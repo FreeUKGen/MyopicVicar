@@ -1,0 +1,14 @@
+development: &global_settings
+  host: 127.0.0.1
+  database: freecen-mockup-development
+  port: 27017
+
+test:
+  database: freecen-mockup-test
+  <<: *global_settings
+
+production:
+  host: 127.0.0.1
+  database: freecen-mockup-production
+
+  <<: *global_settings
