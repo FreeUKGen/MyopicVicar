@@ -8,6 +8,8 @@ class ImageFile
 # belongs_to :model
 # many :model
 # one :model
+  belongs_to :image_dir
+
 
 # Callbacks ::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
 # before_create :your_model_method

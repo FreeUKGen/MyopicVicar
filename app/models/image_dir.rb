@@ -9,6 +9,9 @@ class ImageDir
 # many :model
 # one :model
 
+  belongs_to :image_upload
+  many :image_file
+
 # Callbacks ::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
 # before_create :your_model_method
 # after_create :your_model_method
