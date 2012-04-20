@@ -9,6 +9,9 @@ gem 'rails', '3.0.7'
 gem 'bson_ext'
 gem 'mongo_mapper', :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
 
+# ImageMagick
+gem 'rmagick'
+
 # should move rspec to group below
 #gem 'rspec-rails'
 gem 'rails3-generators'

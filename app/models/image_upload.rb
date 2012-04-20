@@ -57,12 +57,9 @@ class ImageUpload
   
   def process_file(dir_entry, filename)
     log "process_file called on file #{filename}\n"
-    file_entry = ImageFile.new
-    file_entry.image_dir=dir_entry
-    file_entry.name=filename
-    file_entry.path=dir_entry.path
-  
-    file_entry.save!
+    if ImageFile::is_image?filename
+      file_entry = ImageFile.create(:image_dir=>dir_entry, :name=>filename, :path=>dir_entry.path)    
+    end
     log "process_file done with file #{filename}\n"
   end
   

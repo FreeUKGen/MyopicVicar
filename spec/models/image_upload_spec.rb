@@ -106,6 +106,18 @@ describe ImageUpload do
     iu.image_dir.where(:path => /Flintshire.*/).first.image_file.count.should eq(11)
   end
 
+  it "should only process image files" do
+    iu=ImageUpload.new
+    iu.path=HETERO_DIR
+    iu.copy_to_working_dir
+    wd = iu.working_dir
+    iu.process_working_dir(wd)
+
+    iu.image_dir.count.should eq(1+Dir.glob(File.join(HETERO_DIR,"*.zip")).count)
+    iu.image_dir.first.image_file.count.should eq(Dir.glob(File.join(HETERO_DIR,"*.jpg")).count)
+    
+  end
+  
 
 
 end
