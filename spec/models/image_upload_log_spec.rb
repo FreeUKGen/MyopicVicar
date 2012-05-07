@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe ImageUploadLog do
 
-  #SIMPLE_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/simpletest'
   
   it "should create a logfile when its created" do
     iu = ImageUpload.create(:path => "/tmp")
