@@ -62,12 +62,12 @@ describe ImageUpload do
     iu=ImageUpload.new
     iu.path=SIMPLE_DIR
     iu.initialize_working_dir
-    wd = iu.working_dir
+    wd = iu.originals_dir
     File.directory?(wd).should eq(true)
 
 
     # copy files over
-    iu.copy_to_working_dir
+    iu.copy_to_originals_dir
     old_ls = Dir.entries(iu.path).sort
     new_ls = Dir.entries(wd).sort
     
@@ -79,9 +79,9 @@ describe ImageUpload do
   it "should process files" do
     iu=ImageUpload.new
     iu.path=SIMPLE_DIR
-    iu.copy_to_working_dir
-    wd = iu.working_dir
-    iu.process_working_dir(wd)
+    iu.copy_to_originals_dir
+    wd = iu.originals_dir
+    iu.process_originals_dir(wd)
 
     iu.image_dir.count.should eq(1)
     iu.image_dir.first.image_file.count.should eq(Dir.glob(File.join(SIMPLE_DIR,"*")).count)
@@ -92,9 +92,9 @@ describe ImageUpload do
   it "should unzip files" do 
     iu=ImageUpload.new
     iu.path=ZIP_DIR
-    iu.copy_to_working_dir
-    wd = iu.working_dir
-    iu.process_working_dir(wd)
+    iu.copy_to_originals_dir
+    wd = iu.originals_dir
+    iu.process_originals_dir(wd)
 
     # fs tests
     wd_ls = Dir.glob(File.join(wd,"*"))
@@ -111,9 +111,9 @@ describe ImageUpload do
   it "should only process image files" do
     iu=ImageUpload.new
     iu.path=HETERO_DIR
-    iu.copy_to_working_dir
-    wd = iu.working_dir
-    iu.process_working_dir(wd)
+    iu.copy_to_originals_dir
+    wd = iu.originals_dir
+    iu.process_originals_dir(wd)
 
     iu.image_dir.count.should eq(1+Dir.glob(File.join(HETERO_DIR,"*.zip")).count)
     iu.image_dir.first.image_file.count.should eq(Dir.glob(File.join(HETERO_DIR,"*.jpg")).count)

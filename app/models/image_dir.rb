@@ -32,4 +32,9 @@ class ImageDir
    
   key :name, String
   key :path, String
+  
+  
+  def log(msg)
+    self.image_upload.log(msg)
+  end
 end

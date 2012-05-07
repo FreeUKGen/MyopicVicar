@@ -14,15 +14,15 @@ class ImageUpload
   # one :model
   many :image_dir
   many :image_upload_log
-
+  
   
   # Callbacks ::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
   # before_create :your_model_method
   # after_create :your_model_method
   # before_update :your_model_method 
-
+  
   after_create :initialize_logfile
-
+  
   
   # Attribute options extras ::::::::::::::::::::::::::::::::::::::::
   # attr_accessible :first_name, :last_name, :email
@@ -37,55 +37,67 @@ class ImageUpload
   # key :user_ids, Array, :typecast => 'ObjectId'
   
   
+  # we should only store the absolute path of the upload directory
+  # the working and derivation directories should be relative paths from RAILS_ROOT (which is also the cwd of the rails app)
+  # consider having each file record its path
+  
   key :name, String
-  key :path, String
+  key :upload_path, String
   
   key :working_dir, String
-
+  key :originals_dir, String
+  key :derivation_dir, String
   
+  
+  ORIGINALS_DIR='originals'
+  DERIVATION_DIR='derived'
   ZIP_EXTENSION = /\.zip/
-
+  
   def initialize_logfile
     self.image_upload_log << ImageUploadLog.new
     self.image_upload_log.last.save!
   end
-
+  
   def log(msg)
     self.image_upload_log.last.log(msg)
   end
-
+  
   
   def process_file(dir_entry, filename)
     log "process_file called on file #{filename}\n"
     if ImageFile::is_image?filename
-      file_entry = ImageFile.create(:image_dir=>dir_entry, :name=>filename, :path=>dir_entry.path)    
+      file_entry = ImageFile.create(:image_dir=>dir_entry, :name=>filename, :path=>dir_entry.path) 
     end
     log "process_file done with file #{filename}\n"
   end
   
-  def process_zipfile(working_dir, filename)
+  def process_zipfile(dir, filename)
     # form the new directory name
-    log "process_zipfile(#{working_dir}, #{filename})\n"
+    log "process_zipfile(#{dir}, #{filename})\n"
     #filename is absolute path, no need to join
     destination = filename.gsub(ZIP_EXTENSION, '')
     log "destination=#{destination}\n"
     unzip_file(filename, destination)
-    process_working_dir(destination)
+    process_originals_dir(destination)
     
   end
   
-  def process_working_dir(dir)
+  def process_originals_dir(dir)
     # create entry
-    log("processing working directory #{dir}")
+    log("processing originals directory #{dir}")
     entry = ImageDir.new
     entry.image_upload = self
     entry.path=dir
     entry.name=dir
     self.image_dir << entry
 
+    # Create the associated derivation directory
+    derived_dir = dir.sub(ORIGINALS_DIR, DERIVATION_DIR)
+    Dir.mkdir(derived_dir) unless File.exists?(derived_dir)
+    
     # get the beginning state of this dir
-    ls = Dir.glob(File.join(entry.path,"*")).sort
-
+    ls = Dir.glob(File.join(entry.path,"*")).sort.map{|fn| ImageFile.relativize(fn)}
+    
     log "contents of #{File.join(entry.path,"*")} are #{ls}"
     
     ls.each do |filename|
@@ -93,7 +105,7 @@ class ImageUpload
       # if it's a directory, recur
       if File.directory?(filename)
         log "decided #{filename} is a directory"      
-        process_working_dir(File.join(entry.path,filename))
+        process_originals_dir(File.join(entry.path,filename))
       else 
         # what kind of file is it?
         if ZIP_EXTENSION.match(filename)
@@ -109,32 +121,38 @@ class ImageUpload
     entry.save!
     self.save!
   end
-
   
-    def unzip_file (file, destination)
-      
-      Zip::ZipFile.open(file) do |zip_file|
-        zip_file.each do |f|
-          f_path=File.join(destination, File.basename(f.name))
-          log "\tFile.join(#{destination}, #{File.basename(f.name)})=#{f_path}\n"
-          FileUtils.mkdir_p(File.dirname(f_path))
-          zip_file.extract(f, f_path) unless File.exist?(f_path)
-        end
+  
+  def unzip_file (file, destination)
+    
+    Zip::ZipFile.open(file) do |zip_file|
+      zip_file.each do |f|
+        f_path=File.join(destination, File.basename(f.name))
+        log "\tFile.join(#{destination}, #{File.basename(f.name)})=#{f_path}\n"
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path) unless File.exist?(f_path)
       end
     end
+  end
   
-  def copy_to_working_dir
+  def copy_to_originals_dir
     self.working_dir || initialize_working_dir
-    FileUtils.cp_r(Dir.glob(File.join(self.path,"*")), self.working_dir)
-    log "copied contents of #{self.path} to #{self.working_dir}"
+    FileUtils.cp_r(Dir.glob(File.join(self.path,"*")), self.originals_dir)
+    log "copied contents of #{self.path} to #{self.originals_dir}"
   end
   
   def initialize_working_dir
-    self.working_dir = File.join(Dir.getwd, "public", "images", "working", self.id.to_s)
+    self.working_dir = File.join(".", "public", "images", "working", self.id.to_s)
     Dir.mkdir(self.working_dir)
+    self.originals_dir = File.join(self.working_dir, ORIGINALS_DIR)
+    Dir.mkdir(self.originals_dir)
+    self.derivation_dir = File.join(self.working_dir, DERIVATION_DIR)
+    Dir.mkdir(self.derivation_dir)
     self.save!
     
     log "created working directory #{self.working_dir}"
+    log "created originals directory #{self.originals_dir}"
+    log "created derivation directory #{self.derivation_dir}"
   end
   
   def source_path_is_valid
@@ -159,6 +177,6 @@ class ImageUpload
     end
     
   end
-
-
+  
+  
 end

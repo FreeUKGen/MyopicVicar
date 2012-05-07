@@ -19,6 +19,7 @@ class ImageFile
 # after_create :your_model_method
 # before_update :your_model_method 
   before_save :initialize_image
+  before_save :relativize_paths
 
 # Attribute options extras ::::::::::::::::::::::::::::::::::::::::
 # attr_accessible :first_name, :last_name, :email
@@ -43,6 +44,13 @@ class ImageFile
   key :width, Integer
   key :height, Integer
   
+ 
+  
+  # always, always, always save relative paths
+  def relativize_paths
+    path &&= self.class.relativize(path)
+    name &&= self.class.relativize(name)
+  end
 
   def self.is_image?(filename)
     begin
@@ -58,13 +66,28 @@ class ImageFile
   end
 
 
+  def self.relativize(filename)
+    # extract RAILS_ROOT from this
+    filename.sub(Rails.root.to_s+File::SEPARATOR,"")
+  end
+  
+  def self.absolutize(filename)
+    if Pathname.new(filename).absolute?
+      filename
+    else
+      # prepend RAILS_ROOT
+      File.join(Rails.root.to_s, filename)      
+    end
+  end
+
   # load up the image and initialize its metadata
   def initialize_image
-    image= Magick::ImageList.new(self.name)    
+    log "initialize_image called on #{self.name}"
+    log "initialize_image loading file #{self.class.absolutize(self.name)}"
+    image= Magick::ImageList.new(self.class.absolutize(self.name))    
     self.width = image.columns
     self.height = image.rows
     make_thumbnail(image)    
-#    save!
   end
 
   
@@ -73,7 +96,8 @@ class ImageFile
     # figure out dimensions, but make sure they're proportional
     thumb_width = ((THUMB_HEIGHT.to_f / self.height.to_f ) * self.width).to_i
     thumb_image = image.thumbnail(thumb_width, THUMB_HEIGHT)
-    thumb_image.write(fq(thumbnail_name))
+    log "Writing thumbnail to "+ImageFile.absolutize(thumbnail_name)
+    thumb_image.write(ImageFile.absolutize(thumbnail_name))
   end
   
 
@@ -90,18 +114,17 @@ class ImageFile
     File.dirname(self.name)
   end
 
-  def fq(filename)
-    # make sure the full path is correct
-    File.join(File.dirname(self.name), File.basename(filename))
-  end
-
   def filename_stub
     ext = File.extname(self.name)
     File.basename(self.name, ext)
   end
 
   def thumbnail_name
-    "#{filename_stub}_thumb#{PNG_SUFFIX}"
+    File.join(file_directory.sub(ImageUpload::ORIGINALS_DIR, ImageUpload::DERIVATION_DIR), "#{filename_stub}_thumb#{PNG_SUFFIX}")
+  end
+  
+  def log(msg)
+    self.image_dir.log(msg) unless self.image_dir.nil?
   end
   
 end

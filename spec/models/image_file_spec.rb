@@ -17,16 +17,38 @@ describe ImageFile do
   it "should test for images files" do
     ImageFile.is_image?(IMAGE_FILENAME).should eq true
   end
-  
-#  it "should create a thumbnail" do
-#    i = ImageFile.create(:name => IMAGE_FILENAME)
-#    File.exists?(THUMB_FILENAME).should be_true
+ 
+#  it "should not have an absolute path" do
+#    i = ImageFile.create(:name => test_file)
+#    p i.name
+#    i.name.match(/^\//).should be_false
 #  end
+ 
+  it "should create a thumbnail" do
+    i = ImageFile.create(:name => test_file)
+    File.exists?(i.thumbnail_name).should be_true
+  end
   
   it "should read height and width" do
-    i = ImageFile.create(:name => IMAGE_FILENAME)
+    i = ImageFile.create(:name => test_file)
     i.height.should eq 3162
     i.width.should eq 4038
+  end
+
+
+  BASE_DIR = "/tmp/image_file_spec"
+
+  def test_file
+    # quarantine the files
+    unless @dir
+      Dir.mkdir(BASE_DIR) unless File.exists?(BASE_DIR)
+      @dir=File.join(BASE_DIR, Time.now.strftime("%s"))
+
+      FileUtils.rm_rf(@dir)
+      Dir.mkdir(@dir)
+      FileUtils.cp(IMAGE_FILENAME, @dir)
+    end
+    File.join(@dir, File.basename(IMAGE_FILENAME))
   end
   
 end
