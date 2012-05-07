@@ -52,6 +52,7 @@ class ImageUpload
   ORIGINALS_DIR='originals'
   DERIVATION_DIR='derived'
   ZIP_EXTENSION = /\.zip/
+  PDF_EXTENSION = /\.pdf/
   
   def initialize_logfile
     self.image_upload_log << ImageUploadLog.new
@@ -70,6 +71,12 @@ class ImageUpload
     end
     log "process_file done with file #{filename}\n"
   end
+  
+  def process_pdffile(dir, filename)
+    # this works similarly to zipfiles
+  end
+  
+
   
   def process_zipfile(dir, filename)
     # form the new directory name
