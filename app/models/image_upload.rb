@@ -74,6 +74,11 @@ class ImageUpload
   
   def process_pdffile(dir, filename)
     # this works similarly to zipfiles
+    log "process_pdffile(#{dir}, #{filename})"
+    destination = filename.gsub(PDF_EXTENSION, '')
+    log "destination=#{destination}\n"
+    ImageFile::extract_pdf(filename, destination)
+    process_originals_dir(destination)
   end
   
 
@@ -118,9 +123,13 @@ class ImageUpload
         if ZIP_EXTENSION.match(filename)
           log "decided #{filename} is a zipfile"      
           process_zipfile(dir, filename)
-        else
-          log "decided #{filename} is a normal file"      
-          process_file(entry, filename)
+        else 
+          if PDF_EXTENSION.match(filename)
+            process_pdffile(dir, filename)
+          else
+            log "decided #{filename} is a normal file"      
+            process_file(entry, filename)
+          end
         end
       end
     end

@@ -7,6 +7,7 @@ describe ImageUpload do
   ZIP_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/ziptest'
   MULTI_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/multilevletest'
   HETERO_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest'
+  PDF_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/pdftest'
 
 
 #  pending "basic stuff"
@@ -108,6 +109,25 @@ describe ImageUpload do
     iu.image_dir.where(:path => /Flintshire.*/).first.image_file.count.should eq(11)
   end
 
+  it "should unpack PDFs" do 
+    iu=ImageUpload.new
+    iu.path=PDF_DIR
+    iu.copy_to_originals_dir
+    wd = iu.originals_dir
+    iu.process_originals_dir(wd)
+
+    # fs tests
+    wd_ls = Dir.glob(File.join(wd,"*"))
+    zd_ls = Dir.glob(File.join(wd,"SSCens Tutor_Hse_3p","*"))
+    wd_ls.count.should eq 2 # new dir and orig zipfile
+    zd_ls.count.should eq 5
+                     
+
+    # db tests
+    iu.image_dir.count.should eq(2)
+    iu.image_dir.where(:path => /SSCens.*/).first.image_file.count.should eq(5)
+  end
+
   it "should only process image files" do
     iu=ImageUpload.new
     iu.path=HETERO_DIR
@@ -115,7 +135,7 @@ describe ImageUpload do
     wd = iu.originals_dir
     iu.process_originals_dir(wd)
 
-    iu.image_dir.count.should eq(1+Dir.glob(File.join(HETERO_DIR,"*.zip")).count)
+    iu.image_dir.count.should eq(3+Dir.glob(File.join(HETERO_DIR,"*.zip")).count)
     iu.image_dir.first.image_file.count.should eq(Dir.glob(File.join(HETERO_DIR,"*.jpg")).count)
     
   end

@@ -65,6 +65,14 @@ class ImageFile
     true
   end
 
+  def self.extract_pdf(filename, destination)
+    FileUtils.mkdir(destination) unless File.exists?(destination)
+    image_list = Magick::ImageList.new(filename)
+    image_list.each_with_index do |image, i|
+      image.write(File.join(destination, "#{i}.png"))
+    end
+  end
+
 
   def self.relativize(filename)
     # extract RAILS_ROOT from this
