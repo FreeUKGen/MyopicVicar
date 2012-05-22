@@ -1,0 +1,2 @@
+class ImageDirsController < ApplicationController
+end
