@@ -9,6 +9,14 @@ gem 'rails', '= 3.2.2'
 gem 'bson_ext'
 gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
 
+# ActiveAdmin and associated cruft
+gem 'activeadmin'
+gem "meta_search",    '>= 1.1.0.pre'
+gem 'bourbon', '~> 2.1'
+gem 'mm-devise'
+gem 'activeadmin-mongomapper'
+
+
 # ImageMagick
 gem 'rmagick'
 
