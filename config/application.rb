@@ -39,6 +39,11 @@ module MyopicVicar
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
+    # Rails 3.1 additions
+    config.assets.enabled = true
+    config.assets.version = '1.0'
+
+
     config.generators do |g|
       g.orm :mongo_mapper    # :active_record
       g.template_engine :erb # :haml

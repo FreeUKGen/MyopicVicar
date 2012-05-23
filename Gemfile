@@ -1,13 +1,13 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.7'
+gem 'rails', '= 3.1.3'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 # MongoDB
 gem 'bson_ext'
-gem 'mongo_mapper', :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
+gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
 
 # ImageMagick
 gem 'rmagick'
@@ -15,7 +15,6 @@ gem 'rmagick'
 # should move rspec to group below
 #gem 'rspec-rails'
 gem 'rails3-generators'
-gem 'jquery-rails'
 
 gem 'rubyzip'
 
@@ -46,3 +45,13 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
 end
+
+# Needed for the new asset pipeline
+group :assets do
+  gem 'sass-rails',   "~> 3.1.5"
+  gem 'coffee-rails', "~> 3.1.1"
+  gem 'uglifier',     ">= 1.0.3"
+end
+ 
+# jQuery is the default JavaScript library in Rails 3.1
+gem 'jquery-rails'
