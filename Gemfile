@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '= 3.2.2'
+gem 'rails', '3.2.3'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -13,7 +13,7 @@ gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :
 gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
 gem 'bourbon', '~> 2.1'
-gem 'mm-devise'
+gem 'mm-devise', :git => 'git://github.com/pollingj/mm-devise.git'
 gem 'activeadmin-mongomapper'
 
 
