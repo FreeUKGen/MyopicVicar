@@ -4,19 +4,20 @@ Devise.setup do |config|
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
-  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+  config.mailer_sender = "benwbrum-mvdev@gmail.com"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
+
+  # Automatically apply schema changes in tableless databases
+  config.apply_schema = false
 
   # ==> ORM configuration
   # Load and configure the ORM. Supports :active_record (default) and
   # :mongoid (bson_ext recommended) by default. Other ORMs may be
   # available as additional gems.
+#  require 'devise/orm/active_record'
   require 'devise/orm/mongo_mapper'
-
-#  config.orm = :mongo_mapper
-
 
   # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is
@@ -85,7 +86,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 10
 
   # Setup a pepper to generate the encrypted password.
-  # config.pepper = "a2d89f0252b63a02050577576ec633fd819923e412110301ca71933511cc53c79a81bfa8d4334d12b6ad2abb2da71c153a5470c6924685aabb3dcb89392a826f"
+  # config.pepper = "c866d638b5abde482e43a5bad2618d0d02c90a503b7f434706cb2e34d47616959bc6d4dbda3d268052b6262c39fa69a454b43a5097713bb89c4ac257afd9bf0c"
 
   # ==> Configuration for :confirmable
   # A period that the user is allowed to access the website even without
@@ -95,7 +96,7 @@ Devise.setup do |config|
   # the user cannot access the website without confirming his account.
   # config.allow_unconfirmed_access_for = 2.days
 
-  # If true, requires any email changes to be confirmed (exactly the same way as
+  # If true, requires any email changes to be confirmed (exctly the same way as
   # initial account confirmation) to be applied. Requires additional unconfirmed_email
   # db field (see migrations). Until confirmed new email is stored in
   # unconfirmed email column, and copied to email column on successful confirmation.
@@ -111,9 +112,13 @@ Devise.setup do |config|
   # If true, extends the user's remember period when remembered via cookie.
   # config.extend_remember_period = false
 
+  # If true, uses the password salt as remember token. This should be turned
+  # to false if you are not using database authenticatable.
+  config.use_salt_as_remember_token = true
+
   # Options to be passed to the created cookie. For instance, you can set
   # :secure => true in order to force SSL only cookies.
-  # config.rememberable_options = {}
+  # config.cookie_options = {}
 
   # ==> Configuration for :validatable
   # Range for password length. Default is 6..128.

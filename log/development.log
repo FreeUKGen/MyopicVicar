@@ -1,0 +1,217 @@
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (35ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+  [1m[36m (0.2ms)[0m  [1mselect sqlite_version(*)[0m
+  [1m[35m (454.1ms)[0m  CREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) 
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("schema_migrations")[0m
+  [1m[35m (340.3ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+Migrating to CreateAdminNotes (20120529160705)
+  [1m[35m (0.0ms)[0m  select sqlite_version(*)
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.3ms)[0m  CREATE TABLE "admin_notes" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "admin_user_id" integer, "admin_user_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL) 
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_list("admin_notes")[0m
+  [1m[35m (0.1ms)[0m  CREATE INDEX "index_admin_notes_on_resource_type_and_resource_id" ON "admin_notes" ("resource_type", "resource_id")
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_list("admin_notes")[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_admin_notes_on_admin_user_type_and_admin_user_id" ON "admin_notes" ("admin_user_type", "admin_user_id")[0m
+  [1m[35m (0.1ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES ('20120529160705')
+  [1m[36m (803.8ms)[0m  [1mcommit transaction[0m
+Migrating to MoveAdminNotesToComments (20120529160706)
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("admin_notes")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_info('index_admin_notes_on_admin_user_type_and_admin_user_id')
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')[0m
+  [1m[35m (0.4ms)[0m  DROP INDEX "index_admin_notes_on_admin_user_type_and_admin_user_id"
+  [1m[36m (0.4ms)[0m  [1mALTER TABLE "admin_notes" RENAME TO "active_admin_comments"[0m
+  [1m[35m (0.5ms)[0m  CREATE TEMPORARY TABLE "altered_active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "admin_user_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL) 
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_list("altered_active_admin_comments")[0m
+  [1m[35m (0.2ms)[0m  CREATE INDEX "temp_index_admin_notes_on_resource_type_and_resource_id" ON "altered_active_admin_comments" ("resource_type", "resource_id")
+  [1m[36m (0.1ms)[0m  [1mSELECT * FROM "active_admin_comments"[0m
+  [1m[35m (0.3ms)[0m  DROP TABLE "active_admin_comments"
+  [1m[36m (0.2ms)[0m  [1mCREATE TABLE "active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "admin_user_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL) [0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("altered_active_admin_comments")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('temp_index_admin_notes_on_resource_type_and_resource_id')[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (0.2ms)[0m  [1mCREATE INDEX "index_admin_notes_on_resource_type_and_resource_id" ON "active_admin_comments" ("resource_type", "resource_id")[0m
+  [1m[35m (0.1ms)[0m  SELECT * FROM "altered_active_admin_comments"
+  [1m[36m (0.3ms)[0m  [1mDROP TABLE "altered_active_admin_comments"[0m
+  [1m[35m (0.2ms)[0m  CREATE TEMPORARY TABLE "altered_active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "author_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL) 
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_list("altered_active_admin_comments")[0m
+  [1m[35m (0.2ms)[0m  CREATE INDEX "temp_index_admin_notes_on_resource_type_and_resource_id" ON "altered_active_admin_comments" ("resource_type", "resource_id")
+  [1m[36m (0.1ms)[0m  [1mSELECT * FROM "active_admin_comments"[0m
+  [1m[35m (0.3ms)[0m  DROP TABLE "active_admin_comments"
+  [1m[36m (0.1ms)[0m  [1mCREATE TABLE "active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "author_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL) [0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_list("altered_active_admin_comments")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('temp_index_admin_notes_on_resource_type_and_resource_id')[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_admin_notes_on_resource_type_and_resource_id" ON "active_admin_comments" ("resource_type", "resource_id")[0m
+  [1m[35m (0.0ms)[0m  SELECT * FROM "altered_active_admin_comments"
+  [1m[36m (0.1ms)[0m  [1mDROP TABLE "altered_active_admin_comments"[0m
+  [1m[35m (0.1ms)[0m  ALTER TABLE "active_admin_comments" ADD "namespace" varchar(255)
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_active_admin_comments_on_namespace" ON "active_admin_comments" ("namespace")[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_namespace')[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_active_admin_comments_on_author_type_and_author_id" ON "active_admin_comments" ("author_type", "author_id")[0m
+  [1m[35m (0.1ms)[0m  UPDATE active_admin_comments SET namespace='admin'
+  [1m[36m (0.1ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES ('20120529160706')[0m
+  [1m[35m (653.4ms)[0m  commit transaction
+  [1m[36m (0.2ms)[0m  [1mselect sqlite_version(*)[0m
+  [1m[35m (0.1ms)[0m  SELECT "schema_migrations"."version" FROM "schema_migrations" 
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')
+  [1m[36m (0.0ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_namespace')[0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_info('index_admin_notes_on_resource_type_and_resource_id')
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+  [1m[35m (0.2ms)[0m  select sqlite_version(*)
+  [1m[36m (499.7ms)[0m  [1mCREATE TABLE "active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "author_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, "namespace" varchar(255)) [0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (276.3ms)[0m  [1mCREATE INDEX "index_active_admin_comments_on_author_type_and_author_id" ON "active_admin_comments" ("author_type", "author_id")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')[0m
+  [1m[35m (434.0ms)[0m  CREATE INDEX "index_active_admin_comments_on_namespace" ON "active_admin_comments" ("namespace")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_info('index_active_admin_comments_on_namespace')
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')[0m
+  [1m[35m (331.4ms)[0m  CREATE INDEX "index_admin_notes_on_resource_type_and_resource_id" ON "active_admin_comments" ("resource_type", "resource_id")
+  [1m[36m (478.9ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) [0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("schema_migrations")
+  [1m[36m (508.8ms)[0m  [1mCREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")[0m
+  [1m[35m (0.1ms)[0m  SELECT version FROM "schema_migrations"
+  [1m[36m (353.2ms)[0m  [1mINSERT INTO "schema_migrations" (version) VALUES ('20120529160706')[0m
+  [1m[35m (333.2ms)[0m  INSERT INTO "schema_migrations" (version) VALUES ('20120529160705')
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+  [1m[35m (0.2ms)[0m  select sqlite_version(*)
+  [1m[36m (594.5ms)[0m  [1mCREATE TABLE "active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "author_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, "namespace" varchar(255)) [0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (340.2ms)[0m  [1mCREATE INDEX "index_active_admin_comments_on_author_type_and_author_id" ON "active_admin_comments" ("author_type", "author_id")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')[0m
+  [1m[35m (481.2ms)[0m  CREATE INDEX "index_active_admin_comments_on_namespace" ON "active_admin_comments" ("namespace")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_info('index_active_admin_comments_on_namespace')
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')[0m
+  [1m[35m (383.1ms)[0m  CREATE INDEX "index_admin_notes_on_resource_type_and_resource_id" ON "active_admin_comments" ("resource_type", "resource_id")
+  [1m[36m (538.4ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) [0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("schema_migrations")
+  [1m[36m (382.8ms)[0m  [1mCREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")[0m
+  [1m[35m (0.1ms)[0m  SELECT version FROM "schema_migrations"
+  [1m[36m (332.1ms)[0m  [1mINSERT INTO "schema_migrations" (version) VALUES ('20120529160706')[0m
+  [1m[35m (333.1ms)[0m  INSERT INTO "schema_migrations" (version) VALUES ('20120529160705')
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+  [1m[35m (0.2ms)[0m  select sqlite_version(*)
+  [1m[36m (1687.3ms)[0m  [1mCREATE TABLE "active_admin_comments" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_id" varchar(255) NOT NULL, "resource_type" varchar(255) NOT NULL, "author_id" integer, "author_type" varchar(255), "body" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, "namespace" varchar(255)) [0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (339.1ms)[0m  [1mCREATE INDEX "index_active_admin_comments_on_author_type_and_author_id" ON "active_admin_comments" ("author_type", "author_id")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("active_admin_comments")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')[0m
+  [1m[35m (493.7ms)[0m  CREATE INDEX "index_active_admin_comments_on_namespace" ON "active_admin_comments" ("namespace")
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("active_admin_comments")[0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_info('index_active_admin_comments_on_namespace')
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_info('index_active_admin_comments_on_author_type_and_author_id')[0m
+  [1m[35m (381.6ms)[0m  CREATE INDEX "index_admin_notes_on_resource_type_and_resource_id" ON "active_admin_comments" ("resource_type", "resource_id")
+  [1m[36m (528.5ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) [0m
+  [1m[35m (0.1ms)[0m  PRAGMA index_list("schema_migrations")
+  [1m[36m (425.6ms)[0m  [1mCREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")[0m
+  [1m[35m (0.1ms)[0m  SELECT version FROM "schema_migrations"
+  [1m[36m (387.9ms)[0m  [1mINSERT INTO "schema_migrations" (version) VALUES ('20120529160706')[0m
+  [1m[35m (377.6ms)[0m  INSERT INTO "schema_migrations" (version) VALUES ('20120529160705')
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+
+
+Started GET "/assets/rails.png" for 66.90.217.168 at 2012-06-05 16:22:17 -0500
+Served asset /rails.png - 200 OK (3ms)
+
+
+Started GET "/admin" for 66.90.217.168 at 2012-06-05 16:22:17 -0500
+Processing by Admin::DashboardController#index as HTML
+Completed 401 Unauthorized in 1ms
+
+
+Started GET "/admin/login" for 66.90.217.168 at 2012-06-05 16:22:18 -0500
+Processing by ActiveAdmin::Devise::SessionsController#new as HTML
+DEPRECATION WARNING: f.buttons is deprecated in favour of f.actions and will be removed from Formtastic after 2.1. Please see ActionsHelper and InputAction or ButtonAction for more information. (called from realtime at /home/benwbrum/.rvm/rubies/ruby-1.9.3-p125/lib/ruby/1.9.1/benchmark.rb:295)
+DEPRECATION WARNING: f.commit_button is deprecated in favour of f.action(:submit) and will be removed from Formtastic after 2.1. Please see ActionsHelper and InputAction or ButtonAction for more information. (called from realtime at /home/benwbrum/.rvm/rubies/ruby-1.9.3-p125/lib/ruby/1.9.1/benchmark.rb:295)
+  Rendered /home/benwbrum/.rvm/gems/ruby-1.9.3-p125@global/gems/activeadmin-0.4.4/app/views/active_admin/devise/shared/_links.erb (1.0ms)
+  Rendered /home/benwbrum/.rvm/gems/ruby-1.9.3-p125@global/gems/activeadmin-0.4.4/app/views/active_admin/devise/sessions/new.html.erb within layouts/active_admin_logged_out (200.2ms)
+Compiled active_admin.css  (1429ms)  (pid 19458)
+Compiled jquery.js  (1ms)  (pid 19458)
+Compiled jquery-ui.js  (25ms)  (pid 19458)
+Compiled jquery_ujs.js  (0ms)  (pid 19458)
+Compiled active_admin/application.js  (0ms)  (pid 19458)
+Compiled active_admin/base.js  (162ms)  (pid 19458)
+Compiled active_admin.js  (169ms)  (pid 19458)
+Completed 200 OK in 1923ms (Views: 1922.0ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 66.90.217.168 at 2012-06-05 16:22:20 -0500
+Served asset /jquery.js - 200 OK (19ms)
+
+
+Started GET "/assets/active_admin.css?body=1" for 66.90.217.168 at 2012-06-05 16:22:20 -0500
+Served asset /active_admin.css - 200 OK (8ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 66.90.217.168 at 2012-06-05 16:22:20 -0500
+Served asset /jquery_ujs.js - 200 OK (1ms)
+
+
+Started GET "/assets/jquery-ui.js?body=1" for 66.90.217.168 at 2012-06-05 16:22:20 -0500
+Served asset /jquery-ui.js - 200 OK (2ms)
+MONGODB [DEBUG] Logging level is currently :debug which could negatively impact client-side performance. You should set your logging level no lower than :info in production.
+MONGODB (0ms) admin['$cmd'].find({:ismaster=>1}).limit(-1)
+
+
+Started GET "/assets/active_admin/application.js?body=1" for 66.90.217.168 at 2012-06-05 16:22:21 -0500
+Served asset /active_admin/application.js - 200 OK (2ms)
+
+
+Started GET "/assets/active_admin/base.js?body=1" for 66.90.217.168 at 2012-06-05 16:22:21 -0500
+Served asset /active_admin/base.js - 200 OK (29ms)
+
+
+Started GET "/assets/active_admin.js?body=1" for 66.90.217.168 at 2012-06-05 16:22:21 -0500
+Served asset /active_admin.js - 200 OK (6ms)
+
+
+Started POST "/admin/login" for 66.90.217.168 at 2012-06-05 16:50:08 -0500
+Processing by ActiveAdmin::Devise::SessionsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"twKBvMupUpi63MWcxh9QlUMExelJTozW1UJvMDE/uLU=", "admin_user"=>{"email"=>"admin@example.com", "password"=>"[FILTERED]", "remember_me"=>"0"}, "commit"=>"Login"}
+Redirected to http://mvmerge.aspengrovefarm.com/admin
+Completed 302 Found in 338ms (ActiveRecord: 0.0ms)
+
+
+Started GET "/admin" for 66.90.217.168 at 2012-06-05 16:50:08 -0500
+Processing by Admin::DashboardController#index as HTML
+  Rendered /home/benwbrum/.rvm/gems/ruby-1.9.3-p125@global/gems/activeadmin-0.4.4/app/views/active_admin/dashboard/index.html.arb (48.8ms)
+Completed 200 OK in 82ms (Views: 78.2ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/active_admin.css?body=1" for 66.90.217.168 at 2012-06-05 16:50:09 -0500
+Served asset /active_admin.css - 304 Not Modified (13ms)
+
+
+Started GET "/assets/active_admin.js" for 66.90.217.168 at 2012-06-05 16:50:09 -0500
+Served asset /active_admin.js - 200 OK (0ms)
