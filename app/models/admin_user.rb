@@ -12,6 +12,7 @@ class AdminUser
   key :current_sign_in_ip, String
   key :last_sign_in_ip, String
   key :sign_in_count, Integer
+  key :remember_created_at, Time
 
   
   
