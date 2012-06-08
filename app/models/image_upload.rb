@@ -2,7 +2,7 @@ class ImageUpload
   require 'zip/zip'
   include MongoMapper::Document         
   
-  validates_presence_of :path
+  validates_presence_of :upload_path
   validate :source_path_is_valid
   
   # Validations :::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -48,6 +48,7 @@ class ImageUpload
   key :originals_dir, String
   key :derivation_dir, String
   
+  timestamps!
   
   ORIGINALS_DIR='originals'
   DERIVATION_DIR='derived'
@@ -153,8 +154,8 @@ class ImageUpload
   
   def copy_to_originals_dir
     self.working_dir || initialize_working_dir
-    FileUtils.cp_r(Dir.glob(File.join(self.path,"*")), self.originals_dir)
-    log "copied contents of #{self.path} to #{self.originals_dir}"
+    FileUtils.cp_r(Dir.glob(File.join(self.upload_path,"*")), self.originals_dir)
+    log "copied contents of #{self.upload_path} to #{self.originals_dir}"
   end
   
   def initialize_working_dir
@@ -172,21 +173,25 @@ class ImageUpload
   end
   
   def source_path_is_valid
-    path = self[:path]
+    path = self[:upload_path]
     if path
       
       unless File.exists?(path) 
-        #errors.add(:path, "Path #{path} must be a directory on the server.  It appears not to exist.")       
+        errors.add(:upload_path, "Path #{path} must be a directory on the server.  It appears not to exist.")   
+        return
       end
       
       unless File.directory?(path)
-        errors.add(:path, "Path #{path} must be a directory on the server.  It appears not to be a directory.")       
+        errors.add(:upload_path, "Path #{path} must be a directory on the server.  It appears not to be a directory.")          
+        return
       end
       unless File.executable?(path)
-        errors.add(:path, "Path #{path} must be an executable directory on the server.  It appears not to be executable by this program, so we cannot change directories to it.")       
+        errors.add(:upload_path, "Path #{path} must be an executable directory on the server.  It appears not to be executable by this program, so we cannot change directories to it.")   
+        return       
       end
       unless File.readable?(path)
-        errors.add(:path, "Path #{path} must be a readable directory on the server.  It appears not to be readable by this program, so we cannot list files in it.")       
+        errors.add(:upload_path, "Path #{path} must be a readable directory on the server.  It appears not to be readable by this program, so we cannot list files in it.")   
+        return       
       end
       
       
