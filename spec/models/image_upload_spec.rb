@@ -17,29 +17,29 @@ describe ImageUpload do
   end
   
   it "should be persisted" do
-    ImageUpload.create(:path => '/tmp').should be_persisted
+    ImageUpload.create(:upload_path => '/tmp').should be_persisted
   end
   
   it "should persist an upload directory" do
     iu = ImageUpload.new
-    iu.path = "/tmp"
+    iu.upload_path = "/tmp"
     iu.save!
     id = iu.id
     iu2 = ImageUpload.find(id)
-    iu2.path.should eq("/tmp")
+    iu2.upload_path.should eq("/tmp")
   end
   
   
   it "should check for valid upload directory" do
     iu = ImageUpload.new
-    iu.path = "foo"
+    iu.upload_path = "foo"
     iu.should be_invalid
-    iu.path = '/tmp'
+    iu.upload_path = '/tmp'
     iu.should be_valid
     
     TMPDIR = "/tmp/MyopicVicarTest"
 
-    iu.path = TMPDIR
+    iu.upload_path = TMPDIR
     system("mkdir -p #{TMPDIR}")
     system("chmod ugo+rx #{TMPDIR}")
     iu.should be_valid
@@ -61,7 +61,7 @@ describe ImageUpload do
   it "should copy to a working dir" do
     # create the dest dir
     iu=ImageUpload.new
-    iu.path=SIMPLE_DIR
+    iu.upload_path=SIMPLE_DIR
     iu.initialize_working_dir
     wd = iu.originals_dir
     File.directory?(wd).should eq(true)
@@ -69,7 +69,7 @@ describe ImageUpload do
 
     # copy files over
     iu.copy_to_originals_dir
-    old_ls = Dir.entries(iu.path).sort
+    old_ls = Dir.entries(iu.upload_path).sort
     new_ls = Dir.entries(wd).sort
     
     old_ls.should eq(new_ls)
@@ -79,7 +79,7 @@ describe ImageUpload do
   
   it "should process files" do
     iu=ImageUpload.new
-    iu.path=SIMPLE_DIR
+    iu.upload_path=SIMPLE_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
     iu.process_originals_dir(wd)
@@ -92,7 +92,7 @@ describe ImageUpload do
 
   it "should unzip files" do 
     iu=ImageUpload.new
-    iu.path=ZIP_DIR
+    iu.upload_path=ZIP_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
     iu.process_originals_dir(wd)
@@ -111,7 +111,7 @@ describe ImageUpload do
 
   it "should unpack PDFs" do 
     iu=ImageUpload.new
-    iu.path=PDF_DIR
+    iu.upload_path=PDF_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
     iu.process_originals_dir(wd)
@@ -130,7 +130,7 @@ describe ImageUpload do
 
   it "should only process image files" do
     iu=ImageUpload.new
-    iu.path=HETERO_DIR
+    iu.upload_path=HETERO_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
     iu.process_originals_dir(wd)
