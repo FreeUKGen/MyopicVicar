@@ -38,7 +38,9 @@ ActiveAdmin.register ImageUpload do
     
     h3 "Directories" 
     table_for image_upload.image_dir do
-      column("Name") { |dir| dir.name }
+      column("Name") do |dir| 
+        link_to dir.name, admin_image_dir_path(dir) 
+      end
       column("Path") { |dir| dir.path }
     end
   end

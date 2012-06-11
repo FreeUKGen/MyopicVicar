@@ -33,7 +33,7 @@ class ImageFile
 # Typecast
 # key :user_ids, Array, :typecast => 'ObjectId'
   
-   
+  # should be pretty name
   key :name, String
 
   #
