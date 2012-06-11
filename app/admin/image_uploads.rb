@@ -18,12 +18,26 @@ ActiveAdmin.register ImageUpload do
       row :created_at
     end
 
-#    h3 "Directories"
-#  
-#    table_for image_upload.image_dirs do
-#      column("Name") { |dir| dir.name }
-#      column("Path") { |dir| dir.path }
-#    end
+    h3 "Logs"
+    table_for image_upload.image_upload_log do
+      column("File") do 
+        |lf| link_to lf.file, admin_image_upload_log_path(lf) 
+      end
+      column("Created") do 
+        |lf| lf.created_at 
+      end
+      column("Last Updated") do 
+        |lf| lf.updated_at 
+      end
+    end
+    
+    h3 "Directories" 
+    table_for image_upload.image_dir do
+      column("Name") { |dir| dir.name }
+      column("Path") { |dir| dir.path }
+    end
+    
+
   end
 
 

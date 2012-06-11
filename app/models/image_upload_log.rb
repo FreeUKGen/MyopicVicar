@@ -33,6 +33,7 @@ class ImageUploadLog
   
    
   key :file, String
+  timestamps!
 
   def initialize_logfile
     dirname = File.join("log/upload", Date.today.to_s)
@@ -50,8 +51,7 @@ class ImageUploadLog
   end
 
   def read
-    # TODO consider doing this a better way
-    `cat #{self.file}`
+    File.read(self.file)
   end
 
 end
