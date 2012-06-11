@@ -1,5 +1,10 @@
 ActiveAdmin.register ImageUpload do
 
+  actions :show, :index, :new, :create
+  action_item({ :only => :show, :if => proc{ image_upload.status == ImageUpload::Status::NEW } }) do
+    link_to "Process", process_upload_admin_image_upload_path
+  end
+
   # prototype had this:
   index do
     column "Name", :sortable => :name do |iu|
@@ -10,10 +15,10 @@ ActiveAdmin.register ImageUpload do
   end
   
   show :title => :name do |ad|
-    
     attributes_table do
       row :name
       row :upload_path
+      row :status
       row :working_dir
       row :created_at
     end
@@ -36,8 +41,13 @@ ActiveAdmin.register ImageUpload do
       column("Name") { |dir| dir.name }
       column("Path") { |dir| dir.path }
     end
-    
+  end
 
+
+  member_action :process_upload  do    
+      @image_upload = ImageUpload.find(params[:id])
+      @image_upload.process_upload
+      redirect_to admin_image_upload_path
   end
 
 

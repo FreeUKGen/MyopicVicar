@@ -48,6 +48,14 @@ class ImageUpload
   key :originals_dir, String
   key :derivation_dir, String
   
+  module Status
+    NEW="new"
+    PROCESSING="processing"
+    READY="ready"
+  end
+  
+  key :status, String, :default => Status::NEW
+  
   timestamps!
   
   ORIGINALS_DIR='originals'
@@ -151,6 +159,17 @@ class ImageUpload
       end
     end
   end
+  
+  
+  def process_upload
+    self.status = Status::PROCESSING
+    self.save!
+    copy_to_originals_dir
+    process_originals_dir(self.originals_dir)
+    self.status = Status::READY
+    self.save!
+  end
+  
   
   def copy_to_originals_dir
     self.working_dir || initialize_working_dir
