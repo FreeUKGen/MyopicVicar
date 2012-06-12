@@ -120,7 +120,7 @@ class ImageFile
   
   def thumbnail_url
     # returns a relative path to the thumbnail file
-    self.thumbnail_name.gsub(/\.\/public\//, "")
+    self.thumbnail_name.gsub(/\.\/public\/assets\//, "")
   end
 
   def file_directory

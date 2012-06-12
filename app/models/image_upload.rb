@@ -178,7 +178,7 @@ class ImageUpload
   end
   
   def initialize_working_dir
-    self.working_dir = File.join(".", "public", "images", "working", self.id.to_s)
+    self.working_dir = File.join(".", "public", "assets", "images", "working", self.id.to_s)
     Dir.mkdir(self.working_dir)
     self.originals_dir = File.join(self.working_dir, ORIGINALS_DIR)
     Dir.mkdir(self.originals_dir)
