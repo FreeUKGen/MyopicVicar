@@ -43,6 +43,10 @@ class ImageFile
   
   key :width, Integer
   key :height, Integer
+
+  def display_name
+    File.basename(self.name)
+  end
   
  
   
@@ -116,6 +120,7 @@ class ImageFile
   
   def thumbnail_url
     # returns a relative path to the thumbnail file
+    self.thumbnail_name.gsub(/\.\/public\//, "")
   end
 
   def file_directory

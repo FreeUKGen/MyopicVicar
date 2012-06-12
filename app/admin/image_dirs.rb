@@ -14,7 +14,10 @@ ActiveAdmin.register ImageDir do
     h3 "Files"
     table_for image_dir.image_file do
       column("Name") do |f|
-        f.name
+        f.display_name
+      end
+      column("Image") do |f|
+        image_tag f.thumbnail_url
       end
     end
   end
