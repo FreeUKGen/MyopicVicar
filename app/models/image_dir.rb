@@ -34,6 +34,7 @@ class ImageDir
   key :path, String
   timestamps!
   
+  
   def log(msg)
     self.image_upload.log(msg)
   end

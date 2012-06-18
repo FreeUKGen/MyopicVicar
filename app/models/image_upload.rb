@@ -109,7 +109,7 @@ class ImageUpload
     entry = ImageDir.new
     entry.image_upload = self
     entry.path=dir
-    entry.name=dir
+    entry.name=File.join(File.basename(self.upload_path), dir.sub(self.originals_dir, ""))
     self.image_dir << entry
 
     # Create the associated derivation directory
