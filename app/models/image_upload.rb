@@ -117,7 +117,11 @@ class ImageUpload
     Dir.mkdir(derived_dir) unless File.exists?(derived_dir)
     
     # get the beginning state of this dir
-    ls = Dir.glob(File.join(entry.path,"*")).sort.map{|fn| ImageFile.relativize(fn)}
+    ls = Dir.glob(File.join(entry.path,"*")).sort.map do |fn| 
+      rfn = ImageFile.relativize(fn)
+      log "\trelativize(#{fn}) yielded #{rfn}"
+      rfn
+    end
     
     log "contents of #{File.join(entry.path,"*")} are #{ls}"
     
@@ -126,7 +130,7 @@ class ImageUpload
       # if it's a directory, recur
       if File.directory?(filename)
         log "decided #{filename} is a directory"      
-        process_originals_dir(File.join(entry.path,filename))
+        process_originals_dir(File.join(entry.path,File.basename(filename)))
       else 
         # what kind of file is it?
         if ZIP_EXTENSION.match(filename)

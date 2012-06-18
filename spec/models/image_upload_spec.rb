@@ -5,7 +5,7 @@ require 'spec_helper'
 describe ImageUpload do
   SIMPLE_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/simpletest'
   ZIP_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/ziptest'
-  MULTI_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/multilevletest'
+  MULTI_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/multileveltest'
   HETERO_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest'
   PDF_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/pdftest'
 
@@ -127,6 +127,66 @@ describe ImageUpload do
     iu.image_dir.count.should eq(2)
     iu.image_dir.where(:path => /SSCens.*/).first.image_file.count.should eq(5)
   end
+
+  it "should deal with multiple levels" do 
+    iu=ImageUpload.new
+    iu.upload_path=MULTI_DIR
+    iu.process_upload
+    wd = iu.originals_dir
+
+    # fs tests
+    # top directory should equal original 4
+    wd_ls = Dir.glob(File.join(wd,"*"))
+    wd_ls.count.should eq(4)
+    # dbdir should contain 0 dbfiles
+    iu.image_dir.first.image_file.count.should eq(0)
+
+
+    # zip directory should equal 2 (zipfile + extracted directory)
+    zd = File.join(wd, "ziptest")
+    zd_ls = Dir.glob(File.join(zd,"*"))
+    zd_ls.count.should eq(2)
+    # zip dbdir should contain 0 dbfiles
+    iu.image_dir.where(:path => /ziptest$/).first.image_file.count.should eq(0)
+    # zip subdir should equal 11
+    zsd = File.join(zd, "Flintshire 1861")
+    zsd_ls = Dir.glob(File.join(zsd,"*"))
+    zsd_ls.count.should eq(11)
+    # zip dbdir should contain 11 dbfiles
+    iu.image_dir.where(:path => /ziptest\/Flintshire 1861$/).first.image_file.count.should eq(11)
+
+    # pdf directory should equal 2 (pdfdir + extracted dir)
+    pd = File.join(wd, "pdftest")
+    pd_ls = Dir.glob(File.join(pd,"*"))
+    pd_ls.count.should eq(2)
+    # pdf dbdir should contain 0 dbfiles
+    iu.image_dir.where(:path => /pdftest$/).first.image_file.count.should eq(0)
+    # pdf subdir should equal 5
+    psd = File.join(wd, "pdftest")
+    psd_ls = Dir.glob(File.join(psd,"*"))
+    psd_ls.count.should eq(2)
+    # pdf sub dbdir should contain 5 dbfiles
+    iu.image_dir.where(:path => /pdftest\/SSCens.*/).first.image_file.count.should eq(5)
+    # 
+
+
+    # hetero dir should equal 19 files + 5 extract dirs
+    hd = File.join(wd, "heterogenoustest")
+    hd_ls = Dir.glob(File.join(hd,"*"))
+    hd_ls.count.should eq(24)
+    # hetero dbdir should equal 19 files - 5 zipfiles - 1 non-image file
+    iu.image_dir.where(:path => /heterogenoustest$/).first.image_file.count.should eq(13)
+    # hetero pdf subdir should equal X files
+    # pdf directory should equal 2 (pdfdir + extracted dir)
+    hpd = File.join(hd, "SSCens Tutorial_Spread_1p")
+    hpd_ls = Dir.glob(File.join(hpd,"*"))
+    hpd_ls.count.should eq(2)
+    # pdf dbdir should contain 1 dbfiles
+#    iu.image_dir.each { |d| p d.path }
+    iu.image_dir.where(:path => /heterogenoustest\/SSCens Tutorial_Spread_1p$/).first.image_file.count.should eq(2)
+
+  end
+
 
   it "should only process image files" do
     iu=ImageUpload.new

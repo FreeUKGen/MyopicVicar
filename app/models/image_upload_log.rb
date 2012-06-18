@@ -41,12 +41,11 @@ class ImageUploadLog
     self.file = File.join(dirname, "upload_#{self.id}.log")
     @logger = Logger.new(self.file)
     @logger.level = Logger::INFO
-    @logger.info "Created logfile #{self.file}."
     self.save!
   end
 
   def log(msg)
-    @logger || initialize_logfile
+    initialize_logfile unless @logger
     @logger.info(msg)
   end
 
