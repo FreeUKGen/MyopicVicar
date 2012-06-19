@@ -116,6 +116,7 @@ class ImageFile
   
   def image_url
     # returns a relative path to the image file
+    self.name.gsub(/\.\/public\/assets\//, "")
   end
   
   def thumbnail_url
