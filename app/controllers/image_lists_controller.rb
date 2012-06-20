@@ -1,0 +1,2 @@
+class ImageListsController < ApplicationController
+end
