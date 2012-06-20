@@ -2,6 +2,23 @@ ActiveAdmin.register ImageDir do
   menu false
   actions :show
 
+  action_item({ :only => :show }) do
+    link_to "Deskew", deskew_admin_image_dir_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Rotate 90", rotate90_admin_image_dir_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Rotate 270", rotate270_admin_image_dir_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Negate", negate_admin_image_dir_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Revert", revert_admin_image_dir_path
+  end
+
+
   belongs_to :image_upload, :optional => true
 
   show :title => :name do
@@ -24,4 +41,37 @@ ActiveAdmin.register ImageDir do
       end
     end
   end
+  
+  
+  
+  member_action :deskew  do    
+    @image_dir=ImageDir.find(params[:id])
+    @image_dir.image_file.each { |f| f.deskew }
+    redirect_to admin_image_dir_path
+  end
+
+  member_action :rotate90  do    
+    @image_dir=ImageDir.find(params[:id])
+    @image_dir.image_file.each { |f| f.rotate(90) }
+    redirect_to admin_image_dir_path
+  end
+
+  member_action :rotate270  do    
+    @image_dir=ImageDir.find(params[:id])
+    @image_dir.image_file.each { |f| f.rotate(270) }
+    redirect_to admin_image_dir_path
+  end
+
+  member_action :negate  do    
+    @image_dir=ImageDir.find(params[:id])
+    @image_dir.image_file.each { |f| f.negate }
+    redirect_to admin_image_dir_path
+  end
+
+  member_action :revert  do    
+    @image_dir=ImageDir.find(params[:id])
+    @image_dir.image_file.each { |f| f.revert }
+    redirect_to admin_image_dir_path
+  end
+
 end
