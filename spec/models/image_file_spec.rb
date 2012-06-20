@@ -1,11 +1,94 @@
 require 'spec_helper'
 
 describe ImageFile do
+  SIMPLE_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/simpletest'
   ZIP_FILENAME = "/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/Flintshire 1861.zip" 
   IMAGE_FILENAME = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/4143523_01206.jpg'
   PDF_FILENAME = "/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/SSCens Tutorial_Spread_1p.pdf"
   THUMB_FILENAME = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/4143523_01206_thumb.png'
 
+  it "should deal correctly with working copies" do
+    iu=ImageUpload.new
+    iu.upload_path=SIMPLE_DIR
+    iu.process_upload
+    f = iu.image_dir.first.image_file.first
+    
+    # check that new files are considered original
+    f.original?.should eq(true)
+    f.original_name.should eq(nil)
+    f.name.should_not eq(f.original_name)
+    old_name = f.name
+    # do something
+    f.deskew
+      
+    # check that files are not original
+    f.original?.should_not eq(true)
+    f.original_name.should_not eq(nil)
+    f.original_name.should eq(old_name)
+    
+    # new derived file should exist
+    new_name = f.name
+    File.exists?(new_name).should eq(true)
+    
+    # revert
+    f.revert
+    
+    # check that files are original again
+    f.original?.should eq(true)
+    f.original_name.should eq(nil)
+    f.name.should_not eq(f.original_name)
+    File.exists?(new_name).should eq(false)
+    
+  end
+  
+  it "should update thumbnails and metadata after changes" do
+    iu=ImageUpload.new
+    iu.upload_path=SIMPLE_DIR
+    iu.process_upload
+    f = iu.image_dir.first.image_file.first
+    
+    # check coordinates in the DB
+    orig_x=f.width
+    orig_y=f.height
+    # check filesystem for thumbnail
+    orig_size=File.size(f.name)
+    orig_thumb_size=File.size(f.thumbnail_name)
+
+    # do something
+    f.rotate(90)
+      
+    # recheck filesystem
+    File.size(f.name).should_not eq(orig_size)
+    File.size(f.thumbnail_name).should_not eq(orig_size)
+    # recheck coordinates
+    f.width.should_not eq(orig_x)
+    f.height.should_not eq(orig_y)
+    
+  end
+
+  it "should transpose measurements after a rotate" do
+    iu=ImageUpload.new
+    iu.upload_path=SIMPLE_DIR
+    iu.process_upload
+    f = iu.image_dir.first.image_file.first
+    
+    # check coordinates in the DB
+    orig_x=f.width
+    orig_y=f.height
+
+    # do something
+    f.rotate(90)
+      
+    # recheck coordinates
+    f.width.should eq(orig_y)
+    f.height.should eq(orig_x)
+    
+    nf = ImageFile.find(f.id)
+    nf.width.should eq f.width
+    nf.height.should eq f.height
+    nf.name.should eq f.name
+    
+  end
 
   it "should test for zipfiles" do
     ImageFile.is_image?(ZIP_FILENAME).should eq false
@@ -18,11 +101,6 @@ describe ImageFile do
     ImageFile.is_image?(IMAGE_FILENAME).should eq true
   end
  
-#  it "should not have an absolute path" do
-#    i = ImageFile.create(:name => test_file)
-#    p i.name
-#    i.name.match(/^\//).should be_false
-#  end
  
   it "should create a thumbnail" do
     i = ImageFile.create(:name => test_file)

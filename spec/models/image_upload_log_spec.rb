@@ -7,7 +7,7 @@ describe ImageUploadLog do
     iu = ImageUpload.create(:upload_path => "/tmp")
     iu.image_upload_log.last.should be_an_instance_of(ImageUploadLog)
     fn = iu.image_upload_log.last.file
-    iu.image_upload_log.last.read.should match /Created/
+    iu.image_upload_log.last.read.should match /created/
   end
 
   it "should be accessible from child objects" do

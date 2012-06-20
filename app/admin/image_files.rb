@@ -1,5 +1,22 @@
 ActiveAdmin.register ImageFile do
   menu false
+  actions :all, :except => :edit
+  action_item({ :only => :show }) do
+    link_to "Deskew", deskew_admin_image_file_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Rotate 90", rotate90_admin_image_file_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Rotate 270", rotate270_admin_image_file_path
+  end
+  action_item({ :only => :show }) do
+    link_to "Negate", negate_admin_image_file_path
+  end
+  action_item({ :only => :show, :if => proc{ !image_file.original? } }) do
+    link_to "Revert", revert_admin_image_file_path
+  end
+
   show :title => :display_name do
     attributes_table do
 #      row :name
@@ -22,5 +39,35 @@ ActiveAdmin.register ImageFile do
     end
   end
 
+
+  member_action :deskew  do    
+    @image_file=ImageFile.find(params[:id])
+    @image_file.deskew
+    redirect_to admin_image_file_path
+  end
+
+  member_action :rotate90  do    
+    @image_file=ImageFile.find(params[:id])
+    @image_file.rotate(90)
+    redirect_to admin_image_file_path
+  end
+
+  member_action :rotate270  do    
+    @image_file=ImageFile.find(params[:id])
+    @image_file.rotate(270)
+    redirect_to admin_image_file_path
+  end
+
+  member_action :negate  do    
+    @image_file=ImageFile.find(params[:id])
+    @image_file.negate
+    redirect_to admin_image_file_path
+  end
+
+  member_action :revert  do    
+    @image_file=ImageFile.find(params[:id])
+    @image_file.revert
+    redirect_to admin_image_file_path
+  end
 
 end

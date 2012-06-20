@@ -33,8 +33,11 @@ class ImageFile
 # Typecast
 # key :user_ids, Array, :typecast => 'ObjectId'
   
-  # should be pretty name
+  # filename
   key :name, String
+
+  # location of original file to be used when derivation happens
+  key :original_name, String
 
   #
   # TODO consider whether or not we actually need this
@@ -46,6 +49,10 @@ class ImageFile
 
   def display_name
     File.basename(self.name)
+  end
+  
+  def original?
+    self.original_name.nil?    
   end
   
  
@@ -94,11 +101,12 @@ class ImageFile
 
   # load up the image and initialize its metadata
   def initialize_image
-    log "initialize_image called on #{self.name}"
+    log "initialize_image called on #{self.name} by #{caller[0]}"
     log "initialize_image loading file #{self.class.absolutize(self.name)}"
     image= Magick::ImageList.new(self.class.absolutize(self.name))    
     self.width = image.columns
     self.height = image.rows
+    log "initialize_image recording [x,y]=[#{self.width},#{self.height}]"
     make_thumbnail(image)    
   end
 
@@ -108,7 +116,7 @@ class ImageFile
     # figure out dimensions, but make sure they're proportional
     thumb_width = ((THUMB_HEIGHT.to_f / self.height.to_f ) * self.width).to_i
     thumb_image = image.thumbnail(thumb_width, THUMB_HEIGHT)
-    log "Writing thumbnail to "+ImageFile.absolutize(thumbnail_name)
+    log "make_thumbnail writing thumbnail to "+ImageFile.absolutize(thumbnail_name)
     thumb_image.write(ImageFile.absolutize(thumbnail_name))
   end
   
@@ -139,6 +147,67 @@ class ImageFile
   
   def log(msg)
     self.image_dir.log(msg) unless self.image_dir.nil?
+  end
+
+  def rotate(degrees)
+    log("rotate(#{degrees}) called on #{self.name}")
+    log("rotate(#{degrees}) saving original")
+    save_original
+    log("rotate(#{degrees}) reading #{self.name}")
+    image=Magick::ImageList.new(self.class.absolutize(self.name))        
+    log("rotate(#{degrees}) rotating")
+    image.rotate!(degrees)
+    image.write(self.class.absolutize(self.name))
+    log("rotate(#{degrees}) re-initializing")
+    initialize_image
+    save!
+  end
+
+  # TODO: rewrite the image manipulation methods to do something clever with blocks instead
+  # of all the repetition
+  def negate
+    save_original
+    image=Magick::ImageList.new(self.class.absolutize(self.name))        
+    image=image.negate
+    image.write(self.class.absolutize(self.name))
+    initialize_image
+    save!
+  end
+
+  def deskew
+    log("deskew called on #{self.name}")
+    log("deskew saving original")
+    save_original
+    log("deskew reading #{self.name}")
+    image=Magick::ImageList.new(self.class.absolutize(self.name))        
+    log("deskew deskewing")
+    image = image.deskew
+    image.write(self.class.absolutize(self.name))
+    log("deskew re-initializing")
+    initialize_image
+    save!
+  end
+  
+  def revert
+    unless self.original?
+      # delete the working files
+      File.delete(self.name)
+      # point at the original files
+      self.name = self.original_name
+      self.original_name = nil
+    end
+    save!
+  end
+  
+  def save_original
+    if self.original?
+      # first hide the original
+      self.original_name = self.name
+      self.save!
+      # now move the working image to the derived directory
+      self.name = self.original_name.sub(ImageUpload::ORIGINALS_DIR, ImageUpload::DERIVATION_DIR)
+      FileUtils::cp(self.original_name, self.name)
+    end
   end
   
 end
