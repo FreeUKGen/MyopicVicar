@@ -5,14 +5,25 @@ ActiveAdmin.register ImageList do
   end
 
 
-  
+   index do
+    column "Name", :sortable => :name do |il|
+      link_to il.name, admin_image_list_path(il)
+    end
+    column :chapman_code
+    column :difficulty
+    column :created_at
+  end
+
   
   show :title => :name do
     attributes_table do
       row :name
       row :chapman_code
       row :start_date
-      row :template
+      row :template do |il|
+        t = Template.find(il.template)
+        t.name if t
+      end
       row :difficulty
       row :created_at
     end
