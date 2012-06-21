@@ -1,10 +1,18 @@
 require 'chapman_code'
 ActiveAdmin.register ImageList do
+  action_item({ :only => :show }) do
+    link_to "Publish", publish_admin_image_list_path
+  end
+
+
+  
+  
   show :title => :name do
     attributes_table do
       row :name
       row :chapman_code
       row :start_date
+      row :template
       row :difficulty
       row :created_at
     end
@@ -26,11 +34,27 @@ ActiveAdmin.register ImageList do
       f.input :start_date
       f.input :difficulty, :as => :select, :collection => { "Beginner" => 0, "Intermediate" => 1, "Advanced" => 2 }
       f.input :chapman_code, :as => :select, :collection => ChapmanCode::select_hash_with_parenthetical_codes
+      f.input :template, :as => :select, :collection => Template.all
     end
     f.buttons
   end
 
   
+  member_action :publish do
+    @image_list=ImageList.find(params[:id])
+    if @image_list.template.blank? 
+      flash[:error] = "Template is required before an image list may be published."
+      redirect_to edit_admin_image_list_path(@image_list)
+    else
+      flash[:notice] = "Image list #{@image_list.name} is now published for transcription."
+      asset_collection = @image_list.publish_to_asset_collection
+      redirect_to admin_book_part_path(asset_collection)
+    end
+#    logger.debug("Converting to image list")
+#    image_list = @image_dir.convert_to_image_list
+#    logger.debug("Converted to image list #{image_list.inspect}")
+#    redirect_to admin_image_list_path(image_list)
+  end
 
 
 end
