@@ -1,6 +1,14 @@
 ActiveAdmin.register AssetCollection, :as => "Book Part" do
   actions :show, :index, :edit, :delete
 
+
+  index do
+    column "Title", :sortable => [:name, :chapman_code] do |ac|
+      link_to ac.title, admin_book_part_path(ac)
+    end
+    column :chapman_code
+  end
+
     
   show :title => :title do |asset_collection|
     attributes_table do

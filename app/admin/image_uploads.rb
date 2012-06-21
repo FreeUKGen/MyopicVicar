@@ -12,7 +12,9 @@ ActiveAdmin.register ImageUpload do
     end
     column :upload_path
     column :created_at
-    column :status
+    column :status do |iu|
+      status_tag iu.status
+    end
   end
   
   show :title => :name do |ad|
