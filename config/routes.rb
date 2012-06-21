@@ -1,4 +1,16 @@
 MyopicVicar::Application.routes.draw do
+  resources :fields
+
+  resources :templates
+
+  resources :entities
+
+  resources :asset_collections
+
+  resources :assets
+
+  resources :image_lists
+
   ActiveAdmin.routes(self)
 
   devise_for :admin_users, ActiveAdmin::Devise.config

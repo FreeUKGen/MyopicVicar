@@ -17,6 +17,9 @@ ActiveAdmin.register ImageDir do
   action_item({ :only => :show }) do
     link_to "Revert", revert_admin_image_dir_path
   end
+  action_item({ :only => :show }) do
+    link_to "Convert", convert_admin_image_dir_path
+  end
 
 
   belongs_to :image_upload, :optional => true
@@ -42,7 +45,13 @@ ActiveAdmin.register ImageDir do
     end
   end
   
-  
+  member_action :convert do
+    @image_dir=ImageDir.find(params[:id])
+    logger.debug("Converting to image list")
+    image_list = @image_dir.convert_to_image_list
+    logger.debug("Converted to image list #{image_list.inspect}")
+    redirect_to admin_image_list_path(image_list)
+  end
   
   member_action :deskew  do    
     @image_dir=ImageDir.find(params[:id])

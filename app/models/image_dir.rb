@@ -34,6 +34,13 @@ class ImageDir
   key :path, String
   timestamps!
   
+  def convert_to_image_list
+    il = ImageList.create(:name => self.name, :chapman_code => nil)
+    il.image_files = self.image_file
+    il.save!
+    il
+  end
+  
   
   def log(msg)
     self.image_upload.log(msg)
