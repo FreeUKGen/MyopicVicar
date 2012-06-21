@@ -1,0 +1,2 @@
+class EntitiesController < ApplicationController
+end
