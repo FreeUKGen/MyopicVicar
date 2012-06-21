@@ -41,4 +41,48 @@ ActiveAdmin::Dashboards.build do
   # section "Membership Summary", :if => :memberships_enabled?
   # section "Membership Summary", :if => Proc.new { current_admin_user.account.memberships.any? }
 
+  section "Recent Activity" do
+    h3 "Uploads"
+    ul do
+      ImageUpload.sort(:updated_at.desc).limit(5).each do |iu|
+        li link_to(iu.name, admin_image_upload_path(iu))
+      end
+    end
+    h3 "Image Lists"
+    ul do
+      ImageList.sort(:updated_at.desc).limit(5).each do |il|
+        li link_to(il.name, admin_image_list_path(il))
+      end
+    end  end
+
+
+  section "System Stats" do
+    table do
+      tr do
+        td "Uploads"
+        td ImageUpload.count
+      end
+      tr do
+        td "Directories"
+        td ImageDir.count
+      end
+      tr do
+        td "Image Files"
+        td ImageFile.count
+      end
+      tr do
+        td "Image Lists"
+        td ImageUpload.count
+      end
+      tr do
+        td "Book Parts"
+        td AssetCollection.count
+      end
+      tr do
+        td "Pages"
+        td Asset.count
+      end
+    end
+  end
+
 end
