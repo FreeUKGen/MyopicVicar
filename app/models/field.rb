@@ -1,6 +1,6 @@
 # The idea of the field is that it defines the layout of the thing being transcribed at the most fine level. e.g. a text-field
 class Field
-  include MongoMapper::Document
+  include MongoMapper::EmbeddedDocument
   
   key :name, String
   key :field_key, String

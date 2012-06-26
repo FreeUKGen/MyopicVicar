@@ -16,9 +16,11 @@ ActiveAdmin.register Entity do
     end
     h3 "Fields"
     table_for entity.fields do
-      column("Name") do |f|
-        link_to f.name, admin_field_path(f)
-      end
+      column :name
+      column :kind
+      column :field_key
+      column :initial_value
+      column :options
     end
   end
 end
