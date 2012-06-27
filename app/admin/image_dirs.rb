@@ -40,7 +40,8 @@ ActiveAdmin.register ImageDir do
         link_to f.display_name, admin_image_file_path(f)
       end
       column("Image") do |f|
-        image_tag f.thumbnail_url
+        link_to(image_tag(f.thumbnail_url), admin_image_file_path(f))
+        
       end
     end
   end

@@ -1,6 +1,6 @@
 require 'chapman_code'
 ActiveAdmin.register ImageList do
-  action_item({ :only => :show }) do
+  action_item({ :only => :show, :if => proc{ image_list.asset_collection.nil? } }) do
     link_to "Publish", publish_admin_image_list_path
   end
 
@@ -20,9 +20,14 @@ ActiveAdmin.register ImageList do
       row :name
       row :chapman_code
       row :start_date
+      row :end_date
       row :template do |il|
         t = Template.find(il.template)
-        t.name if t
+        link_to t.name, admin_template_path(t) if t
+      end
+      row :book_part do |il|
+        ac = AssetCollection.find(il.asset_collection)
+        link_to ac.title, admin_book_part_path(ac) if ac
       end
       row :difficulty
       row :created_at
@@ -33,7 +38,7 @@ ActiveAdmin.register ImageList do
         link_to f.display_name, admin_image_file_path(f)
       end
       column("Image") do |f|
-        image_tag f.thumbnail_url
+        link_to(image_tag(f.thumbnail_url), admin_image_file_path(f))
       end
     end
   end
@@ -42,7 +47,8 @@ ActiveAdmin.register ImageList do
   form do |f|
     f.inputs "Details" do
       f.input :name
-      f.input :start_date
+      f.input :start_date, :input_html => {:size => 10}
+      f.input :end_date,  :input_html => {:size => 10}
       f.input :difficulty, :as => :select, :collection => { "Beginner" => 0, "Intermediate" => 1, "Advanced" => 2 }
       f.input :chapman_code, :as => :select, :collection => ChapmanCode::select_hash_with_parenthetical_codes
       f.input :template, :as => :select, :collection => Template.all
