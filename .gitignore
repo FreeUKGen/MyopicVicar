@@ -6,10 +6,16 @@
 
 # Ignore bundler config
 /.bundle
+/.project
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
 
+/db/development.sqlite3
+
 # Ignore all logfiles and tempfiles.
 /log/*.log
+/log/upload
 /tmp
+
+/public/assets/images/working
