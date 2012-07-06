@@ -28,6 +28,14 @@ class S3bucket
     self.prefixes
   end
   
+  def ls(dir)
+    return nil unless directories.include?(dir)
+    dir = dir + '/' unless dir.ends_with?('/')
+    c = Fog::Storage.new(:provider => 'AWS')
+    c.directories.get(self.name).files.all(:prefix => dir, :delimiter => '/')
+
+  end
+  
   private
   
   def self.dir_from_key(key) 

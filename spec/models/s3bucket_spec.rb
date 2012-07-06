@@ -8,9 +8,15 @@ describe S3bucket do
   end
   
   it "should get directories" do
-    setup
     b = S3bucket.new(:name => TEST_BUCKET)
     b.directories.count.should eq(3)
+  end
+  
+  it "should list files" do
+    b = S3bucket.new(:name => TEST_BUCKET)
+    b.ls('bogus').should eq(nil)
+    b.ls('FreeTEST').count.should eq(1)
+    b.ls('FreeTEST/Dir1').count.should eq(2)
   end
 end
 
