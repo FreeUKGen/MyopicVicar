@@ -33,7 +33,7 @@ class ImageList
     self.image_files.each do |f|
       Asset.create({
         :location => f.image_url,
-        :display_width => 800,
+        :display_width => 1500,
         :height => f.height,
         :width => f.width,
         :template => Template.find(self.template),
