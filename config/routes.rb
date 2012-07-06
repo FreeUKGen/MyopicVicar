@@ -1,4 +1,6 @@
 MyopicVicar::Application.routes.draw do
+  resources :s3buckets
+
   resources :fields
 
   resources :templates
