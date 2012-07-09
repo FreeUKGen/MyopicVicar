@@ -5,6 +5,8 @@ class S3bucket
   
   key :name, String
   key :prefixes, Array
+
+  TMP_DIR_PREFIX = "/tmp/myopicvicar/"
   
   def directories
     # return the cached version
@@ -36,7 +38,24 @@ class S3bucket
 
   end
   
+  
+  def flush_to_slash_tmp(dir) 
+    
+    files = ls(dir)
+    files.each do |s3_file|
+      FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
+      File.open(key_to_file(s3_file.key), 'w+') do |local_file|
+        local_file.write(s3_file.body)
+      end 
+    end
+    
+  end
+  
   private
+  
+  def key_to_file(key)
+    File.join(TMP_DIR_PREFIX, self.name, key)
+  end
   
   def self.dir_from_key(key) 
     File.join(File.dirname(key), '')
