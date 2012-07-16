@@ -4,6 +4,12 @@ ActiveAdmin.register ImageUpload do
   action_item({ :only => :show, :if => proc{ image_upload.status == ImageUpload::Status::NEW } }) do
     link_to "Process", process_upload_admin_image_upload_path
   end
+  action_item({ :only => :index }) do
+    link_to "Import From S3", admin_s3buckets_path
+    #"Import from S3"
+  end
+
+
 
   # prototype had this:
   index do
@@ -48,12 +54,21 @@ ActiveAdmin.register ImageUpload do
     end
   end
 
+  
+  member_action :import_from_aws do    
+#      @image_upload = ImageUpload.find(params[:id])
+#      @image_upload.process_upload
+      redirect_to admin_image_upload_path
+#      redirect_to admin_s3buckets_path
+  end
+
 
   member_action :process_upload  do    
       @image_upload = ImageUpload.find(params[:id])
       @image_upload.process_upload
       redirect_to admin_image_upload_path
   end
+
 
 
 # docs has this:
@@ -74,6 +89,7 @@ ActiveAdmin.register ImageUpload do
     f.inputs "Image Upload" do
       f.input :name
       f.input :upload_path
+      
       f.buttons
     end
   end

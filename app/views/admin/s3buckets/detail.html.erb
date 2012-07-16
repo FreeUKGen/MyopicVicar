@@ -1,0 +1,17 @@
+<p><%= button_to("Import From S3", import_admin_s3bucket_path('dir' => @dir)) %></p>
+
+<h3>Files</h3>
+<div>
+  <table>
+  	<tr> 
+  		<th>Name</th>
+  		<th>Size</th>
+	</tr>
+	<% @files.each do |file| %>
+	  	<tr>
+			<td><%= File.basename(file.key) %></td>
+			<td><%= file.content_length %></td>
+	    </tr>
+	<%  end %>
+  </table>
+</div>
