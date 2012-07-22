@@ -1,4 +1,5 @@
 require 'chapman_code'
+require 'scribe_translator'
 class ImageList 
   include MongoMapper::Document        
   
@@ -23,29 +24,7 @@ class ImageList
 
 
   def publish_to_asset_collection
-    ac = AssetCollection.create({
-      :title => self.name, 
-      :chapman_code => self.chapman_code, 
-      :start_date => self.start_date, 
-      :end_date => self.end_date, 
-      :template => self.template, 
-      :difficulty => self.difficulty,
-      :has_thumbnails => true})
-      
-    self.image_files.each do |f|
-      Asset.create({
-        :ext_ref => f.name,
-        :location => f.image_url,
-        :display_width => 1200,
-        :height => f.height,
-        :width => f.width,
-        :template => Template.find(self.template),
-        :asset_collection => ac,
-        :thumbnail_location => f.thumbnail_url,
-        :thumbnail_width => f.thumbnail_width,
-        :thumbnail_height => f.thumbnail_height        
-      })
-    end
+    ac = ScribeTranslator.image_list_to_asset_collection(self)
     self.asset_collection = ac.id
     self.save!
     ac
