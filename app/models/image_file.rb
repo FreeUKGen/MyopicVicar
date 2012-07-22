@@ -47,6 +47,9 @@ class ImageFile
   key :width, Integer
   key :height, Integer
 
+  key :thumbnail_width, Integer
+  key :thumbnail_height, Integer
+
   def display_name
     File.basename(self.name)
   end
@@ -80,7 +83,7 @@ class ImageFile
     FileUtils.mkdir(destination) unless File.exists?(destination)
     image_list = Magick::ImageList.new(filename)
     image_list.each_with_index do |image, i|
-      image.write(File.join(destination, "#{i}.png"))
+    image.write(File.join(destination, "#{i}.png"))
     end
   end
 
@@ -118,18 +121,20 @@ class ImageFile
     thumb_image = image.thumbnail(thumb_width, THUMB_HEIGHT)
     log "make_thumbnail writing thumbnail to "+ImageFile.absolutize(thumbnail_name)
     thumb_image.write(ImageFile.absolutize(thumbnail_name))
+    self.thumbnail_width = thumb_width
+    self.thumbnail_height = THUMB_HEIGHT
   end
   
 
   
   def image_url
     # returns a relative path to the image file
-    self.name.gsub(/\.\/public\/assets\//, "")
+    self.name.gsub(/\.\/public\/assets\//, "/")
   end
   
   def thumbnail_url
     # returns a relative path to the thumbnail file
-    self.thumbnail_name.gsub(/\.\/public\/assets\//, "")
+    self.thumbnail_name.gsub(/\.\/public\/assets\//, "/")
   end
 
   def file_directory

@@ -29,15 +29,21 @@ class ImageList
       :start_date => self.start_date, 
       :end_date => self.end_date, 
       :template => self.template, 
-      :difficulty => self.difficulty})
+      :difficulty => self.difficulty,
+      :has_thumbnails => true})
+      
     self.image_files.each do |f|
       Asset.create({
+        :ext_ref => f.name,
         :location => f.image_url,
-        :display_width => 1500,
+        :display_width => 1200,
         :height => f.height,
         :width => f.width,
         :template => Template.find(self.template),
-        :asset_collection => ac
+        :asset_collection => ac,
+        :thumbnail_location => f.thumbnail_url,
+        :thumbnail_width => f.thumbnail_width,
+        :thumbnail_height => f.thumbnail_height        
       })
     end
     self.asset_collection = ac.id
