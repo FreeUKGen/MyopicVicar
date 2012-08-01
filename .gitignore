@@ -23,3 +23,8 @@ tmp/**/*
 
 # Ignore RVM-related files
 .rvmrc
+
+# Ignore Ctags
+
+tags
+
