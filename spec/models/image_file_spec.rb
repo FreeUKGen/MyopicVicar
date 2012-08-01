@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe ImageFile do
-  SIMPLE_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/simpletest'
-  ZIP_FILENAME = "/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/Flintshire 1861.zip" 
-  IMAGE_FILENAME = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/4143523_01206.jpg'
-  PDF_FILENAME = "/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/SSCens Tutorial_Spread_1p.pdf"
-  THUMB_FILENAME = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest/4143523_01206_thumb.png'
+  SIMPLE_DIR = "#{Rails.root}/test_data/mvuploads/simpletest"
+  ZIP_FILENAME = "#{Rails.root}/test_data/mvuploads/heterogenoustest/Flintshire 1861.zip" 
+  IMAGE_FILENAME = "#{Rails.root}/test_data/mvuploads/heterogenoustest/4143523_01206.jpg"
+  PDF_FILENAME = "#{Rails.root}/test_data/mvuploads/heterogenoustest/SSCens Tutorial_Spread_1p.pdf"
+  THUMB_FILENAME = "#{Rails.root}/test_data/mvuploads/heterogenoustest/4143523_01206_thumb.png"
 
   it "should deal correctly with working copies" do
     iu=ImageUpload.new

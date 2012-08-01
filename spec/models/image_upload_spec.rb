@@ -3,11 +3,11 @@
 require 'spec_helper'
 
 describe ImageUpload do
-  SIMPLE_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/simpletest'
-  ZIP_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/ziptest'
-  MULTI_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/multileveltest'
-  HETERO_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/heterogenoustest'
-  PDF_DIR = '/home/benwbrum/dev/freeukgen/mvuploads/pdftest'
+  SIMPLE_DIR = "#{Rails.root}/test_data/mvuploads/simpletest"
+  ZIP_DIR = "#{Rails.root}/test_data/mvuploads/ziptest"
+  MULTI_DIR = "#{Rails.root}/test_data/mvuploads/multileveltest"
+  HETERO_DIR = "#{Rails.root}/test_data/mvuploads/heterogenoustest"
+  PDF_DIR = "#{Rails.root}/test_data/mvuploads/pdftest"
 
 
 #  pending "basic stuff"
