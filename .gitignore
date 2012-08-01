@@ -17,5 +17,9 @@
 /log/*.log
 /log/upload
 /tmp
+tmp/**/*
 
 /public/assets/images/working
+
+# Ignore RVM-related files
+.rvmrc
