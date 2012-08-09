@@ -35,7 +35,7 @@ ActiveAdmin.register ImageFile do
     end
     h3 "Image"
     div do
-      image_tag image_file.image_url
+      link_to image_tag(image_file.image_url, :style => "width: 100%"), image_file.image_url
     end
   end
 
