@@ -1,5 +1,8 @@
 require 'chapman_code'
 ActiveAdmin.register ImageList do
+
+  menu :priority => 3
+
   action_item({ :only => :show, :if => proc{ image_list.asset_collection.nil? || AssetCollection.find(image_list.asset_collection).nil? } }) do
     link_to "Publish", publish_admin_image_list_path
   end

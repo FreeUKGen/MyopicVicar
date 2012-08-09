@@ -1,5 +1,7 @@
 ActiveAdmin.register ImageUpload do
 
+  menu :priority => 2
+
   actions :show, :index, :new, :create
   action_item({ :only => :show, :if => proc{ image_upload.status == ImageUpload::Status::NEW } }) do
     link_to "Process", process_upload_admin_image_upload_path

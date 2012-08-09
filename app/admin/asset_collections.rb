@@ -1,4 +1,5 @@
 ActiveAdmin.register AssetCollection, :as => "Book Part" do
+  menu :priority => 4
   actions :show, :index, :edit, :delete
 
 

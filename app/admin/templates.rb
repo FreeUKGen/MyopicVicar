@@ -1,4 +1,5 @@
 ActiveAdmin.register Template do
+  menu :priority => 5
   actions :show, :index
   
   index do

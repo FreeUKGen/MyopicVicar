@@ -1,4 +1,5 @@
 ActiveAdmin.register S3bucket do
+  menu :priority => 1
 #  menu :false  
 #  actions :new, :except => :detail
 
