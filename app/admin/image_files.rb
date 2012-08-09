@@ -19,8 +19,8 @@ ActiveAdmin.register ImageFile do
 
   show :title => :display_name do
     attributes_table do
-#      row :name
-#      row :path
+      #row :name
+      #row :path
       row :name do |imf|
         imf.display_name
       end
