@@ -34,8 +34,8 @@ ActiveAdmin.register S3bucket do
     @s3bucket.flush_to_slash_tmp(dir)
   
     
-    render :text => @s3bucket.slash_tmp_dir
-#      redirect_to admin_image_upload_path
+    render :text => @s3bucket.slash_tmp_dir(dir)
+    #redirect_to admin_image_upload_path
   end
   member_action :detail  do    
     @s3bucket = S3bucket.find(params[:id])
