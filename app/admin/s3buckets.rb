@@ -42,13 +42,13 @@ ActiveAdmin.register S3bucket do
     @dir = params[:dir]
     @page_title = @dir
     @files = @s3bucket.ls(@dir)
-#    p params[:dir]
-#    h3 "Files"
-#    ul do
-#      s3bucket.ls(params[:dir]).each
-#    end
-#    render :text => params.inspect
-#      redirect_to admin_image_upload_path
+    #p params[:dir]
+    #h3 "Files"
+    #ul do
+      #s3bucket.ls(params[:dir]).each
+    #end
+    #render :text => params.inspect
+    #redirect_to admin_image_upload_path
   end
 
 end
