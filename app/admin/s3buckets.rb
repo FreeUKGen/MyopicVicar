@@ -33,11 +33,16 @@ ActiveAdmin.register S3bucket do
     @s3bucket = S3bucket.find(params[:id])
     dir = params[:dir]
     @s3bucket.flush_to_slash_tmp(dir)
+
+    cr = ImageUpload.create(:upload_path => @s3bucket.slash_tmp_dir(dir))
+    redirect_to "/admin/image_uploads/#{cr.id}"
+    puts "The ID is: #{cr.id}"
   
     
-    render :text => @s3bucket.slash_tmp_dir(dir)
+    #render :text => @s3bucket.slash_tmp_dir(dir)
     #redirect_to admin_image_upload_path
   end
+
   member_action :detail  do    
     @s3bucket = S3bucket.find(params[:id])
     @dir = params[:dir]
