@@ -37,7 +37,6 @@ class S3bucket
     dir = dir + '/' unless dir.ends_with?('/')
     c = Fog::Storage.new(:provider => 'AWS')
     c.directories.get(self.name).files.all(:prefix => dir, :delimiter => '/')
-
   end
   
   
@@ -46,7 +45,6 @@ class S3bucket
   end
   
   def flush_to_slash_tmp(dir) 
-    
     files = ls(dir)
     files.each do |s3_file|
       FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
@@ -54,7 +52,6 @@ class S3bucket
         local_file.write(s3_file.body)
       end 
     end
-    
   end
   
   private
