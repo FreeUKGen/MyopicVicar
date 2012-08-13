@@ -41,7 +41,6 @@ ActiveAdmin.register ImageDir do
       end
       column("Image") do |f|
         link_to(image_tag(f.thumbnail_url), admin_image_file_path(f))
-        
       end
     end
   end
