@@ -1,7 +1,7 @@
 ActiveAdmin.register S3bucket do
   menu :priority => 1
-#  menu :false  
-#  actions :new, :except => :detail
+  #menu :false  
+  #actions :new, :except => :detail
 
   index do
     column "Name", :sortable => :name do |bucket|
