@@ -53,7 +53,8 @@ ActiveAdmin::Dashboards.build do
       ImageList.sort(:updated_at.desc).limit(5).each do |il|
         li link_to(il.name, admin_image_list_path(il))
       end
-    end  end
+    end
+  end
 
 
   section "System Stats" do
