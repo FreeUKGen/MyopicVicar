@@ -30,7 +30,7 @@ gem 'rubyzip'
 
 gem 'rspec-rails'
 
-gem 'fog', '~> 1.4'
+gem "fog", "~> 1.5.0"
 
 
 # Gems used only for assets and not required
