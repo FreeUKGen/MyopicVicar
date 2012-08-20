@@ -66,9 +66,8 @@ ActiveAdmin.register ImageUpload do
 
 
   member_action :process_upload  do    
-      @image_upload = ImageUpload.find(params[:id])
-      @image_upload.process_upload
-      redirect_to admin_image_upload_path
+    system "rake process_upload UPLOAD_ID=#{params[:id]} &"
+    redirect_to admin_image_upload_path
   end
 
 
