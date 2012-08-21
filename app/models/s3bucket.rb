@@ -12,7 +12,7 @@ class S3bucket
   
   def directories
     # return the cached version
-   return self.prefixes if self.prefixes && self.prefixes.size > 0 || []
+    return self.prefixes if self.prefixes && self.prefixes.size > 0
     
     # get the bucket
     c = Fog::Storage.new(:provider => 'AWS')
