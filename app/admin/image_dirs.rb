@@ -39,6 +39,9 @@ ActiveAdmin.register ImageDir do
       column("Name") do |f|
         link_to f.display_name, admin_image_file_path(f)
       end
+      column("Action") do |f|
+	link_to "Start a new Image List with this file", convert_admin_image_file_path(f)
+      end
       column("Image") do |f|
         link_to(image_tag(f.thumbnail_url), admin_image_file_path(f))
       end

@@ -70,4 +70,15 @@ ActiveAdmin.register ImageFile do
     redirect_to admin_image_file_path
   end
 
+  member_action :convert do
+    # convert single images to an image list.
+    # TODO: refactor this with the other convert method.
+    @image_file = ImageFile.find(params[:id])
+    puts "image file is #{@image_file.inspect}"
+    il = ImageList.create(:name => @image_file.name, :image_file_ids => [ @image_file.id ])
+    il.save!
+    flash[:notice] = "Image list was successfully created."
+    redirect_to admin_image_lists_path
+  end
+
 end
