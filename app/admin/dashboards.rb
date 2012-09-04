@@ -44,7 +44,7 @@ ActiveAdmin::Dashboards.build do
   section "Recent Activity" do
     h3 "Uploads"
     ul do
-      ImageUpload.sort(:updated_at.desc).limit(5).each do |iu|
+      Upload.sort(:updated_at.desc).limit(5).each do |iu|
         li link_to(iu.name, admin_image_upload_path(iu))
       end
     end
@@ -61,7 +61,7 @@ ActiveAdmin::Dashboards.build do
     table do
       tr do
         td "Uploads"
-        td ImageUpload.count
+        td Upload.count
       end
       tr do
         td "Directories"
@@ -73,7 +73,7 @@ ActiveAdmin::Dashboards.build do
       end
       tr do
         td "Image Lists"
-        td ImageUpload.count
+        td Upload.count
       end
       tr do
         td "Book Parts"

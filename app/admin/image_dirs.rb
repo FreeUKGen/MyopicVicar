@@ -22,7 +22,7 @@ ActiveAdmin.register ImageDir do
   end
 
 
-  belongs_to :image_upload, :optional => true
+  belongs_to :upload, :optional => true
 
   show :title => :name do
     attributes_table do

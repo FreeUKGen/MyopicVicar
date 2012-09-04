@@ -2,7 +2,7 @@ ActiveAdmin.register ImageUploadLog do
   menu false
   actions :show
 
-  belongs_to :image_upload, :optional => true
+  belongs_to :upload, :optional => true
 
   
   show :title => :file do   

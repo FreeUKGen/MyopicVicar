@@ -10,7 +10,7 @@ class ImageUploadLog
 # belongs_to :model
 # many :model
 # one :model
-  belongs_to :image_upload
+  belongs_to :upload
 
 
 # Callbacks ::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
