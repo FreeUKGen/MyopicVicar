@@ -3,8 +3,8 @@ ActiveAdmin.register Upload do
   menu :priority => 2
 
   actions :show, :index, :new, :create
-  action_item({ :only => :show, :if => proc{ image_upload.status == ImageUpload::Status::NEW } }) do
-    link_to "Process", process_upload_admin_image_upload_path
+  action_item({ :only => :show, :if => proc{ upload.status == Upload::Status::NEW } }) do
+    link_to "Process", process_upload_admin_upload_path
   end
   action_item({ :only => :index }) do
     link_to "Import From S3", admin_s3buckets_path
@@ -35,7 +35,7 @@ ActiveAdmin.register Upload do
     end
 
     h3 "Logs"
-    table_for image_upload.image_upload_log do
+    table_for upload.image_upload_log do
       column("File") do 
         |lf| link_to lf.file, admin_image_upload_log_path(lf) 
       end
@@ -48,7 +48,7 @@ ActiveAdmin.register Upload do
     end
     
     h3 "Directories" 
-    table_for image_upload.image_dir do
+    table_for upload.image_dir do
       column("Name") do |dir| 
         link_to dir.name, admin_image_dir_path(dir) 
       end
@@ -66,7 +66,7 @@ ActiveAdmin.register Upload do
 
 
   member_action :process_upload  do    
-    system "rake process_upload UPLOAD_ID=#{params[:id]} &"
+    system "rake process_upload UPLOAD_ID=#{params[:id]} --trace &"
     redirect_to admin_upload_path
   end
 
