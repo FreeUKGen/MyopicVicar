@@ -58,7 +58,7 @@ ActiveAdmin.register Upload do
 
   
   member_action :import_from_aws do    
-#      @image_upload = ImageUpload.find(params[:id])
+#      @image_upload = Upload.find(params[:id])
 #      @image_upload.process_upload
       redirect_to admin_upload_path
 #      redirect_to admin_s3buckets_path
