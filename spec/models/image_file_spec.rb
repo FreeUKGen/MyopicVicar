@@ -8,7 +8,7 @@ describe ImageFile do
   THUMB_FILENAME = "#{Rails.root}/test_data/mvuploads/heterogenoustest/4143523_01206_thumb.png"
 
   it "should deal correctly with working copies" do
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=SIMPLE_DIR
     iu.process_upload
     f = iu.image_dir.first.image_file.first
@@ -42,7 +42,7 @@ describe ImageFile do
   end
   
   it "should update thumbnails and metadata after changes" do
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=SIMPLE_DIR
     iu.process_upload
     f = iu.image_dir.first.image_file.first
@@ -67,7 +67,7 @@ describe ImageFile do
   end
 
   it "should transpose measurements after a rotate" do
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=SIMPLE_DIR
     iu.process_upload
     f = iu.image_dir.first.image_file.first

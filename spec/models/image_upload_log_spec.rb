@@ -4,7 +4,7 @@ describe ImageUploadLog do
 
   
   it "should create a logfile when its created" do
-    iu = ImageUpload.create(:upload_path => "/tmp")
+    iu = Upload.create(:upload_path => "/tmp")
     iu.image_upload_log.last.should be_an_instance_of(ImageUploadLog)
     fn = iu.image_upload_log.last.file
     iu.image_upload_log.last.read.should match /created/
@@ -12,7 +12,7 @@ describe ImageUploadLog do
 
   it "should be accessible from child objects" do
     # set up the object heirarchy
-    iu = ImageUpload.create(:upload_path => SIMPLE_DIR)
+    iu = Upload.create(:upload_path => SIMPLE_DIR)
     my_log = iu.image_upload_log.last
     
     iu.copy_to_originals_dir

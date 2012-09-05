@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe ImageUpload do
+describe Upload do
   SIMPLE_DIR = "#{Rails.root}/test_data/mvuploads/simpletest"
   ZIP_DIR = "#{Rails.root}/test_data/mvuploads/ziptest"
   MULTI_DIR = "#{Rails.root}/test_data/mvuploads/multileveltest"
@@ -13,25 +13,25 @@ describe ImageUpload do
 #  pending "basic stuff"
   
   it "can be instantiated" do
-    ImageUpload.new.should be_an_instance_of(ImageUpload)
+    Upload.new.should be_an_instance_of(Upload)
   end
   
   it "should be persisted" do
-    ImageUpload.create(:upload_path => '/tmp').should be_persisted
+    Upload.create(:upload_path => '/tmp').should be_persisted
   end
   
   it "should persist an upload directory" do
-    iu = ImageUpload.new
+    iu = Upload.new
     iu.upload_path = "/tmp"
     iu.save!
     id = iu.id
-    iu2 = ImageUpload.find(id)
+    iu2 = Upload.find(id)
     iu2.upload_path.should eq("/tmp")
   end
   
   
   it "should check for valid upload directory" do
-    iu = ImageUpload.new
+    iu = Upload.new
     iu.upload_path = "foo"
     iu.should be_invalid
     iu.upload_path = '/tmp'
@@ -60,7 +60,7 @@ describe ImageUpload do
 
   it "should copy to a working dir" do
     # create the dest dir
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=SIMPLE_DIR
     iu.initialize_working_dir
     wd = iu.originals_dir
@@ -78,7 +78,7 @@ describe ImageUpload do
   end
   
   it "should process files" do
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=SIMPLE_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
@@ -91,7 +91,7 @@ describe ImageUpload do
   
 
   it "should unzip files" do 
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=ZIP_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
@@ -110,7 +110,7 @@ describe ImageUpload do
   end
 
   it "should unpack PDFs" do 
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=PDF_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
@@ -129,7 +129,7 @@ describe ImageUpload do
   end
 
   it "should deal with multiple levels" do 
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=MULTI_DIR
     iu.process_upload
     wd = iu.originals_dir
@@ -189,7 +189,7 @@ describe ImageUpload do
 
 
   it "should only process image files" do
-    iu=ImageUpload.new
+    iu=Upload.new
     iu.upload_path=HETERO_DIR
     iu.copy_to_originals_dir
     wd = iu.originals_dir
