@@ -16,7 +16,7 @@ ActiveAdmin.register Upload do
   # prototype had this:
   index do
     column "Name", :sortable => :name do |iu|
-      link_to iu.name, admin_image_upload_path(iu)
+      link_to iu.name, admin_upload_path(iu)
     end
     column :upload_path
     column :created_at
@@ -60,14 +60,14 @@ ActiveAdmin.register Upload do
   member_action :import_from_aws do    
 #      @image_upload = ImageUpload.find(params[:id])
 #      @image_upload.process_upload
-      redirect_to admin_image_upload_path
+      redirect_to admin_upload_path
 #      redirect_to admin_s3buckets_path
   end
 
 
   member_action :process_upload  do    
     system "rake process_upload UPLOAD_ID=#{params[:id]} &"
-    redirect_to admin_image_upload_path
+    redirect_to admin_upload_path
   end
 
 

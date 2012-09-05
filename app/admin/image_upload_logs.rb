@@ -9,7 +9,7 @@ ActiveAdmin.register ImageUploadLog do
     attributes_table do
       row :image_upload do |ul|
         iu = ul.image_upload
-        link_to iu.name, admin_image_upload_path(iu)
+        link_to iu.name, admin_upload_path(iu)
       end
       row :file
       row :created_at

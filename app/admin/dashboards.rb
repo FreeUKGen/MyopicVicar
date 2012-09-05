@@ -45,7 +45,7 @@ ActiveAdmin::Dashboards.build do
     h3 "Uploads"
     ul do
       Upload.sort(:updated_at.desc).limit(5).each do |iu|
-        li link_to(iu.name, admin_image_upload_path(iu))
+        li link_to(iu.name, admin_upload_path(iu))
       end
     end
     h3 "Image Lists"
