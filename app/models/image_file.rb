@@ -147,7 +147,7 @@ class ImageFile
   end
 
   def thumbnail_name
-    File.join(file_directory.sub(ImageUpload::ORIGINALS_DIR, ImageUpload::DERIVATION_DIR), "#{filename_stub}_thumb#{PNG_SUFFIX}")
+    File.join(file_directory.sub(Upload::ORIGINALS_DIR, Upload::DERIVATION_DIR), "#{filename_stub}_thumb#{PNG_SUFFIX}")
   end
   
   def log(msg)
@@ -210,7 +210,7 @@ class ImageFile
       self.original_name = self.name
       self.save!
       # now move the working image to the derived directory
-      self.name = self.original_name.sub(ImageUpload::ORIGINALS_DIR, ImageUpload::DERIVATION_DIR)
+      self.name = self.original_name.sub(Upload::ORIGINALS_DIR, Upload::DERIVATION_DIR)
       FileUtils::cp(self.original_name, self.name)
     end
   end

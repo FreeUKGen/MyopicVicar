@@ -27,7 +27,7 @@ ActiveAdmin.register ImageDir do
   show :title => :name do
     attributes_table do
       row :upload do |ud|
-        link_to ud.image_upload.name, admin_upload_path(ud.image_upload)
+        link_to ud.upload.name, admin_upload_path(ud.upload)
       end
       row :name
       row :path

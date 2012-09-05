@@ -107,7 +107,7 @@ class Upload
     # create entry
     log("processing originals directory #{dir}")
     entry = ImageDir.new
-    entry.image_upload = self
+    entry.upload = self
     entry.path=dir
     entry.name=File.join(File.basename(self.upload_path), dir.sub(self.originals_dir, ""))
     self.image_dir << entry

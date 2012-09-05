@@ -43,6 +43,6 @@ class ImageDir
   
   
   def log(msg)
-    self.image_upload.log(msg)
+    self.upload.log(msg)
   end
 end
