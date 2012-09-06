@@ -76,7 +76,7 @@ ActiveAdmin::Dashboards.build do
         td Upload.count
       end
       tr do
-        td "Book Parts"
+        td APP_CONFIG['asset_name']
         td AssetCollection.count
       end
       tr do
