@@ -1,4 +1,4 @@
-ActiveAdmin.register AssetCollection, :as => "Book Part" do
+ActiveAdmin.register AssetCollection, :as => APP_CONFIG['asset_name'] do
   menu :priority => 4
   actions :show, :index, :edit, :delete
 
