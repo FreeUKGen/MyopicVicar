@@ -76,7 +76,7 @@ ActiveAdmin::Dashboards.build do
         td Upload.count
       end
       tr do
-        td APP_CONFIG['asset_name']
+        td APP_CONFIG['asset_collection_name']
         td AssetCollection.count
       end
       tr do

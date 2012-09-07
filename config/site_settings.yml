@@ -1,5 +1,5 @@
 development:
-  asset_name: "Registers"
+  asset_collection_name: "Registers"
 
 test:
 
