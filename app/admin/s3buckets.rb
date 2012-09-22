@@ -31,8 +31,7 @@ ActiveAdmin.register S3bucket do
   
   member_action :import, :method => :post  do    
     system "rake import S3_BUCKET_ID=#{params[:id]} DIR_NAME=#{params[:dir]} &"
-    flash[:notice] = "Importing files."
-    redirect_to admin_uploads_path
+    redirect_to admin_uploads_path, :notice => "Importing."
   end
 
   member_action :detail  do    

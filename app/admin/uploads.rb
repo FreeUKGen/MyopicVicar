@@ -67,7 +67,7 @@ ActiveAdmin.register Upload do
 
   member_action :process_upload  do    
     system "rake process_upload UPLOAD_ID=#{params[:id]} --trace &"
-    redirect_to admin_upload_path
+    redirect_to admin_upload_path, :notice => "Processing."
   end
 
 
