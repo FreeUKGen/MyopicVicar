@@ -28,9 +28,9 @@ ActiveAdmin.register ImageList do
         t = Template.find(il.template)
         link_to t.name, admin_template_path(t) if t
       end
-      row :book_part do |il|
+      row :register do |il|
         ac = AssetCollection.find(il.asset_collection)
-        link_to ac.title, admin_book_part_path(ac) if ac
+        link_to ac.title, admin_register_path(ac) if ac
       end
       row :difficulty
       row :created_at
@@ -68,7 +68,7 @@ ActiveAdmin.register ImageList do
     else
       flash[:notice] = "Image list #{@image_list.name} is now published for transcription."
       asset_collection = @image_list.publish_to_asset_collection
-      redirect_to admin_book_part_path(asset_collection)
+      redirect_to admin_register_path(asset_collection)
     end
 #    logger.debug("Converting to image list")
 #    image_list = @image_dir.convert_to_image_list
