@@ -13,6 +13,10 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  resources :search_records
+
+  resources :search_queries
+
   resources :s3buckets
 
   resources :fields

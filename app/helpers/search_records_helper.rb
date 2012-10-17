@@ -1,0 +1,2 @@
+module SearchRecordsHelper
+end
