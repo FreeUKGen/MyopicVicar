@@ -2,6 +2,7 @@ development:
   asset_collection_name: "Registers"
 
 test:
+  asset_collection_name: "Registers"
 
 production:
-
+  asset_collection_name: "Registers"
