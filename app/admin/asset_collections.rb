@@ -19,7 +19,7 @@ ActiveAdmin.register AssetCollection, :as => APP_CONFIG['asset_collection_name']
 
   index do
     column "Title", :sortable => [:name, :chapman_code] do |ac|
-      link_to ac.title, admin_book_part_path(ac)
+      link_to ac.title, admin_register_path(ac)
     end
     column :chapman_code
   end
