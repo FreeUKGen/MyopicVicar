@@ -1,3 +1,10 @@
 // Place all the styles related to the SearchQueries controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+body{
+	background-color: #2F702B;
+}
+
+
+form.formtastic fieldset ol li.string input { width:20em; } 
