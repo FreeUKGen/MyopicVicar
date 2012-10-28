@@ -21,9 +21,16 @@ class SearchQuery
   
   def search_params
     params = Hash.new
-    params[:first_name] = first_name if first_name
-    params[:last_name] = last_name if last_name
+    params[:record_type] = record_type if record_type
     params[:chapman_code] = chapman_code if chapman_code
+    if inclusive
+      params['inclusive_names.first_name'] = first_name if first_name
+      params['inclusive_names.last_name'] = last_name if last_name     
+    else
+      params[:first_name] = first_name if first_name
+      params[:last_name] = last_name if last_name  
+    end
+
     params
   end
   
