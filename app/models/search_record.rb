@@ -16,6 +16,12 @@ class SearchRecord
   key :mother_first_name, String, :required => false
   key :mother_last_name, String, :required => false
 
+  key :husband_first_name, String, :required => false
+  key :husband_last_name, String, :required => false
+
+  key :wife_first_name, String, :required => false
+  key :wife_last_name, String, :required => false
+
 key :inclusive_names, Array, :require => false
 
 
@@ -29,6 +35,14 @@ key :inclusive_names, Array, :require => false
     # mother
     if mother_first_name || mother_last_name
       inclusive_names << { :first_name => mother_first_name, :last_name => mother_last_name }   
+    end
+    # husband
+    if husband_first_name || husband_last_name
+      inclusive_names << { :first_name => husband_first_name, :last_name => husband_last_name }   
+    end
+    # wife
+    if wife_first_name || wife_last_name
+      inclusive_names << { :first_name => wife_first_name, :last_name => wife_last_name }   
     end
   end
 

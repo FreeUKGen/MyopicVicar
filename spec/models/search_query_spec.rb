@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/sample_people'
 
 describe SearchQuery do
   before(:all) do
-    @person = SamplePeople::WILLIAM_FRANKLIN
+    @person = SamplePeople::ALICE_TENNANT
     @record = SearchRecord.create!(@person)
   end
 
@@ -77,6 +77,18 @@ describe SearchQuery do
                            :inclusive => false)
     should_not_find(q,@record)
 
+    q = SearchQuery.create(:record_type => @person[:record_type],
+                           :first_name => @person[:husband_first_name],
+                           :last_name => @person[:husband_last_name],
+                           :inclusive => false)
+    should_not_find(q,@record)
+
+    q = SearchQuery.create(:record_type => @person[:record_type],
+                           :first_name => @person[:wife_first_name],
+                           :last_name => @person[:wife_last_name],
+                           :inclusive => false)
+    should_not_find(q,@record)
+
   end
 
   it "should find a secondary record inclusively" do
@@ -95,6 +107,18 @@ describe SearchQuery do
     # no last name
     q = SearchQuery.create(:record_type => @person[:record_type],
                            :first_name => @person[:mother_first_name],
+                           :inclusive => true)
+    should_find(q,@record)
+
+    q = SearchQuery.create(:record_type => @person[:record_type],
+                           :first_name => @person[:husband_first_name],
+                           :last_name => @person[:husband_last_name],
+                           :inclusive => true)
+    should_find(q,@record)
+
+    q = SearchQuery.create(:record_type => @person[:record_type],
+                           :first_name => @person[:wife_first_name],
+                           :last_name => @person[:wife_last_name],
                            :inclusive => true)
     should_find(q,@record)
 
