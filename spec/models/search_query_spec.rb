@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/sample_people'
 
 describe SearchQuery do
   before(:all) do
-    @person = SamplePeople::ALICE_TENNANT
+    @person = SamplePeople::ELISABETH_ATKINS
     @record = SearchRecord.create!(@person)
   end
 
@@ -65,30 +65,33 @@ describe SearchQuery do
 
   it "shouldn't find a secondary record exclusively" do
     # Thomas Ragsdale's father was also named Thomas
-    q = SearchQuery.create(   :record_type => @person[:record_type],
-                              :first_name => @person[:father_first_name],
-                              :last_name => @person[:father_last_name],
-                              :inclusive => false)
-    should_not_find(q,@record)
+    unless @person[:first_name] == @person[:father_first_name]
+      q = SearchQuery.create(   :first_name => @person[:father_first_name],
+                                :last_name => @person[:father_last_name],
+                                :inclusive => false)
+      should_not_find(q,@record)
+    end
     
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:mother_first_name],
-                           :last_name => @person[:mother_last_name],
-                           :inclusive => false)
-    should_not_find(q,@record)
-
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:husband_first_name],
-                           :last_name => @person[:husband_last_name],
-                           :inclusive => false)
-    should_not_find(q,@record)
-
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:wife_first_name],
-                           :last_name => @person[:wife_last_name],
-                           :inclusive => false)
-    should_not_find(q,@record)
-
+    unless @person[:first_name] == @person[:mother_first_name]
+      q = SearchQuery.create(:first_name => @person[:mother_first_name],
+                             :last_name => @person[:mother_last_name],
+                             :inclusive => false)
+      should_not_find(q,@record)
+    end
+    
+    unless @person[:first_name] == @person[:husband_first_name]
+      q = SearchQuery.create(:first_name => @person[:husband_first_name],
+                             :last_name => @person[:husband_last_name],
+                             :inclusive => false)
+      should_not_find(q,@record)
+    end
+    
+    unless @person[:first_name] == @person[:wife_first_name]
+      q = SearchQuery.create(:first_name => @person[:wife_first_name],
+                             :last_name => @person[:wife_last_name],
+                             :inclusive => false)
+      should_not_find(q,@record)
+    end
   end
 
   it "should find a secondary record inclusively" do
