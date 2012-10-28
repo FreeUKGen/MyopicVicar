@@ -1,25 +1,10 @@
 require 'spec_helper'
 #require './sample_people'
-  THOMAS_RAGSDALE = { 
-    :record_type => 'Burial',
-    :first_name => 'Thomas',
-    :last_name => 'Ragsdale',
-    :surname_inferred => true,
-    :father_first_name => 'Thomas',
-    :father_last_name => 'Ragsdale',
-    :father_surname_inferred => false,
-    :mother_first_name => 'Mary',
-    :mother_last_name => 'Ragsdale',
-    :mother_surname_inferred => false,
-    :date => Time.new(1756, 6, 19),
-    :chapman_code => 'LIN',
-    :parish => 'Bicker'
-  }
-
+require File.dirname(__FILE__) + '/sample_people'
 
 describe SearchQuery do
   before(:all) do
-    @person = THOMAS_RAGSDALE
+    @person = SamplePeople::THOMAS_RAGSDALE
     @record = SearchRecord.create!(@person)
   end
 

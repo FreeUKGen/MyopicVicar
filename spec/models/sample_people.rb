@@ -11,7 +11,7 @@ module SamplePeople
     :mother_first_name => 'Mary',
     :mother_last_name => 'Ragsdale',
     :mother_surname_inferred => false,
-    :date => Date.new(1756, 6, 19),
+    :date => Time.new(1756, 6, 19),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -21,7 +21,7 @@ module SamplePeople
     :first_name => 'William',
     :last_name => 'Franklin',
     :surname_inferred => false,
-    :date => Date.new(1756,2, 3),
+    :date => Time.new(1756,2, 3),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -34,7 +34,7 @@ module SamplePeople
     :husband_first_name => 'John',
     :husband_last_name => 'Tennant',
     :husband_surname_inferred => false,
-    :date => Date.new(1756, 4, 21),
+    :date => Time.new(1756, 4, 21),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -47,7 +47,7 @@ module SamplePeople
     :mother_first_name => 'Sarah',
     :mother_last_name => 'Ramble',
     :mother_surname_inferred => false,
-    :date => Date.new(1756, 11, 2),
+    :date => Time.new(1756, 11, 2),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -60,7 +60,7 @@ module SamplePeople
     :father_first_name => 'Thomas',
     :father_last_name => 'Wilton',
     :father_surname_inferred => false,
-    :date => Date.new(1752, 1, 7),
+    :date => Time.new(1752, 1, 7),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -76,7 +76,7 @@ module SamplePeople
     :mother_first_name => 'Mary',
     :mother_last_name => 'Morley',
     :mother_surname_inferred => false,
-    :date => Date.new(1753, 1, 23),
+    :date => Time.new(1753, 1, 23),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -92,7 +92,7 @@ module SamplePeople
     :mother_first_name => 'Elisabeth',
     :mother_last_name => 'Atkins',
     :mother_surname_inferred => false,
-    :date => Date.new(1753, 1, 23),
+    :date => Time.new(1753, 1, 23),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -107,7 +107,7 @@ module SamplePeople
     :bride_last_name => 'Brackenbury',
     :bride_surname_inferred => false,
     # no day or month!
-    :date => Date.new(1753),
+    :date => Time.new(1753),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
@@ -120,7 +120,7 @@ module SamplePeople
     :bride_first_name => 'Mary',
     :bride_last_name => 'Howesley',
     :bride_surname_inferred => false,
-    :date => Date.new(1753, 3, 5),
+    :date => Time.new(1753, 3, 5),
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
