@@ -1,7 +1,7 @@
 class SearchQuery
   require 'chapman_code'
   # consider extracting this from entities
-  RECORD_TYPES = ['Baptism', 'Marriage', 'Death']
+  RECORD_TYPES = ['Baptism', 'Marriage', 'Burial']
   ROLES = ['Father', 'Mother', 'Son', 'Daughter', 'Groom', 'Bride']
   
   include MongoMapper::Document
@@ -14,8 +14,17 @@ class SearchQuery
 #  key :extern_ref, String
   key :inclusive, Boolean
 
-#  key :has_thumbnails, Boolean, :default => false
+
+  def search
+    SearchRecord.all(search_params)
+  end
   
-#  many :assets 
+  def search_params
+    params = Hash.new
+    params[:first_name] = first_name if first_name
+    params[:last_name] = last_name if last_name
+    params[:chapman_code] = chapman_code if chapman_code
+    params
+  end
   
 end
