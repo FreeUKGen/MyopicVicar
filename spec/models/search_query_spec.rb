@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/sample_people'
 
 describe SearchQuery do
   before(:all) do
-    @person = SamplePeople::THOMAS_RAGSDALE
+    @person = SamplePeople::WILLIAM_FRANKLIN
     @record = SearchRecord.create!(@person)
   end
 
@@ -65,13 +65,13 @@ describe SearchQuery do
 
   it "shouldn't find a secondary record exclusively" do
     # Thomas Ragsdale's father was also named Thomas
-#    q = SearchQuery.create!(:record_type => @person[:record_type],
-#                           :first_name => @person[:father_first_name],
-#                           :last_name => @person[:father_last_name],
-#                           :inclusive => false)
-#    should_not_find(q,@record)
-
-    q = SearchQuery.create!(:record_type => @person[:record_type],
+    q = SearchQuery.create(   :record_type => @person[:record_type],
+                              :first_name => @person[:father_first_name],
+                              :last_name => @person[:father_last_name],
+                              :inclusive => false)
+    should_not_find(q,@record)
+    
+    q = SearchQuery.create(:record_type => @person[:record_type],
                            :first_name => @person[:mother_first_name],
                            :last_name => @person[:mother_last_name],
                            :inclusive => false)
@@ -80,20 +80,20 @@ describe SearchQuery do
   end
 
   it "should find a secondary record inclusively" do
-    q = SearchQuery.create!(:record_type => @person[:record_type],
+    q = SearchQuery.create(:record_type => @person[:record_type],
                            :first_name => @person[:father_first_name],
                            :last_name => @person[:father_last_name],
                            :inclusive => true)
     should_find(q,@record)
 
-    q = SearchQuery.create!(:record_type => @person[:record_type],
+    q = SearchQuery.create(:record_type => @person[:record_type],
                            :first_name => @person[:mother_first_name],
                            :last_name => @person[:mother_last_name],
                            :inclusive => true)
     should_find(q,@record)
 
     # no last name
-    q = SearchQuery.create!(:record_type => @person[:record_type],
+    q = SearchQuery.create(:record_type => @person[:record_type],
                            :first_name => @person[:mother_first_name],
                            :inclusive => true)
     should_find(q,@record)
@@ -113,6 +113,7 @@ describe SearchQuery do
 #  end
 
   def should_find(q, r)
+    return unless q.valid?
     # get a collection of search records
     result = q.search
     
@@ -121,6 +122,7 @@ describe SearchQuery do
   end
 
   def should_not_find(q, r)
+    return unless q.valid?
     # get a collection of search records
     result = q.search
     

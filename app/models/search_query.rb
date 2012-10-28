@@ -15,6 +15,8 @@ class SearchQuery
   key :inclusive, Boolean
 
 
+  validate :name_not_blank
+
   def search
     SearchRecord.all(search_params)
   end
@@ -33,5 +35,12 @@ class SearchQuery
 
     params
   end
+
+  def name_not_blank
+    if first_name.blank? && last_name.blank?
+      errors.add(:last_name, "Both name fields cannot be blank.")
+    end
+  end
+  
   
 end

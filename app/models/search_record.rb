@@ -10,7 +10,13 @@ class SearchRecord
   key :first_name, String, :required => false
   key :last_name, String, :required => false
   
-  key :inclusive_names, Array, :require => false
+  key :father_first_name, String, :required => false
+  key :father_last_name, String, :required => false
+
+  key :mother_first_name, String, :required => false
+  key :mother_last_name, String, :required => false
+
+key :inclusive_names, Array, :require => false
 
 
   def populate_inclusive_names
