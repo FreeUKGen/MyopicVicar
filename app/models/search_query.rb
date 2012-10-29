@@ -29,8 +29,8 @@ class SearchQuery
       params['inclusive_names.first_name'] = first_name if first_name
       params['inclusive_names.last_name'] = last_name if last_name     
     else
-      params[:first_name] = first_name if first_name
-      params[:last_name] = last_name if last_name  
+      params['primary_names.first_name'] = first_name if first_name
+      params['primary_names.last_name'] = last_name if last_name  
     end
 
     params

@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/sample_people'
 
 describe SearchQuery do
   before(:all) do
-    @person = SamplePeople::ELISABETH_ATKINS
+    @person = SamplePeople::RICHARD_AND_ESTHER
     @record = SearchRecord.create!(@person)
     
     # fill the rest of the test db
@@ -21,31 +21,31 @@ describe SearchQuery do
   end
 
   it "should find a primary record exclusively" do
-    q = SearchQuery.create!(:first_name => @person[:first_name],
-                            :last_name => @person[:last_name],
+    q = SearchQuery.create!(:first_name => @person[:first_name]||@person[:groom_first_name],
+                            :last_name => @person[:last_name]||@person[:groom_last_name],
                             :inclusive => false)
     should_find(q,@record)
   end
 
   it "should find a record by last name alone" do
-    q = SearchQuery.create!(:last_name => @person[:last_name],
+    q = SearchQuery.create!(:last_name => @person[:last_name]||@person[:groom_last_name],
                            :inclusive => false)
     should_find(q,@record)
   end
 
   it "should find a record by first name alone" do
-    q = SearchQuery.create!(:first_name => @person[:first_name],
+    q = SearchQuery.create!(:first_name => @person[:first_name]||@person[:groom_first_name],
                            :inclusive => false)
     should_find(q,@record)
   end
 
   it "should filter by chapman code" do
-    q = SearchQuery.create!(:last_name => @person[:last_name],
+    q = SearchQuery.create!(:last_name => @person[:last_name]||@person[:groom_last_name],
                            :chapman_code => @person[:chapman_code],
                            :inclusive => false)
     should_find(q,@record)
 
-    q = SearchQuery.create!(:last_name => @person[:last_name],
+    q = SearchQuery.create!(:last_name => @person[:last_name]||@person[:groom_last_name],
                            :chapman_code => 'BRK',
                            :inclusive => false)
     should_not_find(q,@record)
@@ -54,18 +54,18 @@ describe SearchQuery do
   it "should filter by record type" do
     # explicit correct record type
     q = SearchQuery.create!(:record_type => @person[:record_type],
-                           :last_name => @person[:last_name],
+                           :last_name => @person[:last_name]||@person[:groom_last_name],
                            :inclusive => false)
     should_find(q,@record)
 
     # no record type
-    q = SearchQuery.create!(:last_name => @person[:last_name],
+    q = SearchQuery.create!(:last_name => @person[:last_name]||@person[:groom_last_name],
                            :inclusive => false)
     should_find(q,@record)
 
     # explicit incorrect record type
-    q = SearchQuery.create!(:record_type => 'Marriage',
-                           :last_name => @person[:last_name],
+    q = SearchQuery.create!(:record_type => @person[:record_type]=='Marriage'?'Baptism':'Marriage',
+                           :last_name => @person[:last_name]||@person[:groom_last_name],
                            :inclusive => false)
     should_not_find(q,@record)
   end
@@ -78,8 +78,8 @@ describe SearchQuery do
       ln_key = "#{role}_last_name".to_sym
       
       unless @person[:first_name] == @person[fn_key]
-        q = SearchQuery.create(   :first_name => @person[fn_key],
-                                  :last_name => @person[ln_key],
+        q = SearchQuery.create(   :first_name => @person[fn_key]||@person[:groom_first_name],
+                                  :last_name => @person[ln_key]||@person[:groom_last_name],
                                   :inclusive => false)
         should_not_find(q,@record)
       end
@@ -106,8 +106,8 @@ describe SearchQuery do
   end
 
   it "should find a primary record inclusively" do
-    q = SearchQuery.create!(:first_name => @person[:first_name],
-                            :last_name => @person[:last_name],
+    q = SearchQuery.create!(:first_name => @person[:first_name]||@person[:groom_first_name],
+                            :last_name => @person[:last_name]||@person[:groom_last_name],
                             :inclusive => true)
     should_find(q,@record)
 
