@@ -97,6 +97,54 @@ module SamplePeople
     :parish => 'Bicker'
   }
   
+  JOHN_THORP = { 
+    :record_type => 'Baptism',
+    :first_name => 'John',
+    :last_name => 'Thorp',
+    :surname_inferred => false,
+    :father_first_name => 'John',
+    :father_last_name => 'Thorp',
+    :father_surname_inferred => false,
+    :mother_first_name => 'Eliz.a',
+    :mother_last_name => 'Thorp',
+    :mother_surname_inferred => true,
+    :date => Time.new(1758, 3, 5),
+    :chapman_code => 'LIN',
+    :parish => 'Bicker'
+  }
+  
+  JAMES_BAXTER = { 
+    :record_type => 'Baptism',
+    :first_name => 'James',
+    :last_name => 'Baxter',
+    :surname_inferred => false,
+    :father_first_name => 'Thos',
+    :father_last_name => 'Baxter',
+    :father_surname_inferred => false,
+    :mother_first_name => 'Mary',
+    :mother_last_name => 'Baxter',
+    :mother_surname_inferred => true,
+    :date => Time.new(1758, 4, 16),
+    :chapman_code => 'LIN',
+    :parish => 'Bicker'
+  }
+  
+  SUSANNA_JENNINGS = { 
+    :record_type => 'Baptism',
+    :first_name => 'Susanna',
+    :last_name => 'Jennings',
+    :surname_inferred => false,
+    :father_first_name => 'Robt',
+    :father_last_name => 'Jennings',
+    :father_surname_inferred => false,
+    :mother_first_name => 'Eliz',
+    :mother_last_name => 'Jennings',
+    :mother_surname_inferred => true,
+    :date => Time.new(1758, 11, 6),
+    :chapman_code => 'LIN',
+    :parish => 'Bicker'
+  }
+  
   
   RICHARD_AND_ESTHER = { 
     :record_type => 'Marriage',
