@@ -6,6 +6,13 @@ describe SearchQuery do
   before(:all) do
     @person = SamplePeople::ELISABETH_ATKINS
     @record = SearchRecord.create!(@person)
+    
+    # fill the rest of the test db
+    SamplePeople::BURIALS_AND_BAPTISMS.each do |person|
+      unless person[:first_name] == @record.first_name && person[:last_name] == @record.last_name
+        SearchRecord.create!(person)
+      end
+    end
   end
 
   after(:all) do
@@ -65,65 +72,36 @@ describe SearchQuery do
 
   it "shouldn't find a secondary record exclusively" do
     # Thomas Ragsdale's father was also named Thomas
-    unless @person[:first_name] == @person[:father_first_name]
-      q = SearchQuery.create(   :first_name => @person[:father_first_name],
-                                :last_name => @person[:father_last_name],
-                                :inclusive => false)
-      should_not_find(q,@record)
-    end
-    
-    unless @person[:first_name] == @person[:mother_first_name]
-      q = SearchQuery.create(:first_name => @person[:mother_first_name],
-                             :last_name => @person[:mother_last_name],
-                             :inclusive => false)
-      should_not_find(q,@record)
-    end
-    
-    unless @person[:first_name] == @person[:husband_first_name]
-      q = SearchQuery.create(:first_name => @person[:husband_first_name],
-                             :last_name => @person[:husband_last_name],
-                             :inclusive => false)
-      should_not_find(q,@record)
-    end
-    
-    unless @person[:first_name] == @person[:wife_first_name]
-      q = SearchQuery.create(:first_name => @person[:wife_first_name],
-                             :last_name => @person[:wife_last_name],
-                             :inclusive => false)
-      should_not_find(q,@record)
+    roles = ['father', 'mother', 'husband', 'wife']
+    roles.each do |role|
+      fn_key = "#{role}_first_name".to_sym
+      ln_key = "#{role}_last_name".to_sym
+      
+      unless @person[:first_name] == @person[fn_key]
+        q = SearchQuery.create(   :first_name => @person[fn_key],
+                                  :last_name => @person[ln_key],
+                                  :inclusive => false)
+        should_not_find(q,@record)
+      end
     end
   end
 
+
+
+
   it "should find a secondary record inclusively" do
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:father_first_name],
-                           :last_name => @person[:father_last_name],
-                           :inclusive => true)
-    should_find(q,@record)
-
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:mother_first_name],
-                           :last_name => @person[:mother_last_name],
-                           :inclusive => true)
-    should_find(q,@record)
-
-    # no last name
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:mother_first_name],
-                           :inclusive => true)
-    should_find(q,@record)
-
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:husband_first_name],
-                           :last_name => @person[:husband_last_name],
-                           :inclusive => true)
-    should_find(q,@record)
-
-    q = SearchQuery.create(:record_type => @person[:record_type],
-                           :first_name => @person[:wife_first_name],
-                           :last_name => @person[:wife_last_name],
-                           :inclusive => true)
-    should_find(q,@record)
+    roles = ['father', 'mother', 'husband', 'wife']
+    roles.each do |role|
+      fn_key = "#{role}_first_name".to_sym
+      ln_key = "#{role}_last_name".to_sym
+      
+      unless @person[:first_name] == @person[fn_key]
+        q = SearchQuery.create(   :first_name => @person[fn_key],
+                                  :last_name => @person[ln_key],
+                                  :inclusive => true)
+        should_find(q,@record)
+      end
+    end
 
   end
 

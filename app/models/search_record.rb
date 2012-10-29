@@ -22,7 +22,7 @@ class SearchRecord
   key :wife_first_name, String, :required => false
   key :wife_last_name, String, :required => false
 
-key :inclusive_names, Array, :require => false
+  key :inclusive_names, Array, :require => false
 
 
   def populate_inclusive_names
