@@ -113,6 +113,29 @@ describe SearchQuery do
 
   end
 
+
+  it "should be case insensitive" do
+    q = SearchQuery.create!(:first_name => (@person[:first_name]||@person[:groom_first_name]).upcase,
+                            :last_name => (@person[:last_name]||@person[:groom_last_name]).downcase,
+                            :inclusive => false)
+    should_find(q,@record)
+  end
+
+  it "should use soundex" do
+    q = SearchQuery.create!(:first_name => (@person[:first_name]||@person[:groom_first_name])+'oi',
+                            :last_name => (@person[:last_name]||@person[:groom_last_name])+'oi',
+                            :inclusive => false,
+                            :fuzzy => true)
+    should_find(q,@record)
+    q = SearchQuery.create!(:first_name => (@person[:first_name]||@person[:groom_first_name])+'oi',
+                            :last_name => (@person[:last_name]||@person[:groom_last_name])+'oi',
+                            :inclusive => false,
+                            :fuzzy => false)
+    should_not_find(q,@record)
+  end
+
+
+
 #  it "should remember result counts" do
 #
 #  end

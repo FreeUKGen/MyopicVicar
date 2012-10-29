@@ -25,12 +25,14 @@ class SearchQuery
     params = Hash.new
     params[:record_type] = record_type if record_type
     params[:chapman_code] = chapman_code if chapman_code
-    if inclusive
-      params['inclusive_names.first_name'] = first_name if first_name
-      params['inclusive_names.last_name'] = last_name if last_name     
+
+    search_type = inclusive ? "inclusive" : "primary"
+    if fuzzy
+      params["#{search_type}_soundex.first_name"] = Text::Soundex.soundex(first_name) if first_name     
+      params["#{search_type}_soundex.last_name"] = Text::Soundex.soundex(last_name) if last_name     
     else
-      params['primary_names.first_name'] = first_name if first_name
-      params['primary_names.last_name'] = last_name if last_name  
+      params["#{search_type}_names.first_name"] = first_name.downcase if first_name
+      params["#{search_type}_names.last_name"] = last_name.downcase if last_name           
     end
 
     params

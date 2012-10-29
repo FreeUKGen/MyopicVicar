@@ -2,12 +2,9 @@ class SearchRecord
   include MongoMapper::Document
   SEARCHABLE_KEYS = [:first_name, :last_name]
 
-  before_save :populate_inclusive_names
-  before_save :populate_primary_names
+  before_save :transform
 
-  
-  # For the moment, this will merely mirror the Bicker 18c template
-
+  # transcript fields  
   key :first_name, String, :required => false
   key :last_name, String, :required => false
   
@@ -29,8 +26,57 @@ class SearchRecord
   key :bride_first_name, String, :required => false
   key :bride_last_name, String, :required => false
 
+
+  # search fields
   key :primary_names, Array, :require => false
   key :inclusive_names, Array, :require => false
+  # derived search fields
+  key :primary_soundex, Array, :require => false
+  key :inclusive_soundex, Array, :require => false
+
+
+  def transform
+    populate_search_from_transcript
+    
+  end
+
+  def populate_search_from_transcript
+    populate_primary_names
+    populate_inclusive_names
+    
+    downcase_all
+    create_soundex
+  end
+
+  
+  def create_soundex
+    primary_names.each do |name|
+      primary_soundex << soundex_name_pair(name)
+    end
+    inclusive_names.each do |name|
+      inclusive_soundex << soundex_name_pair(name)
+
+    end
+    
+  end
+  
+  def soundex_name_pair(name)
+    return { 
+        :first_name => Text::Soundex.soundex(name[:first_name]), 
+        :last_name => Text::Soundex.soundex(name[:last_name]) 
+    }
+  end
+  
+  def downcase_all
+    primary_names.each do |name|
+      name[:first_name].downcase!
+      name[:last_name].downcase!
+    end
+    inclusive_names.each do |name|
+      name[:first_name].downcase! if name[:first_name] 
+      name[:last_name].downcase! if name[:last_name]
+    end
+  end
 
   def populate_primary_names
     # standard names

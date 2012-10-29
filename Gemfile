@@ -13,7 +13,7 @@ gem 'execjs'
 
 gem 'therubyracer'
 
-
+gem 'text'
 gem 'json'
 gem 'pry'
 
