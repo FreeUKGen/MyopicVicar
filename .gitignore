@@ -20,6 +20,8 @@
 /log/upload
 /tmp
 tmp/**/*
+*#
+*~
 
 /public/assets/images/working
 
