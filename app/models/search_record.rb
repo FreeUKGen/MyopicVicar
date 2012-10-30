@@ -38,14 +38,15 @@ class SearchRecord
   def transform
     populate_search_from_transcript
     
+    downcase_all
+    #emend
+    create_soundex    
   end
 
   def populate_search_from_transcript
     populate_primary_names
     populate_inclusive_names
-    
-    downcase_all
-    create_soundex
+
   end
 
   

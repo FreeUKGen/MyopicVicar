@@ -145,6 +145,22 @@ module SamplePeople
     :parish => 'Bicker'
   }
   
+  SARAH_CHALLANS = { 
+    :record_type => 'Baptism',
+    :first_name => 'Sarah',
+    :last_name => 'Challans',
+    :surname_inferred => false,
+    :father_first_name => 'Wm',
+    :father_last_name => 'Challans',
+    :father_surname_inferred => false,
+    :mother_first_name => 'Sarah',
+    :mother_last_name => 'Challans',
+    :mother_surname_inferred => true,
+    :date => Time.new(1758, 5, 31),
+    :chapman_code => 'LIN',
+    :parish => 'Bicker'
+  }
+  
   
   RICHARD_AND_ESTHER = { 
     :record_type => 'Marriage',

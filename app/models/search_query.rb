@@ -1,10 +1,11 @@
 class SearchQuery
+  include MongoMapper::Document
+
   require 'chapman_code'
   # consider extracting this from entities
   RECORD_TYPES = ['Baptism', 'Marriage', 'Burial']
   ROLES = ['Father', 'Mother', 'Son', 'Daughter', 'Groom', 'Bride']
   
-  include MongoMapper::Document
   key :first_name, String, :required => false
   key :last_name, String, :required => false
   key :fuzzy, Boolean

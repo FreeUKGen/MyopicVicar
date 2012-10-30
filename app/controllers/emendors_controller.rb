@@ -1,0 +1,2 @@
+class EmendorsController < ApplicationController
+end
