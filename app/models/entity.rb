@@ -31,6 +31,9 @@ class Entity
   key :height, Integer
   key :bounds, Array
   key :zoom, Float
+
+  key :search_record_type, String
+
     
   timestamps!
   

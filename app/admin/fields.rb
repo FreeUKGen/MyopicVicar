@@ -13,7 +13,7 @@
 # limitations under the License.
 # 
 ActiveAdmin.register Field do
-  actions :show
+#  actions :show
   menu false
   show :title => :name
 end

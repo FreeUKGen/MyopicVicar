@@ -4,6 +4,25 @@ class SearchRecord
 
   before_save :transform
 
+  module Source
+    TRANSCRIPT='t'
+    EMENDOR='e'
+    USER_ADDITION='u'
+  end
+
+  module Role
+    FATHER='f'
+    MOTHER='m'
+    HUSBAND='h'
+    WIFE='w'
+    GROOM='g'
+    BRIDE='b'
+    
+    PRIMARY='p'
+    
+  end
+
+
   # transcript fields  
   key :first_name, String, :required => false
   key :last_name, String, :required => false
@@ -81,7 +100,7 @@ class SearchRecord
 
   def populate_primary_names
     # standard names
-    primary_names << { :first_name => first_name, :last_name => last_name } unless first_name.blank? && last_name.blank?
+    primary_names << { :first_name => first_name, :last_name => last_name, :source => 'transcript' } unless first_name.blank? && last_name.blank?
     # marriage names
     primary_names << { :first_name => groom_first_name, :last_name => groom_last_name } unless groom_first_name.blank? && groom_last_name.blank?
     primary_names << { :first_name => bride_first_name, :last_name => bride_last_name } unless bride_first_name.blank? && bride_last_name.blank?

@@ -14,7 +14,7 @@
 # 
 ActiveAdmin.register Template do
   menu :priority => 5
-  actions :show, :index
+#  actions :show, :index
   
   index do
     column "Name", :sortable => [:name, :chapman_code] do |t|
@@ -41,6 +41,8 @@ ActiveAdmin.register Template do
         link_to e.name, admin_entity_path(e)
       end
     end
+    div link_to "Add Tab", new_admin_entity_path()
+    
   end
 
 end

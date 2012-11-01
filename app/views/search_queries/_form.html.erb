@@ -7,15 +7,18 @@
   <%= f.inputs do %>
     <%= f.input :role,
 				{ :as => :select,
+				  :required => false,
 				  :include_blank => true,
 				  :collection => SearchQuery::ROLES } %>
     <%= f.input :record_type,
 				{ :as => :select,
+				  :required => false,
 				  :include_blank => true,
 				  :collection => SearchQuery::RECORD_TYPES } %>
     <%= f.input :chapman_code, 
 				{ :as => :select, 
 				  :include_blank => true,
+				  :required => false,
          		  :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
     <%= f.input :inclusive, :as => :boolean %>
   <% end %>

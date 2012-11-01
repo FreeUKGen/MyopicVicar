@@ -13,7 +13,7 @@
 # limitations under the License.
 # 
 ActiveAdmin.register Entity do
-  actions :show
+#  actions :show
   menu false
   show :title => :name do |template|
     attributes_table do
@@ -26,7 +26,7 @@ ActiveAdmin.register Entity do
       row :bounds
       row :zoom
       row :created_at
-      
+      row :template      
     end
     h3 "Fields"
     table_for entity.fields do
@@ -37,4 +37,24 @@ ActiveAdmin.register Entity do
       column :options
     end
   end
+
+
+
+  form do |f|
+    f.inputs "Tab" do
+      f.input :name
+      f.input :description
+      f.input :help
+      f.input :resizeable
+      f.input :width
+      f.input :height
+      f.input :bounds
+      f.input :zoom
+      f.input :template, :as => :select, :collection => Template.all
+    end
+    f.buttons
+  end
+
+
+
 end

@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
-MongoMapper.connection = Mongo::Connection.new('localhost', 27017)
+logger = Logger.new('mongo.log')
+MongoMapper.connection = Mongo::Connection.new('localhost', 27017, :logger => logger)
 MongoMapper.database = "mvui-#{Rails.env}"
 
 if defined?(PhusionPassenger)
