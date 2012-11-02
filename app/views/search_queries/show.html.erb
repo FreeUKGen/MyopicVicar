@@ -1,0 +1,54 @@
+<h3>
+	Search results
+</h3>
+
+<% if @search_results.size == 0 %>
+	No results found!
+<% else %>
+		
+	<table>			
+		<tr>
+			<th>
+				Forename
+			</th>
+			<th>
+				Surname
+			</th>
+			<th>
+				Type
+			</th>
+			<th>
+				Date
+			</th>
+			<th>
+				County
+			</th>
+		</tr>
+		<% @search_results.each do |search_record| %>
+			<tr>
+				<td>
+					<%= search_record.first_name %>
+				</td>
+				<td>
+					<%= search_record.last_name %>
+				</td>
+				<td>
+					<%= search_record.record_type %>
+				</td>
+				<td>
+					<%= search_record.date %>
+				</td>
+				<td>
+					<%= search_record.chapman_code %>
+				</td>
+				<td>
+					<%= link_to("Details", search_record_path(search_record)) %>
+				</td>
+			
+				
+			</tr>	
+	
+			
+		<% end %>
+	</table>
+<% end %>

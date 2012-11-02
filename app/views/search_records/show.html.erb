@@ -1,0 +1,45 @@
+<h3>
+	Record
+</h3>
+
+<ul>
+	<% @search_record.attributes.keys.each do |field| %>
+		<% if @search_record[field] %>
+			<li>
+				<%= field %>: <b><%= @search_record[field] %></b>				
+			</li>
+		<% end %>
+	<% end %>
+</ul>
+
+<h3>
+	Transcriptions
+</h3>
+
+<ul>
+	<% @annotations.each do |annotation| %>
+		<% annotation.attributes.keys.each do |field| %>
+			<% if annotation[field] %>
+				<li>
+					<%= field %>: <b><%= annotation[field] %></b>				
+				</li>
+			<% end %>
+		<% end %>
+		<% transcription = annotation.transcription %>
+		<% if transcription %>
+			<% transcription.attributes.keys.each do |field| %>
+				<% if transcription[field] %>
+					<li>
+						<%= field %>: <b><%= transcription[field] %></b>				
+					</li>
+				<% end %>
+			<% end %>
+			<li>
+				<%= link_to("Image", transcription.asset.location) %>
+			</li>
+		<% end %>
+	<% end %>
+</ul>
+
+
+<% debug(@search_record) %>

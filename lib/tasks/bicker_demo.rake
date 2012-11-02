@@ -52,7 +52,7 @@ task :bicker_demo => :environment do
                         :field_key=>"first_name",
                         :kind=>"text",
                         :search_key=>:first_name)
-  ln_field = Field.new( :name => "Surame",
+  ln_field = Field.new( :name => "Surname",
                         :field_key=>"last_name",
                         :kind=>"text",
                         :search_key=>:last_name )
@@ -111,7 +111,7 @@ task :bicker_demo => :environment do
                                   
   baptism_bicker.fields << date  
   baptism_bicker.fields << fn_field  
-#  baptism_bicker.fields << ln_field   
+  baptism_bicker.fields << ln_field   
 #  baptism_bicker.fields << ln_inferred  
   baptism_bicker.fields << p_fn_field  
   baptism_bicker.fields << p_ln_field  
@@ -127,27 +127,27 @@ task :bicker_demo => :environment do
                                   :width => 450,
                                   :height => 80)
 
-  h_fn_field = Field.new( :name => "Husband's Name",
-                        :field_key=>"husband_first_name",
+  h_fn_field = Field.new( :name => "Groom's Name",
+                        :field_key=>"groom_first_name",
                         :search_key=>:groom_first_name,
                         :kind=>"text" )
-  h_ln_field = Field.new( :name => "Husband's Surame",
-                        :field_key=>"husband_last_name",
+  h_ln_field = Field.new( :name => "Groom's Surame",
+                        :field_key=>"groom_last_name",
                         :search_key=>:groom_last_name,
                         :kind=>"text" )
-  w_fn_field = Field.new( :name => "Wife's Name",
-                        :field_key=>"wife_first_name",
+  w_fn_field = Field.new( :name => "Bride's Name",
+                        :field_key=>"bride_first_name",
                         :search_key=>:bride_first_name,
                         :kind=>"text" )
-  w_ln_field = Field.new( :name => "Wife's Surame",
-                        :field_key=>"wife_last_name",
+  w_ln_field = Field.new( :name => "Bride's Surame",
+                        :field_key=>"bride_last_name",
                         :search_key=>:bride_last_name,
                         :kind=>"text" )
-  h_place_field = Field.new( :name => "Husband's Place",
-                        :field_key=>"husband_place_name",
+  h_place_field = Field.new( :name => "Groom's Place",
+                        :field_key=>"groom_place_name",
                         :kind=>"text" )
-  w_place_field = Field.new( :name => "Wife's Place",
-                        :field_key=>"wife_place_name",
+  w_place_field = Field.new( :name => "Bride's Place",
+                        :field_key=>"bride_place_name",
                         :kind=>"text" )
 
                                   

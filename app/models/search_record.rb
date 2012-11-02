@@ -22,7 +22,17 @@ class SearchRecord
     
   end
 
+  key :annotation_ids, Array #, :typecast => 'ObjectId'
 
+  
+  #denormalized fields
+  key :asset_id, String
+  key :chapman_code, String
+  
+#  many :annotations, :in => :annotation_ids
+
+  key :record_type, String
+  
   # transcript fields  
   key :first_name, String, :required => false
   key :last_name, String, :required => false
@@ -89,6 +99,7 @@ class SearchRecord
   
   def downcase_all
     primary_names.each do |name|
+      Rails.logger.debug("Downcasing #{name}\n")
       name[:first_name].downcase!
       name[:last_name].downcase!
     end
@@ -136,6 +147,30 @@ class SearchRecord
       inclusive_names << { :first_name => bride_first_name, :last_name => bride_last_name }   
     end
   end
+
+  def self.from_annotation(annotation)
+    Rails.logger.debug("from_annotation processing #{annotation.inspect}")
+
+    # find an existing search record
+    record = SearchRecord.find_by_annotation_ids(annotation.id)
+    
+    unless record 
+      record = SearchRecord.new(annotation[:data])
+      record.record_type = annotation.entity.search_record_type
+
+      # denormalize from other record types
+      record.asset_id = annotation.transcription.asset.id
+      record.chapman_code = annotation.transcription.asset.asset_collection.chapman_code
+
+      record.annotation_ids << annotation.id
+      record.save!    
+
+    end
+    # TODO: Deal with existing search records, given duplicate save calls
+  
+  
+  end
+
 
 
 end

@@ -15,10 +15,16 @@ class SearchQueriesController < ApplicationController
 
     # find the search record result
     # redirect to search records for that search_query ID?
-    
-    render :text => @search_query.inspect
+        
+    redirect_to search_query_path(@search_query)
 
   end
+
+  def show
+    @search_query = SearchQuery.find(params[:id])
+    @search_results = @search_query.search
+  end
+
 
 
 end
