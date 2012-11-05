@@ -111,40 +111,48 @@ class SearchRecord
 
   def populate_primary_names
     # standard names
-    primary_names << { :first_name => String.new(first_name), :last_name => String.new(last_name), :source => 'transcript' } unless first_name.blank? && last_name.blank?
+    primary_names << { :first_name => copy_name(first_name), :last_name => copy_name(last_name), :source => 'transcript' } unless first_name.blank? && last_name.blank?
     # marriage names
-    primary_names << { :first_name => String.new(groom_first_name), :last_name => String.new(groom_last_name) } unless groom_first_name.blank? && groom_last_name.blank?
-    primary_names << { :first_name => String.new(bride_first_name), :last_name => String.new(bride_last_name) } unless bride_first_name.blank? && bride_last_name.blank?
+    primary_names << { :first_name => copy_name(groom_first_name), :last_name => copy_name(groom_last_name) } unless groom_first_name.blank? && groom_last_name.blank?
+    primary_names << { :first_name => copy_name(bride_first_name), :last_name => copy_name(bride_last_name) } unless bride_first_name.blank? && bride_last_name.blank?
   end
 
 
 
   def populate_inclusive_names
     # primary names
-    inclusive_names << { :first_name => String.new(first_name), :last_name => String.new(last_name) }
+    inclusive_names << { :first_name => copy_name(first_name), :last_name => copy_name(last_name) }
     # father
     if father_first_name || father_last_name
-      inclusive_names << { :first_name => String.new(father_first_name), :last_name => String.new(father_last_name) }   
+      inclusive_names << { :first_name => copy_name(father_first_name), :last_name => copy_name(father_last_name) }   
     end
     # mother
     if mother_first_name || mother_last_name
-      inclusive_names << { :first_name => String.new(mother_first_name), :last_name => String.new(mother_last_name) }   
+      inclusive_names << { :first_name => copy_name(mother_first_name), :last_name => copy_name(mother_last_name) }   
     end
     # husband
     if husband_first_name || husband_last_name
-      inclusive_names << { :first_name => String.new(husband_first_name), :last_name => String.new(husband_last_name) }   
+      inclusive_names << { :first_name => copy_name(husband_first_name), :last_name => copy_name(husband_last_name) }   
     end
     # wife
     if wife_first_name || wife_last_name
-      inclusive_names << { :first_name => String.new(wife_first_name), :last_name => String.new(wife_last_name) }   
+      inclusive_names << { :first_name => copy_name(wife_first_name), :last_name => copy_name(wife_last_name) }   
     end
     # groom
     if groom_first_name || groom_last_name
-      inclusive_names << { :first_name => String.new(groom_first_name), :last_name => String.new(groom_last_name) }   
+      inclusive_names << { :first_name => copy_name(groom_first_name), :last_name => copy_name(groom_last_name) }   
     end
     # bride
     if bride_first_name || bride_last_name
-      inclusive_names << { :first_name => String.new(bride_first_name), :last_name => String.new(bride_last_name) }   
+      inclusive_names << { :first_name => copy_name(bride_first_name), :last_name => copy_name(bride_last_name) }   
+    end
+  end
+
+  def copy_name(name)
+    if name
+      String.new(name)
+    else
+      nil
     end
   end
 
