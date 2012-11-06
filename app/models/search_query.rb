@@ -27,17 +27,30 @@ class SearchQuery
     params[:record_type] = record_type if record_type
     params[:chapman_code] = chapman_code if chapman_code
 
-    search_type = inclusive ? "inclusive" : "primary"
-    if fuzzy
-      params["#{search_type}_soundex.first_name"] = Text::Soundex.soundex(first_name) if first_name     
-      params["#{search_type}_soundex.last_name"] = Text::Soundex.soundex(last_name) if last_name     
-    else
-      params["#{search_type}_names.first_name"] = first_name.downcase if first_name
-      params["#{search_type}_names.last_name"] = last_name.downcase if last_name           
-    end
-
+    params.merge!(name_search_params)
     params
   end
+
+  def name_search_params
+    params = Hash.new
+    name_params = Hash.new
+    search_type = inclusive ? "inclusive" : "primary"
+
+    if fuzzy
+    
+      name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name     
+      name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name     
+
+      params["#{search_type}_soundex"] =  { "$elemMatch" => name_params}
+    else
+      name_params["first_name"] = first_name.downcase if first_name
+      name_params["last_name"] = last_name.downcase if last_name           
+
+      params["#{search_type}_names"] =  { "$elemMatch" => name_params}
+    end
+    params
+  end
+
 
   def name_not_blank
     if first_name.blank? && last_name.blank?

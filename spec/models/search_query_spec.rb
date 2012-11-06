@@ -150,6 +150,18 @@ describe SearchQuery do
 
 
 
+  # Marriage-specific records
+  it "should not find P1 first name with P2 surname" do
+    person = SamplePeople::RICHARD_AND_ESTHER
+    record = SearchRecord.create!(person)
+    q = SearchQuery.create!(:first_name => person[:groom_first_name],
+                            :last_name => person[:bride_last_name],
+                            :inclusive => false)
+    should_not_find(q,record)
+  end
+
+
+
 #  it "should remember result counts" do
 #
 #  end
