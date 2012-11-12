@@ -57,8 +57,8 @@ class SearchRecord
 
 
   # search fields
-  key :primary_names, Array, :require => false
-  key :inclusive_names, Array, :require => false
+  many :primary_names, :class_name => 'SearchName'
+  many :inclusive_names, :class_name => 'SearchName'
   # derived search fields
   key :primary_soundex, Array, :require => false
   key :inclusive_soundex, Array, :require => false
@@ -75,7 +75,6 @@ class SearchRecord
   def populate_search_from_transcript
     populate_primary_names
     populate_inclusive_names
-
   end
 
   
@@ -85,7 +84,6 @@ class SearchRecord
     end
     inclusive_names.each do |name|
       inclusive_soundex << soundex_name_pair(name)
-
     end
     
   end
@@ -99,7 +97,6 @@ class SearchRecord
   
   def downcase_all
     primary_names.each do |name|
-      Rails.logger.debug("Downcasing #{name}\n")
       name[:first_name].downcase!
       name[:last_name].downcase!
     end
@@ -111,41 +108,50 @@ class SearchRecord
 
   def populate_primary_names
     # standard names
-    primary_names << { :first_name => copy_name(first_name), :last_name => copy_name(last_name), :source => 'transcript' } unless first_name.blank? && last_name.blank?
+    if name = search_name(first_name, last_name)
+      primary_names << name
+    end
     # marriage names
-    primary_names << { :first_name => copy_name(groom_first_name), :last_name => copy_name(groom_last_name) } unless groom_first_name.blank? && groom_last_name.blank?
-    primary_names << { :first_name => copy_name(bride_first_name), :last_name => copy_name(bride_last_name) } unless bride_first_name.blank? && bride_last_name.blank?
+    if name = search_name(groom_first_name, groom_last_name)
+      primary_names << name
+    end
+    if name = search_name(bride_first_name, bride_last_name)
+      primary_names << name
+    end
   end
 
 
 
   def populate_inclusive_names
     # primary names
-    inclusive_names << { :first_name => copy_name(first_name), :last_name => copy_name(last_name) }
+    primary_names.each do |name|
+      inclusive_names << name
+    end
     # father
-    if father_first_name || father_last_name
-      inclusive_names << { :first_name => copy_name(father_first_name), :last_name => copy_name(father_last_name) }   
+    if name = search_name(father_first_name, father_last_name)
+      inclusive_names << name
     end
     # mother
-    if mother_first_name || mother_last_name
-      inclusive_names << { :first_name => copy_name(mother_first_name), :last_name => copy_name(mother_last_name) }   
+    if name = search_name(mother_first_name, mother_last_name)
+      inclusive_names << name
     end
     # husband
-    if husband_first_name || husband_last_name
-      inclusive_names << { :first_name => copy_name(husband_first_name), :last_name => copy_name(husband_last_name) }   
+    if name = search_name(husband_first_name, husband_last_name)
+      inclusive_names << name
     end
     # wife
-    if wife_first_name || wife_last_name
-      inclusive_names << { :first_name => copy_name(wife_first_name), :last_name => copy_name(wife_last_name) }   
+    if name = search_name(wife_first_name, wife_last_name)
+      inclusive_names << name
     end
-    # groom
-    if groom_first_name || groom_last_name
-      inclusive_names << { :first_name => copy_name(groom_first_name), :last_name => copy_name(groom_last_name) }   
+
+  end
+
+  def search_name(first_name, last_name, source = 'transcript')
+    name = nil
+    unless first_name.blank? && last_name.blank?
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :source => source })       
     end
-    # bride
-    if bride_first_name || bride_last_name
-      inclusive_names << { :first_name => copy_name(bride_first_name), :last_name => copy_name(bride_last_name) }   
-    end
+    name
   end
 
   def copy_name(name)

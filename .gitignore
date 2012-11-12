@@ -22,6 +22,7 @@
 tmp/**/*
 *#
 *~
+mongo.log
 
 /public/assets/images/working
 
