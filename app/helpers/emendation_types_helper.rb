@@ -1,0 +1,2 @@
+module EmendationTypesHelper
+end

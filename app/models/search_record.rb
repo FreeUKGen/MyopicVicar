@@ -1,5 +1,7 @@
+require 'emendor'
 class SearchRecord
   include MongoMapper::Document
+ # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
 
   before_save :transform
@@ -68,7 +70,8 @@ class SearchRecord
     populate_search_from_transcript
     
     downcase_all
-    #emend
+    emend_all
+    
     create_soundex    
   end
 
@@ -105,6 +108,12 @@ class SearchRecord
       name[:last_name].downcase! if name[:last_name]
     end
   end
+
+  def emend_all
+    self.primary_names = Emendor.emend(self.primary_names)
+    self.inclusive_names = Emendor.emend(self.inclusive_names)
+  end
+
 
   def populate_primary_names
     # standard names
@@ -149,7 +158,7 @@ class SearchRecord
   def search_name(first_name, last_name, source = 'transcript')
     name = nil
     unless first_name.blank? && last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :source => source })       
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source })       
     end
     name
   end
@@ -184,6 +193,7 @@ class SearchRecord
   
   
   end
+
 
 
 

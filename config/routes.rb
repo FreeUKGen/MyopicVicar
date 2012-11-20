@@ -13,9 +13,11 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
-  resources :search_names
+  resources :emendation_types
 
-  resources :emendors
+  resources :emendation_rules
+
+  resources :search_names
 
   resources :search_records
 

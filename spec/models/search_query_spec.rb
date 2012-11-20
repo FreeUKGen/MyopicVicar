@@ -160,6 +160,22 @@ describe SearchQuery do
     should_not_find(q,record)
   end
 
+  it "should expand abbreviations" do
+    # Sarah's father is recorded as "Wm."
+    person = SamplePeople::SARAH_CHALLANS
+    record = SearchRecord.create!(person)
+    # search with the abbreviation
+    q = SearchQuery.create!(:first_name => person[:father_first_name],
+                            :last_name => person[:father_last_name],
+                            :inclusive => true)
+    should_find(q,record)
+    # search with the expansion
+    q = SearchQuery.create!(:first_name => 'William',
+                            :last_name => person[:father_last_name],
+                            :inclusive => true)
+    should_find(q,record)
+  end
+
 
 
 #  it "should remember result counts" do
