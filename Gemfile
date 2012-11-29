@@ -17,7 +17,7 @@ gem 'text'
 gem 'json'
 gem 'pry'
 
-gem 'activeadmin'
+gem 'activeadmin', '~> 0.4.4'
 gem "meta_search",    '>= 1.1.0.pre'
 gem 'bourbon', '~> 2.1'
 

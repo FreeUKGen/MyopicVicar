@@ -214,7 +214,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activeadmin
+  activeadmin (~> 0.4.4)
   activeadmin-mongomapper
   bourbon (~> 2.1)
   bson_ext
