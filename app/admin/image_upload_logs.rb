@@ -22,7 +22,7 @@ ActiveAdmin.register ImageUploadLog do
   show :title => :file do   
     attributes_table do
       row :image_upload do |ul|
-        iu = ul.image_upload
+        iu = ul.upload
         link_to iu.name, admin_upload_path(iu)
       end
       row :file
