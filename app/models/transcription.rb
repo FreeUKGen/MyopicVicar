@@ -1,1 +1,1 @@
-/home/benwbrum/dev/freeukgen/Scribe/app/models/transcription.rb
+/home/benwbrum/dev/clients/freeukgen/Scribe/app/models/transcription.rb
