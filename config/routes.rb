@@ -13,6 +13,8 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  resources :freereg1_csv_files
+
   resources :emendation_types
 
   resources :emendation_rules

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121115172115) do
+ActiveRecord::Schema.define(:version => 20121219210533) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -65,6 +65,22 @@ ActiveRecord::Schema.define(:version => 20121115172115) do
   create_table "fields", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "freereg1_csv_files", :force => true do |t|
+    t.string   "dir_name"
+    t.string   "file_name"
+    t.string   "transcriber_email"
+    t.string   "transcriber_name"
+    t.string   "transcriber_syndicate"
+    t.string   "transcription_date"
+    t.string   "record_type"
+    t.string   "credit_name"
+    t.string   "credit_email"
+    t.string   "first_comment"
+    t.string   "second_comment"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
   end
 
   create_table "image_dirs", :force => true do |t|

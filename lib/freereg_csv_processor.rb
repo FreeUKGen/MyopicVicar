@@ -12,7 +12,7 @@ class FreeregCsvProcessor
     # Instance variables
     @charset = "iso-8859-1"
     @file = File.new(filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
-    @filename = filename.upcase
+    @filename = filename # BWB was filename.upcase but this breaks case-sensitive filesystems
     @char = /[^a-zA-Z\d\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#]/
     @csvdata = Array.new
     @valday = /\A\d{1,2}\z/
@@ -373,8 +373,9 @@ class FreeregCsvProcessor
   # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
   def headerone(head)
     raise FreeREGError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] == "+INFO")
-    address = EmailVeracity::Address.new(@csvdata[1])
-    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
+    # BWB: temporarily commenting out to test db interface
+#    address = EmailVeracity::Address.new(@csvdata[1])
+#    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcribers_email] = @csvdata[1]
     raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless @type.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     head [:record_type] = @csvdata [4].capitalize
@@ -393,7 +394,7 @@ class FreeregCsvProcessor
     raise FreeREGError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcribers_syndicate] = @csvdata[3].downcase
     raise FreeREGError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
-    raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless@csvdata[4].upcase == @filename.upcase
+    raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless @csvdata[4].upcase == File.basename(@filename.upcase)
     aa = @csvdata[4].split(//).first(3).join
     raise FreeREGError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless @@chapman.has_value?(aa)
     aa = @csvdata[4].split(//)
@@ -410,8 +411,9 @@ class FreeregCsvProcessor
     raise FreeREGError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && @csvdata[1].upcase == "CREDIT")
     raise FreeREGError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
-    address = EmailVeracity::Address.new(@csvdata[3])
-    raise FreeREGError, "Invalid email address #{@csvdata[3]} for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
+    # suppressing for the moment
+#    address = EmailVeracity::Address.new(@csvdata[3])
+#    raise FreeREGError, "Invalid email address #{@csvdata[3]} for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
     head [:credit_email] = @csvdata[3]
   end
 
@@ -477,8 +479,8 @@ class FreeregCsvProcessor
     data_record[:father_occupation] = @csvdata[13]
     raise FreeREGError, "The notes #{@csvdata[14]} contains invalid characters in line #{n}" unless cleantext(14)
     data_record[:notes] = @csvdata[14]
-    data_record[:father_surname_soundex] = addsoundex(@csvdata[10])
-    data_record[:mother_surname_soundex] = addsoundex(@csvdata[11])
+    data_record[:father_surname_soundex] = addsoundex(10)
+    data_record[:mother_surname_soundex] = addsoundex(11)
     data_record[:file] = @filename
     head[:datemax] = @datemax
     head[:datemin] = @datemin
@@ -614,6 +616,11 @@ class FreeregCsvProcessor
     data_record[:file] = @filename
   end
 
+  def create_db_record_for_file(head)
+    Freereg1CsvFile.create!(head)
+  end
+
+
   def self.process(filename)
     #this is the basic processing
     begin 
@@ -667,6 +674,7 @@ class FreeregCsvProcessor
       dataout.puts header
       dataout.close
     end    
+    me.create_db_record_for_file(header)
   end
 
 
