@@ -22,7 +22,7 @@ class FreeregCsvProcessor
     @wild = /\A\*\z/
     @valdate = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
     @datemin = 2020
-    @datemax = 1540
+    @datemax = 1530
     @datepop = Array.new(50){|i| i * 0 }
     @valname = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
     @valtext = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
@@ -205,8 +205,8 @@ class FreeregCsvProcessor
     xx = x.to_i
     @datemax = xx if xx > @datemax
     @datemin = xx if xx < @datemin
-    xx = (xx-1540)/10 unless xx <= 1540
-    @datepop[xx] = @datepop[xx] + 1
+    xx = (xx-1530)/10 unless xx <= 1530
+    @datepop[xx] = @datepop[xx] + 1 unless xx < 0
   end
 
   #validate dates in the record and allow for the spli date format 1567/8 and 1567/68 creates a base year and a split year eg /8
