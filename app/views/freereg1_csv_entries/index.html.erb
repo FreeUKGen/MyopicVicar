@@ -1,0 +1,115 @@
+<h1>Listing freereg1_csv_entries</h1>
+
+<table>
+  <tr>
+    <th>Abode</th>
+    <th>Age</th>
+    <th>Baptdate</th>
+    <th>Birthdate</th>
+    <th>Bride abode</th>
+    <th>Bride age</th>
+    <th>Bride condition</th>
+    <th>Bride fath firstname</th>
+    <th>Bride fath occupation</th>
+    <th>Bride fath surname</th>
+    <th>Bride firstname</th>
+    <th>Bride occupation</th>
+    <th>Bride parish</th>
+    <th>Bride surname</th>
+    <th>Burdate</th>
+    <th>Church</th>
+    <th>County</th>
+    <th>Father</th>
+    <th>Fath occupation</th>
+    <th>Fath surname</th>
+    <th>Firstname</th>
+    <th>Groom abode</th>
+    <th>Groom age</th>
+    <th>Groom condition</th>
+    <th>Groom fath firstname</th>
+    <th>Groom fath occupation</th>
+    <th>Groom fath surname</th>
+    <th>Groom firstname</th>
+    <th>Groom occupation</th>
+    <th>Groom parish</th>
+    <th>Groom surname</th>
+    <th>Marrdate</th>
+    <th>Mother</th>
+    <th>Moth surname</th>
+    <th>No</th>
+    <th>Notes</th>
+    <th>Place</th>
+    <th>Rel1 male first</th>
+    <th>Rel1 surname</th>
+    <th>Rel2 female first</th>
+    <th>Relationship</th>
+    <th>Sex</th>
+    <th>Surname</th>
+    <th>Witness1 firstname</th>
+    <th>Witness1 surname</th>
+    <th>Witness2 firstname</th>
+    <th>Witness2 surname</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
+  <tr>
+    <td><%= freereg1_csv_entry.abode %></td>
+    <td><%= freereg1_csv_entry.age %></td>
+    <td><%= freereg1_csv_entry.baptdate %></td>
+    <td><%= freereg1_csv_entry.birthdate %></td>
+    <td><%= freereg1_csv_entry.bride_abode %></td>
+    <td><%= freereg1_csv_entry.bride_age %></td>
+    <td><%= freereg1_csv_entry.bride_condition %></td>
+    <td><%= freereg1_csv_entry.bride_fath_firstname %></td>
+    <td><%= freereg1_csv_entry.bride_fath_occupation %></td>
+    <td><%= freereg1_csv_entry.bride_fath_surname %></td>
+    <td><%= freereg1_csv_entry.bride_firstname %></td>
+    <td><%= freereg1_csv_entry.bride_occupation %></td>
+    <td><%= freereg1_csv_entry.bride_parish %></td>
+    <td><%= freereg1_csv_entry.bride_surname %></td>
+    <td><%= freereg1_csv_entry.burdate %></td>
+    <td><%= freereg1_csv_entry.church %></td>
+    <td><%= freereg1_csv_entry.county %></td>
+    <td><%= freereg1_csv_entry.father %></td>
+    <td><%= freereg1_csv_entry.fath_occupation %></td>
+    <td><%= freereg1_csv_entry.fath_surname %></td>
+    <td><%= freereg1_csv_entry.firstname %></td>
+    <td><%= freereg1_csv_entry.groom_abode %></td>
+    <td><%= freereg1_csv_entry.groom_age %></td>
+    <td><%= freereg1_csv_entry.groom_condition %></td>
+    <td><%= freereg1_csv_entry.groom_fath_firstname %></td>
+    <td><%= freereg1_csv_entry.groom_fath_occupation %></td>
+    <td><%= freereg1_csv_entry.groom_fath_surname %></td>
+    <td><%= freereg1_csv_entry.groom_firstname %></td>
+    <td><%= freereg1_csv_entry.groom_occupation %></td>
+    <td><%= freereg1_csv_entry.groom_parish %></td>
+    <td><%= freereg1_csv_entry.groom_surname %></td>
+    <td><%= freereg1_csv_entry.marrdate %></td>
+    <td><%= freereg1_csv_entry.mother %></td>
+    <td><%= freereg1_csv_entry.moth_surname %></td>
+    <td><%= freereg1_csv_entry.no %></td>
+    <td><%= freereg1_csv_entry.notes %></td>
+    <td><%= freereg1_csv_entry.place %></td>
+    <td><%= freereg1_csv_entry.rel1_male_first %></td>
+    <td><%= freereg1_csv_entry.rel1_surname %></td>
+    <td><%= freereg1_csv_entry.rel2_female_first %></td>
+    <td><%= freereg1_csv_entry.relationship %></td>
+    <td><%= freereg1_csv_entry.sex %></td>
+    <td><%= freereg1_csv_entry.surname %></td>
+    <td><%= freereg1_csv_entry.witness1_firstname %></td>
+    <td><%= freereg1_csv_entry.witness1_surname %></td>
+    <td><%= freereg1_csv_entry.witness2_firstname %></td>
+    <td><%= freereg1_csv_entry.witness2_surname %></td>
+    <td><%= link_to 'Show', freereg1_csv_entry %></td>
+    <td><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %></td>
+    <td><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freereg1 csv entry', new_freereg1_csv_entry_path %>

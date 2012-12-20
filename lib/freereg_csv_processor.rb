@@ -9,6 +9,9 @@ class FreeregCsvProcessor
   end
 
   def initialize(filename)
+    # turn off domain checks -- some of these email accounts may no longer work and that's okay
+    EmailVeracity::Config[:skip_lookup]=true
+
     # Instance variables
     @charset = "iso-8859-1"
     @file = File.new(filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
@@ -78,6 +81,7 @@ class FreeregCsvProcessor
           'A Minor' => 'Minor',
           'Juvenis' => 'Minor'}
 
+    # TODO: merge this with chapman_code.rb in lib
     @@chapman = {
       'Bedfordshire' => 'BDF',
       'Berkshire' => 'BRK',
@@ -374,8 +378,8 @@ class FreeregCsvProcessor
   def headerone(head)
     raise FreeREGError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] == "+INFO")
     # BWB: temporarily commenting out to test db interface
-#    address = EmailVeracity::Address.new(@csvdata[1])
-#    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
+   address = EmailVeracity::Address.new(@csvdata[1])
+   raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcribers_email] = @csvdata[1]
     raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless @type.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     head [:record_type] = @csvdata [4].capitalize
@@ -411,9 +415,9 @@ class FreeregCsvProcessor
     raise FreeREGError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && @csvdata[1].upcase == "CREDIT")
     raise FreeREGError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
-    # suppressing for the moment
-#    address = EmailVeracity::Address.new(@csvdata[3])
-#    raise FreeREGError, "Invalid email address #{@csvdata[3]} for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
+    # # suppressing for the moment
+    # address = EmailVeracity::Address.new(@csvdata[3])
+    # raise FreeREGError, "Invalid email address '#{@csvdata[3]}' for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
     head [:credit_email] = @csvdata[3]
   end
 
@@ -616,8 +620,25 @@ class FreeregCsvProcessor
     data_record[:file] = @filename
   end
 
-  def create_db_record_for_file(head)
-    Freereg1CsvFile.create!(head)
+  def create_db_record_for_entry(data_record)
+    # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
+    entry = Freereg1CsvEntry.new(data_record)
+    entry.freereg1_csv_file=@freereg1_csv_file
+    entry.save!
+
+  end
+
+  def create_or_update_db_record_for_file(head)
+    if @freereg1_csv_file
+      @freereg1_csv_file.update_attributes!(head)      
+    else
+      @freereg1_csv_file = Freereg1CsvFile.create!(head)
+    end
+  end
+
+  def self.delete_all
+    Freereg1CsvEntry.delete_all
+    Freereg1CsvFile.delete_all
   end
 
 
@@ -644,6 +665,8 @@ class FreeregCsvProcessor
         me.headerfour(header)
         me.getvalidline
         me.headerfive(header)
+        # persist the record for the file
+        me.create_or_update_db_record_for_file(header)
     #deal with the data    
         n = 1
     #deal with header 5 being optional
@@ -651,15 +674,16 @@ class FreeregCsvProcessor
         me.getvalidline  if header[:lds] == 'yes'
     #keep going until we run out of data    
         loop do
-        me.datalocation(n,data_record)
-        me.databa(n,data_record,header) if type == 'BA'
-        me.datama(n,data_record,header) if type == 'MA'
-        me.databu(n,data_record,header) if type == 'BU'
-    #store the processed data   
-        dataout.puts data_record
-        n = n + 1
-        me.getvalidline
-    #   break if n == 6
+          me.datalocation(n,data_record)
+          me.databa(n,data_record,header) if type == 'BA'
+          me.datama(n,data_record,header) if type == 'MA'
+          me.databu(n,data_record,header) if type == 'BU'
+      #store the processed data   
+          dataout.puts data_record
+          me.create_db_record_for_entry(data_record)
+          n = n + 1
+          me.getvalidline
+      #   break if n == 6
         end
     #rescue the freereg data errors
     rescue FreeREGError => free
@@ -674,7 +698,7 @@ class FreeregCsvProcessor
       dataout.puts header
       dataout.close
     end    
-    me.create_db_record_for_file(header)
+    me.create_or_update_db_record_for_file(header)
   end
 
 

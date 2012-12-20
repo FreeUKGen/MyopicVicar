@@ -14,6 +14,9 @@
 # 
 class Freereg1CsvFile 
   include MongoMapper::Document
+  many :freereg1_csv_entry
+
+  # Fields correspond to cells in CSV headers  
   key :credit_email, String
   key :credit_name, String
   key :dir_name, String
