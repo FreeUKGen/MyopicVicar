@@ -20,51 +20,55 @@ class Freereg1CsvEntry
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
   # They have only been modified to replace hyphens with underscores.
-  key :abode, String
-  key :age, String
-  key :baptdate, String
-  key :birthdate, String
+  key :baptism_date, String
+  key :birth_date, String
   key :bride_abode, String
   key :bride_age, String
   key :bride_condition, String
-  key :bride_fath_firstname, String
-  key :bride_fath_occupation, String
-  key :bride_fath_surname, String
-  key :bride_firstname, String
+  key :bride_father_forename, String
+  key :bride_father_occupation, String
+  key :bride_father_surname, String
+  key :bride_forename, String
   key :bride_occupation, String
   key :bride_parish, String
   key :bride_surname, String
-  key :burdate, String
-  key :church, String
+  key :burial_date, String
+  key :burial_person_forename, String
+  key :burial_person_surname, String
+  key :burial_person_abode, String
   key :county, String
-  key :fath_occupation, String
-  key :fath_surname, String
-  key :father, String
-  key :firstname, String
+  key :father_forename, String
+  key :father_occupation, String
+  key :father_surname, String
+  key :female_relative_forename, String
   key :groom_abode, String
   key :groom_age, String
   key :groom_condition, String
-  key :groom_fath_firstname, String
-  key :groom_fath_occupation, String
-  key :groom_fath_surname, String
-  key :groom_firstname, String
+  key :groom_father_forename, String
+  key :groom_father_occupation, String
+  key :groom_father_surname, String
+  key :groom_forename, String
   key :groom_occupation, String
   key :groom_parish, String
   key :groom_surname, String
-  key :marrdate, String
-  key :moth_surname, String
-  key :mother, String
-  key :no, String
+  key :male_relative_forename, String
+  key :marriage_date, String
+  key :mother_forename, String
+  key :mother_surname, String
   key :notes, String
+  key :person_abode, String
+  key :person_age, String
+  key :person_forename, String
+  key :person_sex, String
   key :place, String
-  key :rel1_male_first, String
-  key :rel1_surname, String
-  key :rel2_female_first, String
+  key :register, String
+  key :register_entry_number, String
+  key :register_type, String
   key :relationship, String
-  key :sex, String
-  key :surname, String
-  key :witness1_firstname, String
+  key :relative_surname, String
+  key :witness1_forename, String
   key :witness1_surname, String
-  key :witness2_firstname, String
-  key :witness2_surname
+  key :witness2_forename, String
+  key :witness2_surname, String
+  key :line, String
 end

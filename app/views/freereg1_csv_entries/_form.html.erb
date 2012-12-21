@@ -12,20 +12,12 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :abode %><br />
-    <%= f.text_field :abode %>
+    <%= f.label :baptism_date %><br />
+    <%= f.text_field :baptism_date %>
   </div>
   <div class="field">
-    <%= f.label :age %><br />
-    <%= f.text_field :age %>
-  </div>
-  <div class="field">
-    <%= f.label :baptdate %><br />
-    <%= f.text_field :baptdate %>
-  </div>
-  <div class="field">
-    <%= f.label :birthdate %><br />
-    <%= f.text_field :birthdate %>
+    <%= f.label :birth_date %><br />
+    <%= f.text_field :birth_date %>
   </div>
   <div class="field">
     <%= f.label :bride_abode %><br />
@@ -40,20 +32,20 @@
     <%= f.text_field :bride_condition %>
   </div>
   <div class="field">
-    <%= f.label :bride_fath_firstname %><br />
-    <%= f.text_field :bride_fath_firstname %>
+    <%= f.label :bride_father_forename %><br />
+    <%= f.text_field :bride_father_forename %>
   </div>
   <div class="field">
-    <%= f.label :bride_fath_occupation %><br />
-    <%= f.text_field :bride_fath_occupation %>
+    <%= f.label :bride_father_occupation %><br />
+    <%= f.text_field :bride_father_occupation %>
   </div>
   <div class="field">
-    <%= f.label :bride_fath_surname %><br />
-    <%= f.text_field :bride_fath_surname %>
+    <%= f.label :bride_father_surname %><br />
+    <%= f.text_field :bride_father_surname %>
   </div>
   <div class="field">
-    <%= f.label :bride_firstname %><br />
-    <%= f.text_field :bride_firstname %>
+    <%= f.label :bride_forename %><br />
+    <%= f.text_field :bride_forename %>
   </div>
   <div class="field">
     <%= f.label :bride_occupation %><br />
@@ -68,32 +60,41 @@
     <%= f.text_field :bride_surname %>
   </div>
   <div class="field">
-    <%= f.label :burdate %><br />
-    <%= f.text_field :burdate %>
+    <%= f.label :burial_date %><br />
+    <%= f.text_field :burial_date %>
   </div>
   <div class="field">
-    <%= f.label :church %><br />
-    <%= f.text_field :church %>
+    <%= f.label :burial_peron_forename %><br />
+    <%= f.text_field :burial_person_forename %>
   </div>
+  <div class="field">
+    <%= f.label :burial_person_surname %><br />
+    <%= f.text_field :burial_person_surname %>
+  </div>
+  <div class="field">
+    <%= f.label :burial_person_abode %><br />
+    <%= f.text_field :burial_person_abode %>
+  </div>
+
   <div class="field">
     <%= f.label :county %><br />
     <%= f.text_field :county %>
   </div>
   <div class="field">
-    <%= f.label :father %><br />
-    <%= f.text_field :father %>
+    <%= f.label :father_forename %><br />
+    <%= f.text_field :father_forename %>
   </div>
   <div class="field">
-    <%= f.label :fath_occupation %><br />
-    <%= f.text_field :fath_occupation %>
+    <%= f.label :father_occupation %><br />
+    <%= f.text_field :father_occupation %>
   </div>
   <div class="field">
-    <%= f.label :fath_surname %><br />
-    <%= f.text_field :fath_surname %>
+    <%= f.label :father_surname %><br />
+    <%= f.text_field :father_surname %>
   </div>
-  <div class="field">
-    <%= f.label :firstname %><br />
-    <%= f.text_field :firstname %>
+   <div class="field">
+    <%= f.label :female_relative_forename %><br />
+    <%= f.text_field :female_relative_forename %>
   </div>
   <div class="field">
     <%= f.label :groom_abode %><br />
@@ -108,20 +109,20 @@
     <%= f.text_field :groom_condition %>
   </div>
   <div class="field">
-    <%= f.label :groom_fath_firstname %><br />
-    <%= f.text_field :groom_fath_firstname %>
+    <%= f.label :groom_father_forename %><br />
+    <%= f.text_field :groom_father_forename %>
   </div>
   <div class="field">
-    <%= f.label :groom_fath_occupation %><br />
-    <%= f.text_field :groom_fath_occupation %>
+    <%= f.label :groom_father_occupation %><br />
+    <%= f.text_field :groom_father_occupation %>
   </div>
   <div class="field">
-    <%= f.label :groom_fath_surname %><br />
-    <%= f.text_field :groom_fath_surname %>
+    <%= f.label :groom_father_surname %><br />
+    <%= f.text_field :groom_father_surname %>
   </div>
   <div class="field">
-    <%= f.label :groom_firstname %><br />
-    <%= f.text_field :groom_firstname %>
+    <%= f.label :groom_forename %><br />
+    <%= f.text_field :groom_forename %>
   </div>
   <div class="field">
     <%= f.label :groom_occupation %><br />
@@ -136,55 +137,69 @@
     <%= f.text_field :groom_surname %>
   </div>
   <div class="field">
-    <%= f.label :marrdate %><br />
-    <%= f.text_field :marrdate %>
+    <%= f.label :male_relative_forename %><br />
+    <%= f.text_field :male_lelative_forename %>
   </div>
   <div class="field">
-    <%= f.label :mother %><br />
-    <%= f.text_field :mother %>
+    <%= f.label :marriage_date %><br />
+    <%= f.text_field :marriage_date %>
   </div>
   <div class="field">
-    <%= f.label :moth_surname %><br />
-    <%= f.text_field :moth_surname %>
+    <%= f.label :mother_forename %><br />
+    <%= f.text_field :mother_forename %>
   </div>
   <div class="field">
-    <%= f.label :no %><br />
-    <%= f.text_field :no %>
+    <%= f.label :mother_surname %><br />
+    <%= f.text_field :mother_surname %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :person_abode %><br />
+    <%= f.text_field :person_abode %>
   </div>
   <div class="field">
-    <%= f.label :notes %><br />
-    <%= f.text_field :notes %>
+    <%= f.label :person_age %><br />
+    <%= f.text_field :person_age %>
+  </div>
+
+  <div class="field">
+    <%= f.label :person_forename %><br />
+    <%= f.text_field :person_forename %>
   </div>
   <div class="field">
+    <%= f.label :person_sex %><br />
+    <%= f.text_field :person_sex %>
+  </div>
+
+   <div class="field">
     <%= f.label :place %><br />
     <%= f.text_field :place %>
   </div>
+  
   <div class="field">
-    <%= f.label :rel1_male_first %><br />
-    <%= f.text_field :rel1_male_first %>
+    <%= f.label :register %><br />
+    <%= f.text_field :register %>
   </div>
   <div class="field">
-    <%= f.label :rel1_surname %><br />
-    <%= f.text_field :rel1_surname %>
+    <%= f.label :register_entry_number %><br />
+    <%= f.text_field :register_entry_number %>
   </div>
   <div class="field">
-    <%= f.label :rel2_female_first %><br />
-    <%= f.text_field :rel2_female_first %>
+    <%= f.label :register_type %><br />
+    <%= f.text_field :register_type %>
   </div>
   <div class="field">
     <%= f.label :relationship %><br />
     <%= f.text_field :relationship %>
   </div>
+
   <div class="field">
-    <%= f.label :sex %><br />
-    <%= f.text_field :sex %>
+    <%= f.label :relative_surname %><br />
+    <%= f.text_field :relative_surname %>
   </div>
+  
   <div class="field">
-    <%= f.label :surname %><br />
-    <%= f.text_field :surname %>
-  </div>
-  <div class="field">
-    <%= f.label :witness1_firstname %><br />
+    <%= f.label :witness1_forename %><br />
     <%= f.text_field :witness1_firstname %>
   </div>
   <div class="field">
@@ -192,12 +207,20 @@
     <%= f.text_field :witness1_surname %>
   </div>
   <div class="field">
-    <%= f.label :witness2_firstname %><br />
+    <%= f.label :witness2_forename %><br />
     <%= f.text_field :witness2_firstname %>
   </div>
   <div class="field">
     <%= f.label :witness2_surname %><br />
     <%= f.text_field :witness2_surname %>
+  </div>
+  <div class="field">
+    <%= f.label :notes %><br />
+    <%= f.text_field :notes %>
+  </div>
+  <div class="field">
+    <%= f.label :line %><br />
+    <%= f.text_field :line %>
   </div>
   <div class="actions">
     <%= f.submit %>

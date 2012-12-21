@@ -450,7 +450,10 @@ class FreeregCsvProcessor
     data_record[:place] = @csvdata[1]
     # do we validate the register field and do we strip the register type AT; ET
     data_record[:register] = @csvdata[2]
-    data_record[:line] = n
+    #need to add the code to create; using PR as the place holder
+    data_record[:register_type] = "PR"
+    # need to add the transcriberID
+    data_record[:line] = n.to_s + "." + File.basename(@filename.upcase)
     raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
     data_record[:register_entry_nuber] = @csvdata[3]
   end
@@ -546,15 +549,15 @@ class FreeregCsvProcessor
     raise FreeREGError, "The bride's father's occupation #{@csvdata[24]} contains invalid characters in line #{n}" unless cleantext(24)
     data_record[:bride_father_occupation] = @csvdata[24]
     raise FreeREGError, "The first witness forename #{@csvdata[25]} contains invalid characters in line #{n}" unless cleanname(25)
-    data_record[:first_witness_forename] = @csvdata[25]
+    data_record[:witness1_forename] = @csvdata[25]
     raise FreeREGError, "The first witness's surname #{@csvdata[26]} contains invalid characters in line #{n}" unless cleanname(26)
-    data_record[:first_witness_surname] = @csvdata[26].upcase unless @csvdata[26].nil?
-    data_record[:first_witness_surname] = @csvdata[26] if @csvdata[26].nil?
+    data_record[:witness1_surname] = @csvdata[26].upcase unless @csvdata[26].nil?
+    data_record[:witness1_surname] = @csvdata[26] if @csvdata[26].nil?
     raise FreeREGError, "The second witness forename #{@csvdata[27]} contains invalid characters in line #{n}" unless cleanname(27)
-    data_record[:second_witness_forename] = @csvdata[27]
+    data_record[:witness2_forename] = @csvdata[27]
     raise FreeREGError, "The second witness's surname #{@csvdata[28]} contains invalid characters in line #{n}" unless cleanname(28)
-    data_record[:second_witness_surname] = @csvdata[28].upcase unless @csvdata[28].nil?
-    data_record[:second_witness_surname] = @csvdata[28] if @csvdata[28].nil?
+    data_record[:witness2_surname] = @csvdata[28].upcase unless @csvdata[28].nil?
+    data_record[:witness2_surname] = @csvdata[28] if @csvdata[28].nil?
     raise FreeREGError, "The notes #{@csvdata[29]} contains invalid characters in line #{n}" unless cleantext(29)
     data_record[:notes] = @csvdata[29]
     data_record[:groom_surname_soundex] = Text::Soundex.soundex(@csvdata[6])
@@ -586,7 +589,7 @@ class FreeregCsvProcessor
     data_record[:burial_date_split] = @splityear
     data_record[:burial_date] = @csvdata[4]
     raise FreeREGError, "The person's forename #{@csvdata[5]} contains invalid characters in line #{n}" unless cleanname(5)
-    data_record[:person_forename] = @csvdata[5]
+    data_record[:burial_person_forename] = @csvdata[5]
     raise FreeREGError, "The relationship #{@csvdata[6]} contains invalid characters in line #{n}" unless cleanname(6)
     data_record[:relationship] = @csvdata[6]
     raise FreeREGError, "The male relative's forename #{@csvdata[7]} contains invalid characters in line #{n}" unless cleanname(7)
@@ -597,18 +600,18 @@ class FreeregCsvProcessor
     data_record[:relative_surname] = @csvdata[9].upcase unless @csvdata[9].nil?
     data_record[:relative_surname] = @csvdata[9] if @csvdata[9].nil?
     raise FreeREGError, "The person's surname #{@csvdata[10]} contains invalid characters in line #{n}" unless cleanname(10)
-    data_record[:person_surname] = @csvdata[10].upcase  unless @csvdata[10].nil?
-    data_record[:person_surname] = @csvdata[10]  if @csvdata[10].nil?
+    data_record[:burial_person_surname] = @csvdata[10].upcase  unless @csvdata[10].nil?
+    data_record[:burial_person_surname] = @csvdata[10]  if @csvdata[10].nil?
     raise FreeREGError, "The person's age #{@csvdata[11]} contains invalid characters in line #{n}" unless cleanage(11)
     data_record[:person_age] = @csvdata[11]
     raise FreeREGError, "The person's abode #{@csvdata[12]} contains invalid characters in line #{n}" unless cleantext(12)
-    data_record[:person_abode] = @csvdata[12]
+    data_record[:burial_person_abode] = @csvdata[12]
     raise FreeREGError, "The notes #{@csvdata[13]} contains invalid characters in line #{n}" unless cleantext(13)
     data_record[:notes] = @csvdata[13]
     data_record[:relative_surname_soundex] = Text::Soundex.soundex(@csvdata[9])
     data_record[:relative_surname_soundex] = "Z000" if (@csvdata[9].nil? ||  Text::Soundex.soundex(@csvdata[9]).nil?)
-    data_record[:person_surname_soundex] = Text::Soundex.soundex(@csvdata[10])
-    data_record[:person_surname_soundex] = "Z000" if (@csvdata[10].nil? ||  Text::Soundex.soundex(@csvdata[10]).nil?)
+    data_record[:burial_person_surname_soundex] = Text::Soundex.soundex(@csvdata[10])
+    data_record[:burial_person_surname_soundex] = "Z000" if (@csvdata[10].nil? ||  Text::Soundex.soundex(@csvdata[10]).nil?)
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop

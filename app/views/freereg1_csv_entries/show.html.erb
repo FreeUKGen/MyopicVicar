@@ -1,23 +1,13 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Abode:</b>
-  <%= @freereg1_csv_entry.abode %>
+  <b>Baptism date:</b>
+  <%= @freereg1_csv_entry.baptism_date %>
 </p>
 
 <p>
-  <b>Age:</b>
-  <%= @freereg1_csv_entry.age %>
-</p>
-
-<p>
-  <b>Baptdate:</b>
-  <%= @freereg1_csv_entry.baptdate %>
-</p>
-
-<p>
-  <b>Birthdate:</b>
-  <%= @freereg1_csv_entry.birthdate %>
+  <b>Birth date:</b>
+  <%= @freereg1_csv_entry.birth_date %>
 </p>
 
 <p>
@@ -36,23 +26,23 @@
 </p>
 
 <p>
-  <b>Bride fath firstname:</b>
-  <%= @freereg1_csv_entry.bride_fath_firstname %>
+  <b>Bride father forename:</b>
+  <%= @freereg1_csv_entry.bride_father_forename %>
 </p>
 
 <p>
-  <b>Bride fath occupation:</b>
-  <%= @freereg1_csv_entry.bride_fath_occupation %>
+  <b>Bride fathr occupation:</b>
+  <%= @freereg1_csv_entry.bride_father_occupation %>
 </p>
 
 <p>
-  <b>Bride fath surname:</b>
-  <%= @freereg1_csv_entry.bride_fath_surname %>
+  <b>Bride father surname:</b>
+  <%= @freereg1_csv_entry.bride_father_surname %>
 </p>
 
 <p>
   <b>Bride firstname:</b>
-  <%= @freereg1_csv_entry.bride_firstname %>
+  <%= @freereg1_csv_entry.bride_forename %>
 </p>
 
 <p>
@@ -71,13 +61,21 @@
 </p>
 
 <p>
-  <b>Burdate:</b>
-  <%= @freereg1_csv_entry.burdate %>
+  <b>Burial date:</b>
+  <%= @freereg1_csv_entry.burial_date %>
 </p>
 
 <p>
-  <b>Church:</b>
-  <%= @freereg1_csv_entry.church %>
+  <b>Burial person forename:</b>
+  <%= @freereg1_csv_entry.burial_person_forename %>
+</p>
+<p>
+  <b>Burial person surname:</b>
+  <%= @freereg1_csv_entry.burial_person_surname %>
+</p>
+<p>
+  <b>Burial person abode:</b>
+  <%= @freereg1_csv_entry.burial_person_abode %>
 </p>
 
 <p>
@@ -86,23 +84,23 @@
 </p>
 
 <p>
-  <b>Father:</b>
-  <%= @freereg1_csv_entry.father %>
+  <b>Father forename:</b>
+  <%= @freereg1_csv_entry.father_forename %>
 </p>
 
 <p>
-  <b>Fath occupation:</b>
-  <%= @freereg1_csv_entry.fath_occupation %>
+  <b>Father occupation:</b>
+  <%= @freereg1_csv_entry.father_occupation %>
 </p>
 
 <p>
-  <b>Fath surname:</b>
-  <%= @freereg1_csv_entry.fath_surname %>
+  <b>Father surname:</b>
+  <%= @freereg1_csv_entry.father_surname %>
 </p>
 
 <p>
-  <b>Firstname:</b>
-  <%= @freereg1_csv_entry.firstname %>
+  <b>Female relative forename:</b>
+  <%= @freereg1_csv_entry.female_relative_forename %>
 </p>
 
 <p>
@@ -121,23 +119,23 @@
 </p>
 
 <p>
-  <b>Groom fath firstname:</b>
-  <%= @freereg1_csv_entry.groom_fath_firstname %>
+  <b>Groom father forename:</b>
+  <%= @freereg1_csv_entry.groom_father_forename %>
 </p>
 
 <p>
-  <b>Groom fath occupation:</b>
-  <%= @freereg1_csv_entry.groom_fath_occupation %>
+  <b>Groom father occupation:</b>
+  <%= @freereg1_csv_entry.groom_father_occupation %>
 </p>
 
 <p>
-  <b>Groom fath surname:</b>
-  <%= @freereg1_csv_entry.groom_fath_surname %>
+  <b>Groom father surname:</b>
+  <%= @freereg1_csv_entry.groom_father_surname %>
 </p>
 
 <p>
-  <b>Groom firstname:</b>
-  <%= @freereg1_csv_entry.groom_firstname %>
+  <b>Groom forename:</b>
+  <%= @freereg1_csv_entry.groom_forename %>
 </p>
 
 <p>
@@ -156,28 +154,46 @@
 </p>
 
 <p>
-  <b>Marrdate:</b>
-  <%= @freereg1_csv_entry.marrdate %>
+  <b>Male relative forename:</b>
+  <%= @freereg1_csv_entry.male_relative_forename %>
 </p>
 
 <p>
-  <b>Mother:</b>
-  <%= @freereg1_csv_entry.mother %>
+  <b>Marriage date:</b>
+  <%= @freereg1_csv_entry.marriage_date %>
 </p>
 
 <p>
-  <b>Moth surname:</b>
-  <%= @freereg1_csv_entry.moth_surname %>
+  <b>Mother forename:</b>
+  <%= @freereg1_csv_entry.mother_forename %>
 </p>
 
 <p>
-  <b>No:</b>
-  <%= @freereg1_csv_entry.no %>
+  <b>Mother surname:</b>
+  <%= @freereg1_csv_entry.mother_surname %>
+</p>
+
+
+
+<p>
+  <b>Person abode:</b>
+  <%= @freereg1_csv_entry.person_abode %>
 </p>
 
 <p>
-  <b>Notes:</b>
-  <%= @freereg1_csv_entry.notes %>
+  <b>Person age:</b>
+  <%= @freereg1_csv_entry.person_age %>
+</p>
+
+<p>
+  <b>Person forename:</b>
+  <%= @freereg1_csv_entry.person_forename %>
+</p>
+
+
+<p>
+  <b>Person sex:</b>
+  <%= @freereg1_csv_entry.person_sex %>
 </p>
 
 <p>
@@ -186,18 +202,18 @@
 </p>
 
 <p>
-  <b>Rel1 male first:</b>
-  <%= @freereg1_csv_entry.rel1_male_first %>
+  <b>Register:</b>
+  <%= @freereg1_csv_entry.register %>
 </p>
 
 <p>
-  <b>Rel1 surname:</b>
-  <%= @freereg1_csv_entry.rel1_surname %>
+  <b>Register entry number:</b>
+  <%= @freereg1_csv_entry.register_entry_number %>
 </p>
 
 <p>
-  <b>Rel2 female first:</b>
-  <%= @freereg1_csv_entry.rel2_female_first %>
+  <b>Register type:</b>
+  <%= @freereg1_csv_entry.register_type %>
 </p>
 
 <p>
@@ -206,18 +222,13 @@
 </p>
 
 <p>
-  <b>Sex:</b>
-  <%= @freereg1_csv_entry.sex %>
+  <b>Relative surname:</b>
+  <%= @freereg1_csv_entry.relative_surname %>
 </p>
 
 <p>
-  <b>Surname:</b>
-  <%= @freereg1_csv_entry.surname %>
-</p>
-
-<p>
-  <b>Witness1 firstname:</b>
-  <%= @freereg1_csv_entry.witness1_firstname %>
+  <b>Witness1 forename:</b>
+  <%= @freereg1_csv_entry.witness1_forename %>
 </p>
 
 <p>
@@ -226,13 +237,21 @@
 </p>
 
 <p>
-  <b>Witness2 firstname:</b>
-  <%= @freereg1_csv_entry.witness2_firstname %>
+  <b>Witness2 forename:</b>
+  <%= @freereg1_csv_entry.witness2_forename %>
 </p>
 
 <p>
   <b>Witness2 surname:</b>
   <%= @freereg1_csv_entry.witness2_surname %>
+</p>
+<p>
+  <b>Notes:</b>
+  <%= @freereg1_csv_entry.notes %>
+</p>
+<p>
+  <b>Line:</b>
+  <%= @freereg1_csv_entry.line %>
 </p>
 
 
