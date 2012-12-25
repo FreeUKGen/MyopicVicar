@@ -1,0 +1,43 @@
+<h1>Listing freereg1_csv_files</h1>
+
+<table>
+  <tr>
+    <th>Dir name</th>
+    <th>File name</th>
+    <th>Transcriber email</th>
+    <th>Transcriber name</th>
+    <th>Transcriber syndicate</th>
+    <th>Transcription date</th>
+    <th>Record type</th>
+    <th>Credit name</th>
+    <th>Credit email</th>
+    <th>First comment</th>
+    <th>Second comment</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freereg1_csv_files.each do |freereg1_csv_file| %>
+  <tr>
+    <td><%= freereg1_csv_file.dir_name %></td>
+    <td><%= freereg1_csv_file.file_name %></td>
+    <td><%= freereg1_csv_file.transcriber_email %></td>
+    <td><%= freereg1_csv_file.transcriber_name %></td>
+    <td><%= freereg1_csv_file.transcriber_syndicate %></td>
+    <td><%= freereg1_csv_file.transcription_date %></td>
+    <td><%= freereg1_csv_file.record_type %></td>
+    <td><%= freereg1_csv_file.credit_name %></td>
+    <td><%= freereg1_csv_file.credit_email %></td>
+    <td><%= freereg1_csv_file.first_comment %></td>
+    <td><%= freereg1_csv_file.second_comment %></td>
+    <td><%= link_to 'Show', freereg1_csv_file %></td>
+    <td><%= link_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file) %></td>
+    <td><%= link_to 'Destroy', freereg1_csv_file, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freereg1 csv file', new_freereg1_csv_file_path %>
