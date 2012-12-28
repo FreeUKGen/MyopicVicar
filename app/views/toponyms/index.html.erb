@@ -1,0 +1,31 @@
+<h1>Listing toponyms</h1>
+
+<table>
+  <tr>
+    <th>Chapman code</th>
+    <th>Parish</th>
+    <th>Geonames response</th>
+    <th>Gbhgis response</th>
+    <th>Resolved</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @toponyms.each do |toponym| %>
+  <tr>
+    <td><%= toponym.chapman_code %></td>
+    <td><%= toponym.parish %></td>
+    <td><%= toponym.geonames_response %></td>
+    <td><%= toponym.gbhgis_response %></td>
+    <td><%= toponym.resolved %></td>
+    <td><%= link_to 'Show', toponym %></td>
+    <td><%= link_to 'Edit', edit_toponym_path(toponym) %></td>
+    <td><%= link_to 'Destroy', toponym, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Toponym', new_toponym_path %>

@@ -1,0 +1,35 @@
+<h1>Listing church_names</h1>
+
+<table>
+  <tr>
+    <th>Chapman code</th>
+    <th>Parish</th>
+    <th>Church</th>
+    <th>Entries</th>
+    <th>Files</th>
+    <th>Toponym</th>
+    <th>Resolved</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @church_names.each do |church_name| %>
+  <tr>
+    <td><%= church_name.chapman_code %></td>
+    <td><%= church_name.parish %></td>
+    <td><%= church_name.church %></td>
+    <td><%= church_name.entry_count %></td>
+    <td><%= church_name.files.count %></td>
+    <td><%= church_name.toponym %></td>
+    <td><%= church_name.resolved %></td>
+    <td><%= link_to 'Show', church_name %></td>
+    <td><%= link_to 'Edit', edit_church_name_path(church_name) %></td>
+    <td><%= link_to 'Destroy', church_name, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Church name', new_church_name_path %>

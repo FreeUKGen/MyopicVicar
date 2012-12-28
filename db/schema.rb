@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121220153949) do
+ActiveRecord::Schema.define(:version => 20121226152614) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -36,6 +36,16 @@ ActiveRecord::Schema.define(:version => 20121220153949) do
   create_table "assets", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "church_names", :force => true do |t|
+    t.string   "chapman_code"
+    t.string   "parish"
+    t.string   "church"
+    t.string   "toponym"
+    t.boolean  "resolved"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "emendation_rules", :force => true do |t|
@@ -183,6 +193,16 @@ ActiveRecord::Schema.define(:version => 20121220153949) do
   create_table "templates", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "toponyms", :force => true do |t|
+    t.string   "chapman_code"
+    t.string   "parish"
+    t.string   "geonames_response"
+    t.string   "gbhgis_response"
+    t.boolean  "resolved"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
 end

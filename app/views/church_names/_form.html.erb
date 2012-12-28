@@ -1,0 +1,37 @@
+<%= form_for(@church_name) do |f| %>
+  <% if @church_name.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@church_name.errors.count, "error") %> prohibited this church_name from being saved:</h2>
+
+      <ul>
+      <% @church_name.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :chapman_code %><br />
+    <%= f.text_field :chapman_code %>
+  </div>
+  <div class="field">
+    <%= f.label :parish %><br />
+    <%= f.text_field :parish %>
+  </div>
+  <div class="field">
+    <%= f.label :church %><br />
+    <%= f.text_field :church %>
+  </div>
+  <div class="field">
+    <%= f.label :toponym %><br />
+    <%= f.text_field :toponym %>
+  </div>
+  <div class="field">
+    <%= f.label :resolved %><br />
+    <%= f.check_box :resolved %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

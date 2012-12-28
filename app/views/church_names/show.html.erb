@@ -1,0 +1,43 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Chapman code:</b>
+  <%= @church_name.chapman_code %>
+</p>
+
+<p>
+  <b>Parish:</b>
+  <%= @church_name.parish %>
+</p>
+
+<p>
+  <b>Church:</b>
+  <%= @church_name.church %>
+</p>
+
+<p>
+  <b>Entries:</b>
+  <%= @church_name.entry_count %>
+</p>
+
+<p>
+  <b>Files:</b>
+  <% @church_name.files.each do |file| %>
+  <br />
+  <%= file.inspect %>
+  <% end %>
+</p>
+
+<p>
+  <b>Toponym:</b>
+  <%= @church_name.toponym %>
+</p>
+
+<p>
+  <b>Resolved:</b>
+  <%= @church_name.resolved %>
+</p>
+
+
+<%= link_to 'Edit', edit_church_name_path(@church_name) %> |
+<%= link_to 'Back', church_names_path %>

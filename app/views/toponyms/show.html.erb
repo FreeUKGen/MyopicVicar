@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Chapman code:</b>
+  <%= @toponym.chapman_code %>
+</p>
+
+<p>
+  <b>Parish:</b>
+  <%= @toponym.parish %>
+</p>
+
+<p>
+  <b>Geonames response:</b>
+  <%= @toponym.geonames_response %>
+</p>
+
+<p>
+  <b>Gbhgis response:</b>
+  <%= @toponym.gbhgis_response %>
+</p>
+
+<p>
+  <b>Resolved:</b>
+  <%= @toponym.resolved %>
+</p>
+
+
+<%= link_to 'Edit', edit_toponym_path(@toponym) %> |
+<%= link_to 'Back', toponyms_path %>

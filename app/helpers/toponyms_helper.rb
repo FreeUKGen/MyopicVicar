@@ -1,0 +1,2 @@
+module ToponymsHelper
+end
