@@ -1,4 +1,4 @@
-<h1>Listing church_names</h1>
+<h1>Listing Church Names</h1>
 
 <table>
   <tr>
@@ -9,8 +9,6 @@
     <th>Files</th>
     <th>Toponym</th>
     <th>Resolved</th>
-    <th></th>
-    <th></th>
     <th></th>
   </tr>
 
@@ -24,8 +22,6 @@
     <td><%= church_name.toponym %></td>
     <td><%= church_name.resolved %></td>
     <td><%= link_to 'Show', church_name %></td>
-    <td><%= link_to 'Edit', edit_church_name_path(church_name) %></td>
-    <td><%= link_to 'Destroy', church_name, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>
