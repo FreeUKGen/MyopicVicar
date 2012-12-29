@@ -11,7 +11,7 @@ gem 'bson_ext'
 gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
 gem 'execjs'
 
-gem 'therubyracer'
+gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'text'
 gem 'json'
@@ -26,7 +26,7 @@ gem 'mm-devise', :git => 'git://github.com/pollingj/mm-devise.git'
 gem 'activeadmin-mongomapper'
 
 
-gem 'rmagick'
+gem 'rmagick', "2.13.1"    #version added by kirk as windows requires this version
 gem 'rubyzip'
 
 gem 'rspec-rails'
