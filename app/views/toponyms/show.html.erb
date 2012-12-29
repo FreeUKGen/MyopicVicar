@@ -25,6 +25,13 @@
   <%= @toponym.resolved %>
 </p>
 
+<p>
+  <b>Church Names:</b>
+  <% @toponym.church_names.each do |church| %>
+	  <br />
+	  <%= link_to(church.church, church_name_path(church)) %>
+  <% end %>
+</p>
 
-<%= link_to 'Edit', edit_toponym_path(@toponym) %> |
+
 <%= link_to 'Back', toponyms_path %>

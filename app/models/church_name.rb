@@ -14,15 +14,23 @@
 # 
 class ChurchName
   include MongoMapper::Document
-   
+  after_create :populate_toponym
+  
+  
   key :chapman_code, String
   key :church, String
   key :parish, String
   key :resolved, Boolean
   key :entry_count, Integer
-  one :toponym
+  belongs_to :toponym
   
   # these are not canonical -- just quick and dirty
   key :files, Array # filename, user hash
+
+  def populate_toponym
+    toponym_attrs = {:chapman_code => self.chapman_code, :parish => self.parish}
+    self.toponym = Toponym.first(toponym_attrs) || Toponym.create!(toponym_attrs) 
+  end
+
   
 end

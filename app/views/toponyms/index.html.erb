@@ -8,8 +8,6 @@
     <th>Gbhgis response</th>
     <th>Resolved</th>
     <th></th>
-    <th></th>
-    <th></th>
   </tr>
 
 <% @toponyms.each do |toponym| %>
@@ -20,8 +18,6 @@
     <td><%= toponym.gbhgis_response %></td>
     <td><%= toponym.resolved %></td>
     <td><%= link_to 'Show', toponym %></td>
-    <td><%= link_to 'Edit', edit_toponym_path(toponym) %></td>
-    <td><%= link_to 'Destroy', toponym, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>

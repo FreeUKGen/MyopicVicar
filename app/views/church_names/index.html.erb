@@ -19,7 +19,7 @@
     <td><%= church_name.church %></td>
     <td><%= church_name.entry_count %></td>
     <td><%= church_name.files.count %></td>
-    <td><%= church_name.toponym %></td>
+    <td><%= link_to("Toponym", church_name.toponym) %></td>
     <td><%= church_name.resolved %></td>
     <td><%= link_to 'Show', church_name %></td>
   </tr>
