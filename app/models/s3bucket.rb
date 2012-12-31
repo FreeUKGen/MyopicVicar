@@ -63,7 +63,8 @@ class S3bucket
     files = ls(dir)
     puts "files is: #{files.count}"
     ul.files = files.count
-    ul.save
+    ul.save(:validate => false)
+    puts "ul is: #{ul}"
     files.each do |s3_file|
       FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
       File.open(key_to_file(s3_file.key), 'wb+') do |local_file|
