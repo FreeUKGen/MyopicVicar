@@ -17,16 +17,27 @@ class Freereg1CsvFile
   many :freereg1_csv_entry
 
   # Fields correspond to cells in CSV headers  
+  key :county, String
+  key :place, String
+  key :register, String
+  key :register_type, String
+  key :record_type, String
+  key :records, String
+  key :datemin, String
+  key :datemax, String
+  key :daterange, Array
+  key :userid, String
+  key :file_name, String
+  key :transcriber_name, String
+  key :transcriber_email, String
+  key :transcriber_syndicate, String
   key :credit_email, String
   key :credit_name, String
-  key :dir_name, String
-  key :file_name, String
   key :first_comment, String
-  key :record_type, String
   key :second_comment, String
-  key :transcriber_email, String
-  key :transcriber_name, String
-  key :transcriber_syndicate, String
-  key :transcription_date
+  key :transcription_date, String
+  key :modification_date, String
+  key :lds, String
+  key :characterset, String
   timestamps!
 end

@@ -12,33 +12,75 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :dir_name %><br />
-    <%= f.text_field :dir_name %>
+    <%= f.label :county %><br />
+    <%= f.text_field :county %>
   </div>
+
   <div class="field">
-    <%= f.label :file_name %><br />
-    <%= f.text_field :file_name %>
+    <%= f.label :place %><br />
+    <%= f.text_field :place %>
   </div>
+
   <div class="field">
-    <%= f.label :transcriber_email %><br />
-    <%= f.text_field :transcriber_email %>
+    <%= f.label :register %><br />
+    <%= f.text_field :register %>
   </div>
+
   <div class="field">
-    <%= f.label :transcriber_name %><br />
-    <%= f.text_field :transcriber_name %>
+    <%= f.label :register_type %><br />
+    <%= f.text_field :register_type %>
   </div>
-  <div class="field">
-    <%= f.label :transcriber_syndicate %><br />
-    <%= f.text_field :transcriber_syndicate %>
-  </div>
-  <div class="field">
-    <%= f.label :transcription_date %><br />
-    <%= f.text_field :transcription_date %>
-  </div>
+
   <div class="field">
     <%= f.label :record_type %><br />
     <%= f.text_field :record_type %>
   </div>
+
+  <div class="field">
+    <%= f.label :records %><br />
+    <%= f.text_field :records %>
+  </div>
+
+  <div class="field">
+    <%= f.label :datemin %><br />
+    <%= f.text_field :datemin %>
+  </div>
+
+  <div class="field">
+    <%= f.label :datemax %><br />
+    <%= f.text_field :datemax %>
+  </div>
+
+  <div class="field">
+    <%= f.label :daterange %><br />
+    <%= f.text_field :daterange %>
+  </div>
+
+  <div class="field">
+    <%= f.label :userid %><br />
+    <%= f.text_field :userid %>
+  </div>
+
+  <div class="field">
+    <%= f.label :file_name %><br />
+    <%= f.text_field :file_name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :transcriber_name %><br />
+    <%= f.text_field :transcriber_name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :transcriber_email %><br />
+    <%= f.text_field :transcriber_email %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :transcriber_syndicate %><br />
+    <%= f.text_field :transcriber_syndicate %>
+  </div>
+   
   <div class="field">
     <%= f.label :credit_name %><br />
     <%= f.text_field :credit_name %>
@@ -55,6 +97,27 @@
     <%= f.label :second_comment %><br />
     <%= f.text_field :second_comment %>
   </div>
+
+  <div class="field">
+    <%= f.label :transcription_date %><br />
+    <%= f.text_field :transcription_date %>
+  </div>
+
+  <div class="field">
+    <%= f.label :modification_date %><br />
+    <%= f.text_field :modification_date %>
+  </div>
+
+  <div class="field">
+    <%= f.label :lds %><br />
+    <%= f.text_field :lds %>
+  </div>
+
+<div class="field">
+    <%= f.label :characterset %><br />
+    <%= f.text_field :characterset %>
+  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>

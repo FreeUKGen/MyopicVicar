@@ -1,18 +1,58 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Dir name:</b>
-  <%= @freereg1_csv_file.dir_name %>
+  <b>County:</b>
+  <%= @freereg1_csv_file.county %>
 </p>
 
+<p>
+  <b>Place:</b>
+  <%= @freereg1_csv_file.place %>
+</p>
+
+<p>
+  <b>Register:</b>
+  <%= @freereg1_csv_file.register %>
+</p>
+
+<p>
+  <b>Register type:</b>
+  <%= @freereg1_csv_file.register_type %>
+</p>
+
+
+<p>
+  <b>Record type:</b>
+  <%= @freereg1_csv_file.record_type %>
+</p>
+
+<p>
+  <b>Records:</b>
+  <%= @freereg1_csv_file.records %>
+</p>
+
+<p>
+  <b>Minimum Year:</b>
+  <%= @freereg1_csv_file.datemin %>
+</p>
+
+<p>
+  <b>Maximum year:</b>
+  <%= @freereg1_csv_file.datemax %>
+</p>
+
+<p>
+  <b>Data range:</b>
+  <%= @freereg1_csv_file.daterange %>
+</p>
+
+<p>
+  <b>UserID:</b>
+  <%= @freereg1_csv_file.userid %>
+</p>
 <p>
   <b>File name:</b>
   <%= @freereg1_csv_file.file_name %>
-</p>
-
-<p>
-  <b>Transcriber email:</b>
-  <%= @freereg1_csv_file.transcriber_email %>
 </p>
 
 <p>
@@ -21,18 +61,13 @@
 </p>
 
 <p>
+  <b>Transcriber email:</b>
+  <%= @freereg1_csv_file.transcriber_email %>
+</p>
+
+<p>
   <b>Transcriber syndicate:</b>
   <%= @freereg1_csv_file.transcriber_syndicate %>
-</p>
-
-<p>
-  <b>Transcription date:</b>
-  <%= @freereg1_csv_file.transcription_date %>
-</p>
-
-<p>
-  <b>Record type:</b>
-  <%= @freereg1_csv_file.record_type %>
 </p>
 
 <p>
@@ -55,6 +90,25 @@
   <%= @freereg1_csv_file.second_comment %>
 </p>
 
+<p>
+  <b>Transcription date:</b>
+  <%= @freereg1_csv_file.transcription_date %>
+</p>
+
+<p>
+  <b>Modification date:</b>
+  <%= @freereg1_csv_file.modification_date %>
+</p>
+
+<p>
+  <b>LDS:</b>
+  <%= @freereg1_csv_file.lds %>
+</p>
+
+<p>
+  <b>Character set:</b>
+  <%= @freereg1_csv_file.characterset %>
+</p>
 
 <%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file) %> |
 <%= link_to 'Back', freereg1_csv_files_path %>

@@ -2,17 +2,28 @@
 
 <table>
   <tr>
-    <th>Dir name</th>
-    <th>File name</th>
-    <th>Transcriber email</th>
-    <th>Transcriber name</th>
-    <th>Transcriber syndicate</th>
-    <th>Transcription date</th>
+    <th>County</th>
+    <th>Place</th>
+    <th>Register</th>
+    <th>Register type</th>
     <th>Record type</th>
+    <th>Records</th>
+    <th>Min Year</th>
+    <th>Max Year</th>
+    <th>Date Range</th>
+    <th>UserID</th>
+    <th>File name</th>
+    <th>Transcriber name</th>
+    <th>Transcriber email</th>
+    <th>Transcriber syndicate</th>
     <th>Credit name</th>
     <th>Credit email</th>
     <th>First comment</th>
     <th>Second comment</th>
+    <th>Transcription date</th>
+    <th>Modification date</th>
+    <th>LDS</th>
+    <th>Character set</th>
     <th></th>
     <th></th>
     <th></th>
@@ -20,17 +31,28 @@
 
 <% @freereg1_csv_files.each do |freereg1_csv_file| %>
   <tr>
-    <td><%= freereg1_csv_file.dir_name %></td>
-    <td><%= freereg1_csv_file.file_name %></td>
-    <td><%= freereg1_csv_file.transcriber_email %></td>
-    <td><%= freereg1_csv_file.transcriber_name %></td>
-    <td><%= freereg1_csv_file.transcriber_syndicate %></td>
-    <td><%= freereg1_csv_file.transcription_date %></td>
+    <td><%= freereg1_csv_file.county %></td>
+    <td><%= freereg1_csv_file.place %></td>
+    <td><%= freereg1_csv_file.register %></td>
+    <td><%= freereg1_csv_file.register_type %></td>
     <td><%= freereg1_csv_file.record_type %></td>
+    <td><%= freereg1_csv_file.records %></td>
+    <td><%= freereg1_csv_file.datemin %></td>
+    <td><%= freereg1_csv_file.datemax %></td>
+    <td><%= freereg1_csv_file.daterange %></td>
+    <td><%= freereg1_csv_file.userid %></td>
+    <td><%= freereg1_csv_file.file_name %></td>
+    <td><%= freereg1_csv_file.transcriber_name %></td>
+    <td><%= freereg1_csv_file.transcriber_email %></td>
+    <td><%= freereg1_csv_file.transcriber_syndicate %></td>
     <td><%= freereg1_csv_file.credit_name %></td>
     <td><%= freereg1_csv_file.credit_email %></td>
     <td><%= freereg1_csv_file.first_comment %></td>
     <td><%= freereg1_csv_file.second_comment %></td>
+    <td><%= freereg1_csv_file.transcription_date %></td>
+    <td><%= freereg1_csv_file.modification_date %></td>
+    <td><%= freereg1_csv_file.lds %></td>
+    <td><%= freereg1_csv_file.characterset %></td>
     <td><%= link_to 'Show', freereg1_csv_file %></td>
     <td><%= link_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file) %></td>
     <td><%= link_to 'Destroy', freereg1_csv_file, confirm: 'Are you sure?', method: :delete %></td>
