@@ -8,11 +8,12 @@ class FreeregCsvProcessor
     print "I exist\n"
   end
 
-  def initialize(filename)
+  def initialize(filename,userid)
     # turn off domain checks -- some of these email accounts may no longer work and that's okay
     EmailVeracity::Config[:skip_lookup]=true
 
     # Instance variables
+    @userid = userid
     @charset = "iso-8859-1"
     @file = File.new(filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
     @filename = filename # BWB was filename.upcase but this breaks case-sensitive filesystems
@@ -22,7 +23,7 @@ class FreeregCsvProcessor
     @valyear = /\A\d{4,5}\z/
     @mon = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"]
     @type = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
-    @wild = /\A\*\z/
+    @wild = /[\*\_]/
     @valdate = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
     @datemin = 2020
     @datemax = 1530
@@ -31,7 +32,7 @@ class FreeregCsvProcessor
     @valtext = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
     @valsex = /\A[\sMmFf-]{1}\z/
     @valagewords = ["infant", "child", "minor", "of age","full age","of full age"]
-    @valagemax = {'d' => 30, 'w' => 30 , 'm' => 30 , 'y' => 150}
+    @valagemax = {'d' => 30, 'w' => 60 , 'm' => 60 , 'y' => 150}
     @valage1 = /\A\d{1,3}\z/
     @valage2 = /^(\d{1,2})([dwmy])/
     @valage3 =  /^(\d{1,2})([dwmy])(\d{1,2})([dwmy])/
@@ -54,6 +55,7 @@ class FreeregCsvProcessor
           'Spiinster' => 'Spinster',
           'Spinspter' => 'Spinster',
           'Maiden and Spinster' => 'Spinster',
+          'Maiden' => 'Spinster',
           'Single Woman and Spinster' => 'Spinster',
           'Minor and Spinster' => 'Spinster',
           'Spinster and Minor' => 'Spinster',
@@ -79,6 +81,7 @@ class FreeregCsvProcessor
           'Relict' => 'Widow',
           'Jun' => 'Minor',
           'A Minor' => 'Minor',
+          'Divorcee' => "Divorcee",
           'Juvenis' => 'Minor'}
 
     # TODO: merge this with chapman_code.rb in lib
@@ -206,11 +209,12 @@ class FreeregCsvProcessor
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1540
   def datestat(x)
+    return true if x.nil?
     xx = x.to_i
     @datemax = xx if xx > @datemax
     @datemin = xx if xx < @datemin
     xx = (xx-1530)/10 unless xx <= 1530
-    @datepop[xx] = @datepop[xx] + 1 unless xx < 0
+    @datepop[xx] = @datepop[xx] + 1 unless (xx < 0 || xx > 50)
   end
 
   #validate dates in the record and allow for the spli date format 1567/8 and 1567/68 creates a base year and a split year eg /8
@@ -218,49 +222,58 @@ class FreeregCsvProcessor
     @splityear = nil
     return true if x.nil?
     a = x.split(" ")
-    if a.length == 3
-      #work with  dd mmm yyyy/y
-      #firstly deal with the dd and allow the wild character
-      return false unless (a[0].to_s =~ @valday || a[0].to_s =~ @wild)
-      #deal with the month allowing for the wild character
-      return false unless @mon.include?(a[1].upcase)
-      #deal with the year and split year
-      if a[2].length >4
-        #deal with the split year
-        @splityear = a[2]
-        a[2]= a[2][0..-(a[2].length-3)]
-        @splityear = @splityear[-(@splityear.length-4)..-1]
-        datestat(a[2])
-      return true
+      if a.length == 3
+        #work with  dd mmm yyyy/y
+        #firstly deal with the dd and allow the wild character
+        return false unless (a[0].to_s =~ @valday || a[0].to_s =~ @wild)
+        #deal with the month allowing for the wild character
+        return false unless @mon.include?(a[1].upcase)
+          #deal with the year and split year
+          if a[2].length >4
+            #deal with the split year
+             @splityear = a[2]
+              a[2]= a[2][0..-(a[2].length-3)]
+              @splityear = @splityear[-(@splityear.length-4)..-1]
+              datestat(a[2]) 
+              return true
+          else
+              #deal with the yyyy and permit the wild character
+              return false  unless (a[2].to_s =~ @valyear || a[2].to_s =~ @wild)
+              datestat(a[2]) unless  a[2].to_s =~ @wild
+              return true
+          end
       else
-      #deal with the yyyy and permit the wild character
-        return false  unless (a[2].to_s =~ @valyear || a[2].to_s =~ @wild)
-        datestat(a[2])
-      return true
-      end
-    else
-      if a.length == 2
-        #deal with dates that are mmm yyyy firstly the mmm then the split year
-        return false unless @mon.include?(a[0].upcase)
-        if a[1].length >4
-          @splityear = a[1]
-          a[1]= a[1][0..-(a[1].length-3)]
-          @splityear = @splityear[-(@splityear.length-4)..-1]
-        return true
+        if a.length == 2
+          #deal with dates that are mmm yyyy firstly the mmm then the split year
+          return false unless @mon.include?(a[0].upcase)
+            if a[1].length >4
+              @splityear = a[1]
+              a[1]= a[1][0..-(a[1].length-3)]
+              @splityear = @splityear[-(@splityear.length-4)..-1]
+              datestat(a[1]) 
+              return true
+            else
+              return false  unless (a[1].to_s =~ @valyear || a[1].to_s =~ @wild)
+              datestat(a[1]) unless  a[1].to_s =~ @wild
+              return true
+            end
         else
-        return false  unless (a[1].to_s =~ @valyear || a[1].to_s =~ @wild)
-        return true
-        end
-      else
-        if a.length == 1
-        #deal with dates that are year only
-        return false unless (a[0].to_s =~ @valyear || a[0].to_s =~ @wild)
-        return true
-        else
-        return true
+          if a.length == 1
+          #deal with dates that are year only
+            if a[0].length >4
+              @splityear = a[0]
+              a[0]= a[0][0..-(a[0].length-3)]
+              @splityear = @splityear[-(@splityear.length-4)..-1]
+              datestat(a[0]) 
+              return true
+            else
+              return false  unless (a[0].to_s =~ @valyear || a[0].to_s =~ @wild)
+              datestat(a[0]) unless  a[0].to_s =~ @wild
+              return true
+            end
+          end        
         end
       end
-    end
   end
 
   # clean up names
@@ -343,15 +356,14 @@ class FreeregCsvProcessor
 
   #test for the character set
   def charvalid(m)
-    if (m == "iso-8859-1"  || m.nil? )
-      return true
-    else
-    #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-      m = "IBM437" if m == 'cp437'
-      m = "macRoman" if m == "macintosh"
-      if Encoding.find(m)
+   return true if (m == "iso-8859-1"  || m.nil? )
+     #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
+    mm = m.strip
+      mm = "IBM437" if (mm == "cp437")
+      mm = "macRoman" if (mm == "macintosh")
+      if Encoding.find(mm)
         #if we have valid new character set; use it and change the file encoding
-        @charset = m
+        @charset = Encoding.find(mm)
         @file.close
         @file = File.new(@filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
         #reposition the file
@@ -360,7 +372,6 @@ class FreeregCsvProcessor
       else
         return false
       end
-    end
   end
 
   #get a line of data
@@ -380,11 +391,11 @@ class FreeregCsvProcessor
     # BWB: temporarily commenting out to test db interface
    address = EmailVeracity::Address.new(@csvdata[1])
    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
-    head [:transcribers_email] = @csvdata[1]
+    head [:transcriber_email] = @csvdata[1]
     raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless @type.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     head [:record_type] = @csvdata [4].capitalize
     raise FreeREGError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
-    head [:characterset] =@csvdata[5]
+    head [:characterset] = @csvdata[5]
   end
 
   #process the header line 2
@@ -396,7 +407,7 @@ class FreeregCsvProcessor
     head [:transcriber_name] = @csvdata[2]
     raise FreeREGError, "The syndicate name #{@csvdata[3]} may not be blank in the second header line" if @csvdata[3].nil?
     raise FreeREGError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
-    head [:transcribers_syndicate] = @csvdata[3].downcase
+    head [:transcriber_syndicate] = @csvdata[3].downcase
     raise FreeREGError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
     raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless @csvdata[4].upcase == File.basename(@filename.upcase)
     aa = @csvdata[4].split(//).first(3).join
@@ -453,9 +464,10 @@ class FreeregCsvProcessor
     #need to add the code to create; using PR as the place holder
     data_record[:register_type] = "PR"
     # need to add the transcriberID
-    data_record[:line] = n.to_s + "." + File.basename(@filename.upcase)
+    data_record[:line] = n.to_s + "." + File.basename(@filename.upcase) + "." + @userid
     raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
     data_record[:register_entry_nuber] = @csvdata[3]
+
   end
 
   #process the baptism record columns
@@ -488,7 +500,7 @@ class FreeregCsvProcessor
     data_record[:notes] = @csvdata[14]
     data_record[:father_surname_soundex] = addsoundex(10)
     data_record[:mother_surname_soundex] = addsoundex(11)
-    data_record[:file] = @filename
+    data_record[:file] = File.basename(@filename.upcase)
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
@@ -572,7 +584,7 @@ class FreeregCsvProcessor
     data_record[:first_witness_surname_soundex] = "Z000" if (@csvdata[26].nil? ||  Text::Soundex.soundex(@csvdata[26]).nil?)
     data_record[:second_witness_surname_soundex] = Text::Soundex.soundex(@csvdata[28])
     data_record[:second_witness_surname_soundex] = "Z000" if (@csvdata[28].nil? ||  Text::Soundex.soundex(@csvdata[28]).nil?)
-    data_record[:file] = @filename
+    data_record[:file] = File.basename(@filename.upcase)
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
@@ -620,7 +632,6 @@ class FreeregCsvProcessor
       data_record[:film_number] = @csvdata[15]
     else
     end
-    data_record[:file] = @filename
   end
 
   def create_db_record_for_entry(data_record)
@@ -648,14 +659,29 @@ class FreeregCsvProcessor
   def self.process(filename)
     #this is the basic processing
     begin 
+     
+    standalone_filename = File.basename(filename)
+    # get the user ID represented by the containing directory
+    full_dirname = File.dirname(filename)
+    parent_dirname = File.dirname(full_dirname)
+    user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+    print "#{user_dirname}\t#{standalone_filename}\n"
+    # TODO convert character sets as in freereg_csv_processor
     #need to make these passed parameters 
 #      filename = "NFKGYAMA.CSV"
-      fileout =  filename.sub(File.extname(filename), '.out')
-      dataout = File.new(fileout, "wb")
+
+#     fileout =  "test_data/csvout/" + user_dirname + "/" + standalone_filename.sub(File.extname(standalone_filename), '.out')
+#     FileUtils.mkdir_p(File.dirname(fileout))
+     filewarn = "test_data/warning/messages.log"
+     FileUtils.mkdir_p(File.dirname(filewarn) )
+     mesout = File.new(filewarn, "a")
+          
+#    dataout = File.new(fileout, "wb")
       header = Hash.new
       data_record = Hash.new
-      header[:filename] = filename.upcase
-      me = FreeregCsvProcessor.new(filename)
+      header[:file_name] = standalone_filename.upcase
+      header[:userid] = user_dirname
+      me = FreeregCsvProcessor.new(filename,user_dirname)
     
     #deal with the headers
         me.getvalidline
@@ -682,7 +708,7 @@ class FreeregCsvProcessor
           me.datama(n,data_record,header) if type == 'MA'
           me.databu(n,data_record,header) if type == 'BU'
       #store the processed data   
-          dataout.puts data_record
+ #         dataout.puts data_record
           me.create_db_record_for_entry(data_record)
           n = n + 1
           me.getvalidline
@@ -691,16 +717,30 @@ class FreeregCsvProcessor
     #rescue the freereg data errors
     rescue FreeREGError => free
       puts free.message
+      mesout.puts free.message
+      mesout.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
     #rescue the end of file and close out the file
     rescue FreeREGEnd => free
       n = n-1
+
       header[:records] = n
+      header[:county] = data_record [:county]   
+      header[:place] = data_record [:place]
+      header[:register] = data_record [:register]
+      header[:register_type] = data_record[:register_type]
+
       puts " Processed #{n} lines" 
     # print the header and add it to the processed records
       puts header
-      dataout.puts header
-      dataout.close
-    end    
+    #  dataout.puts header
+    #  dataout.close
+    rescue Exception => e 
+       mesout.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
+       mesout.puts e.message  
+       mesout.puts e.backtrace.inspect  
+    end 
+
+
     me.create_or_update_db_record_for_file(header)
   end
 
