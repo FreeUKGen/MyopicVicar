@@ -61,6 +61,9 @@ class Upload
   key :working_dir, String
   key :originals_dir, String
   key :derivation_dir, String
+
+  key :files, String
+  key :downloaded, String
   
   module Status
     NEW="new"

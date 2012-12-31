@@ -58,8 +58,12 @@ class S3bucket
     File.join(TMP_DIR_PREFIX, self.name, dir)
   end
   
-  def flush_to_slash_tmp(dir) 
+  def flush_to_slash_tmp(dir, upload_id) 
+    ul = Upload.find(upload_id)
     files = ls(dir)
+    puts "files is: #{files.count}"
+    ul.files = files.count
+    ul.save
     files.each do |s3_file|
       FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
       File.open(key_to_file(s3_file.key), 'wb+') do |local_file|

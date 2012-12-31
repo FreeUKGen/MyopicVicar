@@ -46,6 +46,8 @@ ActiveAdmin.register Upload do
       row :status
       row :working_dir
       row :created_at
+      row :files
+      row :downloaded
     end
 
     h3 "Logs"
