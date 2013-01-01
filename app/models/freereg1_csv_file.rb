@@ -17,9 +17,9 @@ class Freereg1CsvFile
   many :freereg1_csv_entry
 
   # Fields correspond to cells in CSV headers  
-  key :county, String
-  key :place, String
-  key :register, String
+  key :county, String 
+  key :place, String 
+  key :register, String 
   key :register_type, String
   key :record_type, String
   key :records, String

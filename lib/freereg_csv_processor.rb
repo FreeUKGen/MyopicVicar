@@ -1,8 +1,10 @@
 class FreeregCsvProcessor
+#coding: utf-8
 
   require "csv"
   require 'email_veracity'
   require 'text'
+  require "unicode"
 
   def self.prove_you_exist
     print "I exist\n"
@@ -25,6 +27,7 @@ class FreeregCsvProcessor
     @type = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
     @wild = /[\*\_]/
     @valdate = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
+    @valccc = /\AC{3,5}\z/
     @datemin = 2020
     @datemax = 1530
     @datepop = Array.new(50){|i| i * 0 }
@@ -81,8 +84,24 @@ class FreeregCsvProcessor
           'Relict' => 'Widow',
           'Jun' => 'Minor',
           'A Minor' => 'Minor',
+          '*' => '*',
+          '?' => '*',
           'Divorcee' => "Divorcee",
           'Juvenis' => 'Minor'}
+
+    @word_expansions =  {
+            'Saint' => 'St.',
+            'St' => 'St.',
+            'Gt' => 'Great',
+            'Gt.' => 'Great',
+            'Lt' => 'Little',
+            'Lt.' => 'Little',
+            '&' => "and",
+            'nr' => 'near'}
+
+    @capital_exceptions = [
+     "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
+     "the", "to", "von", "with", "yet"]
 
     # TODO: merge this with chapman_code.rb in lib
     @@chapman = {
@@ -220,14 +239,16 @@ class FreeregCsvProcessor
   #validate dates in the record and allow for the spli date format 1567/8 and 1567/68 creates a base year and a split year eg /8
   def datevalsplit(x)
     @splityear = nil
+
     return true if x.nil?
+    return true if x =~ /\A\s\z/
     a = x.split(" ")
       if a.length == 3
         #work with  dd mmm yyyy/y
         #firstly deal with the dd and allow the wild character
         return false unless (a[0].to_s =~ @valday || a[0].to_s =~ @wild)
         #deal with the month allowing for the wild character
-        return false unless @mon.include?(a[1].upcase)
+        return false unless @mon.include?(Unicode::upcase(a[1]))
           #deal with the year and split year
           if a[2].length >4
             #deal with the split year
@@ -245,7 +266,7 @@ class FreeregCsvProcessor
       else
         if a.length == 2
           #deal with dates that are mmm yyyy firstly the mmm then the split year
-          return false unless @mon.include?(a[0].upcase)
+          return false unless @mon.include?(Unicode::upcase(a[0]))
             if a[1].length >4
               @splityear = a[1]
               a[1]= a[1][0..-(a[1].length-3)]
@@ -264,7 +285,7 @@ class FreeregCsvProcessor
               @splityear = a[0]
               a[0]= a[0][0..-(a[0].length-3)]
               @splityear = @splityear[-(@splityear.length-4)..-1]
-              datestat(a[0]) 
+              datestat(a[0]) unless  a[0].to_s =~ @wild
               return true
             else
               return false  unless (a[0].to_s =~ @valyear || a[0].to_s =~ @wild)
@@ -317,7 +338,7 @@ class FreeregCsvProcessor
     return true if @csvdata[m].nil?
     @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
     #test for valid words
-    return true if @valagewords.include?(@csvdata[m].downcase)
+    return true if @valagewords.include?(Unicode::downcase(@csvdata[m]))
     #test for straight years
     if @csvdata[m] =~ @valage1
       return true
@@ -374,6 +395,30 @@ class FreeregCsvProcessor
       end
   end
 
+  def validregister(m)
+    return true if m.nil? 
+    m = m.gsub(/\s+/, ' ').strip
+    a = m.split(" ")
+    n = a.length
+    a[-1] = a[-1].gsub(/\(?\)?/, '')
+    register_words = a
+    @register_type = nil
+      if a[-1] =~ (/\A[AaBbEeTtPp][TtXxRr]'?[Ss]?*$\z/) then
+       a[-1] = a[-1].gsub(/'?[Ss]?/, '') 
+       @register_type = Unicode::upcase(a[-1])
+       n = n - 1
+      end
+       i = 0
+        while i < n do
+          register_words[i] = @word_expansions[register_words[i]] if @word_expansions.has_key?(register_words[i])
+          register_words[i] = Unicode::downcase(register_words[i]) unless i == 0
+          register_words[i] = Unicode::capitalize(register_words[i]) unless @capital_exceptions.include?(register_words[i])
+          i = i + 1 
+        end
+      @register = register_words.shift(n).join(' ')
+      return true
+  end
+
   #get a line of data
   def getvalidline
     line = @file.gets
@@ -393,7 +438,7 @@ class FreeregCsvProcessor
    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcriber_email] = @csvdata[1]
     raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless @type.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
-    head [:record_type] = @csvdata [4].capitalize
+    head [:record_type] = Unicode::upcase(@csvdata [4])
     raise FreeREGError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
     head [:characterset] = @csvdata[5]
   end
@@ -401,21 +446,20 @@ class FreeregCsvProcessor
   #process the header line 2
   # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
   def headertwo (head)
-    raise FreeREGError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && @csvdata[1] == "CCC")
+    raise FreeREGError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ @valccc))
     raise FreeREGError, "The transcriber's name may not be blank in the second header line it contains #{@csvdata[2]}" if @csvdata[2].nil?
     raise FreeREGError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_name] = @csvdata[2]
     raise FreeREGError, "The syndicate name #{@csvdata[3]} may not be blank in the second header line" if @csvdata[3].nil?
     raise FreeREGError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
-    head [:transcriber_syndicate] = @csvdata[3].downcase
+    head [:transcriber_syndicate] = @csvdata[3]
     raise FreeREGError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
-    raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless @csvdata[4].upcase == File.basename(@filename.upcase)
+    raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless Unicode::upcase(@csvdata[4]) == File.basename(@filename.upcase)
     aa = @csvdata[4].split(//).first(3).join
     raise FreeREGError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless @@chapman.has_value?(aa)
     aa = @csvdata[4].split(//)
     aaa = aa[6].to_s + aa[7].to_s
-    raise FreeREGError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless @type.include?(aaa.upcase)
-    head[:record_type] = aaa
+    raise FreeREGError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless @type.include?(Unicode::upcase(aaa))
     raise FreeREGError, "The date of the transcription #{@csvdata[5]} is in the wrong format" unless datevalmod(@csvdata[5])
     head [:transcription_date] = @csvdata[5]
   end
@@ -423,7 +467,7 @@ class FreeregCsvProcessor
   #process the header line 3
   # eg #,Credit,Libby,email address,,,,,,
   def headerthree(head)
-    raise FreeREGError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && @csvdata[1].upcase == "CREDIT")
+#   raise FreeREGError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && (@csvdata[1] == "CREDIT" || @csvdata[1] == "credit" ))
     raise FreeREGError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
     # # suppressing for the moment
@@ -458,11 +502,12 @@ class FreeregCsvProcessor
     raise FreeREGError, "The county code #{ @csvdata[0]} in the file name is invalid " unless @@chapman.has_value?(@csvdata[0])
     data_record[:county] = @csvdata[0]
     # do we validate the Place field?
-    data_record[:place] = @csvdata[1]
-    # do we validate the register field and do we strip the register type AT; ET
-    data_record[:register] = @csvdata[2]
-    #need to add the code to create; using PR as the place holder
-    data_record[:register_type] = "PR"
+    raise FreeREGError, "Place field #{@csvdata[1]} in line #{n} contains non numeric characters" unless validregister(@csvdata[1])
+    data_record[:place] = @register
+    # do we validate the register field 
+    raise FreeREGError, "Register field #{@csvdata[2]} in line #{n} contains non numeric characters" unless validregister(@csvdata[2])
+    data_record[:register] = @register
+    data_record[:register_type] = @register_type
     # need to add the transcriberID
     data_record[:line] = n.to_s + "." + File.basename(@filename.upcase) + "." + @userid
     raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
@@ -487,10 +532,10 @@ class FreeregCsvProcessor
     raise FreeREGError, "The mother's forename #{@csvdata[9]} contains invalid characters in line #{n}" unless cleanname(9)
     data_record[:mother_forename] = @csvdata[9]
     raise FreeREGError, "The father's surname #{@csvdata[10]} contains invalid characters in line #{n}" unless cleanname(10)
-    data_record[:father_surname] = @csvdata[10].upcase unless @csvdata[10].nil?
+    data_record[:father_surname] = Unicode::upcase(@csvdata[10]) unless @csvdata[10].nil?
     data_record[:father_surname] = @csvdata[10]  if @csvdata[10].nil?
     raise FreeREGError, "The mother's surname #{@csvdata[11]} contains invalid characters in line #{n}" unless cleanname(11)
-    data_record[:mother_surname] = @csvdata[11].upcase unless @csvdata[11].nil?
+    data_record[:mother_surname] = Unicode::upcase(@csvdata[11]) unless @csvdata[11].nil?
     data_record[:mother_surname] = @csvdata[11]  if @csvdata[11].nil?
     raise FreeREGError, "The abode #{@csvdata[12]} contains invalid characters in line #{n}" unless cleantext(12)
     data_record[:person_abode] = @csvdata[12]
@@ -500,7 +545,6 @@ class FreeregCsvProcessor
     data_record[:notes] = @csvdata[14]
     data_record[:father_surname_soundex] = addsoundex(10)
     data_record[:mother_surname_soundex] = addsoundex(11)
-    data_record[:file] = File.basename(@filename.upcase)
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
@@ -519,7 +563,7 @@ class FreeregCsvProcessor
     raise FreeREGError, "The groom's forename #{@csvdata[5]} contains invalid characters in line #{n}" unless cleanname(5)
     data_record[:groom_forename] = @csvdata[5]
     raise FreeREGError, "The groom's surname #{@csvdata[6]} contains invalid characters in line #{n}" unless cleanname(6)
-    data_record[:groom_surname] = @csvdata[6].upcase unless @csvdata[6].nil?
+    data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
     data_record[:groom_surname] = @csvdata[6] if @csvdata[6].nil?
     raise FreeREGError, "The groom's age #{@csvdata[7]} contains invalid characters in line #{n}" unless cleanage(7)
     data_record[:groom_age] = @csvdata[7]
@@ -534,7 +578,7 @@ class FreeregCsvProcessor
     raise FreeREGError, "The bride's forename #{@csvdata[12]} contains invalid characters in line #{n}" unless cleanname(12)
     data_record[:bride_forename] = @csvdata[12]
     raise FreeREGError, "The bride's surname #{@csvdata[13]} contains invalid characters in line #{n}" unless cleanname(13)
-    data_record[:bride_surname] = @csvdata[13].upcase unless @csvdata[13].nil?
+    data_record[:bride_surname] = Unicode::upcase(@csvdata[13]) unless @csvdata[13].nil?
     data_record[:bride_surname] = @csvdata[13] if @csvdata[13].nil?
     raise FreeREGError, "The bride's age #{@csvdata[14]} contains invalid characters in line #{n}" unless cleanage(14)
     data_record[:bride_age] = @csvdata[14]
@@ -549,26 +593,26 @@ class FreeregCsvProcessor
     raise FreeREGError, "The groom's fathers forename #{@csvdata[19]} contains invalid characters in line #{n}" unless cleanname(19)
     data_record[:groom_father_forename] = @csvdata[19]
     raise FreeREGError, "The groom's fathers surname #{@csvdata[20]} contains invalid characters in line #{n}" unless cleanname(20)
-    data_record[:groom_father_surname] = @csvdata[20].upcase unless @csvdata[20].nil?
+    data_record[:groom_father_surname] = Unicode::upcase(@csvdata[20]) unless @csvdata[20].nil?
     data_record[:groom_father_surname] = @csvdata[20] if @csvdata[20].nil?
     raise FreeREGError, "The groom's father's occupation #{@csvdata[21]} contains invalid characters in line #{n}" unless cleantext(21)
     data_record[:groom_father_occupation] = @csvdata[21]
     raise FreeREGError, "The bride's fathers forename #{@csvdata[22]} contains invalid characters in line #{n}" unless cleanname(22)
     data_record[:bride_father_forename] = @csvdata[22]
     raise FreeREGError, "The bride's fathers surname #{@csvdata[23]} contains invalid characters in line #{n}" unless cleanname(23)
-    data_record[:bride_father_surname] = @csvdata[23].upcase unless @csvdata[23].nil?
+    data_record[:bride_father_surname] = Unicode::upcase(@csvdata[23]) unless @csvdata[23].nil?
     data_record[:bride_father_surname] = @csvdata[23] if @csvdata[23].nil?
     raise FreeREGError, "The bride's father's occupation #{@csvdata[24]} contains invalid characters in line #{n}" unless cleantext(24)
     data_record[:bride_father_occupation] = @csvdata[24]
     raise FreeREGError, "The first witness forename #{@csvdata[25]} contains invalid characters in line #{n}" unless cleanname(25)
     data_record[:witness1_forename] = @csvdata[25]
     raise FreeREGError, "The first witness's surname #{@csvdata[26]} contains invalid characters in line #{n}" unless cleanname(26)
-    data_record[:witness1_surname] = @csvdata[26].upcase unless @csvdata[26].nil?
+    data_record[:witness1_surname] = Unicode::upcase(@csvdata[26]) unless @csvdata[26].nil?
     data_record[:witness1_surname] = @csvdata[26] if @csvdata[26].nil?
     raise FreeREGError, "The second witness forename #{@csvdata[27]} contains invalid characters in line #{n}" unless cleanname(27)
     data_record[:witness2_forename] = @csvdata[27]
     raise FreeREGError, "The second witness's surname #{@csvdata[28]} contains invalid characters in line #{n}" unless cleanname(28)
-    data_record[:witness2_surname] = @csvdata[28].upcase unless @csvdata[28].nil?
+    data_record[:witness2_surname] = Unicode::upcase(@csvdata[28]) unless @csvdata[28].nil?
     data_record[:witness2_surname] = @csvdata[28] if @csvdata[28].nil?
     raise FreeREGError, "The notes #{@csvdata[29]} contains invalid characters in line #{n}" unless cleantext(29)
     data_record[:notes] = @csvdata[29]
@@ -584,7 +628,6 @@ class FreeregCsvProcessor
     data_record[:first_witness_surname_soundex] = "Z000" if (@csvdata[26].nil? ||  Text::Soundex.soundex(@csvdata[26]).nil?)
     data_record[:second_witness_surname_soundex] = Text::Soundex.soundex(@csvdata[28])
     data_record[:second_witness_surname_soundex] = "Z000" if (@csvdata[28].nil? ||  Text::Soundex.soundex(@csvdata[28]).nil?)
-    data_record[:file] = File.basename(@filename.upcase)
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
@@ -609,10 +652,10 @@ class FreeregCsvProcessor
     raise FreeREGError, "The female relative's forename #{@csvdata[8]} contains invalid characters in line #{n}" unless cleanname(8)
     data_record[:female_relative_forename] = @csvdata[8]
     raise FreeREGError, "The relative's surname #{@csvdata[9]} contains invalid characters in line #{n}" unless cleanname(9)
-    data_record[:relative_surname] = @csvdata[9].upcase unless @csvdata[9].nil?
+    data_record[:relative_surname] = Unicode::upcase(@csvdata[9]) unless @csvdata[9].nil?
     data_record[:relative_surname] = @csvdata[9] if @csvdata[9].nil?
     raise FreeREGError, "The person's surname #{@csvdata[10]} contains invalid characters in line #{n}" unless cleanname(10)
-    data_record[:burial_person_surname] = @csvdata[10].upcase  unless @csvdata[10].nil?
+    data_record[:burial_person_surname] = Unicode::upcase(@csvdata[10])  unless @csvdata[10].nil?
     data_record[:burial_person_surname] = @csvdata[10]  if @csvdata[10].nil?
     raise FreeREGError, "The person's age #{@csvdata[11]} contains invalid characters in line #{n}" unless cleanage(11)
     data_record[:person_age] = @csvdata[11]
@@ -704,9 +747,9 @@ class FreeregCsvProcessor
     #keep going until we run out of data    
         loop do
           me.datalocation(n,data_record)
-          me.databa(n,data_record,header) if type == 'BA'
-          me.datama(n,data_record,header) if type == 'MA'
-          me.databu(n,data_record,header) if type == 'BU'
+          me.databa(n,data_record,header) if type == 'BAPTISMS'
+          me.datama(n,data_record,header) if type == 'MARRIAGES'
+          me.databu(n,data_record,header) if type == 'BURIALS'
       #store the processed data   
  #         dataout.puts data_record
           me.create_db_record_for_entry(data_record)
@@ -734,6 +777,7 @@ class FreeregCsvProcessor
       puts header
     #  dataout.puts header
     #  dataout.close
+    me.create_or_update_db_record_for_file(header)
     rescue Exception => e 
        mesout.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
        mesout.puts e.message  
@@ -741,7 +785,7 @@ class FreeregCsvProcessor
     end 
 
 
-    me.create_or_update_db_record_for_file(header)
+    
   end
 
 
