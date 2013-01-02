@@ -63,7 +63,7 @@ class Upload
   key :derivation_dir, String
 
   key :files, String
-  key :downloaded, String
+  key :downloaded, Integer
   
   module Status
     NEW="new"
