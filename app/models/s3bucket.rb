@@ -65,7 +65,6 @@ class S3bucket
     ul.files = files.count
     ul.downloaded = 0
     ul.save(:validate => false)
-    puts "ul is: #{ul}"
     files.each do |s3_file|
       # counter
       ul.downloaded=ul.downloaded+1
