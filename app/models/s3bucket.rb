@@ -61,7 +61,7 @@ class S3bucket
   def flush_to_slash_tmp(dir, upload_id) 
     ul = Upload.find(upload_id)
     files = ls(dir)
-    puts "files is: #{files.count}"
+    puts "number of files #{files.count}"
     ul.files = files.count
     ul.downloaded = 0
     ul.save(:validate => false)
@@ -70,6 +70,7 @@ class S3bucket
       # counter
       ul.downloaded=ul.downloaded+1
       ul.save(:validate => false)
+      # end counter
       FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
       File.open(key_to_file(s3_file.key), 'wb+') do |local_file|
         local_file.write(s3_file.body)
