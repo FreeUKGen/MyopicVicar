@@ -8,6 +8,6 @@ namespace :s3bucket do
     ul = Upload.find(upload_id)
     ul.status = "new"
     ul.save
-    puts "Task create_and_import complete."
+    puts "Successfully imported data."
   end
 end
