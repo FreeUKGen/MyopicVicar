@@ -64,7 +64,7 @@ class S3bucket
     files = ls(dir)
     fcount(ul, files)
     files.each do |s3_file|
-      dlcounter(ul)
+      dlcount(ul)
       FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
       File.open(key_to_file(s3_file.key), 'wb+') do |local_file|
         local_file.write(s3_file.body)
@@ -72,7 +72,7 @@ class S3bucket
     end
   end
 
-  def dlcounter(ul)
+  def dlcount(ul)
     ul.downloaded=ul.downloaded+1
     ul.save(:validate => false)
   end
