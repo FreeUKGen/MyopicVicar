@@ -44,13 +44,9 @@ ActiveAdmin.register S3bucket do
 
   
   member_action :import, :method => :post  do    
-    # create the upload with importing status.
     u = Upload.create(:name => params[:dir], :upload_path => "/tmp/myopicvicar/fbmd-images/#{params[:dir]}", :status => "importing")
     u.save(:validate => false)
-
-    # create the dirs and pull the data.
-    system "rake create_and_import S3_BUCKET_ID=#{params[:id]} DIR_NAME=#{params[:dir]} UPLOAD_ID=#{u.id} &"
-
+    system "rake s3bucket:import S3_BUCKET_ID=#{params[:id]} DIR_NAME=#{params[:dir]} UPLOAD_ID=#{u.id} &"
     redirect_to admin_uploads_path
   end
 
