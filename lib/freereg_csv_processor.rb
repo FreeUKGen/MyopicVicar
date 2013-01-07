@@ -5,42 +5,41 @@ class FreeregCsvProcessor
   require 'email_veracity'
   require 'text'
   require "unicode"
+  require 'chapman_code'
 
-  def self.prove_you_exist
-    print "I exist\n"
-  end
-
-  def initialize(filename,userid)
-    # turn off domain checks -- some of these email accounts may no longer work and that's okay
-    EmailVeracity::Config[:skip_lookup]=true
-
-    # Instance variables
-    @userid = userid
-    @charset = "iso-8859-1"
-    @file = File.new(filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
-    @filename = filename # BWB was filename.upcase but this breaks case-sensitive filesystems
-    @char = /[^a-zA-Z\d\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#]/
-    @csvdata = Array.new
-    @valday = /\A\d{1,2}\z/
-    @valyear = /\A\d{4,5}\z/
-    @mon = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"]
-    @type = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
-    @wild = /[\*\_]/
-    @valdate = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
-    @valccc = /\AC{3,5}\z/
-    @datemin = 2020
-    @datemax = 1530
-    @datepop = Array.new(50){|i| i * 0 }
-    @valname = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
-    @valtext = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
-    @valsex = /\A[\sMmFf-]{1}\z/
-    @valagewords = ["infant", "child", "minor", "of age","full age","of full age"]
-    @valagemax = {'d' => 30, 'w' => 60 , 'm' => 60 , 'y' => 150}
-    @valage1 = /\A\d{1,3}\z/
-    @valage2 = /^(\d{1,2})([dwmy])/
-    @valage3 =  /^(\d{1,2})([dwmy])(\d{1,2})([dwmy])/
-    @valage4 = /\A [[:xdigit:]] \z/
-    @valcondition = {'Singleman' => 'Single Man',
+  
+  VALID_AGE_MAXIMUM = {'d' => 60, 'w' => 60 , 'm' => 60 , 'y' => 150}
+  VALID_AGE_TYPE1 = /\A\d{1,3}\z/
+  VALID_AGE_TYPE2 = /^(\d{1,2})([dwmy])/
+  VALID_AGE_TYPE3 =  /^(\d{1,2})([dwmy])(\d{1,2})([dwmy])/
+  VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
+  VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age"]
+  VALID_CHAR = /[^a-zA-Z\d\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#]/
+  VALID_DAY = /\A\d{1,2}\z/
+  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"]
+  VALID_YEAR = /\A\d{4,5}\z/
+  VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
+  VALID_DATE = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
+  VALID_CCC_CODE = /\AC{3,5}\z/
+  VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
+  VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
+  VALID_SEX = /\A[\sMmFf-]{1}\z/
+  VALID_REGISTER_TYPES = /\A[AaBbEeTtPp][TtXxRr]'?[Ss]?*$\z/
+  WILD_CHARACTER = /[\*\_]/
+  WORD_EXPANSIONS =  {
+            'Saint' => 'St.',
+            'St' => 'St.',
+            'Gt' => 'Great',
+            'Gt.' => 'Great',
+            'Lt' => 'Little',
+            'Lt.' => 'Little',
+            '&' => "and",
+            'nr' => 'near'}
+  CAPITALIZATION_WORD_EXCEPTIONS = [
+            "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
+            "the", "to", "von", "with", "yet"]
+  VALID_MARRIAGE_CONDITIONS = {
+          'Singleman' => 'Single Man',
           'Singlaman' => 'Single Man',
           'Singlewoman' => 'Single Woman',
           'Singl Woman' => 'Single Woman',
@@ -89,151 +88,43 @@ class FreeregCsvProcessor
           'Divorcee' => "Divorcee",
           'Juvenis' => 'Minor'}
 
-    @word_expansions =  {
-            'Saint' => 'St.',
-            'St' => 'St.',
-            'Gt' => 'Great',
-            'Gt.' => 'Great',
-            'Lt' => 'Little',
-            'Lt.' => 'Little',
-            '&' => "and",
-            'nr' => 'near'}
 
-    @capital_exceptions = [
-     "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
-     "the", "to", "von", "with", "yet"]
 
-    # TODO: merge this with chapman_code.rb in lib
-    @@chapman = {
-      'Bedfordshire' => 'BDF',
-      'Berkshire' => 'BRK',
-      'Buckinghamshire' => 'BKM',
-      'Cambridgeshire' => 'CAM',
-      'Cheshire' => 'CHS',
-      'Cornwall' => 'CON',
-      'Cumberland' => 'CUL',
-      'Derbyshire' => 'DBY',
-      'Devonshire' => 'DEV',
-      'Dorset' => 'DOR',
-      'Durham' => 'DUR',
-      'Essex' => 'ESS',
-      'Gloucestershire' => 'GLS',
-      'Hampshire' => 'HAM',
-      'Herefordshire' => 'HEF',
-      'Hertfordshire' => 'HRT',
-      'Huntingdonshire' => 'HUN',
-      'Isle of Wight' => 'IOW',
-      'Kent' => 'KEN',
-      'Lancashire' => 'LAN',
-      'Leicestershire' => 'LEI',
-      'Lincolnshire' => 'LIN',
-      'London' => 'LND',
-      'Middlesex' => 'MDX',
-      'Norfolk' => 'NFK',
-      'Northamptonshire' => 'NTH',
-      'Northumberland' => 'NBL',
-      'Nottinghamshire' => 'NTT',
-      'Oxfordshire' => 'OXF',
-      'Rutland' => 'RUT',
-      'Shropshire' => 'SAL',
-      'Somerset' => 'SOM',
-      'Staffordshire' => 'STS',
-      'Suffolk' => 'SFK',
-      'Surrey' => 'SRY',
-      'Sussex' => 'SSX',
-      'Warwickshire' => 'WAR',
-      'Westmorland' => 'WES',
-      'Wiltshire' => 'WIL',
-      'Worcestershire' => 'WOR',
-      'Yorkshire' => 'YKS',
-      'Yorkshire East Riding' => 'ERY',
-      'Yorkshire North Riding' => 'NRY',
-      'Yorkshire West Riding' => 'WRY',
-      'Aberdeenshire' => 'ABD',
-      'Angus' => 'ANS',
-      'Argyllshire' => 'ARL',
-      'Ayrshire' => 'AYR',
-      'Banffshire' => 'BAN',
-      'Berwickshire' => 'BEW',
-      'Bute' => 'BUT',
-      'Caithness' => 'CAI',
-      'Clackmannanshire' => 'CLK',
-      'Dumfriesshire' => 'DFS',
-      'Dunbartonshire' => 'DNB',
-      'East Lothian' => 'ELN',
-      'Fife' => 'FIF',
-      'Angus' => 'ANS',
-      'Inverness-shire' => 'INV',
-      'Kincardineshire' => 'KCD',
-      'Kinross-shire' => 'KRS',
-      'Kirkcudbrightshire' => 'KKD',
-      'Lanarkshire' => 'LKS',
-      'Midlothian' => 'MLN',
-      'Moray' => 'MOR',
-      'Nairnshire' => 'NAI',
-      'Orkney' => 'OKI',
-      'Peeblesshire' => 'PEE',
-      'Perthshire' => 'PER',
-      'Renfrewshire' => 'RFW',
-      'Ross and Cromarty' => 'ROC',
-      'Roxburghshire' => 'ROX',
-      'Selkirkshire' => 'SEL',
-      'Shetland' => 'SHI',
-      'Stirlingshire' => 'STI',
-      'Sutherland' => 'SUT',
-      'West Lothian' => 'WLN',
-      'Wigtownshire' => 'WIG',
-      'Borders' => 'BOR',
-      'Central' => 'CEN',
-      'Dumfries and Galloway' => 'DGY',
-      'Fife' => 'FIF',
-      'Grampian' => 'GMP',
-      'Highland' => 'HLD',
-      'Lothian' => 'LTN',
-      'Orkney Isles' => 'OKI',
-      'Shetland Isles' => 'SHI',
-      'Strathclyde' => 'STD',
-      'Tayside' => 'TAY',
-      'Western Isles' => 'WIS',
-      'Anglesey' => 'AGY',
-      'Brecknockshire' => 'BRE',
-      'Caernarfonshire' => 'CAE',
-      'Cardiganshire' => 'CGN',
-      'Carmarthenshire' => 'CMN',
-      'Denbighshire' => 'DEN',
-      'Flintshire' => 'FLN',
-      'Glamorgan' => 'GLA',
-      'Merionethshire' => 'MER',
-      'Monmouthshire' => 'MON',
-      'Montgomeryshire' => 'MGY',
-      'Pembrokeshire' => 'PEM',
-      'Radnorshire' => 'RAD',
-      'Clwyd' => 'CWD',
-      'Dyfed' => 'DFD',
-      'Gwent' => 'GNT',
-      'Gwynedd' => 'GWN',
-      'Mid Glamorgan' => 'MGM',
-      'Powys' => 'POW',
-      'South Glamorgan' => 'SGM',
-      'West Glamorgan' => 'WGM'
-    }
+
+  def self.prove_you_exist
+    print "I exist\n"
+  end
+
+  def initialize(filename,userid)
+    # turn off domain checks -- some of these email accounts may no longer work and that's okay
+    EmailVeracity::Config[:skip_lookup]=true
+
+    @userid = userid
+    @charset = "iso-8859-1"
+    @file = File.new(filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
+    @filename = filename # BWB was filename.upcase but this breaks case-sensitive filesystems
+    @csvdata = Array.new
+    @datemin = 2020
+    @datemax = 1530
+    @datepop = Array.new(50){|i| i * 0 }
+
   end
 
   # validate the modern date of creation or modification
   def datevalmod(x)
     return true if x.nil?
-    return true if x =~ @valdate
+    return true if x =~ VALID_DATE
     return false
   end
 
-  #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1540
+  #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
   def datestat(x)
     return true if x.nil?
-    xx = x.to_i
-    @datemax = xx if xx > @datemax
-    @datemin = xx if xx < @datemin
-    xx = (xx-1530)/10 unless xx <= 1530
-    @datepop[xx] = @datepop[xx] + 1 unless (xx < 0 || xx > 50)
+      xx = x.to_i
+      @datemax = xx if xx > @datemax
+      @datemin = xx if xx < @datemin
+      xx = (xx-1530)/10 unless xx <= 1530 # avoid division into zero
+      @datepop[xx] = @datepop[xx] + 1 unless (xx < 0 || xx > 50) #avoid going outside the data range array
   end
 
   #validate dates in the record and allow for the spli date format 1567/8 and 1567/68 creates a base year and a split year eg /8
@@ -246,9 +137,9 @@ class FreeregCsvProcessor
       if a.length == 3
         #work with  dd mmm yyyy/y
         #firstly deal with the dd and allow the wild character
-        return false unless (a[0].to_s =~ @valday || a[0].to_s =~ @wild)
+        return false unless (a[0].to_s =~ VALID_DAY || a[0].to_s =~ WILD_CHARACTER)
         #deal with the month allowing for the wild character
-        return false unless @mon.include?(Unicode::upcase(a[1]))
+        return false unless VALID_MONTH.include?(Unicode::upcase(a[1]))
           #deal with the year and split year
           if a[2].length >4
             #deal with the split year
@@ -259,14 +150,14 @@ class FreeregCsvProcessor
               return true
           else
               #deal with the yyyy and permit the wild character
-              return false  unless (a[2].to_s =~ @valyear || a[2].to_s =~ @wild)
-              datestat(a[2]) unless  a[2].to_s =~ @wild
+              return false  unless (a[2].to_s =~ VALID_YEAR || a[2].to_s =~ WILD_CHARACTER)
+              datestat(a[2]) unless  a[2].to_s =~ WILD_CHARACTER
               return true
           end
       else
         if a.length == 2
           #deal with dates that are mmm yyyy firstly the mmm then the split year
-          return false unless @mon.include?(Unicode::upcase(a[0]))
+          return false unless VALID_MONTH.include?(Unicode::upcase(a[0]))
             if a[1].length >4
               @splityear = a[1]
               a[1]= a[1][0..-(a[1].length-3)]
@@ -274,8 +165,8 @@ class FreeregCsvProcessor
               datestat(a[1]) 
               return true
             else
-              return false  unless (a[1].to_s =~ @valyear || a[1].to_s =~ @wild)
-              datestat(a[1]) unless  a[1].to_s =~ @wild
+              return false  unless (a[1].to_s =~ VALID_YEAR || a[1].to_s =~ WILD_CHARACTER)
+              datestat(a[1]) unless  a[1].to_s =~ WILD_CHARACTER
               return true
             end
         else
@@ -285,11 +176,11 @@ class FreeregCsvProcessor
               @splityear = a[0]
               a[0]= a[0][0..-(a[0].length-3)]
               @splityear = @splityear[-(@splityear.length-4)..-1]
-              datestat(a[0]) unless  a[0].to_s =~ @wild
+              datestat(a[0]) unless  a[0].to_s =~ WILD_CHARACTER
               return true
             else
-              return false  unless (a[0].to_s =~ @valyear || a[0].to_s =~ @wild)
-              datestat(a[0]) unless  a[0].to_s =~ @wild
+              return false  unless (a[0].to_s =~ VALID_YEAR || a[0].to_s =~ WILD_CHARACTER)
+              datestat(a[0]) unless  a[0].to_s =~ WILD_CHARACTER
               return true
             end
           end        
@@ -300,34 +191,34 @@ class FreeregCsvProcessor
   # clean up names
   def cleanname(m)
     return true if @csvdata[m].nil?
-    @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
-    return true if @csvdata[m] !=~ @valname
-    return false
+      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
+      return true if @csvdata[m] !=~ VALID_NAME
+      return false
   end
 
   #clean up the sex field
   def cleansex(m)
     return true if @csvdata[m].nil?
-    @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
-    return true if @csvdata[m] =~ @valsex
-    return false
+      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
+      return true if @csvdata[m] =~ VALID_SEX
+      return false
   end
 
   #clean up a text field eg abode and notes fields
   def cleantext(m)
     return true if @csvdata[m].nil?
-    @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
-    return true if @csvdata[m] !=~ @valtext
-    return false
+      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
+      return true if @csvdata[m] !=~ VALID_TEXT
+      return false
   end
 
   # clean u the conditions field and make changes according to the valconditions hash
   def cleancondition(m)
     return true if @csvdata[m].nil? || @csvdata[m].to_s =~ /\s/
-    @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip.capitalize
-    @csvdata[m] = @valcondition[@csvdata[m]] if @valcondition.has_key?(@csvdata[m])
-    return true if @valcondition.has_value?(@csvdata[m])
-    return false
+      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip.capitalize
+      @csvdata[m] = VALID_MARRIAGE_CONDITIONS[@csvdata[m]] if VALID_MARRIAGE_CONDITIONS.has_key?(@csvdata[m])
+      return true if VALID_MARRIAGE_CONDITIONS.has_value?(@csvdata[m])
+      return false
   end
 
   #clean up the age field
@@ -336,36 +227,36 @@ class FreeregCsvProcessor
   # max 30d, 30w, 30m and 150y
   def cleanage(m)
     return true if @csvdata[m].nil?
-    @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
-    #test for valid words
-    return true if @valagewords.include?(Unicode::downcase(@csvdata[m]))
-    #test for straight years
-    if @csvdata[m] =~ @valage1
-      return true
-    else
-    #permit the n(dwmy)
-      if @csvdata[m] =~ @valage2
-      duration = $1.to_i
-      unit = $2.to_s
-      return true unless duration > @valagemax[unit]
-      return false
-      else
-      #permit the n(dwmy) m(dwmy)
-        if @csvdata[m] =~ @valage3
-          duration1 = $1.to_i
-          unit1 = $2.to_s
-          duration2 = $1.to_i
-          unit2 = $2.to_s
-          return true unless duration1 > @valagemax[unit1]
-          return true unless duration2 > @valagemax[unit2]
-          return false
+      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
+      #test for valid words
+      return true if VALID_AGE_WORDS.include?(Unicode::downcase(@csvdata[m]))
+      #test for straight years
+        if @csvdata[m] =~ VALID_AGE_TYPE1
+         return true
         else
-          #permit the vulgar fractions
-          return true if @csvdata[m] !=~ @valage4
-          return false
+         #permit the n(dwmy)
+          if @csvdata[m] =~ VALID_AGE_TYPE2
+            duration = $1.to_i
+            unit = $2.to_s
+            return true unless duration > VALID_AGE_MAXIMUM[unit]
+            return false
+          else
+            #permit the n(dwmy) m(dwmy)
+            if @csvdata[m] =~ VALID_AGE_TYPE3
+              duration1 = $1.to_i
+              unit1 = $2.to_s
+              duration2 = $1.to_i
+              unit2 = $2.to_s
+              return true unless duration1 > VALID_AGE_MAXIMUM[unit1]
+              return true unless duration2 > VALID_AGE_MAXIMUM[unit2]
+              return false
+            else
+              #permit the vulgar fractions
+              return true if @csvdata[m] !=~ VALID_AGE_TYPE4
+              return false
+            end
+          end
         end
-      end
-    end
   end
 
   #calculate the soundex using Z000 for nil
@@ -379,7 +270,7 @@ class FreeregCsvProcessor
   def charvalid(m)
    return true if (m == "iso-8859-1"  || m.nil? )
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-    mm = m.strip
+      mm = m.strip
       mm = "IBM437" if (mm == "cp437")
       mm = "macRoman" if (mm == "macintosh")
       if Encoding.find(mm)
@@ -403,16 +294,16 @@ class FreeregCsvProcessor
     a[-1] = a[-1].gsub(/\(?\)?/, '')
     register_words = a
     @register_type = nil
-      if a[-1] =~ (/\A[AaBbEeTtPp][TtXxRr]'?[Ss]?*$\z/) then
+      if a[-1] =~ VALID_REGISTER_TYPES then
        a[-1] = a[-1].gsub(/'?[Ss]?/, '') 
        @register_type = Unicode::upcase(a[-1])
        n = n - 1
       end
        i = 0
         while i < n do
-          register_words[i] = @word_expansions[register_words[i]] if @word_expansions.has_key?(register_words[i])
+          register_words[i] = WORD_EXPANSIONS[register_words[i]] if WORD_EXPANSIONS.has_key?(register_words[i])
           register_words[i] = Unicode::downcase(register_words[i]) unless i == 0
-          register_words[i] = Unicode::capitalize(register_words[i]) unless @capital_exceptions.include?(register_words[i])
+          register_words[i] = Unicode::capitalize(register_words[i]) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(register_words[i])
           i = i + 1 
         end
       @register = register_words.shift(n).join(' ')
@@ -437,7 +328,7 @@ class FreeregCsvProcessor
    address = EmailVeracity::Address.new(@csvdata[1])
    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcriber_email] = @csvdata[1]
-    raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless @type.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
+    raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     head [:record_type] = Unicode::upcase(@csvdata [4])
     raise FreeREGError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
     head [:characterset] = @csvdata[5]
@@ -446,7 +337,7 @@ class FreeregCsvProcessor
   #process the header line 2
   # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
   def headertwo (head)
-    raise FreeREGError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ @valccc))
+    raise FreeREGError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ VALID_CCC_CODE))
     raise FreeREGError, "The transcriber's name may not be blank in the second header line it contains #{@csvdata[2]}" if @csvdata[2].nil?
     raise FreeREGError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_name] = @csvdata[2]
@@ -456,10 +347,10 @@ class FreeregCsvProcessor
     raise FreeREGError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
     raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless Unicode::upcase(@csvdata[4]) == File.basename(@filename.upcase)
     aa = @csvdata[4].split(//).first(3).join
-    raise FreeREGError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless @@chapman.has_value?(aa)
+    raise FreeREGError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless ChapmanCode::values.include?(aa)
     aa = @csvdata[4].split(//)
     aaa = aa[6].to_s + aa[7].to_s
-    raise FreeREGError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless @type.include?(Unicode::upcase(aaa))
+    raise FreeREGError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless VALID_RECORD_TYPE.include?(Unicode::upcase(aaa))
     raise FreeREGError, "The date of the transcription #{@csvdata[5]} is in the wrong format" unless datevalmod(@csvdata[5])
     head [:transcription_date] = @csvdata[5]
   end
@@ -499,7 +390,7 @@ class FreeregCsvProcessor
   # County, Place, Church, Reg #
 
   def datalocation(n,data_record)
-    raise FreeREGError, "The county code #{ @csvdata[0]} in the file name is invalid " unless @@chapman.has_value?(@csvdata[0])
+    raise FreeREGError, "The county code #{ @csvdata[0]} in the file name is invalid " unless ChapmanCode::values.include?(@csvdata[0])
     data_record[:county] = @csvdata[0]
     # do we validate the Place field?
     raise FreeREGError, "Place field #{@csvdata[1]} in line #{n} contains non numeric characters" unless validregister(@csvdata[1])
@@ -548,10 +439,9 @@ class FreeregCsvProcessor
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
-    if head[:lds] == "yes"
+    if head[:lds] == "yes" then
       data_record[:film] = @csvdata[15]
       data_record[:film_number] = @csvdata[16]
-    else
     end
   end
   #process the marriage data columns
@@ -631,10 +521,9 @@ class FreeregCsvProcessor
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
-    if head[:lds] == "yes"
+    if head[:lds] == "yes"  then
       data_record[:film] = @csvdata[30]
       data_record[:film_number] = @csvdata[31]
-    else
     end
   end
 
@@ -670,10 +559,9 @@ class FreeregCsvProcessor
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
-    if head[:lds] == "yes"
+    if head[:lds] == "yes"  then
       data_record[:film] = @csvdata[14]
       data_record[:film_number] = @csvdata[15]
-    else
     end
   end
 
