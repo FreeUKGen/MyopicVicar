@@ -346,7 +346,7 @@ class FreeregCsvProcessor
     head [:transcriber_syndicate] = @csvdata[3]
     raise FreeREGError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
     raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless Unicode::upcase(@csvdata[4]) == File.basename(@filename.upcase)
-    aa = @csvdata[4].split(//).first(3).join
+    aa = @csvdata[4].split(//).first(3).join.upcase
     raise FreeREGError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless ChapmanCode::values.include?(aa)
     aa = @csvdata[4].split(//)
     aaa = aa[6].to_s + aa[7].to_s
@@ -590,29 +590,29 @@ class FreeregCsvProcessor
   def self.process(filename)
     #this is the basic processing
     begin 
-     
-    standalone_filename = File.basename(filename)
-    # get the user ID represented by the containing directory
-    full_dirname = File.dirname(filename)
-    parent_dirname = File.dirname(full_dirname)
-    user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
-    print "#{user_dirname}\t#{standalone_filename}\n"
-    # TODO convert character sets as in freereg_csv_processor
-    #need to make these passed parameters 
-#      filename = "NFKGYAMA.CSV"
-
-#     fileout =  "test_data/csvout/" + user_dirname + "/" + standalone_filename.sub(File.extname(standalone_filename), '.out')
-#     FileUtils.mkdir_p(File.dirname(fileout))
-     filewarn = "test_data/warning/messages.log"
-     FileUtils.mkdir_p(File.dirname(filewarn) )
-     mesout = File.new(filewarn, "a")
+       
+      standalone_filename = File.basename(filename)
+      # get the user ID represented by the containing directory
+      full_dirname = File.dirname(filename)
+      parent_dirname = File.dirname(full_dirname)
+      user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+      print "#{user_dirname}\t#{standalone_filename}\n"
+      # TODO convert character sets as in freereg_csv_processor
+      #need to make these passed parameters 
+  #      filename = "NFKGYAMA.CSV"
+  
+  #     fileout =  "test_data/csvout/" + user_dirname + "/" + standalone_filename.sub(File.extname(standalone_filename), '.out')
+  #     FileUtils.mkdir_p(File.dirname(fileout))
+       filewarn = "test_data/warning/messages.log"
+       FileUtils.mkdir_p(File.dirname(filewarn) )
+       mesout = File.new(filewarn, "a")
           
 #    dataout = File.new(fileout, "wb")
-      header = Hash.new
-      data_record = Hash.new
-      header[:file_name] = standalone_filename.upcase
-      header[:userid] = user_dirname
-      me = FreeregCsvProcessor.new(filename,user_dirname)
+        header = Hash.new
+        data_record = Hash.new
+        header[:file_name] = standalone_filename.upcase
+        header[:userid] = user_dirname
+        me = FreeregCsvProcessor.new(filename,user_dirname)
     
     #deal with the headers
         me.getvalidline
@@ -667,9 +667,10 @@ class FreeregCsvProcessor
     #  dataout.close
     me.create_or_update_db_record_for_file(header)
     rescue Exception => e 
-       mesout.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
-       mesout.puts e.message  
-       mesout.puts e.backtrace.inspect  
+      puts e.message
+      mesout.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
+      mesout.puts e.message  
+      mesout.puts e.backtrace.inspect  
     end 
 
 
