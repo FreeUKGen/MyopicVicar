@@ -21,6 +21,9 @@ namespace :s3bucket do
       files << added
       puts "files is #{files}"
       puts "number of files downloaded #{files.length}"
+      u = Upload.find(upload_id)
+      u.downloaded = files.length
+      u.save
     end
   end
 end
