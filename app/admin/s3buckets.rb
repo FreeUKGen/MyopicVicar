@@ -47,6 +47,7 @@ ActiveAdmin.register S3bucket do
     u = Upload.create(:name => params[:dir], :upload_path => "/tmp/myopicvicar/fbmd-images/#{params[:dir]}", :status => "importing")
     u.save(:validate => false)
     system "rake s3bucket:import S3_BUCKET_ID=#{params[:id]} DIR_NAME=#{params[:dir]} UPLOAD_ID=#{u.id} &"
+    system "rake s3bucket:listen S3_BUCKET_ID=#{params[:id]} DIR_NAME=#{params[:dir]} UPLOAD_ID=#{u.id} &"
     redirect_to admin_uploads_path
   end
 

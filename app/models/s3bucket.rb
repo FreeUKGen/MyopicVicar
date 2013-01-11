@@ -58,13 +58,9 @@ class S3bucket
     File.join(TMP_DIR_PREFIX, self.name, dir)
   end
   
-  def flush_to_slash_tmp(dir, upload_id) 
-    ul = Upload.find(upload_id)
-    ul.downloaded = 0
+  def flush_to_slash_tmp(dir) 
     files = ls(dir)
-    fcount(ul, files)
     files.each do |s3_file|
-      dlcount(ul)
       FileUtils.mkdir_p(File.dirname(key_to_file(s3_file.key)))
       File.open(key_to_file(s3_file.key), 'wb+') do |local_file|
         local_file.write(s3_file.body)
@@ -72,14 +68,11 @@ class S3bucket
     end
   end
 
-  def dlcount(ul)
-    ul.downloaded=ul.downloaded+1
-    ul.save(:validate => false)
-  end
-
-  def fcount(ul, files)
-    ul.files = files.count
-    ul.save(:validate => false)
+  def bucket_total_files(dir, upload_id)
+    files = ls(dir)
+    u = Upload.find(upload_id)
+    u.total_files = files.count
+    u.save(:validate => false)
   end
 
   private

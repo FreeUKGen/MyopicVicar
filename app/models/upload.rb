@@ -62,7 +62,7 @@ class Upload
   key :originals_dir, String
   key :derivation_dir, String
 
-  key :files, String
+  key :total_files, String
   key :downloaded, Integer
   
   module Status

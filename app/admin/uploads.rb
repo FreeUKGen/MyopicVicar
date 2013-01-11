@@ -46,7 +46,7 @@ ActiveAdmin.register Upload do
       row :status
       row :working_dir
       row :created_at
-      row :files
+      row :total_files
       row :downloaded
     end
 
