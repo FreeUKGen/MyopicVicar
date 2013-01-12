@@ -18,7 +18,7 @@ namespace :s3bucket do
     FileUtils.mkdir_p "/tmp/myopicvicar/fbmd-images/#{dir_name}"
     files = []
     Listen.to("/tmp/myopicvicar/fbmd-images/#{dir_name}") do |modified, added, removed|
-      files << added
+      files << added unless added.empty?
       puts "files is #{files}"
       puts "number of files downloaded #{files.length}"
       u = Upload.find(upload_id)
