@@ -6,6 +6,7 @@ class FreeregCsvProcessor
   require 'text'
   require "unicode"
   require 'chapman_code'
+  require "#{Rails.root}/app/models/freereg1_csv_file"
 
   
   VALID_AGE_MAXIMUM = {'d' => 60, 'w' => 60 , 'm' => 60 , 'y' => 150}
