@@ -14,7 +14,7 @@ into a transcription tool based on Zooniverse Scribe.
 
 ### Windows
 
-* in windows use mklink
-* rename the folder C:\....\GitHub\Scribe\public\images so that windows may make the folder
-* mklink /J C:\....\GitHub\Scribe\public\images C:\......\GitHub\MyopicVicar\public\assets\images\working
+1. in windows use mklink
+2. rename the folder C:\....\GitHub\Scribe\public\images so that windows may make the folder
+3. mklink /J C:\....\GitHub\Scribe\public\images C:\......\GitHub\MyopicVicar\public\assets\images\working
 
