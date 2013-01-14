@@ -19,6 +19,14 @@ class FreeregCsvProcessor
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"]
   VALID_YEAR = /\A\d{4,5}\z/
   VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
+  RECORD_TYPE_TRANSLATION = {
+    "BAPTISMS" => Freereg1CsvFile::RECORD_TYPES::BAPTISM, 
+    "MARRIAGES" => Freereg1CsvFile::RECORD_TYPES::MARRIAGE, 
+    "BURIALS" => Freereg1CsvFile::RECORD_TYPES::BURIAL, 
+    "BA" => Freereg1CsvFile::RECORD_TYPES::BAPTISM,
+    "MA" => Freereg1CsvFile::RECORD_TYPES::MARRIAGE, 
+    "BU" => Freereg1CsvFile::RECORD_TYPES::BURIAL
+  }
   VALID_DATE = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
   VALID_CCC_CODE = /\AC{3,5}\z/
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
@@ -329,7 +337,10 @@ class FreeregCsvProcessor
    raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcriber_email] = @csvdata[1]
     raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
-    head [:record_type] = Unicode::upcase(@csvdata [4])
+    # canonicalize record type
+    raw_record_type = @csvdata[4]
+    scrubbed_record_type = Unicode::upcase(@csvdata[4]).gsub(/\s/, '')
+    head [:record_type] =  RECORD_TYPE_TRANSLATION[scrubbed_record_type]
     raise FreeREGError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
     head [:characterset] = @csvdata[5]
   end
@@ -610,7 +621,7 @@ class FreeregCsvProcessor
 #    dataout = File.new(fileout, "wb")
         header = Hash.new
         data_record = Hash.new
-        header[:file_name] = standalone_filename.upcase
+        header[:file_name] = standalone_filename #do not capitalize filenames
         header[:userid] = user_dirname
         me = FreeregCsvProcessor.new(filename,user_dirname)
     
@@ -635,9 +646,11 @@ class FreeregCsvProcessor
     #keep going until we run out of data    
         loop do
           me.datalocation(n,data_record)
-          me.databa(n,data_record,header) if type == 'BAPTISMS'
-          me.datama(n,data_record,header) if type == 'MARRIAGES'
-          me.databu(n,data_record,header) if type == 'BURIALS'
+          case type
+            when Freereg1CsvFile::RECORD_TYPES::BAPTISM then me.databa(n,data_record,header)
+            when Freereg1CsvFile::RECORD_TYPES::MARRIAGE then me.datama(n,data_record,header)
+            when Freereg1CsvFile::RECORD_TYPES::BURIAL then me.databu(n,data_record,header)                      
+          end
       #store the processed data   
  #         dataout.puts data_record
           me.create_db_record_for_entry(data_record)
@@ -662,7 +675,7 @@ class FreeregCsvProcessor
 
       puts " Processed #{n} lines" 
     # print the header and add it to the processed records
-      puts header
+    #  puts header
     #  dataout.puts header
     #  dataout.close
     me.create_or_update_db_record_for_file(header)

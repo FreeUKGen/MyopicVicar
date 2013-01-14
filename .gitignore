@@ -27,6 +27,7 @@ mongo.log
 *.out
 
 /public/assets/images/working
+/test_data/warning/
 
 # Ignore RVM-related files
 .rvmrc
