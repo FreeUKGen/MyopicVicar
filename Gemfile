@@ -34,6 +34,8 @@ gem 'rspec-rails'
 
 gem "fog", "~> 1.5.0"
 
+gem "listen"
+
 
 # Gems used only for assets and not required
 # in production environments by default.
