@@ -46,7 +46,29 @@ ActiveAdmin.register S3bucket do
   member_action :import, :method => :post  do    
     u = Upload.create(:name => params[:dir], :upload_path => "/tmp/myopicvicar/fbmd-images/#{params[:dir]}", :status => "importing")
     u.save(:validate => false)
-    system "rake s3bucket:listen[#{params[:dir]},#{u.id}] &"
+
+    dir_name = params[:dir]
+    upload_id = u.id
+    FileUtils.mkdir_p "/tmp/myopicvicar/fbmd-images/#{dir_name}"
+    files = []
+
+    # Create a callback
+    callback = Proc.new do |modified, added, removed|
+      files << added unless added.empty?
+      puts "files is #{files}"
+      puts "number of files downloaded #{files.length}"
+      u = Upload.find(upload_id)
+      u.downloaded = files.length
+      u.save
+      # This proc will be called when there are changes.
+    end
+
+    listener = Listen.to("/tmp/myopicvicar/fbmd-images/#{dir_name}")
+    listener.change(&callback) # convert the callback to a block and register it
+
+    listener.start(false) # blocks execution
+
+
     system "rake s3bucket:import[#{params[:id]},#{params[:dir]},#{u.id}] &"
     redirect_to admin_uploads_path
   end
