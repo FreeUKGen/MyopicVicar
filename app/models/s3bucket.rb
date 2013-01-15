@@ -68,13 +68,6 @@ class S3bucket
     end
   end
 
-  def bucket_total_files(dir, upload_id)
-    files = ls(dir)
-    u = Upload.find(upload_id)
-    u.total_files = files.count
-    u.save(:validate => false)
-  end
-
   private
   
   def key_to_file(key)
