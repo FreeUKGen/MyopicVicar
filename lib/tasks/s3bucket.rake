@@ -1,5 +1,5 @@
 namespace :s3bucket do
-  task :listen, [:bucket_id, :bucket_dir, :upload_id] => :environment do |t,args|
+  task :listen, [:bucket_dir, :upload_id] => :environment do |t, args|
     dir_name = args.bucket_dir
     upload_id = args.upload_id
     FileUtils.mkdir_p "/tmp/myopicvicar/fbmd-images/#{dir_name}"
@@ -14,11 +14,11 @@ namespace :s3bucket do
     end
   end
 
-  task :import, [:bucket_id, :bucket_dir, :upload_id] => :environment do |t,args|
+  task :import, [:bucket_id, :bucket_dir, :upload_id] => :environment do |t, args|
     s3_bucket_id = args.bucket_id
     dir_name = args.bucket_dir
     upload_id = args.upload_id
-    @s3bucket = S3bucket.find(s3_bucket_id) # s3 bucket id
+    @s3bucket = S3bucket.find(s3_bucket_id)
     @s3bucket.bucket_total_files(dir_name, upload_id)
     @s3bucket.flush_to_slash_tmp(dir_name)
     ul = Upload.find(upload_id)
