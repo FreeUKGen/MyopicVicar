@@ -16,6 +16,14 @@ class Freereg1CsvFile
   include MongoMapper::Document
   many :freereg1_csv_entry
 
+  module RECORD_TYPES 
+    BURIAL='bu'
+    MARRIAGE='ma'
+    BAPTISM='ba'
+    
+    ALL_TYPES = [BURIAL, MARRIAGE, BAPTISM]
+  end
+
   # Fields correspond to cells in CSV headers  
   key :county, String 
   key :place, String 
