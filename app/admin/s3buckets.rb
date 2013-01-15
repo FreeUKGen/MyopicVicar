@@ -66,7 +66,7 @@ ActiveAdmin.register S3bucket do
     listener = Listen.to("/tmp/myopicvicar/fbmd-images/#{dir_name}")
     listener.change(&callback) # convert the callback to a block and register it
 
-    listener.start(false) # blocks execution
+    listener.start(false)
 
 
     system "rake s3bucket:import[#{params[:id]},#{params[:dir]},#{u.id}] &"
