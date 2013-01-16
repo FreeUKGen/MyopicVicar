@@ -44,3 +44,52 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 end
+
+
+FREEREG1_CSV_FILES = [
+  { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKHSPBU.csv",
+    :type => Freereg1CsvFile::RECORD_TYPES::BURIAL,
+    :user => 'kirknorfolk',
+    :chapman_code => 'NFK',
+    :entry_count => 221,
+    :entries => {
+      :first => {
+        :baptism_date => '1700'
+      },
+      :last => {
+        :baptism_date => '1812'
+      }
+    }
+   },
+  { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEBA.CSV",
+    :type => Freereg1CsvFile::RECORD_TYPES::BAPTISM,
+    :user => 'kirkbedfordshire',
+    :chapman_code => 'BDF',
+    :entry_count => 1223,
+    :entries => {
+      :first => {
+        :baptism_date => Date.parse('1602-08-30')
+      },
+      :last => {
+        :baptism_date => Date.parse('1812-10-19')
+      }
+    }
+   },
+  { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
+    :type => Freereg1CsvFile::RECORD_TYPES::MARRIAGE,
+    :user => 'Chd',
+    :chapman_code => 'HRT',
+    :entry_count => 45,
+    :entries => {
+      :first => {
+        :baptism_date => Date.parse('1726-10-04')
+      },
+      :last => {
+        :baptism_date => Date.parse('1837-10-12')
+      }
+    }
+   }
+]

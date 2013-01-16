@@ -14,7 +14,7 @@
 # 
 class Freereg1CsvFile 
   include MongoMapper::Document
-  many :freereg1_csv_entry
+  many :freereg1_csv_entries
 
   module RECORD_TYPES 
     BURIAL='bu'
