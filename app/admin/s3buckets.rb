@@ -61,6 +61,7 @@ ActiveAdmin.register S3bucket do
       files << added unless added.empty?
       puts "files is #{files}"
       puts "number of files downloaded #{files.length}"
+      u = Upload.find(u.id)
       u.downloaded = files.length
       u.save
       # This proc will be called when there are changes.
