@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'freereg_csv_processor'
+require 'pp'
 
 describe Freereg1CsvEntry do
 
@@ -20,12 +21,20 @@ describe Freereg1CsvEntry do
       file_record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
 
       ['first', 'last'].each do |entry_key|
-        entry = file_record.freereg1_csv_entries.send entry_key
+        print "\n\t Testing #{entry_key}\n"
+        entry = file_record.freereg1_csv_entries.sort(:file_line_number.asc).send entry_key
         entry.should_not eq(nil)        
+        pp entry
         
         standard = file[:entries][entry_key.to_sym]
-        p entry
-        p standard
+        pp standard
+        standard.keys.each do |key|
+          standard_value = standard[key]
+          entry_value = entry.send key
+#          entry_value.should_not eq(nil)
+          entry_value.should eq(standard_value)
+        end
+
       end
     end
   end

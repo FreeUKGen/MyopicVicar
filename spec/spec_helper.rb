@@ -55,10 +55,10 @@ FREEREG1_CSV_FILES = [
     :entry_count => 221,
     :entries => {
       :first => {
-        :baptism_date => '1700'
+        :burial_date => '1700'
       },
       :last => {
-        :baptism_date => '1812'
+        :burial_date => '1812'
       }
     }
    },
@@ -70,10 +70,10 @@ FREEREG1_CSV_FILES = [
     :entry_count => 1223,
     :entries => {
       :first => {
-        :baptism_date => Date.parse('1602-08-30')
+        :baptism_date => '30 Aug 1602'
       },
       :last => {
-        :baptism_date => Date.parse('1812-10-19')
+        :baptism_date => '19 Oct 1812'
       }
     }
    },
@@ -85,10 +85,18 @@ FREEREG1_CSV_FILES = [
     :entry_count => 45,
     :entries => {
       :first => {
-        :baptism_date => Date.parse('1726-10-04')
+        :marriage_date => '4 Oct 1726',
+        :bride_surname => 'CANNON',
+        :bride_forename => 'Sarah',
+        :groom_surname => 'SAUNDERS',
+        :groom_forename => 'William'
       },
       :last => {
-        :baptism_date => Date.parse('1837-10-12')
+        :marriage_date => '12 Oct 1837',
+        :bride_surname => 'GARRATT',
+        :bride_forename => 'Anne',
+        :groom_surname => 'CLARKE',
+        :groom_forename => 'Charles'
       }
     }
    }

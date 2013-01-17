@@ -20,8 +20,8 @@ class Freereg1CsvEntry
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
   # They have only been modified to replace hyphens with underscores.
-  key :baptism_date, String
-  key :birth_date, String
+  key :baptism_date, String #actual date as written
+  key :birth_date, String #actual date as written
   key :bride_abode, String
   key :bride_age, String
   key :bride_condition, String
@@ -32,7 +32,7 @@ class Freereg1CsvEntry
   key :bride_occupation, String
   key :bride_parish, String
   key :bride_surname, String
-  key :burial_date, String
+  key :burial_date, String #actual date as written
   key :burial_person_forename, String
   key :burial_person_surname, String
   key :burial_person_abode, String
@@ -52,7 +52,7 @@ class Freereg1CsvEntry
   key :groom_parish, String
   key :groom_surname, String
   key :male_relative_forename, String
-  key :marriage_date, String
+  key :marriage_date, String #actual date as written
   key :mother_forename, String
   key :mother_surname, String
   key :notes, String
@@ -62,7 +62,7 @@ class Freereg1CsvEntry
   key :person_sex, String
   key :place, String
   key :register, String
-  key :register_entry_number, String
+  key :register_entry_number, Integer
   key :register_type, String
   key :relationship, String
   key :relative_surname, String
@@ -71,4 +71,5 @@ class Freereg1CsvEntry
   key :witness2_forename, String
   key :witness2_surname, String
   key :line, String
+  key :file_line_number, Integer
 end

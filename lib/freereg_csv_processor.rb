@@ -136,7 +136,7 @@ class FreeregCsvProcessor
       @datepop[xx] = @datepop[xx] + 1 unless (xx < 0 || xx > 50) #avoid going outside the data range array
   end
 
-  #validate dates in the record and allow for the spli date format 1567/8 and 1567/68 creates a base year and a split year eg /8
+  #validate dates in the record and allow for the split date format 1567/8 and 1567/68 creates a base year and a split year eg /8
   def datevalsplit(x)
     @splityear = nil
 
@@ -413,8 +413,9 @@ class FreeregCsvProcessor
     data_record[:register_type] = @register_type
     # need to add the transcriberID
     data_record[:line] = n.to_s + "." + File.basename(@filename.upcase) + "." + @userid
+    data_record[:file_line_number] = n
     raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
-    data_record[:register_entry_nuber] = @csvdata[3]
+    data_record[:register_entry_nuber] = @csvdata[3].to_i
 
   end
 
