@@ -11,7 +11,7 @@ gem 'bson_ext'
 gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
 gem 'execjs'
 
-gem "therubyracer", :platforms => :ruby # avoid loading on windows
+gem "therubyracer", "~> 0.11", :platforms => :ruby # avoid loading on windows
 
 gem 'text'
 gem 'json'
