@@ -23,7 +23,7 @@ tmp/**/*
 *#
 *~
 mongo.log
-*.csv
+#*.csv
 *.out
 
 /public/assets/images/working
