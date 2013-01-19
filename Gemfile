@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.3'
+gem 'rails', '3.2.11'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -11,7 +11,7 @@ gem 'bson_ext'
 gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
 gem 'execjs'
 
-gem "therubyracer", "~> 0.11", :platforms => :ruby # avoid loading on windows
+gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'text'
 gem 'json'
@@ -32,7 +32,7 @@ gem 'rubyzip'
 
 gem 'rspec-rails'
 
-gem "fog", "~> 1.5.0"
+gem "fog"
 
 gem "listen"
 
