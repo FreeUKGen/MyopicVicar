@@ -48,17 +48,21 @@ end
 
 FREEREG1_CSV_FILES = [
   { 
-    :filename => "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKHSPBU.csv",
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKALEBU.csv",
     :type => Freereg1CsvFile::RECORD_TYPES::BURIAL,
     :user => 'kirknorfolk',
     :chapman_code => 'NFK',
-    :entry_count => 221,
+    :entry_count => 15,
     :entries => {
       :first => {
-        :burial_date => '1700'
+        :burial_person_forename => 'Will',
+#        :burial_person_surname => 'SADD',
+        :burial_date => '6 Mar 1690/1'
       },
       :last => {
-        :burial_date => '1812'
+        :burial_person_forename => 'Robert',
+        :burial_person_surname => 'LONDON',
+        :burial_date => '7 Nov 1691'
       }
     }
    },
@@ -70,10 +74,19 @@ FREEREG1_CSV_FILES = [
     :entry_count => 1223,
     :entries => {
       :first => {
-        :baptism_date => '30 Aug 1602'
+        :baptism_date => '30 Aug 1602',
+        :person_forename => 'Paul',
+        :person_sex => 'M',
+        :father_forename  => 'Thomas',
+        :father_surname => 'MAXEE'
       },
       :last => {
-        :baptism_date => '19 Oct 1812'
+        :baptism_date => '19 Oct 1812',
+        :person_forename => 'Elizabeth',
+        :mother_forename => 'Susan',
+        :person_sex => 'F',
+        :father_surname  => 'CHARLES',
+        :father_forename => 'Joseph'
       }
     }
    },

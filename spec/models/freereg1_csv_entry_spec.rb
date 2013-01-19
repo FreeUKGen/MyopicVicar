@@ -16,15 +16,15 @@ describe Freereg1CsvEntry do
 
   it "should parse each entry correctly" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      puts "Testing #{file[:filename]}"
+#      puts "Testing #{file[:filename]}"
       FreeregCsvProcessor.process(file[:filename])      
       file_record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
 
       ['first', 'last'].each do |entry_key|
-        print "\n\t Testing #{entry_key}\n"
+#        print "\n\t Testing #{entry_key}\n"
         entry = file_record.freereg1_csv_entries.sort(:file_line_number.asc).send entry_key
         entry.should_not eq(nil)        
-        pp entry
+#        pp entry
         
         standard = file[:entries][entry_key.to_sym]
         pp standard
