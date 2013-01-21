@@ -62,6 +62,8 @@ class SearchRecord
   key :bride_first_name, String, :required => false
   key :bride_last_name, String, :required => false
 
+  # Date of the entry, whatever kind it is
+  key :date, String, :required => false
 
   # search fields
   many :primary_names, :class_name => 'SearchName'
