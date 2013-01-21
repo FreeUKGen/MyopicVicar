@@ -99,11 +99,6 @@ class FreeregCsvProcessor
 
 
 
-
-  def self.prove_you_exist
-    print "I exist\n"
-  end
-
   def initialize(filename,userid)
     # turn off domain checks -- some of these email accounts may no longer work and that's okay
     EmailVeracity::Config[:skip_lookup]=true
