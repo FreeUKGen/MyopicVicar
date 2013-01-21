@@ -26,7 +26,7 @@ module Freereg1Translator
     :burial_person_surname => :last_name,
     :county => :chapman_code,
     :father_forename => :father_first_name,
-    :father_surname => :father_surname,
+    :father_surname => :father_last_name,
     # what should we do about the various relatives?  They should be put into family records.
   #  :female_relative_forename => ,
     # TODO refactor parentage to arrays
