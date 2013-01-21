@@ -1,4 +1,6 @@
 require 'emendor'
+require 'freereg1_translator'
+
 class SearchRecord
   include MongoMapper::Document
  # include Emendor
@@ -24,8 +26,10 @@ class SearchRecord
     
   end
 
-  key :annotation_ids, Array #, :typecast => 'ObjectId'
+  belongs_to :freereg1_csv_entry
 
+
+  key :annotation_ids, Array #, :typecast => 'ObjectId'
   
   #denormalized fields
   key :asset_id, String
@@ -100,8 +104,8 @@ class SearchRecord
   
   def downcase_all
     primary_names.each do |name|
-      name[:first_name].downcase!
-      name[:last_name].downcase!
+      name[:first_name].downcase! if name[:last_name]
+      name[:last_name].downcase! if name[:last_name]
     end
     inclusive_names.each do |name|
       name[:first_name].downcase! if name[:first_name] 
@@ -190,11 +194,28 @@ class SearchRecord
 
     end
     # TODO: Deal with existing search records, given duplicate save calls
-  
-  
   end
+  
+  def self.from_freereg1_csv_entry(entry)
+    Rails.logger.debug("from_freereg1_csv_entry processing #{entry.inspect}")
+#    p "from_freereg1_csv_entry processing"
+#    pp entry.attributes
+    # find an existing search record
+    record = SearchRecord.find_by_line_id(entry.line)
+#    p "found #{record}"    
+#    p "found #{record.inspect}"    
+#    binding.pry
+    unless record 
+      record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      record.freereg1_csv_entry = entry
+#      p "creating #{record}"    
+      
+      record.save!    
+    end  
+  end
+  
+  def self.delete_freereg1_csv_entries
+    SearchRecord.delete_all(:freereg1_csv_entry_id.ne => nil)
 
-
-
-
+  end
 end

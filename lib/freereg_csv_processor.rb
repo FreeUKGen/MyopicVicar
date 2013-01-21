@@ -597,6 +597,7 @@ class FreeregCsvProcessor
   def self.delete_all
     Freereg1CsvEntry.delete_all
     Freereg1CsvFile.delete_all
+    SearchRecord.delete_freereg1_csv_entries
   end
 
 
@@ -683,6 +684,7 @@ class FreeregCsvProcessor
     me.create_or_update_db_record_for_file(header)
     rescue Exception => e 
       puts e.message
+      puts e.backtrace
       mesout.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
       mesout.puts e.message  
       mesout.puts e.backtrace.inspect  

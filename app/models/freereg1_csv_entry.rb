@@ -16,6 +16,7 @@ class Freereg1CsvEntry
   include MongoMapper::Document
 
   belongs_to :freereg1_csv_file
+  one :search_record
 
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
@@ -72,4 +73,14 @@ class Freereg1CsvEntry
   key :witness2_surname, String
   key :line, String
   key :file_line_number, Integer
+
+
+  after_save :transform_search_record
+  
+  def transform_search_record
+    Rails.logger.debug('transform_search_record')
+    SearchRecord.from_freereg1_csv_entry(self)
+
+  end
+  
 end

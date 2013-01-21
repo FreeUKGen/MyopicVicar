@@ -4,9 +4,16 @@ require 'pp'
 
 describe Freereg1CsvEntry do
 
+
+  before(:each) do
+    FreeregCsvProcessor::delete_all
+  end
+
+
+
   it "should create the correct number of entries" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      puts "Testing #{file[:filename]}"
+#      puts "Testing #{file[:filename]}"
       FreeregCsvProcessor.process(file[:filename])      
       record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
   
@@ -27,7 +34,7 @@ describe Freereg1CsvEntry do
 #        pp entry
         
         standard = file[:entries][entry_key.to_sym]
-        pp standard
+#        pp standard
         standard.keys.each do |key|
           standard_value = standard[key]
           entry_value = entry.send key
