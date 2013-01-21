@@ -268,13 +268,6 @@ class FreeregCsvProcessor
         end
   end
 
-  #calculate the soundex using Z000 for nil
-  def addsoundex(m)
-
-    @csvdata[m] = Text::Soundex.soundex(@csvdata[m])
-    @csvdata[m] = 'Z000' if (@csvdata[m].nil? ||  Text::Soundex.soundex(@csvdata[m]).nil?)
-  end
-
   #test for the character set
   def charvalid(m)
    return true if (m == "iso-8859-1"  || m.nil? )
@@ -447,8 +440,6 @@ class FreeregCsvProcessor
     data_record[:father_occupation] = @csvdata[13]
     raise FreeREGError, "The notes #{@csvdata[14]} contains invalid characters in line #{n}" unless cleantext(14)
     data_record[:notes] = @csvdata[14]
-    data_record[:father_surname_soundex] = addsoundex(10)
-    data_record[:mother_surname_soundex] = addsoundex(11)
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
@@ -519,18 +510,7 @@ class FreeregCsvProcessor
     data_record[:witness2_surname] = @csvdata[28] if @csvdata[28].nil?
     raise FreeREGError, "The notes #{@csvdata[29]} contains invalid characters in line #{n}" unless cleantext(29)
     data_record[:notes] = @csvdata[29]
-    data_record[:groom_surname_soundex] = Text::Soundex.soundex(@csvdata[6])
-    data_record[:groom_surname_soundex] = "Z000" if (@csvdata[6].nil? ||  Text::Soundex.soundex(@csvdata[6]).nil?)
-    data_record[:bride_surname_soundex] = Text::Soundex.soundex(@csvdata[13])
-    data_record[:bride_surname_soundex] = "Z000" if (@csvdata[13].nil? ||  Text::Soundex.soundex(@csvdata[13]).nil?)
-    data_record[:groom_father_surname_soundex] = Text::Soundex.soundex(@csvdata[20])
-    data_record[:groom_father_surname_soundex] = "Z000" if (@csvdata[20].nil? ||  Text::Soundex.soundex(@csvdata[20]).nil?)
-    data_record[:bride_father_surname_soundex] = Text::Soundex.soundex(@csvdata[23])
-    data_record[:bride_father_surname_soundex] = "Z000" if (@csvdata[23].nil? ||  Text::Soundex.soundex(@csvdata[23]).nil?)
-    data_record[:first_witness_surname_soundex] = Text::Soundex.soundex(@csvdata[26])
-    data_record[:first_witness_surname_soundex] = "Z000" if (@csvdata[26].nil? ||  Text::Soundex.soundex(@csvdata[26]).nil?)
-    data_record[:second_witness_surname_soundex] = Text::Soundex.soundex(@csvdata[28])
-    data_record[:second_witness_surname_soundex] = "Z000" if (@csvdata[28].nil? ||  Text::Soundex.soundex(@csvdata[28]).nil?)
+
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
@@ -565,10 +545,7 @@ class FreeregCsvProcessor
     data_record[:burial_person_abode] = @csvdata[12]
     raise FreeREGError, "The notes #{@csvdata[13]} contains invalid characters in line #{n}" unless cleantext(13)
     data_record[:notes] = @csvdata[13]
-    data_record[:relative_surname_soundex] = Text::Soundex.soundex(@csvdata[9])
-    data_record[:relative_surname_soundex] = "Z000" if (@csvdata[9].nil? ||  Text::Soundex.soundex(@csvdata[9]).nil?)
-    data_record[:burial_person_surname_soundex] = Text::Soundex.soundex(@csvdata[10])
-    data_record[:burial_person_surname_soundex] = "Z000" if (@csvdata[10].nil? ||  Text::Soundex.soundex(@csvdata[10]).nil?)
+
     head[:datemax] = @datemax
     head[:datemin] = @datemin
     head[:daterange] = @datepop
