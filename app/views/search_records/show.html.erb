@@ -16,30 +16,69 @@
 	Transcriptions
 </h3>
 
-<ul>
-	<% @annotations.each do |annotation| %>
-		<% annotation.attributes.keys.each do |field| %>
-			<% if annotation[field] %>
+<% if @search_record.freereg1_csv_entry %>
+	<h4>
+		Offline Transcriptions
+	</h4>
+	<h5>
+		Entry
+	</h5>
+	<ul>
+		<% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
+			<% if @search_record.freereg1_csv_entry[field] %>
 				<li>
-					<%= field %>: <b><%= annotation[field] %></b>				
+					<%= field %>: <b><%= @search_record.freereg1_csv_entry[field] %></b>				
 				</li>
 			<% end %>
 		<% end %>
-		<% transcription = annotation.transcription %>
-		<% if transcription %>
-			<% transcription.attributes.keys.each do |field| %>
-				<% if transcription[field] %>
+	</ul>
+	<h5>
+		File
+	</h5>
+	<ul>
+		<% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
+		<% if file %>
+			<% file.attributes.keys.each do |field| %>
+				<% if file[field] %>
 					<li>
-						<%= field %>: <b><%= transcription[field] %></b>				
+						<%= field %>: <b><%= file[field] %></b>				
 					</li>
 				<% end %>
 			<% end %>
-			<li>
-				<%= link_to("Image", transcription.asset.location) %>
-			</li>
 		<% end %>
-	<% end %>
-</ul>
+	</ul>
+<% end%>
 
+
+<% if @annotations && @annotations.length > 0 %>
+	<h4>
+		Online Transcriptions
+	</h4>
+
+	<ul>
+		<% @annotations.each do |annotation| %>
+			<% annotation.attributes.keys.each do |field| %>
+				<% if annotation[field] %>
+					<li>
+						<%= field %>: <b><%= annotation[field] %></b>				
+					</li>
+				<% end %>
+			<% end %>
+			<% transcription = annotation.transcription %>
+			<% if transcription %>
+				<% transcription.attributes.keys.each do |field| %>
+					<% if transcription[field] %>
+						<li>
+							<%= field %>: <b><%= transcription[field] %></b>				
+						</li>
+					<% end %>
+				<% end %>
+				<li>
+					<%= link_to("Image", transcription.asset.location) %>
+				</li>
+			<% end %>
+		<% end %>
+	</ul>
+<% end%>
 
 <% debug(@search_record) %>
