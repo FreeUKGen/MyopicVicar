@@ -11,6 +11,7 @@ class SearchRecord
   module Source
     TRANSCRIPT='t'
     EMENDOR='e'
+    SUPPLEMENT='s'
     USER_ADDITION='u'
   end
 
@@ -201,7 +202,7 @@ class SearchRecord
 #    p "from_freereg1_csv_entry processing"
 #    pp entry.attributes
     # find an existing search record
-    record = SearchRecord.find_by_line_id(entry.line)
+    record = SearchRecord.find_by_line_id(entry.line_id)
 #    p "found #{record}"    
 #    p "found #{record.inspect}"    
 #    binding.pry

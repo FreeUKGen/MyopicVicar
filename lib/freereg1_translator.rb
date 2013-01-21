@@ -60,7 +60,7 @@ module Freereg1Translator
     KEY_MAP.keys.each do |key|
       new_attrs[KEY_MAP[key]] = entry[key] if entry[key] 
     end    
-    new_attrs[:line_id] = entry.line
+    new_attrs[:line_id] = entry.line_id
     
     new_attrs
   end

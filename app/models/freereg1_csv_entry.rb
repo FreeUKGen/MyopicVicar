@@ -71,7 +71,7 @@ class Freereg1CsvEntry
   key :witness1_surname, String
   key :witness2_forename, String
   key :witness2_surname, String
-  key :line, String
+  key :line_id, String
   key :file_line_number, Integer
 
 

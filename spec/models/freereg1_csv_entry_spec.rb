@@ -46,5 +46,37 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should create search records for baptisms" do
+    FREEREG1_CSV_FILES.each_with_index do |file, index|
+      next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::BAPTISM
+      puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
+      FreeregCsvProcessor.process(file[:filename])      
+ 
+      ['first', 'last'].each do |entry_key|
+#        print "\n\t Testing #{entry_key}\n"
+        entry = file[:entries][entry_key.to_sym]
+
+        q = SearchQuery.create!(:first_name => entry[:father_forename],
+                                :last_name => entry[:father_surname],
+                                :inclusive => true)
+        # get a collection of search records
+#        pp q.attributes
+        result = q.search
+        
+#        pp result
+        result.count.should have_at_least(1).items
+
+        result.should satisfy do |result|
+          found = false
+          result.each do |record|
+            found = true if record.line_id == entry[:line_id]
+          end
+          found
+        end
+      end
+    end
+
+  end
+
 
 end

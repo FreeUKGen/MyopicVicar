@@ -405,7 +405,7 @@ class FreeregCsvProcessor
     data_record[:register] = @register
     data_record[:register_type] = @register_type
     # need to add the transcriberID
-    data_record[:line] = n.to_s + "." + File.basename(@filename.upcase) + "." + @userid
+    data_record[:line_id] = n.to_s + "." + File.basename(@filename.upcase) + "." + @userid
     data_record[:file_line_number] = n
     raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
     data_record[:register_entry_nuber] = @csvdata[3].to_i

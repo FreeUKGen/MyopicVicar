@@ -74,6 +74,7 @@ FREEREG1_CSV_FILES = [
     :entry_count => 1223,
     :entries => {
       :first => {
+        :line_id => "1.BDFYIEBA.CSV.kirkbedfordshire",
         :baptism_date => '30 Aug 1602',
         :person_forename => 'Paul',
         :person_sex => 'M',
@@ -81,6 +82,7 @@ FREEREG1_CSV_FILES = [
         :father_surname => 'MAXEE'
       },
       :last => {
+        :line_id => "1223.BDFYIEBA.CSV.kirkbedfordshire",
         :baptism_date => '19 Oct 1812',
         :person_forename => 'Elizabeth',
         :mother_forename => 'Susan',
