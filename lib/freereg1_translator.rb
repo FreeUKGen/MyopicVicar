@@ -28,7 +28,7 @@ module Freereg1Translator
     :father_forename => :father_first_name,
     :father_surname => :father_last_name,
     # what should we do about the various relatives?  They should be put into family records.
-  #  :female_relative_forename => ,
+    :female_relative_forename => :mother_first_name,
     # TODO refactor parentage to arrays
     # :groom_father_forename => ,
     # :groom_father_occupation => ,
@@ -37,7 +37,7 @@ module Freereg1Translator
   #  :groom_parish => ,
     :groom_surname => :groom_last_name,
     # what should we do about the various relatives?  They should be put into family records.
-  #  :male_relative_forename => ,
+    :male_relative_forename => :father_first_name,
    # :marriage_date => , #actual date as written
     :mother_forename => :mother_first_name,
     :mother_surname => :mother_last_name,
@@ -45,7 +45,7 @@ module Freereg1Translator
   #  :register => ,
   #  :register_type => ,
   #  :relationship => ,
-  #  :relative_surname => ,
+    :relative_surname => :father_last_name,
     # :witness1_forename => ,
     # :witness1_surname => ,
     # :witness2_forename => ,

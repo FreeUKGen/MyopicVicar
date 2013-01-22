@@ -65,41 +65,63 @@ describe Freereg1CsvEntry do
       FreeregCsvProcessor.process(file[:filename])      
  
       ['first', 'last'].each do |entry_key|
-#        print "\n\t Testing #{entry_key}\n"
         entry = file[:entries][entry_key.to_sym]
 
-        q = SearchQuery.create!(:first_name => entry[:father_forename],
-                                :last_name => entry[:father_surname],
-                                :inclusive => true)
-        result = q.search
-        
-        result.count.should have_at_least(1).items
-        result.should be_in_result(entry)
+#
+#        unless entry[:mother_forename].blank?
+#          q = SearchQuery.create!(:first_name => entry[:mother_forename],
+#                                  :last_name => entry[:mother_surname]||entry[:father_surname],
+#                                  :inclusive => true)
+#          result = q.search
+#          
+#          result.count.should have_at_least(1).items
+#          result.should be_in_result(entry)
+#  
+#        end
 
-        unless entry[:mother_forename].blank?
-          q = SearchQuery.create!(:first_name => entry[:mother_forename],
-                                  :last_name => entry[:mother_surname]||entry[:father_surname],
-                                  :inclusive => true)
-          result = q.search
-          
-          result.count.should have_at_least(1).items
-          result.should be_in_result(entry)
-  
-        end
 
-        q = SearchQuery.create!(:first_name => entry[:person_forename],
-                                :last_name => entry[:father_surname],
-                                :inclusive => false)
-        result = q.search
-        
-        result.count.should have_at_least(1).items
-        result.should be_in_result(entry)
-
+        check_record(entry, :father_forename, :father_surname, false)
+        check_record(entry, :mother_forename, :mother_surname, false)
+        check_record(entry, :person_forename, :father_surname, true)
 
       end
     end
-
   end
 
+  it "should create search records for burials" do
+    FREEREG1_CSV_FILES.each_with_index do |file, index|
+      print "testing whether #{file[:type]} == #{Freereg1CsvFile::RECORD_TYPES::BURIAL}\n"
+      next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::BURIAL
+      pp file
+      puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
+      FreeregCsvProcessor.process(file[:filename])      
+ 
+      ['first', 'last'].each do |entry_key|
+        entry = file[:entries][entry_key.to_sym]
+        pp entry
+        
+        check_record(entry, :male_relative_forename, :relative_surname, false)
+        check_record(entry, :female_relative_forename, :relative_surname, false)
+        check_record(entry, :burial_person_forename, :burial_person_surname, true)
+
+      end
+    end
+  end
+
+
+  def check_record(entry, first_name_key, last_name_key, required)
+    unless entry[first_name_key].blank? ||required
+      q = SearchQuery.create!(:first_name => entry[first_name_key],
+                              :last_name => entry[last_name_key],
+                              :inclusive => !required)
+      result = q.search
+      print "\n\nNew search on #{first_name_key}, #{last_name_key}\n"
+      pp q.attributes
+      p result.count
+      result.each { |r| pp r.attributes}
+      result.count.should have_at_least(1).items
+      result.should be_in_result(entry)
+    end    
+  end
 
 end

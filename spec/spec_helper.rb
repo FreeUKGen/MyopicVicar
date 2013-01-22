@@ -56,7 +56,7 @@ FREEREG1_CSV_FILES = [
     :entries => {
       :first => {
         :burial_person_forename => 'Will',
-#        :burial_person_surname => 'SADD',
+        :burial_person_surname => 'SADD',
         :burial_date => '6 Mar 1690/1'
       },
       :last => {
