@@ -2,7 +2,19 @@ require 'spec_helper'
 require 'freereg_csv_processor'
 require 'pp'
 
+RSpec::Matchers.define :be_in_result do |entry|
+  match do |results|
+    found = false
+    results.each do |record|
+      found = true if record.line_id == entry[:line_id]
+    end
+    found    
+  end
+end
+
+
 describe Freereg1CsvEntry do
+
 
 
   before(:each) do
@@ -59,20 +71,31 @@ describe Freereg1CsvEntry do
         q = SearchQuery.create!(:first_name => entry[:father_forename],
                                 :last_name => entry[:father_surname],
                                 :inclusive => true)
-        # get a collection of search records
-#        pp q.attributes
         result = q.search
         
-#        pp result
         result.count.should have_at_least(1).items
+        result.should be_in_result(entry)
 
-        result.should satisfy do |result|
-          found = false
-          result.each do |record|
-            found = true if record.line_id == entry[:line_id]
-          end
-          found
+        unless entry[:mother_forename].blank?
+          q = SearchQuery.create!(:first_name => entry[:mother_forename],
+                                  :last_name => entry[:mother_surname]||entry[:father_surname],
+                                  :inclusive => true)
+          result = q.search
+          
+          result.count.should have_at_least(1).items
+          result.should be_in_result(entry)
+  
         end
+
+        q = SearchQuery.create!(:first_name => entry[:person_forename],
+                                :last_name => entry[:father_surname],
+                                :inclusive => false)
+        result = q.search
+        
+        result.count.should have_at_least(1).items
+        result.should be_in_result(entry)
+
+
       end
     end
 

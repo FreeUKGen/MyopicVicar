@@ -107,7 +107,7 @@ class SearchRecord
   
   def downcase_all
     primary_names.each do |name|
-      name[:first_name].downcase! if name[:last_name]
+      name[:first_name].downcase! if name[:first_name]
       name[:last_name].downcase! if name[:last_name]
     end
     inclusive_names.each do |name|
@@ -134,11 +134,19 @@ class SearchRecord
     if name = search_name(bride_first_name, bride_last_name)
       primary_names << name
     end
+    # supplemental names for baptisms  -- consider moving to separate method
+    unless name
+      name = search_name(first_name, father_last_name)
+      unless name
+        name = search_name(first_name, mother_last_name)
+      end
+      primary_names << name if name
+    end
   end
 
 
-
   def populate_inclusive_names
+
     # primary names
     primary_names.each do |name|
       inclusive_names << name
@@ -150,6 +158,13 @@ class SearchRecord
     # mother
     if name = search_name(mother_first_name, mother_last_name)
       inclusive_names << name
+    end
+    # supplemental names for baptisms  -- consider moving to separate method
+    if mother_last_name.blank? && !mother_first_name.blank?
+      name = search_name(mother_first_name, father_last_name)
+      if name
+        inclusive_names << name
+      end
     end
     # husband
     if name = search_name(husband_first_name, husband_last_name)
@@ -164,7 +179,7 @@ class SearchRecord
 
   def search_name(first_name, last_name, source = 'transcript')
     name = nil
-    unless first_name.blank? && last_name.blank?
+    unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source })       
     end
     name
