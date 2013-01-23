@@ -268,6 +268,7 @@ class FreeregCsvProcessor
    return true if (m == "iso-8859-1"  || m.nil? )
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       mm = m.strip
+      return true if mm.empty?
       mm = "IBM437" if (mm == "cp437")
       mm = "macRoman" if (mm == "macintosh")
       if Encoding.find(mm)
@@ -276,7 +277,7 @@ class FreeregCsvProcessor
         @file.close
         @file = File.new(@filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
         #reposition the file
-        getvalidline
+        get_line_of_data
         return true
       else
         return false
@@ -284,13 +285,14 @@ class FreeregCsvProcessor
   end
 
   def validregister(m)
+    @register = nil
+    @register_type = nil
     return true if m.nil? 
     m = m.gsub(/\s+/, ' ').strip
     a = m.split(" ")
     n = a.length
     a[-1] = a[-1].gsub(/\(?\)?/, '')
     register_words = a
-    @register_type = nil
       if a[-1] =~ VALID_REGISTER_TYPES then
        a[-1] = a[-1].gsub(/'?[Ss]?/, '') 
        @register_type = Unicode::upcase(a[-1])
@@ -308,7 +310,7 @@ class FreeregCsvProcessor
   end
 
   #get a line of data
-  def getvalidline
+  def get_line_of_data
     line = @file.gets
     raise FreeREGEnd,  "Empty file" if line.nil?
     CSV.parse(line) do |data|
@@ -319,7 +321,7 @@ class FreeregCsvProcessor
 
   #process the header line 1
   # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
-  def headerone(head)
+  def process_header_line_one(head)
     raise FreeREGError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] == "+INFO")
     # BWB: temporarily commenting out to test db interface
    address = EmailVeracity::Address.new(@csvdata[1])
@@ -336,7 +338,7 @@ class FreeregCsvProcessor
 
   #process the header line 2
   # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
-  def headertwo (head)
+  def process_header_line_two(head)
     raise FreeREGError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ VALID_CCC_CODE))
     raise FreeREGError, "The transcriber's name may not be blank in the second header line it contains #{@csvdata[2]}" if @csvdata[2].nil?
     raise FreeREGError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
@@ -357,7 +359,7 @@ class FreeregCsvProcessor
 
   #process the header line 3
   # eg #,Credit,Libby,email address,,,,,,
-  def headerthree(head)
+  def process_header_line_threee(head)
 #   raise FreeREGError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && (@csvdata[1] == "CREDIT" || @csvdata[1] == "credit" ))
     raise FreeREGError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
@@ -369,7 +371,7 @@ class FreeregCsvProcessor
 
   #process the header line 4
   # eg #,05-Feb-2006,data taken from computer records and converted using Excel
-  def headerfour(head)
+  def process_header_line_four(head)
     raise FreeREGError, "Forth line does not start with # it has #{@csvdata[0]}"  unless (@csvdata[0] == "#")
     raise FreeREGError, "The date of the modification #{@csvdata[1]} in the forth header line is in the wrong format" unless datevalmod(@csvdata[1])
     head [:modification_date] = @csvdata[1]
@@ -379,7 +381,7 @@ class FreeregCsvProcessor
 
   #process the optional header line 5
   #eg +LDS,,,,
-  def headerfive(head)
+  def process_header_line_five(head)
     if @csvdata[0] == "+LDS"
       head[:lds] = "yes"
     else
@@ -389,7 +391,7 @@ class FreeregCsvProcessor
   #process the first 4 columns of the data record
   # County, Place, Church, Reg #
 
-  def datalocation(n,data_record)
+  def process_register_location(n,data_record)
     raise FreeREGError, "The county code #{ @csvdata[0]} in the file name is invalid " unless ChapmanCode::values.include?(@csvdata[0])
     data_record[:county] = @csvdata[0]
     # do we validate the Place field?
@@ -408,7 +410,7 @@ class FreeregCsvProcessor
   end
 
   #process the baptism record columns
-  def databa(n,data_record,head)
+  def process_baptism_data_records(n,data_record,head)
     raise FreeREGError, "The date of the birth #{@csvdata[4]} is in the wrong format in line #{n}" unless datevalsplit(@csvdata[4])
     data_record[:birth_date_split] = @splityear
     data_record[:birth_date] = @csvdata[4]
@@ -445,7 +447,7 @@ class FreeregCsvProcessor
   end
   #process the marriage data columns
 
-  def datama(n,data_record,head)
+  def process_marriage_data_records(n,data_record,head)
     raise FreeREGError, "The date of the marriage #{@csvdata[4]} is in the wrong format in line #{n}" unless datevalsplit(@csvdata[4])
     data_record[:marriage_date_split] = @splityear
     data_record[:marriage_date] = @csvdata[4]
@@ -516,7 +518,7 @@ class FreeregCsvProcessor
   end
 
   #process the burial data columns
-  def databu(n,data_record,head)
+  def process_burial_data_records(n,data_record,head)
     raise FreeREGError, "The date of the burial #{@csvdata[4]} is in the wrong format in line #{n}" unless datevalsplit(@csvdata[4])
     data_record[:burial_date_split] = @splityear
     data_record[:burial_date] = @csvdata[4]
@@ -601,36 +603,36 @@ class FreeregCsvProcessor
         me = FreeregCsvProcessor.new(filename,user_dirname)
     
     #deal with the headers
-        me.getvalidline
-        me.headerone(header)
-        me.getvalidline
-        me.headertwo(header)
-        me.getvalidline
-        me.headerthree(header)
-        me.getvalidline
-        me.headerfour(header)
-        me.getvalidline
-        me.headerfive(header)
+        me.get_line_of_data
+        me.process_header_line_one(header)
+        me.get_line_of_data
+        me.process_header_line_two(header)
+        me.get_line_of_data
+        me.process_header_line_threee(header)
+        me.get_line_of_data
+        me.process_header_line_four(header)
+        me.get_line_of_data
+        me.process_header_line_five(header)
         # persist the record for the file
         me.create_or_update_db_record_for_file(header)
     #deal with the data    
         n = 1
     #deal with header 5 being optional
         type = header[:record_type]
-        me.getvalidline  if header[:lds] == 'yes'
+        me.get_line_of_data  if header[:lds] == 'yes'
     #keep going until we run out of data    
         loop do
-          me.datalocation(n,data_record)
+          me.process_register_location(n,data_record)
           case type
-            when Freereg1CsvFile::RECORD_TYPES::BAPTISM then me.databa(n,data_record,header)
-            when Freereg1CsvFile::RECORD_TYPES::MARRIAGE then me.datama(n,data_record,header)
-            when Freereg1CsvFile::RECORD_TYPES::BURIAL then me.databu(n,data_record,header)                      
+            when Freereg1CsvFile::RECORD_TYPES::BAPTISM then me.process_baptism_data_records(n,data_record,header)
+            when Freereg1CsvFile::RECORD_TYPES::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
+            when Freereg1CsvFile::RECORD_TYPES::BURIAL then me.process_burial_data_records(n,data_record,header)                      
           end
       #store the processed data   
  #         dataout.puts data_record
           me.create_db_record_for_entry(data_record)
           n = n + 1
-          me.getvalidline
+          me.get_line_of_data
       #   break if n == 6
         end
     #rescue the freereg data errors
