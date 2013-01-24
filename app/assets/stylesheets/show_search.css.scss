@@ -1,12 +1,12 @@
 /** { border: 1px solid #000;}*/
 
-body { color: #555; }
-
 #container { width: 1024px; margin: 0 auto; }
 
-table { width: 100%; border: 1px solid #D3D3D3; }
+table { width: 100%;}
 
-table td { padding: 15px; border-right: 1px solid #E0E0E0; border-top: 1px solid #E0E0E0; }
+table td { padding: 15px; }
 
-table th { padding: 15px; background-color: #eee; text-shadow: 1px 1px 1px #fff; }
+table th { padding: 15px; background-color: #000; color: #fff; }
+
+table th,td { border: 1px solid #000;}
 
