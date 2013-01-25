@@ -125,8 +125,19 @@ class SearchRecord
   def populate_primary_names
     # standard names
     if name = search_name(first_name, last_name)
+#      print "DEBUG: Adding transcript name #{name}"
       primary_names << name
     end
+    # supplemental names for baptisms  -- consider moving to separate method
+    unless name
+      name = search_name(first_name, father_last_name, Source::SUPPLEMENT)
+      unless name
+        name = search_name(first_name, mother_last_name, Source::SUPPLEMENT)
+      end
+#      print "DEBUG: Adding supplemental name #{name}"
+      primary_names << name if name
+    end
+
     # marriage names
     if name = search_name(groom_first_name, groom_last_name)
       primary_names << name
@@ -134,14 +145,7 @@ class SearchRecord
     if name = search_name(bride_first_name, bride_last_name)
       primary_names << name
     end
-    # supplemental names for baptisms  -- consider moving to separate method
-    unless name
-      name = search_name(first_name, father_last_name)
-      unless name
-        name = search_name(first_name, mother_last_name)
-      end
-      primary_names << name if name
-    end
+
   end
 
 

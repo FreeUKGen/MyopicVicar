@@ -24,6 +24,9 @@ describe Freereg1CsvEntry do
 
 
   it "should create the correct number of entries" do
+    Freereg1CsvFile.count.should eq(0)
+    Freereg1CsvEntry.count.should eq(0)
+    SearchRecord.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
       FreeregCsvProcessor.process(file[:filename])      
@@ -89,16 +92,17 @@ describe Freereg1CsvEntry do
   end
 
   it "should create search records for burials" do
+    Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       print "testing whether #{file[:type]} == #{Freereg1CsvFile::RECORD_TYPES::BURIAL}\n"
       next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::BURIAL
-      pp file
+#      pp file
       puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
       FreeregCsvProcessor.process(file[:filename])      
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
-        pp entry
+ #       pp entry
         
         check_record(entry, :male_relative_forename, :relative_surname, false)
         check_record(entry, :female_relative_forename, :relative_surname, false)
