@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'record_type'
 require 'freereg_csv_processor'
 require 'pp'
 
@@ -63,7 +64,7 @@ describe Freereg1CsvEntry do
 
   it "should create search records for baptisms" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::BAPTISM
+      next unless file[:type] == RecordType::BAPTISM
       puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
       FreeregCsvProcessor.process(file[:filename])      
  
@@ -94,8 +95,8 @@ describe Freereg1CsvEntry do
   it "should create search records for burials" do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      print "testing whether #{file[:type]} == #{Freereg1CsvFile::RECORD_TYPES::BURIAL}\n"
-      next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::BURIAL
+      print "testing whether #{file[:type]} == #{RecordType::BURIAL}\n"
+      next unless file[:type] == RecordType::BURIAL
 #      pp file
       puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
       FreeregCsvProcessor.process(file[:filename])      

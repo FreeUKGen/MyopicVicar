@@ -17,6 +17,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
+require 'record_type'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -49,7 +50,7 @@ end
 FREEREG1_CSV_FILES = [
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKALEBU.csv",
-    :type => Freereg1CsvFile::RECORD_TYPES::BURIAL,
+    :type => RecordType::BURIAL,
     :user => 'kirknorfolk',
     :chapman_code => 'NFK',
     :entry_count => 15,
@@ -68,7 +69,7 @@ FREEREG1_CSV_FILES = [
    },
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEBA.CSV",
-    :type => Freereg1CsvFile::RECORD_TYPES::BAPTISM,
+    :type => RecordType::BAPTISM,
     :user => 'kirkbedfordshire',
     :chapman_code => 'BDF',
     :entry_count => 1223,
@@ -94,7 +95,7 @@ FREEREG1_CSV_FILES = [
    },
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
-    :type => Freereg1CsvFile::RECORD_TYPES::MARRIAGE,
+    :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
     :entry_count => 45,

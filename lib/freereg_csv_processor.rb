@@ -6,7 +6,9 @@ class FreeregCsvProcessor
   require 'text'
   require "unicode"
   require 'chapman_code'
+  # Reconsider this!
   require "#{Rails.root}/app/models/freereg1_csv_file"
+  require "record_type"
 
   
   VALID_AGE_MAXIMUM = {'d' => 60, 'w' => 60 , 'm' => 60 , 'y' => 150}
@@ -21,12 +23,12 @@ class FreeregCsvProcessor
   VALID_YEAR = /\A\d{4,5}\z/
   VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
   RECORD_TYPE_TRANSLATION = {
-    "BAPTISMS" => Freereg1CsvFile::RECORD_TYPES::BAPTISM, 
-    "MARRIAGES" => Freereg1CsvFile::RECORD_TYPES::MARRIAGE, 
-    "BURIALS" => Freereg1CsvFile::RECORD_TYPES::BURIAL, 
-    "BA" => Freereg1CsvFile::RECORD_TYPES::BAPTISM,
-    "MA" => Freereg1CsvFile::RECORD_TYPES::MARRIAGE, 
-    "BU" => Freereg1CsvFile::RECORD_TYPES::BURIAL
+    "BAPTISMS" => RecordType::BAPTISM, 
+    "MARRIAGES" => RecordType::MARRIAGE, 
+    "BURIALS" => RecordType::BURIAL, 
+    "BA" => RecordType::BAPTISM,
+    "MA" => RecordType::MARRIAGE, 
+    "BU" => RecordType::BURIAL
   }
   VALID_DATE = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
   VALID_CCC_CODE = /\AC{3,5}\z/
@@ -624,9 +626,9 @@ class FreeregCsvProcessor
         loop do
           me.process_register_location(n,data_record)
           case type
-            when Freereg1CsvFile::RECORD_TYPES::BAPTISM then me.process_baptism_data_records(n,data_record,header)
-            when Freereg1CsvFile::RECORD_TYPES::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
-            when Freereg1CsvFile::RECORD_TYPES::BURIAL then me.process_burial_data_records(n,data_record,header)                      
+            when RecordType::BAPTISM then me.process_baptism_data_records(n,data_record,header)
+            when RecordType::BURIAL then me.process_burial_data_records(n,data_record,header)                      
+            when RecordType::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
           end
       #store the processed data   
  #         dataout.puts data_record
