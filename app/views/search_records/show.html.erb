@@ -1,99 +1,112 @@
 <h3>Record</h3>
 
 <table>
+    <!--
     <thead>
 	<tr>
 	    <th>foo</th>
 	    <th>foo</th>
 	</tr>
     </thead>
+    -->
     <tbody>
-	<tr>
-	    <td>bar</td>
-	    <td>bar</td>
-	</tr>
+	<% @search_record.attributes.keys.each do |field| %>
+	    <% if @search_record[field] %>
+		<tr>
+		    <td><%= field %></td>
+		    <td><%= @search_record[field] %></td>
+		</tr>
+	    <% end %>
+	<% end %>
     </tbody>
 </table>
 
 
 
-<ul>
-	<% @search_record.attributes.keys.each do |field| %>
-		<% if @search_record[field] %>
-			<li>
-				<%= field %>: <b><%= @search_record[field] %></b>				
-			</li>
-		<% end %>
-	<% end %>
-</ul>
 
-<h3>
-	Transcriptions
-</h3>
+<h3>Transcriptions</h3>
 
 <% if @search_record.freereg1_csv_entry %>
-	<h4>
-		Offline Transcriptions
-	</h4>
-	<h5>
-		Entry
-	</h5>
-	<ul>
-		<% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
-			<% if @search_record.freereg1_csv_entry[field] %>
-				<li>
-					<%= field %>: <b><%= @search_record.freereg1_csv_entry[field] %></b>				
-				</li>
-			<% end %>
+    <h4>Offline Transcriptions</h4>
+    <h5>Entry</h5>
+
+    <table>
+	<!--
+	<thead>
+	    <tr>
+		<th>foo</th>
+		<th>foo</th>
+	    </tr>
+	</thead>
+	-->
+	<tbody>
+	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
+		<% if @search_record.freereg1_csv_entry[field] %>
+		    <tr>
+			<td><%= field %></td>
+			<td><%= @search_record.freereg1_csv_entry[field] %></td>
+		    </tr>
 		<% end %>
-	</ul>
-	<h5>
-		File
-	</h5>
-	<ul>
-		<% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
-		<% if file %>
-			<% file.attributes.keys.each do |field| %>
-				<% if file[field] %>
-					<li>
-						<%= field %>: <b><%= file[field] %></b>				
-					</li>
-				<% end %>
-			<% end %>
+	    <% end %>
+	</tbody>
+    </table>
+
+    <h5>File</h5>
+
+
+    <table>
+	<!--
+	<thead>
+	    <tr>
+		<th>foo</th>
+		<th>foo</th>
+	    </tr>
+	</thead>
+	-->
+	<tbody>
+	    <% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
+	    <% if file %>
+		<% file.attributes.keys.each do |field| %>
+		    <% if file[field] %>
+			<tr>
+			    <td><%= field %></td>
+			    <td><%= field[field] %></td>
+			</tr>
+		    <% end %>
 		<% end %>
-	</ul>
+	    <% end %>
+	</tbody>
+    </table>
 <% end%>
 
 
 <% if @annotations && @annotations.length > 0 %>
-	<h4>
-		Online Transcriptions
-	</h4>
+    <h4>Online Transcriptions</h4>
 
-	<ul>
-		<% @annotations.each do |annotation| %>
-			<% annotation.attributes.keys.each do |field| %>
-				<% if annotation[field] %>
-					<li>
-						<%= field %>: <b><%= annotation[field] %></b>				
-					</li>
-				<% end %>
-			<% end %>
-			<% transcription = annotation.transcription %>
-			<% if transcription %>
-				<% transcription.attributes.keys.each do |field| %>
-					<% if transcription[field] %>
-						<li>
-							<%= field %>: <b><%= transcription[field] %></b>				
-						</li>
-					<% end %>
-				<% end %>
-				<li>
-					<%= link_to("Image", transcription.asset.location) %>
-				</li>
-			<% end %>
+    <ul>
+	<% @annotations.each do |annotation| %>
+	    <% annotation.attributes.keys.each do |field| %>
+		<% if annotation[field] %>
+		    <li>
+		    <%= field %>: <b><%= annotation[field] %></b>				
+		    </li>
 		<% end %>
-	</ul>
+	    <% end %>
+	    <% transcription = annotation.transcription %>
+	    <% if transcription %>
+		<% transcription.attributes.keys.each do |field| %>
+		    <% if transcription[field] %>
+			<li>
+			<%= field %>: <b><%= transcription[field] %></b>				
+			</li>
+		    <% end %>
+		<% end %>
+		<li>
+		<%= link_to("Image", transcription.asset.location) %>
+		</li>
+	    <% end %>
+	<% end %>
+    </ul>
 <% end%>
 
 <% debug(@search_record) %>
