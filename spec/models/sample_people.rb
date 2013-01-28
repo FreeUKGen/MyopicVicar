@@ -1,7 +1,8 @@
+require 'record_type'
 module SamplePeople
   
   THOMAS_RAGSDALE = { 
-    :record_type => 'Burial',
+    :record_type => RecordType::BURIAL,
     :first_name => 'Thomas',
     :last_name => 'Ragsdale',
     :surname_inferred => true,
@@ -17,7 +18,7 @@ module SamplePeople
   }
   
   WILLIAM_FRANKLIN = {
-    :record_type => 'Burial',
+    :record_type => RecordType::BURIAL,
     :first_name => 'William',
     :last_name => 'Franklin',
     :surname_inferred => false,
@@ -27,7 +28,7 @@ module SamplePeople
   }
   
   ALICE_TENNANT = {
-    :record_type => 'Burial',
+    :record_type => RecordType::BURIAL,
     :first_name => 'Alice',
     :last_name => 'Tennant',
     :surname_inferred => false,
@@ -40,7 +41,7 @@ module SamplePeople
   }
   
   SAMUEL_RAMBLE = {
-    :record_type => 'Burial',
+    :record_type => RecordType::BURIAL,
     :first_name => 'Samuel',
     :last_name => 'Ramble',
     :surname_inferred => true,
@@ -53,7 +54,7 @@ module SamplePeople
   }
   
   BARTHOLEMEW_WILTON = { 
-    :record_type => 'Burial',
+    :record_type => RecordType::BURIAL,
     :first_name => 'Bartholemew',
     :last_name => 'Wilton',
     :surname_inferred => true,
@@ -66,7 +67,7 @@ module SamplePeople
   }
   
   ELISABETH_MORLEY = { 
-    :record_type => 'Baptism',
+    :record_type => RecordType::BAPTISM,
     :first_name => 'Elisabeth',
     :last_name => 'Morley',
     :surname_inferred => false,
@@ -82,7 +83,7 @@ module SamplePeople
   }
   
   ELISABETH_ATKINS = { 
-    :record_type => 'Baptism',
+    :record_type => RecordType::BAPTISM,
     :first_name => 'Elisabeth',
     :last_name => 'Atkins',
     :surname_inferred => false,
@@ -98,7 +99,7 @@ module SamplePeople
   }
   
   JOHN_THORP = { 
-    :record_type => 'Baptism',
+    :record_type => RecordType::BAPTISM,
     :first_name => 'John',
     :last_name => 'Thorp',
     :surname_inferred => false,
@@ -114,7 +115,7 @@ module SamplePeople
   }
   
   JAMES_BAXTER = { 
-    :record_type => 'Baptism',
+    :record_type => RecordType::BAPTISM,
     :first_name => 'James',
     :last_name => 'Baxter',
     :surname_inferred => false,
@@ -130,7 +131,7 @@ module SamplePeople
   }
   
   SUSANNA_JENNINGS = { 
-    :record_type => 'Baptism',
+    :record_type => RecordType::BAPTISM,
     :first_name => 'Susanna',
     :last_name => 'Jennings',
     :surname_inferred => false,
@@ -146,7 +147,7 @@ module SamplePeople
   }
   
   SARAH_CHALLANS = { 
-    :record_type => 'Baptism',
+    :record_type => RecordType::BAPTISM,
     :first_name => 'Sarah',
     :last_name => 'Challans',
     :surname_inferred => false,
@@ -163,7 +164,7 @@ module SamplePeople
   
   
   RICHARD_AND_ESTHER = { 
-    :record_type => 'Marriage',
+    :record_type => RecordType::MARRIAGE,
     :groom_first_name => 'Richard',
     :groom_last_name => 'Bell',
     :groom_surname_inferred => false,
@@ -177,7 +178,7 @@ module SamplePeople
   }
   
   MICHAEL_AND_MARY = { 
-    :record_type => 'Marriage',
+    :record_type => RecordType::MARRIAGE,
     :groom_first_name => 'Michael',
     :groom_last_name => 'Tubbs',
     :groom_surname_inferred => false,
