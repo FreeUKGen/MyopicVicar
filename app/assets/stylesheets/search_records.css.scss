@@ -1,3 +1,19 @@
 // Place all the styles related to the SearchRecords controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+* { border: 1px solid #000; }
+
+#container {
+    width: 1024px;
+    /*height: 300px;*/
+    margin: 0 auto;
+    border: 1px dashed #000;
+}
+
+table {
+    width: 250px;
+    margin: 0 auto;
+}
+
