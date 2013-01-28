@@ -9,12 +9,12 @@
 				{ :as => :select,
 				  :required => false,
 				  :include_blank => true,
-				  :collection => SearchRecord::Role::OPTIONS } %>
+				  :collection => NameRole::OPTIONS } %>
     <%= f.input :record_type,
 				{ :as => :select,
 				  :required => false,
 				  :include_blank => true,
-				  :collection => SearchRecord::RecordType::OPTIONS} %>
+				  :collection => RecordType::OPTIONS} %>
     <%= f.input :chapman_code, 
 				{ :as => :select, 
 				  :include_blank => true,

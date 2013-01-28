@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
+require 'record_type'
+require 'name_role'
 class ApplicationController < ActionController::Base
   protect_from_forgery
 end
