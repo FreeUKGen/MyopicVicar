@@ -626,23 +626,14 @@ class FreeregCsvProcessor
         me.get_line_of_data  if header[:lds] == 'yes'
     #keep going until we run out of data    
         loop do
-<<<<<<< HEAD
-          me.process_register_location(n,data_record)
-          case type
-            when RecordType::BAPTISM then me.process_baptism_data_records(n,data_record,header)
-            when RecordType::BURIAL then me.process_burial_data_records(n,data_record,header)                      
-            when RecordType::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
-          end
-=======
           begin
             n = n + 1
             me.process_register_location(n,data_record)
              case type
-               when Freereg1CsvFile::RECORD_TYPES::BAPTISM then me.process_baptism_data_records(n,data_record,header)
-               when Freereg1CsvFile::RECORD_TYPES::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
-               when Freereg1CsvFile::RECORD_TYPES::BURIAL then me.process_burial_data_records(n,data_record,header)                      
+             when RecordType::BAPTISM then me.process_baptism_data_records(n,data_record,header)
+             when RecordType::BURIAL then me.process_burial_data_records(n,data_record,header)                      
+             when RecordType::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
              end
->>>>>>> Continue file processing after data error
       #store the processed data   
  #         dataout.puts data_record
             me.create_db_record_for_entry(data_record)
