@@ -35,7 +35,7 @@ class FreeregCsvProcessor
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
   VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
   VALID_SEX = /\A[\sMmFf-]{1}\z/
-  VALID_REGISTER_TYPES = /\A[AaBbEeTtPp][TtXxRr]'?[Ss]?*$\z/
+  VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp][TtXxRr]'?[Ss]?*$\z/
   WILD_CHARACTER = /[\*\_]/
   WORD_EXPANSIONS =  {
             'Saint' => 'St.',
@@ -324,58 +324,58 @@ class FreeregCsvProcessor
   #process the header line 1
   # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
   def process_header_line_one(head)
-    raise FreeREGError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] == "+INFO")
+    raise FreeREGHeaderError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] == "+INFO")
     # BWB: temporarily commenting out to test db interface
    address = EmailVeracity::Address.new(@csvdata[1])
-   raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
+   raise FreeREGHeaderError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcriber_email] = @csvdata[1]
-    raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
+    raise FreeREGHeaderError,  "Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     # canonicalize record type
     raw_record_type = @csvdata[4]
     scrubbed_record_type = Unicode::upcase(@csvdata[4]).gsub(/\s/, '')
     head [:record_type] =  RECORD_TYPE_TRANSLATION[scrubbed_record_type]
-    raise FreeREGError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
+    raise FreeREGHeaderError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
     head [:characterset] = @csvdata[5]
   end
 
   #process the header line 2
   # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
   def process_header_line_two(head)
-    raise FreeREGError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ VALID_CCC_CODE))
-    raise FreeREGError, "The transcriber's name may not be blank in the second header line it contains #{@csvdata[2]}" if @csvdata[2].nil?
-    raise FreeREGError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
+    raise FreeREGHeaderError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ VALID_CCC_CODE))
+    raise FreeREGHeaderError, "The transcriber's name may not be blank in the second header line it contains #{@csvdata[2]}" if @csvdata[2].nil?
+    raise FreeREGHeaderError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_name] = @csvdata[2]
-    raise FreeREGError, "The syndicate name #{@csvdata[3]} may not be blank in the second header line" if @csvdata[3].nil?
-    raise FreeREGError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
+    raise FreeREGHeaderError, "The syndicate name #{@csvdata[3]} may not be blank in the second header line" if @csvdata[3].nil?
+    raise FreeREGHeaderError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_syndicate] = @csvdata[3]
-    raise FreeREGError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
-    raise FreeREGError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless Unicode::upcase(@csvdata[4]) == File.basename(@filename.upcase)
+    raise FreeREGHeaderError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
+    raise FreeREGHeaderError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless Unicode::upcase(@csvdata[4]) == File.basename(@filename.upcase)
     aa = @csvdata[4].split(//).first(3).join.upcase
-    raise FreeREGError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless ChapmanCode::values.include?(aa)
+    raise FreeREGHeaderError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless ChapmanCode::values.include?(aa)
     aa = @csvdata[4].split(//)
     aaa = aa[6].to_s + aa[7].to_s
-    raise FreeREGError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless VALID_RECORD_TYPE.include?(Unicode::upcase(aaa))
-    raise FreeREGError, "The date of the transcription #{@csvdata[5]} is in the wrong format" unless datevalmod(@csvdata[5])
+    raise FreeREGHeaderError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless VALID_RECORD_TYPE.include?(Unicode::upcase(aaa))
+    raise FreeREGHeaderError, "The date of the transcription #{@csvdata[5]} is in the wrong format" unless datevalmod(@csvdata[5])
     head [:transcription_date] = @csvdata[5]
   end
 
   #process the header line 3
   # eg #,Credit,Libby,email address,,,,,,
   def process_header_line_threee(head)
-#   raise FreeREGError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && (@csvdata[1] == "CREDIT" || @csvdata[1] == "credit" ))
-    raise FreeREGError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
+#   raise FreeREGHeaderError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && (@csvdata[1] == "CREDIT" || @csvdata[1] == "credit" ))
+    raise FreeREGHeaderError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
     # # suppressing for the moment
     # address = EmailVeracity::Address.new(@csvdata[3])
-    # raise FreeREGError, "Invalid email address '#{@csvdata[3]}' for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
+    # raise FreeREGHeaderError, "Invalid email address '#{@csvdata[3]}' for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
     head [:credit_email] = @csvdata[3]
   end
 
   #process the header line 4
   # eg #,05-Feb-2006,data taken from computer records and converted using Excel
   def process_header_line_four(head)
-    raise FreeREGError, "Forth line does not start with # it has #{@csvdata[0]}"  unless (@csvdata[0] == "#")
-    raise FreeREGError, "The date of the modification #{@csvdata[1]} in the forth header line is in the wrong format" unless datevalmod(@csvdata[1])
+    raise FreeREGHeaderError, "Forth line does not start with # it has #{@csvdata[0]}"  unless (@csvdata[0] == "#")
+    raise FreeREGHeaderError, "The date of the modification #{@csvdata[1]} in the forth header line is in the wrong format" unless datevalmod(@csvdata[1])
     head [:modification_date] = @csvdata[1]
     head [:first_comments] = @csvdata[2]
     head [:second_comments] = @csvdata[3]
@@ -584,6 +584,7 @@ class FreeregCsvProcessor
       standalone_filename = File.basename(filename)
       # get the user ID represented by the containing directory
       full_dirname = File.dirname(filename)
+
       parent_dirname = File.dirname(full_dirname)
       user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
       print "#{user_dirname}\t#{standalone_filename}\n"
@@ -593,17 +594,18 @@ class FreeregCsvProcessor
   
   #     fileout =  "test_data/csvout/" + user_dirname + "/" + standalone_filename.sub(File.extname(standalone_filename), '.out')
   #     FileUtils.mkdir_p(File.dirname(fileout))
-       filewarn = "test_data/warning/messages.log"
-       FileUtils.mkdir_p(File.dirname(filewarn) )
-       mesout = File.new(filewarn, "a")
-          
+       file_for_warning_messages = "test_data/warning/messages.log"
+       FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
+       message_file = File.new(file_for_warning_messages, "a")
+       user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
+       File.delete(user_file_for_warning_messages) if File.exists?(user_file_for_warning_messages)
 #    dataout = File.new(fileout, "wb")
         header = Hash.new
         data_record = Hash.new
         header[:file_name] = standalone_filename #do not capitalize filenames
         header[:userid] = user_dirname
         me = FreeregCsvProcessor.new(filename,user_dirname)
-    
+        number_of_error_messages = 0
     #deal with the headers
         me.get_line_of_data
         me.process_header_line_one(header)
@@ -618,41 +620,65 @@ class FreeregCsvProcessor
         # persist the record for the file
         me.create_or_update_db_record_for_file(header)
     #deal with the data    
-        n = 1
+        n = 0
     #deal with header 5 being optional
         type = header[:record_type]
         me.get_line_of_data  if header[:lds] == 'yes'
     #keep going until we run out of data    
         loop do
+<<<<<<< HEAD
           me.process_register_location(n,data_record)
           case type
             when RecordType::BAPTISM then me.process_baptism_data_records(n,data_record,header)
             when RecordType::BURIAL then me.process_burial_data_records(n,data_record,header)                      
             when RecordType::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
           end
+=======
+          begin
+            n = n + 1
+            me.process_register_location(n,data_record)
+             case type
+               when Freereg1CsvFile::RECORD_TYPES::BAPTISM then me.process_baptism_data_records(n,data_record,header)
+               when Freereg1CsvFile::RECORD_TYPES::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
+               when Freereg1CsvFile::RECORD_TYPES::BURIAL then me.process_burial_data_records(n,data_record,header)                      
+             end
+>>>>>>> Continue file processing after data error
       #store the processed data   
  #         dataout.puts data_record
-          me.create_db_record_for_entry(data_record)
-          n = n + 1
-          me.get_line_of_data
+            me.create_db_record_for_entry(data_record)
+            me.get_line_of_data
       #   break if n == 6
+      #rescue the freereg data errors and continue processing the file
+          rescue FreeREGError => free
+            user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
+            number_of_error_messages = number_of_error_messages + 1
+            puts free.message
+            message_file.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
+            message_file.puts free.message
+            user_message_file.puts free.message
+            me.get_line_of_data
+            retry
+          end
         end
-    #rescue the freereg data errors
-    rescue FreeREGError => free
+    #rescue FreeREG file header errors and stop processing the file
+    rescue FreeREGHeaderError => free
+      user_message_file = File.new(user_file_for_warning_messages, "w")
+      number_of_error_messages = number_of_error_messages + 1
       puts free.message
-      mesout.puts free.message
-      mesout.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
+      message_file.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
+      message_file.puts free.message
+      user_message_file.puts free.message
+
     #rescue the end of file and close out the file
     rescue FreeREGEnd => free
-      n = n-1
-
+      n = n-1 - number_of_error_messages
       header[:records] = n
       header[:county] = data_record [:county]   
       header[:place] = data_record [:place]
       header[:register] = data_record [:register]
       header[:register_type] = data_record[:register_type]
 
-      puts " Processed #{n} lines" 
+      puts " Processed #{n} lines with #{number_of_error_messages} errors" 
     # print the header and add it to the processed records
     #  puts header
     #  dataout.puts header
@@ -661,9 +687,9 @@ class FreeregCsvProcessor
     rescue Exception => e 
       puts e.message
       puts e.backtrace
-      mesout.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
-      mesout.puts e.message  
-      mesout.puts e.backtrace.inspect  
+      message_file.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
+      message_file.puts e.message  
+      message_file.puts e.backtrace.inspect  
     end 
 
 
@@ -677,6 +703,9 @@ class FreeREGError < StandardError
 end
 
 class FreeREGEnd < StandardError
+end
+
+class FreeREGHeaderError < StandardError
 end
 # 
 # require 'pry'
