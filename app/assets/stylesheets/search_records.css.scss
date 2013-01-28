@@ -3,17 +3,19 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-* { border: 1px solid #000; }
-
 #container {
     width: 1024px;
-    /*height: 300px;*/
     margin: 0 auto;
+    padding: 20px;
     border: 1px dashed #000;
 }
 
 table {
-    width: 250px;
+    width: 600px;
     margin: 0 auto;
+}
+
+table td {
+    width: 50%;
 }
 
