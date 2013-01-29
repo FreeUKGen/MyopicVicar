@@ -94,10 +94,10 @@ describe Freereg1CsvEntry do
   it "should create search records for burials" do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      print "testing whether #{file[:type]} == #{Freereg1CsvFile::RECORD_TYPES::BURIAL}\n"
+#      print "testing whether #{file[:type]} == #{Freereg1CsvFile::RECORD_TYPES::BURIAL}\n"
       next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::BURIAL
 #      pp file
-      puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
+#      puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
       FreeregCsvProcessor.process(file[:filename])      
  
       ['first', 'last'].each do |entry_key|
@@ -113,15 +113,35 @@ describe Freereg1CsvEntry do
   end
 
 
+  it "should create search records for marriages" do
+    Freereg1CsvEntry.count.should eq(0)
+    FREEREG1_CSV_FILES.each_with_index do |file, index|
+      print "testing whether #{file[:type]} == #{Freereg1CsvFile::RECORD_TYPES::MARRIAGE}\n"
+      next unless file[:type] == Freereg1CsvFile::RECORD_TYPES::MARRIAGE
+#
+     FreeregCsvProcessor.process(file[:filename])      
+ 
+      ['first', 'last'].each do |entry_key|
+        entry = file[:entries][entry_key.to_sym]
+        
+        check_record(entry, :bride_forename, :bride_surname, true)
+        check_record(entry, :groom_forename, :groom_surname, true)
+
+        # TODO search based on father/mother
+#        check_record(entry, :male_relative_forename, :relative_surname, false)
+#        check_record(entry, :female_relative_forename, :relative_surname, false)
+
+      end
+    end
+  end
+
+
   def check_record(entry, first_name_key, last_name_key, required)
     unless entry[first_name_key].blank? ||required
       q = SearchQuery.create!(:first_name => entry[first_name_key],
                               :last_name => entry[last_name_key],
                               :inclusive => !required)
       result = q.search
-      print "\n\nNew search on #{first_name_key}, #{last_name_key}\n"
-      pp q.attributes
-      p result.count
       result.each { |r| pp r.attributes}
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
