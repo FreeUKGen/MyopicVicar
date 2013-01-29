@@ -1,4 +1,5 @@
 class SearchQueriesController < ApplicationController
+  layout :resolve_layout
   def index
     redirect_to :action => :new
   end
@@ -23,9 +24,19 @@ class SearchQueriesController < ApplicationController
   def show
     @search_query = SearchQuery.find(params[:id])
     @search_results = @search_query.search
-    render :layout => 'show_search'
   end
 
+
+  private
+
+  def resolve_layout
+    case action_name
+    when "show"
+      "search_queries"
+    else
+      "application"
+    end
+  end
 
 
 end
