@@ -70,14 +70,18 @@
 		<% transcription = annotation.transcription %>
 		<% if transcription %>
 		    <% transcription.attributes.keys.each do |field| %>
-			<% if transcription[field] %>
-			    <tr>
-				<td><%= field %></td>
-				<td><%= transcription[field] %></td>				
-			    </tr>
-			<% end %>
+				<% if transcription[field] %>
+				    <tr>
+					<td><%= field %></td>
+					<td><%= transcription[field] %></td>				
+				    </tr>
+				<% end %>
 		    <% end %>
-		    <%= link_to("Image", transcription.asset.location) %>
+			<% if transcription.asset.thumbnail_location %>
+			    <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+			<% else %>			
+			    <%= link_to("Image", transcription.asset.location) %>
+			<% end %>
 		<% end %>
 	    <% end %>
 	</tbody>
