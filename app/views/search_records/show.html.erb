@@ -54,32 +54,34 @@
 
 
 <% if @annotations && @annotations.length > 0 %>
-    <h4>Online Transcriptions</h4>
+    <h2>Online Transcriptions</h2>
 
-    <ul>
-	<% @annotations.each do |annotation| %>
-	    <% annotation.attributes.keys.each do |field| %>
-		<% if annotation[field] %>
-		    <li>
-		    <%= field %>: <b><%= annotation[field] %></b>				
-		    </li>
-		<% end %>
-	    <% end %>
-	    <% transcription = annotation.transcription %>
-	    <% if transcription %>
-		<% transcription.attributes.keys.each do |field| %>
-		    <% if transcription[field] %>
-			<li>
-			<%= field %>: <b><%= transcription[field] %></b>				
-			</li>
+    <table>
+	<tbody>
+	    <% @annotations.each do |annotation| %>
+		<% annotation.attributes.keys.each do |field| %>
+		    <% if annotation[field] %>
+			<tr>
+			    <td><%= field %></td>
+			    <td><%= annotation[field] %></td>				
+			</tr>
 		    <% end %>
 		<% end %>
-		<li>
-		<%= link_to("Image", transcription.asset.location) %>
-		</li>
+		<% transcription = annotation.transcription %>
+		<% if transcription %>
+		    <% transcription.attributes.keys.each do |field| %>
+			<% if transcription[field] %>
+			    <tr>
+				<td><%= field %></td>
+				<td><%= transcription[field] %></td>				
+			    </tr>
+			<% end %>
+		    <% end %>
+		    <%= link_to("Image", transcription.asset.location) %>
+		<% end %>
 	    <% end %>
-	<% end %>
-    </ul>
+	</tbody>
+    </table>
 <% end%>
 
 <% debug(@search_record) %>
