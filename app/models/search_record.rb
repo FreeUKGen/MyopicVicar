@@ -1,3 +1,5 @@
+require 'name_role'
+require 'record_type'
 require 'emendor'
 require 'freereg1_translator'
 
@@ -15,17 +17,6 @@ class SearchRecord
     USER_ADDITION='u'
   end
 
-  module Role
-    FATHER='f'
-    MOTHER='m'
-    HUSBAND='h'
-    WIFE='w'
-    GROOM='g'
-    BRIDE='b'
-    
-    PRIMARY='p'
-    
-  end
 
   belongs_to :freereg1_csv_entry
 

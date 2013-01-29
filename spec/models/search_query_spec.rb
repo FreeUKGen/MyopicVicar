@@ -64,7 +64,7 @@ describe SearchQuery do
     should_find(q,@record)
 
     # explicit incorrect record type
-    q = SearchQuery.create!(:record_type => @person[:record_type]=='Marriage'?'Baptism':'Marriage',
+    q = SearchQuery.create!(:record_type => @person[:record_type]==RecordType::MARRIAGE ? RecordType::BAPTISM : RecordType::MARRIAGE,
                            :last_name => @person[:last_name]||@person[:groom_last_name],
                            :inclusive => false)
     should_not_find(q,@record)

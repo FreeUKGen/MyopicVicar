@@ -12,8 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
-require 'record_type'
-require 'name_role'
-class ApplicationController < ActionController::Base
-  protect_from_forgery
+
+# describes the role a name place in a record
+module NameRole
+  FATHER='f'
+  MOTHER='m'
+  HUSBAND='h'
+  WIFE='w'
+  GROOM='g'
+  BRIDE='b'
+  
+  OPTIONS = {
+    'Father' => FATHER,
+    'Mother' => MOTHER,
+    'Husband' => HUSBAND,
+    'Wife' => WIFE,
+    'Groom' => GROOM,
+    'Bride' => BRIDE
+  }    
+  
+  ALL_ROLES = [FATHER, MOTHER, HUSBAND, WIFE, GROOM, BRIDE]
 end

@@ -12,24 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
+require 'record_type'
 class Freereg1CsvFile 
   include MongoMapper::Document
   many :freereg1_csv_entries
 
-  module RECORD_TYPES 
-    BURIAL='bu'
-    MARRIAGE='ma'
-    BAPTISM='ba'
-    
-    ALL_TYPES = [BURIAL, MARRIAGE, BAPTISM]
-  end
+
+
 
   # Fields correspond to cells in CSV headers  
   key :county, String 
   key :place, String 
   key :register, String 
   key :register_type, String
-  key :record_type, String
+  key :record_type, String, :in => RecordType::ALL_TYPES+[nil]
+
   key :records, String
   key :datemin, String
   key :datemax, String

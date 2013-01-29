@@ -2,15 +2,14 @@ class SearchQuery
   include MongoMapper::Document
 
   require 'chapman_code'
+  require 'name_role'
   # consider extracting this from entities
-  RECORD_TYPES = ['Baptism', 'Marriage', 'Burial']
-  ROLES = ['Father', 'Mother', 'Son', 'Daughter', 'Groom', 'Bride']
   
   key :first_name, String, :required => false
   key :last_name, String, :required => false
   key :fuzzy, Boolean
-  key :role, String, :required => false, :in => ROLES+[nil] # I'm not sure why in and required=>false seem incompatible; the +[nil] is a work-around
-  key :record_type, String, :required => false, :in => RECORD_TYPES+[nil]
+  key :role, String, :required => false, :in => NameRole::ALL_ROLES+[nil] # I'm not sure why in and required=>false seem incompatible; the +[nil] is a work-around
+  key :record_type, String, :required => false, :in => RecordType::ALL_TYPES+[nil]
   key :chapman_code, String, :required => false, :in => ChapmanCode::values+[nil]
 #  key :extern_ref, String
   key :inclusive, Boolean

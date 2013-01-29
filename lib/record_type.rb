@@ -12,8 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
-require 'record_type'
-require 'name_role'
-class ApplicationController < ActionController::Base
-  protect_from_forgery
+module RecordType
+
+  BURIAL='bu'
+  MARRIAGE='ma'
+  BAPTISM='ba'
+
+  OPTIONS = {
+    'Baptism' => BAPTISM,
+    'Marriage' => MARRIAGE,
+    'Burial' => BURIAL
+  }    
+  
+  ALL_TYPES = [BURIAL, MARRIAGE, BAPTISM]
+
 end
