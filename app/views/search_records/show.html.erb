@@ -77,11 +77,16 @@
 				    </tr>
 				<% end %>
 		    <% end %>
-			<% if transcription.asset.thumbnail_location %>
-			    <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
-			<% else %>			
-			    <%= link_to("Image", transcription.asset.location) %>
-			<% end %>
+		    <tr>
+				<td>Image</td>
+				<td>
+					<% if transcription.asset.thumbnail_location %>
+					    <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+					<% else %>			
+					    <%= link_to("Image", transcription.asset.location) %>
+					<% end %>
+				</td>				
+		    </tr>
 		<% end %>
 	    <% end %>
 	</tbody>
