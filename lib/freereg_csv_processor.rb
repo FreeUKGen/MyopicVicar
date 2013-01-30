@@ -641,12 +641,12 @@ class FreeregCsvProcessor
       #   break if n == 6
       #rescue the freereg data errors and continue processing the file
           rescue FreeREGError => free
-            user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
+            @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
             number_of_error_messages = number_of_error_messages + 1
             puts free.message
             message_file.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
             message_file.puts free.message
-            user_message_file.puts free.message
+            @user_message_file.puts free.message
             me.get_line_of_data
             retry
           end

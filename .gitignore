@@ -17,6 +17,7 @@
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
+/test_data/*.log
 /log/upload
 /tmp
 tmp/**/*
