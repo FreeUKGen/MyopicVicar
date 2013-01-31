@@ -21,6 +21,10 @@ module NameRole
   WIFE='w'
   GROOM='g'
   BRIDE='b'
+  BRIDE_FATHER='bf'
+  BRIDE_MOTHER='bm'
+  GROOM_FATHER='gf'
+  GROOM_MOTHER='gm'
   
   OPTIONS = {
     'Father' => FATHER,
@@ -31,5 +35,5 @@ module NameRole
     'Bride' => BRIDE
   }    
   
-  ALL_ROLES = [FATHER, MOTHER, HUSBAND, WIFE, GROOM, BRIDE]
+  ALL_ROLES = [FATHER, MOTHER, HUSBAND, WIFE, GROOM, BRIDE, BRIDE_FATHER, BRIDE_MOTHER, GROOM_FATHER, GROOM_MOTHER]
 end

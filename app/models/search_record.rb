@@ -53,6 +53,12 @@ class SearchRecord
   key :bride_first_name, String, :required => false
   key :bride_last_name, String, :required => false
 
+  # HACK: this is transitional code while I explore 
+  # roles and other family members on records
+  #
+  # It contains hashes with keys :first_name, :last_name, :role
+  key :other_family_names, Array, :required => false
+
   # Date of the entry, whatever kind it is
   key :date, String, :required => false
 
@@ -169,6 +175,13 @@ class SearchRecord
     if name = search_name(wife_first_name, wife_last_name)
       inclusive_names << name
     end
+    
+    if other_family_names && other_family_names.size > 0
+      other_family_names.each do |name_hash|
+        name = search_name(name_hash[:first_name], name_hash[:last_name])
+        inclusive_names << name
+      end
+    end
 
   end
 
@@ -211,17 +224,13 @@ class SearchRecord
   
   def self.from_freereg1_csv_entry(entry)
     Rails.logger.debug("from_freereg1_csv_entry processing #{entry.inspect}")
-#    p "from_freereg1_csv_entry processing"
-#    pp entry.attributes
+
     # find an existing search record
     record = SearchRecord.find_by_line_id(entry.line_id)
-#    p "found #{record}"    
-#    p "found #{record.inspect}"    
-#    binding.pry
+
     unless record 
       record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
       record.freereg1_csv_entry = entry
-#      p "creating #{record}"    
       
       record.save!    
     end  

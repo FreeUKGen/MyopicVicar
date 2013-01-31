@@ -95,7 +95,6 @@ describe Freereg1CsvEntry do
   it "should create search records for burials" do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      print "testing whether #{file[:type]} == #{RecordType::BURIAL}\n"
       next unless file[:type] == RecordType::BURIAL
       FreeregCsvProcessor.process(file[:filename])      
  
@@ -115,10 +114,9 @@ describe Freereg1CsvEntry do
   it "should create search records for marriages" do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
-      print "testing whether #{file[:type]} == #{RecordType::MARRIAGE}\n"
       next unless file[:type] == RecordType::MARRIAGE
 #
-     FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process(file[:filename])      
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -127,8 +125,8 @@ describe Freereg1CsvEntry do
         check_record(entry, :groom_forename, :groom_surname, true)
 
         # TODO search based on father/mother
-#        check_record(entry, :male_relative_forename, :relative_surname, false)
-#        check_record(entry, :female_relative_forename, :relative_surname, false)
+        check_record(entry, :bride_father_forename, :bride_father_surname, false)
+        check_record(entry, :groom_father_forename, :groom_father_surname, false)
 
       end
     end
@@ -141,7 +139,11 @@ describe Freereg1CsvEntry do
                               :last_name => entry[last_name_key],
                               :inclusive => !required)
       result = q.search
-      result.each { |r| pp r.attributes}
+      # print "\n\tSearching key #{first_name_key}\n"
+      # print "\n\tQuery:\n"
+      # pp q.attributes
+      # print "\n\tResults:\n"
+      # result.each { |r| pp r.attributes}
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
     end    

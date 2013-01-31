@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
+require 'name_role'
+
 module Freereg1Translator
   KEY_MAP = {
   #  :baptism_date => , #actual date as written
   #  :birth_date => ,
-    :bride_father_forename => :father_first_name,
-    :bride_father_surname => :father_surname,
+    # :bride_father_forename => :father_first_name,
+    # :bride_father_surname => :father_surname,
     :bride_forename => :bride_first_name,
   #  :bride_parish => ,
     :bride_surname => :bride_last_name,
@@ -73,11 +75,31 @@ module Freereg1Translator
     new_attrs
   end
   
+  def self.expanded_attrs(entry)
+    extras = []
+
+    if entry[:groom_father_forename] || entry[:groom_father_surname]
+      extra_name = { :role => NameRole::GROOM_FATHER }
+      extra_name[:first_name] = entry[:groom_father_forename]
+      extra_name[:last_name] = entry[:groom_father_surname]
+      extras << extra_name
+    end
+        
+    if entry[:bride_father_forename] || entry[:bride_father_surname]
+      extra_name = { :role => NameRole::BRIDE_FATHER }
+      extra_name[:first_name] = entry[:bride_father_forename]
+      extra_name[:last_name] = entry[:bride_father_surname]
+      extras << extra_name
+    end
+
+  end
   
   def self.translate(file, entry)
     entry_attrs = entry_attributes(entry)
     file_attrs = file_attributes(file)
     file_attrs.merge!(entry_attrs)
+    file_attrs[:other_family_names] = expanded_attrs(entry)
+    file_attrs
   end
 
 end

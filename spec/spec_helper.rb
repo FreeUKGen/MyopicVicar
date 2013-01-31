@@ -101,6 +101,7 @@ FREEREG1_CSV_FILES = [
     :entry_count => 45,
     :entries => {
       :first => {
+        :line_id => "1.HRTCALMA.CSV.Chd",
         :marriage_date => '4 Oct 1726',
         :bride_surname => 'CANNON',
         :bride_forename => 'Sarah',
@@ -108,6 +109,7 @@ FREEREG1_CSV_FILES = [
         :groom_forename => 'William'
       },
       :last => {
+        :line_id => "45.HRTCALMA.CSV.Chd",
         :marriage_date => '12 Oct 1837',
         :bride_surname => 'GARRATT',
         :bride_forename => 'Anne',
@@ -115,5 +117,33 @@ FREEREG1_CSV_FILES = [
         :groom_forename => 'Charles'
       }
     }
-   }
-]
+   },
+  { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTWILMA.csv",
+    :type => RecordType::MARRIAGE,
+    :user => 'Chd',
+    :chapman_code => 'HRT',
+    :entry_count => 545,
+    :entries => {
+      :first => {
+        :line_id => "1.HRTWILMA.CSV.Chd",
+        :marriage_date => '8 Oct 1559',
+        :bride_surname => 'CHATTERTON',
+        :bride_forename => 'Margerie',
+        :groom_surname => 'BUCKMASTER',
+        :groom_forename => 'Thomas'
+      },
+      :last => {
+        :line_id => "545.HRTWILMA.CSV.Chd",
+        :marriage_date => '11 Nov 1911',
+        :bride_surname => 'SWAIN',
+        :bride_forename => 'Bessie Malinda',
+        :groom_surname => 'BROWN',
+        :groom_forename => 'Percy',
+        :bride_father_surname => 'SWAIN',
+        :bride_father_forename => 'Thomas',
+        :groom_father_surname => 'BROWN',
+        :groom_father_forename => 'Charles'
+      }
+    }
+   }]
