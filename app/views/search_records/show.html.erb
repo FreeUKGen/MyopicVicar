@@ -2,6 +2,28 @@
 
 <table>
     <tbody>
+	<tr>
+	    <td>primary_names</td>
+	    <td>
+	    	<% @search_record.primary_names.each do |name| %>
+				first_name: <%= name.first_name %><br/>
+				last_name: <%= name.last_name %><br/>
+				origin: <%= name.origin %><br/>
+				role: <%= name.role %><br/>
+		    <% end %>
+		</td>
+	</tr>
+	<tr>
+	    <td>inclusive_names</td>
+	    <td>
+	    	<% @search_record.inclusive_names.each do |name| %>
+				first_name: <%= name.first_name %><br/>
+				last_name: <%= name.last_name %><br/>
+				origin: <%= name.origin %><br/>
+				role: <%= name.role %><br/>
+		    <% end %>
+		</td>
+	</tr>
 	<% @search_record.attributes.keys.each do |field| %>
 	    <% if @search_record[field] %>
 		<tr>
@@ -23,12 +45,12 @@
     <table>
 	<tbody>
 	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
-		<% if @search_record.freereg1_csv_entry[field] %>
-		    <tr>
-			<td><%= field %></td>
-			<td><%= @search_record.freereg1_csv_entry[field] %></td>
-		    </tr>
-		<% end %>
+			<% if @search_record.freereg1_csv_entry[field] %>
+			    <tr>
+					<td><%= field %></td>
+					<td><%= @search_record.freereg1_csv_entry[field] %></td>
+			    </tr>
+			<% end %>
 	    <% end %>
 	</tbody>
     </table>

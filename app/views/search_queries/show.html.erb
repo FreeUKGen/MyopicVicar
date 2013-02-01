@@ -7,8 +7,8 @@
     <table>			
 	<thead>
 	    <tr>
-		<th>Forename</th>
-		<th>Surname</th>
+		<th>Primary Name</th>
+		<th>Family Members</th>
 		<th>Type</th>
 		<th>Date</th>
 		<th>County</th>
@@ -19,10 +19,20 @@
 	    <tbody>
 		<tr>
 		    <td>
-			<%= search_record.first_name %>
+			<% search_record.primary_names.uniq.each_with_index do |name, i| %>
+				<% if i > 0 %>
+					<br/>
+				<% end%>
+				<%= "#{name.first_name} #{name.last_name}" %>
+			<% end%>
 		    </td>
 		    <td>
-			<%= search_record.last_name %>
+			<% (search_record.inclusive_names - search_record.primary_names).each_with_index do |name, i| %>
+				<% if i > 0 %>
+					<br/>
+				<% end%>
+				<%= "#{name.first_name} #{name.last_name}" %>
+			<% end%>
 		    </td>
 		    <td>
 			<%= search_record.record_type %>
