@@ -404,7 +404,7 @@ class FreeregCsvProcessor
     data_record[:register] = @register
     data_record[:register_type] = @register_type
     # need to add the transcriberID
-    data_record[:line_id] = n.to_s + "." + File.basename(@filename.upcase) + "." + @userid
+    data_record[:line_id] = @userid + "." + File.basename(@filename.upcase) + "." + n.to_s
     data_record[:file_line_number] = n
     raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
     data_record[:register_entry_nuber] = @csvdata[3].to_i
@@ -564,7 +564,7 @@ class FreeregCsvProcessor
 
   def create_or_update_db_record_for_file(head)
     if @freereg1_csv_file
-      @freereg1_csv_file.update_attributes!(head)      
+      @freereg1_csv_file.update_attributes!(head)
     else
       @freereg1_csv_file = Freereg1CsvFile.create!(head)
     end
@@ -617,7 +617,8 @@ class FreeregCsvProcessor
         me.process_header_line_four(header)
         me.get_line_of_data
         me.process_header_line_five(header)
-        # persist the record for the file
+        # persist the record for the file 
+        #TODO we need to test for eistence of file first
         me.create_or_update_db_record_for_file(header)
     #deal with the data    
         n = 0
@@ -644,8 +645,8 @@ class FreeregCsvProcessor
             @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
             number_of_error_messages = number_of_error_messages + 1
             puts free.message
-            message_file.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
-            message_file.puts free.message
+            message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
+            message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message
             @user_message_file.puts free.message
             me.get_line_of_data
             retry
@@ -656,8 +657,8 @@ class FreeregCsvProcessor
       user_message_file = File.new(user_file_for_warning_messages, "w")
       number_of_error_messages = number_of_error_messages + 1
       puts free.message
-      message_file.puts "*********************** #{n} ***********#{standalone_filename} ***********#{user_dirname}" 
-      message_file.puts free.message
+      message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
+      message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message
       user_message_file.puts free.message
 
     #rescue the end of file and close out the file
