@@ -179,7 +179,7 @@ class SearchRecord
     if other_family_names && other_family_names.size > 0
       other_family_names.each do |name_hash|
         name = search_name(name_hash[:first_name], name_hash[:last_name])
-        inclusive_names << name
+        inclusive_names << name if name
       end
     end
 
@@ -187,7 +187,7 @@ class SearchRecord
 
   def search_name(first_name, last_name, source = 'transcript')
     name = nil
-    unless last_name.blank?
+    unless last_name.blank? 
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source })       
     end
     name
