@@ -559,15 +559,17 @@ class FreeregCsvProcessor
     entry = Freereg1CsvEntry.new(data_record)
     entry.freereg1_csv_file=@freereg1_csv_file
     entry.save!
-
+    entry
   end
 
   def create_or_update_db_record_for_file(head)
     if @freereg1_csv_file
       @freereg1_csv_file.update_attributes!(head)
     else
-      @freereg1_csv_file = Freereg1CsvFile.create!(head)
+      @freereg1_csv_file = Freereg1CsvFile.find_by_file_name_and_userid(head[:file_name], head[:userid])
+      @freereg1_csv_file = Freereg1CsvFile.create!(head) unless @freereg1_csv_file
     end
+    @freereg1_csv_file
   end
 
   def self.delete_all
@@ -578,6 +580,7 @@ class FreeregCsvProcessor
 
 
   def self.process(filename)
+    new_db_record = nil
     #this is the basic processing
     begin 
        
@@ -619,7 +622,7 @@ class FreeregCsvProcessor
         me.process_header_line_five(header)
         # persist the record for the file 
         #TODO we need to test for eistence of file first
-        me.create_or_update_db_record_for_file(header)
+        new_db_record = me.create_or_update_db_record_for_file(header)
     #deal with the data    
         n = 0
     #deal with header 5 being optional
@@ -684,8 +687,8 @@ class FreeregCsvProcessor
       message_file.puts e.backtrace.inspect  
     end 
 
-
-    
+    # return the record that was created
+    new_db_record
   end
 
 
