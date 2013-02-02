@@ -564,10 +564,18 @@ class FreeregCsvProcessor
 
   def create_or_update_db_record_for_file(head)
     if @freereg1_csv_file
+
       @freereg1_csv_file.update_attributes!(head)
     else
-      @freereg1_csv_file = Freereg1CsvFile.find_by_file_name_and_userid(head[:file_name], head[:userid])
-      @freereg1_csv_file = Freereg1CsvFile.create!(head) unless @freereg1_csv_file
+      old_freereg1_csv_file = Freereg1CsvFile.find_by_file_name_and_userid(head[:file_name], head[:userid])
+      if old_freereg1_csv_file
+
+        # this is an old record -- delete it before we create a new one
+        old_freereg1_csv_file.freereg1_csv_entries.delete_all
+        old_freereg1_csv_file.delete
+      end
+
+      @freereg1_csv_file = Freereg1CsvFile.create!(head)
     end
     @freereg1_csv_file
   end
@@ -593,10 +601,7 @@ class FreeregCsvProcessor
       print "#{user_dirname}\t#{standalone_filename}\n"
       # TODO convert character sets as in freereg_csv_processor
       #need to make these passed parameters 
-  #      filename = "NFKGYAMA.CSV"
-  
-  #     fileout =  "test_data/csvout/" + user_dirname + "/" + standalone_filename.sub(File.extname(standalone_filename), '.out')
-  #     FileUtils.mkdir_p(File.dirname(fileout))
+
        file_for_warning_messages = "test_data/warning/messages.log"
        FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
        message_file = File.new(file_for_warning_messages, "a")
