@@ -224,16 +224,11 @@ class SearchRecord
   
   def self.from_freereg1_csv_entry(entry)
     Rails.logger.debug("from_freereg1_csv_entry processing #{entry.inspect}")
-
-    # find an existing search record
-    record = SearchRecord.find_by_line_id(entry.line_id)
-
-    unless record 
-      record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-      record.freereg1_csv_entry = entry
-      
-      record.save!    
-    end  
+    # assumes no existing entries for this line
+    record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+    record.freereg1_csv_entry = entry
+    
+    record.save!    
   end
   
   def self.delete_freereg1_csv_entries
