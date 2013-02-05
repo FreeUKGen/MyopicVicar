@@ -3,12 +3,11 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-* { margin: 0; padding: 0; }
+/** { margin: 0; padding: 0; }*/
 /** {border: 1px solid #000;}*/
 
 #container {
     display: table;
-    margin: 0 auto;
     width: 100%;
 }
 
@@ -26,8 +25,9 @@
     width: 80%;
 }
 
-#content h1, h2, h3 {
-    margin: 30px;
+#content h1,h2,h3 {
+    margin: 30px auto;
+    width: 800px;
 }
 
 #header {
