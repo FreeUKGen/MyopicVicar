@@ -63,7 +63,7 @@ class Freereg1CsvEntry
   key :person_sex, String
   key :place, String
   key :register, String
-  key :register_entry_number, Integer
+  key :register_entry_number, String
   key :register_type, String
   key :relationship, String
   key :relative_surname, String
