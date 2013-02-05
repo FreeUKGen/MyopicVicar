@@ -313,9 +313,7 @@ class FreeregCsvProcessor
     CSV.parse(line) do |data|
       @csvdata = data
     end
-    @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].strip unless @csvdata[x].nil? }
-    @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/\s+/, ' ') unless @csvdata[x].nil? }
-          
+    @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
     return true
   end
 
@@ -670,7 +668,7 @@ class FreeregCsvProcessor
 
     #rescue the end of file and close out the file
     rescue FreeREGEnd => free
-      n = n-1 - number_of_error_messages
+      n = n - number_of_error_messages
       header[:records] = n
       header[:county] = data_record [:county]   
       header[:place] = data_record [:place]
