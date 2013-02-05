@@ -14,6 +14,7 @@
 #
 class Freereg1CsvEntry
   include MongoMapper::Document
+  
 
   belongs_to :freereg1_csv_file
   one :search_record
@@ -78,9 +79,7 @@ class Freereg1CsvEntry
   after_save :transform_search_record
   
   def transform_search_record
-    Rails.logger.debug('transform_search_record')
     SearchRecord.from_freereg1_csv_entry(self)
-
   end
   
 end

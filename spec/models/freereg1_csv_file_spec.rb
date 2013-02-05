@@ -36,12 +36,14 @@ describe Freereg1CsvFile do
   it "should load the same file twice, correctly" do
     old_file_count = Freereg1CsvFile.count
     old_entry_count = Freereg1CsvFile.count
+    old_record_count = SearchRecord.count
     
     file = FREEREG1_CSV_FILES.first
     record = FreeregCsvProcessor.process(file[:filename])      
 
     Freereg1CsvFile.count.should eq(old_file_count+1)
     Freereg1CsvEntry.count.should eq(old_entry_count+file[:entry_count])
+    SearchRecord.count.should eq(old_record_count+file[:entry_count])
         
     found_record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
     record.should eq(found_record)
@@ -56,6 +58,7 @@ describe Freereg1CsvFile do
     # validate that we didn't create extra records
     Freereg1CsvFile.count.should eq(old_file_count+1)
     Freereg1CsvEntry.count.should eq(old_entry_count+file[:entry_count])
+    SearchRecord.count.should eq(old_record_count+file[:entry_count])
     
     # look for the old record by id
     old_record = Freereg1CsvFile.find(record.id)

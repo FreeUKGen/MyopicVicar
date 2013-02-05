@@ -571,7 +571,9 @@ class FreeregCsvProcessor
       if old_freereg1_csv_file
 
         # this is an old record -- delete it before we create a new one
-        old_freereg1_csv_file.freereg1_csv_entries.delete_all
+#        old_freereg1_csv_file.freereg1_csv_entries.search_record.delete_all
+        old_freereg1_csv_file.freereg1_csv_entries.all.each { |e| e.search_record.destroy if e.search_record }
+        old_freereg1_csv_file.freereg1_csv_entries.destroy_all
         old_freereg1_csv_file.delete
       end
 

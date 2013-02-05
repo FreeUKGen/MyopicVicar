@@ -223,8 +223,7 @@ class SearchRecord
   end
   
   def self.from_freereg1_csv_entry(entry)
-    Rails.logger.debug("from_freereg1_csv_entry processing #{entry.inspect}")
-    # assumes no existing entries for this line
+#   # assumes no existing entries for this line
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
     record.freereg1_csv_entry = entry
     
