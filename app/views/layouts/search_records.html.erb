@@ -2,12 +2,20 @@
 <html>
     <head>
 	<title></title>
-	<%= stylesheet_link_tag "normalize" %>
+	<%#= stylesheet_link_tag "normalize" %>
 	<%= stylesheet_link_tag "search_records" %>
     </head>
     <body>
+	<div id="header">
+	    <h1>This is the header</h1>
+	</div>
 	<div id="container">
-	    <%= yield %>
+	    <div id="nav">
+		This is the nav
+	    </div>
+	    <div id="content">
+		<%= yield %>
+	    </div>
 	</div>
     </body>
 </html>

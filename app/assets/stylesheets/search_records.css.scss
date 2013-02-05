@@ -3,11 +3,36 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
+* { margin: 0; padding: 0; }
+/** {border: 1px solid #000;}*/
+
 #container {
-    width: 1024px;
+    display: table;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px dashed #000;
+    width: 100%;
+}
+
+#nav {
+    background: none repeat scroll 0 0 #AABBCC;
+    display: table-cell;
+    margin: 10px;
+    width: 20%;
+}
+
+#content {
+    background: none repeat scroll 0 0 #CCBBAA;
+    display: table-cell;
+    margin: 10px;
+    width: 80%;
+}
+
+#content h1, h2, h3 {
+    margin: 30px;
+}
+
+#header {
+    height: 100px;
+    background-color: #000;
 }
 
 table {
