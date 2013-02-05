@@ -19,7 +19,7 @@ class FreeregCsvProcessor
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age"]
   VALID_CHAR = /[^a-zA-Z\d\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#]/
   VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"]
+  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4,5}\z/
   VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
   RECORD_TYPE_TRANSLATION = {
@@ -36,7 +36,7 @@ class FreeregCsvProcessor
   VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
   VALID_SEX = /\A[\sMmFf-]{1}\z/
   VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp][TtXxRr]'?[Ss]?*$\z/
-  WILD_CHARACTER = /[\*\_]/
+  WILD_CHARACTER = /[\*\_\?]/
   WORD_EXPANSIONS =  {
             'Saint' => 'St.',
             'St' => 'St.',
@@ -65,7 +65,9 @@ class FreeregCsvProcessor
           'B' => 'Bachelor',
           'Sing' => 'Single',
           'Spin' => 'Spinster',
+          'Spin.' => 'Spinster',
           'Spiinster' => 'Spinster',
+          'Spinister' => 'Spinster',
           'Spinspter' => 'Spinster',
           'Maiden and Spinster' => 'Spinster',
           'Maiden' => 'Spinster',
@@ -78,6 +80,7 @@ class FreeregCsvProcessor
           'Singl' => 'Single',
           'S' => 'Single',
           'Wid' => 'Widowed',
+          'Wid.' => 'Widowed',
           'Widw' => 'Widow',
           'Widdow' => 'Widow',
           'A Widowe' => 'Widow',
@@ -118,14 +121,14 @@ class FreeregCsvProcessor
 
   # validate the modern date of creation or modification
   def datevalmod(x)
-    return true if x.nil?
+    return true if x.nil? || x.empty?
     return true if x =~ VALID_DATE
     return false
   end
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
   def datestat(x)
-    return true if x.nil?
+    return true if x.nil? || x.empty?
       xx = x.to_i
       @datemax = xx if xx > @datemax
       @datemin = xx if xx < @datemin
@@ -137,9 +140,8 @@ class FreeregCsvProcessor
   def datevalsplit(x)
     @splityear = nil
 
-    return true if x.nil?
-    return true if x =~ /\A\s\z/
-    a = x.split(" ")
+    return true if x.nil? || x.empty? 
+      a = x.split(" ")
       if a.length == 3
         #work with  dd mmm yyyy/y
         #firstly deal with the dd and allow the wild character
@@ -196,32 +198,29 @@ class FreeregCsvProcessor
 
   # clean up names
   def cleanname(m)
-    return true if @csvdata[m].nil?
-      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
-      return true if @csvdata[m] !=~ VALID_NAME
-      return false
+    return true if @csvdata[m].nil? || @csvdata[m].empty?
+    return true if @csvdata[m] !=~ VALID_NAME
+    return false
   end
 
   #clean up the sex field
   def cleansex(m)
-    return true if @csvdata[m].nil?
-      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
-      return true if @csvdata[m] =~ VALID_SEX
-      return false
+    return true if @csvdata[m].nil? || @csvdata[m].empty?
+    return true if @csvdata[m] =~ VALID_SEX
+    return false
   end
 
   #clean up a text field eg abode and notes fields
   def cleantext(m)
-    return true if @csvdata[m].nil?
-      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
+    return true if @csvdata[m].nil? || @csvdata[m].empty?
       return true if @csvdata[m] !=~ VALID_TEXT
       return false
   end
 
   # clean u the conditions field and make changes according to the valconditions hash
   def cleancondition(m)
-    return true if @csvdata[m].nil? || @csvdata[m].to_s =~ /\s/
-      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip.capitalize
+    return true if @csvdata[m].nil? || @csvdata[m].empty?
+      @csvdata[m] = @csvdata[m].capitalize
       @csvdata[m] = VALID_MARRIAGE_CONDITIONS[@csvdata[m]] if VALID_MARRIAGE_CONDITIONS.has_key?(@csvdata[m])
       return true if VALID_MARRIAGE_CONDITIONS.has_value?(@csvdata[m])
       return false
@@ -232,8 +231,7 @@ class FreeregCsvProcessor
   # 1d (day), 2w (week), 3m (month), 2y5m (2 years, 5 months), or - for 'no age'
   # max 30d, 30w, 30m and 150y
   def cleanage(m)
-    return true if @csvdata[m].nil?
-      @csvdata[m] = @csvdata[m].gsub(/\s+/, ' ').strip
+    return true if @csvdata[m].nil? || @csvdata[m].empty?
       #test for valid words
       return true if VALID_AGE_WORDS.include?(Unicode::downcase(@csvdata[m]))
       #test for straight years
@@ -267,15 +265,13 @@ class FreeregCsvProcessor
 
   #test for the character set
   def charvalid(m)
-   return true if (m == "iso-8859-1"  || m.nil? )
+   return true if (m == "iso-8859-1"  || m.nil? || m.empty?)
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-      mm = m.strip
-      return true if mm.empty?
-      mm = "IBM437" if (mm == "cp437")
-      mm = "macRoman" if (mm == "macintosh")
-      if Encoding.find(mm)
+      m = "IBM437" if (m == "cp437")
+      m = "macRoman" if (m == "macintosh")
+      if Encoding.find(m)
         #if we have valid new character set; use it and change the file encoding
-        @charset = Encoding.find(mm)
+        @charset = Encoding.find(m)
         @file.close
         @file = File.new(@filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
         #reposition the file
@@ -289,8 +285,7 @@ class FreeregCsvProcessor
   def validregister(m)
     @register = nil
     @register_type = nil
-    return true if m.nil? 
-    m = m.gsub(/\s+/, ' ').strip
+    return true if m.nil? || m.empty? 
     a = m.split(" ")
     n = a.length
     a[-1] = a[-1].gsub(/\(?\)?/, '')
@@ -318,13 +313,16 @@ class FreeregCsvProcessor
     CSV.parse(line) do |data|
       @csvdata = data
     end
+    @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].strip unless @csvdata[x].nil? }
+    @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/\s+/, ' ') unless @csvdata[x].nil? }
+          
     return true
   end
 
   #process the header line 1
   # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
   def process_header_line_one(head)
-    raise FreeREGHeaderError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] == "+INFO")
+    raise FreeREGHeaderError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
     # BWB: temporarily commenting out to test db interface
    address = EmailVeracity::Address.new(@csvdata[1])
    raise FreeREGHeaderError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
@@ -362,7 +360,7 @@ class FreeregCsvProcessor
   #process the header line 3
   # eg #,Credit,Libby,email address,,,,,,
   def process_header_line_threee(head)
-#   raise FreeREGHeaderError, "Third line does not start with #,Credit" unless (@csvdata[0] == "#" && (@csvdata[1] == "CREDIT" || @csvdata[1] == "credit" ))
+    raise FreeREGHeaderError, "Third line does not start with #,Credit it contains #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && @csvdata[1].upcase == "CREDIT" )
     raise FreeREGHeaderError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
     # # suppressing for the moment
@@ -394,7 +392,7 @@ class FreeregCsvProcessor
   # County, Place, Church, Reg #
 
   def process_register_location(n,data_record)
-    raise FreeREGError, "The county code #{ @csvdata[0]} in the file name is invalid " unless ChapmanCode::values.include?(@csvdata[0])
+    raise FreeREGError, "The county code #{ @csvdata[0]} in line #{n} is invalid " unless ChapmanCode::values.include?(@csvdata[0])
     data_record[:county] = @csvdata[0]
     # do we validate the Place field?
     raise FreeREGError, "Place field #{@csvdata[1]} in line #{n} contains non numeric characters" unless validregister(@csvdata[1])
@@ -406,8 +404,8 @@ class FreeregCsvProcessor
     # need to add the transcriberID
     data_record[:line_id] = @userid + "." + File.basename(@filename.upcase) + "." + n.to_s
     data_record[:file_line_number] = n
-    raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" if @csvdata[3] =~/\D/
-    data_record[:register_entry_nuber] = @csvdata[3].to_i
+    raise FreeREGError, "Register Entry Number #{@csvdata[3]} in line #{n} contains non numeric characters" unless cleantext(3)
+    data_record[:register_entry_nuber] = @csvdata[3]
 
   end
 
@@ -462,7 +460,8 @@ class FreeregCsvProcessor
     data_record[:groom_age] = @csvdata[7]
     raise FreeREGError, "The groom's parish #{@csvdata[8]} contains invalid characters in line #{n}" unless cleantext(8)
     data_record[:groom_parish] = @csvdata[8]
-    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleancondition(9)
+#    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleancondition(9)
+    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleantext(9)
     data_record[:groom_condition] = @csvdata[9]
     raise FreeREGError, "The groom's occupation #{@csvdata[10]} contains invalid characters in line #{n}" unless cleantext(10)
     data_record[:groom_occupation] = @csvdata[10]
@@ -477,7 +476,8 @@ class FreeregCsvProcessor
     data_record[:bride_age] = @csvdata[14]
     raise FreeREGError, "The bride's parish #{@csvdata[15]} contains invalid characters in line #{n}" unless cleantext(15)
     data_record[:bride_parish] = @csvdata[15]
-    raise FreeREGError, "The bride's condition #{@csvdata[16]} contains unknown condition in line #{n}" unless cleancondition(16)
+#    raise FreeREGError, "The bride's condition #{@csvdata[16]} contains unknown condition in line #{n}" unless cleancondition(16)
+    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleantext(9)
     data_record[:bride_condition] = @csvdata[16]
     raise FreeREGError, "The bride's occupation #{@csvdata[17]} contains invalid characters in line #{n}" unless cleantext(17)
     data_record[:bride_occupation] = @csvdata[17]
@@ -564,8 +564,7 @@ class FreeregCsvProcessor
 
   def create_or_update_db_record_for_file(head)
     if @freereg1_csv_file
-
-      @freereg1_csv_file.update_attributes!(head)
+        @freereg1_csv_file.update_attributes!(head)
     else
       old_freereg1_csv_file = Freereg1CsvFile.find_by_file_name_and_userid(head[:file_name], head[:userid])
       if old_freereg1_csv_file
@@ -628,7 +627,6 @@ class FreeregCsvProcessor
         me.get_line_of_data
         me.process_header_line_five(header)
         # persist the record for the file 
-        #TODO we need to test for eistence of file first
         new_db_record = me.create_or_update_db_record_for_file(header)
     #deal with the data    
         n = 0
@@ -646,7 +644,6 @@ class FreeregCsvProcessor
              when RecordType::MARRIAGE then me.process_marriage_data_records(n,data_record,header)
              end
       #store the processed data   
- #         dataout.puts data_record
             me.create_db_record_for_entry(data_record)
             me.get_line_of_data
       #   break if n == 6

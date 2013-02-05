@@ -5,24 +5,24 @@
 	<tr>
 	    <td>primary_names</td>
 	    <td>
-	    	<% @search_record.primary_names.each do |name| %>
-				first_name: <%= name.first_name %><br/>
-				last_name: <%= name.last_name %><br/>
-				origin: <%= name.origin %><br/>
-				role: <%= name.role %><br/>
-		    <% end %>
-		</td>
+		<% @search_record.primary_names.each do |name| %>
+		    first_name: <%= name.first_name %><br/>
+		    last_name: <%= name.last_name %><br/>
+		    origin: <%= name.origin %><br/>
+		    role: <%= name.role %><br/>
+		<% end %>
+	    </td>
 	</tr>
 	<tr>
 	    <td>inclusive_names</td>
 	    <td>
-	    	<% @search_record.inclusive_names.each do |name| %>
-				first_name: <%= name.first_name %><br/>
-				last_name: <%= name.last_name %><br/>
-				origin: <%= name.origin %><br/>
-				role: <%= name.role %><br/>
-		    <% end %>
-		</td>
+		<% @search_record.inclusive_names.each do |name| %>
+		    first_name: <%= name.first_name %><br/>
+		    last_name: <%= name.last_name %><br/>
+		    origin: <%= name.origin %><br/>
+		    role: <%= name.role %><br/>
+		<% end %>
+	    </td>
 	</tr>
 	<% @search_record.attributes.keys.each do |field| %>
 	    <% if @search_record[field] %>
@@ -45,12 +45,12 @@
     <table>
 	<tbody>
 	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
-			<% if @search_record.freereg1_csv_entry[field] %>
-			    <tr>
-					<td><%= field %></td>
-					<td><%= @search_record.freereg1_csv_entry[field] %></td>
-			    </tr>
-			<% end %>
+		<% if @search_record.freereg1_csv_entry[field] %>
+		    <tr>
+			<td><%= field %></td>
+			<td><%= @search_record.freereg1_csv_entry[field] %></td>
+		    </tr>
+		<% end %>
 	    <% end %>
 	</tbody>
     </table>
@@ -92,22 +92,22 @@
 		<% transcription = annotation.transcription %>
 		<% if transcription %>
 		    <% transcription.attributes.keys.each do |field| %>
-				<% if transcription[field] %>
-				    <tr>
-					<td><%= field %></td>
-					<td><%= transcription[field] %></td>				
-				    </tr>
-				<% end %>
+			<% if transcription[field] %>
+			    <tr>
+				<td><%= field %></td>
+				<td><%= transcription[field] %></td>				
+			    </tr>
+			<% end %>
 		    <% end %>
 		    <tr>
-				<td>Image</td>
-				<td>
-					<% if transcription.asset.thumbnail_location %>
-					    <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
-					<% else %>			
-					    <%= link_to("Image", transcription.asset.location) %>
-					<% end %>
-				</td>				
+			<td>Image</td>
+			<td>
+			    <% if transcription.asset.thumbnail_location %>
+				<%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+			    <% else %>			
+				<%= link_to("Image", transcription.asset.location) %>
+			    <% end %>
+			</td>				
 		    </tr>
 		<% end %>
 	    <% end %>
