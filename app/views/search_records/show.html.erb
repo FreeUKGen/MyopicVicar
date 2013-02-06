@@ -1,7 +1,10 @@
-<h1>Record</h1>
-
 <table>
     <tbody>
+	<tr>
+	    <td colspan="2">
+		<h1>Record</h1>
+	    </td>
+	</tr>
 	<tr>
 	    <td>primary_names</td>
 	    <td>
@@ -36,14 +39,18 @@
 </table>
 
 
-<h1>Transcriptions</h1>
 
 <% if @search_record.freereg1_csv_entry %>
-    <h2>Offline Transcriptions</h2>
-    <h3>Entry</h3>
 
     <table>
 	<tbody>
+	    <tr>
+		<td colspan="2">
+		    <h1>Transcriptions</h1>
+		    <h2>Offline Transcriptions</h2>
+		    <h3>Entry</h3>
+		</td>
+	    </tr>
 	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
 		<% if @search_record.freereg1_csv_entry[field] %>
 		    <tr>
@@ -55,10 +62,14 @@
 	</tbody>
     </table>
 
-    <h3>File</h3>
 
     <table>
 	<tbody>
+	    <tr>
+		<td colspan="2">
+		    <h3>File</h3>
+		</td>
+	    </tr>
 	    <% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
 	    <% if file %>
 		<% file.attributes.keys.each do |field| %>
