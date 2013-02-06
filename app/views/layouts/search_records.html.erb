@@ -11,7 +11,10 @@
 	</div>
 	<div id="container">
 	    <div id="nav">
-		This is the nav
+		<ul>
+		    <li><%= link_to "New Search", new_search_query_path %></li>
+		    <li><%= link_to "Back to results", "bar" %></li>
+		</ul>
 	    </div>
 	    <div id="content">
 		<%= yield %>
