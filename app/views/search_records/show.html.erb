@@ -87,10 +87,14 @@
 
 
 <% if @annotations && @annotations.length > 0 %>
-    <h2>Online Transcriptions</h2>
 
     <table>
 	<tbody>
+	    <tr>
+		<td colspan="2">
+		    <h2>Online Transcriptions</h2>
+		</td>
+	    </tr>
 	    <% @annotations.each do |annotation| %>
 		<% annotation.attributes.keys.each do |field| %>
 		    <% if annotation[field] %>
