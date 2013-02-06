@@ -1,10 +1,12 @@
 <table>
-    <tbody>
+    <thead>
 	<tr>
 	    <td colspan="2">
 		<h1>Record</h1>
 	    </td>
 	</tr>
+    </thead>
+    <tbody>
 	<tr>
 	    <td>primary_names</td>
 	    <td>
@@ -43,7 +45,7 @@
 <% if @search_record.freereg1_csv_entry %>
 
     <table>
-	<tbody>
+	<thead>
 	    <tr>
 		<td colspan="2">
 		    <h1>Transcriptions</h1>
@@ -51,6 +53,8 @@
 		    <h3>Entry</h3>
 		</td>
 	    </tr>
+	</thead>
+	<tbody>
 	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
 		<% if @search_record.freereg1_csv_entry[field] %>
 		    <tr>
@@ -64,12 +68,14 @@
 
 
     <table>
-	<tbody>
+	<thead>
 	    <tr>
 		<td colspan="2">
 		    <h3>File</h3>
 		</td>
 	    </tr>
+	</thead>
+	<tbody>
 	    <% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
 	    <% if file %>
 		<% file.attributes.keys.each do |field| %>
@@ -89,12 +95,14 @@
 <% if @annotations && @annotations.length > 0 %>
 
     <table>
-	<tbody>
+	<thead>
 	    <tr>
 		<td colspan="2">
 		    <h2>Online Transcriptions</h2>
 		</td>
 	    </tr>
+	</thead>
+	<tbody>
 	    <% @annotations.each do |annotation| %>
 		<% annotation.attributes.keys.each do |field| %>
 		    <% if annotation[field] %>
