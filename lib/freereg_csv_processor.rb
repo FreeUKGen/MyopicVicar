@@ -10,7 +10,7 @@ class FreeregCsvProcessor
   require "#{Rails.root}/app/models/freereg1_csv_file"
   require "record_type"
 
-  
+  HEADER_FLAG = /\A\#\z/
   VALID_AGE_MAXIMUM = {'d' => 60, 'w' => 60 , 'm' => 60 , 'y' => 150}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
   VALID_AGE_TYPE2 = /^(\d{1,2})([dwmy])/
@@ -32,9 +32,10 @@ class FreeregCsvProcessor
   }
   VALID_DATE = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
   VALID_CCC_CODE = /\AC{3,5}\z/
+  VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
   VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
-  VALID_SEX = /\A[\sMmFf-]{1}\z/
+  VALID_SEX = /\A[\*\?\_\sMmFf-]{1}\z/
   VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp][TtXxRr]'?[Ss]?*$\z/
   WILD_CHARACTER = /[\*\_\?]/
   WORD_EXPANSIONS =  {
@@ -337,44 +338,162 @@ class FreeregCsvProcessor
   #process the header line 2
   # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
   def process_header_line_two(head)
-    raise FreeREGHeaderError,  "Second line of file does not start with #,CCC it has #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && (@csvdata[1] =~ VALID_CCC_CODE))
-    raise FreeREGHeaderError, "The transcriber's name may not be blank in the second header line it contains #{@csvdata[2]}" if @csvdata[2].nil?
+     @csvdata = @csvdata.compact
+     @number_of_fields = @csvdata.length
+     raise FreeREGHeaderError, "The second header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+    
+    case
+      when (@csvdata[0] =~ HEADER_FLAG && @csvdata[1] =~ VALID_CCC_CODE)
+         #deal with correctly formatted header
+         process_header_line_two_block(head)
+      when (@number_of_fields == 4) && (@csvdata[0].length > 1)
+        #deal with #transcriber
+        i = 0
+        while i < 4  do
+          @csvdata[5-i] = @csvdata[3-i]
+          i +=1
+        end
+        @csvdata[2] = @csvdata[2].gsub(/#/, '')        
+        process_header_line_two_block(head)
+    when @number_of_fields == 7
+      eric = Array.new
+    #the basic EricD format
+      eric[2] = @csvdata[1]
+      eric[3] = @csvdata[2]
+      eric[4] = @csvdata[4]
+      eric[5] = @csvdata[5]
+      i = 2
+      while i < 6  do
+        @csvdata[i] = eric[i]
+        i +=1
+      end
+      process_header_line_two_block(head)
+    when @number_of_fields == 1 && @csvdata[0] =~ HEADER_FLAG
+     #empty line 
+    when (@number_of_fields == 5) && (@csvdata[1].length > 1) && @csvdata[0] =~ HEADER_FLAG
+      #,transciber,syndicate,file,date
+      @csvdata[5] = @csvdata[4]
+      @csvdata[4] = @csvdata[3]
+      @csvdata[3] = @csvdata[2]
+      @csvdata[2] = @csvdata[1]
+      process_header_line_two_block(head)
+    else
+      puts "I did not know enough about your data format to extract transciber information at header line 2"
+      puts @csvdata
+    end
+  
+  end
+
+  def process_header_line_two_block(head)
     raise FreeREGHeaderError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_name] = @csvdata[2]
-    raise FreeREGHeaderError, "The syndicate name #{@csvdata[3]} may not be blank in the second header line" if @csvdata[3].nil?
     raise FreeREGHeaderError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_syndicate] = @csvdata[3]
-    raise FreeREGHeaderError, "The file name cannot be blank in the second header line" if @csvdata[4].nil?
-    raise FreeREGHeaderError, "The internal #{@csvdata[4]} and external file #{@filename} names must match" unless Unicode::upcase(@csvdata[4]) == File.basename(@filename.upcase)
-    aa = @csvdata[4].split(//).first(3).join.upcase
-    raise FreeREGHeaderError, "The county code #{@csvdata[4]} in the file name is invalid #{aa}" unless ChapmanCode::values.include?(aa)
-    aa = @csvdata[4].split(//)
-    aaa = aa[6].to_s + aa[7].to_s
-    raise FreeREGHeaderError, "The record type in the file name #{@csvdata[4]} is not one of BA, BU or MA" unless VALID_RECORD_TYPE.include?(Unicode::upcase(aaa))
-    raise FreeREGHeaderError, "The date of the transcription #{@csvdata[5]} is in the wrong format" unless datevalmod(@csvdata[5])
     head [:transcription_date] = @csvdata[5]
   end
 
   #process the header line 3
   # eg #,Credit,Libby,email address,,,,,,
   def process_header_line_threee(head)
-    raise FreeREGHeaderError, "Third line does not start with #,Credit it contains #{@csvdata[0]},#{@csvdata[1]}" unless (@csvdata[0] == "#" && @csvdata[1].upcase == "CREDIT" )
+     @csvdata = @csvdata.compact
+     @number_of_fields = @csvdata.length
+     raise FreeREGHeaderError, "The third header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+    
+    case 
+      when (@csvdata[0] =~ HEADER_FLAG &&  VALID_CREDIT_CODE.include?(@csvdata[1]))
+        #the normal case 
+        process_header_line_three_block(head)
+      when @number_of_fields == 1 && @csvdata[0] =~ HEADER_FLAG
+        #no information just keep going
+      
+      when @number_of_fields == 2 && !VALID_CREDIT_CODE.include?(@csvdata[1])
+         #eric special #,Credit name
+         a = @csvdata[1].split(" ") 
+         head [:credit_name] = a[1] if a.length == 1
+         a = a.drop(1)
+         head [:credit_name] = a.join(" ")
+      when ((@number_of_fields == 5) && (@csvdata[1].nil?))
+          #and extra comma
+          @csvdata[2] = @csvdata[3]
+          @csvdata[3] = @csvdata[4]
+          process_header_line_three_block(head)
+      else
+         puts "I did not know enough about your data format to extract Credit Information at header line 3"
+         @csvdata
+    end
+  
+  end
+
+  def process_header_line_three_block(head)
     raise FreeREGHeaderError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
     head [:credit_name] = @csvdata[2]
     # # suppressing for the moment
     # address = EmailVeracity::Address.new(@csvdata[3])
     # raise FreeREGHeaderError, "Invalid email address '#{@csvdata[3]}' for the credit person in the third line of header" unless address.valid? || @csvdata[3].nil?
     head [:credit_email] = @csvdata[3]
+    
   end
 
   #process the header line 4
-  # eg #,05-Feb-2006,data taken from computer records and converted using Excel
+  # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
   def process_header_line_four(head)
-    raise FreeREGHeaderError, "Forth line does not start with # it has #{@csvdata[0]}"  unless (@csvdata[0] == "#")
-    raise FreeREGHeaderError, "The date of the modification #{@csvdata[1]} in the forth header line is in the wrong format" unless datevalmod(@csvdata[1])
-    head [:modification_date] = @csvdata[1]
-    head [:first_comments] = @csvdata[2]
-    head [:second_comments] = @csvdata[3]
+    @csvdata = @csvdata.compact
+    @number_of_fields = @csvdata.length
+     raise FreeREGHeaderError, "The forth header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+      case 
+        when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
+         #standard format
+          head [:modification_date] = @csvdata[1]
+          head [:first_comments] = @csvdata[2]
+          head [:second_comments] = @csvdata[3]
+       when (@number_of_fields == 1 && @csvdata[0] =~ HEADER_FLAG)
+          #empty line 
+       when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
+           #date and no notes
+           head [:modification_date] = @csvdata[1]
+       when @number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG
+          # only a single comment
+          head [:first_comments] = @csvdata[1]  
+       when @number_of_fields == 2 && !(@csvdata[0] =~ HEADER_FLAG)
+          #date only a single comment but no comma
+          a = Array.new
+          a = @csvdata[0].split("")
+          if a[0] =~ HEADER_FLAG
+             a = a.drop(1)
+             head [:modification_date] = a.join("")
+             head [:first_comments] = @csvdata[1]
+          else
+             puts "I did not know enough about your data format to extract notes Information at header line 4"
+             puts @csvdata
+          end 
+       when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
+            #date and one note
+           head [:modification_date] = @csvdata[1]
+           head [:first_comments] = @csvdata[2]
+       when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[2]))
+            #one note and a date 
+            head [:modification_date] = @csvdata[2]
+            head [:first_comments] = @csvdata[1]
+       when @number_of_fields == 3  && @csvdata[0] =~ HEADER_FLAG
+          # Many comments
+          @csvdata.drop(1)
+          head [:first_comments] = @csvdata.join(" ")
+       when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
+            #date and 3 comments
+            head [:modification_date] = @csvdata[2]
+            @csvdata = @csvdata.drop(1)
+            head [:first_comments] = @csvdata.join(" ")
+       when (@number_of_fields == 5 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
+            #,date and 3 comments
+            head [:modification_date] = @csvdata[1]
+            @csvdata = @csvdata.drop(2)
+            head [:first_comments] = @csvdata.join(" ")
+       
+        else
+            puts "I did not know enough about your data format to extract notes Information at header line 4"
+            puts @csvdata
+      end
+    puts head 
   end
 
   #process the optional header line 5
@@ -650,6 +769,7 @@ class FreeregCsvProcessor
             @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
             number_of_error_messages = number_of_error_messages + 1
             puts free.message
+            puts @csvdata
             message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
             message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message
             @user_message_file.puts free.message
