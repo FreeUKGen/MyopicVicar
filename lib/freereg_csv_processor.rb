@@ -11,7 +11,7 @@ class FreeregCsvProcessor
   require "record_type"
 
   HEADER_FLAG = /\A\#\z/
-  VALID_AGE_MAXIMUM = {'d' => 60, 'w' => 60 , 'm' => 60 , 'y' => 150}
+  VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
   VALID_AGE_TYPE2 = /^(\d{1,2})([dwmy])/
   VALID_AGE_TYPE3 =  /^(\d{1,2})([dwmy])(\d{1,2})([dwmy])/
@@ -21,6 +21,8 @@ class FreeregCsvProcessor
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4,5}\z/
+  VALID_MALE= ["SON"]
+  VALID_FEMALE =["DAU"]
   VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
   RECORD_TYPE_TRANSLATION = {
     "BAPTISMS" => RecordType::BAPTISM, 
@@ -208,6 +210,8 @@ class FreeregCsvProcessor
   def cleansex(m)
     return true if @csvdata[m].nil? || @csvdata[m].empty?
     return true if @csvdata[m] =~ VALID_SEX
+    @csvdata[m] = "M" if @csvdata[m].upcase == VALID_MALE
+    @csvdata[m] = "F" if @csvdata[m].upcase == VALID_FEMALE
     return false
   end
 
@@ -341,7 +345,7 @@ class FreeregCsvProcessor
      @csvdata = @csvdata.compact
      @number_of_fields = @csvdata.length
      raise FreeREGHeaderError, "The second header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
-    
+    @csvdata[1] = @csvdata[1].upcase unless @csvdata[1].nil?
     case
       when (@csvdata[0] =~ HEADER_FLAG && @csvdata[1] =~ VALID_CCC_CODE)
          #deal with correctly formatted header
@@ -493,7 +497,7 @@ class FreeregCsvProcessor
             puts "I did not know enough about your data format to extract notes Information at header line 4"
             puts @csvdata
       end
-    puts head 
+   
   end
 
   #process the optional header line 5
@@ -509,7 +513,7 @@ class FreeregCsvProcessor
   # County, Place, Church, Reg #
 
   def process_register_location(n,data_record)
-    raise FreeREGError, "The county code #{ @csvdata[0]} in line #{n} is invalid " unless ChapmanCode::values.include?(@csvdata[0])
+    raise FreeREGError, "The county code #{ @csvdata[0]} in line #{n} is invalid or you have a blank record line " unless ChapmanCode::values.include?(@csvdata[0])
     data_record[:county] = @csvdata[0]
     # do we validate the Place field?
     raise FreeREGError, "Place field #{@csvdata[1]} in line #{n} contains non numeric characters" unless validregister(@csvdata[1])
