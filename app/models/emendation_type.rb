@@ -2,6 +2,7 @@ class EmendationType
   include MongoMapper::Document
   key :name, String
   key :target_field, String # actually a symbol 
+  key :origin, String
   timestamps!
   
   many :emendation_rules

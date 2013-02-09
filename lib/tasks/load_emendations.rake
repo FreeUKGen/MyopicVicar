@@ -2,7 +2,14 @@ desc "Initialize the emendation rules"
 
 
 task :load_emendations => :environment do  
-  et = EmendationType.create!(:name => 'expansion', :target_field => :first_name)
+  THIS_RAKE_TASK = 'load_emendations rake task'
+  ets = EmendationType.find_all_by_origin(THIS_RAKE_TASK)
+  ets.each do |et|
+    et.emendation_rules.delete_all
+    et.delete
+  end
+  
+  et = EmendationType.create!(:name => 'expansion', :target_field => :first_name, :origin => THIS_RAKE_TASK)
   EmendationRule.create!(:source => 'abig', :target => 'abigail', :emendation_type => et)
   EmendationRule.create!(:source => 'abr', :target => 'abraham', :emendation_type => et)
   EmendationRule.create!(:source => 'agn', :target => 'agnes', :emendation_type => et)
@@ -115,7 +122,7 @@ task :load_emendations => :environment do
   EmendationRule.create!(:source => 'xtopherus', :target => 'christopher', :emendation_type => et)
   EmendationRule.create!(:source => 'zach', :target => 'zachariah', :emendation_type => et)
 
-  et = EmendationType.create!(:name => 'delatinization', :target_field => :first_name)
+  et = EmendationType.create!(:name => 'delatinization', :target_field => :first_name, :origin => THIS_RAKE_TASK)
   EmendationRule.create!(:source => 'adamus', :target => 'adam', :emendation_type => et)
   EmendationRule.create!(:source => 'adelmarus', :target => 'elmer', :emendation_type => et)
   EmendationRule.create!(:source => 'adrianus', :target => 'adrian', :emendation_type => et)
