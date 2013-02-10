@@ -32,7 +32,7 @@
 	<% @search_record.attributes.keys.each do |field| %>
 	    <% if @search_record[field] %>
 		<tr>
-		    <td><%= field %></td>
+		    <td><%= field.gsub('_',' ').capitalize %></td>
 		    <td><%= @search_record[field] %></td>
 		</tr>
 	    <% end %>
@@ -58,7 +58,7 @@
 	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
 		<% if @search_record.freereg1_csv_entry[field] %>
 		    <tr>
-			<td><%= field %></td>
+			<td><%= field.gsub('_',' ').capitalize %></td>
 			<td><%= @search_record.freereg1_csv_entry[field] %></td>
 		    </tr>
 		<% end %>
@@ -81,7 +81,7 @@
 		<% file.attributes.keys.each do |field| %>
 		    <% if file[field] %>
 			<tr>
-			    <td><%= field %></td>
+			    <td><%= field.gsub('_',' ').capitalize %></td>
 			    <td><%= file[field] %></td>
 			</tr>
 		    <% end %>
@@ -107,7 +107,7 @@
 		<% annotation.attributes.keys.each do |field| %>
 		    <% if annotation[field] %>
 			<tr>
-			    <td><%= field %></td>
+			    <td><%= field.gsub('_',' ').capitalize %></td>
 			    <td><%= annotation[field] %></td>				
 			</tr>
 		    <% end %>
@@ -115,12 +115,12 @@
 		<% transcription = annotation.transcription %>
 		<% if transcription %>
 		    <% transcription.attributes.keys.each do |field| %>
-			<% if transcription[field] %>
-			    <tr>
-				<td><%= field %></td>
-				<td><%= transcription[field] %></td>				
-			    </tr>
-			<% end %>
+				<% if transcription[field] %>
+				    <tr>
+					<td><%= field.gsub('_',' ').capitalize %></td>
+					<td><%= transcription[field] %></td>				
+				    </tr>
+				<% end %>
 		    <% end %>
 		    <tr>
 			<td>Image</td>
