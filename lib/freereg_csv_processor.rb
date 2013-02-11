@@ -38,16 +38,23 @@ class FreeregCsvProcessor
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
   VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
   VALID_SEX = /\A[\*\?\_\sMmFf-]{1}\z/
-  VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp][TtXxRr]'?[Ss]?*$\z/
+  VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp][TtXxRrWw]'?[Ss]?*$\z/
   WILD_CHARACTER = /[\*\_\?]/
   WORD_EXPANSIONS =  {
             'Saint' => 'St.',
+            'SAINT' => 'St.',
             'St' => 'St.',
+            'ST' => 'St.',
             'Gt' => 'Great',
+            'GT' => 'Great',
             'Gt.' => 'Great',
+            'GT.' => 'Great',
             'Lt' => 'Little',
+            'LT' => 'Little',
             'Lt.' => 'Little',
+            'LT.' => 'Little',
             '&' => "and",
+            'NR' => 'near',
             'nr' => 'near'}
   CAPITALIZATION_WORD_EXCEPTIONS = [
             "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
@@ -270,10 +277,10 @@ class FreeregCsvProcessor
 
   #test for the character set
   def charvalid(m)
-   return true if (m == "iso-8859-1"  || m.nil? || m.empty?)
+   return true if (m == "iso-8859-1"  || m.nil? || m.empty? || m == "chset")
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       m = "IBM437" if (m == "cp437")
-      m = "macRoman" if (m == "macintosh")
+      m = "macRoman" if (m.downcase == "macintosh")
       if Encoding.find(m)
         #if we have valid new character set; use it and change the file encoding
         @charset = Encoding.find(m)
@@ -299,7 +306,9 @@ class FreeregCsvProcessor
        a[-1] = a[-1].gsub(/'?[Ss]?/, '') 
        @register_type = Unicode::upcase(a[-1])
        n = n - 1
+       @register_type = "DT" if @register_type == "DW"
       end
+      
        i = 0
         while i < n do
           register_words[i] = WORD_EXPANSIONS[register_words[i]] if WORD_EXPANSIONS.has_key?(register_words[i])
@@ -327,8 +336,8 @@ class FreeregCsvProcessor
   def process_header_line_one(head)
     raise FreeREGHeaderError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
     # BWB: temporarily commenting out to test db interface
-   address = EmailVeracity::Address.new(@csvdata[1])
-   raise FreeREGHeaderError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
+#   address = EmailVeracity::Address.new(@csvdata[1])
+#   raise FreeREGHeaderError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     head [:transcriber_email] = @csvdata[1]
     raise FreeREGHeaderError,  "Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     # canonicalize record type
@@ -376,6 +385,13 @@ class FreeregCsvProcessor
      #empty line 
     when (@number_of_fields == 5) && (@csvdata[1].length > 1) && @csvdata[0] =~ HEADER_FLAG
       #,transciber,syndicate,file,date
+      @csvdata[5] = @csvdata[4]
+      @csvdata[4] = @csvdata[3]
+      @csvdata[3] = @csvdata[2]
+      @csvdata[2] = @csvdata[1]
+      process_header_line_two_block(head)
+    when (@number_of_fields == 5) && (@csvdata[0].length > 1) 
+      #deal with missing , between #and ccc
       @csvdata[5] = @csvdata[4]
       @csvdata[4] = @csvdata[3]
       @csvdata[3] = @csvdata[2]
@@ -448,56 +464,84 @@ class FreeregCsvProcessor
         when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
          #standard format
           head [:modification_date] = @csvdata[1]
-          head [:first_comments] = @csvdata[2]
-          head [:second_comments] = @csvdata[3]
+          head [:first_comment] = @csvdata[2]
+          head [:second_comment] = @csvdata[3]
        when (@number_of_fields == 1 && @csvdata[0] =~ HEADER_FLAG)
-          #empty line 
+          # an empty line follows the #
+       when (@number_of_fields == 1 && @csvdata[0] !=~ HEADER_FLAG)
+        # is an # folloed by something either  date or a comment
+          a = Array.new
+          a = @csvdata[0].split("")
+          if a[0] =~ HEADER_FLAG
+             a = a.drop(1)
+             @csvdata[0] = a.join("").strip
+             if datevalmod(@csvdata[0])
+               head [:modification_date] = @csvdata[0]
+             else
+               head [:first_comment] = @csvdata[0]                
+             end
+          else
+             puts "I did not know enough about your data format to extract notes Information at header line 4"
+             puts @csvdata
+          end
        when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
            #date and no notes
            head [:modification_date] = @csvdata[1]
        when @number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG
           # only a single comment
-          head [:first_comments] = @csvdata[1]  
+          head [:first_comment] = @csvdata[1]  
        when @number_of_fields == 2 && !(@csvdata[0] =~ HEADER_FLAG)
-          #date only a single comment but no comma
+          #date only a single comment but no comma ith date in either field
           a = Array.new
           a = @csvdata[0].split("")
           if a[0] =~ HEADER_FLAG
              a = a.drop(1)
-             head [:modification_date] = a.join("")
-             head [:first_comments] = @csvdata[1]
+             @csvdata[0] = a.join("").strip
+              case 
+              when datevalmod(@csvdata[0])
+               head [:modification_date] = @csvdata[0] 
+               head [:first_comment] = @csvdata[1]
+              when datevalmod(@csvdata[1])
+                head [:modification_date] = @csvdata[1] 
+                head [:first_comment] = @csvdata[0]
+              else
+                head [:first_comment] = @csvdata[0]
+                head [:second_comment] = @csvdata[1]
+              end
           else
              puts "I did not know enough about your data format to extract notes Information at header line 4"
              puts @csvdata
           end 
        when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
-            #date and one note
+            # date and one note
            head [:modification_date] = @csvdata[1]
-           head [:first_comments] = @csvdata[2]
+           head [:first_comment] = @csvdata[2]
        when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[2]))
             #one note and a date 
             head [:modification_date] = @csvdata[2]
-            head [:first_comments] = @csvdata[1]
+            head [:first_comment] = @csvdata[1]
        when @number_of_fields == 3  && @csvdata[0] =~ HEADER_FLAG
           # Many comments
           @csvdata.drop(1)
-          head [:first_comments] = @csvdata.join(" ")
+          head [:first_comment] = @csvdata.join(" ")
        when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
             #date and 3 comments
             head [:modification_date] = @csvdata[2]
             @csvdata = @csvdata.drop(1)
-            head [:first_comments] = @csvdata.join(" ")
+            head [:first_comment] = @csvdata.join(" ")
+       when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && !datevalmod(@csvdata[1])) 
+            # 4 comments one of which may be a date that is not in field 2
+            head [:first_comment] = @csvdata.join(" ")
        when (@number_of_fields == 5 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
             #,date and 3 comments
             head [:modification_date] = @csvdata[1]
             @csvdata = @csvdata.drop(2)
-            head [:first_comments] = @csvdata.join(" ")
+            head [:first_comment] = @csvdata.join(" ")
        
         else
             puts "I did not know enough about your data format to extract notes Information at header line 4"
             puts @csvdata
       end
-   
   end
 
   #process the optional header line 5
@@ -513,6 +557,7 @@ class FreeregCsvProcessor
   # County, Place, Church, Reg #
 
   def process_register_location(n,data_record)
+    raise FreeREGError, "Empty data line"  if @csvdata[0].nil? 
     raise FreeREGError, "The county code #{ @csvdata[0]} in line #{n} is invalid or you have a blank record line " unless ChapmanCode::values.include?(@csvdata[0])
     data_record[:county] = @csvdata[0]
     # do we validate the Place field?
@@ -770,15 +815,20 @@ class FreeregCsvProcessor
       #   break if n == 6
       #rescue the freereg data errors and continue processing the file
           rescue FreeREGError => free
-            @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
-            number_of_error_messages = number_of_error_messages + 1
-            puts free.message
-            puts @csvdata
-            message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
-            message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message
-            @user_message_file.puts free.message
-            me.get_line_of_data
-            retry
+            if free.message == "Empty data line"
+              me.get_line_of_data
+              retry
+            else
+               @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
+               number_of_error_messages = number_of_error_messages + 1
+               puts free.message
+               puts @csvdata
+               message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
+               message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message
+               @user_message_file.puts free.message
+               me.get_line_of_data
+               retry
+            end
           end
         end
     #rescue FreeREG file header errors and stop processing the file
