@@ -82,4 +82,47 @@ class Freereg1CsvEntry
     SearchRecord.from_freereg1_csv_entry(self)
   end
   
+  
+  def ordered_display_fields
+    order = []
+    order << 'county'
+    order << 'place'
+    order << 'register'
+    order << 'register_type'
+    order << 'register_entry_number'
+    order << 'baptism_date'
+    order << 'birth_date'
+    order << 'burial_date'
+    [
+      # primary members of the record are displayed first
+      "person_",
+      "burial_person_",
+      "groom_",
+      "bride_",
+      # other family members show up next
+      "father_",
+      "mother_",
+      "husband_",
+      "wife_",
+      "groom_father_",
+      "bride_father_",
+      "male_relative_",
+      "female_relative_",
+      "relative_",
+      "witness1_",
+      "witness2_"
+    ].each do |prefix|
+      ["forename", "surname", "age", "sex", "condition", "abode", "parish", "occupation", ].each do |suffix|
+        order << "#{prefix}#{suffix}"
+      end
+    end
+    order << 'file_line_number'
+    order << 'line_id'
+    order << 'relationship'
+    order << 'notes'
+
+    order
+  end
+  
+  
 end

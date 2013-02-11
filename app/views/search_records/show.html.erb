@@ -1,45 +1,3 @@
-<table>
-    <thead>
-	<tr>
-	    <td colspan="2">
-		<h1>Record</h1>
-	    </td>
-	</tr>
-    </thead>
-    <tbody>
-	<tr>
-	    <td>primary_names</td>
-	    <td>
-		<% @search_record.primary_names.each do |name| %>
-		    first_name: <%= name.first_name %><br/>
-		    last_name: <%= name.last_name %><br/>
-		    origin: <%= name.origin %><br/>
-		    role: <%= name.role %><br/>
-		<% end %>
-	    </td>
-	</tr>
-	<tr>
-	    <td>inclusive_names</td>
-	    <td>
-		<% @search_record.inclusive_names.each do |name| %>
-		    first_name: <%= name.first_name %><br/>
-		    last_name: <%= name.last_name %><br/>
-		    origin: <%= name.origin %><br/>
-		    role: <%= name.role %><br/>
-		<% end %>
-	    </td>
-	</tr>
-	<% @search_record.attributes.keys.each do |field| %>
-	    <% if @search_record[field] %>
-		<tr>
-		    <td><%= field.gsub('_',' ').capitalize %></td>
-		    <td><%= @search_record[field] %></td>
-		</tr>
-	    <% end %>
-	<% end %>
-    </tbody>
-</table>
-
 
 
 <% if @search_record.freereg1_csv_entry %>
@@ -55,7 +13,7 @@
 	    </tr>
 	</thead>
 	<tbody>
-	    <% @search_record.freereg1_csv_entry.attributes.keys.each do |field| %>
+	    <% @search_record.freereg1_csv_entry.ordered_display_fields.each do |field| %>
 		<% if @search_record.freereg1_csv_entry[field] %>
 		    <tr>
 			<td><%= field.gsub('_',' ').capitalize %></td>
@@ -78,7 +36,7 @@
 	<tbody>
 	    <% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
 	    <% if file %>
-		<% file.attributes.keys.each do |field| %>
+		<% file.ordered_display_fields.each do |field| %>
 		    <% if file[field] %>
 			<tr>
 			    <td><%= field.gsub('_',' ').capitalize %></td>
@@ -138,4 +96,43 @@
     </table>
 <% end%>
 
-<% debug(@search_record) %>
+<table>
+    <thead>
+	<tr>
+	    <td colspan="2">
+		<h1>Record</h1>
+	    </td>
+	</tr>
+    </thead>
+    <tbody>
+	<tr>
+	    <td>Primary names</td>
+	    <td>
+		<% @search_record.primary_names.each do |name| %>
+		    first_name: <%= name.first_name %><br/>
+		    last_name: <%= name.last_name %><br/>
+		    origin: <%= name.origin %><br/>
+		<% end %>
+	    </td>
+	</tr>
+	<tr>
+	    <td>Other family names</td>
+	    <td>
+		<% @search_record.inclusive_names.each do |name| %>
+		    first_name: <%= name.first_name %><br/>
+		    last_name: <%= name.last_name %><br/>
+		    origin: <%= name.origin %><br/>
+		<% end %>
+	    </td>
+	</tr>
+	<% @search_record.ordered_display_fields.each do |field| %>
+	    <% if @search_record[field] %>
+		<tr>
+		    <td><%= field.gsub('_',' ').capitalize %></td>
+		    <td><%= @search_record[field] %></td>
+		</tr>
+	    <% end %>
+	<% end %>
+    </tbody>
+</table>
+

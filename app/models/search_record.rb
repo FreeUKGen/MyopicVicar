@@ -70,6 +70,29 @@ class SearchRecord
   key :inclusive_soundex, Array, :require => false
 
 
+  def ordered_display_fields
+    order = []
+    order << 'record_type'
+    order << 'date'
+    [
+      # primary members of the record are displayed first
+      "",
+      "groom_",
+      "bride_",
+      # other family members show up next
+      "father_",
+      "mother_",
+      "husband_",
+      "wife_"
+    ].each do |prefix|
+      ["first_name", "last_name"].each do |suffix|
+        order << "#{prefix}#{suffix}"
+      end
+    end
+    order
+  end
+
+
   def transform
     populate_search_from_transcript
     
