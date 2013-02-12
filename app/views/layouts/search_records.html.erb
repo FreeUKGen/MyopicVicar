@@ -13,7 +13,7 @@
 	    <div id="nav">
 		<ul>
 		    <li><%= link_to "New Search", new_search_query_path %></li>
-		    <li><%= link_to "Back to results", :back %></li>
+		    <li><%= link_to "Back to results", search_query_path(params[:search_id]) %></li>
 		</ul>
 	    </div>
 	    <div id="content">
