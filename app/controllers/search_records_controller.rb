@@ -1,15 +1,14 @@
 class SearchRecordsController < ApplicationController
-  before_filter :visited
+  before_filter :viewed
   def show
     @search_record = SearchRecord.find(params[:id])
     @annotations = Annotation.find(@search_record.annotation_ids)
-    session[:visited] << params[:id]
-    puts "id visited: #{session[:visited]}"
-    #puts "array size: #{session[:visited].length}"
+    session[:viewed] << params[:id]
+    puts "id viewed: #{session[:viewed]}"
   end
 
-  def visited
-    session[:visited] ||= []
+  def viewed
+    session[:viewed] ||= []
   end
 
   
