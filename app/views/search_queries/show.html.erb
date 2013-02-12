@@ -45,6 +45,9 @@
 		    </td>
 		    <td>
 			<%= link_to("Details", search_record_path(search_record, :search_id => @search_query)) %>
+			<% if session[:visited] %>
+			    <%= "visited" if session[:visited].include?("#{search_record.id}") %>
+			<% end %>
 		    </td>
 		</tr>	
 	    </tbody>
