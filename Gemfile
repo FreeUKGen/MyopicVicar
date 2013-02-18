@@ -27,7 +27,7 @@ gem 'mm-devise', :git => 'git://github.com/pollingj/mm-devise.git'
 gem 'activeadmin-mongomapper'
 
 
-gem 'rmagick', "2.13.1"    #version added by kirk as windows requires this version
+gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
 gem 'rubyzip'
 
 gem 'rspec-rails'
