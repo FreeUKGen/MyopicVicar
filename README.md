@@ -6,7 +6,7 @@ into a transcription tool based on Zooniverse Scribe.
 
 ## Getting Started
 
-### Linux/*nix
+### Linux
 
 1. Link the assets directory to public/ under your Scribe install
        <tt>ln -s ./public/assets/images/working ../Scribe/public/images</tt> 
