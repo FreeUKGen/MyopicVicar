@@ -132,6 +132,27 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should not create duplicate names" do
+    [
+      "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
+      "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv"
+    ].each do |filename|
+
+      file_record = FreeregCsvProcessor.process(filename)      
+      file_record.freereg1_csv_entries.count.should eq 1
+      entry = file_record.freereg1_csv_entries.first
+      search_record = entry.search_record
+      pp search_record.attributes
+      names = search_record.inclusive_names
+      seen = {}
+      names.each do |name|
+        key = [name.first_name, name.last_name]
+        seen[key].should be nil
+        seen[key] = key
+      end
+    end    
+  end
+
 
   def check_record(entry, first_name_key, last_name_key, required)
     unless entry[first_name_key].blank? ||required
@@ -148,5 +169,6 @@ describe Freereg1CsvEntry do
       result.should be_in_result(entry)
     end    
   end
+
 
 end
