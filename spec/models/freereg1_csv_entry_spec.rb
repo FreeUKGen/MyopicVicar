@@ -124,10 +124,14 @@ describe Freereg1CsvEntry do
         check_record(entry, :bride_forename, :bride_surname, true)
         check_record(entry, :groom_forename, :groom_surname, true)
 
-        # TODO search based on father/mother
         check_record(entry, :bride_father_forename, :bride_father_surname, false)
         check_record(entry, :groom_father_forename, :groom_father_surname, false)
 
+        # check types and counties
+        check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::MARRIAGE})
+        check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::BURIAL}, false)
+        check_record(entry, :groom_forename, :groom_surname, true, { :chapman_code => file[:county]})
+        check_record(entry, :groom_forename, :groom_surname, true, { :chapman_code => 'BOGUS'}, false)
       end
     end
   end
@@ -153,19 +157,24 @@ describe Freereg1CsvEntry do
   end
 
 
-  def check_record(entry, first_name_key, last_name_key, required)
+  def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required
-      q = SearchQuery.create!(:first_name => entry[first_name_key],
-                              :last_name => entry[last_name_key],
-                              :inclusive => !required)
+      query_params = additional.merge({:first_name => entry[first_name_key],
+                                 :last_name => entry[last_name_key],
+                                 :inclusive => !required})
+      q = SearchQuery.create!(query_params)
       result = q.search
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
       # pp q.attributes
       # print "\n\tResults:\n"
       # result.each { |r| pp r.attributes}
-      result.count.should have_at_least(1).items
-      result.should be_in_result(entry)
+      if should_find
+        result.count.should have_at_least(1).items
+        result.should be_in_result(entry)
+      else
+        result.should_not be_in_result(entry)            
+      end
     end    
   end
 
