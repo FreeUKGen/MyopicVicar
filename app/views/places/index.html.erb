@@ -1,0 +1,52 @@
+<h1>Listing places</h1>
+
+<table>
+  <tr>
+    <th>Place</th>
+    <th>Churches</th>
+    <th></th>
+  </tr>
+
+<% @places.each do |place| %>
+  <tr>
+    <td>
+    	<%= place.place_name %>
+	</td>
+
+    <td width="60%">
+    	<ol>
+	    	<% place.churches.each do |church| %>
+				<li>
+					<%= church.church_name %>
+					<% if church.registers.size > 0 %>
+					Registers:
+					<ol>
+						<% church.registers.each do |register| %>
+							<li>
+								<%= register.register_type %> <%= register.start_year %> - <% register.end_year %> (<%= register.status %>)
+							</li>
+						<% end%>
+					</ol>
+						
+					<% else %>
+						<i>No Registers</i>
+					<% end %>
+					
+				</li>	    		
+	    	
+	    	<% end%>
+    		
+    	</ol>
+    	
+    </td>
+
+    <td><%= link_to 'Show', place %> 
+		<%= link_to 'Edit', edit_place_path(place) %> 
+		<%= link_to 'Destroy', place, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Place', new_place_path %>

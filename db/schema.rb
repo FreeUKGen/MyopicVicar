@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121226152614) do
+ActiveRecord::Schema.define(:version => 20130304200122) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -46,6 +46,12 @@ ActiveRecord::Schema.define(:version => 20121226152614) do
     t.boolean  "resolved"
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
+  end
+
+  create_table "churches", :force => true do |t|
+    t.string   "church_name"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "emendation_rules", :force => true do |t|
@@ -163,6 +169,24 @@ ActiveRecord::Schema.define(:version => 20121226152614) do
   create_table "image_uploads", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "places", :force => true do |t|
+    t.string   "chapman_code"
+    t.string   "place_name"
+    t.string   "church_name"
+    t.string   "genuki_url"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "registers", :force => true do |t|
+    t.string   "start_year"
+    t.string   "end_year"
+    t.string   "register_type"
+    t.string   "status"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "s3buckets", :force => true do |t|

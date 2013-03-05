@@ -1,0 +1,23 @@
+<h1>Listing churches</h1>
+
+<table>
+  <tr>
+    <th>Church name</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @churches.each do |church| %>
+  <tr>
+    <td><%= church.church_name %></td>
+    <td><%= link_to 'Show', church %></td>
+    <td><%= link_to 'Edit', edit_church_path(church) %></td>
+    <td><%= link_to 'Destroy', church, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Church', new_church_path %>

@@ -13,6 +13,15 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  resources :churches
+
+
+  resources :registers
+
+
+  resources :places
+
+
   resources :church_names
 
   resources :toponyms

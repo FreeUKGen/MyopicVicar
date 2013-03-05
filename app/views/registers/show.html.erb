@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Record types:</b>
+  <%= @register.record_types %>
+</p>
+
+<p>
+  <b>Start year:</b>
+  <%= @register.start_year %>
+</p>
+
+<p>
+  <b>End year:</b>
+  <%= @register.end_year %>
+</p>
+
+<p>
+  <b>Register type:</b>
+  <%= @register.register_type %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%= @register.status %>
+</p>
+
+<p>
+  <b>Transcribers:</b>
+  <%= @register.transcribers %>
+</p>
+
+
+<%= link_to 'Edit', edit_register_path(@register) %> |
+<%= link_to 'Back', registers_path %>
