@@ -20,7 +20,7 @@
   <ul>
 	  <% @place.churches.each do |church| %>
 	  	<li>
-		  	<%= church.church_name %><br />
+		  	<%= link_to(church.church_name, church_path(church)) %><br />
 			<ul>
 				<% church.registers.each do |register| %>
 					<li>

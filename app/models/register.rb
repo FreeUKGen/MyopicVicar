@@ -9,5 +9,6 @@ class Register
   key :end_year, Integer 
   key :transcribers, Array
   
-  many :freereg1_csv_files
+  one :freereg1_csv_file
+  
 end

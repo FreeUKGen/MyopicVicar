@@ -16,6 +16,8 @@ require 'record_type'
 class Freereg1CsvFile 
   include MongoMapper::Document
   many :freereg1_csv_entries
+  belongs_to :register
+  belongs_to :place
 
 
 
@@ -64,5 +66,10 @@ class Freereg1CsvFile
     order
   end
   
+  def update_register
+    # look for an existing register for our record
+    # look for a place for our record
+  end
+
 
 end
