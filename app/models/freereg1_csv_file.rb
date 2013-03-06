@@ -16,8 +16,8 @@ require 'record_type'
 class Freereg1CsvFile 
   include MongoMapper::Document
   many :freereg1_csv_entries
-  belongs_to :register
-  belongs_to :place
+#  belongs_to :register
+#  belongs_to :place
 
 
 

@@ -5,6 +5,33 @@
   <%= @church.church_name %>
 </p>
 
+<table>
+  <tr>
+    <th>Record types</th>
+    <th>Start year</th>
+    <th>End year</th>
+    <th>Register type</th>
+    <th>Status</th>
+    <th>Transcribers</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @church.registers.each do |register| %>
+  <tr>
+    <td><%= register.record_types %></td>
+    <td><%= register.start_year %></td>
+    <td><%= register.end_year %></td>
+    <td><%= register.register_type %></td>
+    <td><%= register.status %></td>
+    <td><%= register.transcribers %></td>
+    <td><%= link_to 'Show', register %></td>
+    <td><%= link_to 'Edit', edit_register_path(register) %></td>
+    <td><%= link_to 'Destroy', register, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
 
 <%= link_to 'Edit', edit_church_path(@church) %> |
 <%= link_to 'Back', churches_path %>
