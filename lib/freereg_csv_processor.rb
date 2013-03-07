@@ -736,9 +736,18 @@ class FreeregCsvProcessor
       if old_freereg1_csv_file
 
         # this is an old record -- delete it before we create a new one
-#        old_freereg1_csv_file.freereg1_csv_entries.search_record.delete_all
-        old_freereg1_csv_file.freereg1_csv_entries.all.each { |e| e.search_record.destroy if e.search_record }
-        old_freereg1_csv_file.freereg1_csv_entries.destroy_all
+
+        # TODO: move all this cleanup stuff into an instance method of Freereg1CsvFile and 
+        # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
+        # this function)
+        #
+        # fetch the IDs of all the entries on this file
+        id_array = old_freereg1_csv_file.freereg1_csv_entries.inject([]) { |a,e| a << e.id }
+        # now we delete the SearchRecord records that point to any of those entry IDs
+        SearchRecord.delete_all(:freereg1_csv_entry_id => id_array)
+        # now delete the csv entry records
+        Freereg1CsvEntry.delete(id_array)
+        # now we can delete the file
         old_freereg1_csv_file.delete
       end
 
