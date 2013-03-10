@@ -16,7 +16,7 @@ require 'record_type'
 class Freereg1CsvFile 
   include MongoMapper::Document
   many :freereg1_csv_entries
-#  belongs_to :register
+  belongs_to :register
 #  belongs_to :place
 
 
@@ -25,7 +25,7 @@ class Freereg1CsvFile
   # Fields correspond to cells in CSV headers  
   key :county, String 
   key :place, String 
-  key :register, String 
+  key :church_name, String 
   key :register_type, String
   key :record_type, String, :in => RecordType::ALL_TYPES+[nil]
 
@@ -67,8 +67,19 @@ class Freereg1CsvFile
   end
   
   def update_register
-    # look for an existing register for our record
-    # look for a place for our record
+    Register.update_or_create_register(self)
+  end
+
+  def to_register
+    { :chapman_code => county,
+      :register_type => register_type,
+      :place_name => place,
+      :church_name => church_name,
+      :start_year => datemin,
+      :end_year => datemax,
+      :record_types => [record_type],
+      :transcribers => [credit_name]
+      }
   end
 
 

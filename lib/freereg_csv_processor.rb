@@ -565,7 +565,7 @@ class FreeregCsvProcessor
     data_record[:place] = @register
     # do we validate the register field 
     raise FreeREGError, "Register field #{@csvdata[2]} in line #{n} contains non numeric characters" unless validregister(@csvdata[2])
-    data_record[:register] = @register
+    data_record[:church_name] = @register
     data_record[:register_type] = @register_type
     # need to add the transcriberID
     data_record[:line_id] = @userid + "." + File.basename(@filename.upcase) + "." + n.to_s
@@ -753,6 +753,9 @@ class FreeregCsvProcessor
 
       @freereg1_csv_file = Freereg1CsvFile.create!(head)
     end
+    @freereg1_csv_file.update_register
+
+
     @freereg1_csv_file
   end
 
@@ -855,7 +858,7 @@ class FreeregCsvProcessor
       header[:records] = n
       header[:county] = data_record [:county]   
       header[:place] = data_record [:place]
-      header[:register] = data_record [:register]
+      header[:church_name] = data_record [:church_name]
       header[:register_type] = data_record[:register_type]
 
       puts " Processed #{n} lines with #{number_of_error_messages} errors" 
