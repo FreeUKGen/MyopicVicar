@@ -283,9 +283,11 @@ class FreeregCsvProcessor
       m = "macRoman" if (m.downcase == "macintosh")
       if Encoding.find(m)
         #if we have valid new character set; use it and change the file encoding
-        @charset = Encoding.find(m)
+        @@charset = Encoding.find(m)
         @file.close
-        @file = File.new(@filename, "r" , external_encoding:@charset , internal_encoding:"UTF-8")
+        @file = File.new(@filename, "r" , external_encoding:@@charset , internal_encoding:"UTF-8")
+         @@array_of_data_lines = CSV.read(@filename, external_encoding:@@charset , internal_encoding:"UTF-8")                              
+         @@number_of_line = 0
         #reposition the file
         get_line_of_data
         return true
@@ -322,13 +324,9 @@ class FreeregCsvProcessor
 
   #get a line of data
   def get_line_of_data
-    line = @file.gets
-    raise FreeREGEnd,  "Empty file" if line.nil?
-    CSV.parse(line) do |data|
-      @csvdata = data
-    end
+    @csvdata = @@array_of_data_lines[@@number_of_line]
+    raise FreeREGEnd,  "End of file" if @csvdata.nil?
     @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
-    return true
   end
 
   #process the header line 1
@@ -398,8 +396,8 @@ class FreeregCsvProcessor
       @csvdata[2] = @csvdata[1]
       process_header_line_two_block(head)
     else
-      puts "I did not know enough about your data format to extract transciber information at header line 2"
-      puts @csvdata
+      raise FreeREGHeaderError, "I did not know enough about your data format to extract transciber information at header line 2"
+      
     end
   
   end
@@ -438,8 +436,7 @@ class FreeregCsvProcessor
           @csvdata[3] = @csvdata[4]
           process_header_line_three_block(head)
       else
-         puts "I did not know enough about your data format to extract Credit Information at header line 3"
-         @csvdata
+        raise FreeREGHeaderError, "I did not know enough about your data format to extract Credit Information at header line 3"
     end
   
   end
@@ -481,8 +478,8 @@ class FreeregCsvProcessor
                head [:first_comment] = @csvdata[0]                
              end
           else
-             puts "I did not know enough about your data format to extract notes Information at header line 4"
-             puts @csvdata
+             raise FreeREGHeaderError, "I did not know enough about your data format to extract notes Information at header line 4"
+            
           end
        when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
            #date and no notes
@@ -509,8 +506,8 @@ class FreeregCsvProcessor
                 head [:second_comment] = @csvdata[1]
               end
           else
-             puts "I did not know enough about your data format to extract notes Information at header line 4"
-             puts @csvdata
+             raise FreeREGHeaderError, "I did not know enough about your data format to extract notes Information at header line 4"
+           
           end 
        when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
             # date and one note
@@ -539,8 +536,8 @@ class FreeregCsvProcessor
             head [:first_comment] = @csvdata.join(" ")
        
         else
-            puts "I did not know enough about your data format to extract notes Information at header line 4"
-            puts @csvdata
+            raise FreeREGHeaderError, "I did not know enough about your data format to extract notes Information at header line 4"
+            
       end
   end
 
@@ -770,6 +767,11 @@ class FreeregCsvProcessor
     new_db_record = nil
     #this is the basic processing
     begin 
+      header = Hash.new
+      data_record = Hash.new
+      @@array_of_data_lines = Array.new {Array.new}
+      @@number_of_line = 0
+      @@charset = "iso-8859-1"
        
       standalone_filename = File.basename(filename)
       # get the user ID represented by the containing directory
@@ -787,23 +789,31 @@ class FreeregCsvProcessor
        user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
        File.delete(user_file_for_warning_messages) if File.exists?(user_file_for_warning_messages)
 #    dataout = File.new(fileout, "wb")
-        header = Hash.new
-        data_record = Hash.new
+        
         header[:file_name] = standalone_filename #do not capitalize filenames
         header[:userid] = user_dirname
         me = FreeregCsvProcessor.new(filename,user_dirname)
+        @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
+        raise FreeREGHeaderError,  "Empty file" if @@array_of_data_lines.nil?
+            
         number_of_error_messages = 0
     #deal with the headers
         me.get_line_of_data
         me.process_header_line_one(header)
+        @@number_of_line = @@number_of_line + 1
         me.get_line_of_data
         me.process_header_line_two(header)
+        @@number_of_line = @@number_of_line + 1
         me.get_line_of_data
         me.process_header_line_threee(header)
+        @@number_of_line = @@number_of_line + 1
         me.get_line_of_data
         me.process_header_line_four(header)
+        @@number_of_line = @@number_of_line + 1
         me.get_line_of_data
         me.process_header_line_five(header)
+        @@number_of_line = @@number_of_line + 1
+
         # persist the record for the file 
         new_db_record = me.create_or_update_db_record_for_file(header)
     #deal with the data    
@@ -815,7 +825,7 @@ class FreeregCsvProcessor
         loop do
           begin
             n = n + 1
-            me.process_register_location(n,data_record)
+             me.process_register_location(n,data_record)
              case type
              when RecordType::BAPTISM then me.process_baptism_data_records(n,data_record,header)
              when RecordType::BURIAL then me.process_burial_data_records(n,data_record,header)                      
@@ -823,12 +833,14 @@ class FreeregCsvProcessor
              end
       #store the processed data   
             me.create_db_record_for_entry(data_record)
-            me.get_line_of_data
+             @@number_of_line = @@number_of_line + 1
+           me.get_line_of_data
       #   break if n == 6
       #rescue the freereg data errors and continue processing the file
           rescue FreeREGError => free
             if free.message == "Empty data line"
-              me.get_line_of_data
+             @@number_of_line = @@number_of_line + 1
+             me.get_line_of_data
               retry
             else
                @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
@@ -854,19 +866,23 @@ class FreeregCsvProcessor
 
     #rescue the end of file and close out the file
     rescue FreeREGEnd => free
-      n = n - number_of_error_messages
-      header[:records] = n
-      header[:county] = data_record [:county]   
-      header[:place] = data_record [:place]
-      header[:church_name] = data_record [:church_name]
-      header[:register_type] = data_record[:register_type]
+      if n.nil?
+        puts "The file was empty"
+      else
+        n = n - number_of_error_messages
+        header[:records] = n
+        header[:county] = data_record [:county]   
+        header[:place] = data_record [:place]
+        header[:register] = data_record [:register]
+        header[:register_type] = data_record[:register_type]
 
-      puts " Processed #{n} lines with #{number_of_error_messages} errors" 
+        puts " Processed #{n} lines with #{number_of_error_messages} errors" 
     # print the header and add it to the processed records
     #  puts header
     #  dataout.puts header
     #  dataout.close
     me.create_or_update_db_record_for_file(header)
+     end
     rescue Exception => e 
       puts e.message
       puts e.backtrace
