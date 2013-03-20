@@ -2,29 +2,37 @@ digraph G {
 	label="Current Data Flow"
 
 
-	rankdir="LR";
+#	rankdir="LR";
 	subgraph cluster_2 {
 #		style=filled;
 		color=lightgrey;
 #		node [style=filled,color=white];
 
 		registers [label="Original\nRegisters",shape="house"];
+		bt_registers [label="Bishops'\nTranscripts",shape="house"];
+		at_registers [label="Archbishops'\nTranscripts",shape="house"];
+		phillimores [label="Phillimores\nand other\nantiquarian\neditions (ca. 1900)",shape="house"];
 		externaltranscripts [label="Third-party\nTranscriptions",shape="tab",color=lightgrey];
-		registers->externaltranscripts;
+		registers->externaltranscripts [label="On-site,\nunaffiliated\nvolunteers\ntranscribing"];
+		registers->phillimores [label="Victorian/Edwardian\nantiquarians"];		
+		registers->bt_registers [label="17th-19th c. clerks"];		
+		registers->at_registers [label="17th-19th c. clerks"];		
+		microfilms [label="Microfilms\n(ca. 1980)",shape="tab"];
 		images [label="Register\nImages",shape="tab"];
-		registers->images;		
+		microfilms->images [label="LDS, mostly"];
+		phillimores->images[label="LDS, Google\nInternet Archive"];
+		bt_registers->microfilms [label="LDS"];
+		at_registers->microfilms [label="LDS"];
+		registers->microfilms [label="LDS"];
 		
 		winreg [label="WinREG",shape="diamond"];
 		excel [label="Excel",shape="diamond"];
-		other [label="Other Methods",shape="diamond"];
 		images -> winreg;
-		images -> excel;
-		images -> other;
+		images -> excel [label="media mail, downloads\n(coordinator to transcriber)"];
 		csvs [label="Importable\nCSV Files",shape="tab"];
 		winreg -> csvs;
-		excel -> csvs;
-		other -> csvs;
-		externaltranscripts -> csvs;
+		excel -> csvs [label="media mail, uploads\n(transcriber to coordinator)"];
+		externaltranscripts -> csvs [label="Donated\ntranscripts\nconverted\nby FreeREG\nvolunteers"];
 
 		label="Current Data Entry Process";
 	}
@@ -33,10 +41,10 @@ digraph G {
 
 	subgraph cluster_0 {
 #		color=blue
-		csvrepository [label="CSV\nRepository",shape="box3d"];
-		importer [label="Importer",shape="diamond"];
-		database [label="Search\nDatabase",shape="box3d"];
-		search [label="Search\nScript",shape="diamond"];
+		csvrepository [label="CSV\nRepository\n(CVS?)",shape="box3d"];
+		importer [label="Importer\n(monthly\nfull rebuild)",shape="diamond"];
+		database [label="Search\nDatabase\n(MySQL)",shape="box3d"];
+		search [label="Search\nCGI Script\n(Perl)",shape="diamond"];
 		csvrepository -> importer;
 		importer -> database;
 		database -> search;
