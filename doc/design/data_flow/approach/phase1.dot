@@ -1,0 +1,65 @@
+digraph G {
+	label="Phase 1 Data Flow"
+
+	rankdir="LR";
+	subgraph cluster_2 {
+#		style=filled;
+		color=lightgrey;
+#		node [style=filled,color=white];
+
+		registers [label="Original\nRegisters",shape="house"];
+		externaltranscripts [label="Third-party\nTranscriptions",shape="tab",color=lightgrey];
+		registers->externaltranscripts;
+		images [label="Register\nImages",shape="tab"];
+		registers->images;		
+		
+		awinreg [label="WinREG",shape="diamond"];
+		excel [label="Excel",shape="diamond"];
+		other [label="Other Methods",shape="diamond"];
+		images -> awinreg;
+		images -> excel;
+		images -> other;
+		csvs [label="Importable\nCSV Files",shape="tab"];
+		awinreg -> csvs;
+		excel -> csvs;
+		other -> csvs;
+		externaltranscripts -> csvs;
+
+		subgraph cluster_1 {
+			color=blue;
+			node [color=blue];
+			setup [label="Image\nImport",shape="diamond"]		
+			scribe [label="Scribe-based\nTranscription\nTool",shape="diamond"];
+			setup -> scribe;
+			scribe_db [label="Scribe-based\nTranscription\nDatabase",shape="box3d"];
+			scribe -> scribe_db;
+			exporter [label="Exporter",shape="diamond"];
+			scribe_db -> exporter;
+
+			label="Scribe Server";
+		}
+		images->setup;
+		exporter->csvs;
+
+
+		label="Phase 1 Data Entry Process";
+	}
+	
+
+
+	subgraph cluster_0 {
+#		color=blue
+		csvrepository [label="CSV\nRepository",shape="box3d"];
+		importer [label="Importer",shape="diamond"];
+		database [label="Search\nDatabase",shape="box3d"];
+		search [label="Search\nScript",shape="diamond"];
+		csvrepository -> importer;
+		importer -> database;
+		database -> search;
+		label="Current Search Server";
+	}
+
+	csvs -> csvrepository;
+
+}
+

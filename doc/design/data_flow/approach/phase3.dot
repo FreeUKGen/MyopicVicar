@@ -1,0 +1,82 @@
+digraph G {
+	label="Phase n Data Flow";
+
+	rankdir="LR";
+	subgraph cluster_2 {
+#		style=filled;
+		color=lightgrey;
+#		node [style=filled,color=white];
+
+		registers [label="Original\nRegisters",shape="house"];
+		externaltranscripts [label="Third-party\nTranscriptions",shape="tab",color=lightgrey];
+		registers->externaltranscripts;
+		images [label="Register\nImages",shape="tab"];
+		registers->images;		
+		
+		awinreg [label="WinREG",shape="diamond"];
+		excel [label="Excel",shape="diamond"];
+		other [label="Other Methods",shape="diamond"];
+		images -> awinreg;
+		images -> excel;
+		images -> other;
+		csvs [label="Importable\nCSV Files",shape="tab"];
+		awinreg -> csvs;
+		excel -> csvs;
+		other -> csvs;
+		externaltranscripts -> csvs;
+
+		subgraph cluster_1 {
+			color=blue;
+			node [color=blue];
+			setup [label="Image\nImport",shape="diamond"]		
+			scribe [label="Scribe-based\nTranscription\nTool",shape="diamond"];
+			setup -> scribe;
+			scribe_db [label="Scribe-based\nTranscription\nDatabase",shape="box3d"];
+			scribe -> scribe_db;
+			exporter [label="Exporter",shape="diamond",color=lightgray];
+			scribe_db -> exporter [color=lightgray];
+
+			label="Scribe Server";
+		}
+		images->setup;
+
+
+		label="Phase n Data Entry Process";
+	}
+	
+
+
+#	subgraph cluster_0 {
+#		color=lightgrey;
+#		importer [label="Importer",shape="diamond",color=lightgray];
+#		database [label="Search\nDatabase",shape="box3d",color=lightgray];
+#		search [label="Search\nScript",shape="diamond",color=lightgray];
+#		importer -> database [color=lightgray];
+#		database -> search [color=lightgray];
+#		label="Current Search Server (private)";
+#	}
+
+	subgraph cluster_3 {
+		color=blue
+		importer2 [label="Scribe\nImporter",shape="diamond"];
+		importer_legacy [label="Legacy\nImporter",shape="diamond"];
+		importer_offline [label="Offline\nImporter",shape="diamond"];
+		database2 [label="New\nSearch\nDatabase",shape="box3d"];
+		search2 [label="New\nSearch\nScript",shape="diamond"];
+		importer2 -> database2;
+		importer_legacy -> database2;
+		importer_offline -> database2;
+		database2 -> search2;
+		label="New Search Server";
+	}
+
+	csvrepository [label="CSV\nRepository",shape="box3d"];
+	scribe_db -> importer2;	
+	csvrepository -> importer_offline;
+#	database -> importer_legacy;
+
+	csvs -> csvrepository;
+
+#	csvs -> importer [color=white];
+}
+

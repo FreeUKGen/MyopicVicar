@@ -1,0 +1,49 @@
+digraph G {
+	label="Current Data Flow"
+
+
+	rankdir="LR";
+	subgraph cluster_2 {
+#		style=filled;
+		color=lightgrey;
+#		node [style=filled,color=white];
+
+		registers [label="Original\nRegisters",shape="house"];
+		externaltranscripts [label="Third-party\nTranscriptions",shape="tab",color=lightgrey];
+		registers->externaltranscripts;
+		images [label="Register\nImages",shape="tab"];
+		registers->images;		
+		
+		winreg [label="WinREG",shape="diamond"];
+		excel [label="Excel",shape="diamond"];
+		other [label="Other Methods",shape="diamond"];
+		images -> winreg;
+		images -> excel;
+		images -> other;
+		csvs [label="Importable\nCSV Files",shape="tab"];
+		winreg -> csvs;
+		excel -> csvs;
+		other -> csvs;
+		externaltranscripts -> csvs;
+
+		label="Current Data Entry Process";
+	}
+	
+
+
+	subgraph cluster_0 {
+#		color=blue
+		csvrepository [label="CSV\nRepository",shape="box3d"];
+		importer [label="Importer",shape="diamond"];
+		database [label="Search\nDatabase",shape="box3d"];
+		search [label="Search\nScript",shape="diamond"];
+		csvrepository -> importer;
+		importer -> database;
+		database -> search;
+		label="Current Search Server";
+	}
+
+	csvs -> csvrepository;
+
+}
+

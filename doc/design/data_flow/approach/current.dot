@@ -1,0 +1,29 @@
+digraph G {
+
+	subgraph entry_process {
+		label="Current Data Entry Process";
+		color=blue;
+		style=filled;
+
+	registers [label="Original\nRegisters"];
+	externaltranscripts [label="Third-party\nTranscriptions"];
+	registers->externaltranscripts;
+	images [label="Register\nImages"];
+	registers->images;
+	};
+
+	subgraph search_db {
+		label="Current Search Server";
+		color=blue;
+		style=filled;
+
+		importer [label="Importer"];
+		database [label="Search\nDatabase"];
+		search [label="Search\nScript"];
+		importer -> database;
+		database -> search;
+	};
+	
+	externaltranscripts -> importer;
+
+}
