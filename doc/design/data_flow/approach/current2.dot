@@ -5,15 +5,13 @@ digraph G {
 #	rankdir="LR";
 	subgraph cluster_2 {
 #		style=filled;
-		color=lightgrey;
+		color=blue;
 #		node [style=filled,color=white];
 
 		registers [label="Original\nRegisters",shape="house"];
 		bt_registers [label="Bishops'\nTranscripts",shape="house"];
 		at_registers [label="Archbishops'\nTranscripts",shape="house"];
-		phillimores [label="Phillimores\nand other\nantiquarian\neditions (ca. 1900)",shape="house"];
-		externaltranscripts [label="Third-party\nTranscriptions",shape="tab",color=lightgrey];
-		registers->externaltranscripts [label="On-site,\nunaffiliated\nvolunteers\ntranscribing"];
+		phillimores [label="Phillimores\nand other\nantiquarian\neditions\n(ca. 1900)",shape="house"];
 		registers->phillimores [label="Victorian/Edwardian\nantiquarians"];		
 		registers->bt_registers [label="17th-19th c. clerks"];		
 		registers->at_registers [label="17th-19th c. clerks"];		
@@ -24,6 +22,17 @@ digraph G {
 		bt_registers->microfilms [label="LDS"];
 		at_registers->microfilms [label="LDS"];
 		registers->microfilms [label="LDS"];
+		label="Source Data Flow";
+	}
+
+	subgraph cluster_3 {
+		externaltranscripts [label="Third-party\nTranscriptions",shape="tab",color=lightgrey];
+		registers->externaltranscripts [label="On-site,\nunaffiliated\nvolunteers\ntranscribing"];
+		label="";
+	}
+
+	subgraph cluster_1 {
+		color=blue;
 		
 		winreg [label="WinREG",shape="diamond"];
 		excel [label="Excel",shape="diamond"];
