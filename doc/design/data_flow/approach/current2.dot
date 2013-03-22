@@ -10,9 +10,10 @@ digraph G {
 
 		registers [label="Original\nRegisters",shape="house"];
 		bt_registers [label="Bishops'\nTranscripts",shape="house"];
-		at_registers [label="Archbishops'\nTranscripts",shape="house"];
-		phillimores [label="Phillimores\nand other\nantiquarian\neditions\n(ca. 1900)",shape="house"];
+		at_registers [label="Archdeacons'\nTranscripts",shape="house"];
+		phillimores [label="Phillimores\nand other\nantiquarian\neditions",shape="house"];
 		registers->phillimores [label="Victorian/Edwardian\nantiquarians"];		
+		bt_registers->phillimores [label="Victorian/Edwardian\nantiquarians"];		
 		registers->bt_registers [label="17th-19th c. clerks"];		
 		registers->at_registers [label="17th-19th c. clerks"];		
 		microfilms [label="Microfilms\n(ca. 1980)",shape="tab"];
@@ -50,7 +51,7 @@ digraph G {
 
 	subgraph cluster_0 {
 #		color=blue
-		csvrepository [label="CSV\nRepository\n(CVS?)",shape="box3d"];
+		csvrepository [label="CSV\nRepository",shape="box3d"];
 		importer [label="Importer\n(monthly\nfull rebuild)",shape="diamond"];
 		database [label="Search\nDatabase\n(MySQL)",shape="box3d"];
 		search [label="Search\nCGI Script\n(Perl)",shape="diamond"];
