@@ -138,6 +138,10 @@ module ChapmanCode
     'Mid Glamorgan' => 'MGM',
     'Powys' => 'POW',
     'South Glamorgan' => 'SGM',
-    'West Glamorgan' => 'WGM'
+    'West Glamorgan' => 'WGM',
+    'Jersey' => 'JSY',
+    'Guernsey' => 'GSY',
+    'Sark' => 'SRK',
+    'Alderney' => 'ALD'
   }
 end
