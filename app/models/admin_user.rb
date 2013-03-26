@@ -13,24 +13,24 @@
 # limitations under the License.
 # 
 class AdminUser
-  include MongoMapper::Document
+  include Mongoid::Document
+  include Mongoid::Timestamps
   
   
-  key :email, String
-  key :password, String
-  key :password_confirmation,  String
-  key :remember_me, String
-  key :encrypted_password, String
-  key :current_sign_in_at, Time
-  key :last_sign_in_at, Time
-  key :current_sign_in_ip, String
-  key :last_sign_in_ip, String
-  key :sign_in_count, Integer
-  key :remember_created_at, Time
+  field :email, type: String
+  field :password, type: String
+  field :password_confirmation, type:  String
+  field :remember_me, type: String
+  field :encrypted_password, type: String
+  field :current_sign_in_at, type: Time
+  field :last_sign_in_at, type: Time
+  field :current_sign_in_ip, type: String
+  field :last_sign_in_ip, type: String
+  field :sign_in_count, type: Integer
+  field :remember_created_at, type: Time
 
   
   
-  timestamps!
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, 

@@ -1,15 +1,15 @@
 class Register 
-  include MongoMapper::EmbeddedDocument
+  include Mongoid::Document
   
-  key :status, String
-  key :register_type, String
-  key :record_types, Array
+  field :status, type: String
+  field :register_type, type: String
+  field :record_types, type: Array
   
-  key :start_year, Integer
-  key :end_year, Integer 
-  key :transcribers, Array
+  field :start_year, type: Integer
+  field :end_year, type: Integer 
+  field :transcribers, type: Array
   
-  one :freereg1_csv_file
+  has_one :freereg1_csv_file
   embedded_in :church
   
   

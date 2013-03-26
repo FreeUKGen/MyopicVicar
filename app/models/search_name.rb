@@ -1,7 +1,7 @@
 class SearchName 
-  include MongoMapper::EmbeddedDocument
-  key :first_name, String
-  key :last_name, String
-  key  :origin, String
-  key  :role, String
+  include Mongoid::Document
+  field :first_name, type: String
+  field :last_name, type: String
+  field  :origin, type: String
+  field  :role, type: String
 end

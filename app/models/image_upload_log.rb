@@ -13,7 +13,8 @@
 # limitations under the License.
 # 
 class ImageUploadLog
-  include MongoMapper::Document         
+  include Mongoid::Document
+  include Mongoid::Timestamps
 
   require 'date'
 
@@ -46,8 +47,7 @@ class ImageUploadLog
 # key :user_ids, Array, :typecast => 'ObjectId'
   
    
-  key :file, String
-  timestamps!
+  field :file, type: String
 
   def initialize_logfile
     dirname = File.join("log/upload", Date.today.to_s)

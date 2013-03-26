@@ -4,8 +4,8 @@ require 'emendor'
 require 'freereg1_translator'
 
 class SearchRecord
-  include MongoMapper::Document
- # include Emendor
+  include Mongoid::Document
+  # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
 
   before_save :transform
@@ -21,53 +21,53 @@ class SearchRecord
   belongs_to :freereg1_csv_entry
 
 
-  key :annotation_ids, Array #, :typecast => 'ObjectId'
+  field :annotation_ids, type: Array #, :typecast => 'ObjectId'
   
   #denormalized fields
-  key :asset_id, String
-  key :chapman_code, String
+  field :asset_id, type: String
+  field :chapman_code, type: String
   
-#  many :annotations, :in => :annotation_ids
+  #many :annotations, :in => :annotation_ids
 
-  key :record_type, String
+  field :record_type, type: String
   
   # transcript fields  
-  key :first_name, String, :required => false
-  key :last_name, String, :required => false
+  field :first_name, type: String, :required => false
+  field :last_name, type: String, :required => false
   
-  key :father_first_name, String, :required => false
-  key :father_last_name, String, :required => false
+  field :father_first_name, type: String, :required => false
+  field :father_last_name, type: String, :required => false
 
-  key :mother_first_name, String, :required => false
-  key :mother_last_name, String, :required => false
+  field :mother_first_name, type: String, :required => false
+  field :mother_last_name, type: String, :required => false
 
-  key :husband_first_name, String, :required => false
-  key :husband_last_name, String, :required => false
+  field :husband_first_name, type: String, :required => false
+  field :husband_last_name, type: String, :required => false
 
-  key :wife_first_name, String, :required => false
-  key :wife_last_name, String, :required => false
+  field :wife_first_name, type: String, :required => false
+  field :wife_last_name, type: String, :required => false
 
-  key :groom_first_name, String, :required => false
-  key :groom_last_name, String, :required => false
+  field :groom_first_name, type: String, :required => false
+  field :groom_last_name, type: String, :required => false
 
-  key :bride_first_name, String, :required => false
-  key :bride_last_name, String, :required => false
+  field :bride_first_name, type: String, :required => false
+  field :bride_last_name, type: String, :required => false
 
   # HACK: this is transitional code while I explore 
   # roles and other family members on records
   #
   # It contains hashes with keys :first_name, :last_name, :role
-  key :other_family_names, Array, :required => false
+  field :other_family_names, type: Array, :required => false
 
   # Date of the entry, whatever kind it is
-  key :date, String, :required => false
+  field :date, type: String, :required => false
 
   # search fields
-  many :primary_names, :class_name => 'SearchName'
-  many :inclusive_names, :class_name => 'SearchName'
+  has_many :primary_names, :class_name => 'SearchName'
+  has_many :inclusive_names, :class_name => 'SearchName'
   # derived search fields
-  key :primary_soundex, Array, :require => false
-  key :inclusive_soundex, Array, :require => false
+  has_many :primary_soundex, Array, :require => false
+  has_many :inclusive_soundex, Array, :require => false
 
 
   def ordered_display_fields

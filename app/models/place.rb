@@ -1,10 +1,10 @@
 class Place
-  include MongoMapper::Document
+  include Mongoid::Document
 
   embedded_callbacks_off
   
-  key :chapman_code, String
-  many :churches
-  key :genuki_url, String
-  key :place_name
+  field :chapman_code, type: String
+  has_many :churches
+  field :genuki_url, type: String
+  field :place_name
 end

@@ -1,7 +1,8 @@
 class EmendationRule
-  include MongoMapper::Document
-  key :source, String
-  key :target, String  
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  field :source, type: String
+  field :target, type: String  
   timestamps!
   
   belongs_to :emendation_type

@@ -1,8 +1,8 @@
 class Church 
-  include MongoMapper::EmbeddedDocument
+  include Mongoid::Document
   
-  key :church_name
-  many :registers
+  field :church_name
+  has_many :registers
   embedded_in :place
   
   def self.find_by_name(chapman_code, church_name)

@@ -14,13 +14,14 @@
 # 
 class S3bucket
   require 'set'
-  
-  include MongoMapper::Document     
-  
+
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
   key :name, String
   key :prefixes, Array
 
-  timestamps!
+  #timestamps!
 
   TMP_DIR_PREFIX = "/tmp/myopicvicar/"
   

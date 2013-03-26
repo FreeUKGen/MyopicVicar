@@ -1,11 +1,11 @@
 class EmendationType
-  include MongoMapper::Document
-  key :name, String
-  key :target_field, String # actually a symbol 
-  key :origin, String
-  timestamps!
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  field :name, type: String
+  field :target_field, type: String # actually a symbol 
+  field :origin, type: String
   
-  many :emendation_rules
+  has_many :emendation_rules
   
   def target_field
     self[:target_field].to_sym

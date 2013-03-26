@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.11'
+gem 'rails', '3.2.13'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -8,8 +8,7 @@ gem 'rails', '3.2.11'
 gem 'sqlite3'
 # MongoDB
 gem 'bson_ext'
-gem 'mongo_mapper', :git => 'git://github.com/jnunemaker/mongomapper.git' #, :ref => 'fefec91027f2dd8eb1ab9caa5a4b0acd000f4da7'
-#gem 'mongo_mapper' #, :git => 'https://github.com/jnunemaker/mongomapper.git', :branch => 'rails3'
+gem "mongoid", "~> 2.4"
 gem 'execjs'
 
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
@@ -20,13 +19,12 @@ gem 'pry'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
 
-gem 'activeadmin', '~> 0.4.4'
+gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
 gem 'bourbon', '~> 2.1'
 
-gem 'mm-devise' #, :git => 'git://github.com/pollingj/mm-devise.git'
-gem 'activeadmin-mongomapper', :git => 'git://github.com/futureshocked/activeadmin-mongomapper.git'
-
+gem 'activeadmin-mongoid'
+gem 'devise'
 
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
 gem 'rubyzip'

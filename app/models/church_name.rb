@@ -13,19 +13,19 @@
 # limitations under the License.
 # 
 class ChurchName
-  include MongoMapper::Document
+  include Mongoid::Document
   after_create :populate_toponym
   
   
-  key :chapman_code, String
-  key :church, String
-  key :parish, String
-  key :resolved, Boolean
-  key :entry_count, Integer
+  field :chapman_code, type: String
+  field :church, type: String
+  field :parish, type: String
+  field :resolved, type: Boolean
+  field :entry_count, type: Integer
   belongs_to :toponym
   
   # these are not canonical -- just quick and dirty
-  key :files, Array # filename, user hash
+  field :files, type: Array # filename, user hash
 
   def populate_toponym
     toponym_attrs = {:chapman_code => self.chapman_code, :parish => self.parish}

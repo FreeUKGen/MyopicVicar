@@ -14,7 +14,8 @@
 # 
 class Upload
   require 'zip/zip'
-  include MongoMapper::Document         
+  include Mongoid::Document
+  include Mongoid::Timestamps
   
   validates_presence_of :upload_path
   validate :source_path_is_valid
@@ -26,8 +27,8 @@ class Upload
   # belongs_to :model
   # many :model
   # one :model
-  many :image_dir
-  many :image_upload_log
+  has_many :image_dir
+  has_many :image_upload_log
   
   
   # Callbacks ::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
@@ -55,15 +56,15 @@ class Upload
   # the working and derivation directories should be relative paths from RAILS_ROOT (which is also the cwd of the rails app)
   # consider having each file record its path
   
-  key :name, String
-  key :upload_path, String
+  field :name, type: String
+  field :upload_path, type: String
   
-  key :working_dir, String
-  key :originals_dir, String
-  key :derivation_dir, String
+  field :working_dir, type: String
+  field :originals_dir, type: String
+  field :derivation_dir, type: String
 
-  key :total_files, String
-  key :downloaded, Integer
+  field :total_files, type: String
+  field :downloaded, type: Integer
   
   module Status
     NEW="new"
@@ -71,9 +72,8 @@ class Upload
     READY="ready"
   end
   
-  key :status, String, :default => Status::NEW
+  field :status, type: String, :default => Status::NEW
   
-  timestamps!
   
   ORIGINALS_DIR='originals'
   DERIVATION_DIR='derived'

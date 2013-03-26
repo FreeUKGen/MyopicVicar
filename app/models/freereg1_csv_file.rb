@@ -14,8 +14,9 @@
 # 
 require 'record_type'
 class Freereg1CsvFile 
-  include MongoMapper::Document
-  many :freereg1_csv_entries
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  has_many :freereg1_csv_entries
   belongs_to :register
 #  belongs_to :place
 
@@ -23,30 +24,29 @@ class Freereg1CsvFile
 
 
   # Fields correspond to cells in CSV headers  
-  key :county, String 
-  key :place, String 
-  key :church_name, String 
-  key :register_type, String
-  key :record_type, String, :in => RecordType::ALL_TYPES+[nil]
+  field :county, type: String 
+  field :place, type: String 
+  field :church_name, type: String 
+  field :register_type, type: String
+  field :record_type, type: String, :in => RecordType::ALL_TYPES+[nil]
 
-  key :records, String
-  key :datemin, String
-  key :datemax, String
-  key :daterange, Array
-  key :userid, String
-  key :file_name, String
-  key :transcriber_name, String
-  key :transcriber_email, String
-  key :transcriber_syndicate, String
-  key :credit_email, String
-  key :credit_name, String
-  key :first_comment, String
-  key :second_comment, String
-  key :transcription_date, String
-  key :modification_date, String
-  key :lds, String
-  key :characterset, String
-  timestamps!
+  field :records, type: String
+  field :datemin, type: String
+  field :datemax, type: String
+  field :daterange, type: Array
+  field :userid, type: String
+  field :file_name, type: String
+  field :transcriber_name, type: String
+  field :transcriber_email, type: String
+  field :transcriber_syndicate, type: String
+  field :credit_email, type: String
+  field :credit_name, type: String
+  field :first_comment, type: String
+  field :second_comment, type: String
+  field :transcription_date, type: String
+  field :modification_date, type: String
+  field :lds, type: String
+  field :characterset, type: String
 
 
   def ordered_display_fields
