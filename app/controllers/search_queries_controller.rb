@@ -33,6 +33,8 @@ class SearchQueriesController < ApplicationController
     case action_name
     when "show"
       "search_queries"
+    when "new"
+      "application"
     else
       "application"
     end
