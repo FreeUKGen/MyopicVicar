@@ -237,7 +237,7 @@ class FreeregCsvProcessor
       @datemax = xx if xx > @datemax
       @datemin = xx if xx < @datemin
       xx = (xx-1530)/10 unless xx <= 1530 # avoid division into zero
-      @datepop[xx] = @datepop[xx] + 1 unless (xx < 0 || xx > 50) #avoid going outside the data range array
+      @daterange[xx] = @daterange[xx] + 1 unless (xx < 0 || xx > 50) #avoid going outside the data range array
   end
 
   #validate dates in the record and allow for the split date format 1567/8 and 1567/68 creates a base year and a split year eg /8
@@ -709,7 +709,7 @@ class FreeregCsvProcessor
   def setup_or_add_to_list_of_registers(place_register_key,data_record)
       @datemax = DATEMIN
       @datemin = DATEMAX
-      @datepop = Array.new(50){|i| i * 0 }
+      @daterange = Array.new(50){|i| i * 0 }
       @number_of_records = 0
      
       @list_of_registers[place_register_key] = Hash.new
@@ -718,10 +718,10 @@ class FreeregCsvProcessor
         @list_of_registers[place_register_key].store(:place,data_record[:place])
          @list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
           @list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
-           @list_of_registers[place_register_key].store(:number_of_records,@number_of_records)
+           @list_of_registers[place_register_key].store(:records,@number_of_records)
             @list_of_registers[place_register_key].store(:datemax,@datemax)
              @list_of_registers[place_register_key].store(:datemin,@datemin)
-              @list_of_registers[place_register_key].store(:datepop,@datepop)
+              @list_of_registers[place_register_key].store(:daterange,@daterange)
              
   end
 
@@ -784,12 +784,12 @@ class FreeregCsvProcessor
     data_record[:father_occupation] = @csvdata[13]
     raise FreeREGError, "The notes #{@csvdata[14]} contains invalid characters" unless cleantext(14)
     data_record[:notes] = @csvdata[14]
-    number = @list_of_registers[@place_register_key].fetch(:number_of_records)
+    number = @list_of_registers[@place_register_key].fetch(:records)
     number = number + 1
-    @list_of_registers[@place_register_key].store(:number_of_records,number)
+    @list_of_registers[@place_register_key].store(:records,number)
     @list_of_registers[@place_register_key].store(:datemax,@datemax)
     @list_of_registers[@place_register_key].store(:datemin,@datemin)
-    @list_of_registers[@place_register_key].store(:datepop,@datepop)
+    @list_of_registers[@place_register_key].store(:daterange,@daterange)
     if head[:lds] == "yes" then
       data_record[:film] = @csvdata[15]
       data_record[:film_number] = @csvdata[16]
@@ -867,12 +867,12 @@ class FreeregCsvProcessor
     raise FreeREGError, "The notes #{@csvdata[29]} contains invalid characters" unless cleantext(29)
     data_record[:notes] = @csvdata[29]
      data_record[:notes] = @csvdata[14]
-    number = @list_of_registers[@place_register_key].fetch(:number_of_records)
+    number = @list_of_registers[@place_register_key].fetch(:records)
     number = number + 1
-    @list_of_registers[@place_register_key].store(:number_of_records,number)
+    @list_of_registers[@place_register_key].store(:records,number)
             @list_of_registers[@place_register_key].store(:datemax,@datemax)
              @list_of_registers[@place_register_key].store(:datemin,@datemin)
-              @list_of_registers[@place_register_key].store(:datepop,@datepop)
+              @list_of_registers[@place_register_key].store(:daterange,@daterange)
     if head[:lds] == "yes"  then
       data_record[:film] = @csvdata[30]
       data_record[:film_number] = @csvdata[31]
@@ -912,12 +912,12 @@ class FreeregCsvProcessor
     data_record[:notes] = @csvdata[13]
  
      data_record[:notes] = @csvdata[14]
-    number = @list_of_registers[@place_register_key].fetch(:number_of_records)
+    number = @list_of_registers[@place_register_key].fetch(:records)
     number = number + 1
-    @list_of_registers[@place_register_key].store(:number_of_records,number)
+    @list_of_registers[@place_register_key].store(:records,number)
             @list_of_registers[@place_register_key].store(:datemax,@datemax)
              @list_of_registers[@place_register_key].store(:datemin,@datemin)
-              @list_of_registers[@place_register_key].store(:datepop,@datepop)
+              @list_of_registers[@place_register_key].store(:daterange,@daterange)
     if head[:lds] == "yes"  then
       data_record[:film] = @csvdata[14]
       data_record[:film_number] = @csvdata[15]
