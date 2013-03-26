@@ -8,10 +8,36 @@ body{
 
 form.formtastic fieldset ol li.string input { width:20em; }
 
-/** { border: 1px solid #000;}*/
-#container { width: 1024px; margin: 0 auto; }
-table { width: 100%;}
-table td { padding: 15px; }
-table th { padding: 15px; background-color: #000; color: #fff; }
-table th,td { border: 1px solid #000;}
+/* line 9, ../../app/assets/stylesheets/search_queries.css.scss */
+form.formtastic fieldset ol li.string input {
+  width: 20em;
+}
 
+/** { border: 1px solid #000;}*/
+/* line 12, ../../app/assets/stylesheets/search_queries.css.scss */
+#container {
+  width: 1024px;
+  margin: 0 auto;
+}
+
+/* line 13, ../../app/assets/stylesheets/search_queries.css.scss */
+table {
+  width: 100%;
+}
+
+/* line 14, ../../app/assets/stylesheets/search_queries.css.scss */
+table td {
+  padding: 15px;
+}
+
+/* line 15, ../../app/assets/stylesheets/search_queries.css.scss */
+table th {
+  padding: 15px;
+  background-color: #000;
+  color: #fff;
+}
+
+/* line 16, ../../app/assets/stylesheets/search_queries.css.scss */
+table th, td {
+  border: 1px solid black;
+}

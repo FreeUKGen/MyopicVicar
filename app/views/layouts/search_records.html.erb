@@ -1,24 +1,212 @@
 <!DOCTYPE html>
-<html>
-    <head>
+<!-- saved from url=(0108)http://mvmerge.aspengrovefarm.com/search_records/510adce68ebe61382f05163e?search_id=51428bbe8ebe6108c0000056 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title></title>
+	
+	<!-- Styles -->
+	
+	<link href='http://fonts.googleapis.com/css?family=Corben' rel='stylesheet' type='text/css'>
+	
 	<%= stylesheet_link_tag "normalize" %>
+	<!--<link href="./files/normalize.css" media="screen" rel="stylesheet" type="text/css"> -->
+	
+	
 	<%= stylesheet_link_tag "search_records" %>
+	<!--<link href="./files/search_records.css" media="screen" rel="stylesheet" type="text/css"> -->     <!-- detail.html -->
+	 
+	 <!-- <link href="./files/search_queries.css" media="screen" rel="stylesheet" type="text/css"> -->     <!-- results.html -->
+	
+	  <!-- <link href="./files/application.css" media="all" rel="stylesheet" type="text/css"> -->    <!-- search.html -->
+	
+	
+	
+
+	  <%= stylesheet_link_tag "style" %>
+	<!-->
+	<link href="./files/style.css" media="all" rel="stylesheet" type="text/css">
+	</!-->
+	
+
+    <style type="text/css"></style>
     </head>
     <body>
-	<div id="header">
-	    This is the header
-	</div>
+    
+	
+	
 	<div id="container">
+	
+		<div id="header" class="header">
+		<h1>FreeREG</h1>
+		<h2>The home of U.K. Parish Register Information</h2>
+		</div>
+	
+	
 	    <div id="nav">
 		<ul>
 		    <li><%= link_to "New Search", new_search_query_path %></li>
 		    <li><%= link_to "Back to results", search_query_path(params[:search_id]) %></li>
 		</ul>
 	    </div>
+	    
 	    <div id="content">
-		<%= yield %>
+		
+
+		<!--
+
+    <table>
+	<thead>
+	    <tr>
+		<td colspan="2">
+		    <h1>Transcriptions</h1>
+		    <h2>Offline Transcriptions</h2>
+		    <h3>Entry</h3>
+		</td>
+	    </tr>
+	</thead>
+	<tbody>
+		    <tr>
+			<td>County</td>
+			<td>DUR</td>
+		    </tr>
+		    <tr>
+			<td>Place</td>
+			<td>Heighington</td>
+		    </tr>
+		    <tr>
+			<td>Register</td>
+			<td>St. Michael the Archangel</td>
+		    </tr>
+		    <tr>
+			<td>Groom forename</td>
+			<td>Wiliam</td>
+		    </tr>
+		    <tr>
+			<td>Groom surname</td>
+			<td>ROBINSON</td>
+		    </tr>
+		    <tr>
+			<td>Bride forename</td>
+			<td>Margery</td>
+		    </tr>
+		    <tr>
+			<td>Bride surname</td>
+			<td>WILKINSON</td>
+		    </tr>
+		    <tr>
+			<td>File line number</td>
+			<td>332</td>
+		    </tr>
+		    <tr>
+			<td>Line id</td>
+			<td>332.DURHEIMA.CSV.angelaemily</td>
+		    </tr>
+	</tbody>
+    </table>
+
+
+    <table>
+	<thead>
+	    <tr>
+		<td colspan="2">
+		    <h3>File</h3>
+		</td>
+	    </tr>
+	</thead>
+	<tbody>
+			<tr>
+			    <td>County</td>
+			    <td>DUR</td>
+			</tr>
+			<tr>
+			    <td>Place</td>
+			    <td>Heighington</td>
+			</tr>
+			<tr>
+			    <td>Record type</td>
+			    <td>ma</td>
+			</tr>
+			<tr>
+			    <td>File name</td>
+			    <td>DURHEIMA.CSV</td>
+			</tr>
+			<tr>
+			    <td>Transcriber name</td>
+			    <td>Sue Haycraft</td>
+			</tr>
+			<tr>
+			    <td>Transcriber syndicate</td>
+			    <td>Durham</td>
+			</tr>
+			<tr>
+			    <td>Credit name</td>
+			    <td>Sue Haycraft</td>
+			</tr>
+	</tbody>
+    </table>
+
+
+
+<table>
+    <thead>
+	<tr>
+	    <td colspan="2">
+		<h1>Record</h1>
+	    </td>
+	</tr>
+    </thead>
+    <tbody>
+	<tr>
+	    <td>Primary names</td>
+	    <td>
+		    first_name: wiliam<br>
+		    last_name: robinson<br>
+		    origin: transcript<br>
+		    first_name: margery<br>
+		    last_name: wilkinson<br>
+		    origin: transcript<br>
+	    </td>
+	</tr>
+	<tr>
+	    <td>Other family names</td>
+	    <td>
+		    first_name: wiliam<br>
+		    last_name: robinson<br>
+		    origin: transcript<br>
+		    first_name: margery<br>
+		    last_name: wilkinson<br>
+		    origin: transcript<br>
+	    </td>
+	</tr>
+		<tr>
+		    <td>Record type</td>
+		    <td>ma</td>
+		</tr>
+		<tr>
+		    <td>Groom first name</td>
+		    <td>Wiliam</td>
+		</tr>
+		<tr>
+		    <td>Groom last name</td>
+		    <td>ROBINSON</td>
+		</tr>
+		<tr>
+		    <td>Bride first name</td>
+		    <td>Margery</td>
+		</tr>
+		<tr>
+		    <td>Bride last name</td>
+		    <td>WILKINSON</td>
+		</tr>
+    </tbody>
+</table>
+-->
+
+<%= yield %>
+
+
 	    </div>
 	</div>
-    </body>
-</html>
+    
+
+</body></html>
+
