@@ -1,63 +1,35 @@
 <!DOCTYPE html>
 <!-- saved from url=(0108)http://mvmerge.aspengrovefarm.com/search_records/510adce68ebe61382f05163e?search_id=51428bbe8ebe6108c0000056 -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title></title>
-	
 	<!-- Styles -->
-	
 	<link href='http://fonts.googleapis.com/css?family=Corben' rel='stylesheet' type='text/css'>
-	
 	<%= stylesheet_link_tag "normalize" %>
-	<!--<link href="./files/normalize.css" media="screen" rel="stylesheet" type="text/css"> -->
-	
-	
 	<%= stylesheet_link_tag "search_records" %>
-	<!--<link href="./files/search_records.css" media="screen" rel="stylesheet" type="text/css"> -->     <!-- detail.html -->
-	 
-	 <!-- <link href="./files/search_queries.css" media="screen" rel="stylesheet" type="text/css"> -->     <!-- results.html -->
-	
-	  <!-- <link href="./files/application.css" media="all" rel="stylesheet" type="text/css"> -->    <!-- search.html -->
-	
-	
-	
-
-	  <%= stylesheet_link_tag "style" %>
-	<!-->
-	<link href="./files/style.css" media="all" rel="stylesheet" type="text/css">
-	</!-->
-	
-
-    <style type="text/css"></style>
+	<%= stylesheet_link_tag "style" %>
     </head>
     <body>
-    
-	
-	
 	<div id="container">
-	
-		<div id="header" class="header">
+
+	    <div id="header" class="header">
 		<h1>FreeREG</h1>
 		<h2>The home of U.K. Parish Register Information</h2>
-		</div>
-	
-	
+	    </div>
+
 	    <div id="nav">
 		<ul>
 		    <li><%= link_to "New Search", new_search_query_path %></li>
 		    <li><%= link_to "Back to results", search_query_path(params[:search_id]) %></li>
 		</ul>
 	    </div>
-	    
+
 	    <div id="content">
-		
-
-
-<%= yield %>
-
-
+		<%= yield %>
 	    </div>
-	</div>
-    
 
-</body></html>
+	</div>
+    </body>
+</html>
 
