@@ -11,7 +11,7 @@
 	<%= stylesheet_link_tag "normalize" %>
 	<%= stylesheet_link_tag "search_queries" %>
 	<%= stylesheet_link_tag "style" %>
-	<%= stylesheet_link_tag "application" %>
+	<%= if controller.action_name == "new" then stylesheet_link_tag "application" end %>
 
     </head>
     <body>
