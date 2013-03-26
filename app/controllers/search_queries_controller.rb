@@ -34,7 +34,7 @@ class SearchQueriesController < ApplicationController
     when "show"
       "search_queries"
     when "new"
-      "application"
+      "search_queries"
     else
       "application"
     end
