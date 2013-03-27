@@ -18,8 +18,8 @@ class S3bucket
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  key :name, String
-  key :prefixes, Array
+  field :name, type: String
+  field :prefixes, type: Array
 
   #timestamps!
 
