@@ -13,7 +13,7 @@
 # limitations under the License.
 # 
 ActiveAdmin.register AssetCollection, :as => APP_CONFIG['asset_collection_name'] do
-  menu :priority => 4
+  menu :priority => 5
   actions :show, :index, :edit, :delete
 
 

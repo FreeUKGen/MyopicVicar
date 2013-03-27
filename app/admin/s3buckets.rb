@@ -13,7 +13,7 @@
 # limitations under the License.
 # 
 ActiveAdmin.register S3bucket do
-  menu :priority => 1
+  menu :priority => 2
   #menu :false  
   #actions :new, :except => :detail
 

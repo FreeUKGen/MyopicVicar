@@ -14,7 +14,7 @@
 # 
 ActiveAdmin.register Upload do
 
-  menu :priority => 2
+  menu :priority => 3
 
   actions :show, :index, :new, :create
   action_item({ :only => :show, :if => proc{ upload.status == Upload::Status::NEW } }) do
