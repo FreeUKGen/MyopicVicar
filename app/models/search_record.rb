@@ -110,10 +110,10 @@ class SearchRecord
   
   def create_soundex
     primary_names.each do |name|
-      primary_soundex << soundex_name_pair(name)
+      primary_soundex ||= [] << soundex_name_pair(name)
     end
     inclusive_names.each do |name|
-      inclusive_soundex << soundex_name_pair(name)
+      inclusive_soundex ||= [] << soundex_name_pair(name)
     end
     
   end
