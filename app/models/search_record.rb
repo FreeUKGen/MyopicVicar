@@ -63,11 +63,11 @@ class SearchRecord
   field :date, type: String, :required => false
 
   # search fields
-  has_many :primary_names, :class_name => 'SearchName'
-  has_many :inclusive_names, :class_name => 'SearchName'
+  embeds_many :primary_names, :class_name => 'SearchName'
+  embeds_many :inclusive_names, :class_name => 'SearchName'
   # derived search fields
-  has_many :primary_soundex
-  has_many :inclusive_soundex
+  field :primary_soundex, type: Array
+  field :inclusive_soundex, type: Array
 
 
   def ordered_display_fields
