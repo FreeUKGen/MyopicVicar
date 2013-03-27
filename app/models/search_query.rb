@@ -21,7 +21,7 @@ class SearchQuery
   validate :name_not_blank
 
   def search
-    SearchRecord.all(search_params)
+    SearchRecord.where(search_params).all
   end
   
   def search_params
