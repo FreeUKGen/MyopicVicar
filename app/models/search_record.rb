@@ -66,8 +66,8 @@ class SearchRecord
   has_many :primary_names, :class_name => 'SearchName'
   has_many :inclusive_names, :class_name => 'SearchName'
   # derived search fields
-  has_many :primary_soundex, Array, :require => false
-  has_many :inclusive_soundex, Array, :require => false
+  has_many :primary_soundex
+  has_many :inclusive_soundex
 
 
   def ordered_display_fields
