@@ -11,7 +11,7 @@ class SearchQuery
   field :role, type: String, :required => false, :as => NameRole::ALL_ROLES+[nil] # I'm not sure why in and required=>false seem incompatible; the +[nil] is a work-around
   field :record_type, type: String, :required => false, :as => RecordType::ALL_TYPES+[nil]
   field :chapman_code, type: String, :required => false, :as => ChapmanCode::values+[nil]
-#  field :extern_ref, type: String
+  #field :extern_ref, type: String
   field :inclusive, type: Boolean
 
 

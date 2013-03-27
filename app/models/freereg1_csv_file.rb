@@ -18,7 +18,7 @@ class Freereg1CsvFile
   include Mongoid::Timestamps
   has_many :freereg1_csv_entries
   belongs_to :register
-#  belongs_to :place
+  #belongs_to :place
 
 
 

@@ -21,8 +21,6 @@ class S3bucket
   field :name, type: String
   field :prefixes, type: Array
 
-  #timestamps!
-
   TMP_DIR_PREFIX = "/tmp/myopicvicar/"
   
   def directories
