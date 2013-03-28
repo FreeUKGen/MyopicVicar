@@ -944,7 +944,7 @@ class FreeregCsvProcessor
     @list_of_registers.each do |place_key,head_value|
       head.merge!(head_value)
       #puts "Header #{head} \n"
-      old_freereg1_csv_file = Freereg1CsvFile.find_by_file_name_and_userid_and_county_and_place_and_church_name_and_register_type(head[:file_name], head[:userid], head[:county], head[:place], head[:church_name], head[:register_type])
+      old_freereg1_csv_file = Freereg1CsvFile.where(:file_name => head[:file_name], :userid => head[:userid], :county => head[:county], :place => head[:place], :church_name => head[:church_name], :register_type => head[:register_type]).first
           if old_freereg1_csv_file
             # this is an old record -- delete it before we create a new one
 
