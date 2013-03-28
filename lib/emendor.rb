@@ -20,10 +20,10 @@ module Emendor
     EmendationType.all.each do |emendation_type|
       target_field = emendation_type.target_field
       name_array.each do |name|
-        rules = emendation_type.emendation_rules.find_all_by_source(name[target_field])
+        rules = emendation_type.emendation_rules.where(:original => name[target_field]).all
         rules.each do |rule|
           emended_name = SearchName.new(name.attributes)
-          emended_name[target_field] = rule.target
+          emended_name[target_field] = rule.replacement
           emended_name.origin = emendation_type.name
           emended_names << emended_name
         end

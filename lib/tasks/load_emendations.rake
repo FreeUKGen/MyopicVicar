@@ -9,7 +9,7 @@ task :load_emendations => :environment do
     et.delete
   end
   
-  et = EmendationType.create!(:name => 'expansion', :replacement_field => :first_name, :origin => THIS_RAKE_TASK)
+  et = EmendationType.create!(:name => 'expansion', :target_field => :first_name, :origin => THIS_RAKE_TASK)
   EmendationRule.create!(:original => 'abig', :replacement => 'abigail', :emendation_type => et)
   EmendationRule.create!(:original => 'abr', :replacement => 'abraham', :emendation_type => et)
   EmendationRule.create!(:original => 'agn', :replacement => 'agnes', :emendation_type => et)
@@ -122,7 +122,7 @@ task :load_emendations => :environment do
   EmendationRule.create!(:original => 'xtopherus', :replacement => 'christopher', :emendation_type => et)
   EmendationRule.create!(:original => 'zach', :replacement => 'zachariah', :emendation_type => et)
 
-  et = EmendationType.create!(:name => 'delatinization', :replacement_field => :first_name, :origin => THIS_RAKE_TASK)
+  et = EmendationType.create!(:name => 'delatinization', :target_field => :first_name, :origin => THIS_RAKE_TASK)
   EmendationRule.create!(:source => 'adamus', :replacement => 'adam', :emendation_type => et)
   EmendationRule.create!(:source => 'adelmarus', :replacement => 'elmer', :emendation_type => et)
   EmendationRule.create!(:source => 'adrianus', :replacement => 'adrian', :emendation_type => et)

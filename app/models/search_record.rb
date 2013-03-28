@@ -66,8 +66,8 @@ class SearchRecord
   embeds_many :primary_names, :class_name => 'SearchName'
   embeds_many :inclusive_names, :class_name => 'SearchName'
   # derived search fields
-  field :primary_soundex, type: Array
-  field :inclusive_soundex, type: Array
+  field :primary_soundex, type: Array, default: []
+  field :inclusive_soundex, type: Array, default: []
 
 
   def ordered_display_fields
@@ -110,10 +110,10 @@ class SearchRecord
   
   def create_soundex
     primary_names.each do |name|
-      primary_soundex ||= [] << soundex_name_pair(name)
+      primary_soundex << soundex_name_pair(name)
     end
     inclusive_names.each do |name|
-      inclusive_soundex ||= [] << soundex_name_pair(name)
+      inclusive_soundex << soundex_name_pair(name)
     end
     
   end
