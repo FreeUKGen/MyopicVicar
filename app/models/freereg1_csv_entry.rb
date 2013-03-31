@@ -38,6 +38,7 @@ class Freereg1CsvEntry
   key :burial_person_forename, String
   key :burial_person_surname, String
   key :burial_person_abode, String
+  key :church_name, String
   key :county, String
   key :father_forename, String
   key :father_occupation, String
@@ -63,7 +64,6 @@ class Freereg1CsvEntry
   key :person_forename, String
   key :person_sex, String
   key :place, String
-  key :register, String
   key :register_entry_number, String
   key :register_type, String
   key :relationship, String
@@ -74,6 +74,7 @@ class Freereg1CsvEntry
   key :witness2_surname, String
   key :line_id, String
   key :file_line_number, Integer
+ 
 
 
   after_save :transform_search_record
@@ -87,7 +88,7 @@ class Freereg1CsvEntry
     order = []
     order << 'county'
     order << 'place'
-    order << 'register'
+    order << 'church_name'
     order << 'register_type'
     order << 'register_entry_number'
     order << 'baptism_date'

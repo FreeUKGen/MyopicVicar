@@ -53,7 +53,7 @@ class Freereg1CsvFile
     order = []
     order << 'county'
     order << 'place'
-    order << 'register'
+    order << 'church_name'
     order << 'register_type'
     order << 'record_type'
     order << 'file_name'
