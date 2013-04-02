@@ -22,7 +22,7 @@ describe Freereg1CsvFile do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       puts "Testing #{file[:filename]}"
       FreeregCsvProcessor.process(file[:filename])      
-      record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
+      record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
   
       record.file_name.should eq(File.basename(file[:filename]))
       record.county.should eq(file[:chapman_code])
@@ -44,8 +44,9 @@ describe Freereg1CsvFile do
     Freereg1CsvFile.count.should eq(old_file_count+1)
     Freereg1CsvEntry.count.should eq(old_entry_count+file[:entry_count])
     SearchRecord.count.should eq(old_record_count+file[:entry_count])
-        
-    found_record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
+
+    found_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).last  
+    binding.pry
     record.should eq(found_record)
      
      

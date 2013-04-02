@@ -74,6 +74,7 @@ class Register
   end
   
   def self.find(register_id)
+    return nil unless register_id
     id = register_id.kind_of?(BSON::ObjectId) ? register_id : BSON::ObjectId.new(register_id)
     place = Place.where('churches.registers._id' => register_id).first
     if place

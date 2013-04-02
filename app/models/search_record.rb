@@ -254,7 +254,7 @@ class SearchRecord
   end
   
   def self.delete_freereg1_csv_entries
-    SearchRecord.delete_all(:freereg1_csv_entry_id.ne => nil)
+    SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
 
   end
 end
