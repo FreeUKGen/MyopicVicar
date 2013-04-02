@@ -1,9 +1,10 @@
 digraph G {
-	label="New Data Flow";
+	label="Open Source Indexing Data Flow for FreeREG";
 
 	rankdir="LR";
 	subgraph cluster_2 {
 #		style=filled;
+		label="";
 		color=lightgrey;
 #		node [style=filled,color=white];
 
