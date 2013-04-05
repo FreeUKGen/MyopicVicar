@@ -53,7 +53,6 @@ module Freereg1Translator
     # :witness2_forename => ,
     # :witness2_surname => ,
     # :line => ,
-    :record_type => :record_type, # TODO map the contents correctly
     :file_line_number => :file_line_number,
   }
 
