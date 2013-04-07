@@ -16,6 +16,7 @@ gem "therubyracer", :platforms => :ruby # avoid loading on windows
 gem 'text'
 gem 'json'
 gem 'pry'
+gem 'pry-stack_explorer'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
 

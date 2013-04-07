@@ -55,6 +55,8 @@ GEM
       activesupport (>= 3.0.0)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
+    binding_of_caller (0.7.1)
+      debug_inspector (>= 0.0.1)
     bourbon (2.1.3)
       sass (>= 3.2)
       thor
@@ -70,6 +72,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.2)
+    debug_inspector (0.0.2)
     devise (2.2.3)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -141,6 +144,9 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
+    pry-stack_explorer (0.4.9)
+      binding_of_caller (>= 0.7)
+      pry (~> 0.9.11)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -231,6 +237,7 @@ DEPENDENCIES
   meta_search (>= 1.1.0.pre)
   mongoid (~> 2.4)
   pry
+  pry-stack_explorer
   rails (= 3.2.13)
   rmagick (= 2.13.2)
   rspec-rails
