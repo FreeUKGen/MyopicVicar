@@ -46,7 +46,6 @@ describe Freereg1CsvFile do
     SearchRecord.count.should eq(old_record_count+file[:entry_count])
 
     found_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).last  
-    binding.pry
     record.should eq(found_record)
      
      
@@ -62,7 +61,7 @@ describe Freereg1CsvFile do
     SearchRecord.count.should eq(old_record_count+file[:entry_count])
     
     # look for the old record by id
-    old_record = Freereg1CsvFile.find(record.id)
+    old_record = Freereg1CsvFile.where(:id => record.id).first
     old_record.should eq(nil)
         
   end

@@ -956,9 +956,10 @@ class FreeregCsvProcessor
          # fetch the IDs of all the entries on this file
         id_array = old_freereg1_csv_file.freereg1_csv_entries.inject([]) { |a,e| a << e.id }
          # now we delete the SearchRecord records that point to any of those entry IDs
-        SearchRecord.delete_all(:freereg1_csv_entry_id => id_array)
+        SearchRecord.where(:freereg1_csv_entry_id.in => id_array).delete_all
         # now delete the csv entry records
-        Freereg1CsvEntry.delete_all(:id => id_array)
+        
+        Freereg1CsvEntry.where(:_id.in => id_array).delete_all
         # now we can delete the file
         old_freereg1_csv_file.delete
       end
