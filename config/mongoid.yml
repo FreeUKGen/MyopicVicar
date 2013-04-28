@@ -1,10 +1,10 @@
 development:
   host: localhost
-  database: myopic_vicar_development
+  database: myopic_vicar-development
 
 test:
   host: localhost
-  database: myopic_vicar_test
+  database: myopic_vicar-test
 
 # set these environment variables on your prod server
 production:
