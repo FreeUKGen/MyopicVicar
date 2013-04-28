@@ -126,7 +126,8 @@ describe Freereg1CsvEntry do
 
         check_record(entry, :bride_father_forename, :bride_father_surname, false)
         check_record(entry, :groom_father_forename, :groom_father_surname, false)
-
+        binding.pry
+        
         # check types and counties
         check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::MARRIAGE})
         check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::BURIAL}, false)

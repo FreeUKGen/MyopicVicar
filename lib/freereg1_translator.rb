@@ -76,20 +76,28 @@ module Freereg1Translator
   
   def self.expanded_attrs(entry)
     extras = []
+    role_fields_map = {
+      NameRole::GROOM_FATHER => {
+        :groom_father_forename => :first_name,
+        :groom_father_surname => :last_name
+      },
+      NameRole::BRIDE_FATHER => {
+        :bride_father_forename => :first_name,
+        :bride_father_surname => :last_name
+      }
+    }
 
-    if entry[:groom_father_forename] || entry[:groom_father_surname]
-      extra_name = { :role => NameRole::GROOM_FATHER }
-      extra_name[:first_name] = entry[:groom_father_forename]
-      extra_name[:last_name] = entry[:groom_father_surname]
-      extras << extra_name
+    role_fields_map.keys.each do |role_key|
+      fields_map = role_fields_map[role_key]
+      if fields_map.keys.detect { |field_key| entry[field_key] }
+        extra_name = { :role => role_key }
+        fields_map.each_pair do |original, new|
+            extra_name[new] = entry[original]
+        end    
+        extras << extra_name
+      end
     end
-        
-    if entry[:bride_father_forename] || entry[:bride_father_surname]
-      extra_name = { :role => NameRole::BRIDE_FATHER }
-      extra_name[:first_name] = entry[:bride_father_forename]
-      extra_name[:last_name] = entry[:bride_father_surname]
-      extras << extra_name
-    end
+    extras
 
   end
   
