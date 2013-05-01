@@ -1,0 +1,19 @@
+---
+- role:	f
+  fields:
+    first_name: father_forename
+    last_name:	father_surname
+- role: m
+  fields:
+    first_name: mother_forename
+    last_name:
+    - mother_surname
+    - father_surname
+- role: gf
+  fields:
+    first_name: groom_father_forename
+    last_name:	groom_father_surname
+- role: bf
+  fields:
+    first_name: bride_father_forename
+    last_name:	bride_father_surname
