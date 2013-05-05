@@ -20,12 +20,12 @@ module Freereg1Translator
   #  :birth_date => ,
     # :bride_father_forename => :father_first_name,
     # :bride_father_surname => :father_surname,
-    :bride_forename => :bride_first_name,
+#    :bride_forename => :bride_first_name,
   #  :bride_parish => ,
-    :bride_surname => :bride_last_name,
+#    :bride_surname => :bride_last_name,
   #  :burial_date => , #actual date as written
-    :burial_person_forename => :first_name,
-    :burial_person_surname => :last_name,
+#    :burial_person_forename => :first_name,
+#    :burial_person_surname => :last_name,
     :county => :chapman_code,
     # what should we do about the various relatives?  They should be put into family records.
     :female_relative_forename => :mother_first_name,
@@ -33,17 +33,17 @@ module Freereg1Translator
     # :groom_father_forename => ,
     # :groom_father_occupation => ,
     # :groom_father_surname => ,
-    :groom_forename => :groom_first_name,
+#    :groom_forename => :groom_first_name,
   #  :groom_parish => ,
-    :groom_surname => :groom_last_name,
+#    :groom_surname => :groom_last_name,
     # what should we do about the various relatives?  They should be put into family records.
     :male_relative_forename => :father_first_name,
    # :marriage_date => , #actual date as written
-    :person_forename => :first_name,
+#    :person_forename => :first_name,
   #  :register => ,
   #  :register_type => ,
   #  :relationship => ,
-    :relative_surname => :father_last_name,
+#    :relative_surname => :father_last_name,
     # :witness1_forename => ,
     # :witness1_surname => ,
     # :witness2_forename => ,
@@ -81,10 +81,11 @@ module Freereg1Translator
     roles=role_fields_map
     roles.each do |role|
       role_name = role['role']
+      type_name = role['type']
       fields_map = role['fields']
 
       if fields_map.values.detect { |key| key.is_a?(Array) ? entry[key[0].to_sym] : entry[key.to_sym] }
-        extra_name = { :role => role_name }
+        extra_name = { :role => role_name, :type => type_name }
         fields_map.each_pair do |standard, original|
           if original.is_a? Array
             original.detect { |o| extra_name[standard.to_sym] = entry[o.to_sym] }
@@ -95,17 +96,6 @@ module Freereg1Translator
         extras << extra_name
       end  
     end
-# 
-    # role_fields_map.keys.each do |role_key|
-      # fields_map = role_fields_map[role_key]
-      # if fields_map.keys.detect { |field_key| entry[field_key] }
-        # extra_name = { :role => role_key }
-        # fields_map.each_pair do |original, standard|
-            # extra_name[standard] = entry[original]
-        # end    
-        # extras << extra_name
-      # end
-    # end
     extras
 
   end
@@ -114,7 +104,7 @@ module Freereg1Translator
     entry_attrs = entry_attributes(entry)
     file_attrs = file_attributes(file)
     file_attrs.merge!(entry_attrs)
-    file_attrs[:other_family_names] = expanded_attrs(entry)
+    file_attrs[:transcript_names] = expanded_attrs(entry)
     file_attrs
   end
 

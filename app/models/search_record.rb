@@ -35,11 +35,11 @@ class SearchRecord
   field :first_name, type: String, :required => false
   field :last_name, type: String, :required => false
   
-  field :father_first_name, type: String, :required => false
-  field :father_last_name, type: String, :required => false
-
-  field :mother_first_name, type: String, :required => false
-  field :mother_last_name, type: String, :required => false
+  # field :father_first_name, type: String, :required => false
+  # field :father_last_name, type: String, :required => false
+# 
+  # field :mother_first_name, type: String, :required => false
+  # field :mother_last_name, type: String, :required => false
 
   field :husband_first_name, type: String, :required => false
   field :husband_last_name, type: String, :required => false
@@ -57,7 +57,8 @@ class SearchRecord
   # roles and other family members on records
   #
   # It contains hashes with keys :first_name, :last_name, :role
-  field :other_family_names, type: Array, :required => false
+  field :transcript_names, type: Array, :required => true
+  # field :other_family_names, type: Array, :required => false
 
   # Date of the entry, whatever kind it is
   field :date, type: String, :required => false
@@ -80,8 +81,8 @@ class SearchRecord
       "groom_",
       "bride_",
       # other family members show up next
-      "father_",
-      "mother_",
+      # "father_",
+      # "mother_",
       "husband_",
       "wife_"
     ].each do |prefix|
@@ -143,27 +144,40 @@ class SearchRecord
 
 
   def populate_primary_names
-    # standard names
-    if name = search_name(first_name, last_name)
-#      print "DEBUG: Adding transcript name #{name}"
-      primary_names << name
-    end
-    # supplemental names for baptisms  -- consider moving to separate method
-    unless name
-      name = search_name(first_name, father_last_name, Source::SUPPLEMENT)
-      unless name
-        name = search_name(first_name, mother_last_name, Source::SUPPLEMENT)
-      end
-#      print "DEBUG: Adding supplemental name #{name}"
-      primary_names << name if name
-    end
+    
 
-    # marriage names
-    if name = search_name(groom_first_name, groom_last_name)
-      primary_names << name
-    end
-    if name = search_name(bride_first_name, bride_last_name)
-      primary_names << name
+    # # standard names
+    # if name = search_name(first_name, last_name)
+# #      print "DEBUG: Adding transcript name #{name}"
+      # primary_names << name
+    # end
+    # # supplemental names for baptisms  -- consider moving to separate method
+    # unless name
+      # name = search_name(first_name, father_last_name, Source::SUPPLEMENT)
+      # unless name
+        # name = search_name(first_name, mother_last_name, Source::SUPPLEMENT)
+      # end
+# #      print "DEBUG: Adding supplemental name #{name}"
+      # primary_names << name if name
+    # end
+# 
+    # # marriage names
+    # if name = search_name(groom_first_name, groom_last_name)
+      # primary_names << name
+    # end
+    # if name = search_name(bride_first_name, bride_last_name)
+      # primary_names << name
+    # end
+
+    if transcript_names && transcript_names.size > 0
+      transcript_names.each do |name_hash|
+        if name_hash[:type] == 'primary'
+          name = search_name(name_hash[:first_name], name_hash[:last_name])
+          primary_names << name if name          
+        end
+        # binding.pry
+
+      end
     end
 
   end
@@ -176,33 +190,35 @@ class SearchRecord
       inclusive_names << name
     end
     # father
-    if name = search_name(father_first_name, father_last_name)
-      inclusive_names << name
-    end
-    # mother
-    if name = search_name(mother_first_name, mother_last_name)
-      inclusive_names << name
-    end
+    # if name = search_name(father_first_name, father_last_name)
+      # inclusive_names << name
+    # end
+    # # mother
+    # if name = search_name(mother_first_name, mother_last_name)
+      # inclusive_names << name
+    # end
     # supplemental names for baptisms  -- consider moving to separate method
-    if mother_last_name.blank? && !mother_first_name.blank?
-      name = search_name(mother_first_name, father_last_name)
-      if name
-        inclusive_names << name
-      end
-    end
+    # if mother_last_name.blank? && !mother_first_name.blank?
+      # name = search_name(mother_first_name, father_last_name)
+      # if name
+        # inclusive_names << name
+      # end
+    # end
     # husband
-    if name = search_name(husband_first_name, husband_last_name)
-      inclusive_names << name
-    end
-    # wife
-    if name = search_name(wife_first_name, wife_last_name)
-      inclusive_names << name
-    end
+    # if name = search_name(husband_first_name, husband_last_name)
+      # inclusive_names << name
+    # end
+    # # wife
+    # if name = search_name(wife_first_name, wife_last_name)
+      # inclusive_names << name
+    # end
     
-    if other_family_names && other_family_names.size > 0
-      other_family_names.each do |name_hash|
-        name = search_name(name_hash[:first_name], name_hash[:last_name])
-        inclusive_names << name if name
+    if transcript_names && transcript_names.size > 0
+      transcript_names.each do |name_hash|
+        unless name_hash['type'] == 'primary'
+          name = search_name(name_hash[:first_name], name_hash[:last_name])
+          inclusive_names << name if name          
+        end
       end
     end
 

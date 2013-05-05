@@ -1,19 +1,46 @@
 ---
+- role: ba
+  type: primary
+  fields:
+    first_name: person_forename
+    last_name:
+    - relative_surname
+    - father_surname
+    - mother_surname
+- role: bu
+  type: primary
+  fields:
+    first_name: burial_person_forename
+    last_name:  burial_person_surname
+- role: b
+  type: primary
+  fields:
+    first_name: bride_forename
+    last_name:  bride_surname
+- role: g
+  type: primary
+  fields:
+    first_name: groom_forename
+    last_name:  groom_surname
 - role:	f
+  type: other
   fields:
     first_name: father_forename
     last_name:	father_surname
 - role: m
+  type: other
   fields:
     first_name: mother_forename
     last_name:
     - mother_surname
     - father_surname
 - role: gf
+  type: other
   fields:
     first_name: groom_father_forename
     last_name:	groom_father_surname
 - role: bf
+  type: other
   fields:
     first_name: bride_father_forename
     last_name:	bride_father_surname
