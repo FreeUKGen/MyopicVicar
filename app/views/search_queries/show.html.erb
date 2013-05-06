@@ -19,7 +19,6 @@
 	    <tbody>
 		<tr>
 		    <td>
-		    	<% debug(search_record) %>
 			<% search_record.transcript_names.uniq.each_with_index do |name, i| %>
 				<% if  name['type'] == 'primary' %>
 					<% if i > 0 %>
@@ -49,9 +48,11 @@
 			<%= search_record.chapman_code %>
 		    </td>
 		    <td>
-			<%= link_to("Details", search_record_path(search_record, :search_id => @search_query)) %>
+			<%= link_to("Details", search_record_path(search_record, :search_id => @search_query, :page_number => @page_number)) %>
 			<% if session[:viewed] %>
-			    <%= "viewed" if session[:viewed].include?("#{search_record.id}") %>
+			    <i>
+			    	<%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
+			    </i>
 			<% end %>
 		    </td>
 		</tr>	
