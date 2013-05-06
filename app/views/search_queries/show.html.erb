@@ -1,3 +1,11 @@
+<div id="nav">
+	<ul>
+	    <li><%= link_to "New Search", new_search_query_path %></li>
+	    <li><%= link_to "Back to results", :back %></li>
+	</ul>
+</div>
+
+
 <h1>Search results</h1>
 
 <% if @search_results.size == 0 %>
@@ -61,3 +69,16 @@
     </table>
 <% end %>
 
+
+<div id="nav">
+	<ul>
+	    <li>
+	    	<%= link_to "Next", search_query_path(@search_query, :page_number => @page_number+1) %>
+    	</li>
+    	<% if @page_number > 0 %>		    	
+		    <li>
+		    	<%= link_to "Previous", search_query_path(@search_query, :page_number => @page_number-1) %>
+	    	</li>
+    	<% end %>
+	</ul>
+</div>
