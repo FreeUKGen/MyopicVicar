@@ -2,7 +2,7 @@ class SearchRecordsController < ApplicationController
   before_filter :viewed
   def show
     @search_record = SearchRecord.find(params[:id])
-    @annotations = Annotation.find(@search_record.annotation_ids)
+    @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
     session[:viewed] << params[:id]
   end
 

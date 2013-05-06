@@ -170,7 +170,7 @@ class SearchRecord
     # end
 
     if transcript_names && transcript_names.size > 0
-      transcript_names.each do |name_hash|
+      transcript_names.each_with_index do |name_hash|
         if name_hash[:type] == 'primary'
           name = search_name(name_hash[:first_name], name_hash[:last_name])
           primary_names << name if name          

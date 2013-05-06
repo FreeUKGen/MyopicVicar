@@ -7,8 +7,8 @@
     <table>			
 	<thead>
 	    <tr>
-		<th>Primary Name</th>
-		<th>Family Members</th>
+		<th>Participants</th>
+		<th>Other Names</th>
 		<th>Type</th>
 		<th>Date</th>
 		<th>County</th>
@@ -19,19 +19,24 @@
 	    <tbody>
 		<tr>
 		    <td>
-			<% search_record.primary_names.uniq.each_with_index do |name, i| %>
-				<% if i > 0 %>
-					<br/>
-				<% end%>
-				<%= "#{name.first_name} #{name.last_name}" %>
+		    	<% debug(search_record) %>
+			<% search_record.transcript_names.uniq.each_with_index do |name, i| %>
+				<% if  name['type'] == 'primary' %>
+					<% if i > 0 %>
+						<br/>
+					<% end%>
+					<%= "#{name['first_name']} #{name['last_name']}" %>
+				<% end %>
 			<% end%>
 		    </td>
 		    <td>
-			<% (search_record.inclusive_names - search_record.primary_names).each_with_index do |name, i| %>
-				<% if i > 0 %>
-					<br/>
-				<% end%>
-				<%= "#{name.first_name} #{name.last_name}" %>
+			<% search_record.transcript_names.each_with_index do |name, i| %>
+				<% unless  name['type'] == 'primary' %>
+					<% if i > 0 %>
+						<br/>
+					<% end%>
+					<%= "#{name['first_name']} #{name['last_name']}" %>
+				<% end %>
 			<% end%>
 		    </td>
 		    <td>

@@ -1,4 +1,5 @@
 class SearchQueriesController < ApplicationController
+  RECORDS_PER_PAGE = 100
   def index
     redirect_to :action => :new
   end
@@ -21,8 +22,14 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
+    if params[:page_number]
+      @page_number = params[:page_number].to_i
+    else
+      @page_number = 0
+    end
     @search_query = SearchQuery.find(params[:id])
-    @search_results = @search_query.search
+    @search_results = @search_query.search.skip(@page_number*RECORDS_PER_PAGE).limit(RECORDS_PER_PAGE)
+#    binding.pry
   end
 
 
