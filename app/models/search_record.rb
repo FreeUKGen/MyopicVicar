@@ -95,6 +95,7 @@ class SearchRecord
 
 
   def transform
+
     populate_search_from_transcript
     
     downcase_all
@@ -138,8 +139,11 @@ class SearchRecord
   end
 
   def emend_all
+#    binding.pry
     self.primary_names = Emendor.emend(self.primary_names)
+#    binding.pry
     self.inclusive_names = Emendor.emend(self.inclusive_names)
+#    binding.pry
   end
 
 
@@ -193,8 +197,8 @@ class SearchRecord
     # if name = search_name(father_first_name, father_last_name)
       # inclusive_names << name
     # end
-    # # mother
     # if name = search_name(mother_first_name, mother_last_name)
+    # # mother
       # inclusive_names << name
     # end
     # supplemental names for baptisms  -- consider moving to separate method
@@ -215,7 +219,7 @@ class SearchRecord
     
     if transcript_names && transcript_names.size > 0
       transcript_names.each do |name_hash|
-        unless name_hash['type'] == 'primary'
+        unless name_hash[:type] == 'primary'
           name = search_name(name_hash[:first_name], name_hash[:last_name])
           inclusive_names << name if name          
         end

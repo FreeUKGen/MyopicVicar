@@ -4,7 +4,6 @@
   fields:
     first_name: person_forename
     last_name:
-    - relative_surname
     - father_surname
     - mother_surname
 - role: bu
@@ -43,4 +42,14 @@
   type: other
   fields:
     first_name: bride_father_forename
-    last_name:	bride_father_surname
+    last_name:  bride_father_surname
+- role: fr
+  type: other
+  fields:
+    first_name: female_relative_forename
+    last_name:  relative_surname
+- role: mr
+  type: other
+  fields:
+    first_name: male_relative_forename
+    last_name:  relative_surname

@@ -84,7 +84,8 @@ module Freereg1Translator
       type_name = role['type']
       fields_map = role['fields']
 
-      if fields_map.values.detect { |key| key.is_a?(Array) ? entry[key[0].to_sym] : entry[key.to_sym] }
+      first_name_keys = fields_map['first_name'].is_a?(Array) ? fields_map['first_name'] : [fields_map['first_name']]
+      if first_name_keys.detect { |key| entry[key.to_sym] }
         extra_name = { :role => role_name, :type => type_name }
         fields_map.each_pair do |standard, original|
           if original.is_a? Array
@@ -93,6 +94,7 @@ module Freereg1Translator
             extra_name[standard.to_sym] = entry[original.to_sym]
           end
         end
+
         extras << extra_name
       end  
     end
