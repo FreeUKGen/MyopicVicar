@@ -25,5 +25,10 @@ module RecordType
   }    
   
   ALL_TYPES = [BURIAL, MARRIAGE, BAPTISM]
+  
+  def self.display_name(value)
+    # binding.pry
+    OPTIONS.key(value)
+  end
 
 end

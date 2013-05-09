@@ -14,7 +14,8 @@
 # 
 class ImageFile
   require 'RMagick'
-  include MongoMapper::Document         
+  include Mongoid::Document
+  include Mongoid::Timestamps
 
   PNG_SUFFIX = '.png'
 
@@ -48,21 +49,21 @@ class ImageFile
 # key :user_ids, Array, :typecast => 'ObjectId'
   
   # filename
-  key :name, String
+  field :name, type: String
 
   # location of original file to be used when derivation happens
-  key :original_name, String
+  field :original_name, type: String
 
   #
   # TODO consider whether or not we actually need this
   #
-  key :path, String
+  field :path, type: String
   
-  key :width, Integer
-  key :height, Integer
+  field :width, type: Integer
+  field :height, type: Integer
 
-  key :thumbnail_width, Integer
-  key :thumbnail_height, Integer
+  field :thumbnail_width, type: Integer
+  field :thumbnail_height, type: Integer
 
   def display_name
     File.basename(self.name)

@@ -1,24 +1,27 @@
 class SearchQuery
-  include MongoMapper::Document
+  include Mongoid::Document
 
   require 'chapman_code'
   require 'name_role'
   # consider extracting this from entities
   
-  key :first_name, String, :required => false
-  key :last_name, String, :required => false
-  key :fuzzy, Boolean
-  key :role, String, :required => false, :in => NameRole::ALL_ROLES+[nil] # I'm not sure why in and required=>false seem incompatible; the +[nil] is a work-around
-  key :record_type, String, :required => false, :in => RecordType::ALL_TYPES+[nil]
-  key :chapman_code, String, :required => false, :in => ChapmanCode::values+[nil]
-#  key :extern_ref, String
-  key :inclusive, Boolean
+  field :first_name, type: String, :required => false
+  field :last_name, type: String, :required => false
+  field :fuzzy, type: Boolean
+  field :role, type: String, :required => false
+  validates_inclusion_of :role, :in => NameRole::ALL_ROLES+[nil]
+  field :record_type, type: String, :required => false
+  validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
+  field :chapman_code, type: String, :required => false
+  validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
+  #field :extern_ref, type: String
+  field :inclusive, type: Boolean
 
 
   validate :name_not_blank
 
   def search
-    SearchRecord.all(search_params)
+    SearchRecord.where(search_params).all
   end
   
   def search_params

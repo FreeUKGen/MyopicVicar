@@ -17,32 +17,31 @@
 #
 # The image being transcribed
 class Asset
-  include MongoMapper::Document
+  include Mongoid::Document
+  include Mongoid::Timestamps
   
   # What is the native size of the image
-  key :height, Integer, :required => true
-  key :width, Integer, :required => true
+  field :height, type: Integer, :required => true
+  field :width, type: Integer, :required => true
   
   # What size should the image be displayed at
-  key :display_width, Integer, :required => true
+  field :display_width, type: Integer, :required => true
   
-  key :location, String, :required => true
-  key :ext_ref, String
-  key :order, Integer
-  key :template_id, ObjectId
+  field :location, type: String, :required => true
+  field :ext_ref, type: String
+  field :order, type: Integer
+  field :template_id, type: BSON::ObjectId
   
-  key :done, Boolean, :default => false 
-  key :classification_count, Integer , :default => 0 
+  field :done, type: Boolean, :default => false 
+  field :classification_count, type: Integer , :default => 0 
   
-  key :thumbnail_location, String
-  key :thumbnail_width, Integer
-  key :thumbnail_height, Integer
+  field :thumbnail_location, type: String
+  field :thumbnail_width, type: Integer
+  field :thumbnail_height, type: Integer
   
   scope :active, :conditions => { :done => false }
   scope :in_collection, lambda { |asset_collection| where(:asset_collection_id => asset_collection.id)}
 
-  timestamps!
-  
   belongs_to :template
   belongs_to :asset_collection
   

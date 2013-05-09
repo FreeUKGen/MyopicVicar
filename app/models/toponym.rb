@@ -13,11 +13,11 @@
 # limitations under the License.
 # 
 class Toponym
-  include MongoMapper::Document
-  key :chapman_code, String
-  key :gbhgis_response, Hash
-  key :geonames_response, Hash
-  key :parish, String
-  key :resolved, Boolean
-  many :church_names
+  include Mongoid::Document
+  field :chapman_code, type: String
+  field :gbhgis_response, type: Hash
+  field :geonames_response, type: Hash
+  field :parish, type: String
+  field :resolved, type: Boolean
+  has_many :church_names
 end

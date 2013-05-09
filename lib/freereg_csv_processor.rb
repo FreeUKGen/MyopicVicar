@@ -199,13 +199,8 @@ class FreeregCsvProcessor
           '?' => '*',
           'Divorcee' => "Divorcee",
           'Juvenis' => 'Minor'}
-#This works:
-#$States = Hash.new()
-#$States["California"] = Hash.new()
-#$States["California"].store("Los Angeles", Hash.new())
-#$States["California"].fetch("Los Angeles").store("District 1", "90035")
 
-
+  attr_accessor :freereg1_csv_file
 
   def initialize(filename,userid)
     # turn off domain checks -- some of these email accounts may no longer work and that's okay
@@ -944,142 +939,146 @@ class FreeregCsvProcessor
     @list_of_registers.each do |place_key,head_value|
       head.merge!(head_value)
       #puts "Header #{head} \n"
-      old_freereg1_csv_file = Freereg1CsvFile.find_by_file_name_and_userid_and_county_and_place_and_church_name_and_register_type(head[:file_name], head[:userid], head[:county], head[:place], head[:church_name], head[:register_type])
-          if old_freereg1_csv_file
-            # this is an old record -- delete it before we create a new one
-
-            # TODO: move all this cleanup stuff into an instance method of Freereg1CsvFile and 
-             # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
-            # this function)
-            #
-           # fetch the IDs of all the entries on this file
-           id_array = old_freereg1_csv_file.freereg1_csv_entries.inject([]) { |a,e| a << e.id }
-           # now we delete the SearchRecord records that point to any of those entry IDs
-            SearchRecord.delete_all(:freereg1_csv_entry_id => id_array)
-            # now delete the csv entry records
-            Freereg1CsvEntry.delete(id_array)
-            # now we can delete the file
-            old_freereg1_csv_file.delete
-          end
+      old_freereg1_csv_file = 
+        Freereg1CsvFile.where({ :file_name => head[:file_name], 
+                                :userid => head[:userid], 
+                                :county => head[:county], 
+                                :place => head[:place], 
+                                :church_name => head[:church_name], 
+                                :register_type => head[:register_type] }).first
+      if old_freereg1_csv_file
+        # this is an old record -- delete it before we create a new one
+        
+        # TODO: move all this cleanup stuff into an instance method of Freereg1CsvFile and 
+         # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
+        # this function)
+        #
+         # fetch the IDs of all the entries on this file
+        id_array = old_freereg1_csv_file.freereg1_csv_entries.inject([]) { |a,e| a << e.id }
+         # now we delete the SearchRecord records that point to any of those entry IDs
+        SearchRecord.where(:freereg1_csv_entry_id.in => id_array).delete_all
+        # now delete the csv entry records
+        
+        Freereg1CsvEntry.where(:_id.in => id_array).delete_all
+        # now we can delete the file
+        old_freereg1_csv_file.delete
+      end
       @freereg1_csv_file = Freereg1CsvFile.create!(head)
       @freereg1_csv_file.update_register
-      @freereg1_csv_file
       #write the data records for this place/church
-      
-         @data_hold[place_key].each do |datakey,datarecord|
-          datarecord[:county] = head_value[:county]
-          datarecord[:place] = head_value[:place]
-          datarecord[:church_name] = head_value[:church_name]
-          datarecord[:register_type] = head_value[:register_type]
-          #puts "Data record #{datakey} \n #{datarecord} \n"
-           create_db_record_for_entry(datarecord)
-         end
-
+      @data_hold[place_key].each do |datakey,datarecord|
+        datarecord[:county] = head_value[:county]
+        datarecord[:place] = head_value[:place]
+        datarecord[:church_name] = head_value[:church_name]
+        datarecord[:register_type] = head_value[:register_type]
+        #puts "Data record #{datakey} \n #{datarecord} \n"
+        create_db_record_for_entry(datarecord)
+      end
     end
-
   end
+
+  
 
 
   def self.process(filename)
-  
-      new_db_record = nil
     #this is the basic processing
-      header = Hash.new
-      @@array_of_data_lines = Array.new {Array.new}
-      @@number_of_line = 0
-      @@charset = "iso-8859-1"
-      standalone_filename = File.basename(filename)
-      # get the user ID represented by the containing directory
-      full_dirname = File.dirname(filename)
-      parent_dirname = File.dirname(full_dirname)
-      user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
-      print "#{user_dirname}\t#{standalone_filename}\n"
-      # TODO convert character sets as in freereg_csv_processor
-      #need to make these passed parameters 
-      file_for_warning_messages = "test_data/warning/messages.log"
-      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
-      message_file = File.new(file_for_warning_messages, "a")
-      user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-      File.delete(user_file_for_warning_messages) if File.exists?(user_file_for_warning_messages)
-      header[:file_name] = standalone_filename #do not capitalize filenames
-      header[:userid] = user_dirname
-      me = FreeregCsvProcessor.new(filename,user_dirname)
-      @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
-      raise FreeREGError,  "Empty file" if @@array_of_data_lines.nil?
-      number_of_error_messages = 0
+    header = Hash.new
+    @@array_of_data_lines = Array.new {Array.new}
+    @@number_of_line = 0
+    @@charset = "iso-8859-1"
+    standalone_filename = File.basename(filename)
+    # get the user ID represented by the containing directory
+    full_dirname = File.dirname(filename)
+    parent_dirname = File.dirname(full_dirname)
+    user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+    print "#{user_dirname}\t#{standalone_filename}\n"
+    # TODO convert character sets as in freereg_csv_processor
+    #need to make these passed parameters 
+    file_for_warning_messages = "test_data/warning/messages.log"
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
+    message_file = File.new(file_for_warning_messages, "a")
+    user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
+    File.delete(user_file_for_warning_messages) if File.exists?(user_file_for_warning_messages)
+    header[:file_name] = standalone_filename #do not capitalize filenames
+    header[:userid] = user_dirname
+    me = FreeregCsvProcessor.new(filename,user_dirname)
+    @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
+    raise FreeREGError,  "Empty file" if @@array_of_data_lines.nil?
+    number_of_error_messages = 0
     #deal with the headers
-      line_type = 'hold'
-      header_line = 1
-      n = 1
-        loop do
-          begin
-            line_type = me.get_line_of_data
-            if line_type == 'Header'  
-              case 
-              when header_line == 1 
-                me.process_header_line_one(header)
-                header_line = header_line + 1      
-              when header_line == 2 
-                me.process_header_line_two(header)
-                header_line = header_line + 1
-              when header_line == 3 
-                me.process_header_line_threee(header)
-                header_line = header_line + 1
-              when header_line == 4 
-                me.process_header_line_four(header)
-                header_line = header_line + 1
-              when header_line == 5 
-                me.process_header_line_five(header)
-                header_line = header_line + 1
-              else 
-               raise FreeREGError,  "Unknown header " 
-              end
-            else
-              type = header[:record_type]
-              
-              me.process_register_location(n)
-              case type
-              when RecordType::BAPTISM then me.process_baptism_data_records(n,header)
-              when RecordType::BURIAL then me.process_burial_data_records(n,header)                      
-              when RecordType::MARRIAGE then me.process_marriage_data_records(n,header)
-              end
-              n =  n + 1
-            end
-          @@number_of_line = @@number_of_line + 1
-            
-       #  break if n == 160
-      #rescue the freereg data errors and continue processing the file
-          rescue FreeREGError => free
-            
-               @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
-               number_of_error_messages = number_of_error_messages + 1
-               line_number = @@number_of_line + 1
-               puts free.message + " at line #{line_number}"
-               message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
-               message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message + " at line #{line_number}"
-               @user_message_file.puts free.message + " at line #{line_number}"
-               @@number_of_line = @@number_of_line + 1
-           #    n = n - 1 unless n == 0
-             break if (free.message == "Empty file" || free.message == "Invalid Character Set")
-             retry
-
-            
-          rescue FreeREGEnd => free
-          
-              n = n - 1
-              puts " Processed  #{n} data lines correctly with #{number_of_error_messages} error messages" 
-              me.process_register_headers(header)
-    
-            break
+    line_type = 'hold'
+  
+    header_line = 1
+    n = 1
+    loop do
+      begin
+        line_type = me.get_line_of_data
+        if line_type == 'Header'  
+          case 
+            when header_line == 1 
+              me.process_header_line_one(header)
+              header_line = header_line + 1      
+            when header_line == 2 
+              me.process_header_line_two(header)
+              header_line = header_line + 1
+            when header_line == 3 
+              me.process_header_line_threee(header)
+              header_line = header_line + 1
+            when header_line == 4 
+              me.process_header_line_four(header)
+              header_line = header_line + 1
+            when header_line == 5 
+              me.process_header_line_five(header)
+              header_line = header_line + 1
+            else 
+              raise FreeREGError,  "Unknown header " 
           end
+        else
+          type = header[:record_type]
+              
+          me.process_register_location(n)
+          case type
+            when RecordType::BAPTISM then me.process_baptism_data_records(n,header)
+            when RecordType::BURIAL then me.process_burial_data_records(n,header)                      
+            when RecordType::MARRIAGE then me.process_marriage_data_records(n,header)
+          end
+          n =  n + 1
         end
-      rescue Exception => e 
-        puts e.message
-        puts e.backtrace
-        message_file.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
-        message_file.puts e.message  
-        message_file.puts e.backtrace.inspect     
+        @@number_of_line = @@number_of_line + 1
+         #  break if n == 160
+        #rescue the freereg data errors and continue processing the file
+        
+      rescue FreeREGError => free
+          
+        @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
+        number_of_error_messages = number_of_error_messages + 1
+        line_number = @@number_of_line + 1
+        puts free.message + " at line #{line_number}"
+        message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
+        message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message + " at line #{line_number}"
+        @user_message_file.puts free.message + " at line #{line_number}"
+        @@number_of_line = @@number_of_line + 1
+         #    n = n - 1 unless n == 0
+        break if (free.message == "Empty file" || free.message == "Invalid Character Set")
+        retry
+      rescue FreeREGEnd => free
+        n = n - 1
+        puts " Processed  #{n} data lines correctly with #{number_of_error_messages} error messages" 
+        me.process_register_headers(header)
+        break
+      end
+    end
+    me.freereg1_csv_file          
+  
+  rescue Exception => e 
+    puts e.message
+    puts e.backtrace
+    message_file.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
+    message_file.puts e.message  
+    message_file.puts e.backtrace.inspect     
+    me.freereg1_csv_file                  
   end
+  
 end
 #set the FreeREG error conditions
 class FreeREGError < StandardError

@@ -13,7 +13,8 @@
 # limitations under the License.
 # 
 class ImageDir
-  include MongoMapper::Document         
+  include Mongoid::Document
+  include Mongoid::Timestamps
 
 # Validations :::::::::::::::::::::::::::::::::::::::::::::::::::::
 # validates_presence_of :attribute
@@ -24,7 +25,7 @@ class ImageDir
 # one :model
 
   belongs_to :upload
-  many :image_file
+  has_many :image_file
 
 # Callbacks ::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
 # before_create :your_model_method
@@ -44,9 +45,8 @@ class ImageDir
 # key :user_ids, Array, :typecast => 'ObjectId'
   
    
-  key :name, String
-  key :path, String
-  timestamps!
+  field :name, type: String
+  field :path, type: String
   
   def convert_to_image_list
     il = ImageList.create(:name => self.name, :chapman_code => nil)

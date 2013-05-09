@@ -165,6 +165,19 @@ module SamplePeople
   
   RICHARD_AND_ESTHER = { 
     :record_type => RecordType::MARRIAGE,
+    :transcript_names => [
+      { 'role' => 'g',
+        'type' => 'primary',
+        'first_name' => 'Richard',
+        'last_name' => 'Bell'
+      },
+      {
+        'role' => 'b',
+        'type' => 'primary',
+        'first_name' => 'Esther',
+        'last_name' => 'Brackenbury'
+      }     
+    ],
     :groom_first_name => 'Richard',
     :groom_last_name => 'Bell',
     :groom_surname_inferred => false,

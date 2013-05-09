@@ -13,7 +13,7 @@ describe EmendationType do
   it "should only replace the target field" do
 
     et = EmendationType.create!(:name => 'abbreviation', :target_field => :first_name)
-    er = EmendationRule.create!(:source => RAW_NAME[:first_name], :target => EMENDED_NAME[:first_name], :emendation_type => et)
+    er = EmendationRule.create!(:original => RAW_NAME[:first_name], :replacement => EMENDED_NAME[:first_name], :emendation_type => et)
     
     
     # make sure it replaces the correct field

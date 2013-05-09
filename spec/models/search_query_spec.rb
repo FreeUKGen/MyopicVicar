@@ -188,7 +188,7 @@ describe SearchQuery do
     result = q.search
     
     # check for our record
-    result.should include(r) 
+    result.to_a.should include(r) 
   end
 
   def should_not_find(q, r)
@@ -197,7 +197,7 @@ describe SearchQuery do
     result = q.search
     
     # check for our record
-    result.should_not include(r)
+    result.to_a.should_not include(r)
   end 
 
 end

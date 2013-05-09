@@ -31,7 +31,7 @@ describe Freereg1CsvEntry do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
       FreeregCsvProcessor.process(file[:filename])      
-      record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
+      record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
   
       record.freereg1_csv_entries.count.should eq(file[:entry_count])     
     end
@@ -41,11 +41,11 @@ describe Freereg1CsvEntry do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
       FreeregCsvProcessor.process(file[:filename])      
-      file_record = Freereg1CsvFile.find_by_file_name!(File.basename(file[:filename])) 
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
 
       ['first', 'last'].each do |entry_key|
 #        print "\n\t Testing #{entry_key}\n"
-        entry = file_record.freereg1_csv_entries.sort(:file_line_number.asc).send entry_key
+        entry = file_record.freereg1_csv_entries.asc(:file_line_number).send entry_key
         entry.should_not eq(nil)        
 #        pp entry
         
@@ -126,7 +126,7 @@ describe Freereg1CsvEntry do
 
         check_record(entry, :bride_father_forename, :bride_father_surname, false)
         check_record(entry, :groom_father_forename, :groom_father_surname, false)
-
+        
         # check types and counties
         check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::MARRIAGE})
         check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::BURIAL}, false)

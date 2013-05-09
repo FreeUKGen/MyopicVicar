@@ -13,7 +13,7 @@
 # limitations under the License.
 # 
 ActiveAdmin.register Template do
-  menu :priority => 5
+  menu :priority => 6
 #  actions :show, :index
   
   index do

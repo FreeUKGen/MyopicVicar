@@ -17,12 +17,12 @@
 #
 # The collection of images forming a book
 class AssetCollection
-  include MongoMapper::Document
-  key :title, String, :required => true
-  key :author, String, :required => false
-  key :extern_ref, String
+  include Mongoid::Document
+  field :title, type: String, :required => true
+  field :author, type: String, :required => false
+  field :extern_ref, type: String
   
-  key :has_thumbnails, Boolean, :default => false
+  field :has_thumbnails, type: Boolean, :default => false
   
-  many :assets 
+  has_many :assets 
 end

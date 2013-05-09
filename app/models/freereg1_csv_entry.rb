@@ -13,68 +13,67 @@
 # limitations under the License.
 #
 class Freereg1CsvEntry
-  include MongoMapper::Document
+  include Mongoid::Document
   
 
   belongs_to :freereg1_csv_file
-  one :search_record
+  has_one :search_record
 
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
   # They have only been modified to replace hyphens with underscores.
-  key :baptism_date, String #actual date as written
-  key :birth_date, String #actual date as written
-  key :bride_abode, String
-  key :bride_age, String
-  key :bride_condition, String
-  key :bride_father_forename, String
-  key :bride_father_occupation, String
-  key :bride_father_surname, String
-  key :bride_forename, String
-  key :bride_occupation, String
-  key :bride_parish, String
-  key :bride_surname, String
-  key :burial_date, String #actual date as written
-  key :burial_person_forename, String
-  key :burial_person_surname, String
-  key :burial_person_abode, String
-  key :church_name, String
-  key :county, String
-  key :father_forename, String
-  key :father_occupation, String
-  key :father_surname, String
-  key :female_relative_forename, String
-  key :groom_abode, String
-  key :groom_age, String
-  key :groom_condition, String
-  key :groom_father_forename, String
-  key :groom_father_occupation, String
-  key :groom_father_surname, String
-  key :groom_forename, String
-  key :groom_occupation, String
-  key :groom_parish, String
-  key :groom_surname, String
-  key :male_relative_forename, String
-  key :marriage_date, String #actual date as written
-  key :mother_forename, String
-  key :mother_surname, String
-  key :notes, String
-  key :person_abode, String
-  key :person_age, String
-  key :person_forename, String
-  key :person_sex, String
-  key :place, String
-  key :register_entry_number, String
-  key :register_type, String
-  key :relationship, String
-  key :relative_surname, String
-  key :witness1_forename, String
-  key :witness1_surname, String
-  key :witness2_forename, String
-  key :witness2_surname, String
-  key :line_id, String
-  key :file_line_number, Integer
- 
+  field :baptism_date, type: String #actual date as written
+  field :birth_date, type: String #actual date as written
+  field :bride_abode, type: String
+  field :bride_age, type: String
+  field :bride_condition, type: String
+  field :bride_father_forename, type: String
+  field :bride_father_occupation, type: String
+  field :bride_father_surname, type: String
+  field :bride_forename, type: String
+  field :bride_occupation, type: String
+  field :bride_parish, type: String
+  field :bride_surname, type: String
+  field :burial_date, type: String #actual date as written
+  field :burial_person_forename, type: String
+  field :burial_person_surname, type: String
+  field :burial_person_abode, type: String
+  field :county, type: String
+  field :father_forename, type: String
+  field :father_occupation, type: String
+  field :father_surname, type: String
+  field :female_relative_forename, type: String
+  field :groom_abode, type: String
+  field :groom_age, type: String
+  field :groom_condition, type: String
+  field :groom_father_forename, type: String
+  field :groom_father_occupation, type: String
+  field :groom_father_surname, type: String
+  field :groom_forename, type: String
+  field :groom_occupation, type: String
+  field :groom_parish, type: String
+  field :groom_surname, type: String
+  field :male_relative_forename, type: String
+  field :marriage_date, type: String #actual date as written
+  field :mother_forename, type: String
+  field :mother_surname, type: String
+  field :notes, type: String
+  field :person_abode, type: String
+  field :person_age, type: String
+  field :person_forename, type: String
+  field :person_sex, type: String
+  field :place, type: String
+  field :register, type: String
+  field :register_entry_number, type: String
+  field :register_type, type: String
+  field :relationship, type: String
+  field :relative_surname, type: String
+  field :witness1_forename, type: String
+  field :witness1_surname, type: String
+  field :witness2_forename, type: String
+  field :witness2_surname, type: String
+  field :line_id, type: String
+  field :file_line_number, type: Integer
 
 
   after_save :transform_search_record
@@ -88,7 +87,7 @@ class Freereg1CsvEntry
     order = []
     order << 'county'
     order << 'place'
-    order << 'church_name'
+    order << 'register'
     order << 'register_type'
     order << 'register_entry_number'
     order << 'baptism_date'

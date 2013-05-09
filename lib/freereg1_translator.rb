@@ -20,40 +20,35 @@ module Freereg1Translator
   #  :birth_date => ,
     # :bride_father_forename => :father_first_name,
     # :bride_father_surname => :father_surname,
-    :bride_forename => :bride_first_name,
+#    :bride_forename => :bride_first_name,
   #  :bride_parish => ,
-    :bride_surname => :bride_last_name,
+#    :bride_surname => :bride_last_name,
   #  :burial_date => , #actual date as written
-    :burial_person_forename => :first_name,
-    :burial_person_surname => :last_name,
+#    :burial_person_forename => :first_name,
+#    :burial_person_surname => :last_name,
     :county => :chapman_code,
-    :father_forename => :father_first_name,
-    :father_surname => :father_last_name,
     # what should we do about the various relatives?  They should be put into family records.
     :female_relative_forename => :mother_first_name,
     # TODO refactor parentage to arrays
     # :groom_father_forename => ,
     # :groom_father_occupation => ,
     # :groom_father_surname => ,
-    :groom_forename => :groom_first_name,
+#    :groom_forename => :groom_first_name,
   #  :groom_parish => ,
-    :groom_surname => :groom_last_name,
+#    :groom_surname => :groom_last_name,
     # what should we do about the various relatives?  They should be put into family records.
     :male_relative_forename => :father_first_name,
    # :marriage_date => , #actual date as written
-    :mother_forename => :mother_first_name,
-    :mother_surname => :mother_last_name,
-    :person_forename => :first_name,
+#    :person_forename => :first_name,
   #  :register => ,
   #  :register_type => ,
   #  :relationship => ,
-    :relative_surname => :father_last_name,
+#    :relative_surname => :father_last_name,
     # :witness1_forename => ,
     # :witness1_surname => ,
     # :witness2_forename => ,
     # :witness2_surname => ,
     # :line => ,
-    :record_type => :record_type, # TODO map the contents correctly
     :file_line_number => :file_line_number,
   }
 
@@ -77,20 +72,33 @@ module Freereg1Translator
   
   def self.expanded_attrs(entry)
     extras = []
+    role_fields_map = begin
+      YAML.load(File.open("#{Rails.root}/config/csv_layout.yml"))
+    rescue ArgumentError => e
+      puts "Could not parse YAML: #{e.message}"
+    end
+      # consider duplicate field keys for different formats (see relative surnames above)
+    roles=role_fields_map
+    roles.each do |role|
+      role_name = role['role']
+      type_name = role['type']
+      fields_map = role['fields']
 
-    if entry[:groom_father_forename] || entry[:groom_father_surname]
-      extra_name = { :role => NameRole::GROOM_FATHER }
-      extra_name[:first_name] = entry[:groom_father_forename]
-      extra_name[:last_name] = entry[:groom_father_surname]
-      extras << extra_name
+      first_name_keys = fields_map['first_name'].is_a?(Array) ? fields_map['first_name'] : [fields_map['first_name']]
+      if first_name_keys.detect { |key| entry[key.to_sym] }
+        extra_name = { :role => role_name, :type => type_name }
+        fields_map.each_pair do |standard, original|
+          if original.is_a? Array
+            original.detect { |o| extra_name[standard.to_sym] = entry[o.to_sym] }
+          else
+            extra_name[standard.to_sym] = entry[original.to_sym]
+          end
+        end
+
+        extras << extra_name
+      end  
     end
-        
-    if entry[:bride_father_forename] || entry[:bride_father_surname]
-      extra_name = { :role => NameRole::BRIDE_FATHER }
-      extra_name[:first_name] = entry[:bride_father_forename]
-      extra_name[:last_name] = entry[:bride_father_surname]
-      extras << extra_name
-    end
+    extras
 
   end
   
@@ -98,7 +106,7 @@ module Freereg1Translator
     entry_attrs = entry_attributes(entry)
     file_attrs = file_attributes(file)
     file_attrs.merge!(entry_attrs)
-    file_attrs[:other_family_names] = expanded_attrs(entry)
+    file_attrs[:transcript_names] = expanded_attrs(entry)
     file_attrs
   end
 
