@@ -3,6 +3,7 @@ class SearchQuery
 
   require 'chapman_code'
   require 'name_role'
+  require 'date_parser'
   # consider extracting this from entities
   
   field :first_name, type: String, :required => false
@@ -16,6 +17,8 @@ class SearchQuery
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
+  field :start_year, type: Integer
+  field :end_year, type: Integer
 
 
   validate :name_not_blank
@@ -28,10 +31,19 @@ class SearchQuery
     params = Hash.new
     params[:record_type] = record_type if record_type
     params[:chapman_code] = chapman_code if chapman_code
-
+    params.merge!(date_search_params)
     params.merge!(name_search_params)
+
     params
   end
+
+  def date_search_params
+    params = Hash.new
+    params[:search_date] = { "$gt" => DateParser::start_search_date(start_year)} if start_year
+    params[:search_date] = { "$lt" => DateParser::end_search_date(end_year)} if end_year
+    params
+  end
+  
 
   def name_search_params
     params = Hash.new

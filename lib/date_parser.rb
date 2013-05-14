@@ -15,7 +15,7 @@ module DateParser
     'Dec' => '12'
   }
   
-  def searchable(verbatim)
+  def self.searchable(verbatim)
     unless verbatim.match(/\d\d\d/) #at least most of a year
       return verbatim
     end
@@ -66,11 +66,11 @@ module DateParser
     "#{y}-#{m}-#{d}"  
   end  
   
-  def start_search_date(year)
+  def self.start_search_date(year)
     return year.to_s
   end
   
-  def end_search_date(year)
+  def self.end_search_date(year)
     # make the year inclusive
     next_year = year + 1
     # calculate new year

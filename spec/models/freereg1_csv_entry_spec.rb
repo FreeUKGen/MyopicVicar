@@ -52,6 +52,7 @@ describe Freereg1CsvEntry do
         standard = file[:entries][entry_key.to_sym]
 #        pp standard
         standard.keys.each do |key|
+          next if :modern_year == key
           standard_value = standard[key]
           entry_value = entry.send key
 #          entry_value.should_not eq(nil)
@@ -136,6 +137,33 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should parse and find dates correctly" do
+    Freereg1CsvEntry.count.should eq(0)
+    FREEREG1_CSV_FILES.each_with_index do |file, index|
+#
+      FreeregCsvProcessor.process(file[:filename])      
+ 
+      ['first', 'last'].each do |entry_key|
+        entry = file[:entries][entry_key.to_sym]       
+          if file[:type] == RecordType::MARRIAGE
+            first_name = :groom_forename
+            last_name = :groom_surname
+          elsif file[:type] == RecordType::BURIAL
+            first_name = :burial_person_forename
+            last_name = :burial_person_surname
+          else
+            first_name = :person_forename
+            last_name = :father_surname
+          end
+
+        check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 2 }, true)
+        check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] - 2 }, false)
+        check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 2 }, false)
+        check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] + 2 }, true)
+      end
+    end
+  end
+
   it "should not create duplicate names" do
     [
       "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
@@ -163,7 +191,7 @@ describe Freereg1CsvEntry do
                                  :last_name => entry[last_name_key],
                                  :inclusive => !required})
       q = SearchQuery.create!(query_params)
-      result = q.search
+      result = q.search.to_a
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
       # pp q.attributes

@@ -2,6 +2,7 @@ require 'name_role'
 require 'record_type'
 require 'emendor'
 require 'freereg1_translator'
+require 'date_parser'
 
 class SearchRecord
   include Mongoid::Document
@@ -61,7 +62,8 @@ class SearchRecord
   # field :other_family_names, type: Array, :required => false
 
   # Date of the entry, whatever kind it is
-  field :date, type: String, :required => false
+  field :transcript_date, type: String, :required => false
+  field :search_date, type: String, :required => false
 
   # search fields
   embeds_many :primary_names, :class_name => 'SearchName'
@@ -102,11 +104,17 @@ class SearchRecord
     emend_all
     
     create_soundex    
+
+    transform_date
   end
 
   def populate_search_from_transcript
     populate_primary_names
     populate_inclusive_names
+  end
+
+  def transform_date
+    self.search_date = DateParser::searchable(transcript_date)
   end
 
   
@@ -148,30 +156,6 @@ class SearchRecord
 
 
   def populate_primary_names
-    
-
-    # # standard names
-    # if name = search_name(first_name, last_name)
-# #      print "DEBUG: Adding transcript name #{name}"
-      # primary_names << name
-    # end
-    # # supplemental names for baptisms  -- consider moving to separate method
-    # unless name
-      # name = search_name(first_name, father_last_name, Source::SUPPLEMENT)
-      # unless name
-        # name = search_name(first_name, mother_last_name, Source::SUPPLEMENT)
-      # end
-# #      print "DEBUG: Adding supplemental name #{name}"
-      # primary_names << name if name
-    # end
-# 
-    # # marriage names
-    # if name = search_name(groom_first_name, groom_last_name)
-      # primary_names << name
-    # end
-    # if name = search_name(bride_first_name, bride_last_name)
-      # primary_names << name
-    # end
 
     if transcript_names && transcript_names.size > 0
       transcript_names.each_with_index do |name_hash|

@@ -56,14 +56,18 @@ FREEREG1_CSV_FILES = [
     :entry_count => 15,
     :entries => {
       :first => {
+        :line_id => "kirknorfolk.NFKALEBU.CSV.1",
         :burial_person_forename => 'Will',
         :burial_person_surname => 'SADD',
-        :burial_date => '6 Mar 1690/1'
+        :burial_date => '6 Mar 1690/1',
+        :modern_year => 1691
       },
       :last => {
+        :line_id => "kirknorfolk.NFKALEBU.CSV.15",
         :burial_person_forename => 'Robert',
         :burial_person_surname => 'LONDON',
-        :burial_date => '7 Nov 1691'
+        :burial_date => '7 Nov 1691',
+        :modern_year => 1691
       }
     }
    },
@@ -80,7 +84,8 @@ FREEREG1_CSV_FILES = [
         :person_forename => 'Paul',
         :person_sex => 'M',
         :father_forename  => 'Thomas',
-        :father_surname => 'MAXEE'
+        :father_surname => 'MAXEE',
+        :modern_year => 1602
       },
       :last => {
         :line_id => "kirkbedfordshire.BDFYIEBA.CSV.1223",
@@ -89,7 +94,8 @@ FREEREG1_CSV_FILES = [
         :mother_forename => 'Susan',
         :person_sex => 'F',
         :father_surname  => 'CHARLES',
-        :father_forename => 'Joseph'
+        :father_forename => 'Joseph',
+        :modern_year => 1812
       }
     }
    },
@@ -106,7 +112,8 @@ FREEREG1_CSV_FILES = [
         :bride_surname => 'CANNON',
         :bride_forename => 'Sarah',
         :groom_surname => 'SAUNDERS',
-        :groom_forename => 'William'
+        :groom_forename => 'William',
+        :modern_year => 1726
       },
       :last => {
         :line_id => "Chd.HRTCALMA.CSV.45",
@@ -114,7 +121,8 @@ FREEREG1_CSV_FILES = [
         :bride_surname => 'GARRATT',
         :bride_forename => 'Anne',
         :groom_surname => 'CLARKE',
-        :groom_forename => 'Charles'
+        :groom_forename => 'Charles',
+        :modern_year => 1837
       }
     }
    },
@@ -131,7 +139,8 @@ FREEREG1_CSV_FILES = [
         :bride_surname => 'CHATTERTON',
         :bride_forename => 'Margerie',
         :groom_surname => 'BUCKMASTER',
-        :groom_forename => 'Thomas'
+        :groom_forename => 'Thomas',
+        :modern_year => 1559
       },
       :last => {
         :line_id => "Chd.HRTWILMA.CSV.545",
@@ -143,7 +152,8 @@ FREEREG1_CSV_FILES = [
         :bride_father_surname => 'SWAIN',
         :bride_father_forename => 'Thomas',
         :groom_father_surname => 'BROWN',
-        :groom_father_forename => 'Charles'
+        :groom_father_forename => 'Charles',
+        :modern_year => 1911
       }
     }
    }]
