@@ -16,6 +16,7 @@ module DateParser
   }
   
   def self.searchable(verbatim)
+    return verbatim unless verbatim
     unless verbatim.match(/\d\d\d/) #at least most of a year
       return verbatim
     end

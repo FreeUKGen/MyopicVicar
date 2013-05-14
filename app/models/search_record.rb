@@ -76,7 +76,8 @@ class SearchRecord
   def ordered_display_fields
     order = []
     order << 'record_type'
-    order << 'date'
+    order << 'transcript_date'
+    order << 'search_date'
     [
       # primary members of the record are displayed first
       "",
