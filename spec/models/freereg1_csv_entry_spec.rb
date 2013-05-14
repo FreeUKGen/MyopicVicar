@@ -160,6 +160,10 @@ describe Freereg1CsvEntry do
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] - 2 }, false)
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 2 }, false)
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] + 2 }, true)
+
+        check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 12,:end_year => entry[:modern_year] - 10 }, false)
+        check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 10,:end_year => entry[:modern_year] + 12 }, false)
+
       end
     end
   end

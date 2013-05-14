@@ -39,8 +39,12 @@ class SearchQuery
 
   def date_search_params
     params = Hash.new
-    params[:search_date] = { "$gt" => DateParser::start_search_date(start_year)} if start_year
-    params[:search_date] = { "$lt" => DateParser::end_search_date(end_year)} if end_year
+    if start_year || end_year
+      date_params = Hash.new
+      date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
+      date_params["$lt"] = DateParser::end_search_date(end_year) if end_year
+      params[:search_date] = date_params
+    end
     params
   end
   
