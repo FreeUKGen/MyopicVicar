@@ -168,6 +168,28 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should handle dual forenames" do
+    filename = FREEREG1_CSV_FILES.last[:filename]
+
+
+    file_record = FreeregCsvProcessor.process(filename)      
+    entry = file_record.freereg1_csv_entries.last
+    search_record = entry.search_record
+    raw_name = entry[:bride_forename]
+    check_record(entry, :bride_forename, :bride_surname, true)
+    name_parts = raw_name.split
+    name_parts.each do |part|
+      query_params = { :first_name => part,
+                       :last_name => entry[:bride_surname],
+                       :inclusive => false }
+      q = SearchQuery.create!(query_params)
+      result = q.search.to_a
+      result.count.should have_at_least(1).items
+      result.should be_in_result(entry)
+    end    
+  end
+
+
   it "should not create duplicate names" do
     [
       "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",

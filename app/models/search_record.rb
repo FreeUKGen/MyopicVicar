@@ -15,6 +15,7 @@ class SearchRecord
     TRANSCRIPT='t'
     EMENDOR='e'
     SUPPLEMENT='s'
+    SEPARATION='sep'
     USER_ADDITION='u'
   end
 
@@ -102,6 +103,9 @@ class SearchRecord
     populate_search_from_transcript
     
     downcase_all
+    
+    separate_all
+    
     emend_all
     
     create_soundex    
@@ -154,6 +158,24 @@ class SearchRecord
     self.inclusive_names = Emendor.emend(self.inclusive_names)
 #    binding.pry
   end
+
+  def separate_all
+    separate_names(self.primary_names)
+    separate_names(self.inclusive_names)
+  end
+
+  def separate_names(names_array)
+    separated_names = []
+    names_array.each do |name|
+      tokens = name.first_name.split(/-|\s+/)
+      if tokens.size > 1
+        tokens.each do |token|
+          separated_names << search_name(token, name.last_name, Source::SEPARATION)
+        end
+      end
+    end
+    names_array << separated_names
+  end    
 
 
   def populate_primary_names
