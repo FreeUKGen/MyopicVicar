@@ -37,13 +37,11 @@
 			<% end%>
 		    </td>
 		    <td>
-			<% search_record.transcript_names.each_with_index do |name, i| %>
-				<% unless  name['type'] == 'primary' %>
-					<% if i > 0 %>
-						<br/>
-					<% end%>
-					<%= "#{name['first_name']} #{name['last_name']}" %>
-				<% end %>
+			<% search_record.transcript_names.reject{|n| n['type'] == 'primary' }.each_with_index do |name, i| %>
+				<% if i > 0 %>
+					<br/>
+				<% end%>
+				<%= "#{name['first_name']} #{name['last_name']}" %>
 			<% end%>
 		    </td>
 		    <td>
