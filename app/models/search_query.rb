@@ -24,7 +24,7 @@ class SearchQuery
   validate :name_not_blank
 
   def search
-    SearchRecord.where(search_params).all
+    SearchRecord.where(search_params).asc(:search_date).all
   end
   
   def search_params
