@@ -6,7 +6,14 @@ class SearchQueriesController < ApplicationController
 
 
   def new
-    @search_query = SearchQuery.new
+    if params[:search_id]
+      old_query = SearchQuery.find(params[:search_id])
+#      old_fields = old_query.attributes.delete('_id')
+#      binding.pry
+      @search_query = SearchQuery.new(old_query.attributes)
+    else
+      @search_query = SearchQuery.new    
+    end
   end
 
   def create
