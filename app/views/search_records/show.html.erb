@@ -12,12 +12,12 @@
 	</thead>
 	<tbody>
 	    <% @search_record.freereg1_csv_entry.ordered_display_fields.each do |field| %>
-		<% if @search_record.freereg1_csv_entry[field] %>
-		    <tr>
-			<td><%= field.gsub('_',' ').capitalize %></td>
-			<td><%= @search_record.freereg1_csv_entry[field] %></td>
-		    </tr>
-		<% end %>
+			<% if @search_record.freereg1_csv_entry[field] %>
+			    <tr>
+				<td><%= field.gsub('_',' ').capitalize %></td>
+				<td><%= @search_record.freereg1_csv_entry[field] %></td>
+			    </tr>
+			<% end %>
 	    <% end %>
 	</tbody>
     </table>

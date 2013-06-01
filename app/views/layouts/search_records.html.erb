@@ -20,7 +20,7 @@
 	    <div id="nav">
 		<ul>
 		    <li><%= link_to "New Search", new_search_query_path(:search_id => params[:search_id]) %></li>
-		    <li><%= link_to "Back to results", search_query_path(params[:search_id], :page_number => @page_number) %></li>
+		    <li><%= link_to "Back to results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}") %></li>
 		</ul>
 	    </div>
 

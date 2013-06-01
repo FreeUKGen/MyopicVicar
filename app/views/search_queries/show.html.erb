@@ -25,7 +25,7 @@
 	</thead>
 	<% @search_results.each do |search_record| %>
 	    <tbody>
-		<tr>
+		<tr id="<%=search_record.id%>">
 		    <td>
 			<% search_record.transcript_names.uniq.each_with_index do |name, i| %>
 				<% if  name['type'] == 'primary' %>
