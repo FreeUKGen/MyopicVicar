@@ -93,6 +93,7 @@ class Freereg1CsvEntry
     order << 'baptism_date'
     order << 'birth_date'
     order << 'burial_date'
+    order << 'marriage_date'
     [
       # primary members of the record are displayed first
       "person_",
