@@ -8,6 +8,22 @@
 
 <h1>Search results</h1>
 
+<div id="query_parameters">
+	<% print_br=false%>
+	<% @search_query.attributes.each do |query_field, query_value|%>
+		<% unless query_field == "_id" || query_value==false %>
+			<% if print_br %>
+				<br />
+			<% end %>
+			<%= query_field.gsub("_", " ").titlecase %>:
+			<strong>
+				<%= query_value %>				
+			</strong>			
+			<% print_br = true %>
+		<% end%>
+
+	<% end %>
+</div>
 <% if @search_results.size == 0 %>
     No results found!
 <% else %>
