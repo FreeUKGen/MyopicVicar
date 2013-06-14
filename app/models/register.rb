@@ -1,4 +1,4 @@
-class Register 
+class Register
   include Mongoid::Document
   
   field :status, type: String
@@ -6,7 +6,7 @@ class Register
   field :record_types, type: Array
   
   field :start_year, type: Integer
-  field :end_year, type: Integer 
+  field :end_year, type: Integer
   field :transcribers, type: Array
   
   has_one :freereg1_csv_file
@@ -35,7 +35,7 @@ class Register
   def self.create_register_for_church(args)
 
     # look for the church
-    church = Church.find_by_name(args[:chapman_code], args[:church_name])
+    church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name],args[:church_name])
     
     # look for the place
     if church
@@ -63,14 +63,14 @@ class Register
     church = Church.find_by_name(args[:chapman_code], args[:church_name])
     
     if church
-      register = church.registers.detect do |r| 
+      register = church.registers.detect do |r|
         r.start_year == args[:start_year] && r.end_year == args[:end_year]
       end
         
       register
     else
       nil
-    end    
+    end
   end
   
   def self.find(register_id)
@@ -83,7 +83,7 @@ class Register
       
       register
     else
-      nil      
+      nil
     end
   end
   
