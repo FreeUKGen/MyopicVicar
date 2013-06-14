@@ -74,6 +74,22 @@ class SearchRecord
   field :inclusive_soundex, type: Array, default: []
 
 
+  # index creation for permutations of names, dates, and other metadata
+  ["primary_names", "inclusive_names", "primary_soundex", "inclusive_soundex"].each do |searchable|
+    [{"chapman_code"=>1, "record_type"=>1},
+      {"record_type" => 1},
+      {"chapman_code" => 1}].each do |prelude|
+        index(prelude.merge({"#{searchable}.last_name" => 1, "#{searchable}.first_name" => 1, "search_date" => 1}), 
+              {:name => (prelude.keys.join("_")+"_#{searchable}_ln_fn_sd")})
+        index(prelude.merge({"#{searchable}.first_name" => 1, "search_date" => 1}), 
+              {:name => prelude.keys.join("_")+"_#{searchable}_ln_sd"})
+      end
+    
+  end
+
+
+
+
   def ordered_display_fields
     order = []
     order << 'record_type'

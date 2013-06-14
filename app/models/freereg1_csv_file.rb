@@ -51,15 +51,15 @@ class Freereg1CsvFile
 
   def ordered_display_fields
     order = []
-    order << 'county'
-    order << 'place'
+ #   order << 'county'
+ #   order << 'place'
     order << 'register'
     order << 'register_type'
     order << 'record_type'
     order << 'file_name'
-    order << 'transcriber_name'
+#    order << 'transcriber_name'
     order << 'transcriber_syndicate'
-    order << 'credit_name'
+#    order << 'credit_name'
     order << 'first_comment'
     order << 'second_comment'
 

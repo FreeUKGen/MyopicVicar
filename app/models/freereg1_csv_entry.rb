@@ -83,6 +83,8 @@ class Freereg1CsvEntry
   end
   
   
+  
+  
   def ordered_display_fields
     order = []
     order << 'county'
@@ -93,6 +95,7 @@ class Freereg1CsvEntry
     order << 'baptism_date'
     order << 'birth_date'
     order << 'burial_date'
+    order << 'marriage_date'
     [
       # primary members of the record are displayed first
       "person_",
@@ -105,7 +108,14 @@ class Freereg1CsvEntry
       "husband_",
       "wife_",
       "groom_father_",
-      "bride_father_",
+      "bride_father_"
+    ].each do |prefix|
+      ["forename", "surname", "age", "sex", "condition", "abode", "parish", "occupation", ].each do |suffix|
+        order << "#{prefix}#{suffix}"
+      end
+    end
+    order << 'relationship'
+    [
       "male_relative_",
       "female_relative_",
       "relative_",
@@ -118,7 +128,6 @@ class Freereg1CsvEntry
     end
     order << 'file_line_number'
     order << 'line_id'
-    order << 'relationship'
     order << 'notes'
 
     order
