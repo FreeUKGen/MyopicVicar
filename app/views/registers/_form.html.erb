@@ -11,10 +11,7 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :record_types %><br />
-    <%= f.text_field :record_types %>
-  </div>
+  
   <div class="field">
     <%= f.label :start_year %><br />
     <%= f.text_field :start_year %>
@@ -32,8 +29,15 @@
     <%= f.text_field :status %>
   </div>
   <div class="field">
-    <%= f.label :transcribers %><br />
-    <%= f.text_field :transcribers %>
+    <%= f.label :transcribers %>
+    <% @register.transcribers.each do |transcriber| %>
+      <%= f.label transcriber %><br />
+      <%= f.text_field :transcribers %> 
+    <% end %>  
+  </div>
+  <div class="field">
+    <%= f.label :file_name %><br />
+    <%= f.text_field :file_name %>
   </div>
   <div class="actions">
     <%= f.submit %>

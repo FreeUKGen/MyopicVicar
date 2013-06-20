@@ -13,6 +13,7 @@
     <th>Register type</th>
     <th>Status</th>
     <th>Transcribers</th>
+    <th>File name</th>
     <th></th>
     <th></th>
     <th></th>
@@ -26,6 +27,7 @@
     <td><%= register.register_type %></td>
     <td><%= register.status %></td>
     <td><%= register.transcribers %></td>
+    <td><%= register.file_name %></td> 
     <td><%= link_to 'Show', register %></td>
     <td><%= link_to 'Edit', edit_register_path(register) %></td>
     <td><%= link_to 'Destroy', register, method: :delete, data: { confirm: 'Are you sure?' } %></td>

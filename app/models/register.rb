@@ -8,7 +8,7 @@ class Register
   field :start_year, type: Integer
   field :end_year, type: Integer
   field :transcribers, type: Array
-  
+  field :file_name, type: String
   has_one :freereg1_csv_file
   embedded_in :church
   

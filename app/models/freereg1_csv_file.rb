@@ -77,6 +77,7 @@ class Freereg1CsvFile
       :church_name => church_name,
       :start_year => datemin,
       :end_year => datemax,
+      :file_name => file_name,
       :record_types => [record_type],
       :transcribers => [credit_name]
       }

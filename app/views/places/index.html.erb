@@ -23,7 +23,7 @@
 					<ol>
 						<% church.registers.each do |register| %>
 							<li>
-								<%= register.register_type %> <%= register.start_year %> - <% register.end_year %> (<%= register.status %>)
+								<%= register.register_type %> <%= register.start_year %> - <%= register.end_year %> (<%= register.status %>) <%= register.file_name %>
 							</li>
 						<% end%>
 					</ol>
