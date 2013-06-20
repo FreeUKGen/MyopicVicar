@@ -1,6 +1,9 @@
 development:
   host: localhost
   database: myopic_vicar-development
+  defaults: &defaults
+  autocreate_indexes: true
+
 
 test:
   host: localhost
