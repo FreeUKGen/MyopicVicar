@@ -1,19 +1,24 @@
 <h1>Listing places</h1>
 
-<table>
+<table width="100%">
   <tr>
-    <th>Place</th>
-    <th>Churches</th>
-    <th></th>
+  	<th >County</th>
+    <th >Place</th>
+    <th >Churches</th>
+    <th >Action</th>
   </tr>
 
 <% @places.each do |place| %>
   <tr>
-    <td>
+    <td style="width:10%">
+    	<%= place.chapman_code %>
+	</td>
+
+    <td style="width:30%">
     	<%= place.place_name %>
 	</td>
 
-    <td width="60%">
+    <td style="width:50%">
     	<ol>
 	    	<% place.churches.each do |church| %>
 				<li>
@@ -40,7 +45,8 @@
     	
     </td>
 
-    <td><%= link_to 'Show', place %> 
+    <td style="width:10%">
+    	<%= link_to 'Show', place %> 
 		<%= link_to 'Edit', edit_place_path(place) %> 
 		<%= link_to 'Destroy', place, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
