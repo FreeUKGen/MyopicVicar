@@ -1,5 +1,7 @@
-<p id="notice"><%= notice %></p>
-
+<% if flash[:notice] %>
+    <div id="notice"><%= flash[:notice] %></div>
+<% end %>
+<p></p>
 <p>
   <b>Church name:</b>
   <%= @church.church_name %>
