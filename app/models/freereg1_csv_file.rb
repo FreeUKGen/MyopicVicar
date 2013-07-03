@@ -78,6 +78,7 @@ class Freereg1CsvFile
       :start_year => datemin,
       :end_year => datemax,
       :file_name => file_name,
+      :user_id => userid,
       :record_types => [record_type],
       :transcribers => [credit_name]
       }
