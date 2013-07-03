@@ -144,9 +144,12 @@ class FreeregCsvProcessor
             "Mary\'s" => 'Mary',
             "Marys\'" => 'Mary',
              'Nicholas\'' => 'Nicholas'}
+  WORD_SPLITS = {
+            "-" => /\-/, 
+            "&" => /\&/}
   CAPITALIZATION_WORD_EXCEPTIONS = [
             "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
-            "the", "to", "von", "with", "yet"]
+            "the", "to", "von", "with", "yet", "y"]
   VALID_MARRIAGE_CONDITIONS = {
           'Singleman' => 'Single Man',
           'Singlaman' => 'Single Man',
@@ -399,42 +402,80 @@ class FreeregCsvProcessor
       end
   end
 
+  def mycapitalize(word)
+    word = WORD_EXPANSIONS[word] if WORD_EXPANSIONS.has_key?(word)
+    word = Unicode::downcase(word) 
+    word = Unicode::capitalize(word) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(word)
+    return word
+  end
+
   def validregister(m,type_of_name)
+    #cleans up Church and Place names
     @register = nil
     @register_type = nil
-    return true if m.nil? || m.empty? 
-    a = m.split(" ")
-    n = a.length
-    a[-1] = a[-1].gsub(/\(?\)?/, '')
-    register_words = a
-    if !(n == 1 || type_of_name == "Place" ) then
-      if a[-1] =~ VALID_REGISTER_TYPES then
-       a[-1] = a[-1].gsub(/'?[Ss]?/, '') 
-       @register_type = Unicode::upcase(a[-1])
-       n = n - 1
-       @register_type = "DT" if @register_type == "DW"
+    return true if m.nil? || m.empty?
+    m = m.gsub(/\(?\)?/, '')
+    register_words = m.split(" ")
+    n = register_words.length
+
+    #register_words[-1] = register_words[-1].gsub(/\(?\)?/, '')
+   
+    if (type_of_name == "Church" ) then
+      if n > 1
+      # extract the Register Type from the church field
+        if register_words[-1] =~ VALID_REGISTER_TYPES then
+          register_words[-1] = register_words[-1].gsub(/'?[Ss]?/, '') 
+          @register_type = Unicode::upcase(register_words[-1])
+          n = n - 1
+          @register_type = "DT" if @register_type == "DW"
+        end
       end
-    end
-     #deal with a missing space between St.Name
-      if (a[0] =~ CONTAINS_PERIOD) && (a[0].length) > 3 then
-        a_parts = a[0].partition(CONTAINS_PERIOD)
-        if a_parts[0] =~ ST_PERIOD then
-          a.shift
-          a.insert(0,a_parts[2])
-          a.insert(0,a_parts[0])
+    
+     #deal with a missing space between St.Name in a church name
+     
+      if (register_words[0] =~ CONTAINS_PERIOD) && (register_words[0].length) > 3 then
+        register_first_word_parts = register_words[0].partition(CONTAINS_PERIOD)
+        if register_first_word_parts[0] =~ ST_PERIOD then
+          register_words.shift
+          register_words.insert(0,register_first_word_parts[2])
+          register_words.insert(0,register_first_word_parts[0])
+         
           n = n + 1
         end
       end
-      
+    end
+   
+    idone = Array.new
+    ii = 0
+     while ii <10
+      idone[ii] = nil
+      ii = ii + 1
+    end
+      WORD_SPLITS.each_pair do |word_splitter, word_split|
        i = 0
-        while i < n do
-          register_words[i] = WORD_EXPANSIONS[register_words[i]] if WORD_EXPANSIONS.has_key?(register_words[i])
-          register_words[i] = Unicode::downcase(register_words[i]) unless i == 0
-          register_words[i] = Unicode::capitalize(register_words[i]) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(register_words[i])
-          i = i + 1 
-        end
-      @register = register_words.shift(n).join(' ')
-      return true
+       ii = 0
+       while i < n do 
+        register_word_parts = register_words[i].split(word_split)
+        if register_word_parts.length > 1
+          while ii < register_word_parts.length
+            register_word_parts[ii] = mycapitalize(register_word_parts[ii])
+            ii = ii + 1
+          end
+          register_words[i] = register_word_parts.shift(register_word_parts.length).join(word_splitter)
+          idone[i] = 'done'
+          
+         else
+          register_words[i] = mycapitalize(register_words[i]) if idone[i].nil?
+          
+          idone[i] = 'done'
+         end
+       i = i + 1
+      end
+
+    end
+    @register = register_words.shift(n).join(' ')
+   
+    return true
   end
 
   #get a line of data
@@ -1045,7 +1086,7 @@ class FreeregCsvProcessor
           n =  n + 1
         end
         @@number_of_line = @@number_of_line + 1
-         #  break if n == 160
+        #  break if n == 10
         #rescue the freereg data errors and continue processing the file
         
       rescue FreeREGError => free
