@@ -12,7 +12,8 @@ class ChurchesController < InheritedResources::Base
   def update
     load(params[:id])
     @church.update_attributes(params[:church])
-    @place.save    
+    @place.save!
+    flash[:notice] = 'The change in Church Name was succsessful'    
     redirect_to church_path(@church)
   end
   

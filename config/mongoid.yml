@@ -2,7 +2,7 @@ development:
   host: localhost
   database: myopic_vicar-development
   defaults: &defaults
-  autocreate_indexes: true
+  autocreate_indexes: false
 
 
 test:
