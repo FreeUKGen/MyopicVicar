@@ -4,12 +4,12 @@ class CreatePlaces
  
 require 'chapman_code'
 
-require "D:/Users/Kirk/Documents/GitHub/MyopicVicar/app/models/freereg1_csv_file"
-require "D:/Users/Kirk/Documents/GitHub/MyopicVicar/app/models/freereg1_csv_entry"
-require "D:/Users/Kirk/Documents/GitHub/MyopicVicar/app/models/place"
-require "D:/Users/Kirk/Documents/GitHub/MyopicVicar/app/models/register"
-require "D:/Users/Kirk/Documents/GitHub/MyopicVicar/app/models/church"
- include Mongoid::Document
+require "#{Rails.root}/app/models/freereg1_csv_file"
+require "#{Rails.root}/app/models/freereg1_csv_entry"
+require "#{Rails.root}/app/models/place"
+require "#{Rails.root}/app/models/register"
+require "#{Rails.root}/app/models/church"
+include Mongoid::Document
  
 
 
