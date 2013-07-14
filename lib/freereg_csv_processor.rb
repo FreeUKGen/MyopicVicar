@@ -402,10 +402,11 @@ class FreeregCsvProcessor
       end
   end
 
-  def mycapitalize(word)
+  def mycapitalize(word,num)
     word = WORD_EXPANSIONS[word] if WORD_EXPANSIONS.has_key?(word)
     word = Unicode::downcase(word) 
-    word = Unicode::capitalize(word) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(word)
+    word = Unicode::capitalize(word) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(word) 
+    word = Unicode::capitalize(word) if num == 0
     return word
   end
 
@@ -458,14 +459,14 @@ class FreeregCsvProcessor
         register_word_parts = register_words[i].split(word_split)
         if register_word_parts.length > 1
           while ii < register_word_parts.length
-            register_word_parts[ii] = mycapitalize(register_word_parts[ii])
+            register_word_parts[ii] = mycapitalize(register_word_parts[ii],ii)
             ii = ii + 1
           end
           register_words[i] = register_word_parts.shift(register_word_parts.length).join(word_splitter)
           idone[i] = 'done'
           
          else
-          register_words[i] = mycapitalize(register_words[i]) if idone[i].nil?
+          register_words[i] = mycapitalize(register_words[i],i) if idone[i].nil?
           
           idone[i] = 'done'
          end

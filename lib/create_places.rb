@@ -28,8 +28,9 @@ include Mongoid::Document
     type_of_build = type
     puts "starting a #{type_of_build} with a limit of #{limit} files"
     @freereg1_csv_file = CreatePlaces.new
-    Place.collection.remove if type_of_build == "rebuild"
-
+    Place.destroy_all if type_of_build == "rebuild"
+    Church.destroy_all if type_of_build == "rebuild"
+    Register.destroy_all if type_of_build == "rebuild"
     l = 0
 	
 	   Freereg1CsvFile.all.each do |t|
