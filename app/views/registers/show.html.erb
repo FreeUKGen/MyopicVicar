@@ -1,4 +1,7 @@
-<p id="notice"><%= notice %></p>
+<% if flash[:notice] %>
+    <div id="notice"><%= flash[:notice] %></div>
+<% end %>
+<p></p>
 
 <p>
   <b>Record types:</b>
@@ -35,4 +38,4 @@
 </p>
 
 <%= link_to 'Edit', edit_register_path(@register) %> |
-<%= link_to 'Back', registers_path %>
+<%= link_to 'Back', church_path(@church) %>

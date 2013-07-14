@@ -18,11 +18,14 @@
 # The collection of images forming a book
 class AssetCollection
   include Mongoid::Document
-  field :title, type: String, :required => true
-  field :author, type: String, :required => false
+  field :title, type: String#, :required => true
+  field :author, type: String#, :required => false
   field :extern_ref, type: String
   
   field :has_thumbnails, type: Boolean, :default => false
+
+  validates_presence_of :title
+  validates_presence_of :author
   
   has_many :assets 
 end

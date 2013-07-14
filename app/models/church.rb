@@ -2,37 +2,21 @@ class Church
   include Mongoid::Document
   
   field :church_name
-  embeds_many :registers
-  embedded_in :place
-  
-  def self.find_by_name(chapman_code, church_name)
-    params = {}
-    params["churches.church_name"] = church_name
-    params["chapman_code"] = chapman_code
-    place = Place.where(params).first
-
-    # this may or may not contain our register
-    if place
-      church = place.churches.detect { |c| c.church_name = church_name }
-    else
-      nil
-    end
-  end
+  has_many :registers
+  belongs_to :place
+  index({ place_id: 1, church_name: 1 }, { unique: true })
 
   def self.find_by_name_and_place(chapman_code, place_name,church_name)
-    params = {}
-    params["chapman_code"] = chapman_code
-    params["place_name"] = place_name
-    params["churches.church_name"] = church_name
-    
-    place = Place.all_of(params).first
-
-    if place
-     church = place.churches.detect { |c| c.church_name = church_name }
-     return church
+    #see if church exists
+   my_place = Place.where(:chapman_code => chapman_code, :place_name => place_name).first
+    if my_place
+      my_place_id = my_place[:_id]
+      my_church = Church.where(:place_id => my_place_id, :church_name => church_name).first
     else
-      nil
+      my_church = nil
     end
+    
+    return my_church
   
   end
 end

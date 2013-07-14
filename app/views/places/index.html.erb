@@ -20,7 +20,7 @@
 
     <td style="width:50%">
     	<ol>
-	    	<% place.churches.each do |church| %>
+	    	<% place.churches.order_by(church: 1).each do |church| %>
 				<li>
 					<%= church.church_name %>
 					<% if church.registers.size > 0 %>

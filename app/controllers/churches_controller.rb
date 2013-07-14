@@ -12,16 +12,16 @@ class ChurchesController < InheritedResources::Base
   def update
     load(params[:id])
     @church.update_attributes(params[:church])
-    @place.save!
+    @church.save!
     flash[:notice] = 'The change in Church Name was succsessful'    
     redirect_to church_path(@church)
   end
   
-  def load(church_id_string)
-    church_id = BSON::ObjectId(church_id_string)
-    @place = Place.where('churches._id' => church_id).first
-    i = @place.churches.index { |c| c.id == church_id }
-    @church = @place.churches[i]
+  def load(church_id)
+        
+    @church = Church.find(church_id)
+    @place = @church.place_id
+
     
   end
 

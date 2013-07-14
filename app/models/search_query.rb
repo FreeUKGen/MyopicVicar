@@ -6,14 +6,14 @@ class SearchQuery
   require 'date_parser'
   # consider extracting this from entities
   
-  field :first_name, type: String, :required => false
-  field :last_name, type: String, :required => false
+  field :first_name, type: String#, :required => false
+  field :last_name, type: String#, :required => false
   field :fuzzy, type: Boolean
-  field :role, type: String, :required => false
+  field :role, type: String#, :required => false
   validates_inclusion_of :role, :in => NameRole::ALL_ROLES+[nil]
-  field :record_type, type: String, :required => false
+  field :record_type, type: String#, :required => false
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
-  field :chapman_code, type: String, :required => false
+  field :chapman_code, type: String#, :required => false
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean

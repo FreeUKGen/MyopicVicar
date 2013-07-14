@@ -75,8 +75,9 @@ class Freereg1CsvEntry
   field :line_id, type: String
   field :file_line_number, type: Integer
 
-
-  after_save :transform_search_record
+  index({freereg1_csv_file_id:1})
+  index({file_line_number:1})
+  #after_save :transform_search_record
   
   def transform_search_record
     SearchRecord.from_freereg1_csv_entry(self)

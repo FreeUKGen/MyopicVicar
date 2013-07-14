@@ -34,8 +34,8 @@ class SearchRecord
   field :record_type, type: String
   
   # transcript fields  
-  field :first_name, type: String, :required => false
-  field :last_name, type: String, :required => false
+  field :first_name, type: String#, :required => false
+  field :last_name, type: String#, :required => false
   
   # field :father_first_name, type: String, :required => false
   # field :father_last_name, type: String, :required => false
@@ -43,28 +43,28 @@ class SearchRecord
   # field :mother_first_name, type: String, :required => false
   # field :mother_last_name, type: String, :required => false
 
-  field :husband_first_name, type: String, :required => false
-  field :husband_last_name, type: String, :required => false
+  field :husband_first_name, type: String#, :required => false
+  field :husband_last_name, type: String#, :required => false
 
-  field :wife_first_name, type: String, :required => false
-  field :wife_last_name, type: String, :required => false
+  field :wife_first_name, type: String#, :required => false
+  field :wife_last_name, type: String#, :required => false
 
-  field :groom_first_name, type: String, :required => false
-  field :groom_last_name, type: String, :required => false
+  field :groom_first_name, type: String#, :required => false
+  field :groom_last_name, type: String#, :required => false
 
-  field :bride_first_name, type: String, :required => false
-  field :bride_last_name, type: String, :required => false
+  field :bride_first_name, type: String#, :required => false
+  field :bride_last_name, type: String#, :required => false
 
   # HACK: this is transitional code while I explore 
   # roles and other family members on records
   #
   # It contains hashes with keys :first_name, :last_name, :role
-  field :transcript_names, type: Array, :required => true
+  field :transcript_names, type: Array#, :required => true
   # field :other_family_names, type: Array, :required => false
 
   # Date of the entry, whatever kind it is
-  field :transcript_date, type: String, :required => false
-  field :search_date, type: String, :required => false
+  field :transcript_date, type: String#, :required => false
+  field :search_date, type: String#, :required => false
 
   # search fields
   embeds_many :primary_names, :class_name => 'SearchName'
@@ -85,7 +85,7 @@ class SearchRecord
              {:name => prelude.keys.join("_")+"_#{searchable}_ln_sd"})
        end
     end
-
+   index({freereg1_csv_entry_id:1})
 
 
 

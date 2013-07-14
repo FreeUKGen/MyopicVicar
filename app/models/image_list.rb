@@ -20,22 +20,22 @@ class ImageList
 
   
   # filename
-  field :name, type: String, :required => true
-  field :chapman_code, type: String, :required => false, :in => ChapmanCode::values+[nil]
-  field :start_date, type: String, :length=>10
-  field :end_date, type: String, :length=>10
+  field :name, type: String#, :required => true
+  field :chapman_code, type: String#, :required => false, :in => ChapmanCode::values+[nil]
+  field :start_date, type: String#, :length=>10
+  field :end_date, type: String#, :length=>10
   field :difficulty
   field :image_file_ids, type: Array #, :typecast => 'ObjectId'
   has_many :image_files, :as => :image_file_ids
-  field :template, type: BSON::ObjectId
-  field :asset_collection, type: BSON::ObjectId
+  field :template, type: Moped::BSON::ObjectId
+  field :asset_collection, type: Moped::BSON::ObjectId
   
 #  belongs_to :template
 
   validates_format_of :start_date, :end_date, 
     :with => /^(\d\d\d\d(-\d\d(-\d\d)?)?)?$/, 
     :message => "Dates must be a date of the format YYYY, YYYY-MM, or YYYY-MM-DD."
-  
+  validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
 
 
   def publish_to_asset_collection

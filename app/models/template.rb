@@ -20,11 +20,11 @@ class Template
   include Mongoid::Document
   include Mongoid::Timestamps
   
-  key :name, String
-  key :description, String
-  key :project, String
+  field :name, type: String
+  field :description, type: String
+  field :project,  type: String
 
-  key :default_zoom, Float
+  field :default_zoom, type: Float
   
   has_many :assets
   has_many :entities

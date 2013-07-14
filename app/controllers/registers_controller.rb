@@ -16,19 +16,17 @@ class RegistersController < InheritedResources::Base
     load(params[:id])
     @register.update_attributes(params[:register])
     
-    @place.save    
-    redirect_to church_path(@church)
+    @register.save!    
+    flash[:notice] = 'The change in Register contents was succsessful' 
+    redirect_to register_path(@register)
   end
 
   
-  def load(register_id_string)
-    register_id = BSON::ObjectId(register_id_string)
-
-    @place = Place.where('churches.registers._id' => register_id).first
-    @church = @place.churches.detect { |c| c.registers.any? { |r| r.id == register_id} }
-    @register = @church.registers.detect { |r| r.id == register_id }
-    
-
+  def load(register_id)
+       
+    @register = Register.find(register_id)
+    @church = @register.church_id
+   
     
   end
 end

@@ -2,9 +2,13 @@ class PlacesController < InheritedResources::Base
 
 
 def index
-    @places = Place.where.order_by(chapman_code: 1)
+    @places = Place.exists(place_name: true).order_by(chapman_code: 1, place_name: 1)
   end
 
+def show
+    load(params[:id])
+
+  end
 
 def update
     
@@ -52,9 +56,9 @@ def update
   end
 
   
-  def load(place_id_string)
-  	place_id = BSON::ObjectId(place_id_string)
-    @place = Place.find(place_id)
+  def load(place_id)
+   
+  	@place = Place.find(place_id)
     
   end
 

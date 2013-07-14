@@ -7,8 +7,9 @@ gem 'rails', '3.2.13'
 
 gem 'sqlite3'
 # MongoDB
-gem 'bson_ext'
-gem "mongoid", "~> 2.4"
+#gem 'bson_ext'
+gem "mongoid", "~> 3.0"
+gem "moped", "~> 1.1.1"
 gem 'execjs'
 
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
@@ -24,7 +25,7 @@ gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
 gem 'bourbon', '~> 2.1'
 
-gem 'activeadmin-mongoid', :git => 'git://github.com/elia/activeadmin-mongoid.git'
+gem 'activeadmin-mongoid' , :git => 'git://github.com/elia/activeadmin-mongoid.git'
 gem 'devise'
 
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version

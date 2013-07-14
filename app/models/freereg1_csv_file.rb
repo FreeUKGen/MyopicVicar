@@ -28,8 +28,8 @@ class Freereg1CsvFile
   field :place, type: String 
   field :church_name, type: String 
   field :register_type, type: String
-  field :record_type, type: String, :in => RecordType::ALL_TYPES+[nil]
-
+  field :record_type, type: String#, :in => RecordType::ALL_TYPES+[nil]
+  validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
   field :records, type: String
   field :datemin, type: String
   field :datemax, type: String
@@ -48,6 +48,9 @@ class Freereg1CsvFile
   field :lds, type: String
   field :characterset, type: String
 
+  index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
+  index({register_id:1})
+  index({ounty:1,place:1,church_name:1,register_type:1, record_type: 1})
 
   def ordered_display_fields
     order = []

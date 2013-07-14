@@ -21,16 +21,16 @@ class Asset
   include Mongoid::Timestamps
   
   # What is the native size of the image
-  field :height, type: Integer, :required => true
-  field :width, type: Integer, :required => true
+  field :height, type: Integer#, :required => true
+  field :width, type: Integer#, :required => true
   
   # What size should the image be displayed at
-  field :display_width, type: Integer, :required => true
+  field :display_width, type: Integer#, :required => true
   
-  field :location, type: String, :required => true
+  field :location, type: String#, :required => true
   field :ext_ref, type: String
   field :order, type: Integer
-  field :template_id, type: BSON::ObjectId
+  field :template_id, type: Moped::BSON::ObjectId
   
   field :done, type: Boolean, :default => false 
   field :classification_count, type: Integer , :default => 0 
@@ -39,8 +39,13 @@ class Asset
   field :thumbnail_width, type: Integer
   field :thumbnail_height, type: Integer
   
-  scope :active, :conditions => { :done => false }
-  scope :in_collection, lambda { |asset_collection| where(:asset_collection_id => asset_collection.id)}
+  #scope :active, :conditions => { :done => false }
+  #scope :in_collection, lambda { |asset_collection| where(:asset_collection_id => asset_collection.id)}
+
+  validates_presence_of :height
+  validates_presence_of :width
+  validates_presence_of :display_width
+  validates_presence_of :location
 
   belongs_to :template
   belongs_to :asset_collection
