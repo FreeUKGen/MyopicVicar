@@ -1,4 +1,4 @@
-class CreateSearchRecords
+class CreateSearchRecordsDocs
 
 require 'chapman_code'
 
@@ -20,19 +20,19 @@ include Mongoid::Document
   end
 
   def self.process(lim,type,sk) 
-    #linm is a string with the maximum number of documents to be processed
+    #lim is a string with the maximum number of documents to be processed
     #type of construction; if "rebuild" then we start from scrath; anyhing else we add to existing database
     #sk is a string with the number of entry documents to be skipped before we start processing the entry documents
     limit = lim.to_i
     type_of_build = type
     skip = sk.to_i
     puts "starting a #{type_of_build} with a limit of #{limit} files and skipping the first #{sk} entries"
-    @freereg1_csv_file = CreatePlaces.new
+    database = CreateSearchRecordsDocs.new
     SearchRecord.destroy_all if type_of_build == "rebuild"
     #indexes for counting loops; l is total and lrep is to give message every 10000 documents processed
     l = 0
     lrep = 0
-    Freereg1CsvEntry.each do |t|
+    Freereg1CsvEntry.all.each do |t|
       l = l + 1
       break if l == limit
       if l >= skip then
