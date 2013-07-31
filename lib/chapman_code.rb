@@ -26,6 +26,10 @@ module ChapmanCode
   def self.select_hash_with_parenthetical_codes
     Hash[ChapmanCode::CODES.map { |k,v| ["#{k} (#{v})", v] }]
   end
+
+  def self.has_key(value)
+    CODES.key(value)
+  end
   
   CODES = {
     'Bedfordshire' => 'BDF',
