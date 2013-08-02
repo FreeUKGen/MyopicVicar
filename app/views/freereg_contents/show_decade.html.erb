@@ -3,21 +3,62 @@
 
 <table>
   <tr>
-    <th>Decade</th>
+    <th>Period: Those periods with zero data may span many decades</th>
     <th>Number of records</th>
     
   </tr>
 <% i = 1530%>
+<% ilast = 1530%>
 <% ii = 1539%>
+<% data_zero = 0 %>
+<% zero  = 0  %>
 <% @decade.each do |data| %>
-  <tr> 
-    <td><%= i %>-<%= ii %></td> 
-    <td><%= data %></td>
-    <% i = i + 10 %>
-    <% ii = ii + 10 %>
+ 
+
+      <% if data == 0%>
+      <% ilast = i if data_zero == 0 %>
+      <% data_zero = data_zero + 1  %>
+
+    <% else %>
     
-  </tr>
+      <% if data_zero == 0 %>
+      
+        <% ii = i + 9 %>
+        <tr> 
+        <td><%= i %>-<%= ii %></td> 
+        <td><%= data %></td>
+         </tr>
+      <% else %>
+       
+        <% ii = ilast + data_zero*10 - 1%>
+        <tr> 
+        <td><%= ilast %>-<%= ii %></td> 
+        <td><%= zero %></td>
+         </tr>
+        <% ii = i + 9 %>
+        <tr> 
+        <td><%= i %>-<%= ii %></td> 
+        <td><%= data %></td>
+
+         </tr>
+         <% data_zero = 0 %>
+         <% ilast = i %>
+      <% end %>
+    <% end %>
+
+    <% i = i + 10 %>
+    
+ 
 <% end %>
+  <% unless data_zero == 0  then %>
+   <% i = i - 11 %>
+    <tr> 
+    <td><%= ilast %>-<%= i %></td> 
+    <td><%= zero %></td>
+    </tr>
+  <% end %>
+
+
 </table>
 
  <%= link_to 'Back', show_church_path(@church) %> 
