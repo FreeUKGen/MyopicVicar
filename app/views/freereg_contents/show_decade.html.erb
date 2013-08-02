@@ -1,0 +1,25 @@
+
+<p>This Table shows the number of records in each decade</p>
+
+<table>
+  <tr>
+    <th>Decade</th>
+    <th>Number of records</th>
+    
+  </tr>
+<% i = 1530%>
+<% ii = 1539%>
+<% @decade.each do |data| %>
+  <tr> 
+    <td><%= i %>-<%= ii %></td> 
+    <td><%= data %></td>
+    <% i = i + 10 %>
+    <% ii = ii + 10 %>
+    
+  </tr>
+<% end %>
+</table>
+
+ <%= link_to 'Back', show_church_path(@church) %> 
+
+

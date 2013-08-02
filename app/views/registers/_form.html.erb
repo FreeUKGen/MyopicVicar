@@ -30,10 +30,7 @@
   </div>
   <div class="field">
     <%= f.label :transcribers %>
-    <% @register.transcribers.each do |transcriber| %>
-      <%= f.label transcriber %><br />
-      <%= f.text_field :transcribers %> 
-    <% end %>  
+    <%= f.text_field :transcribers %> 
   </div>
   <div class="field">
     <%= f.label :file_name %><br />

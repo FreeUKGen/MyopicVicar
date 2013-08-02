@@ -1,0 +1,11 @@
+<%= semantic_form_for @search_query do |f| %>
+  
+    <%= f.input :county, 
+        { :as => :select, 
+          :include_blank => true,
+          :required => false,
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+
+    <%= f.action :submit, :as => :input, :label => 'Search'  %>
+  
+<% end %>

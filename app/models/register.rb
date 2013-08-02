@@ -1,13 +1,16 @@
 class Register
   include Mongoid::Document
-  
+   require 'record_type'
+
   field :status, type: String
   field :register_type, type: String
   field :record_types, type: Array
   field :user_id,  type: String
   field :start_year, type: Integer
   field :end_year, type: Integer
-  field :transcribers, type: Array
+  field :number_of_records, type: String
+  field :decade_population, type: Array
+  field :transcribers, type: String
   field :file_name, type: String
   has_one :freereg1_csv_file
   belongs_to :church
@@ -65,4 +68,7 @@ class Register
     end
      register 
   end
+  
+  
+ 
 end

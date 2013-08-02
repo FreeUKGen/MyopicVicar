@@ -78,12 +78,14 @@ class Freereg1CsvFile
       :register_type => register_type,
       :place_name => place,
       :church_name => church_name,
+      :number_of_records => records,
+      :decade_population => daterange,
       :start_year => datemin,
       :end_year => datemax,
       :file_name => file_name,
       :user_id => userid,
       :record_types => [record_type],
-      :transcribers => [credit_name]
+      :transcribers => transcriber_name
       }
   end
 

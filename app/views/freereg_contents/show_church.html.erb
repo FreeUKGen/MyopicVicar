@@ -1,0 +1,46 @@
+<% require 'record_type' %>
+
+<p></p>
+<p>Registers for 
+  Church name:
+  <b><%= @church.church_name %></b>
+   for Place: 
+   <b><%= @place %></b>
+   in the County of:
+   <b><%= @county %></b>
+</p>
+In this Table the Register Type can be:PR representing a Parish Register; AT represent an Archdeacon's Transcript; BT representing a Bishop's Transcript; TR representing a transcript of the Parish Registers; EX representing a selective extract of the Parish Register; DW representing a Dwellies Transcript of a Parish register; and Blank representing an unspecified register that is most likely from a Parish Register.
+<p>You may see the decade for which registers have been transcribed by following the "Decadal Data" link.</p>
+<table>
+  <tr>
+    <th>Record type</th>
+    <th>Register type</th>
+    <th>Start year</th>
+    <th>End year</th>
+    <th>Number of records</th>
+    <th>Status</th>
+    <th>Transcribers</th>
+    
+    <th>Link to Decadal data</th>
+   
+  </tr>
+
+<% @registers.each do |register| %>
+  <tr> 
+    <% value =  register.record_types %>
+    <td><%= RecordType.display_name(value[0]) %></td>
+    <td><%= register.register_type %></td>
+    <td><%= register.start_year %></td>
+    <td><%= register.end_year %></td>
+    <td><%= register.number_of_records %></td>
+    <td><%= register.status %></td>
+    <td><%= register.transcribers %></td>
+    <td><%= link_to "Decadal Data", show_decade_path(register) %></td>
+    
+  </tr>
+<% end %>
+</table>
+    <%= link_to 'Back', show_freereg_content_path($hold,:page_number => @page_number) %> 
+       
+
+
