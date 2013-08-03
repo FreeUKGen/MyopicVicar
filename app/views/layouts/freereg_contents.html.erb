@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title></title>
+
+	<!-- Styles -->
+
+	<link href='http://fonts.googleapis.com/css?family=Corben' rel='stylesheet' type='text/css'>
+
+	<%= stylesheet_link_tag "normalize" %>
+	<%= stylesheet_link_tag "freereg_contents" %>
+	<%= stylesheet_link_tag "style" %>
+	<%= stylesheet_link_tag "application" if controller.controller_name == "places" && controller.action_name == "new" %>
+
+    </head>
+    <body>
+	<div id="container">
+
+	    <div id="header" class="header">
+		<h1>FreeREG</h1>
+		<h2>The home of U.K. Parish Register Information</h2>
+	    </div>
+
+
+	    <%= yield %>
+
+
+	</div>
+    </body>
+</html>

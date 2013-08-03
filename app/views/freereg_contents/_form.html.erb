@@ -2,8 +2,8 @@
   
     <%= f.input :county, 
         { :as => :select, 
-          :include_blank => true,
-          :required => false,
+          :include_blank => false,
+          :required => true,
           :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
 
     <%= f.action :submit, :as => :input, :label => 'Search'  %>

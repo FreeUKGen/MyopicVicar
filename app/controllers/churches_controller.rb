@@ -1,5 +1,5 @@
 class ChurchesController < InheritedResources::Base
-
+ layout "places"
   def show
     load(params[:id])
 
