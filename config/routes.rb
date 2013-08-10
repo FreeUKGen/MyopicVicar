@@ -13,10 +13,6 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
-  resources :freereg_contents
-  get 'freereg_contents/:id/show(.:format)', :to => 'freereg_contents#show', :as => :show_freereg_content
-  get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church
-  get 'freereg_contents/:id/show_decade(.:format)', :to => 'freereg_contents#show_decade', :as => :show_decade
   resources :churches
 
 
@@ -25,7 +21,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :places
 
-  get 'content(.:format)', :to => 'places#content', :as => :content
 
   resources :church_names
 
@@ -58,6 +53,7 @@ MyopicVicar::Application.routes.draw do
   resources :assets
 
   resources :image_lists
+  root :to => 'search_queries#index'
 
   ActiveAdmin.routes(self)
 
@@ -115,7 +111,6 @@ MyopicVicar::Application.routes.draw do
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
   # root :to => "welcome#index"
-
   # See how all your routes lay out with "rake routes"
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
