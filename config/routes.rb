@@ -25,8 +25,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :places
 
-  get 'content(.:format)', :to => 'places#content', :as => :content
-
   resources :church_names
 
   resources :toponyms
