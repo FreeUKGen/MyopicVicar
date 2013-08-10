@@ -1,10 +1,15 @@
+<% require 'record_type' %>
 <% if flash[:notice] %>
     <div id="notice"><%= flash[:notice] %></div>
 <% end %>
 <p></p>
 <p>
-  <b>Church name:</b>
-  <%= @church.church_name %>
+  Church name:
+  <b><%= @church.church_name %></b>
+  for Place: 
+   <b><%= @place_name %></b>
+   in the County of:
+   <b><%= @county %></b>
 </p>
 
 <table>
@@ -23,7 +28,8 @@
 
 <% @church.registers.each do |register| %>
   <tr>
-    <td><%= register.record_types %></td>
+     <% value =  register.record_types %>
+    <td><%= RecordType.display_name(value[0]) %></td>
     <td><%= register.start_year %></td>
     <td><%= register.end_year %></td>
     <td><%= register.register_type %></td>

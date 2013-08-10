@@ -12,8 +12,8 @@ class RegistersController < InheritedResources::Base
 
   def update
    
-    transcriber = params[:register][:transcribers]
-    params[:register][:transcribers] = [transcriber]
+   # transcriber = params[:register][:transcribers]
+   # params[:register][:transcribers] = [transcriber]
     load(params[:id])
     @register.update_attributes(params[:register])
     
@@ -27,7 +27,12 @@ class RegistersController < InheritedResources::Base
        
     @register = Register.find(register_id)
     @church = @register.church_id
-   
+    church = Church.find(@church)
+    @church_name = church.church_name
+    @place = church.place_id
+    @county = ChapmanCode.has_key(church.place.chapman_code)
+    @place_name = Place.find( @place)
+    @place_name = @place_name.place_name
     
   end
 end

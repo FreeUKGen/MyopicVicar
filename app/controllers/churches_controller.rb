@@ -1,5 +1,6 @@
 class ChurchesController < InheritedResources::Base
  layout "places"
+ require 'chapman_code'
   def show
     load(params[:id])
 
@@ -21,8 +22,9 @@ class ChurchesController < InheritedResources::Base
         
     @church = Church.find(church_id)
     @place = @church.place_id
-
-    
+    @county = ChapmanCode.has_key(@church.place.chapman_code)
+    @place_name = Place.find( @place)
+    @place_name = @place_name.place_name
   end
 
 end

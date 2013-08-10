@@ -50,7 +50,7 @@ class Freereg1CsvFile
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({register_id:1})
-  index({ounty:1,place:1,church_name:1,register_type:1, record_type: 1})
+  index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 
   def ordered_display_fields
     order = []

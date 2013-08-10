@@ -1,11 +1,20 @@
+<% require 'record_type' %>
 <% if flash[:notice] %>
     <div id="notice"><%= flash[:notice] %></div>
 <% end %>
-<p></p>
+<p>
+  Church name:
+  <b><%= @church_name %></b>
+  for Place: 
+   <b><%= @place_name %></b>
+   in the County of:
+   <b><%= @county %></b>
+</p>
 
 <p>
   <b>Record types:</b>
-  <%= @register.record_types %>
+   <% value =  @register.record_types %>
+    <td><%= RecordType.display_name(value[0]) %></td>
 </p>
 
 <p>
@@ -31,6 +40,10 @@
 <p>
   <b>Transcribers:</b>
   <%= @register.transcribers %>
+</p>
+<p>
+  <b>Loaded by:</b>
+  <%= @register.user_id %>
 </p>
 <p>
   <b>File name:</b>

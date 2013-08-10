@@ -1,3 +1,4 @@
+<% require 'record_type' %>
 <h1>Listing registers</h1>
 
 <table>
@@ -16,7 +17,8 @@
 
 <% @registers.each do |register| %>
   <tr>
-    <td><%= register.record_types %></td>
+     <% value =  register.record_types %>
+    <td><%= RecordType.display_name(value[0]) %></td>
     <td><%= register.start_year %></td>
     <td><%= register.end_year %></td>
     <td><%= register.register_type %></td>

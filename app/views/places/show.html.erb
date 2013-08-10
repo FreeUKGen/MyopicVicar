@@ -1,11 +1,12 @@
+<% require 'chapman_code' %>
 <% if flash[:notice] %>
     <div id="notice"><%= flash[:notice] %></div>
 <% end %>
 <p></p>
 
 <p>
-  <b>Chapman code:</b>
-  <%= @place.chapman_code %>
+  <b>County:</b>
+  <%= ChapmanCode.has_key(@place.chapman_code)  %>
 </p>
 
 <p>

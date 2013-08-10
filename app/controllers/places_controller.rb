@@ -15,10 +15,13 @@ def update
     load(params[:id])
     place = params[:place][:place_name]
     county = params[:place][:chapman_code]
+    genuki = params[:place][:genuki_url]
     
   # save place name change in Place
     old_place = @place.place_name
+    old_county = @place.chapman_code
     @place.place_name = place
+    @place.genuki_url = genuki
     @place.save!
 
   # save place name change in register
@@ -30,6 +33,7 @@ def update
     end 
    
  # save place name change in Freereg_csv_file
+    county = old_county if county.nil?
     my_files = Freereg1CsvFile.where(:county => county, :place => old_place).to_a
     
     if my_files

@@ -25,7 +25,7 @@ gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
 gem 'bourbon', '~> 2.1'
 
-gem 'activeadmin-mongoid' , :git => 'git://github.com/elia/activeadmin-mongoid.git'
+gem 'activeadmin-mongoid' 
 gem 'devise'
 
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
