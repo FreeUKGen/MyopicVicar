@@ -40,13 +40,13 @@ class FreeregContentsController < InheritedResources::Base
     else
       @page_number = 0
       @search_query = FreeregContent.find(params[:id])
-      $hold = @search_query
       @search_results = @search_query.search.skip(@page_number*RECORDS_PER_PAGE).limit(RECORDS_PER_PAGE)
      
     end
      @county = ChapmanCode.has_key(@search_results[0].chapman_code) unless @search_results[0].nil?
      session[:page_number] = @page_number 
      session[:county] = @county
+     session[:search_query] = @search_query
      
 
 #    binding.pry
@@ -54,6 +54,7 @@ class FreeregContentsController < InheritedResources::Base
   def show_church
      @church = Church.find(params[:id])
      @county = session[:county]
+     @search_query = session[:search_query]
      @place = @church.place.place_name
      @church = @church.church_name
      session[:church] = @church
