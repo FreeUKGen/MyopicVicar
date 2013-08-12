@@ -17,18 +17,20 @@ namespace :foo do
 
  	require 'create_search_records_docs'
  desc "Process the freereg1_csv_entries and create the SearchRecords documents"
- task :create_search_records_docs, [:num, :type, :skip] do |t, args| 
+ task :create_search_records_docs, [:type,:pattern] => [:environment] do |t, args| 
  	Mongoid.unit_of_work(disable: :all) do
-      limit = args.num
-      type_of_build = args.type
-      sk = args.skip
-      puts "Creating Search Records "
-      puts "Number of documents to be processed #{args.num} type of construction #{type_of_build} and skipping #{sk} entry documents"
+     puts "Creating Search Records "
+     filenames = Dir.glob(args[:pattern])
+     type_of_build = args.type
+     filenames.each do |fn|
 
-  	 CreateSearchRecordsDocs.process(limit,type_of_build,sk)
-      puts "Completed Creating #{limit} Search records"
+  	 CreateSearchRecordsDocs.process(type_of_build,fn )
+      
   	end
- end
+    puts "Task complete."
+   end
+  end
+
 
 
 
@@ -42,4 +44,20 @@ namespace :foo do
       puts "Completed Checking #{limit} Search records"
     end
  end
+
+require 'freereg_csv_processor'
+
+desc "Process a csv file or directory specified thus: process_freereg_csv[../*/*.csv]"
+task :process_freereg_csv, [:pattern] => [:environment] do |t, args| 
+  # if we ever need to switch this to multiple files, see
+  # http://stackoverflow.com/questions/3586997/how-to-pass-multiple-parameters-to-rake-task
+  #print "Processing file passed in rake process_freereg_csv[filename]=#{args[:file]}\n" 
+  filenames = Dir.glob(args[:pattern])
+  filenames.each do |fn|
+    FreeregCsvProcessor.process(fn)
+  end
+  puts "Task complete."
+end
+
+
 end

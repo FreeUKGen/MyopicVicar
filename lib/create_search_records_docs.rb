@@ -19,30 +19,28 @@ include Mongoid::Document
     
   end
 
-  def self.process(lim,type,sk) 
+  def self.process(type_of_build,filename) 
     #linm is a string with the maximum number of documents to be processed
     #type of construction; if "rebuild" then we start from scrath; anyhing else we add to existing database
     #sk is a string with the number of entry documents to be skipped before we start processing the entry documents
-    limit = lim.to_i
-    type_of_build = type
-    skip = sk.to_i
-    puts "starting a #{type_of_build} with a limit of #{limit} files and skipping the first #{sk} entries"
+    standalone_filename = File.basename(filename)
+    # get the user ID represented by the containing directory
+    full_dirname = File.dirname(filename)
+    parent_dirname = File.dirname(full_dirname)
+    user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+    print "#{user_dirname}\t#{standalone_filename}\n"
+    
     database = CreateSearchRecordsDocs.new
     SearchRecord.delete_all if type_of_build == "rebuild"
-    #indexes for counting loops; l is total and lrep is to give message every 10000 documents processed
-    l = 0
-    lrep = 0
-    Freereg1CsvEntry.each do |t|
+    freereg_file = Freereg1CsvFile.where(:file_name => standalone_filename, :userid => user_dirname).first
+    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => freereg_file ).all.no_timeout
+    l = 0 
+    entries.each do |t|
       l = l + 1
-      break if l == limit
-      if l >= skip then
-        lrep = lrep + 1
-        t.transform_search_record
-        if lrep == 1000 then
-           puts " #{l} #{t.county} #{t.place} #{t.file_line_number}"
-           lrep = 0
-        end
+      
+      t.transform_search_record
+        
       end
-     end
-  end
+    print "#{l} search records created\n"
+  end   
 end
