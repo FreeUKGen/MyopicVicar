@@ -22,11 +22,17 @@ namespace :foo do
      puts "Creating Search Records "
      filenames = Dir.glob(args[:pattern])
      type_of_build = args.type
+     l = 0
      filenames.each do |fn|
-
-  	 CreateSearchRecordsDocs.process(type_of_build,fn )
+        if (l == 0 && type_of_build == "rebuild") 
+          CreateSearchRecordsDocs.process(type_of_build,fn ) 
+          type_of_build = "build"
+          l = l+1
+        else
+           CreateSearchRecordsDocs.process(type_of_build,fn ) 
+        end
       
-  	end
+     end
     puts "Task complete."
    end
   end
