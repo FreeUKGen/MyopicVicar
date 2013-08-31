@@ -1,7 +1,7 @@
 
 <p>This Table shows the number of records in each decade held in the FreeREG database from 1530 to 2019 for
 the <b><%= @record_type %></b> Registers of <b><%= @register %></b> for 
-<b><%= @place %>;</b>
+<b><%= @place_name %>;</b>
   
   <b><%= @church %></b>
    
@@ -68,7 +68,7 @@ the <b><%= @record_type %></b> Registers of <b><%= @register %></b> for
 
 
 </table>
-
- <%= link_to 'Back', show_freereg_content_path(@search_query,:page_number => @page_number) %> 
+ <%= link_to_function "Back", "history.back()" %> 
+ <%= link_to 'Back to Places', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}") %> 
 
 

@@ -2,7 +2,7 @@
 
 <p></p>
 <p>Details of the Register <b><%= @register %></b> for 
-<b><%= @place %>;</b>
+<b><%= @place_name %>;</b>
   
   <b><%= @church %></b>
    
@@ -41,4 +41,5 @@ In this Table the Register Type can be:PR representing a Parish Register; AT rep
   </tr>
 <% end %>
 </table>
-    <%= link_to 'Back', show_freereg_content_path(@search_query,:page_number => @page_number) %> 
+    <%= link_to_function "Back", "history.back()" %> 
+    <%= link_to 'Back to Places', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}") %> 

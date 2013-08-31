@@ -56,10 +56,13 @@ class FreeregContentsController < InheritedResources::Base
      @church = Church.find(params[:id])
      @county = session[:county]
      @search_query = session[:search_query]
-     @place = @church.place.place_name
+     @place_name = @church.place.place_name
+     @place = @church.place
+     @place = @place.id
      @church = @church.church_name
      session[:church] = @church
-     session[:place] = @place
+     session[:place] = @place_name
+     session[:place_id] = @place
      @page_number = session[:page_number]
      @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
@@ -69,8 +72,9 @@ class FreeregContentsController < InheritedResources::Base
      @search_query = session[:search_query]
      @page_number = session[:page_number]
      @church  = session[:church]
-     @place = session[:place]
+     @place_name = session[:place]
      @county = session[:county]
+     @place = session[:place_id]
      @register = Register.find(params[:id])
      @register = @register.alternate_register_name
      session[:register] = @register
@@ -87,11 +91,11 @@ class FreeregContentsController < InheritedResources::Base
         @record_type = RecordType.display_name(my_file.record_type)
       end
     end
-   
+     @place = session[:place_id]
      @search_query = session[:search_query]
      @page_number = session[:page_number]
      @church  = session[:church]
-     @place = session[:place]
+     @place_name = session[:place]
      @county = session[:county]
      @register = session[:register]
     
