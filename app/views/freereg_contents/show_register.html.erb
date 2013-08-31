@@ -1,0 +1,44 @@
+<% require 'record_type' %>
+
+<p></p>
+<p>Details of the Register <b><%= @register %></b> for 
+<b><%= @place %>;</b>
+  
+  <b><%= @church %></b>
+   
+   in the County of:
+   <b><%= @county %></b>
+</p>
+In this Table the Register Type can be:PR representing a Parish Register; AT represent an Archdeacon's Transcript; BT representing a Bishop's Transcript; TR representing a transcript of the Parish Registers; EX representing a selective extract of the Parish Register; DW representing a Dwelly's Transcript of a Parish register; and Blank representing a register currently of an unspecified source but is most likely transcribed from a Parish Register.
+<p>You may see the decade for which registers have been transcribed by following the "Decadal Data" link.</p>
+<table>
+  <tr>
+    <th>Record type</th>
+    <th>Number of records</th>
+    <th>First year</th>
+    <th>Last yesr</th>
+    <th>Transcriber</th>
+    <th>Credit also</th>
+    <th>Transcribed</th>
+    <th>Last amended</th>
+    <th>Link to Decadal data</th>
+   
+  </tr>
+
+<% @files.each do |file| %>
+  <tr> 
+   <% value = RecordType.display_name(file.record_type) %>
+    <td><%= value %></td>
+    <td><%= file.records %></td>
+    <td><%= file.datemin %></td>
+    <td><%= file.datemax %></td>
+    <td><%= file.transcriber_name%></td>
+    <td><%= file.credit_name %></td>
+    <td><%= file.transcription_date %></td>
+    <td><%= file.modification_date %></td>
+    <td><%= link_to "Decadal Data", show_decade_path(file._id) %></td>
+    
+  </tr>
+<% end %>
+</table>
+    <%= link_to 'Back', show_freereg_content_path(@search_query,:page_number => @page_number) %> 

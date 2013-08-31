@@ -755,6 +755,7 @@ class FreeregCsvProcessor
         @list_of_registers[place_register_key].store(:place,data_record[:place])
          @list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
           @list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
+          @list_of_registers[place_register_key].store(:alternate_register_name,data_record[:alternate_register_name])
            @list_of_registers[place_register_key].store(:records,@number_of_records)
             @list_of_registers[place_register_key].store(:datemax,@datemax)
              @list_of_registers[place_register_key].store(:datemin,@datemin)
@@ -775,10 +776,12 @@ class FreeregCsvProcessor
     data_record[:county] = @csvdata[0]
     data_record[:church_name] = @register
     data_record[:register_type] = @register_type
+   
     data_record[:county] = "Blank" if data_record[:county].nil?
     data_record[:place] = "Blank" if data_record[:place].nil?
     data_record[:church_name] = "Blank" if data_record[:church_name].nil?
     data_record[:register_type] = "Blank" if data_record[:register_type].nil?
+    data_record[:alternate_register_name] = @register.to_s + " " + data_record[:register_type].to_s
         # need to add the transcriberID
     #puts "Header #{data_record[:county]}, #{data_record[:place]}, #{data_record[:church_name]}, #{data_record[:register_type]} "
      place_register_key = data_record[:county] + "." + data_record[:place] + "." + data_record[:church_name] + "." +  data_record[:register_type]
@@ -988,24 +991,10 @@ class FreeregCsvProcessor
                                 :place => head[:place], 
                                 :church_name => head[:church_name], 
                                 :register_type => head[:register_type] }).first
-      if old_freereg1_csv_file
-        # this is an old record -- delete it before we create a new one
-        
-        # TODO: move all this cleanup stuff into an instance method of Freereg1CsvFile and 
-         # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
-        # this function)
-        #
-         # fetch the IDs of all the entries on this file
-        
-         # now we delete the SearchRecord records that point to any of those entry IDs
-        SearchRecord.where(:freereg1_csv_entry_id => old_freereg1_csv_file).delete_all
-        # now delete the csv entry records
-        
-        Freereg1CsvEntry.where(:_id => old_freereg1_csv_file).delete_all
-        # now we can delete the file
-        old_freereg1_csv_file.delete
+      if old_freereg1_csv_file then
+       Freereg1CsvFile.delete_file(old_freereg1_csv_file._id)
       end
-      @freereg1_csv_file = Freereg1CsvFile.create!(head)
+      @freereg1_csv_file = Freereg1CsvFile.new(head)
       @freereg1_csv_file.update_register
       #write the data records for this place/church
       @data_hold[place_key].each do |datakey,datarecord|

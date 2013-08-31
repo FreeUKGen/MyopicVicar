@@ -16,7 +16,7 @@ class Freereg1CsvEntry
   include Mongoid::Document
   
 
-  belongs_to :freereg1_csv_file
+  belongs_to :freereg1_csv_file, index: true
   has_one :search_record
 
   # Fields here represent those currently requested by FreeREG1 at
@@ -75,8 +75,9 @@ class Freereg1CsvEntry
   field :line_id, type: String
   field :file_line_number, type: Integer
 
-  index({freereg1_csv_file_id:1})
+  
   index({file_line_number:1})
+  index ({line_id:1})
   #after_save :transform_search_record
   
   def transform_search_record

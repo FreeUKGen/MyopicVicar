@@ -20,7 +20,7 @@ class SearchRecord
   end
 
 
-  belongs_to :freereg1_csv_entry
+  belongs_to :freereg1_csv_entry, index: true
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
@@ -85,7 +85,7 @@ class SearchRecord
              {:name => prelude.keys.join("_")+"_#{searchable}_ln_sd"})
        end
     end
-   index({freereg1_csv_entry_id:1})
+  
 
 
 

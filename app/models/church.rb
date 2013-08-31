@@ -1,9 +1,12 @@
 class Church
   include Mongoid::Document
   
-  field :church_name
+  field :church_name,type: String
+  field :last_amended, type: String
+  field :alternate_church_name, type: String
+  field :church_notes, type: String
   has_many :registers
-  belongs_to :place
+  belongs_to :place, index: true
   index({ place_id: 1, church_name: 1 }, { unique: true })
 
   def self.find_by_name_and_place(chapman_code, place_name,church_name)

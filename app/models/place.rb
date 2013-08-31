@@ -6,6 +6,10 @@ class Place
    
   field :chapman_code, type: String#, :required => true
   field :place_name, type: String#, :required => true
+  field :last_amended, type: String
+  field :alternate_place_name, type: String
+  field :place_notes, type: String
+
   has_many :churches
   field :genuki_url, type: String
   

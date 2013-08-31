@@ -1,7 +1,8 @@
 class FreeregContentsController < InheritedResources::Base
   require 'record_type'
   require 'chapman_code'
-	RECORDS_PER_PAGE = 100
+  #require 'freereg1_csv_file'
+	RECORDS_PER_PAGE = 1000
   def index
     redirect_to :action => :new
   end
@@ -62,15 +63,39 @@ class FreeregContentsController < InheritedResources::Base
      @page_number = session[:page_number]
      @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
+
+  def show_register
+   
+     @search_query = session[:search_query]
+     @page_number = session[:page_number]
+     @church  = session[:church]
+     @place = session[:place]
+     @county = session[:county]
+     @register = Register.find(params[:id])
+     @register = @register.alternate_register_name
+     session[:register] = @register
+     individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
+     @files = Freereg1CsvFile.combine_files(individual_files)
+     session[:files] = @files
+  end
   
   def show_decade
-    @page_number = session[:page_number]
-    @county = session[:county]
-    @place = session[:place]
-    @register = Register.find(params[:id])
-    @church = @register.church
-    @decade = []
-    @decade = @register.decade_population
+    @files = session[:files]
+    @files.each do |my_file|
+      if (my_file._id.to_s == params[:id].to_s) then
+        @decade = my_file.daterange
+        @record_type = RecordType.display_name(my_file.record_type)
+      end
+    end
+   
+     @search_query = session[:search_query]
+     @page_number = session[:page_number]
+     @church  = session[:church]
+     @place = session[:place]
+     @county = session[:county]
+     @register = session[:register]
+    
+   
   end
 
 end

@@ -33,7 +33,8 @@ include Mongoid::Document
     database = CreateSearchRecordsDocs.new
     SearchRecord.delete_all if type_of_build == "rebuild"
     freereg_file = Freereg1CsvFile.where(:file_name => standalone_filename, :userid => user_dirname).first
-    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => freereg_file ).all.no_timeout
+    freereg_file_id = freereg_file(:_id)
+    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => freereg_file_id ).all.no_timeout
     l = 0 
     entries.each do |t|
       l = l + 1

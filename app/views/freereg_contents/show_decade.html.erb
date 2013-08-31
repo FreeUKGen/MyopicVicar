@@ -1,10 +1,10 @@
 
-<p>This Table shows the number of records in each decade
-for the register in 
-  Church name:
-  <b><%= @church.church_name %></b>
-   for Place: 
-   <b><%= @place %></b>
+<p>This Table shows the number of records in each decade held in the FreeREG database from 1530 to 2019 for
+the <b><%= @record_type %></b> Registers of <b><%= @register %></b> for 
+<b><%= @place %>;</b>
+  
+  <b><%= @church %></b>
+   
    in the County of:
    <b><%= @county %></b>
 </p>
@@ -19,33 +19,33 @@ for the register in
 <% ilast = 1530%>
 <% ii = 1539%>
 <% data_zero = 0 %>
-<% zero  = 0  %>
+<% zero = 0 %>
 <% @decade.each do |data| %>
  
 
       <% if data == 0%>
       <% ilast = i if data_zero == 0 %>
-      <% data_zero = data_zero + 1  %>
+      <% data_zero = data_zero + 1 %>
 
     <% else %>
     
       <% if data_zero == 0 %>
       
         <% ii = i + 9 %>
-        <tr> 
-        <td><%= i %>-<%= ii %></td> 
+        <tr>
+        <td><%= i %>-<%= ii %></td>
         <td><%= data %></td>
          </tr>
       <% else %>
        
         <% ii = ilast + data_zero*10 - 1%>
-        <tr> 
-        <td><%= ilast %>-<%= ii %></td> 
+        <tr>
+        <td><%= ilast %>-<%= ii %></td>
         <td><%= zero %></td>
          </tr>
         <% ii = i + 9 %>
-        <tr> 
-        <td><%= i %>-<%= ii %></td> 
+        <tr>
+        <td><%= i %>-<%= ii %></td>
         <td><%= data %></td>
 
          </tr>
@@ -58,10 +58,10 @@ for the register in
     
  
 <% end %>
-  <% unless data_zero == 0  then %>
+  <% unless data_zero == 0 then %>
    <% i = i - 11 %>
-    <tr> 
-    <td><%= ilast %>-<%= i %></td> 
+    <tr>
+    <td><%= ilast %>-<%= i %></td>
     <td><%= zero %></td>
     </tr>
   <% end %>
@@ -69,6 +69,6 @@ for the register in
 
 </table>
 
- <%= link_to 'Back', show_church_path(@church) %> 
+ <%= link_to 'Back', show_freereg_content_path(@search_query,:page_number => @page_number) %> 
 
 

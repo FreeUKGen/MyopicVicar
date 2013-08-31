@@ -9,7 +9,7 @@ class FreeregContent
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
 
 def search
-  Place.where(search_params).all
+  Place.where(search_params).order_by(:place_name.asc).all
    
   end
 def search_params

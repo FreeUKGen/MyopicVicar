@@ -13,12 +13,13 @@
 # limitations under the License.
 # 
 require 'record_type'
+
 class Freereg1CsvFile 
   include Mongoid::Document
   include Mongoid::Timestamps
   has_many :freereg1_csv_entries
-  belongs_to :register
-  #belongs_to :place
+  belongs_to :register, index: true
+  #register belongs to church which belongs to place
 
 
 
@@ -47,10 +48,10 @@ class Freereg1CsvFile
   field :modification_date, type: String
   field :lds, type: String
   field :characterset, type: String
-
+  field :alternate_register_name,  type: String
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
-  index({register_id:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
+
 
   def ordered_display_fields
     order = []
@@ -74,20 +75,95 @@ class Freereg1CsvFile
   end
 
   def to_register
+
+
     { :chapman_code => county,
       :register_type => register_type,
       :place_name => place,
       :church_name => church_name,
-      :number_of_records => records,
-      :decade_population => daterange,
-      :start_year => datemin,
-      :end_year => datemax,
-      :file_name => file_name,
-      :user_id => userid,
+      :alternate_register_name => alternate_register_name,
+      :last_amended => modification_date,
+      :transcription_date => transcription_date,     
       :record_types => [record_type],
-      :transcribers => transcriber_name
+      
       }
   end
 
+  def self.combine_files(all_files)
+     hold_combined_files = Array.new
+   
+     hold_file_ba = Freereg1CsvFile.new(:record_type => "ba")
+     hold_file_bu = Freereg1CsvFile.new(:record_type => "bu")
+     hold_file_ma = Freereg1CsvFile.new(:record_type => "ma")
+     nm = 0
+     nba = 0
+     nbu = 0
+
+    all_files.each do |individual_file|
+      case 
+       when individual_file.record_type == "ba" 
+        combine_now(hold_file_ba,individual_file,nba)
+        nba = nba + 1
+       when individual_file.record_type == "bu" 
+        combine_now(hold_file_bu,individual_file,nbu)
+        nbu = nbu + 1
+       when individual_file.record_type == "ma" 
+        combine_now(hold_file_ma,individual_file,nm)
+        nm = nm + 1
+      end
+    end
+    hold_combined_files <<  hold_file_ba
+    hold_combined_files <<  hold_file_bu
+    hold_combined_files <<  hold_file_ma
+    
+    hold_combined_files
+
+  end 
+   
+  def self.combine_now(hold_file,individual_file,n)
+      if n == 0
+               hold_file.records = individual_file.records
+               hold_file.datemax = individual_file.datemax
+               hold_file.datemin = individual_file.datemin
+               hold_file.daterange = individual_file.daterange
+               hold_file.transcriber_name = individual_file.transcriber_name
+               hold_file.credit_name = individual_file.credit_name
+               hold_file.transcription_date = individual_file.transcription_date
+               hold_file.modification_date = individual_file.modification_date
+                
+      else
+              
+               hold_file.records = individual_file.records.to_i +  hold_file.records.to_i
+               hold_file.datemax = individual_file.datemax if individual_file.datemax >  hold_file.datemax 
+               hold_file.datemin = individual_file.datemin if individual_file.datemin <  hold_file.datemin
+               hold_file.transcriber_name = hold_file.transcriber_name + ", " + individual_file.transcriber_name unless  (hold_file.transcriber_name == individual_file.transcriber_name || individual_file.transcriber_name.nil?)
+               hold_file.credit_name = hold_file.credit_name + ", " + individual_file.credit_name unless (hold_file.credit_name == individual_file.credit_name || individual_file.credit_name.nil?)
+                 hold_file.daterange.each_index do |i|
+                   hold_file.daterange[i] =  hold_file.daterange[i].to_i + individual_file.daterange[i].to_i
+
+                 end
+               hold_file.transcription_date = individual_file.transcription_date 
+               hold_file.modification_date = individual_file.modification_date
+               
+      end
+
+      hold_file
+  end
+  def self.delete_file(csv_file)
+    puts "deleting file"
+        # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
+        # this function)
+        #
+         # fetch the IDs of all the entries on this file
+        freereg_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => csv_file).all
+        freereg_entries.each do |entry|
+          # now we delete the SearchRecord records that point to any of those entry IDs
+          SearchRecord.where(:freereg1_csv_entry_id => entry._id).delete_all
+           # now delete the csv entry records
+          Freereg1CsvEntry.where(:_id => entry._id).delete_all
+        end
+        # now we can delete the file
+         Freereg1CsvFile.where(:_id => csv_file).destroy_all
+  end
 
 end
