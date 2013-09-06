@@ -136,8 +136,21 @@ class Freereg1CsvFile
                hold_file.records = individual_file.records.to_i +  hold_file.records.to_i
                hold_file.datemax = individual_file.datemax if individual_file.datemax >  hold_file.datemax 
                hold_file.datemin = individual_file.datemin if individual_file.datemin <  hold_file.datemin
-               hold_file.transcriber_name = hold_file.transcriber_name + ", " + individual_file.transcriber_name unless  (hold_file.transcriber_name == individual_file.transcriber_name || individual_file.transcriber_name.nil?)
-               hold_file.credit_name = hold_file.credit_name + ", " + individual_file.credit_name unless (hold_file.credit_name == individual_file.credit_name || individual_file.credit_name.nil?)
+               if hold_file.transcriber_name.nil? 
+                 hold_file.transcriber_name = individual_file.transcriber_name 
+               else
+                unless individual_file.transcriber_name.nil?
+                hold_file.transcriber_name = hold_file.transcriber_name + ", " + individual_file.transcriber_name unless  (hold_file.transcriber_name == individual_file.transcriber_name) 
+                end
+               end
+               if hold_file.credit_name.nil? 
+                 hold_file.credit_name = individual_file.transcriber_name 
+               else
+                unless individual_file.credit_name.nil?
+                hold_file.credit_name = hold_file.credit_name + ", " + individual_file.credit_name unless  (hold_file.credit_name == individual_file.credit_name)
+                end
+               end
+                          
                  hold_file.daterange.each_index do |i|
                    hold_file.daterange[i] =  hold_file.daterange[i].to_i + individual_file.daterange[i].to_i
 
