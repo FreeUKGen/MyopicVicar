@@ -36,7 +36,9 @@ In this Table the Register Type can be:PR representing a Parish Register; AT rep
     <td><%= file.credit_name %></td>
     <td><%= file.transcription_date %></td>
     <td><%= file.modification_date %></td>
+    <% unless file.records.nil? %>
     <td><%= link_to "Decadal Data", show_decade_path(file._id) %></td>
+    <%end%>
     
   </tr>
 <% end %>
