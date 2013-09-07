@@ -6,16 +6,7 @@
   <%= @county  %>
 </p>
 <div id="nav">
-	<ul>
-	    <li><%= link_to 'Back to County Search Page', freereg_contents_path(@church) %>
-	    	<%= link_to "Next", freereg_content_path(@search_query, :page_number => @page_number+1) %>
-    	</li>
-    	<% if @page_number > 0 %>		    	
-		    <li>
-		    	<%= link_to "Previous", freereg_content_path(@search_query, :page_number => @page_number-1) %>
-	    	</li>
-    	<% end %>
-	</ul>
+	<%= link_to 'Back to County Search Page', freereg_contents_path(@church) %>
 </div>
 <table>
 <tr>
