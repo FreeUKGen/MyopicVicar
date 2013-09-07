@@ -1,6 +1,6 @@
-<h1>Editing register</h1>
 
+<p>Editing Register: <%= @register_name %> of Church: <%= @church_name%> in <%= @place_name %> of the County of <%= @county %><br></p>
 <%= render 'form' %>
 
 <%= link_to 'Show', @register %> |
-<%= link_to 'Back', registers_path %>
+<%= link_to_function "Back", "history.back()" %> 

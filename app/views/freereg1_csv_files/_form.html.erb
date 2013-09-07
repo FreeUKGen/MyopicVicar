@@ -1,7 +1,7 @@
-<%= form_for(@freereg1_csv_file) do |f| %>
+<%= semantic_form_for(@freereg1_csv_file) do |f| %>
   <% if @freereg1_csv_file.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@freereg1_csv_file.errors.count, "error") %> prohibited this freereg1_csv_file from being saved:</h2>
+      <h2><%= pluralize(@freereg1_csv_entry.errors.count, "error") %> prohibited this freereg1_csv_file from being saved:</h2>
 
       <ul>
       <% @freereg1_csv_file.errors.full_messages.each do |msg| %>
@@ -11,114 +11,26 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :county %><br />
-    <%= f.text_field :county %>
-  </div>
 
-  <div class="field">
-    <%= f.label :place %><br />
-    <%= f.text_field :place %>
-  </div>
-
-  <div class="field">
-    <%= f.label :church_name %><br />
-    <%= f.text_field :church_name %>
-  </div>
-
-  <div class="field">
-    <%= f.label :register_type %><br />
-    <%= f.text_field :register_type %>
-  </div>
-
-  <div class="field">
-    <%= f.label :record_type %><br />
-    <%= f.text_field :record_type %>
-  </div>
-
-  <div class="field">
-    <%= f.label :records %><br />
-    <%= f.text_field :records %>
-  </div>
-
-  <div class="field">
-    <%= f.label :datemin %><br />
-    <%= f.text_field :datemin %>
-  </div>
-
-  <div class="field">
-    <%= f.label :datemax %><br />
-    <%= f.text_field :datemax %>
-  </div>
-
-  <div class="field">
-    <%= f.label :daterange %><br />
-    <%= f.text_field :daterange %>
-  </div>
-
-  <div class="field">
-    <%= f.label :userid %><br />
-    <%= f.text_field :userid %>
-  </div>
-
-  <div class="field">
-    <%= f.label :file_name %><br />
-    <%= f.text_field :file_name %>
-  </div>
-
-  <div class="field">
-    <%= f.label :transcriber_name %><br />
-    <%= f.text_field :transcriber_name %>
-  </div>
-
-  <div class="field">
-    <%= f.label :transcriber_email %><br />
-    <%= f.text_field :transcriber_email %>
-  </div>
-  
-  <div class="field">
-    <%= f.label :transcriber_syndicate %><br />
-    <%= f.text_field :transcriber_syndicate %>
-  </div>
-   
-  <div class="field">
-    <%= f.label :credit_name %><br />
-    <%= f.text_field :credit_name %>
-  </div>
-  <div class="field">
-    <%= f.label :credit_email %><br />
-    <%= f.text_field :credit_email %>
-  </div>
-  <div class="field">
-    <%= f.label :first_comment %><br />
-    <%= f.text_field :first_comment %>
-  </div>
-  <div class="field">
-    <%= f.label :second_comment %><br />
-    <%= f.text_field :second_comment %>
-  </div>
-
-  <div class="field">
-    <%= f.label :transcription_date %><br />
-    <%= f.text_field :transcription_date %>
-  </div>
-
-  <div class="field">
-    <%= f.label :modification_date %><br />
-    <%= f.text_field :modification_date %>
-  </div>
-
-  <div class="field">
-    <%= f.label :lds %><br />
-    <%= f.text_field :lds %>
-  </div>
-
-<div class="field">
-    <%= f.label :characterset %><br />
-    <%= f.text_field :characterset %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+ 
+  <%= f.input :register_type %>
+  <%= f.input :record_type, :input_html => { :disabled => true } %> 
+  <%= f.input :records %>
+  <%= f.input :datemin %>
+  <%= f.input :datemax %>
+  <%= f.input :daterange ,      :input_html => { :size => 100 }%>  
+  <%= f.input :userid %>
+  <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
+  <%= f.input :transcriber_name , :input_html => { :size => 40 }%>
+  <%= f.input :transcriber_email %>
+  <%= f.input :transcriber_syndicate %>
+  <%= f.input :credit_email %>
+  <%= f.input :credit_name , :input_html => { :size => 40 }%>
+  <%= f.input :first_comment, :input_html => { :size => 100 }%>  
+  <%= f.input :second_comment, :input_html => { :size => 100 }%>  
+  <%= f.input :transcription_date %>
+  <%= f.input :modification_date %>
+ 
+    <%= f.actions %>
+ 
 <% end %>

@@ -1,4 +1,4 @@
-<h1>Editing church</h1>
+<p>Editing Church: <%= @church_name%> in <%= @place_name %> of the County of <%= @county %><br></p>
 
 
 
@@ -6,4 +6,4 @@
 
 
 <%= link_to 'Show', @church %> |
-<%= link_to 'Back', place_path(@place) %>
+<%= link_to_function "Back", "history.back()" %> 

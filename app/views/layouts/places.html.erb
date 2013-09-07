@@ -12,7 +12,8 @@
 	<%= stylesheet_link_tag "places" %>
 	<%= stylesheet_link_tag "style" %>
 	<%= stylesheet_link_tag "application" if controller.controller_name == "freereg_contents" && controller.action_name == "new" %>
-
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tags %>
     </head>
     <body>
 	<div id="container">
@@ -20,6 +21,7 @@
 	    <div id="header" class="header">
 		<h1>FreeREG</h1>
 		<h2>The home of U.K. Parish Register Information</h2>
+		<h2>Administrative Tools</h2>
 	    </div>
 
 

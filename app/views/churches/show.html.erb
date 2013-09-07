@@ -12,36 +12,42 @@
    <b><%= @county %></b>
 </p>
 
-<table>
+<table style="width: 100%">
   <tr>
-    <th>Record types</th>
-    <th>Start year</th>
-    <th>End year</th>
-    <th>Register type</th>
-    <th>Status</th>
-    <th>Transcribers</th>
-    <th>File name</th>
-    <th></th>
-    <th></th>
-    <th></th>
+  
+    <th>Other church name</th>
+    <th>Last amended</th>
+    <th>Notes</th>
+    <th>Registers</th>
+     <th>Alternate register names</th>
+    <th>Action</th>
+    
   </tr>
 
-<% @church.registers.each do |register| %>
+
   <tr>
-     <% value =  register.record_types %>
-    <td><%= RecordType.display_name(value[0]) %></td>
-    <td><%= register.start_year %></td>
-    <td><%= register.end_year %></td>
-    <td><%= register.register_type %></td>
-    <td><%= register.status %></td>
-    <td><%= register.transcribers %></td>
-    <td><%= register.file_name %></td> 
-    <td><%= link_to 'Show', register %></td>
-    <td><%= link_to 'Edit', edit_register_path(register) %></td>
-    <td><%= link_to 'Destroy', register, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
+ 
+  <td><%= @church.alternate_church_name %></td>
+  <td><%= @church.last_amended %></td>
+  <td><%= @church.church_notes %></td>
+  
+  <ol>
+    <% @church.registers.each do |register| %>
+   
+   <td> <%= register.register_name %></td>
+   
+   <td><%= link_to(register.alternate_register_name, register_path(register)) %><br> </td>
+    
+  
 <% end %>
+</ol>
+
+  <td >
+     
+<%= link_to 'Edit Church', edit_church_path(@church) %>
+<%= link_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+</tr>
 </table>
 
-<%= link_to 'Edit', edit_church_path(@church) %> |
-<%= link_to 'Back', place_path(@place) %>
+
+<%= link_to_function "Back", "history.back()" %> 

@@ -1,4 +1,4 @@
-<%= form_for(@freereg1_csv_entry) do |f| %>
+<%= semantic_form_for(@freereg1_csv_entry) do |f| %>
   <% if @freereg1_csv_entry.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@freereg1_csv_entry.errors.count, "error") %> prohibited this freereg1_csv_entry from being saved:</h2>
@@ -10,220 +10,81 @@
       </ul>
     </div>
   <% end %>
-
-  <div class="field">
-    <%= f.label :baptism_date %><br />
-    <%= f.text_field :baptism_date %>
-  </div>
-  <div class="field">
-    <%= f.label :birth_date %><br />
-    <%= f.text_field :birth_date %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_abode %><br />
-    <%= f.text_field :bride_abode %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_age %><br />
-    <%= f.text_field :bride_age %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_condition %><br />
-    <%= f.text_field :bride_condition %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_father_forename %><br />
-    <%= f.text_field :bride_father_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_father_occupation %><br />
-    <%= f.text_field :bride_father_occupation %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_father_surname %><br />
-    <%= f.text_field :bride_father_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_forename %><br />
-    <%= f.text_field :bride_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_occupation %><br />
-    <%= f.text_field :bride_occupation %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_parish %><br />
-    <%= f.text_field :bride_parish %>
-  </div>
-  <div class="field">
-    <%= f.label :bride_surname %><br />
-    <%= f.text_field :bride_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :burial_date %><br />
-    <%= f.text_field :burial_date %>
-  </div>
-  <div class="field">
-    <%= f.label :burial_peron_forename %><br />
-    <%= f.text_field :burial_person_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :burial_person_surname %><br />
-    <%= f.text_field :burial_person_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :burial_person_abode %><br />
-    <%= f.text_field :burial_person_abode %>
-  </div>
-   <div class="field">
-    <%= f.label :church_name %><br />
-    <%= f.text_field :church_name %>
-  </div>
-
-  <div class="field">
-    <%= f.label :county %><br />
-    <%= f.text_field :county %>
-  </div>
-  <div class="field">
-    <%= f.label :father_forename %><br />
-    <%= f.text_field :father_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :father_occupation %><br />
-    <%= f.text_field :father_occupation %>
-  </div>
-  <div class="field">
-    <%= f.label :father_surname %><br />
-    <%= f.text_field :father_surname %>
-  </div>
-   <div class="field">
-    <%= f.label :female_relative_forename %><br />
-    <%= f.text_field :female_relative_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_abode %><br />
-    <%= f.text_field :groom_abode %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_age %><br />
-    <%= f.text_field :groom_age %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_condition %><br />
-    <%= f.text_field :groom_condition %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_father_forename %><br />
-    <%= f.text_field :groom_father_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_father_occupation %><br />
-    <%= f.text_field :groom_father_occupation %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_father_surname %><br />
-    <%= f.text_field :groom_father_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_forename %><br />
-    <%= f.text_field :groom_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_occupation %><br />
-    <%= f.text_field :groom_occupation %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_parish %><br />
-    <%= f.text_field :groom_parish %>
-  </div>
-  <div class="field">
-    <%= f.label :groom_surname %><br />
-    <%= f.text_field :groom_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :male_relative_forename %><br />
-    <%= f.text_field :male_lelative_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :marriage_date %><br />
-    <%= f.text_field :marriage_date %>
-  </div>
-  <div class="field">
-    <%= f.label :mother_forename %><br />
-    <%= f.text_field :mother_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :mother_surname %><br />
-    <%= f.text_field :mother_surname %>
-  </div>
-  
-  <div class="field">
-    <%= f.label :person_abode %><br />
-    <%= f.text_field :person_abode %>
-  </div>
-  <div class="field">
-    <%= f.label :person_age %><br />
-    <%= f.text_field :person_age %>
-  </div>
-
-  <div class="field">
-    <%= f.label :person_forename %><br />
-    <%= f.text_field :person_forename %>
-  </div>
-  <div class="field">
-    <%= f.label :person_sex %><br />
-    <%= f.text_field :person_sex %>
-  </div>
-
-   <div class="field">
-    <%= f.label :place %><br />
-    <%= f.text_field :place %>
-  </div>
-  
- 
-  <div class="field">
-    <%= f.label :register_entry_number %><br />
-    <%= f.text_field :register_entry_number %>
-  </div>
-  <div class="field">
-    <%= f.label :register_type %><br />
-    <%= f.text_field :register_type %>
-  </div>
-  <div class="field">
-    <%= f.label :relationship %><br />
-    <%= f.text_field :relationship %>
-  </div>
-
-  <div class="field">
-    <%= f.label :relative_surname %><br />
-    <%= f.text_field :relative_surname %>
-  </div>
-  
-  <div class="field">
-    <%= f.label :witness1_forename %><br />
-    <%= f.text_field :witness1_firstname %>
-  </div>
-  <div class="field">
-    <%= f.label :witness1_surname %><br />
-    <%= f.text_field :witness1_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :witness2_forename %><br />
-    <%= f.text_field :witness2_firstname %>
-  </div>
-  <div class="field">
-    <%= f.label :witness2_surname %><br />
-    <%= f.text_field :witness2_surname %>
-  </div>
-  <div class="field">
-    <%= f.label :notes %><br />
-    <%= f.text_field :notes %>
-  </div>
-  <div class="field">
-    <%= f.label :line %><br />
-    <%= f.text_field :line %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+  <% case %>
+<% when @file.record_type == "ba" %>
+  <%= f.input :baptism_date  %> 
+  <%= f.input :birth_date_elements,  :as => :date_select, 
+         :prompt => {:day => "Day", :month => "Month", :year => "Year"},
+         :start_year => 1530  %> 
+  <%= f.input :county, :input_html => { :disabled => true } %> 
+  <%= f.input :father_forename %> 
+  <%= f.input :father_occupation %> 
+  <%= f.input :father_surname %> 
+  <%= f.input :mother_forename %> 
+  <%= f.input :mother_surname %> 
+  <%= f.input :notes,      :input_html => { :size => 40 }%> 
+  <%= f.input :person_abode %> 
+  <%= f.input :person_forename %> 
+  <%= f.input :person_sex ,      :input_html => { :size => 2 }%> 
+  <%= f.input :place, :input_html => { :disabled => true }%> 
+  <%= f.input :register,:input_html => { :disabled => true } %> 
+  <%= f.input :register_entry_number , :input_html => { :disabled => true , :size => 10} %> 
+  <%= f.input :register_type , :input_html => { :disabled => true , :size => 2} %> 
+  <%= f.input :line_id, :input_html => { :disabled => true , :size => 30} %> 
+  <%= f.input :file_line_number %> 
+  <% when @file.record_type == "ma" %>
+  <%= f.input :bride_abode %> 
+  <%= f.input :bride_age %> 
+  <%= f.input :bride_condition %> 
+  <%= f.input :bride_father_forename %> 
+  <%= f.input :bride_father_occupation %> 
+  <%= f.input :bride_father_surname %> 
+  <%= f.input :bride_forename %> 
+  <%= f.input :bride_occupation %> 
+  <%= f.input :bride_parish %> 
+  <%= f.input :bride_surname %> 
+  <%= f.input :groom_abode %> 
+  <%= f.input :groom_age %> 
+  <%= f.input :groom_condition %> 
+  <%= f.input :groom_father_forename %> 
+  <%= f.input :groom_father_occupation %> 
+  <%= f.input :groom_father_surname %> 
+  <%= f.input :groom_forename %> 
+  <%= f.input :groom_occupation %> 
+  <%= f.input :groom_parish %> 
+  <%= f.input :groom_surname %> 
+  <%= f.input :marriage_date %> 
+  <%= f.input :witness1_forename %> 
+  <%= f.input :witness1_surname %> 
+  <%= f.input :witness2_forename %> 
+  <%= f.input :witness2_surname %>  
+  <%= f.input :notes %> 
+  <%= f.input :place, :input_html => { :disabled => true }%> 
+  <%= f.input :register,:input_html => { :disabled => true } %> 
+  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
+  <%= f.input :register_type ,      :input_html => { :size => 2}%> 
+  <%= f.input :line_id, :input_html => { :disabled => true , :size => 30} %> 
+  <%= f.input :file_line_number %> 
+  <% when @file.record_type == "bu" %>
+   <%= f.input :burial_date %> 
+  <%= f.input :burial_person_forename %> 
+  <%= f.input :burial_person_surname %> 
+  <%= f.input :burial_person_abode %> 
+  <%= f.input :female_relative_forename %>   
+  <%= f.input :male_relative_forename %>
+  <%= f.input :person_age %>  
+  <%= f.input :relationship %> 
+  <%= f.input :relative_surname %> 
+  <%= f.input :notes %> 
+  <%= f.input :place, :input_html => { :disabled => true }%> 
+  <%= f.input :register,:input_html => { :disabled => true } %> 
+  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
+  <%= f.input :register_type ,      :input_html => { :size => 2}%> 
+  <%= f.input :line_id, :input_html => { :disabled => true , :size => 30} %> 
+  <%= f.input :file_line_number %> 
+  <% else %>
+  <% end %>
+    <%= f.actions %>
+    
 <% end %>
+

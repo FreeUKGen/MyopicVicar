@@ -1,6 +1,6 @@
-<h1>Editing freereg1_csv_file</h1>
+<p>Editing file:<%= @freereg1_csv_file_name %> in Register: <%= @register_name %> of Church: <%= @church_name%> in <%= @place_name %> of the County of <%= @county %><br></p>
 
 <%= render 'form' %>
 
 <%= link_to 'Show', @freereg1_csv_file %> |
-<%= link_to 'Back', freereg1_csv_files_path %>
+<%= link_to_function "Back", "history.back()" %> 

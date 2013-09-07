@@ -1,9 +1,9 @@
 <% require 'chapman_code' %>
 <h1>Listing all Places</h1>
 
-<table width="100%">
+<table style="width: 100%">
   <tr>
-  	<th >County</th>
+   <th >County</th>
     <th >Place</th>
     <th >Churches</th>
     <th >Action</th>
@@ -12,48 +12,36 @@
 <% @places.each do |place| %>
   <tr>
     <td style="width:10%">
-    	<%= ChapmanCode.has_key(place.chapman_code) %>
-	</td>
+     <%= ChapmanCode.has_key(place.chapman_code) %>
+</td>
 
     <td style="width:30%">
-    	<%= place.place_name %>
-	</td>
+     <%= place.place_name %>
+</td>
 
-    <td style="width:50%">
-    	<ol>
-	    	<% place.churches.order_by(church: 1).each do |church| %>
-				<li>
-					<%= church.church_name %>
-					<% if church.registers.size > 0 %>
-					Registers:
-					<ol>
-						<% church.registers.each do |register| %>
-							<li>
-								<%= register.register_type %> <%= register.start_year %> - <%= register.end_year %> (<%= register.status %>) <%= register.file_name %>
-							</li>
-						<% end%>
-					</ol>
-						
-					<% else %>
-						<i>No Registers</i>
-					<% end %>
-					
-				</li>	    		
-	    	
-	    	<% end%>
-    		
-    	</ol>
-    	
+    <td style="width:35%">
+     <ol>
+<% place.churches.order_by(church: 1).each do |church| %>
+<li>
+<%= link_to(church.church_name, church_path(church)) %><br />
+
+
+</li>	
+
+<% end%>
+    
+     </ol>
+    
     </td>
 
-    <td style="width:10%">
-    	<%= link_to 'Show', place %> 
-		<%= link_to 'Edit', edit_place_path(place) %> 
-		<%= link_to 'Destroy', place, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td style="width:25%">
+     
+<%= link_to 'Edit Place', edit_place_path(place) %>
+<%= link_to 'Destroy Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Place', new_place_path %>
+

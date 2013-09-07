@@ -3,7 +3,6 @@ class Register
    require 'record_type'
 
   field :status, type: String
-  field :record_types, type: Array
   field :register_name,  type: String
   field :alternate_register_name,  type: String
   field :quality,  type: String

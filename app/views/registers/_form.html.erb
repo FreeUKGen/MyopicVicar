@@ -1,4 +1,4 @@
-<%= form_for(@register) do |f| %>
+<%= semantic_form_for(@register) do |f| %>
   <% if @register.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@register.errors.count, "error") %> prohibited this register from being saved:</h2>
@@ -12,31 +12,15 @@
   <% end %>
 
   
-  <div class="field">
-    <%= f.label :start_year %><br />
-    <%= f.text_field :start_year %>
-  </div>
-  <div class="field">
-    <%= f.label :end_year %><br />
-    <%= f.text_field :end_year %>
-  </div>
-  <div class="field">
-    <%= f.label :register_type %><br />
-    <%= f.text_field :register_type %>
-  </div>
-  <div class="field">
-    <%= f.label :status %><br />
-    <%= f.text_field :status %>
-  </div>
-  <div class="field">
-    <%= f.label :transcribers %>
-    <%= f.text_field :transcribers %> 
-  </div>
-  <div class="field">
-    <%= f.label :file_name %><br />
-    <%= f.text_field :file_name %>
-  </div>
+  <%= f.input :status%>
+  <%= f.input :register_name%>
+  <%= f.input :alternate_register_name, :input_html => { :disabled => true , :size => 30} %> 
+  <%= f.input :quality%>
+  <%= f.input :source%>
+  <%= f.input :copyright%>
+  <%= f.input :register_notes%>
+  <%= f.input :last_amended%>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.actions %>
   </div>
 <% end %>

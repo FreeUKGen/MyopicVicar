@@ -6,7 +6,7 @@
 
 <p>
   <b>County:</b>
-  <%= ChapmanCode.has_key(@place.chapman_code)  %>
+  <%= ChapmanCode.has_key(@place.chapman_code) %>
 </p>
 
 <p>
@@ -22,30 +22,21 @@
 <p>
   <b>Churches and Registers:</b><br />
   <ul>
-	  <% @place.churches.each do |church| %>
-	  	<li>
-		  	<%= link_to(church.church_name, church_path(church)) %><br />
-			<ul>
-				<% church.registers.each do |register| %>
-					<li>
-						<%= register.register_type %>
-						<%= register.start_year %>
-						-
-						<%= register.end_year %>
+<% @place.churches.each do |church| %>
+<li>
+<%= link_to(church.church_name, church_path(church)) %><br />
+<ul>
+<% church.registers.each do |register| %>
 
-						(<%= register.status %>)
-						<%= register.file_name %>
-
-					</li>
-				<% end%>
-			</ul>  		
-	  	</li>
-	  <% end %>  	
+<% end%>
+</ul>
+</li>
+<% end %>
   </ul>
-  	
+  
 
 </p>
 
 
 <%= link_to 'Edit', edit_place_path(@place) %> |
-<%= link_to 'Back', places_path %>
+<%= link_to_function "Back", "history.back()" %> 

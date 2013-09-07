@@ -1,4 +1,4 @@
-<%= form_for(@church) do |f| %>
+<%= semantic_form_for(@church) do |f| %>
   <% if @church.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@church.errors.count, "error") %> prohibited this church from being saved:</h2>
@@ -10,12 +10,10 @@
       </ul>
     </div>
   <% end %>
+  <%= f.input :church_name %>
+  <%= f.input :last_amended%>
+  <%= f.input :alternate_church_name %>
+  <%= f.input :church_notes,      :input_html => { :size => 40 } %>
 
-  <div class="field">
-    <%= f.label :church_name %><br />
-    <%= f.text_field :church_name %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+  <%= f.action :submit, :as => :button%>
 <% end %>

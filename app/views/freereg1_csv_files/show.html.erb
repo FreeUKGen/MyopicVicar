@@ -12,7 +12,7 @@
 
 <p>
   <b>Church:</b>
-  <%= @freereg1_csv_file.chruch_name %>
+  <%= @freereg1_csv_file.church_name %>
 </p>
 
 <p>
@@ -109,6 +109,7 @@
   <b>Character set:</b>
   <%= @freereg1_csv_file.characterset %>
 </p>
-
+ <% entries_id = @freereg1_csv_file.id %>
+<%= link_to 'Show Entries', freereg1_csv_entries_path %> |
 <%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file) %> |
-<%= link_to 'Back', freereg1_csv_files_path %>
+<%= link_to_function "Back", "history.back()" %> 

@@ -17,22 +17,27 @@ class RegistersController < InheritedResources::Base
     load(params[:id])
     @register.update_attributes(params[:register])
     
-    @register.save!    
+    @register.save! 
+
     flash[:notice] = 'The change in Register contents was succsessful' 
-    redirect_to register_path(@register)
+     redirect_to :action => 'show'
   end
 
   
   def load(register_id)
-       
+    puts params.inspect
+
     @register = Register.find(register_id)
-    @church = @register.church_id
-    church = Church.find(@church)
-    @church_name = church.church_name
-    @place = church.place_id
-    @county = ChapmanCode.has_key(church.place.chapman_code)
-    @place_name = Place.find( @place)
-    @place_name = @place_name.place_name
+    puts @register.inspect
+    session[:register_id] = register_id
+    session[:register_name] = @register.alternate_register_name
+    @register_name = session[:register_name]
+    @church = session[:church_id]
+    @church_name = session[:church_name]
+    @place = session[:place_id]
+    @county =  session[:county]
+    @place_name = session[:place_name] 
+    puts session.inspect
     
   end
 end

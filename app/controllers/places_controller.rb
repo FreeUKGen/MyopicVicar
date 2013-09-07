@@ -2,22 +2,31 @@ class PlacesController < InheritedResources::Base
 
 
 def index
+    reset_session
     @places = Place.exists(place_name: true).order_by(chapman_code: 1, place_name: 1)
+
   end
 
 def show
     load(params[:id])
 
   end
+def edit
+  puts "edit"
+  puts params.inspect
+  load(params[:id])
+    
+
+end
 
 def update
-    
+    puts "update"
+    puts params.inspect
     load(params[:id])
     place = params[:place][:place_name]
     county = params[:place][:chapman_code]
     genuki = params[:place][:genuki_url]
-    
-  # save place name change in Place
+    # save place name change in Place
     old_place = @place.place_name
     old_county = @place.chapman_code
     @place.place_name = place
@@ -25,17 +34,16 @@ def update
     @place.save!
 
   # save place name change in register
-    @place.churches.each do  |church|  
-      church.registers.each do |register| 
+    @place.churches.each do |church|
+      church.registers.each do |register|
         register.place_name = place
         register.save!
       end
-    end 
+    end
    
  # save place name change in Freereg_csv_file
     county = old_county if county.nil?
     my_files = Freereg1CsvFile.where(:county => county, :place => old_place).to_a
-    
     if my_files
       my_files.each do |myfile|
         myfile.place = place
@@ -55,16 +63,25 @@ def update
 
   # Need to add failure capture code
   
-   flash[:notice] = 'The change in Place Name was succsessful' 
-   redirect_to :action => 'show' 
+   flash[:notice] = 'The change in Place Name was succsessful'
+   redirect_to :action => 'show'
   end
 
   
   def load(place_id)
-   
-  	@place = Place.find(place_id)
-    
+   @place = Place.find(place_id)
+   session[:place_id] = place_id
+   @place_name = @place.place_name
+   session[:place_name] = @place_name
+   @county = ChapmanCode.has_key(@place.chapman_code)
+   session[:county] = @county
   end
-
+ def destroy
+   puts "update"
+    puts params.inspect
+    load(params[:id])
+    @place.destroy
+    redirect_to places_path
+ end
 
 end

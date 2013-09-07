@@ -10,45 +10,48 @@
    in the County of:
    <b><%= @county %></b>
 </p>
+<table style="width: 100%">
+ <tr>
 
-<p>
-  <b>Record types:</b>
-   <% value =  @register.record_types %>
-    <td><%= RecordType.display_name(value[0]) %></td>
-</p>
+<th>Register name</th>
+<th>Alternate register name</th>
+<th>Quality</th>
+<th>Source</th>
+<th>Copyright</th>
+<th>Register notes</th>
+<th>Last amended</th>
+<th>Files</th>
+<th>Action</th>
+</tr>
+<tr>
+ 
+  <td><%= @register.register_name %></td>
+   <td><%= @register.alternate_register_name%></td>
+   <td><%= @register.quality %></td>
+   <td><%= @register.source %></td>
+   <td><%= @register.copyright %></td>
+   <td><%= @register.register_notes %></td>
+    <td><%= @register.last_amended %></td>
+  <td>
+  <ol>
+  
+    <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
+    <li>
+    <%= link_to(file_name.file_name,freereg1_csv_file_path(file_name)) %><br>
+    </li>
+  
+  
+<% end %>
+</ol>
+</td>
+ <td >
+     
+<%= link_to 'Edit Register', edit_register_path(@register) %>
+<%= link_to 'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+</tr>
+</table>
 
-<p>
-  <b>Start year:</b>
-  <%= @register.start_year %>
-</p>
+ 
 
-<p>
-  <b>End year:</b>
-  <%= @register.end_year %>
-</p>
 
-<p>
-  <b>Register type:</b>
-  <%= @register.register_type %>
-</p>
-
-<p>
-  <b>Status:</b>
-  <%= @register.status %>
-</p>
-
-<p>
-  <b>Transcribers:</b>
-  <%= @register.transcribers %>
-</p>
-<p>
-  <b>Loaded by:</b>
-  <%= @register.user_id %>
-</p>
-<p>
-  <b>File name:</b>
-  <%= @register.file_name %>
-</p>
-
-<%= link_to 'Edit', edit_register_path(@register) %> |
-<%= link_to 'Back', church_path(@church) %>
+<%= link_to_function "Back", "history.back()" %> 
