@@ -1,0 +1,12 @@
+SOMMSNBA2.CSV
+SOMMSNBA3.CSV
+SOMMSNBA6.CSV
+SOMMSNBU2.CSV
+SOMMSNBU3.CSV
+SOMMSNBU5.CSV
+SOMMSNMA3.CSV
+
+Should create the register St John the Baptist Blank for the church St John the Baptist in Midsomer Norton in Somerset
+
+SOMMSNBA5.CSV
+SOMMSNMA5.CSV
