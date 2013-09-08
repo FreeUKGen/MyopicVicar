@@ -34,9 +34,9 @@ class Register
 
   def self.create_register_for_church(args,freereg1_csv_file)
     # look for the church
-    if @my_church
+    if @@my_church
      # locate place
-     my_place = @my_church.place
+     my_place = @@my_church.place
     else
       #church does not exist so see if Place exists with another church
       my_place = Place.where('chapman_code' => args[:chapman_code], 'place_name' => args[:place_name]).first
@@ -45,18 +45,18 @@ class Register
        my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name]) 
     end
       #now create the church entry
-      @my_church = Church.new(:church_name => args[:church_name])
-      my_place.churches << @my_church
+      @@my_church = Church.new(:church_name => args[:church_name])
+      my_place.churches << @@my_church
     end
 
     #now creat the register
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
-    @my_church.registers << register
+    @@my_church.registers << register
     #and save everything
     freereg1_csv_file.save!
     register.save!
-    @my_church.save!
+    @@my_church.save!
     my_place.save!
     register
   end
@@ -65,9 +65,9 @@ class Register
  
   
   def self.find_register(args)
-    @my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
-    if @my_church
-      my_church_id = @my_church[:_id]
+    @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
+    if @@my_church
+      my_church_id = @@my_church[:_id]
       register = Register.where(:church_id =>my_church_id, :alternate_register_name=> args[:alternate_register_name] ).first
       unless register then
         register = Register.where(:church_id =>my_church_id, :register_name=> args[:alternate_register_name] ).first
