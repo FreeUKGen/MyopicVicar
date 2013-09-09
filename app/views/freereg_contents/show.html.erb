@@ -6,7 +6,7 @@
   <%= @county  %>
 </p>
 <div id="nav">
-	<%= link_to 'Back to County Search Page', freereg_contents_path(@church) %>
+	<%= button_to 'Back to County Search Page', freereg_contents_path(@church) %>
 </div>
 <table>
 <tr>
@@ -35,7 +35,7 @@
 </table>
 <div id="nav">
 	<ul>
-	    <li><%= link_to 'Back to County Search Page', freereg_contents_path(@church) %>
+	    <li><%= button_to 'Back to County Search Page', freereg_contents_path(@church), method: :get  %>
 	    	
     	</li>
     	<% if @page_number > 0 %>		    	

@@ -13,35 +13,38 @@ In this Table the Register Type can be:PR representing a Parish Register; AT rep
 <p>You may see the decade for which registers have been transcribed by following the "Decadal Data" link.</p>
 <table>
   <tr>
-    <th>Record type</th>
-    <th>Number of records</th>
-    <th>First year</th>
-    <th>Last year</th>
-    <th>Transcriber</th>
-    <th>Credit also</th>
-    <th>Transcribed</th>
-    <th>Last amended</th>
-    <th>Link to Decadal data</th>
+    <th style="width:10%">Record type</th>
+    <th style="width:10%">Number of records</th>
+    <th style="width:7%">First year</th>
+    <th style="width:7%">Last year</th>
+    <th style="width:34%">Credit</th>
+    <th style="width:10%">Transcription Date</th>
+    <th style="width:10%">Last amended</th>
+    <th style="width:12%">Link to Decadal data</th>
    
   </tr>
 
 <% @files.each do |file| %>
   <tr> 
    <% value = RecordType.display_name(file.record_type) %>
-    <td><%= value %></td>
-    <td><%= file.records %></td>
-    <td><%= file.datemin %></td>
-    <td><%= file.datemax %></td>
-    <td><%= file.transcriber_name%></td>
-    <td><%= file.credit_name %></td>
-    <td><%= file.transcription_date %></td>
-    <td><%= file.modification_date %></td>
+    <td style="width:10%"><%= value %></td>
+    <td style="width:10%"><%= file.records %></td>
+    <td style="width:7%"><%= file.datemin %></td>
+    <td style="width:7%"><%= file.datemax %></td>
+    <% if file.credit_name.nil? %> 
+    <td style="width:34%"><%= file.transcriber_name%></td>
+    <%end%>
+     <% unless file.credit_name.nil? %> 
+    <td style="width:34%"><%= file.credit_name %></td>
+    <%end%>
+    <td style="width:10%"><%= file.transcription_date %></td>
+    <td style="width:10%"><%= file.modification_date %></td>
     <% unless file.records.nil? %>
-    <td><%= link_to "Decadal Data", show_decade_path(file._id) %></td>
+    <td style="width:12%"><%= link_to "Decadal Data", show_decade_path(file._id) %></td>
     <%end%>
     
   </tr>
 <% end %>
 </table>
-    <%= link_to_function "Back", "history.back()" %> 
-    <%= link_to 'Back to Places', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}") %> 
+    <%= button_to_function "Back to Previous Page", "history.back()" %> <br>
+    <%= button_to 'Back to Places Page', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}"), method: :get %> 
