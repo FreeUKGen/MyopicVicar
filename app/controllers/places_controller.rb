@@ -2,8 +2,15 @@ class PlacesController < InheritedResources::Base
 
 
 def index
-    reset_session
-    @places = Place.exists(place_name: true).order_by(chapman_code: 1, place_name: 1)
+    
+    unless params[:commit] == "Search"
+          reset_session
+          @places = Place.new
+      else       
+          @places = Place.where( :chapman_code => params[:place][:chapman_code]).all.order_by( place_name: 1)
+          @county = ChapmanCode.has_key(params[:place][:chapman_code]) 
+          session[:county] = @county
+      end
 
   end
 
@@ -11,17 +18,23 @@ def show
     load(params[:id])
 
   end
+
 def edit
-  puts "edit"
-  puts params.inspect
+  
   load(params[:id])
     
 
 end
 
+def create
+  if params[:commit] == "Search"
+    redirect_to places_path(params)
+  else
+    redirect_to :action => :new
+  end
+end
+
 def update
-    puts "update"
-    puts params.inspect
     load(params[:id])
     place = params[:place][:place_name]
     county = params[:place][:chapman_code]
@@ -77,8 +90,7 @@ def update
    session[:county] = @county
   end
  def destroy
-   puts "update"
-    puts params.inspect
+   
     load(params[:id])
     @place.destroy
     redirect_to places_path

@@ -1,13 +1,72 @@
 <p id="notice"><%= notice %></p>
-
+<p>Showing entry <b><%= @freereg1_csv_entry.file_line_number %></b> for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+<% case %>
+<% when @freereg1_csv_file.record_type == "ba" %>      
+<p>
+  <b>Register entry number:</b>
+  <%= @freereg1_csv_entry.register_entry_number %>
+</p>
 <p>
   <b>Baptism date:</b>
   <%= @freereg1_csv_entry.baptism_date %>
 </p>
-
 <p>
   <b>Birth date:</b>
   <%= @freereg1_csv_entry.birth_date %>
+</p>
+<p>
+  <b>Person forename:</b>
+  <%= @freereg1_csv_entry.person_forename %>
+</p>
+
+
+<p>
+  <b>Person sex:</b>
+  <%= @freereg1_csv_entry.person_sex %>
+</p>
+
+
+<p>
+  <b>Father forename:</b>
+  <%= @freereg1_csv_entry.father_forename %>
+</p>
+
+
+<p>
+  <b>Father surname:</b>
+  <%= @freereg1_csv_entry.father_surname %>
+</p>
+<p>
+  <b>Father occupation:</b>
+  <%= @freereg1_csv_entry.father_occupation %>
+</p>
+<p>
+  <b>Mother forename:</b>
+  <%= @freereg1_csv_entry.mother_forename %>
+</p>
+
+<p>
+  <b>Mother surname:</b>
+  <%= @freereg1_csv_entry.mother_surname %>
+</p>
+<p>
+  <b>Person abode:</b>
+  <%= @freereg1_csv_entry.person_abode %>
+</p>
+
+<p>
+  <b>Notes:</b>
+  <%= @freereg1_csv_entry.notes %>
+</p>
+<p>
+  <b>Line:</b>
+  <%= @freereg1_csv_entry.line_id %>
+</p>
+<% when @freereg1_csv_file.record_type == "ma" %> 
+
+<p>
+  <b>Register entry number:</b>
+  <%= @freereg1_csv_entry.register_entry_number %>
 </p>
 
 <p>
@@ -59,50 +118,6 @@
   <b>Bride surname:</b>
   <%= @freereg1_csv_entry.bride_surname %>
 </p>
-
-<p>
-  <b>Burial date:</b>
-  <%= @freereg1_csv_entry.burial_date %>
-</p>
-
-<p>
-  <b>Burial person forename:</b>
-  <%= @freereg1_csv_entry.burial_person_forename %>
-</p>
-<p>
-  <b>Burial person surname:</b>
-  <%= @freereg1_csv_entry.burial_person_surname %>
-</p>
-<p>
-  <b>Burial person abode:</b>
-  <%= @freereg1_csv_entry.burial_person_abode %>
-</p>
-
-<p>
-  <b>County:</b>
-  <%= @freereg1_csv_entry.county %>
-</p>
-
-<p>
-  <b>Father forename:</b>
-  <%= @freereg1_csv_entry.father_forename %>
-</p>
-
-<p>
-  <b>Father occupation:</b>
-  <%= @freereg1_csv_entry.father_occupation %>
-</p>
-
-<p>
-  <b>Father surname:</b>
-  <%= @freereg1_csv_entry.father_surname %>
-</p>
-
-<p>
-  <b>Female relative forename:</b>
-  <%= @freereg1_csv_entry.female_relative_forename %>
-</p>
-
 <p>
   <b>Groom abode:</b>
   <%= @freereg1_csv_entry.groom_abode %>
@@ -153,79 +168,11 @@
   <%= @freereg1_csv_entry.groom_surname %>
 </p>
 
-<p>
-  <b>Male relative forename:</b>
-  <%= @freereg1_csv_entry.male_relative_forename %>
-</p>
 
 <p>
   <b>Marriage date:</b>
   <%= @freereg1_csv_entry.marriage_date %>
 </p>
-
-<p>
-  <b>Mother forename:</b>
-  <%= @freereg1_csv_entry.mother_forename %>
-</p>
-
-<p>
-  <b>Mother surname:</b>
-  <%= @freereg1_csv_entry.mother_surname %>
-</p>
-
-
-
-<p>
-  <b>Person abode:</b>
-  <%= @freereg1_csv_entry.person_abode %>
-</p>
-
-<p>
-  <b>Person age:</b>
-  <%= @freereg1_csv_entry.person_age %>
-</p>
-
-<p>
-  <b>Person forename:</b>
-  <%= @freereg1_csv_entry.person_forename %>
-</p>
-
-
-<p>
-  <b>Person sex:</b>
-  <%= @freereg1_csv_entry.person_sex %>
-</p>
-
-<p>
-  <b>Place:</b>
-  <%= @freereg1_csv_entry.place %>
-</p>
-
-<p>
-  <b>Church:</b>
-  <%= @freereg1_csv_entry.church_name %>
-</p>
-
-<p>
-  <b>Register entry number:</b>
-  <%= @freereg1_csv_entry.register_entry_number %>
-</p>
-
-<p>
-  <b>Register type:</b>
-  <%= @freereg1_csv_entry.register_type %>
-</p>
-
-<p>
-  <b>Relationship:</b>
-  <%= @freereg1_csv_entry.relationship %>
-</p>
-
-<p>
-  <b>Relative surname:</b>
-  <%= @freereg1_csv_entry.relative_surname %>
-</p>
-
 <p>
   <b>Witness1 forename:</b>
   <%= @freereg1_csv_entry.witness1_forename %>
@@ -254,6 +201,60 @@
   <%= @freereg1_csv_entry.line_id %>
 </p>
 
+<% when @freereg1_csv_file.record_type %> 
+<p>
+  <b>Register entry number:</b>
+  <%= @freereg1_csv_entry.register_entry_number %>
+</p>
 
-<%= link_to 'Edit', edit_freereg1_csv_entry_path(@freereg1_csv_entry) %> |
-<%= link_to 'Back', freereg1_csv_entries_path %>
+<p>
+  <b>Burial date:</b>
+  <%= @freereg1_csv_entry.burial_date %>
+</p>
+
+<p>
+  <b>Burial person forename:</b>
+  <%= @freereg1_csv_entry.burial_person_forename %>
+</p>
+<p>
+  <b>Burial person surname:</b>
+  <%= @freereg1_csv_entry.burial_person_surname %>
+</p>
+<p>
+  <b>Burial person abode:</b>
+  <%= @freereg1_csv_entry.burial_person_abode %>
+</p>
+<p>
+  <b>Relationship:</b>
+  <%= @freereg1_csv_entry.relationship %>
+</p>
+<p>
+  <b>Person age:</b>
+  <%= @freereg1_csv_entry.person_age %>
+</p>
+
+<p>
+  <b>Female relative forename:</b>
+  <%= @freereg1_csv_entry.female_relative_forename %>
+</p>
+<p>
+  <b>Male relative forename:</b>
+  <%= @freereg1_csv_entry.male_relative_forename %>
+</p>
+
+<p>
+  <b>Relative surname:</b>
+  <%= @freereg1_csv_entry.relative_surname %>
+</p>
+<p>
+  <b>Notes:</b>
+  <%= @freereg1_csv_entry.notes %>
+</p>
+<p>
+  <b>Line:</b>
+  <%= @freereg1_csv_entry.line_id %>
+</p>
+<%end%>
+
+<%= button_to 'Edit Entry', edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>
+<%= button_to_function "Back to Previous Page", "history.back()" %> 

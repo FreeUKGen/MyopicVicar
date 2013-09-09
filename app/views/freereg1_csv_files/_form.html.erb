@@ -22,14 +22,15 @@
   <%= f.input :userid %>
   <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
   <%= f.input :transcriber_name , :input_html => { :size => 40 }%>
-  <%= f.input :transcriber_email %>
+  <%= f.input :transcriber_email, :input_html => { :size => 40 } %>
   <%= f.input :transcriber_syndicate %>
-  <%= f.input :credit_email %>
+  <%= f.input :credit_email, :input_html => { :size => 40 } %>
   <%= f.input :credit_name , :input_html => { :size => 40 }%>
   <%= f.input :first_comment, :input_html => { :size => 100 }%>  
   <%= f.input :second_comment, :input_html => { :size => 100 }%>  
   <%= f.input :transcription_date %>
   <%= f.input :modification_date %>
+  <br>
  
     <%= f.actions %>
  

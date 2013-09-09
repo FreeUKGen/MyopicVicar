@@ -38,5 +38,5 @@
 </p>
 
 
-<%= link_to 'Edit', edit_place_path(@place) %> |
-<%= link_to_function "Back", "history.back()" %> 
+<%= button_to 'Edit Place', edit_place_path(@place), method: :get %> 
+<%= button_to_function "Back to Previous Page", "history.back()" %> 

@@ -1,6 +1,6 @@
 
-<p>Editing Register: <%= @register_name %> of Church: <%= @church_name%> in <%= @place_name %> of the County of <%= @county %><br></p>
+<p>Editing Register: <b><%= @register_name %></b> of Church: <b><%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 <%= render 'form' %>
-
-<%= link_to 'Show', @register %> |
-<%= link_to_function "Back", "history.back()" %> 
+<br>
+<%= button_to 'Show Register', @register , method: :get%> 
+<%= button_to_function "Back to Previous Page", "history.back()" %> 

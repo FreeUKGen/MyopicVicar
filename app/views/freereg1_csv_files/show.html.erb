@@ -1,5 +1,5 @@
 <p id="notice"><%= notice %></p>
-
+<p>Showing  file:<b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church: <b><%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 <p>
   <b>County:</b>
   <%= @freereg1_csv_file.county %>
@@ -109,7 +109,7 @@
   <b>Character set:</b>
   <%= @freereg1_csv_file.characterset %>
 </p>
- <% entries_id = @freereg1_csv_file.id %>
-<%= link_to 'Show Entries', freereg1_csv_entries_path %> |
-<%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file) %> |
-<%= link_to_function "Back", "history.back()" %> 
+ <br>
+<%= button_to 'Show Entries', freereg1_csv_entries_path, method: :get %> 
+<%= button_to 'Edit File', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %> 
+<%= button_to_function "Back to Previous Page", "history.back()" %> 

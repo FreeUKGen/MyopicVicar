@@ -11,28 +11,24 @@
     </div>
   <% end %>
   <% case %>
-<% when @file.record_type == "ba" %>
+<% when @freereg1_csv_file.record_type == "ba" %>
+  <%= f.input :register_entry_number , :input_html => { :size => 10} %> 
   <%= f.input :baptism_date  %> 
   <%= f.input :birth_date_elements,  :as => :date_select, 
          :prompt => {:day => "Day", :month => "Month", :year => "Year"},
          :start_year => 1530  %> 
-  <%= f.input :county, :input_html => { :disabled => true } %> 
+  
   <%= f.input :father_forename %> 
   <%= f.input :father_occupation %> 
   <%= f.input :father_surname %> 
   <%= f.input :mother_forename %> 
   <%= f.input :mother_surname %> 
-  <%= f.input :notes,      :input_html => { :size => 40 }%> 
   <%= f.input :person_abode %> 
   <%= f.input :person_forename %> 
   <%= f.input :person_sex ,      :input_html => { :size => 2 }%> 
-  <%= f.input :place, :input_html => { :disabled => true }%> 
-  <%= f.input :register,:input_html => { :disabled => true } %> 
-  <%= f.input :register_entry_number , :input_html => { :disabled => true , :size => 10} %> 
-  <%= f.input :register_type , :input_html => { :disabled => true , :size => 2} %> 
-  <%= f.input :line_id, :input_html => { :disabled => true , :size => 30} %> 
-  <%= f.input :file_line_number %> 
+  <%= f.input :notes,      :input_html => { :size => 80 }%> 
   <% when @file.record_type == "ma" %>
+  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
   <%= f.input :bride_abode %> 
   <%= f.input :bride_age %> 
   <%= f.input :bride_condition %> 
@@ -58,15 +54,10 @@
   <%= f.input :witness1_surname %> 
   <%= f.input :witness2_forename %> 
   <%= f.input :witness2_surname %>  
-  <%= f.input :notes %> 
-  <%= f.input :place, :input_html => { :disabled => true }%> 
-  <%= f.input :register,:input_html => { :disabled => true } %> 
-  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
-  <%= f.input :register_type ,      :input_html => { :size => 2}%> 
-  <%= f.input :line_id, :input_html => { :disabled => true , :size => 30} %> 
-  <%= f.input :file_line_number %> 
+  <%= f.input :notes,      :input_html => { :size => 80 }%> 
   <% when @file.record_type == "bu" %>
-   <%= f.input :burial_date %> 
+  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
+  <%= f.input :burial_date %> 
   <%= f.input :burial_person_forename %> 
   <%= f.input :burial_person_surname %> 
   <%= f.input :burial_person_abode %> 
@@ -75,13 +66,7 @@
   <%= f.input :person_age %>  
   <%= f.input :relationship %> 
   <%= f.input :relative_surname %> 
-  <%= f.input :notes %> 
-  <%= f.input :place, :input_html => { :disabled => true }%> 
-  <%= f.input :register,:input_html => { :disabled => true } %> 
-  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
-  <%= f.input :register_type ,      :input_html => { :size => 2}%> 
-  <%= f.input :line_id, :input_html => { :disabled => true , :size => 30} %> 
-  <%= f.input :file_line_number %> 
+  <%= f.input :notes,      :input_html => { :size => 80 }%> 
   <% else %>
   <% end %>
     <%= f.actions %>

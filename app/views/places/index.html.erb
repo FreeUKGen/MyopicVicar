@@ -1,9 +1,30 @@
 <% require 'chapman_code' %>
-<h1>Listing all Places</h1>
+
+<%  unless params[:commit] == "Search" %>
+
+<%= semantic_form_for @places do |f| %>
+  
+    <%= f.input :chapman_code, 
+        { :as => :select, 
+          :include_blank => false,
+          :required => true,
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+
+    <%= f.action :submit, :as => :input, :label => 'Search'   %>
+  
+<% end %>
+ <% else %>
+<p>This Table contains a listing of all Places and Churches held in the FreeREG database for the
+  County:
+  <b><%= @county  %></b>
+</p>
+<div id="nav">
+	<%= button_to 'Back to County Search Page', places_path, method: :get %>
+</div>
 
 <table style="width: 100%">
   <tr>
-   <th >County</th>
+  
     <th >Place</th>
     <th >Churches</th>
     <th >Action</th>
@@ -11,10 +32,6 @@
 
 <% @places.each do |place| %>
   <tr>
-    <td style="width:10%">
-     <%= ChapmanCode.has_key(place.chapman_code) %>
-</td>
-
     <td style="width:30%">
      <%= place.place_name %>
 </td>
@@ -34,7 +51,7 @@
     
     </td>
 
-    <td style="width:25%">
+    <td style="width:35%">
      
 <%= link_to 'Edit Place', edit_place_path(place) %>
 <%= link_to 'Destroy Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
@@ -44,4 +61,6 @@
 
 <br />
 
+<%= button_to 'Back to County Search Page', places_path, method: :get %>
 
+ <% end %>

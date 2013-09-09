@@ -1,11 +1,8 @@
-<h1>Listing freereg1_csv_entries</h1>
-
+<p>Listing entries for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+<% case %>
+<% when @freereg1_csv_file.record_type == "ba" %>   
 <table>
   <tr>
-    <th>County</th>
-    <th>Place</th>
-    <th>Church</th>
-    <th>Register type</th>
     <th>Register entry number</th>
     <th>Baptism date</th>
     <th>Birth date</th>
@@ -17,8 +14,42 @@
     <th>Mother forename</th>
     <th>Mother surname</th>
     <th>Person abode</th>
-    <th>Burial date</th>
-    <th>Burial person forename</th>
+   
+    <th>Notes</th>
+    <th>Line</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
+   <tr id="<%= freereg1_csv_entry.id %>">
+    
+    <td><%= freereg1_csv_entry.register_entry_number %></td>
+    <td><%= freereg1_csv_entry.baptism_date %></td>
+    <td><%= freereg1_csv_entry.birth_date %></td>
+    <td><%= freereg1_csv_entry.person_forename %></td>
+    <td><%= freereg1_csv_entry.person_sex %></td>
+    <td><%= freereg1_csv_entry.father_forename %></td>
+    <td><%= freereg1_csv_entry.father_surname %></td>
+    <td><%= freereg1_csv_entry.father_occupation %></td>
+    <td><%= freereg1_csv_entry.mother_forename %></td>
+    <td><%= freereg1_csv_entry.mother_surname %></td>
+    <td><%= freereg1_csv_entry.person_abode %></td>
+    <td><%= freereg1_csv_entry.notes %></td>
+    <td><%= freereg1_csv_entry.file_line_number%></td>
+    <td><%= link_to 'Show', freereg1_csv_entry %></td>
+    <td><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %></td>
+    <td><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+<% when @freereg1_csv_file.record_type == "bu" %>   
+<table>
+  <tr>
+   <th>Register entry number</th>
+   <th>Burial date</th>
+   <th>Burial person forename</th>
     <th>Burial person surname</th>
     <th>Relationship</th>
     <th>Male relaive forename</th>
@@ -26,6 +57,37 @@
     <th>Relative surname</th>
     <th>Person age</th>
     <th>Burial person abode</th>
+    <th>Notes</th>
+    <th>Line ID</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+<% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
+    <tr>
+ <td><%= freereg1_csv_entry.register_entry_number %></td>
+ <td><%= freereg1_csv_entry.burial_date %></td>
+    <td><%= freereg1_csv_entry.burial_person_forename %></td>
+    <td><%= freereg1_csv_entry.burial_person_surname %></td>
+    <td><%= freereg1_csv_entry.relationship %></td>
+    <td><%= freereg1_csv_entry.male_relative_forename %></td>
+    <td><%= freereg1_csv_entry.female_relative_forename %></td>
+    <td><%= freereg1_csv_entry.relative_surname %></td>
+    <td><%= freereg1_csv_entry.person_age %></td>
+    <td><%= freereg1_csv_entry.burial_person_abode %></td>
+    <td><%= freereg1_csv_entry.notes %></td>
+    <td><%= freereg1_csv_entry.line_id %></td>
+    <td><%= link_to 'Show', freereg1_csv_entry %></td>
+    <td><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %></td>
+    <td><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<% when @freereg1_csv_file.record_type == "ma" %>   
+<table>
+  <tr>
+    <th>Register entry number</th>
     <th>Marriage date</th>
     <th>Bride abode</th>
     <th>Bride age</th>
@@ -59,31 +121,8 @@
   </tr>
 
 <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-  <tr>
-    <td><%= freereg1_csv_entry.county %></td>
-    <td><%= freereg1_csv_entry.place %></td>
-    <td><%= freereg1_csv_entry.church_name %></td>
-    <td><%= freereg1_csv_entry.register_type %></td>
-    <td><%= freereg1_csv_entry.register_entry_number %></td>
-    <td><%= freereg1_csv_entry.baptism_date %></td>
-    <td><%= freereg1_csv_entry.birth_date %></td>
-    <td><%= freereg1_csv_entry.person_forename %></td>
-    <td><%= freereg1_csv_entry.person_sex %></td>
-    <td><%= freereg1_csv_entry.father_forename %></td>
-    <td><%= freereg1_csv_entry.father_surname %></td>
-    <td><%= freereg1_csv_entry.father_occupation %></td>
-    <td><%= freereg1_csv_entry.mother_forename %></td>
-    <td><%= freereg1_csv_entry.mother_surname %></td>
-    <td><%= freereg1_csv_entry.person_abode %></td>
-    <td><%= freereg1_csv_entry.burial_date %></td>
-    <td><%= freereg1_csv_entry.burial_person_forename %></td>
-    <td><%= freereg1_csv_entry.burial_person_surname %></td>
-    <td><%= freereg1_csv_entry.relationship %></td>
-    <td><%= freereg1_csv_entry.male_relative_forename %></td>
-    <td><%= freereg1_csv_entry.female_relative_forename %></td>
-    <td><%= freereg1_csv_entry.relative_surname %></td>
-    <td><%= freereg1_csv_entry.person_age %></td>
-    <td><%= freereg1_csv_entry.burial_person_abode %></td>
+    <tr>
+     <td><%= freereg1_csv_entry.register_entry_number %></td>  
     <td><%= freereg1_csv_entry.marriage_date %></td>
     <td><%= freereg1_csv_entry.bride_abode %></td>
     <td><%= freereg1_csv_entry.bride_age %></td>
@@ -117,7 +156,8 @@
   </tr>
 <% end %>
 </table>
-
+<% end %>
 <br />
 
-<%= link_to 'New Freereg1 csv entry', new_freereg1_csv_entry_path %>
+<%= button_to 'New Freereg1 csv entry', new_freereg1_csv_entry_path, method: :get %>
+<%= button_to_function "Back to Previous Page", "history.back()" %> 
