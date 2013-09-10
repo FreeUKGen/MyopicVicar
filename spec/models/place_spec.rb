@@ -6,8 +6,8 @@ require 'freereg_csv_processor'
 SAME_REGISTER_FILES = [
     "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA5.CSV",
     "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNMA2.csv",
-    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA2.CSV",
-    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA3.CSV"
+    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA2.csv",
+    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA3.csv"
   ]
 
 
