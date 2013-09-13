@@ -1,6 +1,6 @@
 namespace :foo do
 
-	require 'create_places_docs'
+ require 'create_places_docs'
  desc "Process the freereg1_csv_file and create the Places documents"
  task :create_places_docs, [:num, :type] do |t, args|  
  	Mongoid.unit_of_work(disable: :all) do
@@ -40,7 +40,7 @@ namespace :foo do
 
 
 
-  	require 'check_search_records'
+require 'check_search_records'
  desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
  task :check_search_records, [:num] do |t, args| 
  	Mongoid.unit_of_work(disable: :all) do
@@ -59,6 +59,7 @@ task :process_freereg_csv, [:pattern] => [:environment] do |t, args|
   # http://stackoverflow.com/questions/3586997/how-to-pass-multiple-parameters-to-rake-task
   #print "Processing file passed in rake process_freereg_csv[filename]=#{args[:file]}\n" 
   filenames = Dir.glob(args[:pattern])
+  filenames.sort #sort in alphabetical order, including directories
   filenames.each do |fn|
     FreeregCsvProcessor.process(fn)
   end
