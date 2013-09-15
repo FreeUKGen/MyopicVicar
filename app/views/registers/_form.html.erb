@@ -12,14 +12,15 @@
   <% end %>
 
   
-  <%= f.input :status%>
-  <%= f.input :register_name%>
+  <%= f.input :status, :input_html => { :size => 30 }%>
+  <%= f.input :register_name, :input_html => { :size => 30 }%>
   <%= f.input :alternate_register_name, :input_html => { :disabled => true , :size => 30} %> 
-  <%= f.input :quality%>
-  <%= f.input :source%>
-  <%= f.input :copyright%>
-  <%= f.input :register_notes%>
+  <%= f.input :quality, :input_html => { :size => 40 }%>
+  <%= f.input :source, :input_html => { :size => 40 }%>
+  <%= f.input :copyright, :input_html => { :size => 40 }%>
+  <%= f.input :register_notes, :input_html => { :size => 60 }%>
   <%= f.input :last_amended%>
+  <br>
   <div class="actions">
     <%= f.actions %>
   </div>

@@ -14,7 +14,6 @@ In this Table the Register Type can be:PR representing a Parish Register; AT rep
 <table>
   <tr>
     <th>Register name</th>
-    <th>Alternate register name</th>
     <th>Source</th>
     <th>Quality</th>
     <th>Copyright</th>
@@ -27,8 +26,12 @@ In this Table the Register Type can be:PR representing a Parish Register; AT rep
 
 <% @registers.each do |register| %>
   <tr> 
-    <td><%= register.register_name %></td>
+    <% unless register.register_name.nil? %>
+    <td><%= link_to(register.register_name, show_register_path(register)) %> </td> 
+    <% end %>
+    <% if register.register_name.nil? %>
     <td><%= link_to(register.alternate_register_name, show_register_path(register)) %></td>
+     <% end %>
     <td><%= register.source %></td>
     <td><%= register.quality %></td>
     <td><%= register.copyright %></td>
@@ -38,7 +41,7 @@ In this Table the Register Type can be:PR representing a Parish Register; AT rep
   </tr>
 <% end %>
 </table>
-    <%= link_to 'Back to Places', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}") %> 
+    <%= button_to 'Back to Places Page', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}"),method: :get %> 
        
 
 

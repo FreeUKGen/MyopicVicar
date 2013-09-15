@@ -18,8 +18,8 @@
     <th>Other church name</th>
     <th>Last amended</th>
     <th>Notes</th>
-    <th>Registers</th>
-     <th>Alternate register names</th>
+    <th>Register Names</th>
+    <th>Alternate register names</th>
     <th>Action</th>
     
   </tr>
@@ -31,16 +31,24 @@
   <td><%= @church.last_amended %></td>
   <td><%= @church.church_notes %></td>
   
-  <ol>
+  <td><ul>
     <% @church.registers.each do |register| %>
+   <li>
+    <%= register.register_name %>
    
-   <td> <%= register.register_name %></td>
    
-   <td><%= link_to(register.alternate_register_name, register_path(register)) %><br> </td>
-    
+   </li> 
   
 <% end %>
-</ol>
+</ul></td>
+<td><ol>
+ <% @church.registers.each do |register| %>
+   <li>
+<%= link_to(register.alternate_register_name, register_path(register)) %>
+</li> 
+  
+<% end %>
+</ol></td>
 
   <td >
      
@@ -48,6 +56,6 @@
 <%= link_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } %></td>
 </tr>
 </table>
+<br>
 
-
-<%= link_to_function "Back", "history.back()" %> 
+<%= button_to_function "Back to Previous Page", "history.back()" %> 

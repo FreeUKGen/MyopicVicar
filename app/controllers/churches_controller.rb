@@ -43,9 +43,10 @@ class ChurchesController < InheritedResources::Base
         
     @church = Church.find(church_id)
     session[:church_id] = @church._id
-    session[:church_name] = @church.church_name
+    @church_name = @church.church_name
+    session[:church_name] = @church_name
     @place_id = @church.place
-    session[:place_id] = @place_id
+    session[:place_id] = @place_id._id
     @place = Place.find(@place_id)
     @place_name = @place.place_name
     session[:place_name] =  @place_name

@@ -1,4 +1,4 @@
-<%= form_for(@place) do |f| %>
+<%= semantic_form_for(@place) do |f| %>
   <% if @place.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@place.errors.count, "error") %> prohibited this place from being saved:</h2>
@@ -12,16 +12,18 @@
   <% end %>
 
  
-  <div class="field">
-    <%= f.label :place_name %><br />
-    <%= f.text_field :place_name %>
+  
+    
+    <%= f.input :place_name,:input_html => { :size => 40 }%>
+  
+  <br>
+  
+    <%= f.input :genuki_url,as: :url, :input_html => { :size => 60 }%>
+  
+  <br>
+ 
+    <%= f.action :submit, :as => :input, :label => 'Update' %>
   </div>
-  <div class="field">
-    <%= f.label :genuki_url %><br />
-    <%= f.text_field :genuki_url %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+  <br>
 <% end %>
 

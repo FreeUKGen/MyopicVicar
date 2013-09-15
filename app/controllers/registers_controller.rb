@@ -28,7 +28,7 @@ class RegistersController < InheritedResources::Base
     puts params.inspect
 
     @register = Register.find(register_id)
-    puts @register.inspect
+    
     session[:register_id] = register_id
     session[:register_name] = @register.alternate_register_name
     @register_name = session[:register_name]

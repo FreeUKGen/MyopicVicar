@@ -1,6 +1,6 @@
-<p>Editing <%= @place_name %> of the County of <%= @county %><br></p>
+<p>Editing <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 
 <%= render 'form' %>
 
-<%= link_to 'Show', @place %> |
-<%= link_to 'Back', places_path %>
+<br><br><%= button_to 'Show Place', @place , method: :get%> 
+<%= button_to 'Back to Listing of Places', places_path, method: :get %>

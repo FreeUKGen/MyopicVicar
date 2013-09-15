@@ -68,7 +68,7 @@ the <b><%= @record_type %></b> Registers of <b><%= @register %></b> for
 
 
 </table>
- <%= link_to_function "Back", "history.back()" %> 
- <%= link_to 'Back to Places', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}") %> 
+ <%= button_to_function "Back to Previous Page", "history.back()" %> 
+ <%= button_to 'Back to Places Page', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}"), method: :get %> 
 
 
