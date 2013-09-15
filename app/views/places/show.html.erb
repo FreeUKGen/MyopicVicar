@@ -22,7 +22,7 @@
 <p>
   <b>Churches and Registers:</b><br />
   <ul>
-<% @place.churches.each do |church| %>
+<% @place.churches.order_by(:church_name.asc).each do |church| %>
 <li>
 <%= link_to(church.church_name, church_path(church)) %><br />
 <ul>

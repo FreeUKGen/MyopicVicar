@@ -3,6 +3,8 @@ class Church
   
   field :church_name,type: String
   field :last_amended, type: String
+  field :denomination, type: String
+  field :location, type: String
   field :alternate_church_name, type: String
   field :church_notes, type: String
   has_many :registers
@@ -21,5 +23,20 @@ class Church
     
     return my_church
   
+  end
+
+  def self.create_or_update_last_amended_date(freereg_file)
+    register = freereg_file.register._id
+    register = Register.find(register)
+    church = register.church.id
+    church = Church.find(church)
+    original_last_amended_date = church.last_amended
+    file_amended_date = freereg_file.modification_date
+    file_creation_date = freereg_file.transcription_date
+    new_last_amended_date = freereg_file.modification_date
+    new_last_amended_date = file_creation_date if (Freereg1CsvFile.convert_date(freereg_file.transcription_date) > Freereg1CsvFile.convert_date(freereg_file.modification_date))
+    new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
+    church.last_amended = new_last_amended_date
+    church.save!
   end
 end

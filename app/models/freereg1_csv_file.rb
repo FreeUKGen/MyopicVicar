@@ -52,6 +52,31 @@ class Freereg1CsvFile
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 
+  after_save :create_or_update_last_amended_date
+  #after_update :create_or_update_last_amended_date
+  VALID_DAY = /\A\d{1,2}\z/
+  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+  VALID_YEAR = /\A\d{4}\z/
+  ANOTHER_VALID_YEAR = /\A\d{2}\z/
+  MONTHS = {
+    'Jan' => '01',
+    'Feb' => '02',
+    'Mar' => '03',
+    'Apr' => '04',
+    'May' => '05',
+    'Jun' => '06',
+    'Jul' => '07',
+    'Aug' => '08',
+    'Sep' => '09',
+    'Oct' => '10',
+    'Nov' => '11',
+    'Dec' => '12'
+  }
+
+  def create_or_update_last_amended_date
+   Register.create_or_update_last_amended_date(self)
+   Church.create_or_update_last_amended_date(self)
+  end
 
   def ordered_display_fields
     order = []
@@ -108,16 +133,16 @@ class Freereg1CsvFile
         combine_now(hold_file_bu,individual_file,nbu)
         nbu = nbu + 1
        when individual_file.record_type == "ma" 
-        combine_now(hold_file_ma,individual_file,nm)
+         combine_now(hold_file_ma,individual_file,nm)
         nm = nm + 1
       end
     end
+    
     hold_combined_files <<  hold_file_ba
     hold_combined_files <<  hold_file_bu
     hold_combined_files <<  hold_file_ma
     
-    hold_combined_files
-
+    
   end 
    
   def self.combine_now(hold_file,individual_file,n)
@@ -155,8 +180,9 @@ class Freereg1CsvFile
                    hold_file.daterange[i] =  hold_file.daterange[i].to_i + individual_file.daterange[i].to_i
 
                  end
-               hold_file.transcription_date = individual_file.transcription_date 
-               hold_file.modification_date = individual_file.modification_date
+               hold_file.transcription_date = individual_file.transcription_date if (Freereg1CsvFile.convert_date(individual_file.transcription_date) <  Freereg1CsvFile.convert_date(hold_file.transcription_date))
+               hold_file.modification_date = individual_file.modification_date if (Freereg1CsvFile.convert_date(individual_file.modification_date) >  Freereg1CsvFile.convert_date(hold_file.modification_date))
+              
                
       end
 
@@ -177,6 +203,50 @@ class Freereg1CsvFile
         end
         # now we can delete the file
          Freereg1CsvFile.where(:_id => csv_file).destroy_all
+  end
+
+
+  def self.convert_date(date_field)
+    date_day = 0
+    date_month = 0
+    date_year = 0
+     unless date_field.nil?
+       a = date_field.split("-")
+         if ((a.length == 1)) then
+           a = date_field.split(" ") unless a[0].length <= 4
+         end
+
+
+     case
+
+      when a.length == 3
+        #work with  dd mmm yyyy/y
+        #firstly deal with the dd
+       date_day = a[0].to_i if(a[0].to_s =~ VALID_DAY)
+        #deal with the month
+       date_month = MONTHS[a[1]].to_i if (VALID_MONTH.include?(Unicode::upcase(a[1])) )
+        #deal with the yyyy
+         if a[2].length == 4
+          date_year = a[2].to_i if (a[2].to_s =~ VALID_YEAR)
+         else
+          date_year = a[2].to_i if (a[2].to_s =~ ANOTHER_VALID_YEAR)
+          date_year = date_year + 2000
+      end
+             
+      when a.length == 2
+         #deal with dates that are mmm yyyy firstly the mmm then the year
+        date_month if (VALID_MONTH.include?(Unicode::upcase(a[0])))
+        date_year if (a[1].to_s =~ VALID_YEAR)
+                 
+      when a.length == 1 
+          #deal with dates that are year only
+            date_year if (a[0].to_s =~ VALID_YEAR)
+        
+      end
+   
+    end 
+    my_days =  date_year.to_i*365 + date_month.to_i*30 + date_day.to_i 
+    my_days
   end
 
 end

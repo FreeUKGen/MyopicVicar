@@ -6,12 +6,12 @@
   <%= @county  %>
 </p>
 <div id="nav">
-	<%= button_to 'Back to County Search Page', freereg_contents_path(@church) %>
+	<%= button_to 'Back to County Search Page', freereg_contents_path , method: :get%>
 </div>
 <table>
 <tr>
   <th>Place</th>
-  <th>Church or Chapel</th>
+  <th>Church or Chapel; denomination and location</th>
 </tr>
 
 
@@ -21,8 +21,9 @@
   <td><ul>
 	  <% place.churches.order_by(:church_name.asc).each do |church| %>
 	  	<li>
-		  	<%= link_to(church.church_name, show_church_path(church)) %><br />
-				
+		  	<%= link_to(church.church_name, show_church_path(church)) %>
+			<%= church.denomination %>	
+			<%= church.location %>	<br />
 	  	</li>
 	  <% end %>  	
   </ul>
@@ -35,7 +36,7 @@
 </table>
 <div id="nav">
 	<ul>
-	    <li><%= button_to 'Back to County Search Page', freereg_contents_path(@church), method: :get  %>
+	    <li><%= button_to 'Back to County Search Page', freereg_contents_path, method: :get  %>
 	    	
     	</li>
     	<% if @page_number > 0 %>		    	

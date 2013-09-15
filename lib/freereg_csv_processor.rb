@@ -780,7 +780,7 @@ class FreeregCsvProcessor
     data_record[:county] = "Blank" if data_record[:county].nil?
     data_record[:place] = "Blank" if data_record[:place].nil?
     data_record[:church_name] = "Blank" if data_record[:church_name].nil?
-    data_record[:register_type] = "Blank" if data_record[:register_type].nil?
+    data_record[:register_type] = "PR" if data_record[:register_type].nil?
     data_record[:alternate_register_name] = @register.to_s + " " + data_record[:register_type].to_s
         # need to add the transcriberID
     #puts "Header #{data_record[:county]}, #{data_record[:place]}, #{data_record[:church_name]}, #{data_record[:register_type]} "
@@ -967,8 +967,9 @@ class FreeregCsvProcessor
 
   def create_db_record_for_entry(data_record)
     # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
+
     entry = Freereg1CsvEntry.new(data_record)
-    entry.freereg1_csv_file=@freereg1_csv_file
+    entry.freereg1_csv_file = @freereg1_csv_file
     entry.save!
     entry
   end

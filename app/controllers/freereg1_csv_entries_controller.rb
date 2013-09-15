@@ -32,10 +32,8 @@ class Freereg1CsvEntriesController < InheritedResources::Base
   end
 
   def load(file_id)
-    puts params.inspect   
     @freereg1_csv_entry = Freereg1CsvEntry.find(file_id)
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
-   
     @freereg1_csv_file_id =  session[:freereg1_csv_file_id]
     @freereg1_csv_file_name =  session[:freereg1_csv_file_name]
     @freereg1_csv_file = Freereg1CsvFile.find(@freereg1_csv_file_id)
@@ -46,7 +44,6 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 
-    puts session.inspect
-    
+     
   end
 end
