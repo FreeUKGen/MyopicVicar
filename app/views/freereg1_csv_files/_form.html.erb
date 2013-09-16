@@ -15,10 +15,10 @@
  
   <%= f.input :register_type %>
   <%= f.input :record_type, :input_html => { :disabled => true } %> 
-  <%= f.input :records %>
-  <%= f.input :datemin %>
-  <%= f.input :datemax %>
-  <%= f.input :daterange ,      :input_html => { :size => 100 }%>  
+  <%= f.input :records , :input_html => { :disabled => true }%>
+  <%= f.input :datemin , :input_html => { :disabled => true }%>
+  <%= f.input :datemax , :input_html => { :disabled => true }%>
+  <%= f.input :daterange,      :input_html => { :disabled => true, :size => 100  }%>  
   <%= f.input :userid %>
   <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
   <%= f.input :transcriber_name , :input_html => { :size => 40 }%>

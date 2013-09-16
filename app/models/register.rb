@@ -21,11 +21,11 @@ class Register
     # find if register exists
    register = find_register(freereg1_csv_file.to_register)
     if register
+      
       #update register
-      #freereg1_csv_file.update_attributes(freereg1_csv_file)
       register.freereg1_csv_files << freereg1_csv_file
-      freereg1_csv_file.save!
       register.save!
+      freereg1_csv_file.save!
     else 
     # creatre the register  
      register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)   
@@ -54,10 +54,10 @@ class Register
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register
     #and save everything
-    freereg1_csv_file.save!
     register.save!
     @@my_church.save!
     my_place.save!
+    freereg1_csv_file.save!
     register
   end
 
@@ -65,6 +65,7 @@ class Register
  
   
   def self.find_register(args)
+    
     @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
     if @@my_church
       my_church_id = @@my_church[:_id]
@@ -80,7 +81,17 @@ class Register
     end
      register 
   end
-  
-  
- 
+
+  def self.create_or_update_last_amended_date(freereg_file)
+    register = freereg_file.register._id
+    register = Register.find(register)
+    original_last_amended_date = register.last_amended
+    file_amended_date = freereg_file.modification_date
+    file_creation_date = freereg_file.transcription_date
+    new_last_amended_date = freereg_file.modification_date
+    new_last_amended_date = file_creation_date if (Freereg1CsvFile.convert_date(freereg_file.transcription_date) > Freereg1CsvFile.convert_date(freereg_file.modification_date))
+    new_last_amended_date =original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
+    register.last_amended = new_last_amended_date
+    register.save!
+  end
 end

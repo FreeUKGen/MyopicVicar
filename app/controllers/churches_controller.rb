@@ -13,8 +13,7 @@ class ChurchesController < InheritedResources::Base
   def update
     load(params[:id])
     old_church_name = @church.church_name
-    puts params[:church].inspect
-    @church.update_attributes(params[:church])
+    @church.church_name = params[:church]
     @church.save!
     
     my_files = Freereg1CsvFile.where(:county => @county, :place => @place_name, :church_name =>  old_church_name).to_a
@@ -60,8 +59,7 @@ class ChurchesController < InheritedResources::Base
 
   end
   def destroy
-   puts "destroy"
-    puts params.inspect
+   
     load(params[:id])
     @church.destroy
     redirect_to church_path

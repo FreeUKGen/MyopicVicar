@@ -20,9 +20,11 @@ class FreeregContentsController < InheritedResources::Base
   end
 
   def create
-   
+    unless params[:freereg_content].nil? 
     @search_query = FreeregContent.new(params[:freereg_content].delete_if{|k,v| v.blank? }) 
-
+    else
+    @search_query = FreeregContent.new  
+    end
     @search_query.save!
 
     # find the search record result
@@ -68,36 +70,56 @@ class FreeregContentsController < InheritedResources::Base
   end
 
   def show_register
-   
+     @files_id = Array.new
      @search_query = session[:search_query]
      @page_number = session[:page_number]
      @church  = session[:church]
      @place_name = session[:place]
      @county = session[:county]
      @place = session[:place_id]
+     session[:register_id] = params[:id]
      @register = Register.find(params[:id])
-     @register = @register.alternate_register_name
-     session[:register] = @register
+     session[:register_name] = @register.alternate_register_name
      individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
      @files = Freereg1CsvFile.combine_files(individual_files)
-     session[:files] = @files
+     @register_name =  session[:register_name] 
+
   end
   
   def show_decade
-    @files = session[:files]
-    @files.each do |my_file|
-      if (my_file._id.to_s == params[:id].to_s) then
-        @decade = my_file.daterange
-        @record_type = RecordType.display_name(my_file.record_type)
-      end
-    end
+    @files_id = session[:files]
+    @register_id = session[:register_id]
+     @register_name =  session[:register_name] 
+     
+    
+       individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
+       @files = Freereg1CsvFile.combine_files(individual_files)
+       puts  @files.inspect
+        @files.each do |my_file|
+        puts  my_file.inspect
+         @record_type = RecordType.display_name(my_file.record_type)
+         puts @record_type.inspect
+         puts params[:id].inspect
+         if @record_type == params[:id] then
+         
+          @decade = my_file.daterange
+          
+
+         end
+        
+       
+
+        end
+      puts  @decade.inspect
+
+     @record_type = params[:id]  
+    
      @place = session[:place_id]
      @search_query = session[:search_query]
      @page_number = session[:page_number]
      @church  = session[:church]
      @place_name = session[:place]
      @county = session[:county]
-     @register = session[:register]
     
    
   end

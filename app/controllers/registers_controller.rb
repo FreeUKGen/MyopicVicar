@@ -25,10 +25,7 @@ class RegistersController < InheritedResources::Base
 
   
   def load(register_id)
-    puts params.inspect
-
     @register = Register.find(register_id)
-    
     session[:register_id] = register_id
     session[:register_name] = @register.alternate_register_name
     @register_name = session[:register_name]
@@ -37,7 +34,6 @@ class RegistersController < InheritedResources::Base
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 
-    puts session.inspect
-    
+      
   end
 end

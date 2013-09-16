@@ -9,9 +9,9 @@ class Place
   field :last_amended, type: String
   field :alternate_place_name, type: String
   field :place_notes, type: String
-
-  has_many :churches
   field :genuki_url, type: String
+  has_many :churches
+ 
   
  # index ([[:chapman_code, Mongo::ASCENDING],[:place_name, Mongo::ASCENDING]])
 
