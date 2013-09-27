@@ -1,6 +1,15 @@
 require 'record_type'
 module SamplePeople
   
+  def self.primary_name(person)
+    person[:transcript_names].find{ |n| n[:type] == 'primary' }
+  end
+  
+  def self.other_name(person)
+    person[:transcript_names].find{ |n| n[:type] != 'primary' }
+  end
+  
+  
   THOMAS_RAGSDALE = { 
     :record_type => RecordType::BURIAL,
     :first_name => 'Thomas',
@@ -148,47 +157,64 @@ module SamplePeople
   
   SARAH_CHALLANS = { 
     :record_type => RecordType::BAPTISM,
+    :transcript_date=>"31 May 1758",
     :first_name => 'Sarah',
     :last_name => 'Challans',
-    :surname_inferred => false,
-    :father_first_name => 'Wm',
-    :father_last_name => 'Challans',
-    :father_surname_inferred => false,
-    :mother_first_name => 'Sarah',
-    :mother_last_name => 'Challans',
-    :mother_surname_inferred => true,
-    :date => Time.new(1758, 5, 31),
+    :transcript_names=>
+      [{:role=>"ba",
+        :type=>"primary",
+        :first_name=>"Sarah",
+        :last_name=>"Challans"},
+       { :role=>"mr", 
+         :type=>"other", 
+         :first_name=>"Wm", 
+         :last_name=>"Challans"}
+       ],
     :chapman_code => 'LIN',
     :parish => 'Bicker'
   }
   
   
+  FROM_DB = {
+    :record_type=>"bu",
+    :transcript_date=>"6 Mar 1690/1",
+    :chapman_code=>"NFK",
+    :father_first_name=>"John",
+    :file_line_number=>1,
+    :line_id=>"kirknorfolk.NFKALEBU.CSV.1",
+    :transcript_names=>
+      [{:role=>"bu",
+        :type=>"primary",
+        :first_name=>"Will",
+        :last_name=>"SADD"},
+       { :role=>"mr", 
+         :type=>"other", 
+         :first_name=>"John", 
+         :last_name=>"SADD"}
+       ]
+ }
+
   RICHARD_AND_ESTHER = { 
     :record_type => RecordType::MARRIAGE,
-    :transcript_names => [
-      { 'role' => 'g',
-        'type' => 'primary',
-        'first_name' => 'Richard',
-        'last_name' => 'Bell'
+    :transcript_date=>"* * 1753",
+    :chapman_code=>"LIN",
+    :transcript_names=>
+   [
+      { :role => NameRole::GROOM,
+        :type => 'primary',
+        :first_name => 'Richard',
+        :last_name => 'Bell'
       },
       {
-        'role' => 'b',
-        'type' => 'primary',
-        'first_name' => 'Esther',
-        'last_name' => 'Brackenbury'
+        :role => NameRole::BRIDE,
+        :type => 'primary',
+        :first_name => 'Esther',
+        :last_name => 'Brackenbury'
       }     
-    ],
-    :groom_first_name => 'Richard',
-    :groom_last_name => 'Bell',
-    :groom_surname_inferred => false,
-    :bride_first_name => 'Esther',
-    :bride_last_name => 'Brackenbury',
-    :bride_surname_inferred => false,
-    # no day or month!
-    :date => Time.new(1753),
-    :chapman_code => 'LIN',
+    ], 
     :parish => 'Bicker'
-  }
+ }
+  
   
   MICHAEL_AND_MARY = { 
     :record_type => RecordType::MARRIAGE,

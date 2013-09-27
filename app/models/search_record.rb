@@ -201,7 +201,6 @@ class SearchRecord
           name = search_name(name_hash[:first_name], name_hash[:last_name])
           primary_names << name if name          
         end
-        # binding.pry
 
       end
     end
