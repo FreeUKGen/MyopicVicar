@@ -20,6 +20,8 @@ describe Freereg1CsvEntry do
 
   before(:each) do
     FreeregCsvProcessor::delete_all
+    # some other tests (e.g. search_query_spec) don't create search records from search queries
+    SearchRecord::delete_all
   end
 
 
