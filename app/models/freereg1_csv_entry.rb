@@ -17,6 +17,7 @@ class Freereg1CsvEntry
   
 
   belongs_to :freereg1_csv_file, index: true
+  
   has_one :search_record
 
   # Fields here represent those currently requested by FreeREG1 at

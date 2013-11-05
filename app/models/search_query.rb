@@ -19,6 +19,7 @@ class SearchQuery
   field :inclusive, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
+  field :place_ids, type: Array
 
 
   validate :name_not_blank
@@ -31,9 +32,19 @@ class SearchQuery
     params = Hash.new
     params[:record_type] = record_type if record_type
     params[:chapman_code] = chapman_code if chapman_code
+    params.merge!(place_search_params)
     params.merge!(date_search_params)
     params.merge!(name_search_params)
 
+    params
+  end
+
+  def place_search_params
+    params = Hash.new
+    if place_ids && place_ids.size > 0
+      params[:place_id] = { "$in" => place_ids }
+    end
+        
     params
   end
 

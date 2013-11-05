@@ -27,6 +27,7 @@ class SearchRecord
 
 
   belongs_to :freereg1_csv_entry, index: true
+  belongs_to :place, index:true
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
@@ -281,6 +282,8 @@ class SearchRecord
 #   # assumes no existing entries for this line
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
     record.freereg1_csv_entry = entry
+    # TODO profile this to see if it's especially costly
+    record.place = entry.freereg1_csv_file.register.church.place
     
     record.save!    
   end

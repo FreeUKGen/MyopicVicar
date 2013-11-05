@@ -11,6 +11,7 @@ class Place
   field :place_notes, type: String
   field :genuki_url, type: String
   has_many :churches
+  has_many :search_records
  
   
  # index ([[:chapman_code, Mongo::ASCENDING],[:place_name, Mongo::ASCENDING]])

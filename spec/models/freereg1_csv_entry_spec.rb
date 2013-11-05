@@ -20,6 +20,10 @@ describe Freereg1CsvEntry do
 
   before(:each) do
     FreeregCsvProcessor::delete_all
+    Place.delete_all
+    Church.delete_all
+    Register.delete_all
+
     # some other tests (e.g. search_query_spec) don't create search records from search queries
     SearchRecord::delete_all
   end
@@ -211,6 +215,57 @@ describe Freereg1CsvEntry do
       end
     end    
   end
+
+  it "should filter by place" do
+    # first create something to test against
+    different_file = FreeregCsvProcessor.process("#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv")
+    different_entry = different_file.freereg1_csv_entries.first
+    different_search_record = different_entry.search_record
+    different_place = different_search_record.place
+
+    [
+      "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKALEBU.csv",
+      "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEMA.CSV"
+    ].each do |filename|
+      
+      file_record = FreeregCsvProcessor.process(filename)
+      entry = file_record.freereg1_csv_entries.first
+      search_record = entry.search_record
+      place = search_record.place
+      name = search_record.transcript_names.first
+      
+      query_params = { :first_name => name[:first_name],
+                       :last_name => name[:last_name],
+                       :inclusive => true,
+                       :place_ids => [place.id] }
+      q = SearchQuery.create!(query_params)
+      result = q.search.to_a
+      result.count.should have_at_least(1).items
+      result.should be_in_result(entry)
+      
+      query_params = { :first_name => name[:first_name],
+                       :last_name => name[:last_name],
+                       :inclusive => true,
+                       :place_ids => [place.id, different_place.id] }
+      q = SearchQuery.create!(query_params)
+      result = q.search.to_a
+      result.count.should have_at_least(1).items
+      result.should be_in_result(entry)
+      
+      query_params = { :first_name => name[:first_name],
+                       :last_name => name[:last_name],
+                       :inclusive => true,
+                       :place_ids => [different_place.id] }
+      q = SearchQuery.create!(query_params)
+      result = q.search.to_a
+
+      result.count.should eq(0)
+      result.should_not be_in_result(entry)
+
+    end
+    
+  end
+
 
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
