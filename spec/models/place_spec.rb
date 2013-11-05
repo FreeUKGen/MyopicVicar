@@ -14,6 +14,9 @@ SAME_REGISTER_FILES = [
 describe Place do
   before(:each) do
     FreeregCsvProcessor::delete_all
+    Place.delete_all
+    Church.delete_all
+    Register.delete_all
   end
 
   it "should create four files with three registers, one church and one place" do

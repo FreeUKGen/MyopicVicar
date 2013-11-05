@@ -202,7 +202,7 @@ describe Freereg1CsvEntry do
       file_record.freereg1_csv_entries.count.should eq 1
       entry = file_record.freereg1_csv_entries.first
       search_record = entry.search_record
-      names = search_record.inclusive_names
+      names = search_record.search_names
       seen = {}
       names.each do |name|
         key = [name.first_name, name.last_name]

@@ -52,19 +52,20 @@ class SearchQuery
   def name_search_params
     params = Hash.new
     name_params = Hash.new
-    search_type = inclusive ? "inclusive" : "primary"
+    search_type = inclusive ? { "$in" => [SearchRecord::PersonType::FAMILY, SearchRecord::PersonType::PRIMARY ] } : SearchRecord::PersonType::PRIMARY
+    name_params["type"] = search_type
 
     if fuzzy
     
       name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name     
       name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name     
 
-      params["#{search_type}_soundex"] =  { "$elemMatch" => name_params}
+      params["search_soundex"] =  { "$elemMatch" => name_params}
     else
       name_params["first_name"] = first_name.downcase if first_name
       name_params["last_name"] = last_name.downcase if last_name           
 
-      params["#{search_type}_names"] =  { "$elemMatch" => name_params}
+      params["search_names"] =  { "$elemMatch" => name_params}
     end
     params
   end

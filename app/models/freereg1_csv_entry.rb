@@ -77,7 +77,7 @@ class Freereg1CsvEntry
 
   index({file_line_number:1})
   index ({line_id:1})
-  #after_save :transform_search_record
+  after_save :transform_search_record
   
   def transform_search_record
     SearchRecord.from_freereg1_csv_entry(self)

@@ -120,11 +120,6 @@ describe SearchQuery do
   end
 
 
-  it "should handle abbreviations" do
-    # TODO
-  end
-
-
 
   # Marriage-specific records
   it "should not find P1 first name with P2 surname" do

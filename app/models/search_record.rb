@@ -18,6 +18,12 @@ class SearchRecord
     SEPARATION='sep'
     USER_ADDITION='u'
   end
+  
+  module PersonType
+    PRIMARY='p'
+    FAMILY='f'
+    WITNESS='w'
+  end
 
 
   belongs_to :freereg1_csv_entry, index: true
@@ -34,29 +40,9 @@ class SearchRecord
   field :record_type, type: String
   
   # transcript fields  
-  field :first_name, type: String#, :required => false
-  field :last_name, type: String#, :required => false
+  # field :first_name, type: String#, :required => false
+  # field :last_name, type: String#, :required => false
   
-  # field :father_first_name, type: String, :required => false
-  # field :father_last_name, type: String, :required => false
-# 
-  # field :mother_first_name, type: String, :required => false
-  # field :mother_last_name, type: String, :required => false
-
-  field :husband_first_name, type: String#, :required => false
-  field :husband_last_name, type: String#, :required => false
-
-  field :wife_first_name, type: String#, :required => false
-  field :wife_last_name, type: String#, :required => false
-
-  field :groom_first_name, type: String#, :required => false
-  field :groom_last_name, type: String#, :required => false
-
-  field :bride_first_name, type: String#, :required => false
-  field :bride_last_name, type: String#, :required => false
-
-  # HACK: this is transitional code while I explore 
-  # roles and other family members on records
   #
   # It contains hashes with keys :first_name, :last_name, :role
   field :transcript_names, type: Array#, :required => true
@@ -67,15 +53,18 @@ class SearchRecord
   field :search_date, type: String#, :required => false
 
   # search fields
-  embeds_many :primary_names, :class_name => 'SearchName'
-  embeds_many :inclusive_names, :class_name => 'SearchName'
+  # embeds_many :primary_names, :class_name => 'SearchName'
+  # embeds_many :inclusive_names, :class_name => 'SearchName'
+  
+  embeds_many :search_names, :class_name => 'SearchName'
+
   # derived search fields
-  field :primary_soundex, type: Array, default: []
-  field :inclusive_soundex, type: Array, default: []
+
+  field :search_soundex, type: Array, default: []
 
 
    #index creation for permutations of names, dates, and other metadata
-     ["primary_names", "inclusive_names", "primary_soundex", "inclusive_soundex"].each do |searchable|
+     ["search_names", "search_soundex"].each do |searchable|
        [{"chapman_code"=>1, "record_type"=>1},
        {"record_type" => 1},
        {"chapman_code" => 1}].each do |prelude|
@@ -129,8 +118,9 @@ class SearchRecord
   end
 
   def populate_search_from_transcript
-    populate_primary_names
-    populate_inclusive_names
+    populate_search_names
+    # populate_primary_names
+    # populate_inclusive_names
   end
 
   def transform_date
@@ -139,44 +129,53 @@ class SearchRecord
 
   
   def create_soundex
-    primary_names.each do |name|
-      primary_soundex << soundex_name_pair(name)
+    search_names.each do |name|
+      search_soundex << soundex_name_type_triple(name)
     end
-    inclusive_names.each do |name|
-      inclusive_soundex << soundex_name_pair(name)
-    end
-    
+    # primary_names.each do |name|
+      # primary_soundex << soundex_name_pair(name)
+    # end
+    # inclusive_names.each do |name|
+      # inclusive_soundex << soundex_name_pair(name)
+    # end
   end
   
-  def soundex_name_pair(name)
+  def soundex_name_type_triple(name)
     return { 
         :first_name => Text::Soundex.soundex(name[:first_name]), 
-        :last_name => Text::Soundex.soundex(name[:last_name]) 
+        :last_name => Text::Soundex.soundex(name[:last_name]), 
+        :type => name[:type]
     }
   end
   
   def downcase_all
-    primary_names.each do |name|
+    search_names.each do |name|
       name[:first_name].downcase! if name[:first_name]
       name[:last_name].downcase! if name[:last_name]
     end
-    inclusive_names.each do |name|
-      name[:first_name].downcase! if name[:first_name] 
-      name[:last_name].downcase! if name[:last_name]
-    end
+    # primary_names.each do |name|
+      # name[:first_name].downcase! if name[:first_name]
+      # name[:last_name].downcase! if name[:last_name]
+    # end
+    # inclusive_names.each do |name|
+      # name[:first_name].downcase! if name[:first_name] 
+      # name[:last_name].downcase! if name[:last_name]
+    # end
   end
 
   def emend_all
-#    binding.pry
-    self.primary_names = Emendor.emend(self.primary_names)
-#    binding.pry
-    self.inclusive_names = Emendor.emend(self.inclusive_names)
-#    binding.pry
+    self.search_names = Emendor.emend(self.search_names)
+# #    binding.pry
+    # self.primary_names = Emendor.emend(self.primary_names)
+# #    binding.pry
+    # self.inclusive_names = Emendor.emend(self.inclusive_names)
+# #    binding.pry
   end
 
   def separate_all
-    separate_names(self.primary_names)
-    separate_names(self.inclusive_names)
+    separate_names(self.search_names)
+    # separate_names(self.primary_names)
+    # separate_names(self.inclusive_names)
   end
 
   def separate_names(names_array)
@@ -193,66 +192,58 @@ class SearchRecord
   end    
 
 
-  def populate_primary_names
-
+  def populate_search_names
     if transcript_names && transcript_names.size > 0
       transcript_names.each_with_index do |name_hash|
+        person_type=PersonType::FAMILY
         if name_hash[:type] == 'primary'
-          name = search_name(name_hash[:first_name], name_hash[:last_name])
-          primary_names << name if name          
+          person_type=PersonType::PRIMARY
         end
-
+        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type)
+        search_names << name if name          
       end
     end
-
   end
 
 
-  def populate_inclusive_names
 
-    # primary names
-    primary_names.each do |name|
-      inclusive_names << name
-    end
-    # father
-    # if name = search_name(father_first_name, father_last_name)
-      # inclusive_names << name
-    # end
-    # if name = search_name(mother_first_name, mother_last_name)
-    # # mother
-      # inclusive_names << name
-    # end
-    # supplemental names for baptisms  -- consider moving to separate method
-    # if mother_last_name.blank? && !mother_first_name.blank?
-      # name = search_name(mother_first_name, father_last_name)
-      # if name
-        # inclusive_names << name
+  # def populate_primary_names
+# 
+    # if transcript_names && transcript_names.size > 0
+      # transcript_names.each_with_index do |name_hash|
+        # if name_hash[:type] == 'primary'
+          # name = search_name(name_hash[:first_name], name_hash[:last_name])
+          # primary_names << name if name          
+        # end
+# 
       # end
     # end
-    # husband
-    # if name = search_name(husband_first_name, husband_last_name)
+# 
+  # end
+# 
+# 
+  # def populate_inclusive_names
+# 
+    # # primary names
+    # primary_names.each do |name|
       # inclusive_names << name
     # end
-    # # wife
-    # if name = search_name(wife_first_name, wife_last_name)
-      # inclusive_names << name
+#     
+    # if transcript_names && transcript_names.size > 0
+      # transcript_names.each do |name_hash|
+        # unless name_hash[:type] == 'primary'
+          # name = search_name(name_hash[:first_name], name_hash[:last_name])
+          # inclusive_names << name if name          
+        # end
+      # end
     # end
-    
-    if transcript_names && transcript_names.size > 0
-      transcript_names.each do |name_hash|
-        unless name_hash[:type] == 'primary'
-          name = search_name(name_hash[:first_name], name_hash[:last_name])
-          inclusive_names << name if name          
-        end
-      end
-    end
+# 
+  # end
 
-  end
-
-  def search_name(first_name, last_name, source = 'transcript')
+  def search_name(first_name, last_name, person_type, source = 'transcript')
     name = nil
     unless last_name.blank? 
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source })       
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type })       
     end
     name
   end
