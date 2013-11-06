@@ -17,7 +17,8 @@
 				{ :as => :select, 
 				  :include_blank => true,
 				  :required => false,
-         		  :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+         		  :collection => ChapmanCode::select_hash_with_parenthetical_codes,
+         		  :label => 'County' } %>
     <%= f.input :inclusive, :as => :boolean %>
   <% end %>
 
