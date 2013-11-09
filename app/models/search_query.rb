@@ -13,13 +13,13 @@ class SearchQuery
   validates_inclusion_of :role, :in => NameRole::ALL_ROLES+[nil]
   field :record_type, type: String#, :required => false
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
-  field :chapman_code, type: String#, :required => false
-  validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
+  field :chapman_codes, type: Array#, :required => false
+#  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
-  field :place_ids, type: Array
+  has_and_belongs_to_many :places, inverse_of: nil
 
 
   validate :name_not_blank
@@ -31,7 +31,7 @@ class SearchQuery
   def search_params
     params = Hash.new
     params[:record_type] = record_type if record_type
-    params[:chapman_code] = chapman_code if chapman_code
+    params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     params.merge!(place_search_params)
     params.merge!(date_search_params)
     params.merge!(name_search_params)

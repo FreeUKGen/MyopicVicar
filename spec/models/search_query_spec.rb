@@ -43,12 +43,12 @@ describe SearchQuery do
 
   it "should filter by chapman code" do
     q = SearchQuery.create!(:last_name => @person_name[:last_name],
-                           :chapman_code => @person[:chapman_code],
+                           :chapman_codes => [@person[:chapman_code]],
                            :inclusive => false)
     should_find(q,@record)
 
     q = SearchQuery.create!(:last_name => @person_name[:last_name],
-                           :chapman_code => 'BRK',
+                           :chapman_codes => ['BRK'],
                            :inclusive => false)
     should_not_find(q,@record)
   end

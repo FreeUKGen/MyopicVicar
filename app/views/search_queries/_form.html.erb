@@ -13,12 +13,13 @@
 				  :required => false,
 				  :include_blank => true,
 				  :collection => RecordType::OPTIONS} %>
-    <%= f.input :chapman_code, 
+    <%= f.input :chapman_codes, 
 				{ :as => :select, 
 				  :include_blank => true,
 				  :required => false,
          		  :collection => ChapmanCode::select_hash_with_parenthetical_codes,
-         		  :label => 'County' } %>
+         		  :label => 'County',
+         		  :input_html => { :multiple => true } } %>
     <%= f.input :inclusive, :as => :boolean %>
   <% end %>
 

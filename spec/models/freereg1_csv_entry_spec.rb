@@ -137,8 +137,8 @@ describe Freereg1CsvEntry do
         # check types and counties
         check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::MARRIAGE})
         check_record(entry, :groom_forename, :groom_surname, true, { :record_type => RecordType::BURIAL}, false)
-        check_record(entry, :groom_forename, :groom_surname, true, { :chapman_code => file[:county]})
-        check_record(entry, :groom_forename, :groom_surname, true, { :chapman_code => 'BOGUS'}, false)
+        check_record(entry, :groom_forename, :groom_surname, true, { :chapman_codes => [file[:county]]})
+        check_record(entry, :groom_forename, :groom_surname, true, { :chapman_codes => ['BOGUS']}, false)
       end
     end
   end
