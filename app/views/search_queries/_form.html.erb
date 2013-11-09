@@ -20,6 +20,13 @@
          		  :collection => ChapmanCode::select_hash_with_parenthetical_codes,
          		  :label => 'County',
          		  :input_html => { :multiple => true } } %>
+    <%= f.input :places, 
+				{ :as => :select, 
+				  :include_blank => true,
+				  :member_label => :place_name,
+				  :required => false,
+         		  :label => 'Place',
+         		  :input_html => { :multiple => true } } %>
     <%= f.input :inclusive, :as => :boolean %>
   <% end %>
 
