@@ -11,7 +11,7 @@
 <div id="query_parameters">
 	<% print_br=false%>
 	<% @search_query.attributes.each do |query_field, query_value|%>
-		<% unless query_field == "_id" || query_value==false %>
+		<% unless ["_id", "chapman_codes", "place_ids"].include?(query_field) || query_value==false %>
 			<% if print_br %>
 				<br />
 			<% end %>
@@ -21,8 +21,43 @@
 			</strong>			
 			<% print_br = true %>
 		<% end%>
-
 	<% end %>
+	<% if @search_query.chapman_codes.size > 0 %>
+		<br />
+		<% if @search_query.chapman_codes.size > 1 %>
+			Counties:
+		<% else %>
+			County:
+		<% end %>
+		<% print_or = false %>
+		<% @search_query.chapman_codes.each do |chapman_code| %>
+			<% if print_or %>
+				or 
+			<% end %>
+			<strong>
+				<%= ChapmanCode::name_from_code(chapman_code) %>
+			</strong>
+			<% print_or = true %>
+		<% end %>
+	<% end%>
+	<% if @search_query.places.size > 0 %>
+		<br />
+		<% if @search_query.places.size > 1 %>
+			Places:
+		<% else %>
+			Place:
+		<% end %>		
+		<% print_or = false %>
+		<% @search_query.places.each do |place| %>
+			<% if print_or %>
+				or 
+			<% end %>
+			<strong>
+				<%= place.place_name %>
+			</strong>
+			<% print_or = true %>
+		<% end %>
+	<% end%>
 </div>
 <% if @search_results.size == 0 %>
     No results found!

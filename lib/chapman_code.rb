@@ -14,6 +14,10 @@
 # 
 module ChapmanCode
 
+  def self.name_from_code(code)
+    CODES.invert[code]
+  end
+
   
   def self.values
     CODES::values

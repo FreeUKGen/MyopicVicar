@@ -23,6 +23,7 @@ class SearchQuery
 
 
   validate :name_not_blank
+  before_save :clean_blanks
 
   def search
     SearchRecord.where(search_params).asc(:search_date).all
@@ -87,6 +88,9 @@ class SearchQuery
       errors.add(:last_name, "Both name fields cannot be blank.")
     end
   end
-  
+
+  def clean_blanks
+    chapman_codes.delete_if { |x| x.blank? }
+  end  
   
 end
