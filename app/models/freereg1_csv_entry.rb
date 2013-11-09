@@ -84,6 +84,13 @@ class Freereg1CsvEntry
     SearchRecord.from_freereg1_csv_entry(self)
   end
   
+  def display_field(field_name)
+    if field_name == 'county'
+      ChapmanCode::name_from_code(self.county)
+    else
+      self[field_name]
+    end
+  end
   
   
   

@@ -15,7 +15,7 @@
 			<% if @search_record.freereg1_csv_entry[field] %>
 			    <tr>
 				<td><%= field.gsub('_',' ').capitalize %></td>
-				<td><%= @search_record.freereg1_csv_entry[field] %></td>
+				<td><%= @search_record.freereg1_csv_entry.display_field(field) %></td>
 			    </tr>
 			<% end %>
 	    <% end %>
