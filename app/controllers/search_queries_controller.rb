@@ -14,6 +14,7 @@ class SearchQueriesController < ApplicationController
     else
       @search_query = SearchQuery.new    
     end
+    @places = Place.all.order_by(:chapman_code.asc, :place_name.asc) # TODO filter places with no records
   end
 
   def create
