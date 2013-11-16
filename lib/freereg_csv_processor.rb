@@ -428,7 +428,7 @@ class FreeregCsvProcessor
           register_words[-1] = register_words[-1].gsub(/'?[Ss]?/, '') 
           @register_type = Unicode::upcase(register_words[-1])
           n = n - 1
-          @register_type = "DT" if @register_type == "DW"
+          @register_type = "DW" if @register_type == "DT"
         end
       end
     
@@ -780,7 +780,7 @@ class FreeregCsvProcessor
     data_record[:county] = "Blank" if data_record[:county].nil?
     data_record[:place] = "Blank" if data_record[:place].nil?
     data_record[:church_name] = "Blank" if data_record[:church_name].nil?
-    data_record[:register_type] = "PR" if data_record[:register_type].nil?
+    data_record[:register_type] = " " if data_record[:register_type].nil?
     data_record[:alternate_register_name] = @register.to_s + " " + data_record[:register_type].to_s
         # need to add the transcriberID
     #puts "Header #{data_record[:county]}, #{data_record[:place]}, #{data_record[:church_name]}, #{data_record[:register_type]} "
