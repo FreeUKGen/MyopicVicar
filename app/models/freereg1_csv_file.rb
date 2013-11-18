@@ -211,16 +211,11 @@ class Freereg1CsvFile
     date_month = 0
     date_year = 0
      unless date_field.nil?
-       a = date_field.split("-")
-         if ((a.length == 1)) then
-           a = date_field.split(" ") unless a[0].length <= 4
-         end
-
-
-     case
+       a = date_field.split(" ")
+      case
 
       when a.length == 3
-        #work with  dd mmm yyyy/y
+        #work with  dd mmm yyyy
         #firstly deal with the dd
        date_day = a[0].to_i if(a[0].to_s =~ VALID_DAY)
         #deal with the month

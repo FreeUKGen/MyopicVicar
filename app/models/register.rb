@@ -86,11 +86,12 @@ class Register
     register = freereg_file.register._id
     register = Register.find(register)
     original_last_amended_date = register.last_amended
-    file_amended_date = freereg_file.modification_date
     file_creation_date = freereg_file.transcription_date
-    new_last_amended_date = freereg_file.modification_date
+    file_amended_date = freereg_file.modification_date
+    file_amended_date =  file_creation_date if file_amended_date.nil?
+    new_last_amended_date = file_amended_date
     new_last_amended_date = file_creation_date if (Freereg1CsvFile.convert_date(freereg_file.transcription_date) > Freereg1CsvFile.convert_date(freereg_file.modification_date))
-    new_last_amended_date =original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
+    new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
     register.last_amended = new_last_amended_date
     register.save!
   end

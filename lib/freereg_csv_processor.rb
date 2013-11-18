@@ -36,7 +36,9 @@ class FreeregCsvProcessor
     "MA" => RecordType::MARRIAGE, 
     "BU" => RecordType::BURIAL
   }
-  VALID_DATE = Regexp.new('^\d{1,2}[\s-][A-Za-z]{3,3}[\s-]\d{2,4}')
+  VALID_DATE = /^\d{1,2}.[A-Za-z]{3,3}.\d{4}$/
+  VALID_DATE_SHORT = /^\d{1,2}.[A-Za-z]{3,3}.\d{2}$/
+  VALID_DATE_NUMERIC = /^\d{1,2}.\d{1,2}.\d{2}$/
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
   VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
@@ -147,6 +149,10 @@ class FreeregCsvProcessor
   WORD_SPLITS = {
             "-" => /\-/, 
             "&" => /\&/}
+  DATE_SPLITS = {
+            " " => /\s/,
+            "-" => /\-/,
+            "/" => /\\/}
   CAPITALIZATION_WORD_EXCEPTIONS = [
             "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
             "the", "to", "von", "with", "yet", "y"]
@@ -222,10 +228,43 @@ class FreeregCsvProcessor
   end
 
   # validate the modern date of creation or modification
-  def datevalmod(x)
-    return true if x.nil? || x.empty?
-    return true if x =~ VALID_DATE
-    return false
+  def datevalmod(m)
+    return true if @csvdata[m].nil? || @csvdata[m].empty?
+    if @csvdata[m] =~ VALID_DATE_SHORT 
+         DATE_SPLITS.each_pair do |date_splitter, date_split|
+          date_parts = @csvdata[m].split(date_split)
+          if date_parts.length == 3 then
+            date_parts[2] = (date_parts[2].to_i + 2000).to_s 
+          end
+          @csvdata[m] = date_parts.join(" ")
+        end
+        return true
+    else
+        if @csvdata[m] =~ VALID_DATE 
+         DATE_SPLITS.each_pair do |date_splitter, date_split|
+          date_parts = @csvdata[m].split(date_split)
+          @csvdata[m] = date_parts.join(" ") if date_parts.length == 3
+          end
+          return true
+        else
+          if @csvdata[m] =~ VALID_DATE_NUMERIC 
+            DATE_SPLITS.each_pair do |date_splitter, date_split|
+             date_parts = @csvdata[m].split(date_split)
+             if date_parts.length == 3 then
+              date_parts[1] = VALID_MONTH[date_parts[1].to_i ]
+              date_parts[2] = (date_parts[2].to_i + 2000).to_s 
+              @csvdata[m] = date_parts.join(" ") 
+              puts "testing"
+              puts @csvdata[m].inspect
+             end
+            end
+            return true
+          else
+           return false 
+        end
+         return false 
+        end
+    end
   end
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
@@ -525,6 +564,7 @@ class FreeregCsvProcessor
     case
       when (@csvdata[0] =~ HEADER_FLAG && @csvdata[1] =~ VALID_CCC_CODE)
          #deal with correctly formatted header
+
          process_header_line_two_block(head)
       when @number_of_fields == 1 && @csvdata[0] =~ HEADER_FLAG
      #empty line    
@@ -591,6 +631,7 @@ class FreeregCsvProcessor
     head [:transcriber_name] = @csvdata[2]
     raise FreeREGError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
     head [:transcriber_syndicate] = @csvdata[3]
+     raise FreeREGError, "The transcription date #{@csvdata[5]} is incorrectly formatted" unless datevalmod(5)
     head [:transcription_date] = @csvdata[5]
   end
 
@@ -649,7 +690,7 @@ class FreeregCsvProcessor
     @number_of_fields = @csvdata.length
      raise FreeREGError, "The forth header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
       case 
-        when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
+        when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
          #standard format
           head [:modification_date] = @csvdata[1]
           head [:first_comment] = @csvdata[2]
@@ -663,16 +704,17 @@ class FreeregCsvProcessor
           if a[0] =~ HEADER_FLAG
              a = a.drop(1)
              @csvdata[0] = a.join("").strip
-             if datevalmod(@csvdata[0])
+             if datevalmod(0)
                head [:modification_date] = @csvdata[0]
              else
                head [:first_comment] = @csvdata[0]                
              end
           else
+            head [:modification_date] = head [:transcription_date]
              raise FreeREGError, "I did not know enough about your data format to extract notes Information at header line 4"
             
           end
-       when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1]))
+       when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
            #date and no notes
            head [:modification_date] = @csvdata[1]
        when @number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG
@@ -686,10 +728,10 @@ class FreeregCsvProcessor
              a = a.drop(1)
              @csvdata[0] = a.join("").strip
               case 
-              when datevalmod(@csvdata[0])
+              when datevalmod(0)
                head [:modification_date] = @csvdata[0] 
                head [:first_comment] = @csvdata[1]
-              when datevalmod(@csvdata[1])
+              when datevalmod(1)
                 head [:modification_date] = @csvdata[1] 
                 head [:first_comment] = @csvdata[0]
               else
@@ -697,14 +739,15 @@ class FreeregCsvProcessor
                 head [:second_comment] = @csvdata[1]
               end
           else
+            head [:modification_date] = head [:transcription_date]
              raise FreeREGError, "I did not know enough about your data format to extract notes Information at header line 4"
            
           end 
-       when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
+       when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1)) 
             # date and one note
            head [:modification_date] = @csvdata[1]
            head [:first_comment] = @csvdata[2]
-       when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[2]))
+       when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(2))
             #one note and a date 
             head [:modification_date] = @csvdata[2]
             head [:first_comment] = @csvdata[1]
@@ -712,24 +755,26 @@ class FreeregCsvProcessor
           # Many comments
           @csvdata.drop(1)
           head [:first_comment] = @csvdata.join(" ")
-       when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
+       when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1)) 
             #date and 3 comments
             head [:modification_date] = @csvdata[2]
             @csvdata = @csvdata.drop(1)
             head [:first_comment] = @csvdata.join(" ")
-       when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && !datevalmod(@csvdata[1])) 
+       when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && !datevalmod(1)) 
             # 4 comments one of which may be a date that is not in field 2
             head [:first_comment] = @csvdata.join(" ")
-       when (@number_of_fields == 5 && @csvdata[0] =~ HEADER_FLAG && datevalmod(@csvdata[1])) 
+       when (@number_of_fields == 5 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1)) 
             #,date and 3 comments
             head [:modification_date] = @csvdata[1]
             @csvdata = @csvdata.drop(2)
             head [:first_comment] = @csvdata.join(" ")
        
         else
+            head [:modification_date] = head [:transcription_date]
             raise FreeREGError, "I did not know enough about your data format to extract notes Information at header line 4"
             
       end
+      head [:modification_date] = head [:transcription_date] if (head [:modification_date].nil? || (Freereg1CsvFile.convert_date(head [:transcription_date]) > Freereg1CsvFile.convert_date(head [:modification_date])))
   end
 
   #process the optional header line 5
@@ -1038,14 +1083,14 @@ class FreeregCsvProcessor
     raise FreeREGError,  "Empty file" if @@array_of_data_lines.nil?
     number_of_error_messages = 0
     #deal with the headers
-    line_type = 'hold'
+    @line_type = 'hold'
   
     header_line = 1
     n = 1
     loop do
       begin
-        line_type = me.get_line_of_data
-        if line_type == 'Header'  
+        @line_type = me.get_line_of_data
+        if @line_type == 'Header'  
           case 
             when header_line == 1 
               me.process_header_line_one(header)
@@ -1091,8 +1136,8 @@ class FreeregCsvProcessor
         @user_message_file.puts free.message + " at line #{line_number}"
         @@number_of_line = @@number_of_line + 1
          #    n = n - 1 unless n == 0
-        break if (free.message == "Empty file" || free.message == "Invalid Character Set")
-        retry
+        break if (free.message == "Empty file" || free.message == "Invalid Character Set" || @line_type == 'Header'  )
+        retry  
       rescue FreeREGEnd => free
         n = n - 1
         puts " Processed  #{n} data lines correctly with #{number_of_error_messages} error messages" 

@@ -17,10 +17,10 @@ In this Table the Register Type indicates the source used for the transcription 
     <th style="width:10%">Number of records</th>
     <th style="width:7%">First year</th>
     <th style="width:7%">Last year</th>
-    <th style="width:34%">Credit</th>
-    <th style="width:10%">Transcription Date</th>
-    <th style="width:10%">Last amended</th>
-    <th style="width:12%">Link to Decadal data</th>
+    <th style="width:30%">Credit</th>
+    <th style="width:12%">Transcription date</th>
+    <th style="width:12%">Last amended date</th>
+    <th style="width:12%">Link to decadal data</th>
    
   </tr>
 
@@ -32,13 +32,13 @@ In this Table the Register Type indicates the source used for the transcription 
     <td style="width:7%"><%= file.datemin %></td>
     <td style="width:7%"><%= file.datemax %></td>
     <% if file.credit_name.nil? %> 
-    <td style="width:34%"><%= file.transcriber_name%></td>
+    <td style="width:30%"><%= file.transcriber_name%></td>
     <%end%>
      <% unless file.credit_name.nil? %> 
     <td style="width:34%"><%= file.credit_name %></td>
     <%end%>
-    <td style="width:10%"><%= file.transcription_date %></td>
-    <td style="width:10%"><%= file.modification_date %></td>
+    <td style="width:12%"><%= file.transcription_date %></td>
+    <td style="width:12%"><%= file.modification_date %></td>
     <% unless file.records.nil? %>
     <td style="width:12%"><%= link_to "Decadal Data", show_decade_path(value) %></td>
     <%end%>
