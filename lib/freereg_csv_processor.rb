@@ -48,7 +48,7 @@ class FreeregCsvProcessor
   UNCERTAIN_FEMALE_SEX = ["F?", "DAU?"]
   UNCERTAIN_SEX = ["?", "-", "*","_","??"]
   VALID_FEMALE_SEX = ["F","FF","FFF","FM","F.","FEMALE","DAUGHTER","WIFE","DAUGHTER OF","DAU", "DAU OF"]
-  VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp\(][AaBbDdEeTtPpTtXxRrWw]?[TtXxRrWw]?'?[Ss]? ?[\)]?\z/
+  VALID_REGISTER_TYPE = ["AT", "BT", "PR", "PH", "EX", "TR", "DT", "DW", "MI"]
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
   WORD_EXPANSIONS =  {
             'Albans' => 'Alban',
@@ -254,8 +254,7 @@ class FreeregCsvProcessor
               date_parts[1] = VALID_MONTH[date_parts[1].to_i ]
               date_parts[2] = (date_parts[2].to_i + 2000).to_s 
               @csvdata[m] = date_parts.join(" ") 
-              puts "testing"
-              puts @csvdata[m].inspect
+             
              end
             end
             return true
@@ -462,13 +461,17 @@ class FreeregCsvProcessor
    
     if (type_of_name == "Church" ) then
       if n > 1
+        register_words[-1] = register_words[-1].gsub(/'?"?[Ss]?/, '')
+        register_words[-1] = Unicode::upcase(register_words[-1])
       # extract the Register Type from the church field
-        if register_words[-1] =~ VALID_REGISTER_TYPES then
-          register_words[-1] = register_words[-1].gsub(/'?[Ss]?/, '') 
-          @register_type = Unicode::upcase(register_words[-1])
+        if VALID_REGISTER_TYPE.include?(register_words[-1]) then
+          
+          @register_type = register_words[-1]
           n = n - 1
           @register_type = "DW" if @register_type == "DT"
+          
         end
+        
       end
     
      #deal with a missing space between St.Name in a church name
