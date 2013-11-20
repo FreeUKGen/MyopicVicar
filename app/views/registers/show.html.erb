@@ -3,11 +3,11 @@
     <div id="notice"><%= flash[:notice] %></div>
 <% end %>
 <p>Details of the Register <b><%= @register_name %></b> for 
-  Church name:
+  Church of
   <b><%= @church_name %></b>
-  for Place: 
+  in 
    <b><%= @place_name %></b>
-   in the County of:
+   for the County of:
    <b><%= @county %></b>
 </p>
 <table style="width: 100%">
@@ -15,6 +15,7 @@
 
 <th>Register name</th>
 <th>Alternate register name</th>
+ <th>Register Type</th>
 <th>Quality</th>
 <th>Source</th>
 <th>Copyright</th>
@@ -27,6 +28,7 @@
  
   <td><%= @register.register_name %></td>
    <td><%= @register.alternate_register_name%></td>
+   <td><%= @register.register_type %></td>
    <td><%= @register.quality %></td>
    <td><%= @register.source %></td>
    <td><%= @register.copyright %></td>

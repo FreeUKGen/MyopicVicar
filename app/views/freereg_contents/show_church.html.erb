@@ -1,12 +1,12 @@
 <% require 'record_type' %>
 
 <p></p>
-<p>Registers held in the FreeREG database for 
+<p>Registers held in the FreeREG database for the Church  <b><%= @church %></b> in
 <b><%= @place_name %>;</b>
   
-  <b><%= @church %></b>
+ 
    
-   in the County of:
+   for the County of:
    <b><%= @county %></b>
 </p>
 In this Table the Register Type indicates the source used for the transcription and can be: PR is from a Parish Register; AT is from an Archdeacon's Transcript; BT is from a Bishop's Transcript; TR is from a transcript of the Parish Registers; PH is from a Phillimore Transcript of a Parish Register; EX is from a selective extract of the Parish Register; DW is from a Dwelly's Transcript of a Parish register; and if there is no entry our transcription is from an unspecified source but is most likely transcribed from a Parish Register. 
@@ -14,6 +14,7 @@ In this Table the Register Type indicates the source used for the transcription 
 <table>
   <tr>
     <th>Register name</th>
+    <th>Register Type</th>
     <th>Source</th>
     <th>Quality</th>
     <th>Copyright</th>
@@ -32,6 +33,7 @@ In this Table the Register Type indicates the source used for the transcription 
     <% if register.register_name.nil? %>
     <td><%= link_to(register.alternate_register_name, show_register_path(register)) %></td>
      <% end %>
+    <td><%= register.register_type %></td> 
     <td><%= register.source %></td>
     <td><%= register.quality %></td>
     <td><%= register.copyright %></td>
