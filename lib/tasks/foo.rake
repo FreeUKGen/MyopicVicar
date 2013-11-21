@@ -2,6 +2,8 @@ namespace :foo do
 
  require 'create_places_docs'
  desc "Process the freereg1_csv_file and create the Places documents"
+  # eg foo:create_places_docs[10000,rebuild]
+ #valid options are rebuild, replace, add
  task :create_places_docs, [:num, :type] do |t, args|  
  	Mongoid.unit_of_work(disable: :all) do
       limit = args.num
@@ -17,16 +19,20 @@ namespace :foo do
 
  	require 'create_search_records_docs'
  desc "Process the freereg1_csv_entries and create the SearchRecords documents"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options are rebuild, replace, add
  task :create_search_records_docs, [:type,:pattern] => [:environment] do |t, args| 
  	Mongoid.unit_of_work(disable: :all) do
-     puts "Creating Search Records "
+   
      filenames = Dir.glob(args[:pattern])
+     filenames.sort #sort in alphabetical order, including directories
      type_of_build = args.type
+       puts "Creating Search Records with #{type_of_build} option"
      l = 0
      filenames.each do |fn|
         if (l == 0 && type_of_build == "rebuild") 
           CreateSearchRecordsDocs.process(type_of_build,fn ) 
-          type_of_build = "build"
+          type_of_build = "replace"
           l = l+1
         else
            CreateSearchRecordsDocs.process(type_of_build,fn ) 
@@ -42,7 +48,8 @@ namespace :foo do
 
 require 'check_search_records'
  desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
- task :check_search_records, [:num] do |t, args| 
+  # eg foo:check_search_records[100000]
+  task :check_search_records, [:num] do |t, args| 
  	Mongoid.unit_of_work(disable: :all) do
       limit = args.num 
       puts "Checking the existence of search record documents for the first #{limit} freereg1_csv_entries "
@@ -55,9 +62,6 @@ require 'freereg_csv_processor'
 
 desc "Process a csv file or directory specified thus: process_freereg_csv[../*/*.csv]"
 task :process_freereg_csv, [:pattern] => [:environment] do |t, args| 
-  # if we ever need to switch this to multiple files, see
-  # http://stackoverflow.com/questions/3586997/how-to-pass-multiple-parameters-to-rake-task
-  #print "Processing file passed in rake process_freereg_csv[filename]=#{args[:file]}\n" 
   filenames = Dir.glob(args[:pattern])
   filenames.sort #sort in alphabetical order, including directories
   filenames.each do |fn|

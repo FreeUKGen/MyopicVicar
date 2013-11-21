@@ -28,20 +28,37 @@ include Mongoid::Document
     full_dirname = File.dirname(filename)
     parent_dirname = File.dirname(full_dirname)
     user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
-    print "#{user_dirname}\t#{standalone_filename}\n"
+    print "Processing #{user_dirname}\t#{standalone_filename} with #{type_of_build} option\n"
     
     database = CreateSearchRecordsDocs.new
     SearchRecord.delete_all if type_of_build == "rebuild"
     freereg_file = Freereg1CsvFile.where(:file_name => standalone_filename, :userid => user_dirname).first
-    freereg_file_id = freereg_file(:_id)
-    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => freereg_file_id ).all.no_timeout
-    l = 0 
-    entries.each do |t|
-      l = l + 1
-      
-      t.transform_search_record
-        
+    if freereg_file.nil? 
+      print "No such file in the database\n"
+    else
+      puts "Found file #{freereg_file[:_id] }\n"
+      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => freereg_file[:_id] ).all.no_timeout
+      if entries.nil?
+        print "File has no entries\n"
+      else
+        puts "Found #{entries.length} entries\n"
+        lc = 0 
+        lu = 0
+        entries.each do |t|
+         unless SearchRecord.where(:freereg1_csv_entry_id => t[:_id] ).exists?
+          lc = lc + 1
+          t.transform_search_record 
+         else
+              if  type_of_build == "replace" then
+                record = SearchRecord.where(:freereg1_csv_entry_id => t[:_id] ).first
+                record.delete  
+                lu = lu + 1
+                t.transform_search_record 
+              end
+          end
+        end
+        print "#{lc} search records processed or #{lu} records updated\n"
       end
-    print "#{l} search records created\n"
+    end
   end   
 end
