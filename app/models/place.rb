@@ -13,9 +13,11 @@ class Place
   field :genuki_url, type: String
 
 	field :pastplace_lat, type: String
-	field :pastplace_lon, type: String
+  field :pastplace_lon, type: String
+  field :pastplace_count, type: Integer
 	field :geonames_lat, type: String
-	field :geonames_lon, type: String
+  field :geonames_lon, type: String
+  field :geonames_count, type: Integer
 
   has_many :churches
   has_many :search_records
@@ -34,15 +36,19 @@ class Place
 
   end
 
-
-	def geocode(xml_root)
+  # xml_root defines the root for the UkHgisPlaceProviders repository on the local filesystem
+	def geocode!(xml_root)
 		geocode_from_pastplace(File.join(xml_root, "pastplace", self.to_xml_basename))		
 		geocode_from_geonames(File.join(xml_root, "geonames", self.to_xml_basename))		
 		save!
+		
 		self
   end
 
   def geocode_from_pastplace(filename)
+    p filename
+    return unless File.exists?(filename)
+
 		file = File.open(filename)
 		doc = Nokogiri::XML(file)
 		self[:pastplace_lat] = doc.xpath('//place/lat').text
@@ -51,10 +57,16 @@ class Place
   end
 
 	def geocode_from_geonames(filename)
+	  p filename
+    return unless File.exists?(filename)
+
 		file = File.open(filename)
 		doc = Nokogiri::XML(file)
-		self[:geonames_lat] = doc.xpath('//geoname/lat').text
-		self[:geonames_lon] = doc.xpath('//geoname/lon').text
+		geonames_count=doc.xpath('//totalResultsCount').text.to_i
+		if geonames_count > 0
+  		self[:geonames_lat] = doc.xpath('//geoname/lat').first.text
+  		self[:geonames_lon] = doc.xpath('//geoname/lng').first.text
+		end
 		file.close
 	end
 
