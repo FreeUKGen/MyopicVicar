@@ -22,6 +22,14 @@ module ChapmanCode
   def self.values
     CODES::values
   end
+  def self.has_key?(code)
+    CODES.has_key?(code)
+  end
+
+  def self.values_at(value)
+    array = CODES.values_at(value)
+    array[0]
+  end
   
   def self.select_hash
     CODES
@@ -44,7 +52,7 @@ module ChapmanCode
     'Cornwall' => 'CON',
     'Cumberland' => 'CUL',
     'Derbyshire' => 'DBY',
-    'Devonshire' => 'DEV',
+    'Devon' => 'DEV',
     'Dorset' => 'DOR',
     'Durham' => 'DUR',
     'Essex' => 'ESS',
@@ -77,9 +85,9 @@ module ChapmanCode
     'Wiltshire' => 'WIL',
     'Worcestershire' => 'WOR',
     'Yorkshire' => 'YKS',
-    'Yorkshire East Riding' => 'ERY',
-    'Yorkshire North Riding' => 'NRY',
-    'Yorkshire West Riding' => 'WRY',
+    'Yorkshire, East Riding' => 'ERY',
+    'Yorkshire, North Riding' => 'NRY',
+    'Yorkshire, West Riding' => 'WRY',
     'Aberdeenshire' => 'ABD',
     'Angus' => 'ANS',
     'Argyllshire' => 'ARL',
@@ -100,7 +108,7 @@ module ChapmanCode
     'Kirkcudbrightshire' => 'KKD',
     'Lanarkshire' => 'LKS',
     'Midlothian' => 'MLN',
-    'Moray' => 'MOR',
+    'Morayshire' => 'MOR',
     'Nairnshire' => 'NAI',
     'Orkney' => 'OKI',
     'Peeblesshire' => 'PEE',
