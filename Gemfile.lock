@@ -248,6 +248,7 @@ DEPENDENCIES
   meta_search (>= 1.1.0.pre)
   mongoid (~> 3.0)
   moped (~> 1.1.1)
+  nokogiri
   pry
   pry-stack_explorer
   rails (= 3.2.13)
