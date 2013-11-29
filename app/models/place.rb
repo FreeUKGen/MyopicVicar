@@ -14,13 +14,21 @@ class Place
 
 	field :pastplace_lat, type: String
   field :pastplace_lon, type: String
-  field :pastplace_count, type: Integer
-	field :geonames_lat, type: String
+  field :geonames_lat, type: String
   field :geonames_lon, type: String
-  field :geonames_count, type: Integer
+
+  field :location, type: Array
+  
+  index({ location: "2dsphere" }, { min: -200, max: 200 })
 
   has_many :churches
   has_many :search_records
+  
+
+  module MeasurementSystem 
+    SI = :si
+    ENGLISH = :english
+  end
  
   
  # index ([[:chapman_code, Mongo::ASCENDING],[:place_name, Mongo::ASCENDING]])
@@ -36,13 +44,36 @@ class Place
 
   end
 
+
+  def places_near(radius, system=MeasurementSystem::ENGLISH)
+    earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
+
+    places = Place.geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
+    # get rid of this place
+    places.shift
+    
+    places
+  end
+
   # xml_root defines the root for the UkHgisPlaceProviders repository on the local filesystem
 	def geocode!(xml_root)
 		geocode_from_pastplace(File.join(xml_root, "pastplace", self.to_xml_basename))		
 		geocode_from_geonames(File.join(xml_root, "geonames", self.to_xml_basename))		
+		
+		fill_location
+		
 		save!
 		
 		self
+  end
+
+  def fill_location
+    # pastplace seems to be higher quality than geonames, so use that first
+    if !self.pastplace_lat.blank?
+      self.location=[self.pastplace_lat.to_f, self.pastplace_lon.to_f]
+    else
+      self.location=[self.geonames_lat.to_f, self.geonames_lon.to_f]      
+    end
   end
 
   def geocode_from_pastplace(filename)

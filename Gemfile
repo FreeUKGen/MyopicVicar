@@ -8,8 +8,8 @@ gem 'rails', '3.2.13'
 gem 'sqlite3'
 # MongoDB
 #gem 'bson_ext'
-gem "mongoid", "~> 3.0"
-gem "moped", "~> 1.1.1"
+gem "mongoid", "~> 3.1"
+gem "moped", "~> 1"
 gem 'execjs'
 
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
