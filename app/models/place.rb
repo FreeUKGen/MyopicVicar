@@ -11,13 +11,16 @@ class Place
   field :alternate_place_name, type: String
   field :place_notes, type: String
   field :genuki_url, type: String
-
+  field :master_place_lat, type: String
+  field :master_place_lon, type: String
 	field :pastplace_lat, type: String
   field :pastplace_lon, type: String
   field :geonames_lat, type: String
   field :geonames_lon, type: String
 
   field :location, type: Array
+
+  after_create :lat_and_lon_from_master_place_name
   
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
@@ -42,6 +45,20 @@ class Place
     
       errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
 
+  end 
+
+
+  def lat_and_lon_from_master_place_name
+    #todo add code to deal with different case and hyphens
+    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name => self.place_name).first
+    if master_record.nil? 
+      #Todo add check other comparators
+    else
+     self.location = [master_record.latitude.to_f, master_record.longitude.to_f]
+     self.update_attributes!(:master_place_lat => master_record.latitude, :master_place_lon => master_record.longitude)
+     self.save!
+    end
+   
   end
 
 
