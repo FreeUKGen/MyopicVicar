@@ -50,7 +50,11 @@ class Place
 
   def lat_and_lon_from_master_place_name
     #todo add code to deal with different case and hyphens
-    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name => self.place_name).first
+
+    place = self.place_name.gsub(/-/, " ")
+    place = place.gsub(/\./, "")
+    place = place.gsub(/\'/, "").downcase
+    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name_modified => place).first
     if master_record.nil? 
       #Todo add check other comparators
     else

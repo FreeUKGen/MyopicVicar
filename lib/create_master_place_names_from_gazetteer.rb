@@ -16,8 +16,12 @@ require 'chapman_code'
 	while number_of_line < (records - 1)
 		number_of_line = number_of_line + 1
 		csvdata = array_of_data_lines[number_of_line]
-         
+          place_name = csvdata[0].gsub(/-/, " ")
+          place_name = place_name.gsub(/\./, "")
+          place_name = place_name.gsub(/\'/, "").downcase
+          
           new_record[:place_name] = csvdata[0]
+          new_record[:place_name_modified] = place_name
            new_record[:grid_reference] = csvdata[1]
             new_record[:latitude ] = csvdata[2]
              new_record[:longitude] = csvdata[3]
@@ -31,6 +35,9 @@ require 'chapman_code'
                  new_record[:chapman_code] = "MER" if csvdata[4] == "Merioneth"
                   new_record[:chapman_code] = "BUT" if csvdata[4] == "Buteshire"
                    new_record[:chapman_code] = "ROC" if csvdata[4] == "Cromartyshire"
+                   #use the FreeREG county
+                   new_record[:chapman_code] = ChapmanCode.values_at(csvdata[10]).to_s
+
                  puts "\"#{csvdata[0]}\",\"#{csvdata[4]}\"" if new_record[:chapman_code].nil?
              end
               
@@ -41,7 +48,7 @@ require 'chapman_code'
                   new_record[:police_area] = csvdata[8]
                    new_record[:country] = csvdata[9]
                    new_record[:source] = "Gazetteer"
-                  new_record[:original_county] = csvdata[10] unless csvdata[10].nil?
+                  new_record[:freereg_county] = csvdata[10] unless csvdata[10].nil?
                 new_record[:reason_for_change] = csvdata[11] unless csvdata[11].nil?
 
         entry = MasterPlaceName.new(new_record)

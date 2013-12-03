@@ -14,9 +14,10 @@ class MasterPlaceName
   field :grid_reference, type: String
   field :latitude , type: String
   field :longitude, type: String
-  field :place_name, type: String#, :required => true
+  field :place_name, type: String
+  field :place_name_modified, type: String#, :required => true
   field :source, type: String
-  field :original_county, type: String
+  field :freereg_county, type: String
   field :reason_for_change, type: String
   
   index({ chapman_code: 1, place_name: 1 }, { unique: true })
