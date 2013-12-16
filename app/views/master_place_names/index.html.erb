@@ -1,0 +1,68 @@
+<% require 'chapman_code' %>
+
+<%  unless params[:commit] == "Search" %>
+
+<%= semantic_form_for @places do |f| %>
+  
+    <%= f.input :chapman_code, 
+        { :as => :select, 
+          :include_blank => false,
+          :required => true,
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+
+    <%= f.action :submit, :as => :input, :label => 'Search'   %>
+ <% end %>
+ <% else %>
+
+<p>This Table contains a listing of all Places held in the FreeREG Master Place Name collection for the
+  County: <b><%= @county  %></b>
+</p>
+<div id="nav">
+	<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
+</div>
+<div id="main">
+<table style="width: 100%">
+  <tr>
+    <th >Place</th>
+    <th >County </th>
+    <th >Genuki page</th>
+    <th >Source</th>
+    <th >Last Updated</th>
+    <th >Action</th>
+  </tr>
+
+<% @places.each do |place| %>
+  <tr>
+    <td >
+     <%= place.place_name %>
+    </td>
+    <td >
+     <%= place.county %>
+    </td>
+    
+    <td >
+    <% if (place.genuki_url.nil? || place.genuki_url == "no url") %>
+      <%= place.genuki_url %>
+     <% else %>
+     <%= link_to('Genuki', place.genuki_url) %>
+     <% end %>
+    </td>
+    <td >
+     <%= place.source %>
+    </td>
+    <td >
+     <%= place.u_at %>
+    </td>
+    <td >
+       <%= link_to 'Show Place Detail', master_place_name_path(place) %>     
+       <%= link_to 'Edit Place', edit_master_place_name_path(place) %>
+       <%= link_to 'Destroy Place', master_place_name_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table> <br />
+</div>
+<div id="nav">
+  <%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
+</div>
+<% end %>
+

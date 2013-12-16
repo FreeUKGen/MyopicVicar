@@ -13,12 +13,32 @@
   <b>Place name:</b>
   <%= @place.place_name %>
 </p>
-
+<p>
+ <b>Alternate place name:</b>
+     <%= @place.alternate_place_name %>
+      </p>
+      <p>
+ <b>Last amended:</b>
+  <%= @place.last_amended %>
+      </p>
+      <p>
+  <b>Latitude:</b>
+  <%= @place.master_place_lat %>
+      </p>  
+      <p>
+  <b>Longitude:</b>
+  <%= @place.master_place_lon %>
+      </p>        
 <p>
   <b>Genuki url:</b>
-  <%= @place.genuki_url %>
+  <%= @place.genuki_url %><br>
+  <b>Test link:</b>
+  <%= link_to('Genuki', @place.genuki_url) unless (@place.genuki_url.nil? || @place.genuki_url == "no url")%>
 </p>
-
+ <p>
+  <b>Place notes:</b>
+  <%= @place.place_notes %>
+      </p>       
 <p>
   <b>Churches and Registers:</b><br />
   <ul>

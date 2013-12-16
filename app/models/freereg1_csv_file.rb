@@ -76,6 +76,7 @@ class Freereg1CsvFile
   def create_or_update_last_amended_date
    Register.create_or_update_last_amended_date(self)
    Church.create_or_update_last_amended_date(self)
+   
   end
 
   def ordered_display_fields

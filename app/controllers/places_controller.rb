@@ -44,6 +44,8 @@ def update
     old_county = @place.chapman_code
     @place.place_name = place
     @place.genuki_url = genuki
+    @place.last_amended = params[:place][:last_amended]
+    @place.alternate_place_name = params[:place][:alternate_place_name]
     @place.save!
 
   # save place name change in register

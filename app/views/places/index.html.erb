@@ -26,17 +26,28 @@
   <tr>
   
     <th >Place</th>
+    <th >Alternate place name</th>
+    <th >Genuki page</th>
+    <th >Last amended</th>
     <th >Churches</th>
     <th >Action</th>
   </tr>
 
 <% @places.each do |place| %>
   <tr>
-    <td style="width:30%">
+    <td >
      <%= place.place_name %>
-</td>
-
-    <td style="width:35%">
+    </td>
+       <td >
+     <%= place.alternate_place_name %>
+      </td>
+  <td >
+     <%= link_to('Genuki', place.genuki_url) unless place.genuki_url.nil? %>
+      </td>
+     <td >
+     <%= place.last_amended %>
+      </td>
+    <td >
      <ol>
 <% place.churches.order_by(church: 1).each do |church| %>
 <li>
@@ -51,8 +62,8 @@
     
     </td>
 
-    <td style="width:35%">
-     
+    <td >
+<%= link_to 'Show Place Details', place_path(place) %>     
 <%= link_to 'Edit Place', edit_place_path(place) %>
 <%= link_to 'Destroy Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>

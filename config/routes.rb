@@ -23,6 +23,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :registers
 
+  resources :master_place_names
 
   resources :places
 

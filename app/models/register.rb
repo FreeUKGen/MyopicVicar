@@ -1,5 +1,7 @@
 class Register
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
    require 'record_type'
 
   field :status, type: String

@@ -783,6 +783,8 @@ class FreeregCsvProcessor
             
       end
       head [:modification_date] = head [:transcription_date] if (head [:modification_date].nil? || (Freereg1CsvFile.convert_date(head [:transcription_date]) > Freereg1CsvFile.convert_date(head [:modification_date])))
+      
+      head [:modification_date] = @@uploaded_date if (Freereg1CsvFile.convert_date(@@uploaded_date) > Freereg1CsvFile.convert_date(head [:modification_date]))
   end
 
   #process the optional header line 5
@@ -1024,6 +1026,7 @@ class FreeregCsvProcessor
     entry = Freereg1CsvEntry.new(data_record)
     entry.freereg1_csv_file = @freereg1_csv_file
     entry.save!
+    entry.transform_search_record if  @@create_search_records
     entry
   end
 
@@ -1065,14 +1068,18 @@ class FreeregCsvProcessor
   
 
 
-  def self.process(filename)
+  def self.process(filename,create_search_records)
     #this is the basic processing
     header = Hash.new
+    @@create_search_records = false
+    @@create_search_records = true if create_search_records == 'create_search_records'
     @@array_of_data_lines = Array.new {Array.new}
     @@number_of_line = 0
     @@charset = "iso-8859-1"
     standalone_filename = File.basename(filename)
-    # get the user ID represented by the containing directory
+    modified_date = File.mtime(filename)
+    @@uploaded_date = modified_date.day.to_s + ' ' + VALID_MONTH[modified_date.mon].to_s + ' ' + modified_date.year.to_s
+        # get the user ID represented by the containing directory
     full_dirname = File.dirname(filename)
     parent_dirname = File.dirname(full_dirname)
     user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')

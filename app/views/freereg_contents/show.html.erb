@@ -10,14 +10,29 @@
 </div>
 <table>
 <tr>
-  <th>Place</th>
-  <th>Church or Chapel; denomination and location</th>
+    <th >Place</th>
+    <th >Alternate place name</th>
+    <th >Genuki page</th>
+    <th >Last amended</th>
+    <th >Churches</th>
 </tr>
 
 
 <% @search_results.each do |place|%>
 <tr id="<%=place.id%>">
- <td><%= place.place_name %></td>
+ <td >
+     <%= place.place_name %>
+    </td>
+       <td >
+     <%= place.alternate_place_name %>
+      </td>
+  <td >
+     <%= link_to('Genuki', place.genuki_url) unless place.genuki_url.nil?%>
+      </td>
+     <td >
+     <%= place.last_amended %>
+      </td>
+    
   <td><ul>
 	  <% place.churches.order_by(:church_name.asc).each do |church| %>
 	  	<li>
