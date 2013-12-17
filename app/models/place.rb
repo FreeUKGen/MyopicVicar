@@ -104,6 +104,7 @@ class Place
          #lets save the record in the master collection
          master_record =  MasterPlaceName.new()
          master_record.chapman_code = self.chapman_code
+         master_record.county = ChapmanCode.has_key(self.chapman_code)
          master_record.place_name = self.place_name
          master_record.modified_place_name = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
          master_record.genuki_url = self.genuki_url
@@ -156,6 +157,7 @@ class Place
           master_place = MasterPlaceName.new()
           master_place.place_name = self.place_name
           master_place.chapman_code = self.chapman_code
+          master_record.county = ChapmanCode.has_key(self.chapman_code)
           master_place.latitude = self.master_place_lat
           master_place.longitude = self.master_place_lon
           master_place.source = source
