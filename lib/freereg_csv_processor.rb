@@ -1086,7 +1086,7 @@ class FreeregCsvProcessor
     print "#{user_dirname}\t#{standalone_filename}\n"
     # TODO convert character sets as in freereg_csv_processor
     #need to make these passed parameters 
-    file_for_warning_messages = "test_data/warning/messages.log"
+    file_for_warning_messages = "logs/freereg_messages.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "a")
     user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
