@@ -6,7 +6,10 @@ require 'chapman_code'
  	  number_of_no_urls = 0
     number_of_urls = 0
     number_of_loops = 0
-    MasterPlaceName.where(:genuki_url.nil?).order_by(chapman_code: "asc", place_name: "asc").each do |master_record|
+    kirk =  nil
+    records = MasterPlaceName.where(:genuki_url => kirk).order_by(chapman_code: "asc", place_name: "asc").all
+     p records.length
+        records.each do |master_record|
         number_of_loops = number_of_loops + 1
         type = 1
         genuki_uri = URI('http://www.genuki.org.uk/cgi-bin/gaz')
@@ -28,8 +31,8 @@ require 'chapman_code'
            number_of_urls = number_of_urls + 1
         end
      number_of_lines =  number_of_no_urls + number_of_urls
-     puts "#{number_of_lines} processed" if number_of_loops == 1000
-     number_of_loops = 0 if number_of_loops == 1000
+     puts "#{number_of_lines} processed #{number_of_urls} urls #{number_of_no_urls} no urls" if number_of_loops == 100
+     number_of_loops = 0 if number_of_loops == 100
     end
     puts "#{number_of_urls} Genuki urls added to the Master Place Name documents; #{number_of_no_urls}"
   end
