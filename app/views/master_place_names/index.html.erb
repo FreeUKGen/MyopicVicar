@@ -24,7 +24,6 @@
 <table style="width: 100%">
   <tr>
     <th >Place</th>
-    <th >County </th>
     <th >Genuki page</th>
     <th >Source</th>
     <th >Last Updated</th>
@@ -36,10 +35,7 @@
     <td >
      <%= place.place_name %>
     </td>
-    <td >
-     <%= place.county %>
-    </td>
-    
+       
     <td >
     <% if (place.genuki_url.nil? || place.genuki_url == "no url") %>
       <%= place.genuki_url %>
