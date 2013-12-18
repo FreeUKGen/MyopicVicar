@@ -102,7 +102,7 @@ task :create_freereg_csv_indexes, [:pattern] => [:environment] do |t, args|
   require 'place'
   puts "Freereg build indexes."
   Freereg1CsvFile.create_indexes()
-  Freereg1CsvEntry.create_indexes()
+  #Freereg1CsvEntry.create_indexes()
   Register.create_indexes()
   Church.create_indexes()
   Place.create_indexes()
@@ -145,7 +145,7 @@ end
 
 
 desc "Add Genuki URL to master_place_names  "
-task :add_genuki_url_to_master_place_name, [:type, :add_url]  => [:environment] do |t, args| 
+task :add_genuki_url_to_master_place_name, [:type, :add_url] => [:environment]  do |t, args| 
   # if type is rebuild then the currrent collection will be deleted and a complete new collection made
   #if anything else eg add then existing entries will be skipped over and new ones added
   # if add url is set to add_url then genuki lookup happens
@@ -177,5 +177,24 @@ task :add_lat_lon_to_place, [:type]  => [:environment] do |t, args|
   puts "Task complete."
 end
 
+desc "check place documents"
+task :check_place_docs, [:type]  => [:environment] do |t, args| 
+  require 'master_place_name'
+  require 'check_place_records'
+  require 'place'
+  type_of_build = args.type
+  puts "Check Place Docs in Gazetteer"
+  
+    CheckPlaceRecords.process(type_of_build)
+
+  
+  puts "Task complete."
+end
 
 end
+
+
+
+  
+
+
