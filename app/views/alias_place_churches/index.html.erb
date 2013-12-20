@@ -1,0 +1,71 @@
+<% require 'chapman_code' %>
+
+<%  unless params[:commit] == "Search" %>
+<p> This is the entry point for Alias document processing</p>
+<%= semantic_form_for @alias_place_church do |f| %>
+  
+    <%= f.input :chapman_code, 
+        { :as => :select, 
+          :include_blank => false,
+          :required => true,
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+
+    <%= f.action :submit, :as => :input, :label => 'Search'   %>
+  
+<% end %>
+ <% else %>
+
+<p>This table contains a listing of all Alias documents for:
+  <b><%= @county  %></b>
+</p>
+<div id="nav">
+  <%= button_to 'Back to County Search Page', alias_place_churches_path, method: :get %>
+</div>
+
+<table>
+   <tr>
+  
+    <th >Place name</th>
+    <th >Alternate place name</th>
+    <th >Church name</th>
+    <th >Alternate church name</th>
+    <th >Alias notes</th>
+    <th >Last amended</th>
+    <th >Action</th>
+  </tr>
+
+<% @alias_place_church.each do |alias_place_church| %>
+<tr>
+    <td >
+     <%= alias_place_church.place_name %>
+    </td>
+       <td >
+     <%= alias_place_church.alternate_place_name %>
+      </td>
+  <td >
+     <%= alias_place_church.church_name %>
+    </td>
+       <td >
+     <%= alias_place_church.alternate_church_name %>
+      </td>
+     <td >
+     <%=  alias_place_church.alias_notes %>
+      </td>
+   <td >
+     <%=  alias_place_church.u_at %>
+      </td>
+
+  
+    <td><%= link_to 'Show', alias_place_church %>
+    <%= link_to 'Edit', edit_alias_place_church_path(alias_place_church) %>
+    <%= link_to 'Destroy', alias_place_church, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= button_to 'New Alias document', new_alias_place_church_path, method: :get %>
+<%= button_to_function "Back to Previous Page", "history.back()" %> 
+ <%= button_to 'Back to County Search Page', alias_place_churches_path, method: :get %>
+ <% end %>

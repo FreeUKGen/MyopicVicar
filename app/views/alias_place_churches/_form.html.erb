@@ -1,0 +1,53 @@
+<%= semantic_form_for(@alias_place_church) do |f| %>
+  <% if @alias_place_church.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@alias_place_church.errors.count, "error") %> prohibited this alias_place_church from being saved:</h2>
+
+      <ul>
+      <% @alias_place_church.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+  <%case%>
+  <% when session[:edit] == "new place"%>
+   <%= f.input :place_name, 
+        { :as => :select, 
+          :include_blank => false,
+          :required => true,
+          :collection => @place_names} %>
+          <br>
+    <%= f.action :submit, :as => :input, :label => 'Select Place' %>       
+  
+    <% when session[:edit] == "new church"%>
+     <%=f.input :place_name, :input_html => { :disabled => true }%>  
+     <br>
+   <%= f.input :church_name, 
+        { :as => :select, 
+          :include_blank => false,
+          :required => true,
+          :collection => @church_names} %>
+          <br>
+         <%= f.action :submit, :as => :input, :label => 'Select Church' %>  
+
+    <% when session[:edit] == "edit"%> 
+    <br>  
+     <%=f.input :place_name, :input_html => { :disabled => true }%>  
+ <br>
+   <%= f.input :alternate_place_name,:input_html => { :size => 40 } %>
+    <br>
+    <%= f.input :church_name,:input_html => { :disabled => true ,:size => 80 } %> 
+  <br>
+   <%= f.input :alternate_church_name,:input_html => { :size => 80 }%>
+  <br>
+   <%= f.input :alias_notes,:input_html => { :size => 100 }%>
+   <br>
+  <%= f.action :submit, :as => :input, :label => 'Update' %>
+  <br>
+   
+ <% end %>
+  </div>
+ <% end %>

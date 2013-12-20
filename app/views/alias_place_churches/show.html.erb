@@ -1,0 +1,40 @@
+<% require 'chapman_code' %>
+<% if flash[:notice] %>
+    <div id="notice"><%= flash[:notice] %></div>
+<% end %>
+<p></p>
+
+<p>
+  <b>County:</b>
+  <%= ChapmanCode.has_key(@alias_place_church.chapman_code) %>
+</p>
+<p>
+  <b>Place name:</b>
+  <%= @alias_place_church.place_name %>
+</p>
+<p>
+ <b>Alternate place name:</b>
+     <%= @alias_place_church.alternate_place_name %>
+      </p>
+      <p>
+      <p>
+  <b>Church name:</b>
+  <%= @alias_place_church.church_name %>
+</p>
+<p>
+ <b>Alternate church name:</b>
+     <%= @alias_place_church.alternate_church_name %>
+      </p>
+<p>
+  <b>Alias notes:</b>
+  <%= @alias_place_church.alias_notes %>
+</p>
+
+ <b>Last amended:</b>
+  <%= @alias_place_church.u_at %>
+      </p>
+ <br>    
+ 
+<%= button_to 'Edit this Alias document', edit_alias_place_church_path(@alias_place_church), method: :get  %>
+<%= button_to_function "Back to Previous Page", "history.back()" %> 
+ <%= button_to 'Back to County Search Page', alias_place_churches_path, method: :get %>
