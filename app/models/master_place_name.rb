@@ -16,7 +16,9 @@ class MasterPlaceName
   field :place_name, type: String
   field :original_place_name, type: String
   field :original_county, type: String
-  field :original_grid_refernce, type: String
+  field :original_chapman_code, type: String
+  field :original_country, type: String
+  field :original_grid_reference, type: String
   field :original_latitude, type: String
   field :original_longitude, type: String
   field :source, type: String

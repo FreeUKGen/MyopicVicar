@@ -1,6 +1,7 @@
 <% require 'chapman_code' %>
 
 <%  unless params[:commit] == "Search" %>
+<p> This is the entry point for Master Place Name document processing</p>
 
 <%= semantic_form_for @places do |f| %>
   
@@ -19,6 +20,7 @@
 </p>
 <div id="nav">
 	<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
+  <%= button_to 'Create New Master Place Name document', new_master_place_name_path, method: :get %>
 </div>
 <div id="main">
 <table style="width: 100%">
@@ -31,7 +33,7 @@
   </tr>
 
 <% @places.each do |place| %>
-  <tr>
+  <trid="<%=place.id%>">
     <td >
      <%= place.place_name %>
     </td>
@@ -51,14 +53,17 @@
     </td>
     <td >
        <%= link_to 'Show Place Detail', master_place_name_path(place) %>     
-       <%= link_to 'Edit Place', edit_master_place_name_path(place) %>
-       <%= link_to 'Destroy Place', master_place_name_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+       <%= link_to'Edit Place', edit_master_place_name_path(place) %>
+       <%= link_to 'Destroy', master_place_name_path(place),method: :delete,data:{confirm: 'Are you sure?'} %>
+      </td>
   </tr>
 <% end %>
 </table> <br />
 </div>
 <div id="nav">
+  <%= button_to 'Create New Master Place Name document', new_master_place_name_path, method: :get %>
   <%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
 </div>
 <% end %>
 
+ 

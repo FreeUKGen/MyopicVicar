@@ -19,7 +19,7 @@
 <%= f.input :chapman_code, { :as => :select, 
           :include_blank => false,
           :required => true,
-          :collection => ChapmanCode::select_hash_with_parenthetical_codes }%>
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } if session[:edit] == "edit"%>
 <%= f.input :country,:input_html => { :size => 40 }%>
 <%= f.input :grid_reference ,:input_html => { :size => 40 }%>
 <%= f.input :latitude ,:input_html => { :size => 40 }%>

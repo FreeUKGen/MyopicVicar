@@ -8,7 +8,7 @@ require 'chapman_code'
  	new_record = Hash.new
  	number_of_line = 0
   file = "#{Rails.root}/test_data/Place_and_church_name_resources/Gazetteer.csv"
-  MasterPlaceName.delete_all if type_of_build == "rebuild"
+  
 	array_of_data_lines = CSV.read(file)
 	records = array_of_data_lines.length
 	puts "Number of records #{records}"

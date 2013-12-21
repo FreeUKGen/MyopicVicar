@@ -14,6 +14,7 @@ Details of the <b>Place name:</b><%= @place.place_name %> in the Master Place Na
 <p><b>Source:</b><%= @place.source %></p>
 <p><b>Original place name:</b><%= @place.original_place_name %></p>
 <p><b>Original county:</b><%= @place.original_county %></p>
+<p><b>Original country:</b><%= @place.original_country %></p>
 <p><b>Original Grid Reference:</b><%= @place.original_grid_reference %></p>
 <p><b>Original Latitude:</b><%= @place.original_latitude %></p>
 <p><b>Original Longitude:</b><%= @place.original_longitude %></p>
@@ -23,6 +24,5 @@ Details of the <b>Place name:</b><%= @place.place_name %> in the Master Place Na
  
 <%= button_to 'Edit Place', edit_master_place_name_path(@place), method: :get %> 
 <%= button_to_function "Back to Previous Page", "history.back()" %> 
-
- 
+<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
  
