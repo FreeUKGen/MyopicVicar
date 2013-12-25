@@ -43,7 +43,7 @@ class Place
   validates_presence_of :place_name
   validate :place_does_not_exist, on: :create
   index({ chapman_code: 1, place_name: 1 }, { unique: true })
-
+  index({ place_name: 1 })
   def place_does_not_exist 
     
       errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
@@ -74,8 +74,10 @@ class Place
       self.genuki_extract(type)
     
       if self.location[0].nil? then
+        file_name = "#{::Rails.root}".split('/').slice(0..-2).join("/")
+        file_name = "#{file_name}/UkHgisPlaceProviders"
       #not found in Master of Genuki lets try past place and Geoname
-        self.geocode!("D:/Users/Kirk/Documents/GitHub/UkHgisPlaceProviders")
+        self.geocode!(file_name)
       end      
     end
   end
