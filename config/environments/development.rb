@@ -56,4 +56,8 @@ MyopicVicar::Application.configure do
   config.mongodb_collection_temp = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/tmp/"
   #Where the collections are stored
   config.mongodb_collection_location = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/db/collections/"
+  #where do we store the Mongodb database 
+  #config.mongodb_datafile = "e:/data/"
+  # Date of dataset used
+  config.dataset_date = "13 Dec 2013"
 end
