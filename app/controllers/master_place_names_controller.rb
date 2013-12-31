@@ -9,18 +9,20 @@ class MasterPlaceNamesController < InheritedResources::Base
           @places = MasterPlaceName.where( :chapman_code => params[:master_place_name][:chapman_code]).all.order_by( place_name: 1)
           @county = ChapmanCode.has_key(params[:master_place_name][:chapman_code]) 
           session[:county] = @county
-          session[:chapman] = params[:master_place_name][:chapman_code]
+          session[:chapman_code] = params[:master_place_name][:chapman_code]
     end
 
   end
 
   def show
     load(params[:id])
+    session[:type] = "edit"
   end
 
  def edit
    load(params[:id])
    session[:type] = "edit"
+   p session
  end
 
  def create
@@ -30,8 +32,8 @@ class MasterPlaceNamesController < InheritedResources::Base
     p params
     @place =  session[:form] 
     @place.genuki_url = params[:master_place_name][:genuki_url]
-    @place.chapman_code = session[:chapman]
-    @place.county = session[:county]
+    @place.chapman_code = params[:master_place_name][:chapman_code]
+    @place.county = ChapmanCode.has_key(params[:master_place_name][:chapman_code])
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
     @place.grid_reference = params[:master_place_name][:grid_reference]
@@ -52,15 +54,16 @@ class MasterPlaceNamesController < InheritedResources::Base
     
     # save place name change in Master Place Name
    
-    @place.genuki_url = params[:master_place_name][:genuki_url]
-    @place.original_chapman_code = @place.chapman_code unless params[:master_place_name][:chapman_code].nil? || @place.chapman_code == params[:master_place_name][:chapman_code]
-    @place.original_county = @place.county unless params[:master_place_name][:county].nil? || @place.county == params[:master_place_name][:county]
-    @place.original_country = @place.country unless params[:master_place_name][:country].nil? || @place.country == params[:master_place_name][:country]
-    @place.original_place_name = @place.place_name unless params[:master_place_name][:place_name].nil? || @place.place_name == params[:master_place_name][:place_name]
-    @place.original_grid_reference = @place.grid_reference unless params[:master_place_name][:grid_reference].nil? || @place.grid_reference == params[:master_place_name][:grid_reference]
-    @place.original_latitude = @place.latitude unless params[:master_place_name][:latitude].nil? || @place.latitude == params[:master_place_name][:latitude]
-    @place.original_longitude = @place.longitude unless params[:master_place_name][:longitude].nil? || @place.longitude == params[:master_place_name][:longitude]
-    @place.county = ChapmanCode.has_key(params[:master_place_name][:chapman_code])
+    @place.genuki_url = params[:master_place_name][:genuki_url] unless params[:master_place_name][:genuki_url].nil?
+    #save the original entry we had
+    @place.original_chapman_code = session[:chapman_code] unless !@place.original_chapman_code.nil?
+    @place.original_county = session[:county] unless !@place.original_county.nil?
+    @place.original_country = @place.country unless params[:master_place_name][:country].nil? || !@place.original_country.nil?
+    @place.original_place_name = @place.place_name unless params[:master_place_name][:place_name].nil? || !@place.original_place_name.nil?
+    @place.original_grid_reference = @place.grid_reference unless params[:master_place_name][:grid_reference].nil? || !@place.original_grid_reference.nil?
+    @place.original_latitude = @place.latitude unless params[:master_place_name][:latitude].nil? || !@place.original_latitude.nil?
+    @place.original_longitude = @place.longitude unless params[:master_place_name][:longitude].nil? || !@place.original_longitude.nil?
+    @place.county = session[:county]
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
     @place.grid_reference = params[:master_place_name][:grid_reference]
@@ -82,6 +85,7 @@ class MasterPlaceNamesController < InheritedResources::Base
     session[:form] = @place
     @county = session[:county]
     session[:type] = "new"
+    p session
  end
 
  def destroy

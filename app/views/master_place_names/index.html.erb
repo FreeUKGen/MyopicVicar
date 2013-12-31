@@ -1,7 +1,7 @@
 <% require 'chapman_code' %>
 
 <%  unless params[:commit] == "Search" %>
-<p> This is the entry point for Master Place Name document processing</p>
+<p> Please select the county that you wish to review and/or edit.</p>
 
 <%= semantic_form_for @places do |f| %>
   
@@ -15,12 +15,11 @@
  <% end %>
  <% else %>
 
-<p>This Table contains a listing of all Places held in the FreeREG Master Place Name collection for the
-  County: <b><%= @county  %></b>
+<p>All Places for <b><%= @county  %></b>
 </p>
 <div id="nav">
 	<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
-  <%= button_to 'Create New Master Place Name document', new_master_place_name_path, method: :get %>
+  <%= button_to 'Create New Master Place Name entry', new_master_place_name_path, method: :get %>
 </div>
 <div id="main">
 <table style="width: 100%">
@@ -52,9 +51,9 @@
      <%= place.u_at %>
     </td>
     <td >
-       <%= link_to 'Show Place Detail', master_place_name_path(place) %>     
+       <%= link_to 'Show Detail', master_place_name_path(place) %><br>     
        <%= link_to'Edit Place', edit_master_place_name_path(place) %>
-       <%= link_to 'Destroy', master_place_name_path(place),method: :delete,data:{confirm: 'Are you sure?'} %>
+       
       </td>
   </tr>
 <% end %>

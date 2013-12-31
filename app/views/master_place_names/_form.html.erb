@@ -15,11 +15,13 @@
 
 <div id="main">
 
-<%= f.input :place_name,:input_html => { :size => 40 }%>
+<%= f.input :place_name, :input_html => { :size => 40 }%>
+<% if session[:type] == "new" then %>
 <%= f.input :chapman_code, { :as => :select, 
           :include_blank => false,
           :required => true,
-          :collection => ChapmanCode::select_hash_with_parenthetical_codes } if session[:edit] == "edit"%>
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+<% end %>
 <%= f.input :country,:input_html => { :size => 40 }%>
 <%= f.input :grid_reference ,:input_html => { :size => 40 }%>
 <%= f.input :latitude ,:input_html => { :size => 40 }%>
