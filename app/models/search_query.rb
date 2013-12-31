@@ -20,6 +20,9 @@ class SearchQuery
   field :start_year, type: Integer
   field :end_year, type: Integer
   has_and_belongs_to_many :places, inverse_of: nil
+  field :place_radius, type: Integer
+  field :place_system, type: String
+  validates_inclusion_of :place_system, :in => Place::MeasurementSystem::ALL_SYSTEMS+[nil]  
 
 
   validate :name_not_blank
@@ -32,7 +35,6 @@ class SearchQuery
   def search_params
     params = Hash.new
     params[:record_type] = record_type if record_type
-    params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     params.merge!(place_search_params)
     params.merge!(date_search_params)
     params.merge!(name_search_params)
@@ -42,12 +44,27 @@ class SearchQuery
 
   def place_search_params
     params = Hash.new
-    if place_ids && place_ids.size > 0
-      params[:place_id] = { "$in" => place_ids }
+    if place_search?
+      search_place_ids = radius_place_ids
+      params[:place_id] = { "$in" => search_place_ids }
+    else
+      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     end
         
     params
   end
+
+  def place_search?
+    place_ids && place_ids.size > 0
+  end
+  
+  def radius_place_ids
+    radius_ids = []
+    all_radius_places.map { |place| radius_ids << place.id }
+    radius_ids << place_ids
+    radius_ids.uniq
+  end
+
 
   def date_search_params
     params = Hash.new
@@ -92,5 +109,28 @@ class SearchQuery
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
   end  
+
+  def radius_search?
+    place_radius && place_radius > 0
+  end
+
+  def all_radius_places
+    all_places = []
+    place_ids.each do |place_id|
+      if radius_search?
+        radius_places(place_id).each do |near_place|
+          all_places << near_place
+        end
+      end
+    end
+    all_places.uniq
+  end
+
+
+
+  def radius_places(place_id)
+    place = Place.find(place_id)
+    place.places_near(place_radius, place_system)    
+  end
   
 end

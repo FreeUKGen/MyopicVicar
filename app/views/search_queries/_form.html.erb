@@ -38,6 +38,13 @@
          		  :label => 'Place',
          		  :input_html => { :multiple => true } } %>
 
+	<%= f.input :place_radius %>
+    <%= f.input :place_system,
+				{ :as => :select,
+				  :required => false,
+				  :include_blank => true,
+				  :collection => Place::MeasurementSystem::OPTIONS} %>
+
 
     <%= f.input :inclusive, :as => :boolean %>
   <% end %>
