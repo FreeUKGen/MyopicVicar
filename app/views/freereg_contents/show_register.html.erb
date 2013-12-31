@@ -1,13 +1,10 @@
 <% require 'record_type' %>
 
 <p></p>
-<p>Transcription details of the Registers <b><%= @register_name %></b> held in the FreeREG database for the Church  <b><%= @church %></b> in
-<b><%= @place_name %>;</b>
-   
-   for the County of:
-   <b><%= @county %></b>
-
-<p>You may see the decade for which registers have been transcribed by following the "Decadal Data" link.</p>
+<p>Transcription details of the 
+ <b><%= @register_name %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b>   
+   of 
+   <b><%= @county %></b>. You may see the decade for which registers have been transcribed by following the "Decadal Data" link.
 <table>
   <tr>
     <th style="width:10%">Record type</th>
@@ -42,6 +39,6 @@
     
   </tr>
 <% end %>
-</table>
+</table><br>
     <%= button_to_function "Back to Previous Page", "history.back()" %> <br>
     <%= button_to 'Back to Places Page', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}"), method: :get %> 

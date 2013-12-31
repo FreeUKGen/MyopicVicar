@@ -1,9 +1,8 @@
 
 <p></p>
 
-<p>This Table contains a listing of all Places and Churches held in the FreeREG database for the
-  <b>County:</b>
-  <%= @county  %>
+<p>This table contains a listing of all Places and Churches for <b> <%= @county  %></b>. Select the Genuki link where it exists to find out the actual location of the Place. Select the Church link to obtain additional information about the specific registers that have been transcribed for that church.
+ 
 </p>
 <div id="nav">
 	<%= button_to 'Back to County Search Page', freereg_contents_path , method: :get%>
