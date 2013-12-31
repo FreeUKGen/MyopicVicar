@@ -50,5 +50,14 @@ MyopicVicar::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
-
+  #location of the mongo binary folder
+  config.mongodb_bin_location = "d:/mongodb/bin/"
+  #where to store the collections AliasPlaceChurch
+  config.mongodb_collection_temp = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/tmp/"
+  #Where the collections are stored
+  config.mongodb_collection_location = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/db/collections/"
+  #where do we store the Mongodb database 
+  #config.mongodb_datafile = "e:/data/"
+  # Date of dataset used
+  config.dataset_date = "13 Dec 2013"
 end

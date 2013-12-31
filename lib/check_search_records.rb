@@ -18,7 +18,7 @@ include Mongoid::Document
   end
 
   def self.process(limit)
-  	file_for_warning_messages = "test_data/warning/check_search_records_messages.log"
+  	file_for_warning_messages = "logs/check_search_records_messages.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "a")
   	limit = limit.to_i

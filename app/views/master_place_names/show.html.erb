@@ -1,0 +1,29 @@
+<% require 'chapman_code' %>
+<% if flash[:notice] %>
+    <div id="notice"><%= flash[:notice] %></div>
+<% end %>
+<p>
+Details of the <b>Place name:</b><%= @place.place_name %> </p>
+<p><b>County:</b><%= @place.county %></p>
+<p><b>Country:</b><%= @place.country %></p>
+<p><b>Genuki url:</b><%= @place.genuki_url %><br> 
+<b>Test link:</b> <%= link_to('Genuki', @place.genuki_url) unless (@place.genuki_url.nil? || @place.genuki_url == "no url")%></p>
+<p><b>Grid Reference:</b><%= @place.grid_reference %></p>
+<p><b>Latitude:</b><%= @place.latitude%></p>
+<p><b>Longitude:</b><%= @place.longitude%></p>
+<p><b>Source:</b><%= @place.source %></p>
+<p><b>Original place name:</b><%= @place.original_place_name %></p>
+<p><b>Original county:</b><%= @place.original_county %></p>
+<p><b>Original country:</b><%= @place.original_country %></p>
+<p><b>Original Grid Reference:</b><%= @place.original_grid_reference %></p>
+<p><b>Original Latitude:</b><%= @place.original_latitude %></p>
+<p><b>Original Longitude:</b><%= @place.original_longitude %></p>
+<p><b>Reason for changes:</b><%= @place.reason_for_change %></p>
+<p><b>Other Reason for changes:</b><%= @place.other_reason_for_change %></p>
+<p><b>Last amended:</b><%= @place.u_at %></p>
+ 
+<%= button_to 'Edit Place', edit_master_place_name_path(@place), method: :get %> 
+<%= button_to 'Destroy', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %>
+<%= button_to_function "Back to Previous Page", "history.back()" %> 
+<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
+ 

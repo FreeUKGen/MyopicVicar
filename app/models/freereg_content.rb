@@ -1,5 +1,8 @@
 class FreeregContent
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
+
   require 'chapman_code'
   field :county, type: String#, :required => false
   validates_inclusion_of :county, :in => ChapmanCode::values+[nil]

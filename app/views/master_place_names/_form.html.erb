@@ -1,0 +1,40 @@
+<% require 'chapman_code' %>
+
+<%= semantic_form_for(@place) do |f| %>
+  <% if @place.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@place.errors.count, "error") %> prohibited this place from being saved:</h2>
+
+      <ul>
+      <% @place.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<div id="main">
+
+<%= f.input :place_name, :input_html => { :size => 40 }%>
+<% if session[:type] == "new" then %>
+<%= f.input :chapman_code, { :as => :select, 
+          :include_blank => false,
+          :required => true,
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+<% end %>
+<%= f.input :country,:input_html => { :size => 40 }%>
+<%= f.input :grid_reference ,:input_html => { :size => 40 }%>
+<%= f.input :latitude ,:input_html => { :size => 40 }%>
+<%= f.input :longitude ,:input_html => { :size => 40 }%>
+<%= f.input :genuki_url,as: :url, :input_html => { :size => 100 }%>
+<%= f.input :source ,:input_html => { :size => 40 }%>
+<%= f.input :reason_for_change ,:input_html => { :size => 40 }%>
+<%= f.input :other_reason_for_change ,:input_html => { :size => 40 }%>
+  <br>
+  <br>
+ 
+    <%= f.action :submit, :as => :input, :label => 'Update' %>
+  </div>
+  <br>
+<% end %>
+

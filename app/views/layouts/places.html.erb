@@ -11,7 +11,7 @@
 	<%= stylesheet_link_tag "normalize" %>
 	<%= stylesheet_link_tag "places" %>
 	<%= stylesheet_link_tag "style" %>
-	<%= stylesheet_link_tag "application" if controller.controller_name == "freereg_contents" && controller.action_name == "new" %>
+	<%= stylesheet_link_tag "application" if controller.controller_name == "places" && controller.action_name == "new" %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
     </head>
@@ -21,9 +21,10 @@
 	    <div id="header" class="header">
 		<h1>FreeREG</h1>
 		<h2>The home of U.K. Parish Register Information</h2>
-		<h2>Administrative Tools</h2>
+		
 	    </div>
-
+	    <div> These are the coordinators aministrative tools to manage the content of the data for which they are responsible. The data displayed is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. 
+</div>
 
 	    <%= yield %>
 

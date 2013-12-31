@@ -1,5 +1,7 @@
 class Church
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
   
   field :church_name,type: String
   field :last_amended, type: String
@@ -38,5 +40,9 @@ class Church
     new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
     church.last_amended = new_last_amended_date
     church.save!
-  end
+    place = church.place
+    my_place_date = place.last_amended
+    place.last_amended = church.last_amended if (my_place_date.nil? ||(Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(my_place_date)))
+    place.save!
+  end 
 end

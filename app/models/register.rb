@@ -1,10 +1,13 @@
 class Register
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
    require 'record_type'
 
   field :status, type: String
   field :register_name,  type: String
   field :alternate_register_name,  type: String
+  field :register_type,  type: String
   field :quality,  type: String
   field :source,  type: String
   field :copyright,  type: String

@@ -1,0 +1,7 @@
+<p>Edting an Alias document for <b><%= @county %></b><br>
+
+<%= render 'form' %>
+<br>
+<%= button_to 'Show Alias Document', @alias_place_church, method: :get %> 
+<%= button_to_function "Back to Previous Page", "history.back()" %> 
+ <%= button_to 'Back to County Search Page', alias_place_churches_path, method: :get %>
