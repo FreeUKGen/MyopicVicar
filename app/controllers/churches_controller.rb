@@ -12,14 +12,22 @@ class ChurchesController < InheritedResources::Base
 
   def update
     load(params[:id])
-    old_church_name = @church.church_name
-    @church.church_name = params[:church]
+    old_church_name = session[:church_name]
+    p old_church_name
+    p params
+    @church.church_name = params[:church][:church_name]
+    p @church.church_name
     @church.save!
-    
-    my_files = Freereg1CsvFile.where(:county => @county, :place => @place_name, :church_name =>  old_church_name).to_a
+#update registers
+    @church.registers.each do |register|
+        register.alternate_register_name = @church.church_name.to_s + " " + register.register_type.to_s
+         #update files   
+    my_files = Freereg1CsvFile.where(:register_id => register._id).all
+    p my_files
     if my_files
       my_files.each do |myfile|
-        myfile.church_name = params[:church_name]
+        p myfile
+        myfile.church_name = params[:church][:church_name]
         myfile.save!
 
 # save place name change in Freereg_csv_entry
@@ -27,12 +35,15 @@ class ChurchesController < InheritedResources::Base
        
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).to_a
         my_entries.each do |myentries|
-            myentries.church_name =params[:church_name]
+            myentries.church_name =params[:church][:church_name]
             myentries.save!
         end
       end
     else
     end
+        register.save!
+      end
+
 
     flash[:notice] = 'The change in Church Name was succsessful'    
     redirect_to :action => 'show'

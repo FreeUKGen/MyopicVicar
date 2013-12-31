@@ -7,6 +7,7 @@ class Register
   field :status, type: String
   field :register_name,  type: String
   field :alternate_register_name,  type: String
+  field :register_type,  type: String
   field :quality,  type: String
   field :source,  type: String
   field :copyright,  type: String

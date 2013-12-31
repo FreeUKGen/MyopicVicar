@@ -36,16 +36,15 @@ end
 
 def update
     load(params[:id])
-    place = params[:place][:place_name]
-    county = params[:place][:chapman_code]
-    genuki = params[:place][:genuki_url]
+    place = params[:place][:alternate_place_name]
+    notes = params[:place][:notes]
+    
     # save place name change in Place
-    old_place = @place.place_name
+     @place.alternate_place_name = @place.place_name
     old_county = @place.chapman_code
     @place.place_name = place
-    @place.genuki_url = genuki
-    @place.last_amended = params[:place][:last_amended]
-    @place.alternate_place_name = params[:place][:alternate_place_name]
+   
+    @place.place_notes = notes
     @place.save!
 
   # save place name change in register
@@ -58,7 +57,7 @@ def update
    
  # save place name change in Freereg_csv_file
     county = old_county if county.nil?
-    my_files = Freereg1CsvFile.where(:county => county, :place => old_place).to_a
+    my_files = Freereg1CsvFile.where(:county => county, :place => @place.alternate_place_name).all
     if my_files
       my_files.each do |myfile|
         myfile.place = place
@@ -67,7 +66,7 @@ def update
 # save place name change in Freereg_csv_entry
         myfile_id = myfile._id
        
-        my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).to_a
+        my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).all
         my_entries.each do |myentries|
             myentries.place = place
             myentries.save!
