@@ -32,8 +32,16 @@ class Place
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem 
-    SI = :si
-    ENGLISH = :english
+    SI = 'si'
+    ENGLISH = 'en'
+    ALL_SYSTEMS = [SI, ENGLISH]
+    OPTIONS = {
+    'miles' => ENGLISH,
+    'kilometers' => SI
+    }    
+    def self.system_to_units(system)
+      OPTIONS.invert[system]
+    end
   end
  
   
