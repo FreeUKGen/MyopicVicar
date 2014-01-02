@@ -1,35 +1,48 @@
 <% require 'chapman_code' %>
 
 <%= semantic_form_for(@place) do |f| %>
-  <% if @place.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@place.errors.count, "error") %> prohibited this place from being saved:</h2>
-
-      <ul>
-      <% @place.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+  
+  <% if !session[:errors].nil? %>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:red">
+    <%= flash[:notice] %>
     </div>
+<% end %>
+    
+    <% else %>
+    <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green">
+    <%= flash[:notice] %>
+    </div>
+<% end %>
   <% end %>
 
-<div id="main">
+<div id="main"style="color:black">
 
-<%= f.input :place_name, :input_html => { :size => 40 }%>
+<%= f.input :place_name, :label => "Place Name (required) :", :input_html => { :size => 40 }%>
 <% if session[:type] == "new" then %>
-<%= f.input :chapman_code, { :as => :select, 
+<%= f.input :chapman_code,  { :as => :select, 
           :include_blank => false,
           :required => true,
-          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes , :label => "County (please select) :" }%>
 <% end %>
-<%= f.input :country,:input_html => { :size => 40 }%>
-<%= f.input :grid_reference ,:input_html => { :size => 40 }%>
-<%= f.input :latitude ,:input_html => { :size => 40 }%>
-<%= f.input :longitude ,:input_html => { :size => 40 }%>
-<%= f.input :genuki_url,as: :url, :input_html => { :size => 100 }%>
-<%= f.input :source ,:input_html => { :size => 40 }%>
-<%= f.input :reason_for_change ,:input_html => { :size => 40 }%>
-<%= f.input :other_reason_for_change ,:input_html => { :size => 40 }%>
+
+
+<p>Please enter the latitude and longitude as decimal degrees. If these are entered the Grid Reference is not required</p>
+
+<%= f.input :latitude , :label => "Latitude in degrees eg 50.234 :",:input_html => { :size => 40 }%>
+<%= f.input :longitude ,:label => "Longitude in degrees eg -1.234 :", :input_html => { :size => 40 }%>
+
+<p> The Grid Reference in the following entry must be 2 capital characters followd by 4,6 or 8 numerics eg NX123456:
+It will be used to calculate the latitude and longitude if those fields were left blank.</p>
+<%= f.input :grid_reference , :label => " Grid Reference :",:input_html => { :size => 40 }%><br>
+
+<%= f.input :genuki_url,as: :url, :label => "The link to the Genuki Gazatteer (if known) :", :input_html => { :size => 100 }%>
+<%= f.input :source ,:label => "The source of the information :", :input_html => { :size => 40 }%>
+<% if session[:type] == "edit" then %>
+<%= f.input :reason_for_change ,:label => "Your reason for the change :", :input_html => { :size => 40 }%>
+<%= f.input :other_reason_for_change ,:label => "Your reason for a further change :",:input_html => { :size => 40 }%>
+<% end %>
   <br>
   <br>
  
@@ -37,4 +50,3 @@
   </div>
   <br>
 <% end %>
-

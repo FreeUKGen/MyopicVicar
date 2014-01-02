@@ -15,7 +15,7 @@
  <% end %>
  <% else %>
 
-<p>All Places for <b><%= @county  %></b>
+<p>All Places for <b><%= @county  %></b>. Select the Genuki link to see the specific location of the Place and the Show Details or Edit Places links to see or change the details.
 </p>
 <div id="nav">
 	<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
@@ -48,7 +48,7 @@
      <%= place.source %>
     </td>
     <td >
-     <%= place.u_at %>
+     <%= place.u_at.strftime("%d %b %Y") %>
     </td>
     <td >
        <%= link_to 'Show Detail', master_place_name_path(place) %><br>     

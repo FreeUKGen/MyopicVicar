@@ -1,4 +1,4 @@
-class MasterPlaceName
+class MasterPlaceName 
   
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
@@ -31,6 +31,38 @@ class MasterPlaceName
   index({ chapman_code: 1, modified_place_name: 1 })
   index({ place_name: 1, grid_reference: 1 })
   index({ source: 1})
+
+  validate :place_does_not_exist, on: :create
+  validate :grid_reference_is_valid
+  validate :grid_reference_or_location_present
+
+  validates_presence_of :place_name
+  validates_numericality_of :latitude , :less_than => 70
+  validates_numericality_of :latitude , :greater_than => 45
+  validates_numericality_of :longitude , :less_than => 5
+  validates_numericality_of :longitude , :greater_than => -10
+  def place_does_not_exist 
+         errors.add(:place_name, "already exits") if MasterPlaceName.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
+ end 
+
+  def grid_reference_is_valid
+       unless (self[:grid_reference].nil? || self[:grid_reference].empty?) then
+       errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref? 
+     end
+  end
+  def grid_reference_or_location_present
+    p "checking"
+    p self[:grid_reference]
+    p self[:latitude]
+    p self[:longitude]
+    case 
+    when (self[:grid_reference].nil? && (self[:latitude].nil? || self[:longitude].nil?)) 
+      p "came here"
+      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
+    when (self[:grid_reference].empty? && (self[:latitude].empty? || self[:longitude].empty?))
+      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")  
+    end
+  end
 
   def master_place_name_from_genuki
     
