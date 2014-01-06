@@ -24,7 +24,7 @@ Details of the <b>Place name:</b><%= @place.place_name %> </p>
 <p><b>Last amended:</b><%= @place.u_at %></p>
  </div>
 <%= button_to 'Edit Place', edit_master_place_name_path(@place), method: :get %> 
-<%= button_to 'Destroy', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %>
+<%= button_to 'Discard', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %>
 <%= button_to_function "Back to Previous Page", "history.back()" %> 
 <%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
  

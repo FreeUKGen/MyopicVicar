@@ -26,6 +26,7 @@ class MasterPlaceName
   field :other_reason_for_change, type: String
   field :genuki_url, type: String
   field :modified_place_name, type: String #This is used for comparison searching
+  field :disabled, type: String, default: -> {"false"} 
   
   
   index({ chapman_code: 1, modified_place_name: 1 })
@@ -51,13 +52,8 @@ class MasterPlaceName
      end
   end
   def grid_reference_or_location_present
-    p "checking"
-    p self[:grid_reference]
-    p self[:latitude]
-    p self[:longitude]
     case 
     when (self[:grid_reference].nil? && (self[:latitude].nil? || self[:longitude].nil?)) 
-      p "came here"
       errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
     when (self[:grid_reference].empty? && (self[:latitude].empty? || self[:longitude].empty?))
       errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")  

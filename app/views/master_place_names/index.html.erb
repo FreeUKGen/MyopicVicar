@@ -33,6 +33,7 @@
 
 <% @places.each do |place| %>
   <trid="<%=place.id%>">
+    <% unless place.disabled == "true" then %>
     <td >
      <%= place.place_name %>
     </td>
@@ -55,6 +56,7 @@
        <%= link_to'Edit Place', edit_master_place_name_path(place) %>
        
       </td>
+      <% end %>
   </tr>
 <% end %>
 </table> <br />

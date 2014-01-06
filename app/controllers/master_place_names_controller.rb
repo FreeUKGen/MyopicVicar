@@ -15,6 +15,7 @@ class MasterPlaceNamesController < ActionController::Base
           #reset the session errors flag
           session[:errors] = nil
           session[:form] = nil
+          session[:parameters] = params
     end
 
   end
@@ -145,7 +146,15 @@ class MasterPlaceNamesController < ActionController::Base
 
  def destroy
     load(params[:id])
-    @place.destroy
+    @place.disabled = "true"
+    p "destroying"
+
+    p params
+    p session
+    @place.save
+    params = session[:parameters]
+    p params
+    #redirect_to :action => 'index'
     redirect_to master_place_names_path(params)
  end
 
