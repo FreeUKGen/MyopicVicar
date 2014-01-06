@@ -43,8 +43,17 @@ class MasterPlaceName
   validates_numericality_of :longitude , :less_than => 5
   validates_numericality_of :longitude , :greater_than => -10
   def place_does_not_exist 
-         errors.add(:place_name, "already exits") if MasterPlaceName.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
- end 
+         place = MasterPlaceName.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first 
+         if place.disabled == "true" 
+          place.disabled = "false"
+          place.save 
+          errors.add(:place_name, "Place was previously disabled; it has been re-enabled; go to edit on the place")
+          
+        else
+
+         errors.add(:place_name, "already exits") 
+       end 
+  end
 
   def grid_reference_is_valid
        unless (self[:grid_reference].nil? || self[:grid_reference].empty?) then

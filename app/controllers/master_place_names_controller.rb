@@ -147,10 +147,6 @@ class MasterPlaceNamesController < ActionController::Base
  def destroy
     load(params[:id])
     @place.disabled = "true"
-    p "destroying"
-
-    p params
-    p session
     @place.save
     params = session[:parameters]
     p params
