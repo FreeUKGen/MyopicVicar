@@ -1,5 +1,5 @@
 class MasterPlaceNamesController < ActionController::Base
-
+    
  def index
  #on initial entry we display a county selection; a second entry displays an index of the Master Place Names for the selected county   
     unless params[:commit] == "Search"
@@ -52,13 +52,14 @@ class MasterPlaceNamesController < ActionController::Base
     @place.grid_reference = params[:master_place_name][:grid_reference]
     @place.latitude = params[:master_place_name][:latitude]
     @place.longitude = params[:master_place_name][:longitude]
-     #use the lat/lon if present if not calculate from the grid reference
+
+      #use the lat/lon if present if not calculate from the grid reference
     if @place.latitude.nil? || @place.longitude.nil? || @place.latitude.empty? || @place.longitude.empty? then
-    unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
+     unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
       location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
       @place.latitude = location[0]
       @place.longitude = location[1]
-    end
+     end
     end
     @place.source = params[:master_place_name][:source] 
     @place.reason_for_change = params[:master_place_name][:reason_for_change]
@@ -105,11 +106,11 @@ class MasterPlaceNamesController < ActionController::Base
     @place.longitude = params[:master_place_name][:longitude]
    #use the lat/lon if present if not calculate from the grid reference
     if @place.latitude.nil? || @place.longitude.nil? || @place.latitude.empty? || @place.longitude.empty? then
-    unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
+     unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
       location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
       @place.latitude = location[0]
       @place.longitude = location[1]
-    end
+     end
     end
     @place.source =  @place.source + params[:master_place_name][:source] unless @place.source.nil? || @place.source == params[:master_place_name][:source]
     @place.reason_for_change = params[:master_place_name][:reason_for_change]
