@@ -98,6 +98,8 @@ class MasterPlaceNamesController < ActionController::Base
     @place.original_grid_reference = @place.grid_reference unless params[:master_place_name][:grid_reference].nil? || !@place.original_grid_reference.nil?
     @place.original_latitude = @place.latitude unless params[:master_place_name][:latitude].nil? || !@place.original_latitude.nil?
     @place.original_longitude = @place.longitude unless params[:master_place_name][:longitude].nil? || !@place.original_longitude.nil?
+    @place.original_source =  @place.source unless params[:master_place_name][:source].nil? || !@place.original_source.nil?
+    @place.reason_for_change = params[:master_place_name][:reason_for_change]
     @place.county = session[:county]
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
@@ -112,7 +114,7 @@ class MasterPlaceNamesController < ActionController::Base
       @place.longitude = location[1]
      end
     end
-    @place.source =  @place.source + params[:master_place_name][:source] unless @place.source.nil? || @place.source == params[:master_place_name][:source]
+    @place.source =  params[:master_place_name][:source] 
     @place.reason_for_change = params[:master_place_name][:reason_for_change]
     @place.other_reason_for_change = params[:master_place_name][:other_reason_for_change]
     @place.save
@@ -150,7 +152,6 @@ class MasterPlaceNamesController < ActionController::Base
     @place.disabled = "true"
     @place.save
     params = session[:parameters]
-    p params
     #redirect_to :action => 'index'
     redirect_to master_place_names_path(params)
  end
