@@ -22,6 +22,7 @@ class MasterPlaceName
   field :original_grid_reference, type: String
   field :original_latitude, type: String
   field :original_longitude, type: String
+  field :original_source, type: String
   field :source, type: String
   field :reason_for_change, type: String
   field :other_reason_for_change, type: String
