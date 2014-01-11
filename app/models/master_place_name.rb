@@ -69,7 +69,7 @@ class MasterPlaceName
 
   def grid_reference_or_location_present
     case 
-    when ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?)) 
+    when ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
       errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
     end
   end
