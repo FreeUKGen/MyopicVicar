@@ -1,4 +1,4 @@
-class PlacesController < InheritedResources::Base
+class PlacesController < ActionController::Base
 
 
 def index
@@ -10,6 +10,11 @@ def index
           @places = Place.where( :chapman_code => params[:place][:chapman_code]).all.order_by( place_name: 1)
           @county = ChapmanCode.has_key(params[:place][:chapman_code]) 
           session[:county] = @county
+          session[:chapman_code] = params[:place][:chapman_code]
+          #reset the session errors flag
+          session[:errors] = nil
+          session[:form] = nil
+          session[:parameters] = params
       end
 
   end

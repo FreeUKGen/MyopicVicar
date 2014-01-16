@@ -44,7 +44,7 @@
      <%= place.alternate_place_name %>
       </td>
   <td >
-     <%= link_to('Genuki', place.genuki_url) unless place.genuki_url.nil? %>
+     <%= link_to('Genuki', place.genuki_url) unless place.genuki_url.nil? || place.genuki_url == "no url" %>
       </td>
      <td >
      <%= place.last_amended %>
@@ -65,8 +65,8 @@
     </td>
 
     <td >
-<%= link_to 'Show Place Details', place_path(place) %>     
-<%= link_to 'Edit Place', edit_place_path(place) %>
+<%= link_to 'Show Place Details', place_path(place) %>  <br>   
+<%= link_to 'Edit Place', edit_place_path(place) %><br>  
 <%= link_to 'Destroy Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>
