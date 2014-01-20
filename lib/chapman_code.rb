@@ -66,7 +66,7 @@ module ChapmanCode
     'Lancashire' => 'LAN',
     'Leicestershire' => 'LEI',
     'Lincolnshire' => 'LIN',
-    'London' => 'LND',
+    'City of London' => 'LND',
     'Middlesex' => 'MDX',
     'Norfolk' => 'NFK',
     'Northamptonshire' => 'NTH',
