@@ -24,6 +24,183 @@ EXPORT_COMMAND =  "mongoexport --db myopic_vicar_development --collection  "
  IMPORT_COMMAND =  "mongoimport --db myopic_vicar_development --collection  "
  IMPORT_IN = " --file  "
 
+
+
+# example build:freereg[recreate,create_search_records,e:/freereg8/,a-d,e-f]
+#This processes the csv files located at e:/freereg8/ and creates the search records at the same time. Before doing so it
+# saves a copy of the Master and Alias; it drops Places/Churches/Registers/Freere1_csv_files,Freereg1_csv_entries and search records.
+#it then runs a csv_process on all userids starting with a, b, c and then d with another process doing e, and f. and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
+#and indexes everything
+# example build:freereg[recreate,create_search_records,e:/freereg8/,*.WRY*.csv,*.NFK*.csv]
+# this creates a database for WRY and NFK  with search records from all files
+# it saves Master and Alias before dropping everything and rebuilding and re-indexing
+#example build:freereg[add,create_search_records,e:/freereg8/,userid/wryconba.csv,useridb/norabsma.csv]
+#this adds the records for 2 specific files to the existing database
+#******************************NOTE************************************
+#it uses a number of settings located in config environment development 
+# config.mongodb_bin_location        where the Mongodb binary are located
+# config.mongodb_collection_temp     where to store the temp files
+# config.mongodb_collection_location where the github collections are located
+#       as well as the date of the dataset being used
+# config.dataset_date = "13 Dec 2013"
+
+
+task :freereg,[:type,:search_records,:base_directory,:range1,:range2,:range3] => [:setup,:create_freereg_csv_indexes] do |t, args| 
+    p "completed build"
+end
+
+task :setup => [ :environment] do |t, args| 
+  puts "Start Setup"
+  file_for_warning_messages = "log/freereg_messages.log"
+  File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
+  puts "Freereg messages log deleted."
+   x = system("Rake load_emendations") 
+  puts "Emendations loaded" if x
+  puts "Setup finished"
+
+end
+
+ task :setup_save,[:type] => [:setup, :environment] do |t, args| 
+ @mongodb_bin =   Rails.application.config.mongodb_bin_location
+ @tmp_location =   Rails.application.config.mongodb_collection_temp
+ #@datafile_location =  Rails.application.config.mongodb_datafile
+ #save master_place_names and alias
+ p "Save started"
+  collections_to_save = ["0","1"] if args.type == "recreate"
+  collections_to_save = ["0","1","2","3","4","5","6","7"] if args.type != "recreate"
+   collections_to_save.each  do |col|
+    coll  = col.to_i
+    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + $collections[coll] + ".json"
+    puts "#{$collections[coll]} being saved in #{@tmp_location}"
+     output =  `#{collection}`
+     p output
+   end
+   p "Save finished"
+  end
+
+  task :setup_drop,[:type]  => [:setup_save, :environment] do |t, args| 
+  puts "Collections drop task initiated"
+  #dops place, church, register, files
+  if args.type == "recreate"
+   
+  collections_to_drop = ["2","3","4","5","6","7"]
+   collections_to_drop.each  do |col|
+     coll  = col.to_i
+     model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll]) 
+     model.collection.drop
+     puts "#{$collections[coll]} dropped"
+   end 
+   end
+ puts "Collections drop task completed"
+end
+
+task :setup_index => [:setup_drop, :environment] do |t, args| 
+  puts "Creating minimum indexes"
+ script_index_places = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.places.ensureIndex({place_name:1 })"'
+   `#{script_index_places}`
+   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+  script_index_places_chapman = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.places.ensureIndex({chapman_code: 1, place_name:1 })"'
+ `#{script_index_places_chapman}`
+   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+ script_index_registers_alternate = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.registers.ensureIndex({church_id:1, alternate_register_name: 1 })"'
+ `#{script_index_registers_alternate}`
+    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+ script_index_registers = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.registers.ensureIndex({church_id:1, register_name: 1 })"'
+ `#{script_index_registers}`
+   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+  script_index_churches = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.churches.ensureIndex({place_id: 1, church_name: 1 })"'
+ `#{script_index_churches}`
+   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+ script_index_freereg1_csv_files = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.freereg1_csv_files.ensureIndex({file_name: 1, userid: 1, county: 1, place: 1 , church_name: 1, register_type: 1})"'
+ `#{script_index_freereg1_csv_files}`
+    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+ script_index_freereg1_csv_entries = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id:1 })"'
+ `#{script_index_freereg1_csv_entries}`
+    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+   script_index_search_records_entries = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.search_records.ensureIndex({freereg1_csv_entry_id :1 })"' 
+      `#{script_index_search_records_entries}`    
+    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+     puts "Minimum indexes created"
+
+end
+ 
+ 
+#This spinning off 1,2 or 3 rake csv_processes.
+task :parallelp,[:type,:search_records,:base_directory,:range1,:range2,:range3] => [:setup_index, :environment]  do |t, args| 
+  p "Starting processors"
+    
+    search_records = args.search_records
+    time_start = Time.now
+    pid1 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")
+    pid2 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]") unless args.range2.nil?
+    pid3 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]") unless args.range3.nil?
+    p "#{pid1} #{pid2}  #{pid3}  started at #{time_start}"
+    p Process.waitall
+    time_end = Time.now
+    process_time = time_end - time_start
+    p "Completed processors in #{process_time}"
+ end
+desc "Process the freereg1_csv_entries and create the SearchRecords documents"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :parallel_create_search_records, [:type,:search_records,:base_directory,:range1,:range2,:range3] => [:parallelp,:environment] do |t, args|
+ # only parallel create search records if we are recreating else the processor does it
+    if args.search_records == 'create_search_records_parallel'  then
+       time_start = Time.now
+     puts "Processing entries to search records with #{args.search_records}"
+     pid1 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")  
+     pid2 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]")  unless args.range2.nil?
+     pid3 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]")  unless args.range3.nil?
+     p Process.waitall
+      time_end = Time.now
+    process_time = time_end - time_start
+     puts "Search Records complete in #{process_time}."
+    end
+  end
+
+  task :create_search_records, [:type,:search_records,:base_directory,:range] => [:environment] do |t, args|
+   require 'create_search_records_docs' 
+ 
+  search_records = "create_search_records" 
+
+     CreateSearchRecordsDocs.process(args.type,search_records,args.base_directory,args.range )
+  end
+
+desc "Create the indices after all FreeREG processes have completed"
+task :create_freereg_csv_indexes => [:parallel_create_search_records,:environment] do  
+  #task is there to creat indexes after running of freereg_csv_processor
+  
+  require 'freereg1_csv_file'
+  require 'freereg1_csv_entry'
+  require 'register'
+  require 'church'
+  require 'place'
+  puts "Freereg build indexes."
+  Freereg1CsvFile.create_indexes()
+  Freereg1CsvEntry.create_indexes()
+  Register.create_indexes()
+  Church.create_indexes()
+  Place.create_indexes()
+  puts "Indexes complete."
+end
+
+# This is the processing task. It can be invoked on its own as build:process_freereg1_csv[] with
+#parameters as defined for build:freereg EXCEPT there is only one range argument
+#NOTE NO SETUP of the database IS DONE DURING THIS TASK
+task :process_freereg1_csv,[:type,:search_records,:base_directory,:range] => [:environment] do |t, args| 
+
+  require 'freereg_csv_processor'
+  # use the processor to initiate search record creation on add or update but not on recreation when we do at end
+  search_records = "no_search_records" 
+  search_records = "create_search_records" if args.search_record == "create_search_records_processor"
+ 
+  puts "processing CSV file with #{args.type} and #{search_records}"
+  FreeregCsvProcessor.process(args.type,search_records, args.base_directory, args.range)
+  puts "Freereg task complete."
+
+end
+
+
 # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5"]
 #this saves and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
 #and indexes everything
@@ -111,7 +288,7 @@ task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load
 end
 
 desc "Create the indices after all FreeREG processes have completed"
-task :recreate_freereg_csv_indexes,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:load_freereg_collections_from_file, :environment] do  |t,args|
+ task :recreate_freereg_csv_indexes,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:load_freereg_collections_from_file, :environment] do  |t,args|
   require 'freereg1_csv_file'
   require 'freereg1_csv_entry'
   require 'register'
@@ -127,202 +304,9 @@ task :recreate_freereg_csv_indexes,[:save, :drop, :reload_from_temp, :load_from_
      puts "#{$collections[coll]} indexed"
    end
     puts " Index task complete."
-end
-
-
-
-
-# example build:freereg[recreate,create_search_records,e:/freereg8/,a-d,e-f"]
-#This processes the csv files located at e:/freereg8/ and creates the search records at the same time. Before doing so it
-# saves a copy of the Master and Alias; it drops Places/Churches/Registers/Freere1_csv_files,Freereg1_csv_entries and search records.
-#it then runs a csv_process on all userids starting with a, b, c and then d with another process doing e, and f. and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
-#and indexes everything
-# example build:freereg[recreate,create_search_records,e:/freereg8/,*.WRY*.csv,*.NOR*.csv]
-# this creates a database for WRY and NOR  with search records from all files
-# it saves Master and Alias before dropping everything and rebuilding and re-indexing
-#example build:freereg[add,create_search_records,e:/freereg8/,userid/wryconba.csv,useridb/norabsma.csv]
-#this adds the records for 2 specific files to the existing database
-#******************************NOTE************************************
-#it uses the @mongodb_bin =   Rails.application.config.mongodb_bin_location where the Mongodb binary are located
-# @tmp_location = Rails.application.config.mongodb_collection_temp to store the temp files
-#@file_location =  Rails.application.config.mongodb_collection_location the location of the github ollections
-#from the developmentapplication.config
-
-
-
-
-
-
-
-
-  task :freereg,[:type,:search_records,:base_dirctory,:range1,:range2] => [:setup,:create_freereg_csv_indexes] do |t, args| 
-    p "completed build"
-  end
-
-task :setup => [:setup_index, :environment] do |t, args| 
-
-  system("Rake load_emendations") 
-  puts "Setup finished"
-
  end
-
- task :setup_save,[:type] => [ :environment] do |t, args| 
- @mongodb_bin =   Rails.application.config.mongodb_bin_location
- @tmp_location =   Rails.application.config.mongodb_collection_temp
- #@datafile_location =  Rails.application.config.mongodb_datafile
- #save master_place_names and alias
- p "Save started"
-  collections_to_save = ["0","1"]
-   collections_to_save.each  do |col|
-    coll  = col.to_i
-    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + $collections[coll] + ".json"
-    puts "#{$collections[coll]} being saved in #{@tmp_location}"
-     output =  `#{collection}`
-     p output
-   end
-   p "Save finished"
-  end
-
-  task :setup_drop,[:type]  => [:setup_save, :environment] do |t, args| 
-  puts "Dropping collections"
-  #dops place, church, register, files
-  if :type == "recreate"
-  collections_to_drop = ["2","3","4","5","6","7"]
-   collections_to_drop.each  do |col|
-     coll  = col.to_i
-     model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll]) 
-     model.collection.drop
-     puts "#{$collections[coll]} dropped"
-   end 
-   end
- puts "Collections drop task completed"
 end
 
-task :setup_index => [:setup_drop, :environment] do |t, args| 
-  puts "Creating minimum indexes"
- script_index_places = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.places.ensureIndex({place_name:1 })"'
-   `#{script_index_places}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-  script_index_places_chapman = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.places.ensureIndex({chapman_code: 1, place_name:1 })"'
- `#{script_index_places_chapman}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers_alternate = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.registers.ensureIndex({church_id:1, alternate_register_name: 1 })"'
- `#{script_index_registers_alternate}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.registers.ensureIndex({church_id:1, register_name: 1 })"'
- `#{script_index_registers}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-  script_index_churches = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.churches.ensureIndex({place_id: 1, church_name: 1 })"'
- `#{script_index_churches}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_freereg1_csv_files = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.freereg1_csv_files.ensureIndex({file_name: 1, userid: 1, county: 1, place: 1 , church_name: 1, register_type: 1})"'
- `#{script_index_freereg1_csv_files}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_freereg1_csv_entries = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id:1 })"'
- `#{script_index_freereg1_csv_entries}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_search_records = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.search_records.ensureIndex({freereg1_csv_file_id :1 })"' 
-      `#{script_index_search_records}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-     puts "Minimum indexes created"
-
-end
- 
- #This was an attempt to see if invoking 2 rake tasks as separate threads helps; it does not
- task :parallelr,[:type,:search_records,:base_dirctory,:range1,:range2] => [:environment]  do |t, args| 
-  require "freereg_csv_processor"
-    p "Starting processors"
-    base_directory = args.base_dirctory
-    range1 = args.range1
-    range2 = args.range2
-    type = args.type
-    search_records = args.search_records
-    Rake::Task['build:process_csv'].invoke(type,search_records,base_directory,range1)
-    Rake::Task['build:process_csv'].reenable
-    Rake::Task['build:process_csv'].invoke(type,search_records,base_directory,range1)
-    p "Completed processors"
- end
-
-#This was an attempt to see if spinning off 2 2 rake processes helps; it does not
-# I tried forking them but fork is unsupported in Windows.
-task :parallelp,[:type,:search_records,:base_dirctory,:range1,:range2] => [:environment]  do |t, args| 
-  p "Starting processors"
-  p args
-    base_directory = args.base_dirctory
-    range1 = args.range1
-    range2 = args.range2
-    type = args.type
-    search_records = args.search_records
-    
-    system("Rake build:process_csv[#{type},#{search_records},#{base_directory},#{range1}]") 
-    system("Rake build:process_csv[#{type},#{search_records},#{base_directory},#{range2}]") 
-    
-    p "Completed processors"
- end
-
- 
-desc "Create the indices after all FreeREG processes have completed"
-task :create_freereg_csv_indexes => [:parallelp,:environment] do  
-  #task is there to creat indexes after running of freereg_csv_processor
-  
-  require 'freereg1_csv_file'
-  require 'freereg1_csv_entry'
-  require 'register'
-  require 'church'
-  require 'place'
-  puts "Freereg build indexes."
-  Freereg1CsvFile.create_indexes()
-  Freereg1CsvEntry.create_indexes()
-  Register.create_indexes()
-  Church.create_indexes()
-  Place.create_indexes()
-  puts "Indexes complete."
-end
-
-desc "Process the freereg1_csv_entries and create the SearchRecords documents"
- # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
- #valid options for type are rebuild, replace, add
- task :create_search_records_docs, [:type,:search_records,:base_dirctory] => [:create_freereg_csv_indexes,:environment] do |t, args|
- require 'create_search_records_docs' 
- require 'search_record' 
-  Mongoid.unit_of_work(disable: :all) do
-    base_directory = args.base_dirctory
-  aplha = Array.new
-  alpha = args[:range2].split("-") 
-  alpha_start = ALPHA.find_index(alpha[0])
-  alpha_end = ALPHA.find_index(alpha[1]) + 1
-  create_search_records = args.search_records
-  puts "Processing CSV file with #{args.search_records}"
-  index = alpha_start
-  while index < alpha_end do 
-    pattern = base_directory + ALPHA[index] + "*/*.csv"
-    filenames = Dir.glob(pattern).sort
-    filenames.each do |fn|
-      
-      CreateSearchRecordsDocs.process(create_search_records,fn ) if create_search_records == 'create_search_records'
-    end
-    index = index + 1
-   end
-     puts "Search Records complete."
-   end
-  end
-
-task :process_csv,[:type,:search_records,:base_directory,:range,] => [:environment] do |t, args| 
-
-  require 'freereg_csv_processor'
-  require 'freereg1_csv_file'
-  require 'freereg1_csv_entry'
-  require 'register'
-  require 'church'
-  require 'place'
-
-  puts "processing CSV file with #{args.search_records}"
-  FreeregCsvProcessor.process(args.type,args.search_records, args.base_directory, args.range)
-  puts "Freereg task complete."
-
- end
-
-end
 
 
 
