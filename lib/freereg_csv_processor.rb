@@ -9,7 +9,7 @@ class FreeregCsvProcessor
   # Reconsider this!
   require "#{Rails.root}/app/models/freereg1_csv_file"
   require "record_type"
-
+  ALPHA = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9"]
   CONTAINS_PERIOD = /\./
   DATEMAX = 2020
   DATEMIN = 1530
@@ -51,7 +51,7 @@ class FreeregCsvProcessor
   VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp\(][AaBbDdEeHhTtPpTtXxRrWw]?[TtXxRrWw]?'?[Ss]? ?[\)]?\z/
   VALID_REGISTER_TYPE = ["AT", "BT", "PR", "PH", "EX", "TR", "DW", "DT", "PT", "MI"]
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
-  WORD_EXPANSIONS =  {
+  CHURCH_WORD_EXPANSIONS =  {
             'Albans' => 'Alban',
             'Albright\'s' => 'Albright',
             'Andrews' => 'Andrew',
@@ -102,13 +102,11 @@ class FreeregCsvProcessor
             'Marks' => 'Mark',
             'Martins' => 'Martin',
             'Martin\'s' => 'Martin',
-            'Magdalen' => 'Magdalene',
             "Marys" => 'Mary',
             'Mary\'s' => 'Mary',
             'Matthews' => 'Matthew',
             'Michaels' => 'Michael',
             'Michael\'s' => 'Michael',
-            'Nicolas' => 'Nicholas',
             'Oswalds' => 'Oswald',
             'Pauls'=> 'Paul',
             'Paul\'s' => 'Paul',
@@ -118,15 +116,21 @@ class FreeregCsvProcessor
             'Philips' => 'Philip',
             'Stevens' => 'Steven',
             'Steven\'s' => 'Steven',
-            'Saints\'' => 'Saint',
-            'Saint\'s' => 'Saint',
+            
             'Swithen' => 'Swithin',
             'Swithins' => 'Swith1n',
             'Swithin\'s' => 'Swithin',
-            'Swithuns' => 'Swithin',
-            'Swithun' => 'Swithin',
+            'Swithuns' => 'Swithun',
             'Wilfreds' => 'Wilfred',
             'Wilfrid\'s' => 'Wilfrid',
+            'Cemetry' => 'Cemetery',
+            'Marys' => 'Mary',
+            "Mary\'s" => 'Mary',
+            "Marys\'" => 'Mary',
+             'Nicholas\'' => 'Nicholas'}
+COMMON_WORD_EXPANSIONS = {
+             'Saints\'' => 'St',
+            'Saint\'s' => 'St',
             'Saint' => 'St',
             'SAINT' => 'St',
             'St.' => 'St',
@@ -137,16 +141,12 @@ class FreeregCsvProcessor
             'GT.' => 'Great',
             'Lt' => 'Little',
             'LT' => 'Little',
-            'Cemetry' => 'Cemetery',
             'Lt.' => 'Little',
             'LT.' => 'Little',
             '&' => "and",
             'NR' => 'near',
             'nr' => 'near',
-            'Marys' => 'Mary',
-            "Mary\'s" => 'Mary',
-            "Marys\'" => 'Mary',
-             'Nicholas\'' => 'Nicholas'}
+            }
   WORD_SPLITS = {
             "-" => /\-/, 
             "&" => /\&/}
@@ -441,8 +441,9 @@ class FreeregCsvProcessor
       end
   end
 
-  def mycapitalize(word,num)
-    word = WORD_EXPANSIONS[word] if WORD_EXPANSIONS.has_key?(word)
+  def mycapitalize(word,num,type_of_name)
+    word = CHURCH_WORD_EXPANSIONS[word] if CHURCH_WORD_EXPANSIONS.has_key?(word) && type_of_name == "Church"
+    word = COMMON_WORD_EXPANSIONS[word] if COMMON_WORD_EXPANSIONS.has_key?(word)
     word = Unicode::downcase(word) 
     word = Unicode::capitalize(word) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(word) 
     word = Unicode::capitalize(word) if num == 0
@@ -492,7 +493,7 @@ class FreeregCsvProcessor
         end
       end
     end
-   
+   #now clean up multi word names with - and & as seperators
     idone = Array.new
     ii = 0
      while ii <10
@@ -506,14 +507,14 @@ class FreeregCsvProcessor
         register_word_parts = register_words[i].split(word_split)
         if register_word_parts.length > 1
           while ii < register_word_parts.length
-            register_word_parts[ii] = mycapitalize(register_word_parts[ii],ii)
+            register_word_parts[ii] = mycapitalize(register_word_parts[ii],ii,type_of_name)
             ii = ii + 1
           end
           register_words[i] = register_word_parts.shift(register_word_parts.length).join(word_splitter)
           idone[i] = 'done'
           
          else
-          register_words[i] = mycapitalize(register_words[i],i) if idone[i].nil?
+          register_words[i] = mycapitalize(register_words[i],i,type_of_name) if idone[i].nil?
           
           idone[i] = 'done'
          end
@@ -531,8 +532,9 @@ class FreeregCsvProcessor
      @csvdata = @@array_of_data_lines[@@number_of_line]
     raise FreeREGEnd,  "End of file" if @csvdata.nil?
     @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
-    raise FreeREGError,  "Empty data line" if @csvdata.empty?
-    @first_character = @csvdata[0].slice(0)
+    raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
+    @first_character = "?"
+    @first_character = @csvdata[0].slice(0) unless  @csvdata[0].nil?
     @line_type = "Data"
     @line_type = "Header" if (@first_character == '+' || @first_character ==  '#')
     number_of_fields = @csvdata.length
@@ -1025,7 +1027,7 @@ class FreeregCsvProcessor
 
     entry = Freereg1CsvEntry.new(data_record)
     entry.freereg1_csv_file = @freereg1_csv_file
-    entry.save!
+    entry.save
     entry.transform_search_record if  @@create_search_records
     entry
   end
@@ -1068,109 +1070,204 @@ class FreeregCsvProcessor
   
 
 
-  def self.process(filename,create_search_records)
+  def self.process(recreate,create_search_records,base_directory,range)
     #this is the basic processing
-    header = Hash.new
-    @@create_search_records = false
-    @@create_search_records = true if create_search_records == 'create_search_records'
-    @@array_of_data_lines = Array.new {Array.new}
-    @@number_of_line = 0
-    @@charset = "iso-8859-1"
-    standalone_filename = File.basename(filename)
-    modified_date = File.mtime(filename)
-    @@uploaded_date = modified_date.day.to_s + ' ' + VALID_MONTH[modified_date.mon].to_s + ' ' + modified_date.year.to_s
-        # get the user ID represented by the containing directory
-    full_dirname = File.dirname(filename)
-    parent_dirname = File.dirname(full_dirname)
-    user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
-    print "#{user_dirname}\t#{standalone_filename}\n"
-    # TODO convert character sets as in freereg_csv_processor
-    #need to make these passed parameters 
-    file_for_warning_messages = "logs/freereg_messages.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
-    message_file = File.new(file_for_warning_messages, "a")
-    user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-    File.delete(user_file_for_warning_messages) if File.exists?(user_file_for_warning_messages)
-    header[:file_name] = standalone_filename #do not capitalize filenames
-    header[:userid] = user_dirname
-    me = FreeregCsvProcessor.new(filename,user_dirname)
-    @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
-    raise FreeREGError,  "Empty file" if @@array_of_data_lines.nil?
-    number_of_error_messages = 0
-    #deal with the headers
-    @line_type = 'hold'
-  
-    header_line = 1
-    n = 1
-    loop do
-      begin
-        @line_type = me.get_line_of_data
-        if @line_type == 'Header'  
-          case 
-            when header_line == 1 
-              me.process_header_line_one(header)
-              header_line = header_line + 1      
-            when header_line == 2 
-              me.process_header_line_two(header)
-              header_line = header_line + 1
-            when header_line == 3 
-              me.process_header_line_threee(header)
-              header_line = header_line + 1
-            when header_line == 4 
-              me.process_header_line_four(header)
-              header_line = header_line + 1
-            when header_line == 5 
-              me.process_header_line_five(header)
-              header_line = header_line + 1
-            else 
-              raise FreeREGError,  "Unknown header " 
-          end
-        else
-          type = header[:record_type]
-              
-          me.process_register_location(n)
-          case type
-            when RecordType::BAPTISM then me.process_baptism_data_records(n,header)
-            when RecordType::BURIAL then me.process_burial_data_records(n,header)                      
-            when RecordType::MARRIAGE then me.process_marriage_data_records(n,header)
-          end
-          n =  n + 1
+    
+     #set up message files 
+     file_for_warning_messages = "logs/freereg_messages.log"
+     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
+     message_file = File.new(file_for_warning_messages, "a")
+
+     #set up to determine files to be processed
+     short = 0 #means we have a single character range selector
+     filenames = Array.new
+     aplha = Array.new
+     alpha_start = 1
+     alpha_end = 2
+     alpha = range.split("-")
+
+     if alpha[0].length == 1
+       #deal with a-c range
+     alpha_start = ALPHA.find_index(alpha[0])
+     alpha_end =  alpha_start + 1
+     alpha_end = ALPHA.find_index(alpha[1]) + 1 unless alpha.length == 1
+     else
+      short = 1 #means that the range was a userid/xyz.csv or userid/*.csv
+
+      new_alpha = Array.new
+      new_alpha = range.split("/")
+      case
+        when new_alpha[0].length > 2 && new_alpha[1].length  >= 12
+           #deals with userid/abddddxy.csv ie a specific file
+           filename = base_directory + range
+           filenames << filename
+        when (new_alpha[0].length == 1 || new_alpha[0].length > 2) && new_alpha[1].length < 12 
+
+           #deals with userid/*.csv i.e. all of a usersid files or */wry*.csv
+           pattern =  base_directory + range
+           filenames = Dir.glob(pattern).sort
         end
-        @@number_of_line = @@number_of_line + 1
-        #  break if n == 10
-        #rescue the freereg data errors and continue processing the file
-        
-      rescue FreeREGError => free
-          
-        @user_message_file = File.new(user_file_for_warning_messages, "w")  if number_of_error_messages == 0
-        number_of_error_messages = number_of_error_messages + 1
-        line_number = @@number_of_line + 1
-        puts free.message + " at line #{line_number}"
-        message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
-        message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message + " at line #{line_number}"
-        @user_message_file.puts free.message + " at line #{line_number}"
-        @@number_of_line = @@number_of_line + 1
-         #    n = n - 1 unless n == 0
-        break if (free.message == "Empty file" || free.message == "Invalid Character Set" || @line_type == 'Header'  )
-        retry  
-      rescue FreeREGEnd => free
-        n = n - 1
-        puts " Processed  #{n} data lines correctly with #{number_of_error_messages} error messages" 
-        me.process_register_headers(header)
-        break
+
       end
-    end
-    me.freereg1_csv_file          
-  
-  rescue Exception => e 
-    puts e.message
-    puts e.backtrace
-    message_file.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
-    message_file.puts e.message  
-    message_file.puts e.backtrace.inspect     
-    me.freereg1_csv_file                  
+     
+      index = alpha_start
+      while index < alpha_end do 
+       #get the file names for a character ; we don't do it if the userid was specified
+       pattern = base_directory + ALPHA[index] + "*/*.csv" unless short == 1
+       filenames = Dir.glob(pattern).sort unless short == 1
+       #now we cycle through the files
+      filenames.each do |filename|
+         
+          @badfile = 0
+        # now we go though the csv file
+         
+          header = Hash.new
+          @@create_search_records = false
+          @@create_search_records = true if create_search_records == 'create_search_records'
+          @@array_of_data_lines = Array.new {Array.new}
+          @@number_of_line = 0
+          @@charset = "iso-8859-1"
+          standalone_filename = File.basename(filename)
+
+          #Lets get the upload date
+          modified_date = File.mtime(filename)
+          @@uploaded_date = modified_date.strftime("%d %b %Y") 
+        # get the user ID represented by the containing directory
+          full_dirname = File.dirname(filename)
+          parent_dirname = File.dirname(full_dirname)
+          user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+          print "#{user_dirname}\t#{standalone_filename}\n"
+           # TODO convert character sets as in freereg_csv_processor
+          #delete any user log file for errors we put it in the same directory as the csv file came from    
+          @user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
+          File.delete(@user_file_for_warning_messages) if File.exists?(@user_file_for_warning_messages)
+          header[:file_name] = standalone_filename #do not capitalize filenames
+          header[:userid] = user_dirname
+          header[:uploaded_date] = modified_date
+
+
+
+         p modified_date
+          check_for_file = Freereg1CsvFile.where({ :file_name => header[:file_name], 
+                                :userid => header[:userid], :uploaded_date => header[:uploaded_date]}).first
+          p check_for_file
+          p recreate
+          break if !check_for_file.nil? && recreate == "update"
+         
+
+         p "continuing"
+          me = FreeregCsvProcessor.new(filename,user_dirname)
+          begin
+          #we slurp in the full csv file
+          @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
+          #we rescue when for some reason the slurp barfs
+          rescue => e 
+                   @user_message_file = File.new(@user_file_for_warning_messages, "w") 
+                   @user_message_file.puts e.message  
+                   @user_message_file.puts "Something seriously wrong with your file; it was not processed please contact your coordinator"
+                   puts e.message
+                   message_file.puts "***********#{standalone_filename} **************#{user_dirname}       "  
+                   message_file.puts e.message  
+                   message_file.puts e.backtrace.inspect 
+                   @badfile = 1
+                  
+          else
+            raise FreeREGError,  "Empty file" if @@array_of_data_lines.nil?
+          ensure
+          #we ensure that processing keeps going by dropping outthrough the bottom     
+          end
+
+           #we dont process the file if it barfed
+          unless @badfile == 1 
+           #we have a file of data to process
+          
+          number_of_error_messages = 0
+          @line_type = 'hold'
+          header_line = 1
+          n = 1
+          loop do
+              begin
+                @line_type = me.get_line_of_data
+                if @line_type == 'Header'  
+                  case 
+                    when header_line == 1 
+                      me.process_header_line_one(header)
+                      header_line = header_line + 1      
+                    when header_line == 2 
+                      me.process_header_line_two(header)
+                      header_line = header_line + 1
+                    when header_line == 3 
+                      me.process_header_line_threee(header)
+                      header_line = header_line + 1
+                    when header_line == 4 
+                      me.process_header_line_four(header)
+                      header_line = header_line + 1
+                    when header_line == 5 
+                      me.process_header_line_five(header)
+                      header_line = header_line + 1
+                    else 
+                     raise FreeREGError,  "Unknown header " 
+                  end
+                else
+                  type = header[:record_type]
+                  me.process_register_location(n)
+                  case type
+                    when RecordType::BAPTISM then me.process_baptism_data_records(n,header)
+                    when RecordType::BURIAL then me.process_burial_data_records(n,header)                      
+                    when RecordType::MARRIAGE then me.process_marriage_data_records(n,header)
+                  end
+                    n =  n + 1
+                end
+                @@number_of_line = @@number_of_line + 1
+                #  break if n == 10
+                #rescue the freereg data errors and continue processing the file
+        
+                rescue FreeREGError => free
+          
+                   @user_message_file = File.new(@user_file_for_warning_messages, "w")  if number_of_error_messages == 0
+                   number_of_error_messages = number_of_error_messages + 1
+                   line_number = @@number_of_line + 1
+                   puts free.message + " at line #{line_number}"
+                    message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}*********************has errors*********** ***********" 
+                    message_file.puts "#{user_dirname}.#{standalone_filename}.#{n}" + free.message + " at line #{line_number}"
+                    @user_message_file.puts free.message + " at line #{line_number}"
+                    @@number_of_line = @@number_of_line + 1
+                     #    n = n - 1 unless n == 0
+                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" || @line_type == 'Header'  )
+                    retry  
+                rescue FreeREGEnd => free
+                   n = n - 1
+                   puts " Processed  #{n} data lines correctly with #{number_of_error_messages} error messages" 
+                   me.process_register_headers(header)
+                   break
+                rescue  => e 
+                  @user_message_file = File.new(@user_file_for_warning_messages, "w") unless File.exists?(@user_file_for_warning_messages)
+                  @user_message_file.puts e.message  
+                  @user_message_file.puts "Something seriously wrong with your file during processing please contact your coordinator"
+                   puts e.message
+                   puts e.backtrace
+                   message_file.puts "*********************** #{n} ***********#{standalone_filename} **************#{user_dirname}       "  
+                   message_file.puts e.message  
+                   message_file.puts e.backtrace.inspect 
+                   break   
+                end
+                #puts "line repeating"
+                
+              end
+              
+              
+               me.freereg1_csv_file
+              else
+             puts " Bypassed line and file processing for #{@badfile}"  
+              end         
+          end
+           index = index + 1
+        
+      end
+     
+     
   end
-  
+   
 end
 #set the FreeREG error conditions
 class FreeREGError < StandardError
@@ -1179,8 +1276,8 @@ end
 class FreeREGEnd < StandardError
 end
 
-class FreeREGError < StandardError
-end
+#class FreeREGError < StandardError
+#end
 # 
 # require 'pry'
 

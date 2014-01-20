@@ -74,7 +74,7 @@ class Place
           self.master_place_lon = master_record.longitude
           self.location = [self.master_place_lat, self.master_place_lon]
           self.genuki_url  = master_record.genuki_url
-          self.save!
+          self.save
     else
       # Master does not have the place name lets look at Genuki
       # type 0 Complete word (default) 1 Exact match 2 Word ending 3 Word beginning 4 Word containing 
@@ -97,7 +97,7 @@ class Place
      if our_page.css('div').text =~  /does not match any place name in the gazetteer/ 
           self.genuki_url = "no url"
           self.location = [nil,nil]
-          self.save!
+          self.save
      else
          page_tr = our_page.css('table').css('tr')
          individual_td = page_tr[5].css('td')
@@ -110,7 +110,7 @@ class Place
          self.genuki_url = PLACE_BASE_URL + url[0]["href"]
          self.master_place_lat = location[0].to_f
          self.master_place_lon = location[1].to_f
-         self.save!   
+         self.save   
          #lets save the record in the master collection
          master_record =  MasterPlaceName.new()
          master_record.chapman_code = self.chapman_code
@@ -122,7 +122,7 @@ class Place
          master_record.latitude = location[0].to_f
          master_record.longitude = location[1].to_f
          master_record.source = "Genuki"
-         master_record.save!   
+         master_record.save   
          
      end
   end
@@ -144,7 +144,7 @@ class Place
 		
 		fill_location
 		
-		save!
+		save
 		
 		self
   end
@@ -171,7 +171,7 @@ class Place
           master_place.latitude = self.master_place_lat
           master_place.longitude = self.master_place_lon
           master_place.source = source
-          master_place.save!
+          master_place.save
       end
   end
 

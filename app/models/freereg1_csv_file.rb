@@ -44,8 +44,11 @@ class Freereg1CsvFile
   field :credit_name, type: String
   field :first_comment, type: String
   field :second_comment, type: String
-  field :transcription_date, type: String
-  field :modification_date, type: String
+  field :transcription_date, type: String, default: -> {"01 Jan 1998"} 
+  field :modification_date, type: String, default: -> {"01 Jan 1998"} 
+  field :uploaded_date, type: DateTime
+  field :digest, type: String
+  field :locked, type: String, default: -> {false} 
   field :lds, type: String
   field :characterset, type: String
   field :alternate_register_name,  type: String
@@ -208,6 +211,8 @@ class Freereg1CsvFile
 
 
   def self.convert_date(date_field)
+    #use a custom date covertion to number of days for comparison purposes only
+    #dates provided vary in format
     date_day = 0
     date_month = 0
     date_year = 0

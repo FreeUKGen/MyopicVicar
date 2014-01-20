@@ -22,7 +22,7 @@ Details of the <b>Place name:</b><%= @place.place_name %> </p>
 <p><b>Original Source:</b><%= @place.original_source %></p>
 <p><b>Reason for changes:</b><%= @place.reason_for_change %></p>
 <p><b>Other Reason for changes:</b><%= @place.other_reason_for_change %></p>
-<p><b>Last amended:</b><%= @place.u_at %></p>
+<p><b>Last amended:</b><%= @place.u_at.strftime("%d %b %Y") %></p>
  </div>
 <%= button_to 'Edit Place', edit_master_place_name_path(@place), method: :get %> 
 <%= button_to 'Discard', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %>
