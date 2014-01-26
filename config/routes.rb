@@ -13,6 +13,12 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  resources :syndicates
+
+
+  resources :coordinators
+
+
   resources :alias_place_churches
 
 

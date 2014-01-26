@@ -1,0 +1,2 @@
+class SyndicatesController < ApplicationController
+end
