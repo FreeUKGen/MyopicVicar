@@ -16,6 +16,23 @@ desc "Create a missing locations list"
    end
   end
 
+desc "Create a report of files loaded by people"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :userid_files, [:syndicate] => [:environment] do |t, args|
+ require 'userids_files' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          UseridsFiles.process(args.syndicate) 
+          
+     
+    puts "Task complete."
+   end
+  end
+
+
 
 
 

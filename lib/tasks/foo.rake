@@ -74,7 +74,47 @@ task :check_place_docs, [:type]  => [:environment] do |t, args|
   
   puts "Task complete."
 end
+desc "Create the indices after all FreeREG processes have completed"
+task :create_freereg_csv_indexes => [:environment] do  
+  #task is there to creat indexes after running of freereg_csv_processor
+  require 'search_record'
+  require 'freereg1_csv_file'
+  require 'freereg1_csv_entry'
+  require 'register'
+  require 'church'
+  require 'place'
+  puts "Freereg build indexes."
+  SearchRecord.create_indexes()
+  Freereg1CsvFile.create_indexes()
+  Freereg1CsvEntry.create_indexes()
+  Register.create_indexes()
+  Church.create_indexes()
+  Place.create_indexes()
+  puts "Indexes complete."
+end
 
+ task :create_userid_docs, [:type,:base_directory,:range]  => [:environment] do |t, args| 
+ #this task reads the .uDetails file for each userid and creates the userid_detail collection  
+  require 'create_userid_docs'
+ 
+  puts "Creating Transcriber Docs"
+  
+    CreateUseridDocs.process(args.type,args.base_directory,args.range )
+
+  
+  puts "Task complete."
+ end
+ task :create_syndicate_docs, [:type,:base_directory,:range]  => [:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_syndicate_docs'
+ 
+  puts "Creating Syndicate Docs"
+  
+    CreateSyndicateDocs.process(args.type,args.base_directory,args.range )
+
+  
+  puts "Task complete."
+ end
 end
 
 
