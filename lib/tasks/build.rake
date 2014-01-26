@@ -166,23 +166,7 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
      CreateSearchRecordsDocs.process(args.type,search_records,args.base_directory,args.range )
   end
 
-desc "Create the indices after all FreeREG processes have completed"
-task :create_freereg_csv_indexes => [:parallel_create_search_records,:environment] do  
-  #task is there to creat indexes after running of freereg_csv_processor
-  
-  require 'freereg1_csv_file'
-  require 'freereg1_csv_entry'
-  require 'register'
-  require 'church'
-  require 'place'
-  puts "Freereg build indexes."
-  Freereg1CsvFile.create_indexes()
-  Freereg1CsvEntry.create_indexes()
-  Register.create_indexes()
-  Church.create_indexes()
-  Place.create_indexes()
-  puts "Indexes complete."
-end
+
 
 # This is the processing task. It can be invoked on its own as build:process_freereg1_csv[] with
 #parameters as defined for build:freereg EXCEPT there is only one range argument
@@ -199,7 +183,24 @@ task :process_freereg1_csv,[:type,:search_records,:base_directory,:range] => [:e
   puts "Freereg task complete."
 
 end
-
+desc "Create the indices after all FreeREG processes have completed"
+task :create_freereg_csv_indexes => [:parallel_create_search_records,:environment] do  
+  #task is there to creat indexes after running of freereg_csv_processor
+  require 'search_record'
+  require 'freereg1_csv_file'
+  require 'freereg1_csv_entry'
+  require 'register'
+  require 'church'
+  require 'place'
+  puts "Freereg build indexes."
+  SearchRecord.create_indexes()
+  Freereg1CsvFile.create_indexes()
+  Freereg1CsvEntry.create_indexes()
+  Register.create_indexes()
+  Church.create_indexes()
+  Place.create_indexes()
+  puts "Indexes complete."
+end
 
 # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5"]
 #this saves and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
@@ -289,6 +290,7 @@ end
 
 desc "Create the indices after all FreeREG processes have completed"
  task :recreate_freereg_csv_indexes,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:load_freereg_collections_from_file, :environment] do  |t,args|
+  require "search_record"
   require 'freereg1_csv_file'
   require 'freereg1_csv_entry'
   require 'register'

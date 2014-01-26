@@ -6,11 +6,11 @@ class FreeregCsvProcessor
   require 'text'
   require "unicode"
   require 'chapman_code'
-  # Reconsider this!
-  require "#{Rails.root}/app/models/freereg1_csv_file"
+ require "#{Rails.root}/app/models/freereg1_csv_file"
   require "record_type"
   require 'digest/md5'
-  ALPHA = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9"]
+  require 'get_files'
+ 
   CONTAINS_PERIOD = /\./
   DATEMAX = 2020
   DATEMIN = 1530
@@ -1049,53 +1049,6 @@ COMMON_WORD_EXPANSIONS = {
     end
   end
 
-  def self.get_all_of_the_filenames(base_directory,range)
-    
-     filenames = Array.new
-     files = Array.new
-     aplha = Array.new
-     alpha_start = 1
-     alpha_end = 2
-     alpha = range.split("-")
-
-     if alpha[0].length == 1
-       #deal with a-c range
-       alpha_start = ALPHA.find_index(alpha[0])
-       alpha_end =  alpha_start + 1
-       alpha_end = ALPHA.find_index(alpha[1]) + 1 unless alpha.length == 1
-       index = alpha_start
-       while index < alpha_end do 
-         #get the file names for a character 
-         pattern = base_directory + ALPHA[index] + "*/*.csv" 
-         pattern_upcase = base_directory + ALPHA[index] + "*/*.csv" 
-         files = Dir.glob(pattern, File::FNM_CASEFOLD).sort 
-         files.each do |fil|
-           filenames << fil
-         end
-         index = index + 1
-       end
-     else
-      new_alpha = Array.new
-      new_alpha = range.split("/")
-      case
-        when new_alpha[0].length > 2 && new_alpha[1].length  >= 12
-           #deals with userid/abddddxy.csv ie a specific file
-           files = base_directory + range
-           filenames << files
-        when (new_alpha[0].length == 1 || new_alpha[0].length > 2) && new_alpha[1].length < 12 
-           #deals with userid/*.csv i.e. all of a usersid files or */wry*.csv
-           pattern =  base_directory + range
-           files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-          files.each do |fil|
-           filenames << fil
-         end
-      end
-    end
-    @@message_file.puts filenames
-    @@message_file.puts "#{filenames.length}\t files selected for processing\n"
-    return filenames
-  end
-
   def self.process_the_data
                   
      @@number_of_line = 0
@@ -1300,7 +1253,9 @@ COMMON_WORD_EXPANSIONS = {
      @@create_search_records = false
      @@create_search_records = true if create_search_records == 'create_search_records'
      #set up to determine files to be processed
-     filenames = get_all_of_the_filenames(base_directory,range)
+     filenames = GetFiles.get_all_of_the_filenames(base_directory,range)
+      
+      @@message_file.puts "#{filenames.length}\t files selected for processing\n"
        time_start = Time.now
        nn = 2
        #now we cycle through the files
