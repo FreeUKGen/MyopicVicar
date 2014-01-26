@@ -1,0 +1,29 @@
+<% require 'chapman_code' %>
+<%  unless params[:commit] == "Search" %>
+  <% if @number_of_syndicates != 1 %>
+  
+   <%= semantic_form_for @coordinators do |f| %>
+      <%= f.input :chapman_code, 
+        { :as => :select, :label => "#{@first_name} you have multiple syndicates. Which would you like to work with?",
+          :include_blank => false,
+          :required => true,
+          :collection => @syndicates } %>
+    <%= f.action :submit, :as => :input, :label => 'Select'   %>
+   <% end %>
+<% else %>
+<%= @first_name%> please select one of these options for <%= @county %>.
+
+Let me manage the county contents
+
+Show my transcribers
+
+Show my files
+
+Show the statistics for county
+
+
+<% end %>
+
+	<%= button_to 'Back to County Search Page', places_path, method: :get %>
+	<% end %>
+</div>
