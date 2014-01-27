@@ -20,6 +20,7 @@
 
 <% @files.each do |file| %>
   <tr> 
+    <% unless file.records.nil? %>
    <% value = RecordType.display_name(file.record_type) %>
     <td style="width:10%"><%= value %></td>
     <td style="width:10%"><%= file.records %></td>
@@ -33,9 +34,10 @@
     <%end%>
     <td style="width:12%"><%= file.transcription_date %></td>
     <td style="width:12%"><%= file.modification_date %></td>
-    <% unless file.records.nil? %>
     <td style="width:12%"><%= link_to "Decadal Data", show_decade_path(value) %></td>
-    <%end%>
+   
+     <%end%>
+    
     
   </tr>
 <% end %>

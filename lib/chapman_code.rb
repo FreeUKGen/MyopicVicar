@@ -42,12 +42,17 @@ module ChapmanCode
   def self.has_key(value)
     CODES.key(value)
   end
-  
+
+  def self.value?(value)
+    CODES.value?(value)  
+  end
+
   CODES = {
     'Bedfordshire' => 'BDF',
     'Berkshire' => 'BRK',
     'Buckinghamshire' => 'BKM',
     'Cambridgeshire' => 'CAM',
+    'Channel Islands' => 'CHI',
     'Cheshire' => 'CHS',
     'Cornwall' => 'CON',
     'Cumberland' => 'CUL',
@@ -61,12 +66,13 @@ module ChapmanCode
     'Herefordshire' => 'HEF',
     'Hertfordshire' => 'HRT',
     'Huntingdonshire' => 'HUN',
+    'Isle of Man' => 'IOM',
     'Isle of Wight' => 'IOW',
     'Kent' => 'KEN',
     'Lancashire' => 'LAN',
     'Leicestershire' => 'LEI',
     'Lincolnshire' => 'LIN',
-    'London' => 'LND',
+    'City of London' => 'LND',
     'Middlesex' => 'MDX',
     'Norfolk' => 'NFK',
     'Northamptonshire' => 'NTH',
@@ -88,6 +94,7 @@ module ChapmanCode
     'Yorkshire, East Riding' => 'ERY',
     'Yorkshire, North Riding' => 'NRY',
     'Yorkshire, West Riding' => 'WRY',
+    'England' => 'ENG',
     'Aberdeenshire' => 'ABD',
     'Angus' => 'ANS',
     'Argyllshire' => 'ARL',
@@ -147,6 +154,7 @@ module ChapmanCode
     'Montgomeryshire' => 'MGY',
     'Pembrokeshire' => 'PEM',
     'Radnorshire' => 'RAD',
+    'Scotland' => 'SCT',
     'Clwyd' => 'CWD',
     'Dyfed' => 'DFD',
     'Gwent' => 'GNT',
@@ -158,6 +166,7 @@ module ChapmanCode
     'Jersey' => 'JSY',
     'Guernsey' => 'GSY',
     'Sark' => 'SRK',
-    'Alderney' => 'ALD'
+    'Alderney' => 'ALD',
+    'Wales' => 'WLS'
   }
 end

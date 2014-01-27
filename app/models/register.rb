@@ -28,7 +28,7 @@ class Register
       #update register
       register.freereg1_csv_files << freereg1_csv_file
       register.save!
-      freereg1_csv_file.save!
+      freereg1_csv_file.save
     else 
     # creatre the register  
      register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)   
@@ -57,10 +57,10 @@ class Register
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register
     #and save everything
-    register.save!
-    @@my_church.save!
-    my_place.save!
-    freereg1_csv_file.save!
+    register.save
+    @@my_church.save
+    my_place.save
+    freereg1_csv_file.save
     register
   end
 
@@ -96,6 +96,6 @@ class Register
     new_last_amended_date = file_creation_date if (Freereg1CsvFile.convert_date(freereg_file.transcription_date) > Freereg1CsvFile.convert_date(freereg_file.modification_date))
     new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
     register.last_amended = new_last_amended_date
-    register.save!
+    register.save
   end
 end

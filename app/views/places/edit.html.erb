@@ -3,4 +3,5 @@
 <%= render 'form' %>
 
 <br><br><%= button_to 'Show Place', @place , method: :get%> 
-<%= button_to 'Back to Listing of Places', places_path, method: :get %>
+<% params = session[:parameters] %>
+<%= button_to 'Back to Index of Places', places_path(params) %>
