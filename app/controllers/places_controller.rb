@@ -3,10 +3,6 @@ class PlacesController < InheritedResources::Base
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
   
   def index
-    redirect_to list_place_path
-  end
-
-  def list
           @chapman_code = session[:chapman_code] 
           @places = Place.where( :chapman_code => session[:chapman_code] ).all.order_by( place_name: 1)
           @county = session[:county]
@@ -14,6 +10,10 @@ class PlacesController < InheritedResources::Base
           session[:errors] = nil
           session[:form] = nil
           session[:parameters] = params
+  end
+
+  def list
+          
   end
 
   def show
@@ -67,8 +67,7 @@ def create
      return
  else
     session[:type] = "edit"
-    params = session[:parameters]
-    redirect_to list_place_path(params[:id])
+    redirect_to places_path
  end
 end
 
@@ -121,7 +120,7 @@ def update
     else
     end
   end
-  redirect_to list_place_path(@place,:anchor => "#{@place.id}")
+  redirect_to places_path(:anchor => "#{@place.id}")
   end
 
   
@@ -144,16 +143,16 @@ def update
      session[:errors] = @place.errors.messages
      flash[:notice] = 'The deletion of the place was unsuccessful'
     end
-    redirect_to list_place_path(params[:id])
+    redirect_to places_path
  end
 
  def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
-   redirect_to list_place_path(@place,:anchor => "#{@place.id}")
+   redirect_to place_path(:anchor => "#{@place.id}")
  end
 
  def record_validation_errors
   flash[:notice] = 'The update of the children to Place with a place name change failed'
-   redirect_to list_place_path(@place,:anchor => "#{@place.id}")
+   redirect_to places_path(:anchor => "#{@place.id}")
  end
 end

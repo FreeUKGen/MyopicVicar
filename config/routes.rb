@@ -43,8 +43,7 @@ MyopicVicar::Application.routes.draw do
   resources :master_place_names
 
   resources :places
-   get 'places/:id/list(.:format)', :to => 'places#list', :as => :list_place
-
+  
   resources :church_names
 
   resources :toponyms
