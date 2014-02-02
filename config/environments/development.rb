@@ -51,11 +51,11 @@ MyopicVicar::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
   #location of the mongo binary folder
-  config.mongodb_bin_location = "d:/mongodb/bin/"
+  config.mongodb_bin_location = File.exist?("d:/mongodb/bin/") ? "d:/mongodb/bin/" : "/usr/bin/"
   #where to store the collections AliasPlaceChurch
-  config.mongodb_collection_temp = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/tmp/"
+  config.mongodb_collection_temp = File.join(Rails.root, 'tmp')
   #Where the collections are stored
-  config.mongodb_collection_location = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/db/collections/"
+  config.mongodb_collection_location = File.join(Rails.root, 'db', 'collections')
   #where do we store the Mongodb database 
   #config.mongodb_datafile = "e:/data/"
   # Date of dataset used

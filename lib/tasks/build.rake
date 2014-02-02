@@ -70,7 +70,7 @@ end
   collections_to_save = ["0","1","2","3","4","5","6","7"] if args.type != "recreate"
    collections_to_save.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
     puts "#{$collections[coll]} being saved in #{@tmp_location}"
      output =  `#{collection}`
      p output
@@ -148,9 +148,9 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
     if args.search_records == 'create_search_records_parallel'  then
        time_start = Time.now
      puts "Processing entries to search records with #{args.search_records}"
-     pid1 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")  
-     pid2 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]")  unless args.range2.nil?
-     pid3 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]")  unless args.range3.nil?
+     pid1 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")  
+     pid2 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]")  unless args.range2.nil?
+     pid3 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]")  unless args.range3.nil?
      p Process.waitall
       time_end = Time.now
     process_time = time_end - time_start
@@ -259,7 +259,7 @@ task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :lo
   collections_to_reload = args[:reload_from_temp].split("/")
   collections_to_reload.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + @tmp_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + File.join(@tmp_location, $collections[coll] + ".json")
     puts "#{$collections[coll]} being reloaded from #{@tmp_location}"
     p collection
     output = `#{collection}`
@@ -279,7 +279,7 @@ task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load
  collections_to_load = args[:load_from_file].split("/")
  collections_to_load.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + @file_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + File.join(@file_location, $collections[coll] + ".json")
     puts "#{$collections[coll]} being loaded from #{@file_location}"
     p collection
     output = `#{collection}`
