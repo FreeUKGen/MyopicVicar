@@ -13,14 +13,23 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
-  resources :syndicates
 
+  resources :saved_searches
+
+
+  resources :manage_resources
+ 
+  get 'userid_details/:id/disable(.:format)', :to => 'userid_details#disable', :as => :disable_userid_detail
+  
+  resources :userid_details
+  
+  resources :manage_counties
+
+  resources :syndicates
 
   resources :coordinators
 
-
   resources :alias_place_churches
-
 
   resources :freereg_contents
   get 'freereg_contents/:id/show(.:format)', :to => 'freereg_contents#show', :as => :show_freereg_content
@@ -29,12 +38,12 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/:id/show_decade(.:format)', :to => 'freereg_contents#show_decade', :as => :show_decade
   resources :churches
 
-
   resources :registers
 
   resources :master_place_names
 
   resources :places
+   get 'places/:id/list(.:format)', :to => 'places#list', :as => :list_place
 
   resources :church_names
 
