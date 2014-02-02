@@ -1,5 +1,8 @@
-<h1>New place</h1>
+Adding a place to <b><%= @county  %></b>
 
 <%= render 'form' %>
 
-<%= link_to 'Back', places_path %>
+<% params = session[:parameters] %>
+<%= button_to 'Back to Index of Places', list_place_path(params) , method: :get%>
+<%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %>
+<%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %>

@@ -2,6 +2,6 @@
 
 <%= render 'form' %>
 
-<br><br><%= button_to 'Show Place', @place , method: :get%> 
-<% params = session[:parameters] %>
-<%= button_to 'Back to Index of Places', places_path(params) %>
+<%= button_to 'Back to Index of Places', list_place_path(@place, :anchor => "#{@place.id}") , method: :get%>
+<%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %>
+<%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %>
