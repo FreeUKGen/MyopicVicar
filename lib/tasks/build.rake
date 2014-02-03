@@ -45,7 +45,7 @@ EXPORT_COMMAND =  "mongoexport --db myopic_vicar_development --collection  "
 # config.dataset_date = "13 Dec 2013"
 
 
-task :freereg,[:type,:search_records,:base_directory,:range1,:range2,:range3] => [:setup,:create_freereg_csv_indexes] do |t, args| 
+task :freereg,[:type,:search_records,:range1,:range2,:range3] => [:setup,:create_freereg_csv_indexes] do |t, args| 
     p "completed build"
 end
 
@@ -70,7 +70,7 @@ end
   collections_to_save = ["0","1","2","3","4","5","6","7"] if args.type != "recreate"
    collections_to_save.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
     puts "#{$collections[coll]} being saved in #{@tmp_location}"
      output =  `#{collection}`
      p output
@@ -126,14 +126,14 @@ end
  
  
 #This spinning off 1,2 or 3 rake csv_processes.
-task :parallelp,[:type,:search_records,:base_directory,:range1,:range2,:range3] => [:setup_index, :environment]  do |t, args| 
+task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:setup_index, :environment]  do |t, args| 
   p "Starting processors"
     
     search_records = args.search_records
     time_start = Time.now
-    pid1 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")
-    pid2 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]") unless args.range2.nil?
-    pid3 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]") unless args.range3.nil?
+    pid1 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range1}]")
+    pid2 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range2}]") unless args.range2.nil?
+    pid3 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range3}]") unless args.range3.nil?
     p "#{pid1} #{pid2}  #{pid3}  started at #{time_start}"
     p Process.waitall
     time_end = Time.now
@@ -143,14 +143,14 @@ task :parallelp,[:type,:search_records,:base_directory,:range1,:range2,:range3] 
 desc "Process the freereg1_csv_entries and create the SearchRecords documents"
  # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
  #valid options for type are rebuild, replace, add
- task :parallel_create_search_records, [:type,:search_records,:base_directory,:range1,:range2,:range3] => [:parallelp,:environment] do |t, args|
+ task :parallel_create_search_records, [:type,:search_records,:range1,:range2,:range3] => [:parallelp,:environment] do |t, args|
  # only parallel create search records if we are recreating else the processor does it
     if args.search_records == 'create_search_records_parallel'  then
        time_start = Time.now
      puts "Processing entries to search records with #{args.search_records}"
-     pid1 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")  
-     pid2 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]")  unless args.range2.nil?
-     pid3 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]")  unless args.range3.nil?
+     pid1 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.range1}]")  
+     pid2 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.range2}]")  unless args.range2.nil?
+     pid3 = Kernel.spawn("Rake build:create_search_records[#{args.type},#{args.search_records},#{args.range3}]")  unless args.range3.nil?
      p Process.waitall
       time_end = Time.now
     process_time = time_end - time_start
@@ -158,12 +158,12 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
     end
   end
 
-  task :create_search_records, [:type,:search_records,:base_directory,:range] => [:environment] do |t, args|
+  task :create_search_records, [:type,:search_records,:range] => [:environment] do |t, args|
    require 'create_search_records_docs' 
  
   search_records = "create_search_records" 
 
-     CreateSearchRecordsDocs.process(args.type,search_records,args.base_directory,args.range )
+     CreateSearchRecordsDocs.process(args.type,search_records,args.range )
   end
 
 
@@ -171,15 +171,15 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
 # This is the processing task. It can be invoked on its own as build:process_freereg1_csv[] with
 #parameters as defined for build:freereg EXCEPT there is only one range argument
 #NOTE NO SETUP of the database IS DONE DURING THIS TASK
-task :process_freereg1_csv,[:type,:search_records,:base_directory,:range] => [:environment] do |t, args| 
+task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |t, args| 
 
   require 'freereg_csv_processor'
   # use the processor to initiate search record creation on add or update but not on recreation when we do at end
   search_records = "no_search_records" 
   search_records = "create_search_records" if args.search_record == "create_search_records_processor"
- 
+
   puts "processing CSV file with #{args.type} and #{search_records}"
-  FreeregCsvProcessor.process(args.type,search_records, args.base_directory, args.range)
+    FreeregCsvProcessor.process(args.type,search_records,args.range)
   puts "Freereg task complete."
 
 end
@@ -229,7 +229,7 @@ task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file
  collections_to_save = args[:save].split("/")
    collections_to_save.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
     puts "#{$collections[coll]} being saved in #{@tmp_location}"
      output =  `#{collection}`
      p output
@@ -259,7 +259,7 @@ task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :lo
   collections_to_reload = args[:reload_from_temp].split("/")
   collections_to_reload.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + @tmp_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + @tmp_location + '/' + $collections[coll] + ".json"
     puts "#{$collections[coll]} being reloaded from #{@tmp_location}"
     p collection
     output = `#{collection}`
@@ -279,7 +279,7 @@ task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load
  collections_to_load = args[:load_from_file].split("/")
  collections_to_load.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + @file_location + $collections[coll] + ".json"
+    collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + @file_location + '/' + $collections[coll] + ".json"
     puts "#{$collections[coll]} being loaded from #{@file_location}"
     p collection
     output = `#{collection}`
