@@ -47,6 +47,7 @@ class Freereg1CsvFile
   field :transcription_date, type: String, default: -> {"01 Jan 1998"} 
   field :modification_date, type: String, default: -> {"01 Jan 1998"} 
   field :uploaded_date, type: DateTime
+  field :error, type: Integer, default: 0
   field :digest, type: String
   field :locked, type: String, default: -> {false} 
   field :lds, type: String

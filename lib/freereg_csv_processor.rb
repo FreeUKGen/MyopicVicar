@@ -1115,6 +1115,8 @@ COMMON_WORD_EXPANSIONS = {
                    n = n - 1
                    puts "#@@userid #{@@filename} processed  #{n} data lines correctly with #{@@number_of_error_messages} error messages" 
                    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{n} data lines correctly with #{@@number_of_error_messages} error messages"
+                   @@header[:error] = @@number_of_error_messages
+
                    process_register_headers
                    break
                 rescue  => e 
