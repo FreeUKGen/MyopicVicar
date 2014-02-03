@@ -1115,6 +1115,8 @@ COMMON_WORD_EXPANSIONS = {
                    n = n - 1
                    puts "#@@userid #{@@filename} processed  #{n} data lines correctly with #{@@number_of_error_messages} error messages" 
                    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{n} data lines correctly with #{@@number_of_error_messages} error messages"
+                   @@header[:error] = @@number_of_error_messages
+
                    process_register_headers
                    break
                 rescue  => e 
@@ -1240,11 +1242,12 @@ COMMON_WORD_EXPANSIONS = {
     
   end
 
-  def self.process(recreate,create_search_records,base_directory,range)
+  def self.process(recreate,create_search_records,range)
     #this is the basic processing
     
      #set up message files 
      EmailVeracity::Config[:skip_lookup]=true
+     base_directory = Rails.application.config.datafiles
      file_for_warning_messages = "log/freereg_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
      @@message_file = File.new(file_for_warning_messages, "a")

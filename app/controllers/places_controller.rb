@@ -1,89 +1,126 @@
-class PlacesController < ActionController::Base
-
-
-def index
-    
-    unless params[:commit] == "Search"
-          reset_session
-          @places = Place.new
-      else       
-          @places = Place.where( :chapman_code => params[:place][:chapman_code]).all.order_by( place_name: 1)
-          @county = ChapmanCode.has_key(params[:place][:chapman_code]) 
-          session[:county] = @county
-          session[:chapman_code] = params[:place][:chapman_code]
-          #reset the session errors flag
+class PlacesController < InheritedResources::Base
+  rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
+  rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
+  
+  def index
+          @chapman_code = session[:chapman_code] 
+          @places = Place.where( :chapman_code => session[:chapman_code] ).all.order_by( place_name: 1)
+          @county = session[:county]
+          @first_name = session[:first_name]
           session[:errors] = nil
           session[:form] = nil
           session[:parameters] = params
-      end
-
   end
 
-def show
-    load(params[:id])
-
+  def list
+          
   end
 
-def edit
-  
-  load(params[:id])
-    
+  def show
+   
+  end
+
+  def edit
+     load(params[:id])
+     @place = session[:form] if (!session[:form].nil? && session[:type] = "new") #repeating the addition as there were errors
+     session[:type] = "edit"
+     @first_name = session[:first_name]
+   end
+
+
+def new
+  if session[:errors].nil?
+      #coming through new for the first time so get a new instance
+      @place = Place.new
+      @place.chapman_code = session[:chapman_code]
+      session[:form] = @place
+      @county = session[:county]
+      session[:errors] = nil
+      @first_name = session[:first_name]
+    else
+     #Coming through new with errors
+      @first_name = session[:first_name]
+      @place = session[:form]
+       @county = session[:county]
+    end
+    session[:type] = "new"
 
 end
 
 def create
-  if params[:commit] == "Search"
-    redirect_to places_path(params)
-  else
-    redirect_to :action => :new
-  end
+   @place = Place.new
+     # save place name change in Place
+    @place.master_place_lon = params[:place][:master_place_lon] unless params[:place][:master_place_lon].nil?
+    @place.master_place_lat = params[:place][:master_place_lat] unless params[:place][:master_place_lat].nil?
+    @place.genuki_url = params[:place][:genuki_url] unless params[:place][:genuki_url].nil?
+    @place.place_notes = params[:place][:place_notes] unless params[:place][:place_notes].nil?
+    @place.place_name = params[:place][:place_name] unless params[:place][:place_name].nil?
+    @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
+    @place.chapman_code = session[:chapman_code]
+    @place.save
+    flash[:notice] = 'The addition of the Place was succsessful'
+   if @place.errors.any?
+     session[:form] =  @place
+     session[:errors] = @place.errors.messages
+     flash[:notice] = 'The addition of the Place was unsuccsessful'
+     redirect_to :action => 'new'
+     return
+ else
+    session[:type] = "edit"
+    redirect_to places_path
+ end
 end
 
 def update
     load(params[:id])
-    place = params[:place][:alternate_place_name]
-    notes = params[:place][:notes]
-    
     # save place name change in Place
-     @place.alternate_place_name = @place.place_name
-    old_county = @place.chapman_code
-    @place.place_name = place
-   
-    @place.place_notes = notes
-    @place.save!
+    
+    old_place_name = @place.place_name
 
+    @place.master_place_lon = params[:place][:master_place_lon] unless params[:place][:master_place_lon].nil?
+    @place.master_place_lat = params[:place][:master_place_lat] unless params[:place][:master_place_lat].nil?
+    @place.genuki_url = params[:place][:genuki_url] unless params[:place][:genuki_url].nil?
+    @place.place_notes = params[:place][:place_notes] unless params[:place][:place_notes].nil?
+    @place.place_name = params[:place][:place_name] unless params[:place][:place_name].nil?
+    @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
+    @place.chapman_code = session[:chapman_code]
+    @place.save
+    flash[:notice] = 'The update the Place was succsessful'
+   if @place.errors.any? then
+     session[:form] =  @place
+     session[:errors] = @place.errors.messages
+     flash[:notice] = 'The update of the Place was unsuccsessful'
+     redirect_to :action => 'edit'
+     return 
+  end
+   
+   unless old_place_name == params[:place][:place_name]
   # save place name change in register
     @place.churches.each do |church|
       church.registers.each do |register|
-        register.place_name = place
+        register.place_name = params[:place][:place_name]
         register.save!
       end
     end
-   
  # save place name change in Freereg_csv_file
     county = old_county if county.nil?
     my_files = Freereg1CsvFile.where(:county => county, :place => @place.alternate_place_name).all
     if my_files
       my_files.each do |myfile|
-        myfile.place = place
+        myfile.place = params[:place][:place_name]
         myfile.save!
-
-# save place name change in Freereg_csv_entry
+ # save place name change in Freereg_csv_entry
         myfile_id = myfile._id
-       
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).all
         my_entries.each do |myentries|
-            myentries.place = place
+            myentries.place = params[:place][:place_name]
             myentries.save!
         end
       end
     else
     end
-
-  # Need to add failure capture code
-  
-   flash[:notice] = 'The change in Place Name was succsessful'
-   redirect_to :action => 'show'
+  end
+  redirect_to places_path(:anchor => "#{@place.id}")
   end
 
   
@@ -95,11 +132,27 @@ def update
    @county = ChapmanCode.has_key(@place.chapman_code)
    session[:county] = @county
   end
+
  def destroy
-   
     load(params[:id])
     @place.destroy
+    flash[:notice] = 'The deletion of the place was successful'
+    if @place.errors.any? then
+     @place.errors
+     session[:form] =  @place
+     session[:errors] = @place.errors.messages
+     flash[:notice] = 'The deletion of the place was unsuccessful'
+    end
     redirect_to places_path
  end
 
+ def record_cannot_be_deleted
+   flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
+   redirect_to place_path(:anchor => "#{@place.id}")
+ end
+
+ def record_validation_errors
+  flash[:notice] = 'The update of the children to Place with a place name change failed'
+   redirect_to places_path(:anchor => "#{@place.id}")
+ end
 end

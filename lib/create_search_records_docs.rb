@@ -39,13 +39,14 @@ include Mongoid::Document
     
   end
 
-  def self.process(recreate,create_search_records,base_directory,range) 
+  def self.process(recreate,create_search_records,range) 
     #linm is a string with the maximum number of documents to be processed
     #type of construction; if "rebuild" then we start from scrath; anyhing else we add to existing database
     #sk is a string with the number of entry documents to be skipped before we start processing the entry documents
         
     database = CreateSearchRecordsDocs.new
-   
+    
+   base_directory = Rails.application.config.datafiles
 
     file_for_warning_messages = "log/freereg_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)

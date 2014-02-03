@@ -53,11 +53,11 @@ MyopicVicar::Application.configure do
   #location of the mongo binary folder
   config.mongodb_bin_location = "d:/mongodb/bin/"
   #where to store the collections AliasPlaceChurch
-  config.mongodb_collection_temp = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/tmp/"
+  config.mongodb_collection_temp = File.join(Rails.root,'tmp')
   #Where the collections are stored
-  config.mongodb_collection_location = "d:/Users/Kirk/Documents/GitHub/MyopicVicar/db/collections/"
+  config.mongodb_collection_location = File.join(Rails.root,'db','collections')
   #where do we store the Mongodb database 
-  #config.mongodb_datafile = "e:/data/"
+  config.datafiles = "e:/freereg8/"
   # Date of dataset used
   config.dataset_date = "13 Dec 2013"
 end

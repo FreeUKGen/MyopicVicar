@@ -1,34 +1,43 @@
 <%= semantic_form_for(@place) do |f| %>
-  <% if @place.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@place.errors.count, "error") %> prohibited this place from being saved:</h2>
-
-      <ul>
-      <% @place.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+ 
+  <% if !session[:errors].nil? %>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:red">
+    <%= flash[:notice] %>
     </div>
+   <% end %>
+    
+    <% else %>
+    <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green">
+    <%= flash[:notice] %>
+    </div>
+   <% end %>
   <% end %>
 
- 
-  <div>
-    
-    <%= f.input :place_name,:input_html => { :disabled => true ,:size => 60 }%> 
-  
+<div id="main"style="color:black">
+  <%= f.input :place_name,:label => "This is the most commonly used name for the place:",:input_html => { :size => 60 }%> 
+   
   <br>
-   <%= f.input :alternate_place_name,:input_html => { :size => 60 }%>
+   <%= f.input :alternate_place_name,:label => "Any other names used for this place :",:input_html => { :size => 60 }%>
  <br>
-   <%= f.input :place_notes,:input_html => { :size => 100 }%>
+   <%= f.input :place_notes,:label => "Any notes:",:input_html => { :size => 100 }%>
 
   <br>
-   <%= f.input :last_amended,:input_html => { :disabled => true ,:size => 60 }%>
+   <%= f.input :last_amended, :label => "This is date that data last changed (cannot be changed) :",:input_html => { :disabled => true ,:size => 20 }%>
   
   <br>
-  
-
+   <%= f.input :genuki_url,:label => "The link to the Genuki Gazatteer :", :input_html => { :size => 100 }%>
+  <br>
+      <%= f.input :master_place_lat, :label => "Latitude in degrees eg 50.234 :",:input_html => { :size => 20 }%>
+   <br>   
+   <%= f.input :master_place_lon, :label => "Longitude in degrees eg -1.234 :",:input_html => { :size => 20 }%>
+  <br>
+  <% if session[:type] == "edit" %>  
    <%= f.action :submit, :as => :input, :label => 'Update' %>
+  <% else %>
+   <%= f.action :submit, :as => :input, :label => 'Create' %>
+   <% end %>
   </div>
   <br>
-<% end %>
-
+   <% end %>

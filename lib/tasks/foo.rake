@@ -93,24 +93,24 @@ task :create_freereg_csv_indexes => [:environment] do
   puts "Indexes complete."
 end
 
- task :create_userid_docs, [:type,:base_directory,:range]  => [:environment] do |t, args| 
+ task :create_userid_docs, [:type,:range]  => [:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
   require 'create_userid_docs'
  
   puts "Creating Transcriber Docs"
   
-    CreateUseridDocs.process(args.type,args.base_directory,args.range )
+    CreateUseridDocs.process(args.type,args.range )
 
   
   puts "Task complete."
  end
- task :create_syndicate_docs, [:type,:base_directory,:range]  => [:environment] do |t, args| 
+ task :create_syndicate_docs, [:type,:range]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_syndicate_docs'
  
   puts "Creating Syndicate Docs"
   
-    CreateSyndicateDocs.process(args.type,args.base_directory,args.range )
+    CreateSyndicateDocs.process(args.type,args.range )
 
   
   puts "Task complete."
