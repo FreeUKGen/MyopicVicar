@@ -151,6 +151,7 @@ COMMON_WORD_EXPANSIONS = {
   WORD_SPLITS = {
             "-" => /\-/, 
             "&" => /\&/}
+  WORD_START_BRACKET =  /\A\(/
   DATE_SPLITS = {
             " " => /\s/,
             "-" => /\-/,
@@ -443,6 +444,10 @@ COMMON_WORD_EXPANSIONS = {
     word = COMMON_WORD_EXPANSIONS[word] if COMMON_WORD_EXPANSIONS.has_key?(word)
     word = Unicode::downcase(word) 
     word = Unicode::capitalize(word) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(word) 
+    if word =~ WORD_START_BRACKET 
+      #word is in a () 
+     word = Unicode::capitalize(word.gsub(/\(?/, '')).insert(0, "(") 
+    end 
     word = Unicode::capitalize(word) if num == 0
     return word
   end
@@ -452,7 +457,6 @@ COMMON_WORD_EXPANSIONS = {
     @register = nil
     @register_type = nil
     return true if m.nil? || m.empty?
-    m = m.gsub(/\(?\)?/, '')
     register_words = m.split(" ")
     n = register_words.length
 
@@ -462,7 +466,7 @@ COMMON_WORD_EXPANSIONS = {
       if n > 1
         if register_words[-1] =~ VALID_REGISTER_TYPES then 
           # extract a Register Type field from the church field
-          register_words[-1] = register_words[-1].gsub(/'?"?[Ss]?/, '')
+          register_words[-1] = register_words[-1].gsub(/\(?\)?'?"?[Ss]?/, '')
           register_words[-1] = Unicode::upcase(register_words[-1])
       
          if VALID_REGISTER_TYPE.include?(register_words[-1]) 
@@ -1050,6 +1054,8 @@ COMMON_WORD_EXPANSIONS = {
   end
 
   def self.process_the_data
+    #we do this here so that the logfile is only deleted if we actually process the file!
+     File.delete(@@user_file_for_warning_messages) if File.exists?(@@user_file_for_warning_messages)
                   
      @@number_of_line = 0
      @@number_of_error_messages = 0
@@ -1234,7 +1240,7 @@ COMMON_WORD_EXPANSIONS = {
           @@header[:digest] = Digest::MD5.file(filename).hexdigest 
           #delete any user log file for errors we put it in the same directory as the csv file came from    
           @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-          File.delete(@@user_file_for_warning_messages) if File.exists?(@@user_file_for_warning_messages)
+         
           @@header[:file_name] = standalone_filename #do not capitalize filenames
           @@header[:userid] = user_dirname
           @@uploaded_date = File.mtime(filename)
