@@ -49,6 +49,7 @@ class MasterPlaceNamesController < ActionController::Base
     @place.county = ChapmanCode.has_key(params[:master_place_name][:chapman_code])
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
+    @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     @place.grid_reference = params[:master_place_name][:grid_reference]
     @place.latitude = params[:master_place_name][:latitude]
     @place.longitude = params[:master_place_name][:longitude]
@@ -103,6 +104,7 @@ class MasterPlaceNamesController < ActionController::Base
     @place.county = session[:county]
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
+    @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     @place.grid_reference = params[:master_place_name][:grid_reference]
     @place.latitude = params[:master_place_name][:latitude]
     @place.longitude = params[:master_place_name][:longitude]
