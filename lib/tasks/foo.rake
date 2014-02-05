@@ -46,6 +46,18 @@ task :add_genuki_url_to_master_place_name, [:type, :add_url] => [:environment]  
   puts "Task complete."
 end
 
+task :correct_master_place_records, [:limit]  => [:environment] do |t, args| 
+ 
+  require 'correct_master_place_records'
+ 
+  puts "Correcting Master Place Name Records "
+  
+    CorrectMasterPlaceRecords.process(args.limit)
+  #puts "Collection created, now creating indexes"
+ # MasterPlaceName.create_indexes()
+  puts "Task complete."
+end
+
 desc "Add lat and lon to place documents"
 task :add_lat_lon_to_place, [:type]  => [:environment] do |t, args| 
   require 'add_lat_lon_to_place'
