@@ -30,7 +30,7 @@ class MasterPlaceName
   field :modified_place_name, type: String #This is used for comparison searching
   field :disabled, type: String, default: -> {"false"} 
   
-  
+  after_save :update_place
   index({ chapman_code: 1, modified_place_name: 1 })
   index({ place_name: 1, grid_reference: 1 })
   index({ source: 1})
@@ -72,6 +72,18 @@ class MasterPlaceName
     when ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
       errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
     end
+  end
+
+  def update_place
+
+    county = self.chapman_code
+    place = self.place_name
+    my_place = Place.where(:chapman_code => county, :place_name =>  place).first
+    unless my_place.nil?
+     my_place.lat_and_lon_from_master_place_name 
+    end
+
+    
   end
 
  
