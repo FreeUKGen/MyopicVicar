@@ -82,6 +82,15 @@ class Place
           self.location = [self.master_place_lat, self.master_place_lon]
           self.genuki_url  = master_record.genuki_url
           self.save
+    else 
+      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name).first
+      unless master_record.nil? 
+          self.master_place_lat = master_record.latitude
+          self.master_place_lon = master_record.longitude
+          self.location = [self.master_place_lat, self.master_place_lon]
+          self.genuki_url  = master_record.genuki_url
+          self.save
+      end
     end
   end
 
