@@ -92,7 +92,14 @@ class Place
 
   def genuki_extract(type)
       genuki_uri = URI('http://www.genuki.org.uk/cgi-bin/gaz')
-      genuki_page = Net::HTTP.post_form(genuki_uri, 'PLACE' => self.place_name, 'CCC' => self.chapman_code, 'TYPE' => type)
+      begin
+        genuki_page = Net::HTTP.post_form(genuki_uri, 'PLACE' => self.place_name, 'CCC' => self.chapman_code, 'TYPE' => type)
+      rescue # if we have no internet connection, a SocketException is thrown here
+        self.genuki_url = "no connection"
+        self.location = [nil,nil]
+        self.save
+        return
+      end
       our_page = Nokogiri::HTML(genuki_page.body)
      if our_page.css('div').text =~  /does not match any place name in the gazetteer/ 
           self.genuki_url = "no url"

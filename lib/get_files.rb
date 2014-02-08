@@ -1,6 +1,11 @@
 module GetFiles
 ALPHA = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9"]
 def self.get_all_of_the_filenames(base_directory,range)
+  
+     # bail out if passed a filename instead of a range
+     if range.match(/\w\.csv/i)       
+       return [File.join(base_directory, range)]
+     end
     
      filenames = Array.new
      files = Array.new
@@ -17,7 +22,7 @@ def self.get_all_of_the_filenames(base_directory,range)
        index = alpha_start
        while index < alpha_end do 
          #get the file names for a character 
-         pattern = base_directory + ALPHA[index] + "*/*.csv" 
+         pattern = base_directory + ALPHA[index] + "*/*.csv" # will this work on Unix systems where .CSV != .csv ?
          files = Dir.glob(pattern, File::FNM_CASEFOLD).sort 
          files.each do |fil|
            filenames << fil
