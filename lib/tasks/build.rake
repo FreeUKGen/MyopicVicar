@@ -54,7 +54,7 @@ task :setup => [ :environment] do |t, args|
   file_for_warning_messages = "log/freereg_messages.log"
   File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
   puts "Freereg messages log deleted."
-   x = system("Rake load_emendations") 
+   x = system("rake load_emendations") 
   puts "Emendations loaded" if x
   puts "Setup finished"
 
@@ -131,9 +131,9 @@ task :parallelp,[:type,:search_records,:base_directory,:range1,:range2,:range3] 
     
     search_records = args.search_records
     time_start = Time.now
-    pid1 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")
-    pid2 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]") unless args.range2.nil?
-    pid3 = Kernel.spawn("Rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]") unless args.range3.nil?
+    pid1 = Kernel.spawn("rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range1}]")
+    pid2 = Kernel.spawn("rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range2}]") unless args.range2.nil?
+    pid3 = Kernel.spawn("rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.base_directory},#{args.range3}]") unless args.range3.nil?
     p "#{pid1} #{pid2}  #{pid3}  started at #{time_start}"
     p Process.waitall
     time_end = Time.now
