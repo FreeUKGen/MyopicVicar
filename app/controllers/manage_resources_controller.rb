@@ -1,9 +1,9 @@
 class ManageResourcesController < ApplicationController
+  require "county"
 def index
     reset_session
-   p session
     @manage_resources = ManageResource.new  
-   
+    @coordinators = County.all.distinct(:county_coordinator)
 end
 
 def new
