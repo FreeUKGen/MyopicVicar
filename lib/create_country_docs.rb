@@ -41,7 +41,7 @@ def self.slurp_the_csv_file(filename)
        
        if @include.include?(data[0])
         number_of_country_coordinators =  number_of_country_coordinators + 1
-        header[:country_code] = data[0]
+        header[:chapman_code] = data[0]
         header[:country_coordinator] = data[1]
         record = Country.new(header)
         record.save

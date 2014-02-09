@@ -40,7 +40,7 @@ def self.slurp_the_csv_file(filename)
         data = @@array_of_data_lines[@@number_of_line] 
         unless @except.include?(data[0])
         number_of_county_coordinators =  number_of_county_coordinators + 1
-        header[:county_code] = data[0] 
+        header[:chapman_code] = data[0] 
         header[:county_coordinator] = data[1] 
         record = County.new(header)
         record.save
