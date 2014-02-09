@@ -1,0 +1,21 @@
+<h1>Listing manage_counties</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @manage_counties.each do |manage_county| %>
+  <tr>
+    <td><%= link_to 'Show', manage_county %></td>
+    <td><%= link_to 'Edit', edit_manage_county_path(manage_county) %></td>
+    <td><%= link_to 'Destroy', manage_county, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Manage county', new_manage_county_path %>
