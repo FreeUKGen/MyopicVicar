@@ -1,0 +1,8 @@
+<%= semantic_form_for(@manage_resources) do |f| %>
+ 
+<div id="main"style="color:black">
+
+<%= f.input :userid, { :as => :select, :include_blank => true, :collection => ["test-researcher", "test-transcriber", "test-syndicate-coordinator","test-county-coordinator","test-country-coordinator","test-volunteer-coordinator","test-data-manager","test-system-administrator","kirknorfolk","JulieHarold"], :label => "Select a userid :", :input_html => { :size => 10 }}%>
+   <%= f.action :submit, :as => :input, :label => 'Update'   %>         
+<% end %>
+</div>
