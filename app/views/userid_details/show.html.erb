@@ -1,0 +1,55 @@
+<p style="text-align: center"><b>UserID Details </b></p>
+
+<div style="float:left;"> <%= button_to 'Edit UserID', edit_userid_detail_path(@userid), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to UserID options', userid_details_path(:anchor => "#{ @userid.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
+
+<% if !session[:errors].nil? %>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+    
+    <% else %>
+    <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+  <% end %>
+
+
+<div id="main"style="color:black">
+<p><b>UserID:</b><%=@userid.userid %></p>
+
+<p><b>Syndicate:</b><%=@userid.syndicate %></p>
+<p><b>Forename:</b><%=@userid.person_forename %></p>
+<p><b>Surname:</b><%=@userid.person_surname %></p>
+<p><b>Forename:</b><%=@userid.person_forename %></p>
+<p><b>Email:</b><%=@userid.email_address %></p>
+<p><b>Physical Address:</b><%=@userid.address %></p>
+<p><b>Telephone number:</b><%=@userid.telephone_number %></p>
+
+<p><b>Fiche reader:</b><%=@userid.fiche_reader %></p>
+
+<p><b>County:</b><%=@userid.chapman_code  %></p>
+
+<p><b>Last upload:</b><%=@userid.last_upload.strftime("%d %b %Y") unless @userid.last_upload.nil? %></p>
+<p><b>Number of files loaded:</b><%=@userid.number_of_files %></p>
+<p><b>Number of records loaded:</b><%=@userid.number_of_records%></p>
+<p><b>Signed up:</b><%=@userid.sign_up_date.strftime("%d %b %Y") unless @userid.sign_up_date.nil? %></p>
+
+<% if  session[:manager] == true%>
+<p><b>Active:</b><%=@userid.active %></p>
+<p><b>Role in FreeREG:</b><%=@userid.person_role %></p>
+<p><b>Skill Level:</b><%=@userid.skill_level  %></p>
+<p><b>Disable date:</b><%=@userid.disabled_date %></p>
+<p><b>Disabled reason:</b><%=@userid.disabled_reason %></p>
+<%end%>
+</div>
+<div style="float:left;"> <%= button_to 'Edit UserID', edit_userid_detail_path(@userid), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to UserID options', userid_details_path(:anchor => "#{ @userid.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>

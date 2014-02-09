@@ -1,0 +1,39 @@
+
+<%= semantic_form_for @userid do |f| %>
+
+<%= f.input :userid,:label => "The UserId :",:input_html => { :disabled => true ,:size => 30 } unless session[:type] == "add"%> 
+<%= f.input :userid,:label => "The UserId :",:input_html => { :size => 30 } if session[:type] == "add"%> 
+<% if session[:manager] == true%>
+<%= f.input :syndicate,:as => :select,  :collection => ChapmanCode::select_hash_with_parenthetical_codes ,:include_blank => true,:label => "The Transcribers Syndicate :",:input_html => { :size => 5 }%>
+<%else%> 
+<%= f.input :syndicate,:label => "The Transcribers Syndicate :",:input_html => {:disabled => true , :size => 40 }%>
+<%end%>
+<%= f.input :person_forename,:label => "Forename :",:input_html => { :size => 40 }%>
+<%= f.input :person_surname,:label => "Surname :",:input_html => { :size => 40 }%>
+<%= f.input :email_address,:label => "Email :",:input_html => { :size => 60 }%>
+<%= f.input :address,:label => "Physical address :",:input_html => { :size => 100 }%>
+<%= f.input :telephone_number,:label => "Telephone :",:input_html => { :size => 40 }%>
+<%= f.input :fiche_reader, :as => :select,  :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :",:input_html => { :size => 2}%>
+<% if session[:manager] == true %>
+<%= f.input :active,:as => :select,  :collection => [true,false],:include_blank => false,:label => "Active :",:input_html => { :size => 2}%>
+<%= f.input :last_upload,:label => "Date of last upload :",:input_html => { :disabled => true ,:size => 30 }%>
+<%= f.input :sign_up_date,:label => "Date User signed up :",:input_html => { :disabled => true, :size => 30 }%>
+<%= f.input :disabled_date,:label => "Date the transcriber was disabled :",:input_html => { :size => 30 }%>
+<%= f.input :disabled_reason,:label => "Reason for disabling :",:input_html => { :size => 60 }%>
+<%= f.input :skill_level,:label => "Transcriber skill :",:input_html => { :size => 100 } %>
+
+<%else%> 
+
+<%= f.input :last_upload,:label => "Date of last upload :",:input_html => { :disabled => true ,:size => 30 }%>
+<%= f.input :sign_up_date,:label => "Date User signed up :",:input_html => { :disabled => true, :size => 30 }%>
+
+
+<%end%>
+
+
+<%= f.input :person_role, :as => :select,  :collection => UseridRole::CODES,:include_blank => false,:label => "Person's role in FreeREG :",:input_html => { :size => 8 } if session[:user].person_role == 'system_administrator'%>
+
+
+    
+    <%= f.action :submit, :as => :input, :label => 'Update'   %>
+   <% end %>
