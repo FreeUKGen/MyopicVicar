@@ -1,65 +1,86 @@
-<h1>Listing freereg1_csv_files</h1>
+<p style="text-align: center"><b>Listing of your files</b></p>
+<div style="float:left;"> <%= button_to 'Upload CSV File', new_userid_detail_path, method: :get %> </div>
 
-<table>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="clear:both;"> </div><br>
+<% if !session[:errors].nil? %>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+    
+    <% else %>
+    <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+  <% end %>
+
+
+<div id="main"style="color:black">
+<% unless @freereg1_csv_files.nil? %>
+<table CLASS="boldtable" >
   <tr>
-    <th>County</th>
-    <th>Place</th>
-    <th>Church</th>
-    <th>Register type</th>
-    <th>Record type</th>
-    <th>Records</th>
-    <th>Min Year</th>
-    <th>Max Year</th>
-    <th>Date Range</th>
-    <th>UserID</th>
-    <th>File name</th>
-    <th>Transcriber name</th>
-    <th>Transcriber email</th>
-    <th>Transcriber syndicate</th>
-    <th>Credit name</th>
-    <th>Credit email</th>
-    <th>First comment</th>
-    <th>Second comment</th>
-    <th>Transcription date</th>
-    <th>Modification date</th>
-    <th>LDS</th>
-    <th>Character set</th>
-    <th></th>
-    <th></th>
-    <th></th>
+    <th style="width:4%">Cnty</th>
+    <th style="width:10%">Place</th>
+    <th style="width:10%">Church</th>
+    <th style="width:4%">Reg type</th>
+    <th style="width:4%">Rec type</th>
+    <th style="width:5%">Records</th>
+   
+    
+    <th style="width:13%">UserID</th>
+    <th style="width:10%">File name</th>
+    <th style="width:9%">Loaded</th>
+    <th style="width:4%">Errs</th>
+    <th style="width:4%">Lock</th>
+    <th style="width:13%">Syndicate</th>
+    
+    <th style="width:10%">Action</th>
   </tr>
 
 <% @freereg1_csv_files.each do |freereg1_csv_file| %>
-  <tr>
+  <tr id="<%=freereg1_csv_file.id%>">
     <td><%= freereg1_csv_file.county %></td>
     <td><%= freereg1_csv_file.place %></td>
     <td><%= freereg1_csv_file.church_name %></td>
     <td><%= freereg1_csv_file.register_type %></td>
     <td><%= freereg1_csv_file.record_type %></td>
     <td><%= freereg1_csv_file.records %></td>
-    <td><%= freereg1_csv_file.datemin %></td>
-    <td><%= freereg1_csv_file.datemax %></td>
-    <td><%= freereg1_csv_file.daterange %></td>
+   
+   
     <td><%= freereg1_csv_file.userid %></td>
-    <td><%= freereg1_csv_file.file_name %></td>
-    <td><%= freereg1_csv_file.transcriber_name %></td>
-    <td><%= freereg1_csv_file.transcriber_email %></td>
+    <td><%= freereg1_csv_file.file_name[0..-5] %></td>
+    <td><%= freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %></td>
+    <% if freereg1_csv_file.error == 0 %>
+    <td style="color:green"><%= freereg1_csv_file.error  %></td>
+    <% else %> 
+    <td style="color:red"><%= freereg1_csv_file.error  %></td> 
+    <% end %>
+    <td><%= freereg1_csv_file.locked %></td>
     <td><%= freereg1_csv_file.transcriber_syndicate %></td>
-    <td><%= freereg1_csv_file.credit_name %></td>
-    <td><%= freereg1_csv_file.credit_email %></td>
-    <td><%= freereg1_csv_file.first_comment %></td>
-    <td><%= freereg1_csv_file.second_comment %></td>
-    <td><%= freereg1_csv_file.transcription_date %></td>
-    <td><%= freereg1_csv_file.modification_date %></td>
-    <td><%= freereg1_csv_file.lds %></td>
-    <td><%= freereg1_csv_file.characterset %></td>
-    <td><%= link_to 'Show', freereg1_csv_file %></td>
-    <td><%= link_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file) %></td>
-    <td><%= link_to 'Destroy', freereg1_csv_file, confirm: 'Are you sure?', method: :delete %></td>
+    
+    <td><%= link_to 'Show', freereg1_csv_file %><br>
+    <%= link_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file) %><br>
+    <% if freereg1_csv_file.error != 0 %>
+     <%= link_to 'Errors', error_freereg1_csv_file_path(freereg1_csv_file)%><br>
+     <% end %>
+     <%= link_to 'Lock', lock_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to lock this file?'%><br>
+    <%= link_to 'Destroy', freereg1_csv_file, confirm: 'Are you sure you want to delete this file?', method: :delete %></td>
   </tr>
+
 <% end %>
+
 </table>
+<%else%>
+   You have no files
+   <%end%>
+</div>
 
 <br />
+<div style="float:left;"> <%= button_to 'Upload CSV File', new_userid_detail_path, method: :get %> </div>
 
-<%= link_to 'New Freereg1 csv file', new_freereg1_csv_file_path %>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="clear:both;"> </div><br>

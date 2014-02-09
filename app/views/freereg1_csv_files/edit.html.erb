@@ -1,6 +1,12 @@
-<p>Editing file:<b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church: <b><%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
-
+<p>Editing file:<b><%= @freereg1_csv_file_name %></b> </p>
+<div style="float:left;"> <%= button_to 'Show file', freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to file options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="clear:both;"> </div><br>
 <%= render 'form' %>
 <br>
-<%= button_to 'Show File', @freereg1_csv_file, method: :get %> 
-<%= button_to_function "Back to Previous Page", "history.back()" %> 
+
+<div style="float:left;"> <%= button_to 'Show file', freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to file options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="clear:both;"> </div><br>
