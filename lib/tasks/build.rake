@@ -11,7 +11,7 @@ namespace :build do
  $collections[7] = "search_records"
  $collections[8] = "userid_details"
  $collections[9] = "syndicates"
-$collections[10] = "counties"
+ $collections[10] = "counties"
  $collections[11] = "countries"
 
  COLLECTIONS = {

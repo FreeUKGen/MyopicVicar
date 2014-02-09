@@ -86,6 +86,7 @@ task :check_place_docs, [:type]  => [:environment] do |t, args|
   
   puts "Task complete."
 end
+
 desc "Create the indices after all FreeREG processes have completed"
 task :create_freereg_csv_indexes => [:environment] do  
   #task is there to creat indexes after running of freereg_csv_processor
@@ -95,13 +96,32 @@ task :create_freereg_csv_indexes => [:environment] do
   require 'register'
   require 'church'
   require 'place'
+  require "userid_detail"
+  require "syndicate"
+   require "county"
+    require "country"
   puts "Freereg build indexes."
+  Country.create_indexes()
+  County.create_indexes()
+  Syndicate.create_indexes()
+  UseridDetail.create_indexes()
   SearchRecord.create_indexes()
   Freereg1CsvFile.create_indexes()
   Freereg1CsvEntry.create_indexes()
   Register.create_indexes()
   Church.create_indexes()
   Place.create_indexes()
+  puts "Indexes complete."
+end
+desc "Create the search record indices "
+task :create_search_records_indexes => [:environment] do  
+  #task is there to creat indexes after running of freereg_csv_processor
+  require 'search_record'
+ 
+  puts "Search records build indexes."
+
+  SearchRecord.create_indexes()
+ 
   puts "Indexes complete."
 end
 
