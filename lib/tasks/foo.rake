@@ -58,7 +58,7 @@ task :correct_master_place_records, [:limit]  => [:environment] do |t, args|
   puts "Task complete."
 end
 
-desc "Add lat and lon to place documents"
+desc "Add lat and lon to place documents or checks for errors between Master and Places"
 task :add_lat_lon_to_place, [:type]  => [:environment] do |t, args| 
   require 'add_lat_lon_to_place'
   require 'place'
@@ -105,28 +105,55 @@ task :create_freereg_csv_indexes => [:environment] do
   puts "Indexes complete."
 end
 
- task :create_userid_docs, [:type,:range]  => [:environment] do |t, args| 
+ task :create_userid_docs, [:type]  => [:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
   require 'create_userid_docs'
  
   puts "Creating Transcriber Docs"
-  
-    CreateUseridDocs.process(args.type,args.range )
+  range = "*/.uDetails"
+    CreateUseridDocs.process(args.type,range )
 
   
   puts "Task complete."
  end
- task :create_syndicate_docs, [:type,:range]  => [:environment] do |t, args| 
+ 
+ task :create_syndicate_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_syndicate_docs'
- 
+  range = "syndicate.csv"
   puts "Creating Syndicate Docs"
   
-    CreateSyndicateDocs.process(args.type,args.range )
+    CreateSyndicateDocs.process(args.type,range )
 
   
   puts "Task complete."
  end
+
+
+ task :create_county_docs, [:type]  => [:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_county_docs'
+  range = "syndicate.csv"
+  puts "Creating County Docs"
+  
+    CreateCountyDocs.process(args.type,range )
+
+  
+  puts "Task complete."
+ end
+ 
+task :create_country_docs, [:type]  => [:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_country_docs'
+  range = "syndicate.csv"
+  puts "Creating Country Docs"
+  
+    CreateCountryDocs.process(args.type,range )
+
+  
+  puts "Task complete."
+ end
+
 end
 
 

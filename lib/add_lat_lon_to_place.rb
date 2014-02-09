@@ -2,9 +2,20 @@ class AddLatLonToPlace
 require "#{Rails.root}/app/models/place"
      
  def self.process(type)
+
+  
+  
+
    number_found = 0
    number_not_found = 0
    Place.order_by(chapman_code: 1, place_name: 1).each do |place|
+    if type == "recreate"
+      place.location[0] = nil
+      place.location[1] = nil
+      place.master_place_lat = nil
+      place.master_place_lon = nil
+      place.genuki_url = nil
+     end
     if place.location.nil?
     #puts "\" #{place.place_name}\", #{place.chapman_code},not found"
     place.lat_and_lon_from_master_place_name
@@ -21,7 +32,6 @@ require "#{Rails.root}/app/models/place"
       
       p "\" #{place.place_name}\", #{place.chapman_code} has location mismatch"
       p place.location
-
       p location.latitude
       p location.longitude
     end

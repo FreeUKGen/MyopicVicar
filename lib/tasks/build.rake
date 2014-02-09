@@ -9,6 +9,11 @@ namespace :build do
  $collections[5] = "freereg1_csv_files"
  $collections[6] = "freereg1_csv_entries"
  $collections[7] = "search_records"
+ $collections[8] = "userid_details"
+ $collections[9] = "syndicates"
+$collections[10] = "counties"
+ $collections[11] = "countries"
+
  COLLECTIONS = {
 'master_place_names' => 'MasterPlaceName',
 'alias_place_churches' => 'AliasPlaceChurch',
@@ -17,7 +22,12 @@ namespace :build do
 'registers' => 'Register',
 'freereg1_csv_files' => 'Freereg1CsvFile',
 'freereg1_csv_entries' => 'Freereg1CsvEntry',
-'search_records' => 'SearchRecord'
+'search_records' => 'SearchRecord',
+'userid_details' => 'UseridDetail',
+'syndicates' => 'Syndicate',
+'counties' => 'County',
+'countries' => 'Country'
+
 }
 EXPORT_COMMAND =  "mongoexport --db myopic_vicar_development --collection  "
  EXPORT_OUT = " --out  "
@@ -66,8 +76,8 @@ end
  #@datafile_location =  Rails.application.config.mongodb_datafile
  #save master_place_names and alias
  p "Save started"
-  collections_to_save = ["0","1"] if args.type == "recreate"
-  collections_to_save = ["0","1","2","3","4","5","6","7"] if args.type != "recreate"
+  collections_to_save = ["0","1","8","9","10","11"] if args.type == "recreate"
+  collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11"] if args.type != "recreate" #
    collections_to_save.each  do |col|
     coll  = col.to_i
     collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
@@ -183,8 +193,54 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
   puts "Freereg task complete."
 
 end
+
+task :create_userid_docs, [:type]  => [:create_syndicate_docs,:create_county_docs,:create_country_docs,:environment] do |t, args| 
+ #this task reads the .uDetails file for each userid and creates the userid_detail collection  
+  require 'create_userid_docs'
+   puts "Creating Transcriber Docs"
+   range = "*/.uDetails"
+    CreateUseridDocs.process(args.type,range )
+  
+  puts "Task complete."
+ end
+
+ task :create_syndicate_docs, [:type]  => [:parallelp,:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_syndicate_docs'
+ 
+  puts "Creating Syndicate Docs"
+
+  range = "syndicate.csv"
+  
+    CreateSyndicateDocs.process(args.type,range )
+  
+  puts "Task complete."
+ end
+
+  task :create_county_docs, [:type]  => [:create_syndicate_docs, :environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_county_docs'
+  range = "syndicate.csv"
+  puts "Creating County Docs"
+  
+    CreateCountyDocs.process(args.type,range )
+
+  puts "Task complete."
+ end
+
+ task :create_country_docs, [:type]  => [ :create_county_docs,:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_country_docs'
+  range = "syndicate.csv"
+  puts "Creating Country Docs"
+  
+    CreateCountryDocs.process(args.type,range )
+  
+  puts "Task complete."
+ end
+
 desc "Create the indices after all FreeREG processes have completed"
-task :create_freereg_csv_indexes => [:parallel_create_search_records,:environment] do  
+task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_userid_docs, :environment] do  
   #task is there to creat indexes after running of freereg_csv_processor
   require 'search_record'
   require 'freereg1_csv_file'
@@ -192,7 +248,15 @@ task :create_freereg_csv_indexes => [:parallel_create_search_records,:environmen
   require 'register'
   require 'church'
   require 'place'
+  require "userid_detail"
+  require "syndicate"
+   require "county"
+    require "country"
   puts "Freereg build indexes."
+  Country.create_indexes()
+  County.create_indexes()
+  Syndicate.create_indexes()
+  UseridDetail.create_indexes()
   SearchRecord.create_indexes()
   Freereg1CsvFile.create_indexes()
   Freereg1CsvEntry.create_indexes()
@@ -201,6 +265,7 @@ task :create_freereg_csv_indexes => [:parallel_create_search_records,:environmen
   Place.create_indexes()
   puts "Indexes complete."
 end
+
 
 # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5"]
 #this saves and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
@@ -226,6 +291,7 @@ task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file
  collections_to_save = Array.new
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
  @tmp_location =   Rails.application.config.mongodb_collection_temp
+ unless args[:save].nil?
  collections_to_save = args[:save].split("/")
    collections_to_save.each  do |col|
     coll  = col.to_i
@@ -234,11 +300,13 @@ task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file
      output =  `#{collection}`
      p output
   end
+end
  puts "Save task compelete"
 end
 
 task :drop_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:save_freereg_collections, :environment] do |t,args|
   puts "Dropping collections"
+  unless args[:drop].nil?
   collections_to_drop = args[:drop].split("/")
    collections_to_drop.each  do |col|
      coll  = col.to_i
@@ -246,6 +314,7 @@ task :drop_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file
      model.collection.drop
      puts "#{$collections[coll]} dropped"
    end
+ end
  puts "Collections drop task completed"
 end
 
@@ -256,6 +325,7 @@ task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :lo
  collections_to_reload = Array.new
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
  @tmp_location =   Rails.application.config.mongodb_collection_temp
+ unless args[:reload_from_temp].nil?
   collections_to_reload = args[:reload_from_temp].split("/")
   collections_to_reload.each  do |col|
     coll  = col.to_i
@@ -265,6 +335,7 @@ task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :lo
     output = `#{collection}`
     p output
   end
+end
  puts "Reload task compelete "
 end
 
@@ -276,6 +347,7 @@ task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
  @tmp_location =   Rails.application.config.mongodb_collection_temp
  @file_location =  Rails.application.config.mongodb_collection_location
+ unless args[:load_from_file].nil?
  collections_to_load = args[:load_from_file].split("/")
  collections_to_load.each  do |col|
     coll  = col.to_i
@@ -285,11 +357,16 @@ task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load
     output = `#{collection}`
     puts output
   end
+end
  puts "Load task compelete"
 end
 
 desc "Create the indices after all FreeREG processes have completed"
  task :recreate_freereg_csv_indexes,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:load_freereg_collections_from_file, :environment] do  |t,args|
+   require "county"
+    require "country"
+  require "userid_detail"
+  require "syndicate"
   require "search_record"
   require 'freereg1_csv_file'
   require 'freereg1_csv_entry'
@@ -297,6 +374,7 @@ desc "Create the indices after all FreeREG processes have completed"
   require 'church'
   require 'place'
   collections_to_index = Array.new
+  unless args[:index].nil?
    collections_to_index = args[:index].split("/")
   puts "Freereg build indexes."
    collections_to_index.each  do |col|
@@ -305,6 +383,7 @@ desc "Create the indices after all FreeREG processes have completed"
      model.create_indexes()
      puts "#{$collections[coll]} indexed"
    end
+ end
     puts " Index task complete."
  end
 end
