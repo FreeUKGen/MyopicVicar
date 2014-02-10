@@ -1115,7 +1115,8 @@ COMMON_WORD_EXPANSIONS = {
                     @@user_message_file.puts free.message + " at line #{line_number}"
                     @@number_of_line = @@number_of_line + 1
                      #    n = n - 1 unless n == 0
-                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" || @line_type == 'Header'  )
+                      @@header_line = @@header_line + 1 if @line_type == 'Header'  
+                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
                     retry  
                 rescue FreeREGEnd => free
                    n = n - 1
