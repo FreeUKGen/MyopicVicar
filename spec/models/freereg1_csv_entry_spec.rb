@@ -36,7 +36,8 @@ describe Freereg1CsvEntry do
     SearchRecord.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
-      FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      
       record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
   
       record.freereg1_csv_entries.count.should eq(file[:entry_count])     
@@ -46,7 +47,7 @@ describe Freereg1CsvEntry do
   it "should parse each entry correctly" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
-      FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
       file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
 
       ['first', 'last'].each do |entry_key|
@@ -73,7 +74,7 @@ describe Freereg1CsvEntry do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::BAPTISM
       puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
-      FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -103,7 +104,7 @@ describe Freereg1CsvEntry do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::BURIAL
-      FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -123,7 +124,7 @@ describe Freereg1CsvEntry do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::MARRIAGE
 #
-      FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -147,7 +148,7 @@ describe Freereg1CsvEntry do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #
-      FreeregCsvProcessor.process(file[:filename])      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]       
@@ -178,7 +179,9 @@ describe Freereg1CsvEntry do
     filename = FREEREG1_CSV_FILES.last[:filename]
 
 
-    file_record = FreeregCsvProcessor.process(filename)      
+#    file_record = FreeregCsvProcessor.process(filename)      
+    FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(filename), File.basename(filename))
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
     entry = file_record.freereg1_csv_entries.last
     search_record = entry.search_record
     raw_name = entry[:bride_forename]
@@ -191,6 +194,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.create!(query_params)
       result = q.search.to_a
       result.count.should have_at_least(1).items
+      binding.pry
       result.should be_in_result(entry)
     end    
   end
@@ -202,7 +206,9 @@ describe Freereg1CsvEntry do
       "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv"
     ].each do |filename|
 
-      file_record = FreeregCsvProcessor.process(filename)      
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(filename), File.basename(filename))
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
+      
       file_record.freereg1_csv_entries.count.should eq 1
       entry = file_record.freereg1_csv_entries.first
       search_record = entry.search_record
@@ -218,7 +224,14 @@ describe Freereg1CsvEntry do
 
   it "should filter by place" do
     # first create something to test against
-    different_file = FreeregCsvProcessor.process("#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv")
+    different_filename = "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv"
+    FreeregCsvProcessor.process(
+      'recreate', 
+      'create_search_records', 
+      File.dirname(different_filename), 
+      File.basename(different_filename))
+    different_file = Freereg1CsvFile.where(:file_name => File.basename(different_filename)).first 
+
     different_entry = different_file.freereg1_csv_entries.first
     different_search_record = different_entry.search_record
     different_place = different_search_record.place
@@ -228,14 +241,18 @@ describe Freereg1CsvEntry do
       "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEMA.CSV"
     ].each do |filename|
       
-      file_record = FreeregCsvProcessor.process(filename)
+      FreeregCsvProcessor.process(
+        'recreate', 
+        'create_search_records', 
+        File.dirname(filename), 
+        File.basename(filename))
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
       entry = file_record.freereg1_csv_entries.first
       search_record = entry.search_record
       place = search_record.place
       name = search_record.transcript_names.first
-      
-      query_params = { :first_name => name[:first_name],
-                       :last_name => name[:last_name],
+      query_params = { :first_name => name["first_name"],
+                       :last_name => name["last_name"],
                        :inclusive => true,
                        :place_ids => [place.id] }
       q = SearchQuery.create!(query_params)
@@ -243,8 +260,8 @@ describe Freereg1CsvEntry do
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
       
-      query_params = { :first_name => name[:first_name],
-                       :last_name => name[:last_name],
+      query_params = { :first_name => name["first_name"],
+                       :last_name => name["last_name"],
                        :inclusive => true,
                        :place_ids => [place.id, different_place.id] }
       q = SearchQuery.create!(query_params)
@@ -252,8 +269,8 @@ describe Freereg1CsvEntry do
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
       
-      query_params = { :first_name => name[:first_name],
-                       :last_name => name[:last_name],
+      query_params = { :first_name => name["first_name"],
+                       :last_name => name["last_name"],
                        :inclusive => true,
                        :place_ids => [different_place.id] }
       q = SearchQuery.create!(query_params)
