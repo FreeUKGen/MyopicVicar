@@ -80,12 +80,11 @@ class MasterPlaceName
     place = self.place_name
     my_place = Place.where(:chapman_code => county, :place_name =>  place).first
     unless my_place.nil?
-     my_place.lat_and_lon_from_master_place_name 
-    end
-
-    
+     my_place.update_lat_and_lon_from_master_place_name 
+    end  
   end
 
+  
  
   
 end
