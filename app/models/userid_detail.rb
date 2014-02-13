@@ -39,6 +39,7 @@ index({ userid: 1, chapman_code: 1 })
 index({ userid: 1, volunteer_coordinator: 1 })
 
 validate :person_role_is_valid, on: :create
+validate :userid_does_not_exist, on: :create
 
 before_save :add_lower_case_userid
 #validate :syndicate_is_valid, on: :create
@@ -53,9 +54,14 @@ before_save :add_lower_case_userid
  def syndicate_is_valid
  	  errors.add(:chapman_code, "The syndicate code is incorrect") unless ChapmanCode.value?(self[:chapman_code])
  end #end def
+
+ def userid_does_not_exist
+  errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).first
+ end
  
  def add_lower_case_userid
  	self[:userid_lower_case] = self[:userid].downcase
+
     files = Freereg1CsvFile.where(:userid => self[:userid] ).all
     if files.nil?
      self[:number_of_files] = 0
@@ -74,6 +80,7 @@ before_save :add_lower_case_userid
        end
        self[:number_of_files] = number
         self[:number_of_records] = records
+        
     end
  end
 end #end class

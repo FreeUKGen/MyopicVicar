@@ -22,19 +22,19 @@ class UseridDetailsController < ApplicationController
  	end #end method
 
   def new
+    session[:type] = "add"
     @userid = UseridDetail.new
     @first_name = session[:first_name]
     synd = Syndicate.all.order_by(syndicate_code: 1)
-     session[:type] = "add"
-     @syndicates = Array.new
-     synd.each do |syn|
-      @syndicates << syn.syndicate_code
+    @syndicates = Array.new
+    synd.each do |syn|
+        @syndicates << syn.syndicate_code
      end
   end
    
   def show
     load(params[:id])
-     @first_name = session[:first_name]
+  
    
   end
   def my_own
@@ -46,35 +46,29 @@ class UseridDetailsController < ApplicationController
   end
 
   def edit
-    
+    session[:type] = "edit"
      load(params[:id])
-     @first_name = session[:first_name]
-     session[:type] = "edit"
      synd = Syndicate.all.order_by(syndicate_code: 1)
      @syndicates = Array.new
      synd.each do |syn|
-      @syndicates << syn.syndicate_code
+       @syndicates << syn.syndicate_code
      end
 
   end
 
   def create
-     @userid = UseridDetail.new
-    params[:userid_detail][:sign_up_date] = DateTime.now
-    p session
-    p params
-     @userid.update_attributes!(params[:userid_detail])
-     flash[:notice] = 'The update of the Userid was succsessful'
+     @userid = UseridDetail.new(params[:userid_detail])
+    @userid.sign_up_date = DateTime.now
+     @userid.save
+   
       if @userid.errors.any?
-     session[:form] =  @userid
      session[:errors] = @userid.errors.messages
      flash[:notice] = 'The addition of the Place was unsuccsessful'
-     redirect_to :action => 'edit'
+     render :action => 'new'
      return
      else
-    session[:type] = "edit"
-    
-    redirect_to userid_details_path
+     flash[:notice] = 'The update of the Userid was succsessful'
+     redirect_to userid_details_path(:anchor => "#{ @userid.id}")
      end
   end
   def update
@@ -86,13 +80,12 @@ class UseridDetailsController < ApplicationController
     params[:userid_detail][:person_role] = UseridRole.has_key(params[:userid_detail][:person_role]).to_s
     @userid.update_attributes!(params[:userid_detail])
     if @userid.errors.any?
-      session[:form] =  @userid
+     
       session[:errors] = @userid.errors.messages
       flash[:notice] = 'The update of the Userid was unsuccsessful'
-      redirect_to :action => 'edit'
+      render :action => 'edit'
       return
     else
-      session[:type] = "edit"
       flash[:notice] = 'The update of the Userid was succsessful'
       redirect_to userid_details_path(:anchor => "#{ @userid.id}")
      end
@@ -103,7 +96,7 @@ end
 
  def disable
   load(params[:id])
- 	@first_name = session[:first_name]
+ 	
   session[:type] = "disable"
 
   end
@@ -111,6 +104,7 @@ end
   def load(userid_id)
    @userid = UseridDetail.find(userid_id)
    session[:userid_id] = userid_id
+   @first_name = session[:first_name]
   end
 end
 

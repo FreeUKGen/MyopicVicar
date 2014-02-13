@@ -4,20 +4,15 @@
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 
-<% if !session[:errors].nil? %>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:red"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>
-    
-    <% else %>
-    <% if flash[:notice] && session[:errors].nil? %>
+ <% if flash[:notice] && session[:errors].nil? %>
     <div id="notice" style="color:green"><br>
-    <%= flash[:notice] %> <br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+   <% session[:errors] = nil %>
+   <br>
     </div>
-   <% end %>
-  <% end %>
 
 
 <div id="main"style="color:black">
