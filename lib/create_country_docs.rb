@@ -52,7 +52,7 @@ def self.slurp_the_csv_file(filename)
            p record.errors
          
         else
-          p "Country #{data[0]} successfully saved"
+        
           @@message_file.puts "Country #{data[0]} successfully saved"
         end #if
       end
