@@ -1,22 +1,21 @@
 
 <% require 'chapman_code' %>
-<%  if session[:initial] == "yes" %>
+
  
    <%= semantic_form_for @manage_county do |f| %>
       <%= f.input :chapman_code, 
         { :as => :select, :label => "#{@first_name} you have multiple counties. Which would you like to work with?",
           :include_blank => false,
           :required => true,
-          :collection => @counties } %>
+          :collection => @counties, :size => 10 } %>
     <%= f.action :submit, :as => :input, :label => 'Select'   %>
    <% end %>
-<% else %>
+
 
 
           
   <%= button_to 'Back to County Search Page', places_path, method: :get %>
-  <% end %>
-
+ 
 
 
 

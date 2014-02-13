@@ -1,21 +1,16 @@
-<h1>Listing manage_counties</h1>
+<% require 'chapman_code' %>
+   <%= semantic_form_for @manage_county do |f| %>
+      <%= f.input :chapman_code, 
+        { :as => :select, :label => "#{@first_name} you have multiple counties. Which would you like to work with?",
+          :include_blank => false,
+          :required => true,
+          :collection => @counties, :size => 15 } %>
+    <%= f.action :submit, :as => :input, :label => 'Select'   %>
+   <% end %>
 
-<table>
-  <tr>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
 
-<% @manage_counties.each do |manage_county| %>
-  <tr>
-    <td><%= link_to 'Show', manage_county %></td>
-    <td><%= link_to 'Edit', edit_manage_county_path(manage_county) %></td>
-    <td><%= link_to 'Destroy', manage_county, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
-</table>
 
-<br />
+          
+  <%= button_to 'Back to County Search Page', places_path, method: :get %>
+ 
 
-<%= link_to 'New Manage county', new_manage_county_path %>
