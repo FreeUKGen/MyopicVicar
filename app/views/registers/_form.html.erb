@@ -1,15 +1,13 @@
 <%= semantic_form_for(@register) do |f| %>
-  <% if @register.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@register.errors.count, "error") %> prohibited this register from being saved:</h2>
-
-      <ul>
-      <% @register.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+   <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+   <% session[:errors] = nil %>
+   <br>
     </div>
-  <% end %>
 
   
   <%= f.input :status, :input_html => { :size => 30 }%>
