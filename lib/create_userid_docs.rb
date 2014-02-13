@@ -45,7 +45,7 @@ def self.check_for_replace(filename,header)
       
       if header[:digest] == check_for_file.digest then
         #file in database is same or more recent than we we are attempting to reload so do not process
-              p  "#{userid} #{header[:file_name]} has not changed since last build"
+              @@message_file.puts "#{userid} #{header[:file_name]} has not changed since last build"
               return false
       else
         UseridDetail.delete_file(check_for_file._id)
@@ -65,7 +65,7 @@ def self.check_for_replace(filename,header)
      file_for_warning_messages = "log/userid_detail_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
      @@message_file = File.new(file_for_warning_messages, "w")
-     p "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
+     
      @@message_file.puts  "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
 
 
@@ -76,6 +76,7 @@ def self.check_for_replace(filename,header)
 
   filenames.each do |filename|
    number = number + 1
+   
   fields = Hash.new
   header = Hash.new
   records = Array.new
@@ -130,6 +131,7 @@ header[:disabled] = header[:disabled].to_i
     
     syndicates_count = Syndicate.where(:syndicate_coordinator => header[:userid]).count
     
+
     unless syndicates_count == 0
       number_of_syndicate_coordinators =  number_of_syndicate_coordinators  + 1
       syndicates = Syndicate.where(:syndicate_coordinator => header[:userid]).all
@@ -138,21 +140,30 @@ header[:disabled] = header[:disabled].to_i
       syndicates.each do |syndicate|
         header[:syndicate_groups] <<  syndicate.syndicate_code
       end
+      
+    else
+
     end
 
    counties_count = County.where(:county_coordinator => header[:userid]).count
+
+   
     
     unless counties_count == 0
        number_of_county_coordinators =  number_of_county_coordinators + 1
       counties = County.where(:county_coordinator => header[:userid]).all
+
       header[:person_role] = "county_coordinator"
        header[:county_groups] = Array.new
       counties.each do |county|
         header[:county_groups] <<  county.chapman_code
       end
+       
+    else
+     
     end
     countries_count = Country.where(:country_coordinator => header[:userid]).count
-    
+   
     unless countries_count == 0
        number_of_country_coordinators =  number_of_country_coordinators + 1
       countries = Country.where(:country_coordinator => header[:userid]).all
@@ -160,19 +171,23 @@ header[:disabled] = header[:disabled].to_i
        header[:country_groups] = Array.new
       countries.each do |country|
         header[:country_groups] <<  country.chapman_code
-      end
+      end 
+      
+    else 
+      
     end
 
    header[:person_role] = "system_administrator" if header[:userid] == "REGManager" 
    process = true   
    process = check_for_replace(filename,header) unless type == "recreate"   
-
+   
    detail = UseridDetail.new(header)
    detail.save if process == true
     if detail.errors.any?
-     p detail.errors
+     @@message_file.puts detail.errors
     end #end errors
+    
   end # end filename
-  p "#{number} records added with #{number_of_syndicate_coordinators} syndicate coordinators, #{number_of_county_coordinators} county coordinators #{number_of_country_coordinators} country coordinators"
+  @@message_file.puts"#{number} records added with #{number_of_syndicate_coordinators} syndicate coordinators, #{number_of_county_coordinators} county coordinators #{number_of_country_coordinators} country coordinators"
  end #end process
 end
