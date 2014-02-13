@@ -19,20 +19,20 @@ class Freereg1CsvFilesController < InheritedResources::Base
           countries = Syndicate.where(:country_coordinator => @user.userid).all
           countries.each do |country|
           freereg1_csv_files = Freereg1CsvFile.where(:county => country.chapman_code).all.order_by(file_name: 1) 
-            @freereg1_csv_files << freereg1_csv_files
-          end
+          freereg1_csv_files.each do |freereg1_csv_file|
+          @freereg1_csv_files << freereg1_csv_file
+         end
+         end
 
        when @user.person_role == "county_coordinator" 
           counties = County.where(:county_coordinator => @user.userid)
           counties.each do |county|
-          p county
           freereg1_csv_files = Freereg1CsvFile.where(:county => county.chapman_code).all.order_by(file_name: 1) 
           freereg1_csv_files.each do |freereg1_csv_file|
-            p freereg1_csv_file
-           @freereg1_csv_files << freereg1_csv_file
+          @freereg1_csv_files << freereg1_csv_file
          end
           end
-          p @freereg1_csv_files
+          
        when @user.person_role == "syndicate_coordinator"
 
          syndicates = Syndicate.where(:syndicate_coordinator => @user.userid)

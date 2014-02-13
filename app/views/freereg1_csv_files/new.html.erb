@@ -1,12 +1,12 @@
 <h1>Create new file</h1>
-<div style="float:left;"> <%= button_to 'Edit file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Back to file options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options',manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 
 <%= render 'form' %>
 
-<div style="float:left;"> <%= button_to 'Edit file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Back to file options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

@@ -1,8 +1,8 @@
 <p id="notice"><%= notice %></p>
 <p>Showing  file:<b><%= @freereg1_csv_file_name %></b> </p>
 <div style="float:left;"> <%= button_to 'Edit file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Back to UserID options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 <p>
   <b>County:</b>
@@ -126,7 +126,7 @@
 </p>
  <br>
 
-<div style="float:left;"> <%= button_to 'Edit file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Back to UserID options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

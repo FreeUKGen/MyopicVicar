@@ -1,7 +1,7 @@
 <p style="text-align: center"><b>Listing of your files</b></p>
 <div style="float:left;"> <%= button_to 'Upload CSV File', new_userid_detail_path, method: :get %> </div>
 
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options',manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 <% if !session[:errors].nil? %>
   <% if flash[:notice] %>
@@ -42,7 +42,11 @@
   </tr>
 
 <% @freereg1_csv_files.each do |freereg1_csv_file| %>
-  <tr id="<%=freereg1_csv_file.id%>">
+ <% if freereg1_csv_file.error == 0 %>
+  <tr id="<%=freereg1_csv_file.id%>"  style="color:green">
+ <% else %> 
+<tr id="<%=freereg1_csv_file.id%>"  style="color:red">
+ <% end %>
     <td><%= freereg1_csv_file.county %></td>
     <td><%= freereg1_csv_file.place %></td>
     <td><%= freereg1_csv_file.church_name %></td>
@@ -54,11 +58,9 @@
     <td><%= freereg1_csv_file.userid %></td>
     <td><%= freereg1_csv_file.file_name[0..-5] %></td>
     <td><%= freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %></td>
-    <% if freereg1_csv_file.error == 0 %>
-    <td style="color:green"><%= freereg1_csv_file.error  %></td>
-    <% else %> 
-    <td style="color:red"><%= freereg1_csv_file.error  %></td> 
-    <% end %>
+   
+    <td ><%= freereg1_csv_file.error  %></td>
+    
     <td><%= freereg1_csv_file.locked %></td>
     <td><%= freereg1_csv_file.transcriber_syndicate %></td>
     
@@ -82,5 +84,5 @@
 <br />
 <div style="float:left;"> <%= button_to 'Upload CSV File', new_userid_detail_path, method: :get %> </div>
 
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resources_path, method: :get %> </div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
