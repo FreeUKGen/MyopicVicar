@@ -3,22 +3,20 @@
 <div>  The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. 
 
 </div>
-<% if !session[:errors].nil? %>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:red"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>
-    
-    <% else %>
-    <% if flash[:notice] && session[:errors].nil? %>
+<br>
+   <% if flash[:notice] && session[:errors].nil? %>
     <div id="notice" style="color:green"><br>
-    <%= flash[:notice] %> <br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+    <% session[:errors] = nil %>
+   <br>
     </div>
-   <% end %>
-  <% end %>
-<div style="float:left;">  <%= button_to 'Create Place entry', new_place_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %></div>
+ <p> 
+<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Register', new_register_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 
@@ -27,12 +25,12 @@
 <table style="width: 100%">
   <tr>
   
-    <th style="width:20%">Place</th>
-    <th style="width:20%">Alternate place name</th>
-    <th style="width:11%">Genuki page</th>
+    <th style="width:18%">Place</th>
+    <th style="width:18%">Alternate place name</th>
+    <th style="width:8%">Genuki page</th>
     <th style="width:12%">Last amended</th>
     <th style="width:25%">Churches</th>
-    <th style="width:12%">Action</th>
+    <th style="width:19%">Action</th>
   </tr>
 
 <% @places.each do |place| %>
@@ -53,20 +51,28 @@
      <ol>
 <% place.churches.order_by(church: 1).each do |church| %>
 <li>
+<% session[:placeid] = place.id%>
 <%= link_to(church.church_name, church_path(church)) %><br />
 
 
 </li> 
 
+
 <% end%>
+
+
     
      </ol>
-    
+ 
     </td>
 
     <td >
-<%= link_to 'Edit Place', edit_place_path(place) %><br>  
-<%= link_to 'Discard Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+   <%= link_to 'Show Place', place_path(place) %><br>  
+<%= link_to 'Edit Place', edit_place_path(place) %><br> 
+
+ <%= link_to 'Discard Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %><br>
+ </td>
+
   </tr>
 <% end %>
 </table>

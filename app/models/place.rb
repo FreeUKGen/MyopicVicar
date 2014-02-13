@@ -19,7 +19,14 @@ class Place
   field :master_place_lon, type: String
 	field :location, type: Array
 
-  after_create :lat_and_lon_from_master_place_name
+  validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
+
+  validates_presence_of :place_name
+ 
+  validate :place_does_not_exist, on: :create
+
+  before_save :add_lat_and_lon_from_master_place_name, on: :create
+
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
   has_many :churches, dependent: :restrict
@@ -46,10 +53,8 @@ class Place
   
  # index ([[:chapman_code, Mongo::ASCENDING],[:place_name, Mongo::ASCENDING]])
 
-  validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
-  validates_presence_of :place_name
-   validate :lat_long_is_valid
-  validate :place_does_not_exist, on: :create
+ 
+  
   index({ chapman_code: 1, place_name: 1 }, { unique: true })
   index({ place_name: 1 })
 
@@ -73,7 +78,26 @@ class Place
     
   end
 
-  def lat_and_lon_from_master_place_name
+  def add_lat_and_lon_from_master_place_name
+    place = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
+    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place).first
+   unless master_record.nil? 
+          self.master_place_lat = master_record.latitude
+          self.master_place_lon = master_record.longitude
+          self.location = [self.master_place_lat, self.master_place_lon]
+          self.genuki_url  = master_record.genuki_url
+         
+    else 
+      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name).first
+      unless master_record.nil? 
+          self.master_place_lat = master_record.latitude
+          self.master_place_lon = master_record.longitude
+          self.location = [self.master_place_lat, self.master_place_lon]
+          self.genuki_url  = master_record.genuki_url
+      end
+    end
+  end
+def update_lat_and_lon_from_master_place_name
     place = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place).first
    unless master_record.nil? 
