@@ -1,64 +1,63 @@
 <% require 'chapman_code' %>
-<% if flash[:notice] %>
-    <div id="notice"><%= flash[:notice] %></div>
-<% end %>
-<p></p>
 
-<p>
-  <b>County:</b>
-  <%= ChapmanCode.has_key(@place.chapman_code) %>
-</p>
+<div>  The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. 
 
-<p>
-  <b>Place name:</b>
-  <%= @place.place_name %>
-</p>
-<p>
- <b>Alternate place name:</b>
-     <%= @place.alternate_place_name %>
-      </p>
-      <p>
- <b>Last amended:</b>
-  <%= @place.last_amended %>
-      </p>
-      <p>
-  <b>Latitude:</b>
-  <%= @place.master_place_lat %>
-      </p>  
-      <p>
-  <b>Longitude:</b>
-  <%= @place.master_place_lon %>
-      </p>        
-<p>
-  <b>Genuki url:</b>
-  <%= @place.genuki_url %><br>
-  <b>Test link:</b>
-  <%= link_to('Genuki', @place.genuki_url) unless (@place.genuki_url.nil? || @place.genuki_url == "no url")%>
-</p>
- <p>
-  <b>Place notes:</b>
-  <%= @place.place_notes %>
-      </p>       
-<p>
-  <b>Churches and Registers:</b><br />
-  <ul>
-<% @place.churches.order_by(:church_name.asc).each do |church| %>
+</div>
+<br>
+   <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+    <% session[:errors] = nil %>
+   <br>
+    </div>
+ <p> 
+<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Register', new_register_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
+
+<div id="main"style="color:black">
+
+     <p><b>Place :</b><%= @place.place_name %>
+    
+     <p><b>Alternate place name :</b><%= @place.alternate_place_name %>
+      
+     <p><b>Genuki page :</b><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %>
+      
+     <p><b>Last amended :</b><%= @place.last_amended %>
+     
+     <ol>
+<% @place.churches.order_by(church: 1).each do |church| %>
 <li>
-<%= link_to(church.church_name, church_path(church)) %><br />
-<ul>
-<% church.registers.each do |register| %>
-
+<% session[:placeid] = @place.id%>
+<p><b>Church :</b><%= link_to(church.church_name, church_path(church)) %></p>
+ <ol>
+   <% church.registers.order_by(register: 1).each do |register| %>
+   <li>
+     <p><b>Register :</b><%= link_to(register.alternate_register_name, register_path(register))%></p>
+      <ol>
+     <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
+     <li>
+       <p><b>File :</b><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></p>
+     <% end%>
+      </li>
+      </ol>
+    
+   
+   <% end%>
+   </li>
+   </ol>
 <% end%>
-</ul>
+
 </li>
-<% end %>
-  </ul>
-  
+</ol>
 
-</p>
-
-
-<%= button_to 'Edit Place', edit_place_path(@place), method: :get %> 
-<%= button_to_function "Back to Previous Page", "history.back()" %> 
-<% params = session[:parameters] %>
-<%= button_to 'Back to Index of Places', places_path(params) %>
+<br />
+<div style="float:left;">  <%= button_to 'Create Place entry', new_place_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>

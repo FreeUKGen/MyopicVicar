@@ -46,7 +46,19 @@ task :add_genuki_url_to_master_place_name, [:type, :add_url] => [:environment]  
   puts "Task complete."
 end
 
-desc "Add lat and lon to place documents"
+task :correct_master_place_records, [:limit]  => [:environment] do |t, args| 
+ 
+  require 'correct_master_place_records'
+ 
+  puts "Correcting Master Place Name Records "
+  
+    CorrectMasterPlaceRecords.process(args.limit)
+  #puts "Collection created, now creating indexes"
+ # MasterPlaceName.create_indexes()
+  puts "Task complete."
+end
+
+desc "Add lat and lon to place documents or checks for errors between Master and Places"
 task :add_lat_lon_to_place, [:type]  => [:environment] do |t, args| 
   require 'add_lat_lon_to_place'
   require 'place'
@@ -74,6 +86,7 @@ task :check_place_docs, [:type]  => [:environment] do |t, args|
   
   puts "Task complete."
 end
+
 desc "Create the indices after all FreeREG processes have completed"
 task :create_freereg_csv_indexes => [:environment] do  
   #task is there to creat indexes after running of freereg_csv_processor
@@ -83,7 +96,15 @@ task :create_freereg_csv_indexes => [:environment] do
   require 'register'
   require 'church'
   require 'place'
+  require "userid_detail"
+  require "syndicate"
+   require "county"
+    require "country"
   puts "Freereg build indexes."
+  Country.create_indexes()
+  County.create_indexes()
+  Syndicate.create_indexes()
+  UseridDetail.create_indexes()
   SearchRecord.create_indexes()
   Freereg1CsvFile.create_indexes()
   Freereg1CsvEntry.create_indexes()
@@ -92,29 +113,67 @@ task :create_freereg_csv_indexes => [:environment] do
   Place.create_indexes()
   puts "Indexes complete."
 end
+desc "Create the search record indices "
+task :create_search_records_indexes => [:environment] do  
+  #task is there to creat indexes after running of freereg_csv_processor
+  require 'search_record'
+ 
+  puts "Search records build indexes."
 
- task :create_userid_docs, [:type,:base_directory,:range]  => [:environment] do |t, args| 
+  SearchRecord.create_indexes()
+ 
+  puts "Indexes complete."
+end
+
+ task :create_userid_docs, [:type]  => [:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
   require 'create_userid_docs'
  
   puts "Creating Transcriber Docs"
-  
-    CreateUseridDocs.process(args.type,args.base_directory,args.range )
+  range = "*/.uDetails"
+    CreateUseridDocs.process(args.type,range )
 
   
   puts "Task complete."
  end
- task :create_syndicate_docs, [:type,:base_directory,:range]  => [:environment] do |t, args| 
+ 
+ task :create_syndicate_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_syndicate_docs'
- 
+  range = "syndicate.csv"
   puts "Creating Syndicate Docs"
   
-    CreateSyndicateDocs.process(args.type,args.base_directory,args.range )
+    CreateSyndicateDocs.process(args.type,range )
 
   
   puts "Task complete."
  end
+
+
+ task :create_county_docs, [:type]  => [:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_county_docs'
+  range = "syndicate.csv"
+  puts "Creating County Docs"
+  
+    CreateCountyDocs.process(args.type,range )
+
+  
+  puts "Task complete."
+ end
+ 
+task :create_country_docs, [:type]  => [:environment] do |t, args| 
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'create_country_docs'
+  range = "syndicate.csv"
+  puts "Creating Country Docs"
+  
+    CreateCountryDocs.process(args.type,range )
+
+  
+  puts "Task complete."
+ end
+
 end
 
 

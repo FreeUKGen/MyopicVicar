@@ -17,9 +17,12 @@ class RegistersController < InheritedResources::Base
     load(params[:id])
     @register.update_attributes(params[:register])
     
-    @register.save! 
-
-    flash[:notice] = 'The change in Register contents was succsessful' 
+    flash[:notice] = 'The update the Register was succsessful'
+    if @register.errors.any? then
+     session[:errors] = @church.errors.messages
+     flash[:notice] = 'The update of the Register was unsuccsessful'
+     render :action => 'edit'
+     return 
      redirect_to :action => 'show'
   end
 
@@ -34,6 +37,6 @@ class RegistersController < InheritedResources::Base
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 
-      
+     @first_name = session[:first_name]  
   end
 end

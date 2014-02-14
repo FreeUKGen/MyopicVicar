@@ -1,5 +1,9 @@
 <p id="notice"><%= notice %></p>
-<p>Showing  file:<b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church: <b><%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+<p>Showing  file:<b><%= @freereg1_csv_file_name %></b> </p>
+<div style="float:left;"> <%= button_to 'Edit file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
 <p>
   <b>County:</b>
   <%= @freereg1_csv_file.county %>
@@ -69,7 +73,18 @@
   <b>Transcriber syndicate:</b>
   <%= @freereg1_csv_file.transcriber_syndicate %>
 </p>
-
+<p>
+  <b>Uploaded:</b>
+<%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %>
+</p>
+<p>
+  <b>Errors:</b>
+<%= @freereg1_csv_file.error %>
+</p>
+<p>
+  <b>Locked:</b>
+<%= @freereg1_csv_file.locked %>
+</p>
 <p>
   <b>Credit name:</b>
   <%= @freereg1_csv_file.credit_name %>
@@ -111,5 +126,7 @@
 </p>
  <br>
 
-<%= button_to 'Edit File', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %> 
-<%= button_to_function "Back to Previous Page", "history.back()" %> 
+<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>

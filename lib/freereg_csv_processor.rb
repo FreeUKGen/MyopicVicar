@@ -151,6 +151,7 @@ COMMON_WORD_EXPANSIONS = {
   WORD_SPLITS = {
             "-" => /\-/, 
             "&" => /\&/}
+  WORD_START_BRACKET =  /\A\(/
   DATE_SPLITS = {
             " " => /\s/,
             "-" => /\-/,
@@ -443,6 +444,10 @@ COMMON_WORD_EXPANSIONS = {
     word = COMMON_WORD_EXPANSIONS[word] if COMMON_WORD_EXPANSIONS.has_key?(word)
     word = Unicode::downcase(word) 
     word = Unicode::capitalize(word) unless CAPITALIZATION_WORD_EXCEPTIONS.include?(word) 
+    if word =~ WORD_START_BRACKET 
+      #word is in a () 
+     word = Unicode::capitalize(word.gsub(/\(?/, '')).insert(0, "(") 
+    end 
     word = Unicode::capitalize(word) if num == 0
     return word
   end
@@ -452,7 +457,6 @@ COMMON_WORD_EXPANSIONS = {
     @register = nil
     @register_type = nil
     return true if m.nil? || m.empty?
-    m = m.gsub(/\(?\)?/, '')
     register_words = m.split(" ")
     n = register_words.length
 
@@ -462,7 +466,7 @@ COMMON_WORD_EXPANSIONS = {
       if n > 1
         if register_words[-1] =~ VALID_REGISTER_TYPES then 
           # extract a Register Type field from the church field
-          register_words[-1] = register_words[-1].gsub(/'?"?[Ss]?/, '')
+          register_words[-1] = register_words[-1].gsub(/\(?\)?'?"?[Ss]?/, '')
           register_words[-1] = Unicode::upcase(register_words[-1])
       
          if VALID_REGISTER_TYPE.include?(register_words[-1]) 
@@ -1050,6 +1054,8 @@ COMMON_WORD_EXPANSIONS = {
   end
 
   def self.process_the_data
+    #we do this here so that the logfile is only deleted if we actually process the file!
+     File.delete(@@user_file_for_warning_messages) if File.exists?(@@user_file_for_warning_messages)
                   
      @@number_of_line = 0
      @@number_of_error_messages = 0
@@ -1109,12 +1115,15 @@ COMMON_WORD_EXPANSIONS = {
                     @@user_message_file.puts free.message + " at line #{line_number}"
                     @@number_of_line = @@number_of_line + 1
                      #    n = n - 1 unless n == 0
-                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" || @line_type == 'Header'  )
+                      @@header_line = @@header_line + 1 if @line_type == 'Header'  
+                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
                     retry  
                 rescue FreeREGEnd => free
                    n = n - 1
                    puts "#@@userid #{@@filename} processed  #{n} data lines correctly with #{@@number_of_error_messages} error messages" 
                    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{n} data lines correctly with #{@@number_of_error_messages} error messages"
+                   @@header[:error] = @@number_of_error_messages
+
                    process_register_headers
                    break
                 rescue  => e 
@@ -1232,7 +1241,7 @@ COMMON_WORD_EXPANSIONS = {
           @@header[:digest] = Digest::MD5.file(filename).hexdigest 
           #delete any user log file for errors we put it in the same directory as the csv file came from    
           @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-          File.delete(@@user_file_for_warning_messages) if File.exists?(@@user_file_for_warning_messages)
+         
           @@header[:file_name] = standalone_filename #do not capitalize filenames
           @@header[:userid] = user_dirname
           @@uploaded_date = File.mtime(filename)
@@ -1240,11 +1249,12 @@ COMMON_WORD_EXPANSIONS = {
     
   end
 
-  def self.process(recreate,create_search_records,base_directory,range)
+  def self.process(recreate,create_search_records,range)
     #this is the basic processing
     
      #set up message files 
      EmailVeracity::Config[:skip_lookup]=true
+     base_directory = Rails.application.config.datafiles
      file_for_warning_messages = "log/freereg_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
      @@message_file = File.new(file_for_warning_messages, "a")

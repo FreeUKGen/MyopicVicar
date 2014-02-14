@@ -1,34 +1,27 @@
 <%= semantic_form_for(@place) do |f| %>
-  <% if @place.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@place.errors.count, "error") %> prohibited this place from being saved:</h2>
-
-      <ul>
-      <% @place.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
  
-  <div>
-    
-    <%= f.input :place_name,:input_html => { :disabled => true ,:size => 60 }%> 
   
+   <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+   <% session[:errors] = nil %>
+   <br>
+    </div>
+  
+<div id="main"style="color:black">
+  <%= f.input :place_name,{ :as => :select,:label => "Select from the Master Place Name collection",:include_blank => false,
+          :required => true, :collection => @placenames, :size => 15 } %> 
+   
   <br>
-   <%= f.input :alternate_place_name,:input_html => { :size => 60 }%>
+   <%= f.input :alternate_place_name,:label => "Any other names used for this place :",:input_html => { :size => 60 }%>
  <br>
-   <%= f.input :place_notes,:input_html => { :size => 100 }%>
-
-  <br>
-   <%= f.input :last_amended,:input_html => { :disabled => true ,:size => 60 }%>
-  
-  <br>
-  
+   <%= f.input :place_notes,:label => "Any notes:",:input_html => { :size => 100 }%>
 
    <%= f.action :submit, :as => :input, :label => 'Update' %>
+  
   </div>
   <br>
-<% end %>
-
+   <% end %>

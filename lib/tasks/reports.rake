@@ -32,8 +32,37 @@ desc "Create a report of files loaded by people"
    end
   end
 
+desc "Create a report of Master files"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :master_place_name_report, [:limit] => [:environment] do |t, args|
+ require 'master_place_name_report' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          MasterPlaceNameReport.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
 
-
+desc "Create a report of Userid Details"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :userid_details_report, [:limit] => [:environment] do |t, args|
+ require 'userid_details_report' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          UseridDetailsReport.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
 
 
 

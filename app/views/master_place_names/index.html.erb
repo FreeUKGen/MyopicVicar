@@ -32,7 +32,7 @@
   </tr>
 
 <% @places.each do |place| %>
-  <trid="<%=place.id%>">
+  <tr id="<%=place.id%>">
     <% unless place.disabled == "true" then %>
     <td >
      <%= place.place_name %>

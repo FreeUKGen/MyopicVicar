@@ -2,6 +2,8 @@
 
 <%= render 'form' %>
 
-<br><br><%= button_to 'Show Place', @place , method: :get%> 
-<% params = session[:parameters] %>
-<%= button_to 'Back to Index of Places', places_path(params) %>
+<div style="float:left;"> <%= button_to 'Back to Index of Places', places_path( :anchor => "#{@place.id}"), method: :get%></div>
+<div  style="float:left;"> <%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+</div>
+<div style="clear:both;"> </div><br>
