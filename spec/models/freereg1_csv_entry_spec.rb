@@ -194,7 +194,6 @@ describe Freereg1CsvEntry do
       q = SearchQuery.create!(query_params)
       result = q.search.to_a
       result.count.should have_at_least(1).items
-      binding.pry
       result.should be_in_result(entry)
     end    
   end
