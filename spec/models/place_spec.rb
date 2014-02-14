@@ -22,7 +22,7 @@ describe Place do
   it "should create four files with three registers, one church and one place" do
     SAME_REGISTER_FILES.each_with_index do |file, index|
       # first, load the file
-      FreeregCsvProcessor.process(file)
+      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file), File.basename(file))
       # then process the place
       #CreatePlacesDocs.process(40000,"rebuild")
 
