@@ -27,7 +27,7 @@ def self.slurp_the_csv_file(filename)
      @@message_file = File.new(file_for_warning_messages, "w")
      p "Started a syndicate build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
      @@message_file.puts  "Started a syndicate build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
-     filename = base_directory + range
+     filename = File.join(base_directory, range)
      success = slurp_the_csv_file(filename)
      p "csv slurp failed" unless success == true
      @@message_file.puts "csv slurp failed" unless success == true

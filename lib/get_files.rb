@@ -21,8 +21,9 @@ def self.get_all_of_the_filenames(base_directory,range)
        index = alpha_start
        while index < alpha_end do 
          #get the file names for a character 
-         pattern = base_directory + ALPHA[index] + "*/*.csv" # will this work on Unix systems where .CSV != .csv ?
+         pattern = File.join(base_directory, ALPHA[index] + "*/*.csv") # will this work on Unix systems where .CSV != .csv ?
          files = Dir.glob(pattern, File::FNM_CASEFOLD).sort 
+         print "Searching for #{pattern} and found #{files.count} files \n"
          files.each do |fil|
            filenames << fil
          end #end do
