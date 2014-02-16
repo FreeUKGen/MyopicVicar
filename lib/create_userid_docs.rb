@@ -60,8 +60,24 @@ def self.check_for_replace(filename,header)
  	
   base_directory = Rails.application.config.datafiles
   UseridDetail.delete_all if type = "recreate"
- 	filenames = GetFiles.get_all_of_the_filenames(base_directory,range)
+           
 
+  filenames = Array.new
+  files = Array.new
+  userids = range.split("/")
+    if userids.length == 2
+      pattern = File.join(base_directory,userids[0])
+      files = Dir.glob(pattern, File::FNM_CASEFOLD).sort 
+      files.each do |filename|
+         pattern = File.join(filename,userids[1])
+         fil = Dir.glob(pattern, File::FNM_DOTMATCH) 
+         filenames << fil[0] unless fil[0].nil?
+      end
+     else
+      P "unknown range style"
+     end
+
+       
      file_for_warning_messages = "log/userid_detail_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
      @@message_file = File.new(file_for_warning_messages, "w")
@@ -75,11 +91,13 @@ def self.check_for_replace(filename,header)
  number_of_country_coordinators = 0
 
   filenames.each do |filename|
+  
    number = number + 1
    
   fields = Hash.new
   header = Hash.new
   records = Array.new
+ 
     record = File.open(filename).read
 	  records = record.split("\n")
   

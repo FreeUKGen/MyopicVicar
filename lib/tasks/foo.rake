@@ -128,11 +128,11 @@ end
  task :create_userid_docs, [:type]  => [:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
   require 'create_userid_docs'
- 
+   require "userid_detail"
   puts "Creating Transcriber Docs"
   range = "*/.uDetails"
     CreateUseridDocs.process(args.type,range )
-
+    UseridDetail.create_indexes()
   
   puts "Task complete."
  end
