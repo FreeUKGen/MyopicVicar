@@ -1,7 +1,7 @@
 <p>Listing entries for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %>   
-<table>
+<table CLASS="boldtable" >
   <tr>
     <th>Register entry number</th>
     <th>Baptism date</th>

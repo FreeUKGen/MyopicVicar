@@ -1,0 +1,59 @@
+<p style="text-align: center"><b>UserID Details Management</b></p>
+<div style="float:left;"> <%= button_to 'Create Userid', new_userid_detail_path, method: :get %> </div>
+
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
+
+ <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+   <% session[:errors] = nil %>
+   <br>
+    </div>
+
+
+<div id="main"style="color:black">
+<table  CLASS="boldtable" style="width: 100%">
+  <tr>
+    
+    <th style="width:11%">UserID</th>
+    <th style="width:11%">Forename</th>
+    <th style="width:10%">Surname</th>
+    <th style="width:30%">Email</th>
+    <th style="width:4%">Active</th>
+    <th style="width:13%">Last Upload</th>
+    <th style="width:7%">Files</th>
+    <th style="width:7%">Records</th>
+    <th style="width:7%">Action</th>
+
+
+  </tr>
+<% unless @userids.nil? %>
+<% @userids.each do |userid| %>
+  <tr id="<%=userid.id%>">
+   <td > <%= userid.userid %>  </td>
+   <td > <%= userid.person_forename %>  </td>   
+   <td > <%= userid.person_surname %>  </td>   
+   <td ><div class=scrollable> <%= userid.email_address %> </div> </td> 
+    <td > <%= userid.active %>  </td> 
+    <td > <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td> 
+    <td ><%= userid.number_of_files %> </td> 
+    <td ><%= userid.number_of_records %> </td>   
+    <td><%= link_to 'Show', userid_detail_path(userid) %><br><%= link_to 'Edit', edit_userid_detail_path(userid) %><br><%= link_to 'Disable', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' } %></td> 
+  </tr>
+  <% end %>
+  <%else%>
+  You have no transcribers
+  <% end %>
+</table>
+</div>
+<div style="float:left;"> <%= button_to 'Create Userid', new_userid_detail_path, method: :get %> </div>
+
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
+
+
+

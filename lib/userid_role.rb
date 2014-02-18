@@ -31,10 +31,13 @@ module UseridRole
   
   CODES = {
    'researcher' => "Results", 
-   'coordinator' => "County", 
-   'assistant_coordinator' => "County", 
-   'system_administrator' => "All", 
+   'trainee' => "Profile",
    'transcriber' => "Files", 
-   'data_manager' => "Data" 
+   'syndicate_coordinator' => "Syndicate", 
+   'county_coordinator' => "County",
+   'country_coordinator' => "Country",
+   'volunteer_coordinator' => "All people",
+   'system_administrator' => "All Assets", 
+   'data_manager' => "All Data" 
   }
 end

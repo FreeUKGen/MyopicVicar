@@ -4,12 +4,10 @@ class PlacesController < InheritedResources::Base
   
   def index
           @chapman_code = session[:chapman_code] 
-          @places = Place.where( :chapman_code => session[:chapman_code] ).all.order_by( place_name: 1)
+          @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
           @first_name = session[:first_name]
-          session[:errors] = nil
-          session[:form] = nil
-          session[:parameters] = params
+          
   end
 
   def list
@@ -17,42 +15,38 @@ class PlacesController < InheritedResources::Base
   end
 
   def show
-   
+    load(params[:id])
   end
 
   def edit
      load(params[:id])
-     @place = session[:form] if (!session[:form].nil? && session[:type] = "new") #repeating the addition as there were errors
-     session[:type] = "edit"
-     @first_name = session[:first_name]
-   end
+     placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
+      @placenames = Array.new
+        placenames.each do |placename|
+          @placenames << placename.place_name
+        end
+  end
 
 
 def new
-  if session[:errors].nil?
+ 
       #coming through new for the first time so get a new instance
       @place = Place.new
       @place.chapman_code = session[:chapman_code]
       session[:form] = @place
       @county = session[:county]
+      placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
+      @placenames = Array.new
+        placenames.each do |placename|
+          @placenames << placename.place_name
+        end
       session[:errors] = nil
       @first_name = session[:first_name]
-    else
-     #Coming through new with errors
-      @first_name = session[:first_name]
-      @place = session[:form]
-       @county = session[:county]
-    end
-    session[:type] = "new"
-
-end
+  end
 
 def create
    @place = Place.new
      # save place name change in Place
-    @place.master_place_lon = params[:place][:master_place_lon] unless params[:place][:master_place_lon].nil?
-    @place.master_place_lat = params[:place][:master_place_lat] unless params[:place][:master_place_lat].nil?
-    @place.genuki_url = params[:place][:genuki_url] unless params[:place][:genuki_url].nil?
     @place.place_notes = params[:place][:place_notes] unless params[:place][:place_notes].nil?
     @place.place_name = params[:place][:place_name] unless params[:place][:place_name].nil?
     @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
@@ -60,14 +54,17 @@ def create
     @place.save
     flash[:notice] = 'The addition of the Place was succsessful'
    if @place.errors.any?
-     session[:form] =  @place
      session[:errors] = @place.errors.messages
-     flash[:notice] = 'The addition of the Place was unsuccsessful'
-     redirect_to :action => 'new'
+     flash[:notice] = "The addition of the Place #{@place.place_name} was unsuccsessful"
+     placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
+      @placenames = Array.new
+        placenames.each do |placename|
+          @placenames << placename.place_name
+        end
+     render :action => 'new'
      return
  else
-    session[:type] = "edit"
-    redirect_to places_path
+     redirect_to places_path
  end
 end
 
@@ -85,26 +82,19 @@ def update
     @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
     @place.chapman_code = session[:chapman_code]
     @place.save
-    flash[:notice] = 'The update the Place was succsessful'
+  
    if @place.errors.any? then
      session[:form] =  @place
      session[:errors] = @place.errors.messages
      flash[:notice] = 'The update of the Place was unsuccsessful'
-     redirect_to :action => 'edit'
+     render :action => 'edit'
      return 
-  end
+    end
    
    unless old_place_name == params[:place][:place_name]
-  # save place name change in register
-    @place.churches.each do |church|
-      church.registers.each do |register|
-        register.place_name = params[:place][:place_name]
-        register.save!
-      end
-    end
+  
  # save place name change in Freereg_csv_file
-    county = old_county if county.nil?
-    my_files = Freereg1CsvFile.where(:county => county, :place => @place.alternate_place_name).all
+    my_files = Freereg1CsvFile.where(:county => session[:chapman_code], :place => old_place_name).all
     if my_files
       my_files.each do |myfile|
         myfile.place = params[:place][:place_name]
@@ -120,6 +110,7 @@ def update
     else
     end
   end
+    flash[:notice] = 'The update the Place was succsessful'
   redirect_to places_path(:anchor => "#{@place.id}")
   end
 
@@ -131,11 +122,14 @@ def update
    session[:place_name] = @place_name
    @county = ChapmanCode.has_key(@place.chapman_code)
    session[:county] = @county
+   @first_name = session[:first_name]
+
   end
 
  def destroy
     load(params[:id])
     @place.destroy
+     session[:errors] = nil
     flash[:notice] = 'The deletion of the place was successful'
     if @place.errors.any? then
      @place.errors
@@ -143,16 +137,19 @@ def update
      session[:errors] = @place.errors.messages
      flash[:notice] = 'The deletion of the place was unsuccessful'
     end
+
     redirect_to places_path
  end
 
  def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
-   redirect_to place_path(:anchor => "#{@place.id}")
+   session[:errors] = 'errors'
+   redirect_to places_path
  end
 
  def record_validation_errors
-  flash[:notice] = 'The update of the children to Place with a place name change failed'
-   redirect_to places_path(:anchor => "#{@place.id}")
+   flash[:notice] = 'The update of the children to Place with a place name change failed'
+   session[:errors] = 'errors'
+   redirect_to places_path
  end
 end

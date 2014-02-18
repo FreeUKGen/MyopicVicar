@@ -49,6 +49,7 @@ class MasterPlaceNamesController < ActionController::Base
     @place.county = ChapmanCode.has_key(params[:master_place_name][:chapman_code])
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
+    @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     @place.grid_reference = params[:master_place_name][:grid_reference]
     @place.latitude = params[:master_place_name][:latitude]
     @place.longitude = params[:master_place_name][:longitude]
@@ -103,17 +104,28 @@ class MasterPlaceNamesController < ActionController::Base
     @place.county = session[:county]
     @place.country = params[:master_place_name][:country]
     @place.place_name = params[:master_place_name][:place_name]
+    @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     @place.grid_reference = params[:master_place_name][:grid_reference]
     @place.latitude = params[:master_place_name][:latitude]
     @place.longitude = params[:master_place_name][:longitude]
    #use the lat/lon if present if not calculate from the grid reference
     if @place.latitude.nil? || @place.longitude.nil? || @place.latitude.empty? || @place.longitude.empty? then
-     unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
-      location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
-      @place.latitude = location[0]
-      @place.longitude = location[1]
-     end
-    end
+        unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
+           location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
+           @place.latitude = location[0]
+           @place.longitude = location[1]
+        end
+      else
+        #have they changed?
+        if @place.original_latitude == @place.latitude && @place.original_longitude == @place.longitude
+          #yes they have not changed so use Grid ref
+          unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
+            location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
+            @place.latitude = location[0]
+            @place.longitude = location[1]
+          end
+        end
+      end
     @place.source =  params[:master_place_name][:source] 
     @place.reason_for_change = params[:master_place_name][:reason_for_change]
     @place.other_reason_for_change = params[:master_place_name][:other_reason_for_change]

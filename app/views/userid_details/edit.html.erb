@@ -1,0 +1,8 @@
+<p style="text-align: center">Editing Userids </p>
+
+<%= render 'form' %>
+
+<div style="float:left;"> <%= button_to 'Back to Userid Management', userid_details_path, method: :get %></div>
+
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>

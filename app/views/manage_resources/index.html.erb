@@ -1,0 +1,9 @@
+This is a temporary landing page until the full Security system is in place
+<%= semantic_form_for(@manage_resources) do |f| %>
+ 
+<div id="main"style="color:black">
+
+<%= f.input :userid, { :as => :select, :include_blank => true,  :collection => @coordinators, :label => "Select a userid :", :input_html => { :size => 10 }}%>
+   <%= f.action :submit, :as => :input, :label => 'Update'   %>         
+<% end %>
+</div>

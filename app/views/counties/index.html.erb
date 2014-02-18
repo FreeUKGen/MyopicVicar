@@ -1,0 +1,21 @@
+<h1>Listing counties</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @counties.each do |county| %>
+  <tr>
+    <td><%= link_to 'Show', county %></td>
+    <td><%= link_to 'Edit', edit_county_path(county) %></td>
+    <td><%= link_to 'Destroy', county, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New County', new_county_path %>

@@ -13,7 +13,7 @@ class SearchQuery
   validates_inclusion_of :role, :in => NameRole::ALL_ROLES+[nil]
   field :record_type, type: String#, :required => false
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
-  field :chapman_codes, type: Array#, :required => false
+  field :chapman_codes, type: Array, default: []#, :required => false
 #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean

@@ -14,12 +14,20 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+  resources :countries
+
+
+  resources :counties
+
+
   resources :saved_searches
 
 
   resources :manage_resources
  
   get 'userid_details/:id/disable(.:format)', :to => 'userid_details#disable', :as => :disable_userid_detail
+  get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
+  get 'userid_details/my-own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   
   resources :userid_details
   
@@ -31,11 +39,13 @@ MyopicVicar::Application.routes.draw do
 
   resources :alias_place_churches
 
-  resources :freereg_contents
   get 'freereg_contents/:id/show(.:format)', :to => 'freereg_contents#show', :as => :show_freereg_content
   get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church
   get 'freereg_contents/:id/show_register(.:format)', :to => 'freereg_contents#show_register', :as => :show_register
   get 'freereg_contents/:id/show_decade(.:format)', :to => 'freereg_contents#show_decade', :as => :show_decade
+  
+  resources :freereg_contents
+
   resources :churches
 
   resources :registers
@@ -50,6 +60,10 @@ MyopicVicar::Application.routes.draw do
 
   resources :freereg1_csv_entries
 
+ get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
+ get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
+ get 'freereg1_csv_files/my-own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
+ 
   resources :freereg1_csv_files
 
   resources :emendation_types

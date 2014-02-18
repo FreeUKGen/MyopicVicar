@@ -1,43 +1,27 @@
 <%= semantic_form_for(@place) do |f| %>
  
-  <% if !session[:errors].nil? %>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:red">
-    <%= flash[:notice] %>
+  
+   <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+   <% session[:errors] = nil %>
+   <br>
     </div>
-   <% end %>
-    
-    <% else %>
-    <% if flash[:notice] && session[:errors].nil? %>
-    <div id="notice" style="color:green">
-    <%= flash[:notice] %>
-    </div>
-   <% end %>
-  <% end %>
-
+  
 <div id="main"style="color:black">
-  <%= f.input :place_name,:label => "This is the most commonly used name for the place:",:input_html => { :size => 60 }%> 
+  <%= f.input :place_name,{ :as => :select,:label => "Select from the Master Place Name collection",:include_blank => false,
+          :required => true, :collection => @placenames, :size => 15 } %> 
    
   <br>
    <%= f.input :alternate_place_name,:label => "Any other names used for this place :",:input_html => { :size => 60 }%>
  <br>
    <%= f.input :place_notes,:label => "Any notes:",:input_html => { :size => 100 }%>
 
-  <br>
-   <%= f.input :last_amended, :label => "This is date that data last changed (cannot be changed) :",:input_html => { :disabled => true ,:size => 20 }%>
-  
-  <br>
-   <%= f.input :genuki_url,:label => "The link to the Genuki Gazatteer :", :input_html => { :size => 100 }%>
-  <br>
-      <%= f.input :master_place_lat, :label => "Latitude in degrees eg 50.234 :",:input_html => { :size => 20 }%>
-   <br>   
-   <%= f.input :master_place_lon, :label => "Longitude in degrees eg -1.234 :",:input_html => { :size => 20 }%>
-  <br>
-  <% if session[:type] == "edit" %>  
    <%= f.action :submit, :as => :input, :label => 'Update' %>
-  <% else %>
-   <%= f.action :submit, :as => :input, :label => 'Create' %>
-   <% end %>
+  
   </div>
   <br>
    <% end %>
