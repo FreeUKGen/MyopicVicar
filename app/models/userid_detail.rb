@@ -13,7 +13,7 @@ field :person_forename, type: String
 field :email_address, type: String
 field :address, type: String
 field :telephone_number, type: String
-field :skill_level, type: String
+field :skill_level, type: String, default: 'Average'
 field :fiche_reader, type: Boolean
 field :password, type: String
 field :chapman_code, type: String 

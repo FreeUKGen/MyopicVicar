@@ -14,6 +14,11 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+  get 'csvfiles/:id/error(.:format)', :to => 'csvfiles#replace', :as => :replace_csvfile
+  get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
+  resources :csvfiles
+
+
   resources :countries
 
 

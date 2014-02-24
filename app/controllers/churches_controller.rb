@@ -17,9 +17,7 @@ class ChurchesController < InheritedResources::Base
   end
 
   def new
-    p "new"
-    p session
-    p params
+   
     if session[:errors].nil?
       #coming through new for the first time so get a new instance
       @church = Church.new
@@ -44,7 +42,7 @@ class ChurchesController < InheritedResources::Base
     
   end
   def create
-    p "creating"
+   
 
     place = Place.where(:place_name => params[:church][:place_id]).first
   church = Church.new(params[:church])
@@ -67,8 +65,10 @@ class ChurchesController < InheritedResources::Base
 end
   
   def edit
-          @chapman_code = session[:chapman_code] 
-          @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
+          load(params[:id])
+          @chapman_code = session[:chapman_code]
+          @places = Array.new 
+          @places << @place_name
           @county = session[:county]
           @first_name = session[:first_name]
           load(params[:id])
@@ -77,10 +77,7 @@ end
   def update
     load(params[:id])
     old_church_name = session[:church_name]
-    p old_church_name
-    p params
     @church.church_name = params[:church][:church_name]
-    p @church.church_name
     @church.save
      flash[:notice] = 'The update the Church was succsessful'
    if @church.errors.any? then
@@ -95,10 +92,9 @@ end
         register.alternate_register_name = @church.church_name.to_s + " " + register.register_type.to_s
          #update files   
     my_files = Freereg1CsvFile.where(:register_id => register._id).all
-    p my_files
     if my_files
       my_files.each do |myfile|
-        p myfile
+      
         myfile.church_name = params[:church][:church_name]
         myfile.save!
 

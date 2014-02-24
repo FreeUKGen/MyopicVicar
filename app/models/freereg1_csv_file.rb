@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
-require 'record_type'
 
-class Freereg1CsvFile 
+class Freereg1CsvFile  
+
   include Mongoid::Document
   include Mongoid::Timestamps
+   require "#{Rails.root}/app/uploaders/csvfile_uploader"
+   require 'record_type'
+
+
   has_many :freereg1_csv_entries
   belongs_to :register, index: true
   #register belongs to church which belongs to place
-
+  has_one :csvfile
 
 
 
@@ -53,11 +57,13 @@ class Freereg1CsvFile
   field :lds, type: String
   field :characterset, type: String
   field :alternate_register_name,  type: String
+  field :csvfile, type: String
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 
-  after_save :create_or_update_last_amended_date
-  #after_update :create_or_update_last_amended_date
+  after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
+
+ 
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4}\z/
@@ -194,10 +200,10 @@ class Freereg1CsvFile
       hold_file
   end
   def self.delete_file(csv_file)
-    puts "deleting file"
+   
         # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
         # this function)
-        #
+        p "deleting #{csv_file}"
          # fetch the IDs of all the entries on this file
         freereg_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => csv_file).all
         freereg_entries.each do |entry|
@@ -206,8 +212,9 @@ class Freereg1CsvFile
            # now delete the csv entry records
           Freereg1CsvEntry.where(:_id => entry._id).delete_all
         end
+       
         # now we can delete the file
-         Freereg1CsvFile.where(:_id => csv_file).destroy_all
+       Freereg1CsvFile.where(:_id => csv_file).delete_all
   end
 
 

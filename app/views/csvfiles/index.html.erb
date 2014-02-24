@@ -1,0 +1,33 @@
+<h1>Listing csvfiles</h1>
+ <% if !flash[:notice].blank? %>
+    <div >
+    <%= flash[:notice] %>
+    </div>
+    <% end %>
+    <br />
+    <%= link_to "New CsvFile", new_csvfile_path %>
+    <br />
+    <br />
+    <table >
+    <thead>
+    <tr>
+    <th>Name</th>
+    <th>Download Link</th>
+    <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% unless @csvfiles.nil?%>
+  <% @csvfiles.each do |csvfile| %>
+  <tr>
+    <td><%= link_to 'Show', csvfile %></td>
+    <td><%= link_to 'Edit', edit_csvfile_path(csvfile) %></td>
+    <td><%= link_to 'Destroy', csvfile, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+<% end %>
+    </tbody>
+    </table>
+
+
+<%= link_to 'New Csvfile', new_csvfile_path %>
