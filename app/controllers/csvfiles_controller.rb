@@ -38,7 +38,8 @@ def create
     end
     if @csvfile.save!
 
-       range = File.join(@csvfile[:userid] ,place)
+       place  = @csvfile.file_name
+       range = File.join(@csvfile[:userid] ,@csvfile.file_name)
 
           unless params[:csvfile][:process] == 'Scheduled'
             start = Time.now
@@ -46,7 +47,7 @@ def create
              Process.waitall if params[:csvfile][:process]  == 'Now'
             endtime = Time.now - start
            end
-
+      
       @csvfile.delete
 
           if session[:my_own] == 'my_own'
