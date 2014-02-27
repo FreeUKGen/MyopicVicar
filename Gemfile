@@ -36,7 +36,7 @@ gem 'rubyzip'
 gem 'rspec-rails'
 
 gem "fog"
-
+gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid'
 gem "listen"
 
 

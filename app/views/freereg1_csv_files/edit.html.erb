@@ -1,12 +1,12 @@
 <p>Editing file:<b><%= @freereg1_csv_file_name %></b> </p>
-<div style="float:left;"> <%= button_to 'Show this file', freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Back to fFile options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+
+<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %></div>
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management options',manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 <%= render 'form' %>
 <br>
 
-<div style="float:left;"> <%= button_to 'Show this file', freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Back to File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+
+<div style="float:left;"><%= button_to_function "Back to Previous Page", "history.back()" %></div>
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

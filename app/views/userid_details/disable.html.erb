@@ -1,10 +1,10 @@
-<p style="text-align: center"><b>Disabling UserID</b> </p>
+<p style="text-align: center"><b>Disabling Person</b> </p>
 <%= semantic_form_for @userid do |f| %>
 
 <%= f.input :userid,:label => "The UserId :",:input_html => { :disabled => true ,:size => 30 }%>
 <%= f.input :disabled_reason,:label => "Reason for disabling :",:input_html => { :size => 60 }%>
  <%= f.action :submit, :as => :input, :label => 'Update'   %>
  <% end %>
-<div style="float:left;"> <%= button_to 'Back to UserID options', userid_details_path(:anchor => "#{ @userid.id}"), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
+<div  style="float:left;"> <%= button_to 'Back to Resource Management', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

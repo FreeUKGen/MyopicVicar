@@ -30,10 +30,10 @@ class MasterPlaceNamesController < ActionController::Base
 
  def edit
    load(params[:id])
-   p session
+  
    @place = session[:form] if (!session[:form].nil? && session[:type] = "new")
    session[:type] = "edit"
-   p session[:errors]
+  
  end
 
  def create
@@ -42,7 +42,7 @@ class MasterPlaceNamesController < ActionController::Base
     redirect_to master_place_names_path(params)
   else
     #this time we are creally creating a new entry
-    p params
+    
     @place =  session[:form] 
     @place.genuki_url = params[:master_place_name][:genuki_url]
     @place.chapman_code = params[:master_place_name][:chapman_code]

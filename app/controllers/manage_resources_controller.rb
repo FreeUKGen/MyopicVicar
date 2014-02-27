@@ -4,6 +4,7 @@ def index
     reset_session
     @manage_resources = ManageResource.new  
     @coordinators = County.all.distinct(:county_coordinator).sort
+    
 end
 
 def new
@@ -18,6 +19,7 @@ def create
     session[:first_name] = @user.person_forename
     session[:manager] = false
     session[:manager] = true if (session[:user].person_role == 'system_administrator' || session[:user].person_role == 'country_coordinator'  || session[:user].person_role == 'county_coordinator'  || session[:user].person_role == 'volunteer_coordinator' || session[:user].person_role == 'syndicate_coordinator')
+        
     redirect_to manage_resource_path(@user)
     
 end
@@ -32,9 +34,6 @@ def load(userid_id)
   
   end
 
-def my_syndicates
 
-  
-end
 end
 

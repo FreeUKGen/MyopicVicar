@@ -3,7 +3,7 @@ class PlacesController < InheritedResources::Base
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
   
   def index
-          @chapman_code = session[:chapman_code] 
+          @chapman_code = session[:chapman_code]
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
           @first_name = session[:first_name]
@@ -84,11 +84,11 @@ def update
     @place.save
   
    if @place.errors.any? then
-     session[:form] =  @place
+     session[:form] = @place
      session[:errors] = @place.errors.messages
      flash[:notice] = 'The update of the Place was unsuccsessful'
      render :action => 'edit'
-     return 
+     return
     end
    
    unless old_place_name == params[:place][:place_name]
@@ -133,7 +133,7 @@ def update
     flash[:notice] = 'The deletion of the place was successful'
     if @place.errors.any? then
      @place.errors
-     session[:form] =  @place
+     session[:form] = @place
      session[:errors] = @place.errors.messages
      flash[:notice] = 'The deletion of the place was unsuccessful'
     end

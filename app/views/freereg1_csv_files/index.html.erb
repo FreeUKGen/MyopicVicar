@@ -1,5 +1,5 @@
 <p style="text-align: center"><b>Listing of your files</b></p>
-<div style="float:left;"> <%= button_to 'Upload CSV File', new_userid_detail_path, method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Upload CSV File', new_csvfile_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management options',manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
@@ -24,8 +24,8 @@
 <table CLASS="boldtable" >
   <tr>
     <th style="width:4%">Cnty</th>
-    <th style="width:10%">Place</th>
-    <th style="width:10%">Church</th>
+    <th style="width:15%">Place</th>
+    <th style="width:12%">Church</th>
     <th style="width:4%">Reg type</th>
     <th style="width:4%">Rec type</th>
     <th style="width:5%">Records</th>
@@ -38,7 +38,7 @@
     <th style="width:4%">Lock</th>
     <th style="width:13%">Syndicate</th>
     
-    <th style="width:10%">Action</th>
+   
   </tr>
 
 <% @freereg1_csv_files.each do |freereg1_csv_file| %>
@@ -62,15 +62,20 @@
     <td ><%= freereg1_csv_file.error  %></td>
     
     <td><%= freereg1_csv_file.locked %></td>
-    <td><%= freereg1_csv_file.transcriber_syndicate %></td>
+    <td><%= freereg1_csv_file.transcriber_syndicate %></td></tr>
+    <tr> <td></td>
+    <td><%= button_to 'Show', freereg1_csv_file, method: :get %></td>
+    <td><%= button_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get %></td>
+    <td><%= button_to 'Lock', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock this file?'%></td>
+    <td></td></td><td><td><%= button_to 'Replace', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace this file?'%></td>
     
-    <td><%= link_to 'Show', freereg1_csv_file %><br>
-    <%= link_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file) %><br>
-    <% if freereg1_csv_file.error != 0 %>
-     <%= link_to 'Errors', error_freereg1_csv_file_path(freereg1_csv_file)%><br>
+    <td><%= button_to 'Discard', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete %></td>
+
+    <td><%= button_to 'Download', download_csvfile_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get %></td>
+  <td></td><td style="color:red"> <% if freereg1_csv_file.error != 0 %>
+     <%= button_to 'Errors', error_freereg1_csv_file_path(freereg1_csv_file), method: :get%></td>
      <% end %>
-     <%= link_to 'Lock', lock_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to lock this file?'%><br>
-    <%= link_to 'Destroy', freereg1_csv_file, confirm: 'Are you sure you want to delete this file?', method: :delete %></td>
+
   </tr>
 
 <% end %>
@@ -82,7 +87,7 @@
 </div>
 
 <br />
-<div style="float:left;"> <%= button_to 'Upload CSV File', new_userid_detail_path, method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Upload CSV File', new_csvfile_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
