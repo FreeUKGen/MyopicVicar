@@ -7,6 +7,7 @@ gem 'rails', '3.2.13'
 
 
 gem 'mysql2'
+gem 'refinerycms'
 # MongoDB
 #gem 'bson_ext'
 gem "mongoid", "~> 3.1"
