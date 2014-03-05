@@ -65,9 +65,15 @@ class RegistersController < InheritedResources::Base
      flash[:notice] = 'The update of the Register was unsuccsessful'
      render :action => 'edit'
      return 
+<<<<<<< HEAD
    end
      render :action => 'show'
 
+=======
+# Editor complains that this is an unreachable statement; commenting out -- BWB
+#     redirect_to :action => 'show'
+   end
+>>>>>>> ff1650e30bf3c6664d3304219d031217fa012155
   end
 
   
