@@ -1,25 +1,23 @@
 <%= semantic_form_for(@register) do |f| %>
-   <% if flash[:notice] && session[:errors].nil? %>
-    <div id="notice" style="color:green"><br>
-  <% else %>
-   <div id="notice" style="color:red"><br> 
-    <% end %>
-   <%= flash[:notice] %> 
-   <% session[:errors] = nil %>
-   <br>
-    </div>
+  
+  
 
   
-  <%= f.input :status, :input_html => { :size => 30 }%>
-  <%= f.input :register_name, :input_html => { :size => 30 }%>
-  <%= f.input :alternate_register_name, :input_html => { :disabled => true , :size => 30} %> 
-  <%= f.input :quality, :input_html => { :size => 40 }%>
-  <%= f.input :source, :input_html => { :size => 40 }%>
-  <%= f.input :copyright, :input_html => { :size => 40 }%>
-  <%= f.input :register_notes, :input_html => { :size => 60 }%>
-  <%= f.input :last_amended, :input_html => { :disabled => true, :size => 20  }%>
+
+   <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
+          :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
+
+  <%= f.input :quality,:label => "Quality of the Register images :", :input_html => { :size => 40 }%>
+  <%= f.input :source, :label => "Source of the Register images :",:input_html => { :size => 100 }%>
+  <%= f.input :copyright, :label => "Any copyright issues ?",:input_html => { :size => 60 }%>
+  <%= f.input :register_notes, :label => "Notes about Register :",:input_html => { :size => 60 }%>
+   <%= f.input :status, :input_html => {  :size => 60 }%>
+  <%= f.input :last_amended,:label => "System generate date of last amemended record :", :input_html => { :disabled => true, :size => 20  }%>
+ 
   <br>
-  <div class="actions">
-    <%= f.actions %>
-  </div>
+  
+  <%= f.action :submit, :as => :input, :label => 'Create' %>
+
+ 
+
 <% end %>

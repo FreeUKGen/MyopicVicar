@@ -7,13 +7,17 @@ class Church
   field :last_amended, type: String
   field :denomination, type: String
   field :location, type: String
-  field :alternate_church_name, type: String
+
   field :church_notes, type: String
   has_many :registers, dependent: :restrict
+
+   embeds_many :alternatechurchnames
+   accepts_nested_attributes_for :alternatechurchnames
+
   belongs_to :place, index: true
   index({ place_id: 1, church_name: 1 }, { unique: true })
-   validates_presence_of :church_name
-   validate :church_does_not_exist, on: :create
+  validates_presence_of :church_name
+  validate :church_does_not_exist, on: :create
 
    def church_does_not_exist 
     p "checking for church"

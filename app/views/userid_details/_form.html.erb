@@ -1,19 +1,13 @@
- <% if flash[:notice] && session[:errors].nil? %>
-    <div id="notice" style="color:green"><br>
-  <% else %>
-   <div id="notice" style="color:red"><br> 
-    <% end %>
-   <%= flash[:notice] %> 
-   <% session[:errors] = nil %>
-   <br>
-    </div>
+
 <%= semantic_form_for @userid do |f| %>
 
-<%= f.input :userid,:label => "The UserId itself:",:input_html => { :disabled => true ,:size => 30 } unless session[:type] == "add"%> 
-<%= f.input :userid,:label => "The UserId itself:",:input_html => { :size => 30 } if session[:type] == "add"%> 
-<% if session[:manager]%>
-<%= f.input :syndicate, {:as => :select,  :collection => ChapmanCode::select_hash_with_parenthetical_codes ,:include_blank => false,:label => "The Transcribers Syndicate :", :size => 15 }%>
-<%else%> 
+
+    <div id="main"style="color:black">
+
+<%if session[:type] == "add"%> 
+<%= f.input :userid,:label => "The UserId itself:",:input_html => { :size => 30 }%> 
+<%else%>
+<%= f.input :userid, :label => "The UserId itself:",:input_html => { :disabled => true ,:size => 30 } %>
 <%= f.input :syndicate,:label => "The Transcribers Syndicate :",:input_html => {:disabled => true , :size => 40 }%>
 <%end%>
 <%= f.input :person_forename,:label => "Forename :",:input_html => { :size => 40 }%>
@@ -29,13 +23,17 @@
 <%= f.input :disabled_date,:label => "Date the transcriber was disabled :",:input_html => { :size => 30 }%>
 <%= f.input :disabled_reason,:label => "Reason for disabling :",:input_html => { :size => 60 }%>
 <%= f.input :skill_level,:label => "Transcriber skill :",:input_html => { :size => 100 } %>
-<%= f.input :person_role,:label => "Persons Role in Freereg :",:input_html => { :disabled => true, :size => 30 }%>
+
+<%= f.input :person_role,:label => "Person's Role in Freereg :",:input_html => { :disabled => true, :size => 30 }%>
 <%else%> 
 
 <%= f.input :last_upload,:label => "Date of last upload :",:input_html => { :disabled => true ,:size => 30 }%>
 <%= f.input :sign_up_date,:label => "Date person signed up :",:input_html => { :disabled => true, :size => 30 }%>
 <%end%>
-<%= f.input :person_role, {:as => :select,  :collection => UseridRole::CODES,:include_blank => false,:label => "Person's role in FreeREG :", :size => 8 } if session[:user].person_role == 'system_administrator'%>
+<%if @user.person_role == 'system_administrator' && session[:type] == "add"%>
+<%= f.input :person_role, {:as => :select,  :collection => UseridRole::CODES,:include_blank => false,:label => "Person's role in FreeREG :", :size => 8 } %>
+ <% end %>
   
     <%= f.action :submit, :as => :input, :label => 'Update'   %>
    <% end %>
+</div>

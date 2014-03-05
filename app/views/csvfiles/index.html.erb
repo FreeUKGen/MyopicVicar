@@ -1,10 +1,10 @@
-<h1>Listing csvfiles</h1>
- <% if !flash[:notice].blank? %>
-    <div >
-    <%= flash[:notice] %>
+<p style="text-align: center">Listing csvfiles</p>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
     </div>
-    <% end %>
-    <br />
+   <% end %>  
+
     <%= link_to "New CsvFile", new_csvfile_path %>
     <br />
     <br />

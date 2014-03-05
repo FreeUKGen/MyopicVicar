@@ -1,0 +1,20 @@
+
+  <%= semantic_form_for @manage_people do |f| %>
+      <%= f.input :syndicate, 
+        { :as => :select, :label => "#{@first_name} you have multiple syndicates. Which would you like to work with?",
+          :include_blank => false,
+          :required => true,
+          :collection => @syndicates, :size => 15 }  if @syndicates.length > 1%>
+          <%= f.input :action, { :as => :select, :include_blank => true, :collection => ['Review Members', 'Review Batches', 'Add Member'], :label => "Select an action :", :input_html => { :size => 10 } }%>
+
+
+    <%= f.action :submit, :as => :input, :label => 'Select'   %>
+   <% end %>
+
+
+
+          
+ <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="clear:both;"> </div><br>
+ 

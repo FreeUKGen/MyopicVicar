@@ -3,7 +3,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
   def index
  
     @register = session[:register_id]
-    @user = session[:user]
+     @user = UseridDetail.where(:userid => session[:userid]).first
     @first_name = session[:first_name]
     session[:my_own] = 'no'
     userids = Array.new
@@ -88,10 +88,11 @@ class Freereg1CsvFilesController < InheritedResources::Base
   def error
     load(params[:id])
     my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,session[:freereg1_csv_file_name]) + '.log' #Needs generalization
+    
     @lines = Array.new
     File.open(my_file, 'r') do |f1|  
       while line = f1.gets
-        @lines << line
+         @lines << line
       end
     end
    
@@ -99,6 +100,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
   
   def my_own
     @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
     @freereg1_csv_files = Freereg1CsvFile.where(:userid => session[:userid]).all.order_by(file_name: 1)
     session[:my_own] = 'my_own'
     render "index"
@@ -147,7 +149,13 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     session[:freereg1_csv_file_id] = file_id
     session[:freereg1_csv_file_name] =@freereg1_csv_file_name
+    @user = UseridDetail.where(:userid => session[:userid]).first
     @first_name = session[:first_name] 
+     session[:county] = @freereg1_csv_file.county
+     session[:place_name] = @freereg1_csv_file.place
+       session[:church_name] = @freereg1_csv_file.church_name
+
+
   end
  
 end
