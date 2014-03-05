@@ -1,19 +1,24 @@
+<% require 'chapman_code' %>
 
+<div>  The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. 
 
-<p style="text-align: center">The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>.</p> 
-
-
-
- <p> 
- <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
-<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+</div>
+<br>
+   <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+    <% session[:errors] = nil %>
+   <br>
     </div>
-   <% end %> 
+ <p> 
+<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Register', new_register_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
 
 <div id="main"style="color:black">
 
@@ -74,7 +79,7 @@
 
 
 <br />
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="float:left;">  <%= button_to 'Create Place entry', new_place_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+<div  style="float:left;"> <%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

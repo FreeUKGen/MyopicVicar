@@ -2,25 +2,33 @@ class UseridDetailsController < ApplicationController
  require 'userid_role'
 
 	def index
+    @userid = session[:userid]
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
-    session[:type] = "manager"
-    session[:my_own] = "no"
+    session[:user] = @user
+     session[:type] = "manager"
+     session[:my_own] = "no"
+    case
+    when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
+        @userids = UseridDetail.all.order_by(userid_lower_case: 1)
 
-     users = UseridDetail.where(:syndicate => session[:syndicate]).all.order_by(userid_lower_case: 1) 
-     
-      @userids = Array.new
+    when @user.person_role == "syndicate_coordinator" || (@user.person_role == 'county_coordinator' && @user.syndicate_groups.length > 0) || (@user.person_role == 'country_coordinator' && @user.syndicate_groups.length > 0)
+         @userids = Array.new
+         syndicates = Syndicate.where(:syndicate_coordinator => @user.userid).all.order_by(syndicate_code: 1) 
+         syndicates.each do |synd|
+           users = UseridDetail.where(:syndicate => synd.syndicate_code).all.order_by(userid: 1) 
            users.each do |user|
-              @userids << user
-           end
-      
+           @userids << user
+         end
+       end
+    end #end case
+
  	end #end method
 
   def new
     session[:type] = "add"
     @userid = UseridDetail.new
     @first_name = session[:first_name]
-     @user = UseridDetail.where(:userid => session[:userid]).first
     synd = Syndicate.all.order_by(syndicate_code: 1)
     @syndicates = Array.new
     synd.each do |syn|
@@ -35,10 +43,12 @@ class UseridDetailsController < ApplicationController
    
   end
   def my_own
-    @userid = session[:userid]
+    @user = session[:user]
     @first_name = session[:first_name]
-    @userid = UseridDetail.where(:userid => session[:userid]).first
-    session[:my_own] = 'my-own'
+    session[:my_own] = "my-own"
+   
+    @userid = UseridDetail.where(:userid => @user.userid ).first
+    #redirect_to userid_detail_path(@userids)
     render :action => 'show'
 
   end
@@ -56,10 +66,10 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+    p "update userid"
+    p session
      @userid = UseridDetail.new(params[:userid_detail])
      @userid.sign_up_date = DateTime.now
-     @userid.syndicate =  session[:syndicate]
-     @userid.person_role = 'transcriber'
      @userid.save
    
       if @userid.errors.any?
@@ -108,11 +118,9 @@ end
  end
 
   def load(userid_id)
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @userid = UseridDetail.find(userid_id)
-    session[:userid_id] = userid_id
-  
+   @userid = UseridDetail.find(userid_id)
+   session[:userid_id] = userid_id
+   @first_name = session[:first_name]
   end
 end
 

@@ -77,8 +77,7 @@ end
  #save master_place_names and alias
  p "Save started"
   collections_to_save = ["0","1","8","9","10","11"] if args.type == "recreate"
-  collections_to_save = ["0"] if args.type != "recreate" #,"1","2","3","4","5","6","7","8","9","10","11"
-
+  collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11"] if args.type != "recreate" #
    collections_to_save.each  do |col|
     coll  = col.to_i
     collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")

@@ -1,16 +1,14 @@
 <p style="text-align: center"><b>Display error file</b></p>
-
-
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %></div>
+<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 There are <b> <%= @lines.length %> errors</b><br><br>
 <% @lines.each do |line| %>
 <%= line %><br>
 <%end%>
-
-
-
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %></div>
+<br>
+<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

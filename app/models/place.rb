@@ -18,11 +18,6 @@ class Place
   field :master_place_lat, type: String
   field :master_place_lon, type: String
 	field :location, type: Array
-    
-  embeds_many :alternateplacenames
-  
-  accepts_nested_attributes_for :alternateplacenames
-
 
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
 
@@ -54,6 +49,10 @@ class Place
       OPTIONS.invert[system]
     end
   end
+ 
+  
+ # index ([[:chapman_code, Mongo::ASCENDING],[:place_name, Mongo::ASCENDING]])
+
  
   
   index({ chapman_code: 1, place_name: 1 }, { unique: true })

@@ -1,7 +1,15 @@
 <%= semantic_form_for(@freereg1_csv_entry) do |f| %>
+  <% if @freereg1_csv_entry.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@freereg1_csv_entry.errors.count, "error") %> prohibited this freereg1_csv_entry from being saved:</h2>
 
-  
-
+      <ul>
+      <% @freereg1_csv_entry.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
   <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %>
   <%= f.input :register_entry_number , :input_html => { :size => 10} %> 
@@ -19,7 +27,7 @@
   <%= f.input :person_forename %> 
   <%= f.input :person_sex ,      :input_html => { :size => 2 }%> 
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
-  <% when @freereg1_csv_file.record_type == "ma" %>
+  <% when @file.record_type == "ma" %>
   <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
   <%= f.input :bride_abode %> 
   <%= f.input :bride_age %> 
@@ -47,7 +55,7 @@
   <%= f.input :witness2_forename %> 
   <%= f.input :witness2_surname %>  
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
-  <% when @freereg1_csv_file.record_type == "bu" %>
+  <% when @file.record_type == "bu" %>
   <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
   <%= f.input :burial_date %> 
   <%= f.input :burial_person_forename %> 
@@ -61,7 +69,7 @@
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
   <% else %>
   <% end %>
-      <%= f.action :submit, :as => :input, :label => 'Update'   %>
+    <%= f.actions %>
     
 <% end %>
 

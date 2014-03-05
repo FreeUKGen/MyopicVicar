@@ -3,9 +3,8 @@ class ChurchesController < InheritedResources::Base
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
  layout "places"
  require 'chapman_code'
-
+  
   def show
-    p "show"
           @chapman_code = session[:chapman_code] 
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
@@ -14,16 +13,7 @@ class ChurchesController < InheritedResources::Base
           session[:form] = nil
           session[:parameters] = params
           load(params[:id])
-          @names = Array.new
-         @alternate_church_names = @church.alternatechurchnames.all
-         p "at church"
-         p  @alternate_church_names
-         @alternate_church_names.each do |acn|
-          name = acn.alternate_name
-          @names << name
-         end
-         p @names
-          
+
   end
 
   def new
@@ -47,16 +37,21 @@ class ChurchesController < InheritedResources::Base
       @church = session[:form]
       @county = session[:county]
     end
-     @user = UseridDetail.where(:userid => session[:userid]).first
+    
 
     
   end
   def create
-  place = Place.where(:place_name => params[:church][:place_id]).first
+   
+
+    place = Place.where(:place_name => params[:church][:place_id]).first
   church = Church.new(params[:church])
-  place.churches << church
-  church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
-  church.save
+   place.churches << church
+     # save place name change in Place
+    
+     
+     
+    church.save
     flash[:notice] = 'The addition of the Church was succsessful'
    if church.errors.any?
      session[:errors] = church.errors.messages
@@ -64,12 +59,12 @@ class ChurchesController < InheritedResources::Base
      redirect_to :action => 'new'
      return
  else
+   
     redirect_to places_path
  end
 end
   
   def edit
-   
           load(params[:id])
           @chapman_code = session[:chapman_code]
           @places = Array.new 
@@ -77,15 +72,12 @@ end
           @county = session[:county]
           @first_name = session[:first_name]
           load(params[:id])
-  
   end
 
   def update
     load(params[:id])
     old_church_name = session[:church_name]
     @church.church_name = params[:church][:church_name]
-    @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
-    @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
     @church.save
      flash[:notice] = 'The update the Church was succsessful'
    if @church.errors.any? then
@@ -126,7 +118,7 @@ end
   end
   
   def load(church_id)
-    @first_name = session[:first_name]   
+        
     @church = Church.find(church_id)
     session[:church_id] = @church._id
     @church_name = @church.church_name
@@ -138,7 +130,6 @@ end
     session[:place_name] =  @place_name
     @county = ChapmanCode.has_key(@place.chapman_code)
     session[:county] = @county
-     @user = UseridDetail.where(:userid => session[:userid]).first
   end
 
   def destroy
@@ -149,15 +140,15 @@ end
  end
 
  def record_cannot_be_deleted
-   flash[:notice] = 'The deletion of the Church was unsuccessful because there were dependant documents; please delete them first'
+   flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
    session[:errors]  = "errors"
-   redirect_to :action => 'show'
+   redirect_to :action => 'edit'
  end
 
  def record_validation_errors
   flash[:notice] = 'The update of the children to Church with a church name change failed'
   session[:errors] = "errors"
-    redirect_to :action => 'show'
+    redirect_to :action => 'edit'
  end
 
 end

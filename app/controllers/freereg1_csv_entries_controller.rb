@@ -3,7 +3,6 @@ class Freereg1CsvEntriesController < InheritedResources::Base
    require 'chapman_code'
 
   def index
-    p session
     @register = session[:register_id] 
     @register_name = session[:register_name] 
     @church = session[:church_id]
@@ -11,14 +10,11 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 
-     @first_name = session[:first_name]
-     @user = UseridDetail.where(:userid => session[:userid]).first
     @freereg1_csv_file_name =  session[:freereg1_csv_file_name]
     @freereg1_csv_file_id = session[:freereg1_csv_file_id]
     @freereg1_csv_file = Freereg1CsvFile.find(@freereg1_csv_file_id)
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1)
   end
-
   def show
     load(params[:id])
   end
@@ -48,8 +44,6 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 
-    @first_name = session[:first_name]
-     @user = UseridDetail.where(:userid => session[:userid]).first
      
   end
 end

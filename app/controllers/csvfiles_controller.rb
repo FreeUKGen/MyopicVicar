@@ -4,7 +4,7 @@ end
  
 def new
  
- @user = UseridDetail.where(:userid => session[:userid]).first
+@user = session[:user]
 @first_name = session[:first_name]	
 @userid = session[:userid]	
 @csvfile  = Csvfile.new(:userid  => session[:userid])
@@ -15,7 +15,7 @@ end
 def edit
  
   #code to move existing file to attic
-  @user = UseridDetail.where(:userid => session[:userid]).first
+  @user = session[:user]
   @first_name = session[:first_name]  
   @userid = session[:userid]  
   @csvfile  = Csvfile.new(:userid  => session[:userid])
@@ -74,7 +74,7 @@ def delete
 end
 
 def get_userids_and_transcribers
- @user = UseridDetail.where(:userid => session[:userid]).first
+@user = session[:user]
   case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
         @userids = UseridDetail.all.order_by(userid_lower_case: 1)
@@ -84,15 +84,12 @@ def get_userids_and_transcribers
         @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
     when  @user.person_role == 'sydicate_coordinator'  
         @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
-    else
-       @userids = @user
+    
     end #end case
-    unless session[:my_own] == 'my_own'
-      @people =Array.new
-        @userids.each do |ids|
-        @people << ids.userid
-      end
-  end
+    @people =Array.new
+    @userids.each do |ids|
+    @people << ids.userid
+    end
   
 end
 

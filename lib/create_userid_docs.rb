@@ -5,8 +5,6 @@ require 'get_files'
 require 'digest/md5'
 require 'syndicate'
 
-require 'syndicate_translation'
-
 FIELD_NAMES = {
 'Surname' => :person_surname,
 
@@ -118,18 +116,18 @@ def self.check_for_replace(filename,header)
     end #end field
   
    header[:person_role] = "transcriber" if header[:person_role].nil?
-   header[:previous_syndicate] = header[:syndicate]
-   header[:syndicate] = SyndicateTranslation.values_at(header[:syndicate])
-   
+   header[:chapman_code] = header[:syndicate]
    header[:digest] = Digest::MD5.file(filename).hexdigest 
     
   header[:sign_up_date] = DateTime.strptime(header[:sign_up_date],'%s') unless header[:sign_up_date].nil?
    header[:disabled_date] = DateTime.strptime(header[:disabled_date],'%s') unless header[:disabled_date].nil?
    header[:fiche_reader] = header[:fiche_reader].to_i
 
-     
+     if  header[:fiche_reader] == 1
+       header[:fiche_reader] = true
+     else
       header[:fiche_reader] = false
-    
+     end
    
  header[:active] = header[:active].to_i
 
@@ -151,12 +149,12 @@ header[:disabled] = header[:disabled].to_i
     
     syndicates_count = Syndicate.where(:syndicate_coordinator => header[:userid]).count
     
-     header[:syndicate_groups] = Array.new
+
     unless syndicates_count == 0
       number_of_syndicate_coordinators =  number_of_syndicate_coordinators  + 1
       syndicates = Syndicate.where(:syndicate_coordinator => header[:userid]).all
       header[:person_role] = "syndicate_coordinator"
-      
+       header[:syndicate_groups] = Array.new
       syndicates.each do |syndicate|
         header[:syndicate_groups] <<  syndicate.syndicate_code
       end
@@ -168,13 +166,13 @@ header[:disabled] = header[:disabled].to_i
    counties_count = County.where(:county_coordinator => header[:userid]).count
 
    
-     header[:county_groups] = Array.new
+    
     unless counties_count == 0
        number_of_county_coordinators =  number_of_county_coordinators + 1
       counties = County.where(:county_coordinator => header[:userid]).all
 
       header[:person_role] = "county_coordinator"
-      
+       header[:county_groups] = Array.new
       counties.each do |county|
         header[:county_groups] <<  county.chapman_code
       end
@@ -182,18 +180,16 @@ header[:disabled] = header[:disabled].to_i
     else
      
     end
-     header[:country_groups] = Array.new
     countries_count = Country.where(:country_coordinator => header[:userid]).count
    
     unless countries_count == 0
        number_of_country_coordinators =  number_of_country_coordinators + 1
-      countries = Country.where(:country_coordinator => header[:userid]).first
-
+      countries = Country.where(:country_coordinator => header[:userid]).all
       header[:person_role] = "country_coordinator"
-      
-      
-        header[:country_groups] =  countries.counties_included
-  
+       header[:country_groups] = Array.new
+      countries.each do |country|
+        header[:country_groups] <<  country.chapman_code
+      end 
       
     else 
       

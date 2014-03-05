@@ -19,10 +19,10 @@ def self.slurp_the_csv_file(filename)
 
 
  def self.process(type,range)
- 
+  @except = ["ENG","IRL","SCT","WLS","SYNManager","REGManager","GENManager","nil"]
       County.delete_all if type = "recreate"
       @@array_of_data_lines = Array.new {Array.new}
-      base_directory = File.join(Rails.root,'db','setup')
+      base_directory = Rails.application.config.datafiles
       header = Hash.new
  	   file_for_warning_messages = "log/county_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
@@ -38,7 +38,7 @@ def self.slurp_the_csv_file(filename)
       loop do
         break if @@array_of_data_lines[@@number_of_line].nil?
         data = @@array_of_data_lines[@@number_of_line] 
-       
+        unless @except.include?(data[0])
         number_of_county_coordinators =  number_of_county_coordinators + 1
         header[:chapman_code] = data[0] 
         header[:county_coordinator] = data[1] 
@@ -54,7 +54,7 @@ def self.slurp_the_csv_file(filename)
       
           @@message_file.puts "County #{data[0]} successfully saved"
         end #if
-       
+        end
         @@number_of_line = @@number_of_line + 1
        
       end #loop

@@ -13,10 +13,10 @@ field :person_forename, type: String
 field :email_address, type: String
 field :address, type: String
 field :telephone_number, type: String
-field :skill_level, type: String, default: 'Unspecified'
+field :skill_level, type: String, default: 'Average'
 field :fiche_reader, type: Boolean
 field :password, type: String
-field :previous_syndicate, type: String 
+field :chapman_code, type: String 
 field :active, type: Boolean
 field :last_upload, type: DateTime
 field :number_of_files, type: Integer, default: 0

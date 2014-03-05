@@ -5,7 +5,7 @@ def index
 
 	@userid = session[:userid]
   @first_name = session[:first_name]
-  @user = UseridDetail.where(:userid => session[:userid]).first
+  @user = session[:user]
   @counties = County.where(:county_coordinator => session[:userid]).all
   @number_of_counties = @counties.length
   

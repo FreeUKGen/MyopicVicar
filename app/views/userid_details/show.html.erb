@@ -1,99 +1,62 @@
-<p style="text-align: center"><b>Details for:<%=@userid.userid %></p></b>
+<p style="text-align: center"><b>Personal Details for:<%=@userid.userid %></p></b>
 
-<div style="float:left;"> <%= button_to 'Edit Details', edit_userid_detail_path(@userid), method: :get %></div>
-
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@userid), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <%= button_to 'Edit the details', edit_userid_detail_path(@userid), method: :get %></div>
+<div style="float:left;">  <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
 
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>
-<div id="main"style="color:black">
-<div id="main"style="color:black">
-<table  CLASS="boldtable" style="width: 100%">
-  <tr>
-    
-    <th style="width:30%">Field</th>
-    <th style="width:50">Value</th>
-     
-  </tr>
+ <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+   <% session[:errors] = nil %>
+   </div>
 
-  <tr> 
-   <td>Forename:</td><td > <%= @userid.person_forename %>  </td>
-  </tr><tr>
-   <td>Surname:</td><td > <%= @userid.person_surname %>  </td>   
-   </tr>
-   <tr>
-   <td>Email:</td><td > <%= @userid.email_address   %> </td>   
-   </tr>
-   <tr>
-   <td>Physical Location:</td><td > <%= @userid.address  %>  </td>   
-   </tr>
-   <tr>
-   <td>Telephone number:</td><td > <%= @userid.telephone_number %>  </td>   
-   </tr>
-   <tr>
-   <td>Fiche reader:</td><td > <%=@userid.fiche_reader%>  </td>   
-   </tr>
-  <tr>
-   <td>Syndicate:</td><td > <%=@userid.syndicate %>  </td>   
-   </tr>
- <tr>
-   <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>   
-   </tr>
-<tr>
-   <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y") unless @userid.sign_up_date.nil? %> </td>   
-   </tr>
-<tr>
-   <td>Last upload:</td><td > <%= @userid.last_upload.strftime("%d %b %Y") unless @userid.last_upload.nil?%>  </td>   
-   </tr>
-   <tr>
-   <td>Number of files loaded:</td><td > <%= @userid.number_of_files  %>  </td>   
-   </tr>
-   <tr>
-   <td>Number of records loaded:</td><td > <%=@userid.number_of_records%>  </td>   
-   </tr>
-<% if  session[:manager] == true%>
-<tr>
-   <td>Active:</td><td > <%= @userid.active  %>  </td>   
-   </tr>
-   <tr>
-   <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>   
-   </tr>
-   <%unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0   %>
-<td>Syndicates managed:</td><td > <%= @userid.syndicate_groups  %>  </td>   
-   </tr>
-    <%end%> 
-   <tr>
-   <%unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
-   <td>Counties coordinated:</td><td > <%=@userid.county_groups %>   </td>   
-   </tr>
-  <%end%> 
-<tr>
-   <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups unless @userid.person_role == 'country_coordinator' %>  </td>   
-   </tr>
-   <tr>
-   <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>   
-   </tr>
-<%if  @userid.active == false%>
-   <tr>
-   <td>Disable date:</td><td > <%=@userid.disabled_date%>  </td>   
-   </tr>
-<tr>
-   <td>Disabled reason:</td><td > <%=@userid.disabled_reason %>  </td>   
-   </tr>
-   <%end%>
 
+<div id="main"style="color:black">
+
+
+<p><b>Forename:</b><%=@userid.person_forename %></p>
+<p><b>Surname:</b><%=@userid.person_surname %></p>
+
+<p><b>Email:</b><%=@userid.email_address %></p>
+<p><b>Physical Address:</b><%=@userid.address %></p>
+<p><b>Telephone number:</b><%=@userid.telephone_number %></p>
+
+<p><b>Fiche reader:</b><%=@userid.fiche_reader %></p>
+<p><b>Syndicate:</b><%=@userid.syndicate %></p>
+<p><b>County:</b><%=@userid.chapman_code  %></p>
+<% unless @userid.sign_up_date.nil? %>
+<p><b>Signed up:</b><%=@userid.sign_up_date.strftime("%d %b %Y")  %></p>
 <%end%>
+<% unless @userid.last_upload.nil?%>
+<p><b>Last upload:</b><%=@userid.last_upload.strftime("%d %b %Y")  %></p>
+<%end%>
+<p><b>Number of files loaded:</b><%=@userid.number_of_files %></p>
+<p><b>Number of records loaded:</b><%=@userid.number_of_records%></p>
 
-</table>
+<% if  session[:manager] == true%>
+<p><b>Active:</b><%=@userid.active %></p>
+<p><b>Role in FreeREG:</b><%=@userid.person_role %></p>
+<% unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0 %>
+<p><b>Syndicates managed:</b><%=@userid.syndicate_groups%></p>
+<%end%>
+<% unless @userid.county_groups.nil? || @userid.county_groups.length == 0 %>
+<p><b>Counties coordinated:</b><%=@userid.county_groups %></p>
+<%end%>
+<% if @userid.person_role == "country_coordinator"  %>
+<p><b>Country managed:</b><%=@userid.country_groups %></p>  
+<%end%>
+<p><b>Skill Level:</b><%=@userid.skill_level  %></p>
+<% if  @userid.active == false%>
+<p><b>Disable date:</b><%=@userid.disabled_date %></p>
+<p><b>Disabled reason:</b><%=@userid.disabled_reason %></p>
+<%end%>
+<%end%>
 </div>
-
-<div style="float:left;"> <%= button_to 'Edit Details', edit_userid_detail_path(@userid), method: :get %></div>
-
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@userid), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <%= button_to 'Edit the details', edit_userid_detail_path(@userid), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Back to UserID management options', userid_details_path(:anchor => "#{ @userid.id}"), method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>

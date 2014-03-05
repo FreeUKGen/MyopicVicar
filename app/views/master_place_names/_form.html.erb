@@ -2,11 +2,20 @@
 
 <%= semantic_form_for(@place) do |f| %>
   
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+  <% if !session[:errors].nil? %>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:red">
+    <%= flash[:notice] %>
     </div>
-   <% end %>  
+<% end %>
+    
+    <% else %>
+    <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green">
+    <%= flash[:notice] %>
+    </div>
+<% end %>
+  <% end %>
 
 <div id="main"style="color:black">
 

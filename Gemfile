@@ -28,7 +28,7 @@ gem 'bourbon', '~> 2.1'
 gem 'activeadmin-mongoid' 
 gem 'devise'
 gem 'nokogiri'
-gem "osgb"#, :git => 'git://github.com/FreeUKGen/osgb.git'
+gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
 
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
 gem 'rubyzip'

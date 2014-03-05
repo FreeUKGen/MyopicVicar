@@ -61,7 +61,6 @@ class Freereg1CsvEntry
   field :mother_forename, type: String
   field :mother_surname, type: String
   field :notes, type: String
-   field :notes_from_register, type: String
   field :person_abode, type: String
   field :person_age, type: String
   field :person_forename, type: String
@@ -81,7 +80,7 @@ class Freereg1CsvEntry
 
   index({file_line_number:1})
   index ({line_id:1})
-
+  
   
   def transform_search_record
     SearchRecord.from_freereg1_csv_entry(self) 

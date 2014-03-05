@@ -1,18 +1,27 @@
-<%= semantic_form_for  @church do |f| %>
+<%= semantic_form_for(@church) do |f| %>
+  <p>
+<% if !session[:errors].nil? %>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+    
+    <% else %>
+    <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+  <% end %>
+<p></p>
    <%= f.input :place, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place that Church is located in :", :size => 15}%>
   <%= f.input :church_name, :label => "The most common Church Name :",:input_html => { :size => 60 }%>
- 
- <%= f.inputs :alternate_name, :for => :alternatechurchnames, :name => 'Edit Existing Alternate Church Name #%i', :input_html => { :size => 60 }%>
-       
-  <%= f.inputs :alternate_name, :for => :alternatechurchname, :name => 'Add Altername Church Name',  :size => 60 %>
-
-
- 
+  <%= f.input :last_amended, :label => "The last date when a file in the church registers was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
+  <%= f.input :alternate_church_name, :label => "Other forms of the Church Name :",:input_html => { :size => 60 }%>
   <%= f.input :denomination, :label => "Denomination of the Church :",:input_html => { :size => 60 }%>
  
   <%= f.input :church_notes, :label => "Any comments about the Church :",     :input_html => { :size => 100 } %>
  <br>
-  <%= f.input :last_amended, :label => "The last date when a register in the church was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
-
   <%= f.action :submit, :as => :button%>
 <% end %>

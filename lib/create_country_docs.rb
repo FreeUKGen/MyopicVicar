@@ -1,9 +1,9 @@
 class CreateCountryDocs
 require 'country'
 require 'chapman_code'
+require 'get_files'
 
-
-
+@include = ["ENG","IRL","SCT","WLS"]
 
 def self.slurp_the_csv_file(filename)
                
@@ -19,11 +19,11 @@ def self.slurp_the_csv_file(filename)
 
 
  def self.process(type,range)
-    
+      @include = ["ENG","IRL","SCT","WLS"]
       number_of_country_coordinators = 0
       Country.delete_all if type = "recreate"
       @@array_of_data_lines = Array.new {Array.new}
-      base_directory = File.join(Rails.root,'db','setup')
+      base_directory = Rails.application.config.datafiles
       header = Hash.new
  	   file_for_warning_messages = "log/country_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
@@ -39,20 +39,10 @@ def self.slurp_the_csv_file(filename)
         break if @@array_of_data_lines[@@number_of_line].nil?
         data = @@array_of_data_lines[@@number_of_line] 
        
-       
+       if @include.include?(data[0])
         number_of_country_coordinators =  number_of_country_coordinators + 1
-        header[:country_code] = data[0]
+        header[:chapman_code] = data[0]
         header[:country_coordinator] = data[1]
-        number_of_counties = data.length - 2
-        counties = Array.new
-        n = 0
-        data.each do |county|
-          if n >1
-          counties << county
-          end  
-            n = n + 1
-        end
-         header[:counties_included] = counties
         record = Country.new(header)
         record.save
         if record.errors.any?
@@ -65,7 +55,7 @@ def self.slurp_the_csv_file(filename)
         
           @@message_file.puts "Country #{data[0]} successfully saved"
         end #if
-      
+      end
         @@number_of_line = @@number_of_line + 1
       
       end #loop

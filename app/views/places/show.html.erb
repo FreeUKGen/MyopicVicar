@@ -1,93 +1,63 @@
+<% require 'chapman_code' %>
 
+<div>  The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. 
 
- <p style="text-align: center"> The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. </p>
-
-
-
- <p> 
- 
-<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
- <div style="float:left;"><%= button_to 'Edit Place', edit_place_path(@place) , method: :get %></div>
-
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
-<div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+</div>
+<br>
+   <% if flash[:notice] && session[:errors].nil? %>
+    <div id="notice" style="color:green"><br>
+  <% else %>
+   <div id="notice" style="color:red"><br> 
+    <% end %>
+   <%= flash[:notice] %> 
+    <% session[:errors] = nil %>
+   <br>
     </div>
-   <% end %> 
+ <p> 
+<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Create New Register', new_register_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div style="clear:both;"> </div><br>
 
 <div id="main"style="color:black">
 
-<table  style="width: 100%">
-  <tr>    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-  </tr>
-
-  <tr> 
-   <td>Place : </td> <td> <%= @place.place_name %>  </td>
-  </tr>
-  <tr>
-   <% if @names%>
-   <%  @names.each do |name| %>
-   <td>Other possible place names :</td><td ><%= name %>  </td>  
-   <%end%>
-   <%end%>
-   </tr>
-   <tr>
-   <td>Genuki page :</td><td ><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td>   
-   </tr>
-   <tr>
-   <td>Last date that a record for this Place was amended :</td><td ><%= @place.last_amended %></td>   
-   </tr>
-   <tr>
-   <td>Notes about the Place :</td><td > <%= @place.place_notes %> </td>   
-   </tr>
-</table>  
-
-
- 
- 
-<tr>
-<td><table style="width:100%"> 
-
+     <p><b>Place :</b><%= @place.place_name %>
+    
+     <p><b>Alternate place name :</b><%= @place.alternate_place_name %>
+      
+     <p><b>Genuki page :</b><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %>
+      
+     <p><b>Last amended :</b><%= @place.last_amended %>
+     
+     <ol>
 <% @place.churches.order_by(church: 1).each do |church| %>
-
-<tr ><td><b>Church <br></b><%= link_to(church.church_name, church_path(church)) %></td>
-
- <td><table style="width:100%"> <% church.registers.order_by(register: 1).each do |register| %>
-<tr><th colspan="6">Registers  <%= link_to(register.alternate_register_name, register_path(register)) %></th></tr>
-   <tr >
-  <td><table style="width:100%"> 
-<tr><th colspan="6">Batches</th></tr>
-   <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
+<li>
+<% session[:placeid] = @place.id%>
+<p><b>Church :</b><%= link_to(church.church_name, church_path(church)) %></p>
+ <ol>
+   <% church.registers.order_by(register: 1).each do |register| %>
+   <li>
+     <p><b>Register :</b><%= link_to(register.alternate_register_name, register_path(register))%></p>
+      <ol>
+     <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
+     <li>
+       <p><b>File :</b><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></p>
+     <% end%>
+      </li>
+      </ol>
+    
    
-  <% if freeregfile.error == 0 %>
-  <tr id="<%=freeregfile.id%>"  style="color:green" >
- <% else %> 
-<tr id="<%=freeregfile.id%>"  style="color:red" >
- <% end %>
-
- <td ><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></td> 
-<td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>   <td><%=freeregfile.datemin%></td>
-<td><%=freeregfile.datemax%></td><td>Errors: <%=freeregfile.error%></td></td></td></tr>
-
-<% end %>
-</table>
+   <% end%>
+   </li>
+   </ol>
 <% end%>
-</table>
-<% end%>
-</table>
-</div>  
 
-
+</li>
+</ol>
 
 <br />
-<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
- <div style="float:left;"><%= button_to 'Edit Place', edit_place_path(@place) , method: :get %></div>
-
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;">  <%= button_to 'Create Place entry', new_place_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
 <div style="clear:both;"> </div><br>
