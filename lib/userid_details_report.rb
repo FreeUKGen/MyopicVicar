@@ -22,7 +22,7 @@ include Mongoid::Document
     message_file = File.new(file_for_messages, "w")
   	limit = limit.to_i
  
-    puts "Producing report of documents in the Usierid Details collection"
+    puts "Producing report of documents in the Userid Details collection"
     message_file.puts "Userid,Syndicate,Person Surname,Person Forename,email address,Active,Last Upload,Number of Files,Number of Records,Person Role"
 
     record_number = 0

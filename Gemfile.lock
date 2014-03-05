@@ -1,9 +1,3 @@
-GIT
-  remote: git://github.com/FreeUKGen/osgb.git
-  revision: ce21033002ff8d53dbcfcd13533fb027d683a0cd
-  specs:
-    osgb (0.3.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -153,6 +147,7 @@ GEM
     nokogiri (1.5.9-x86-mingw32)
     origin (1.1.0)
     orm_adapter (0.4.0)
+    osgb (0.3.1)
     polyamorous (0.5.0)
       activerecord (~> 3.0)
     polyglot (0.3.3)
@@ -268,7 +263,7 @@ DEPENDENCIES
   mongoid (~> 3.1)
   moped (~> 1)
   nokogiri
-  osgb!
+  osgb
   pry
   pry-stack_explorer
   rails (= 3.2.13)

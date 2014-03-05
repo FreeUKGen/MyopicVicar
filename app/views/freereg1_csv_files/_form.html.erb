@@ -1,43 +1,36 @@
 <%= semantic_form_for(@freereg1_csv_file) do |f| %>
-  <% if !session[:errors].nil? %>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:red">
-    <%= flash[:notice] %>
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
     </div>
-   <% end %>
-    
-    <% else %>
-    <% if flash[:notice] && session[:errors].nil? %>
-    <div id="notice" style="color:green">
-    <%= flash[:notice] %>
-    </div>
-   <% end %>
-  <% end %>
+   <% end %>  
 
 <div id="main"style="color:black">
 
 
  
-  <%= f.input :register_type, :input_html => { :size => 5 } %>
-  <%= f.input :record_type, :input_html => { :disabled => true, :size => 5 } %> 
-  <%= f.input :records , :label => "Number of records :",:input_html => { :disabled => true }%>
-  <%= f.input :datemin , :label => "First year of records :",:input_html => { :disabled => true }%>
-  <%= f.input :datemax ,  :label => "Last year of records :",:input_html => { :disabled => true }%>
-  <%= f.input :daterange,  :label => "Number of records per decade starting in 1530 :",:input_html => { :disabled => true, :size => 130  }%>  
-  <%= f.input :userid,  :label => "UserID :",:input_html => { :size => 40 } %>
-  <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
+  
+  
   <%= f.input :transcriber_name , :input_html => { :size => 40 }%>
   <%= f.input :transcriber_email, :input_html => { :size => 60 } %>
   <%= f.input :transcriber_syndicate, :input_html => { :size => 40 } %>
   <%= f.input :credit_email, :input_html => { :size => 40 } %>
   <%= f.input :credit_name , :input_html => { :size => 40 }%>
   <%= f.input :first_comment, :input_html => { :size => 100 }%>  
-  <%= f.input :second_comment, :input_html => { :size => 100 }%>  
+  <%= f.input :second_comment, :input_html => { :size => 100 }%> 
+  <%= f.input :userid,  :label => "UserID :",:input_html => { :disabled => true,:size => 40 } %>
+  <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
+  <%= f.input :register_type, :input_html => {:disabled => true, :size => 5 } %>
+  <%= f.input :record_type, :input_html => { :disabled => true, :size => 5 } %> 
+  <%= f.input :records , :label => "Number of records :",:input_html => { :disabled => true }%>
+  <%= f.input :datemin , :label => "First year of records :",:input_html => { :disabled => true }%>
+  <%= f.input :datemax ,  :label => "Last year of records :",:input_html => { :disabled => true }%>
+  <%= f.input :daterange,  :label => "Number of records per decade starting in 1530 :",:input_html => { :disabled => true, :size => 130  }%>   
   <%= f.input :transcription_date ,:input_html => { :disabled => true, :size => 50  }%>  
   <%= f.input :modification_date ,:input_html => { :disabled => true, :size => 50 }%>  
   <%= f.input :uploaded_date,:input_html => { :disabled => true, :size => 50  }%>
 
-  <% if session[:user].person_role == "transcriber" %>
+  <% if @user.person_role == "transcriber" %>
    <%= f.input :locked, :input_html => { :disabled => true, :size => 10 } %>
    <% else %>
    <%= f.input :locked, :input_html => { :size => 10 } %>

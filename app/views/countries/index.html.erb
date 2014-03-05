@@ -1,21 +1,40 @@
-<h1>Listing countries</h1>
 
-<table>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <%= button_to 'Create a new county', new_county_path, method: :get %> </div>
+
+<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="clear:both;"> </div><br>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>  
+
+<div id="main"style="color:black">
+<table  CLASS="boldtable" style="width: 100%">
   <tr>
-    <th></th>
-    <th></th>
-    <th></th>
+    
+    <th style="width:25%">Country</th>
+    <th style="width:25">Country Coordinator</th>
+     <th style="width:25%">Show</th>
+    <th style="width:25%">Edit</th>
   </tr>
 
-<% @countries.each do |country| %>
-  <tr>
-    <td><%= link_to 'Show', country %></td>
-    <td><%= link_to 'Edit', edit_country_path(country) %></td>
-    <td><%= link_to 'Destroy', country, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+<% @counties.each do |country| %>
+  <tr id="<%=country.id%>">
+   <td > <%= country.country_code %>  </td>
+   <td > <%= country.country_coordinator %>  </td>   
+   
+   
+   
+     <td><%= button_to 'Show', country_path(country), method: :get  %></td><td><%= button_to 'Edit details', edit_country_path(country), method: :get  %>
   </tr>
-<% end %>
+  <% end %>
+  
 </table>
+</div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <%= button_to 'Create a new country', new_country_path, method: :get %> </div>
 
-<br />
-
-<%= link_to 'New Country', new_country_path %>
+<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="clear:both;"> </div><br>

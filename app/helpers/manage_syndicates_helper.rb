@@ -1,0 +1,2 @@
+module ManageSyndicatesHelper
+end

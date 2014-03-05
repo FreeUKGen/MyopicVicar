@@ -140,11 +140,11 @@ end
  task :create_syndicate_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_syndicate_docs'
-  range = "syndicate.csv"
+  range = "Syndicate Coordinators.csv"
   puts "Creating Syndicate Docs"
   
     CreateSyndicateDocs.process(args.type,range )
-
+    Syndicate.create_indexes()
   
   puts "Task complete."
  end
@@ -153,10 +153,11 @@ end
  task :create_county_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_county_docs'
-  range = "syndicate.csv"
+  range = "County Coordinators.csv"
   puts "Creating County Docs"
   
     CreateCountyDocs.process(args.type,range )
+    County.create_indexes()
 
   
   puts "Task complete."
@@ -165,11 +166,11 @@ end
 task :create_country_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_country_docs'
-  range = "syndicate.csv"
+  range = "Country Coordinators.csv"
   puts "Creating Country Docs"
   
     CreateCountryDocs.process(args.type,range )
-
+    Country.create_indexes()
   
   puts "Task complete."
  end
