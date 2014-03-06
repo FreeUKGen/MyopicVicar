@@ -27,8 +27,7 @@ layout "manage_counties"
        @syndicates = synd
     end #end if
 
-    p  @syndicates
-   
+     
 end
 
 
@@ -46,11 +45,25 @@ def new
      redirect_to userid_details_path
      return
      when params[:manage_syndicate][:action] == 'Review Batches listed by filename'
+      session[:sort] =  sort = "file_name ASC"
       redirect_to freereg1_csv_files_path
       return
-      when params[:manage_syndicate][:action] == 'Add Member' 
-      redirect_to new_userid_detail_path
-       return
+     when params[:manage_syndicate][:action] == 'Review Batches listed by number of errors then filename'
+      session[:sort] =  sort = "error DESC, file_name ASC"
+      redirect_to freereg1_csv_files_path
+      return
+      when params[:manage_syndicate][:action] == 'Review Batches listed by number of userid then filename'
+      session[:sort] =  sort = "userid ASC, file_name ASC"
+      redirect_to freereg1_csv_files_path
+      return
+      when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date (ascending) then userid'
+      session[:sort] =  sort = "uploaded_date DESC, userid ASC"
+      redirect_to freereg1_csv_files_path
+      return
+     when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date (descending) then userid'
+      session[:sort] =  sort = "uploaded_date ASC, userid ASC"
+      redirect_to freereg1_csv_files_path
+      return
     end
     @user = UseridDetail.where(:userid => session[:userid]).first
    redirect_to manage_resource_path(@user)

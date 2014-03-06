@@ -61,19 +61,12 @@ class RegistersController < InheritedResources::Base
     
     flash[:notice] = 'The update the Register was succsessful'
     if @register.errors.any? then
-     session[:errors] = @church.errors.messages
-     flash[:notice] = 'The update of the Register was unsuccsessful'
-     render :action => 'edit'
-     return 
-<<<<<<< HEAD
-   end
+      session[:errors] = @church.errors.messages
+      flash[:notice] = 'The update of the Register was unsuccsessful'
+      render :action => 'edit'
+      return 
+    end
      render :action => 'show'
-
-=======
-# Editor complains that this is an unreachable statement; commenting out -- BWB
-#     redirect_to :action => 'show'
-   end
->>>>>>> ff1650e30bf3c6664d3304219d031217fa012155
   end
 
   

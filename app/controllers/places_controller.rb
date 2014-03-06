@@ -15,7 +15,6 @@ class PlacesController < InheritedResources::Base
   end
 
   def show
-    p "show"
           load(params[:id])
          
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
@@ -23,16 +22,13 @@ class PlacesController < InheritedResources::Base
           session[:errors] = nil
           session[:form] = nil
           session[:parameters] = params
-          
           @names = Array.new
          @alternate_place_names = @place.alternateplacenames.all
-         p "at place"
-         p  @alternate_place_names
          @alternate_place_names.each do |acn|
           name = acn.alternate_name
           @names << name
          end
-         p @names
+        
    end
 
   def edit

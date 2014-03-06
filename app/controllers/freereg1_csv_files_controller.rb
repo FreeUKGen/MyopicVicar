@@ -6,16 +6,17 @@ class Freereg1CsvFilesController < InheritedResources::Base
      @user = UseridDetail.where(:userid => session[:userid]).first
     @first_name = session[:first_name]
     session[:my_own] = 'no'
+    sort = session[:sort]
     userids = Array.new
     @freereg1_csv_files = Array.new
      case 
        when @user.person_role == "system_administrator" || @user.person_role == "volunteer_coordinator"
-         @freereg1_csv_files = Freereg1CsvFile.all.order_by(file_name: 1) 
+         @freereg1_csv_files = Freereg1CsvFile.all.order_by(sort) 
          
        when @user.person_role == "country_coordinator" 
           countries = Syndicate.where(:country_coordinator => @user.userid).all
           countries.each do |country|
-          freereg1_csv_files = Freereg1CsvFile.where(:county => country.chapman_code).all.order_by(file_name: 1) 
+          freereg1_csv_files = Freereg1CsvFile.where(:county => country.chapman_code).all.order_by(sort) 
           freereg1_csv_files.each do |freereg1_csv_file|
           @freereg1_csv_files << freereg1_csv_file
          end
@@ -24,7 +25,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
        when @user.person_role == "county_coordinator" 
           counties = County.where(:county_coordinator => @user.userid)
           counties.each do |county|
-          freereg1_csv_files = Freereg1CsvFile.where(:county => county.chapman_code).all.order_by(file_name: 1) 
+          freereg1_csv_files = Freereg1CsvFile.where(:county => county.chapman_code).all.order_by(sort) 
           freereg1_csv_files.each do |freereg1_csv_file|
           @freereg1_csv_files << freereg1_csv_file
          end
@@ -37,8 +38,9 @@ class Freereg1CsvFilesController < InheritedResources::Base
            user = UseridDetail.where(:syndicate => synd.syndicate_code)
            userids << user
          end
+          
            userids.each do |userid|
-           freereg1_csv_files = Freereg1CsvFile.where(:userid => userid.userid ).all
+           freereg1_csv_files = Freereg1CsvFile.where(:userid => userid.userid ).all.order_by(sort) 
            @freereg1_csv_files << freereg1_csv_files
          end
 

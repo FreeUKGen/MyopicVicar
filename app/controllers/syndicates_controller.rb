@@ -24,7 +24,7 @@ def create
 	@syndicate.save
  if @syndicate.errors.any?
      session[:errors] = @syndicate.errors.messages
-     flash[:notice] = "The addition of the Syndciate was unsuccsessful"
+     flash[:notice] = "The addition of the Syndicate was unsuccsessful"
      render :action => 'edit'
      return
  else
