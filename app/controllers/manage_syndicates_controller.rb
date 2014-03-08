@@ -6,7 +6,7 @@ layout "manage_counties"
 	@userid = session[:userid]
   @first_name = session[:first_name]
   @user = UseridDetail.where(:userid => session[:userid]).first
-  syndicates = Syndicate.where(:syndicate_coordinator => session[:userid]).all
+  syndicates =@user.syndicate_groups
   number_of_syndicates = syndicates.length
   
 
@@ -14,15 +14,16 @@ layout "manage_counties"
    @manage_syndicate = ManageSyndicate.new
   
     if number_of_syndicates == 1 
-        @syndicates = Syndicate.where(:syndicate_coordinator => session[:userid]).first.syndicate_code#this needs changing to counties when that collection is set up
+        @syndicates = syndicates[0]
        session[:syndicate] =  @syndicates
-        session[:muliple] = false
+       p  session[:syndicate]
+      session[:muliple] = false
 
     else
        session[:muliple] = true
        synd = Array.new
        syndicates.each do |syn|
-        synd << syn.syndicate_code #this needs changing to counties when that collection is set up
+        synd << syn
        end
        @syndicates = synd
     end #end if
@@ -38,8 +39,8 @@ def new
  def create
   
  
-  	session[:syndicate] = params[:manage_syndicate][:syndicate] if  session[:muliple] == true
-
+  	session[:syndicate] = params[:manage_syndicate][:syndicate] if session[:muliple] == true
+    p  session[:syndicate]
     case 
     when params[:manage_syndicate][:action] == 'Review Members listed alphabetically'
      redirect_to userid_details_path
@@ -52,7 +53,7 @@ def new
       session[:sort] =  sort = "error DESC, file_name ASC"
       redirect_to freereg1_csv_files_path
       return
-      when params[:manage_syndicate][:action] == 'Review Batches listed by number of userid then filename'
+      when params[:manage_syndicate][:action] == 'Review Batches listed by userid then filename'
       session[:sort] =  sort = "userid ASC, file_name ASC"
       redirect_to freereg1_csv_files_path
       return

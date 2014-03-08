@@ -53,8 +53,9 @@ class Freereg1CsvFile
   field :uploaded_date, type: DateTime
   field :error, type: Integer, default: 0
   field :digest, type: String
-  field :locked, type: String, default: -> {false} 
+  field :locked, type: String, default: 'false' 
   field :lds, type: String
+  field :action, type: String
   field :characterset, type: String
   field :alternate_register_name,  type: String
   field :csvfile, type: String

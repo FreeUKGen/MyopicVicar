@@ -1,13 +1,14 @@
 
-
+Page Identification Places:index<p>
 <p style="text-align: center">The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>.</p> 
 
 
 
  <p> 
- <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+
 <div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+ <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -20,61 +21,39 @@
 <table style="width: 100%">
   <tr>
   
-    <th style="width:18%">Place</th>
-    <th style="width:18%">Alternate place name</th>
-    <th style="width:8%">Genuki page</th>
+    <th style="width:25%">Place</th>
     <th style="width:12%">Last amended</th>
-    <th style="width:25%">Churches</th>
-    <th style="width:19%">Action</th>
+    <th style="width:50%">Churches/Registers</th>
+       
   </tr>
 
 <% @places.each do |place| %>
   <tr id="<%=place.id%>">
-    <td >
-     <%= place.place_name %>
-    </td>
-       <td >
-     <%= place.alternate_place_name %>
-      </td>
-  <td >
-     <%= link_to('Genuki', place.genuki_url) unless place.genuki_url.nil? || place.genuki_url == "no url" %>
-      </td>
-     <td >
-     <%= place.last_amended %>
-      </td>
-    <td >
-     <ol>
+  <% session[:placeid] = place.id%>
+    <td > <%= link_to(place.place_name, place_path(place)) %> </td>
+    <td > <%= place.last_amended %> </td>
+    <td ><table style="width:100%"> 
+     
 <% place.churches.order_by(church: 1).each do |church| %>
-<li>
-<% session[:placeid] = place.id%>
-<%= link_to(church.church_name, church_path(church)) %><br />
 
 
-</li> 
+<tr ><td><%= link_to(church.church_name, church_path(church)) %> </td>
+<td><table style="width:100%"><% church.registers.order_by(alterate_register_name: 1).each do |register| %>
+<%= link_to(register.alternate_register_name, register_path(register)) %></td><br /></tr>
 
 
 <% end%>
-
-
-    
-     </ol>
- 
-    </td>
-
-    <td >
-   <%= link_to 'Show Place', place_path(place) %><br>  
-<%= link_to 'Edit Place', edit_place_path(place) %><br> 
-
- <%= link_to 'Discard Place', place_path(place), method: :delete, data: { confirm: 'Are you sure?' } %><br>
- </td>
-
+</table>
+<% end%>
+</table>
+  </td>
   </tr>
 <% end %>
 </table>
 
-
 <br />
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+
 <div style="float:left;">  <%= button_to 'Create Place entry', new_place_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>

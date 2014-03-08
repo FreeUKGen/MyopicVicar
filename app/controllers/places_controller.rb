@@ -41,8 +41,7 @@ class PlacesController < InheritedResources::Base
   end
 
 def new
-      if session[:errors].nil?
-      #coming through new for the first time so get a new instance
+     
       @place = Place.new
       @place.chapman_code = session[:chapman_code]
       session[:form] = @place
@@ -55,12 +54,8 @@ def new
       session[:errors] = nil
       @first_name = session[:first_name]
        @user = UseridDetail.where(:userid => session[:userid]).first
-    else
-     @first_name = session[:first_name]
-      @place = session[:form]
-      @county = session[:county]
-    end
-      @user = UseridDetail.where(:userid => session[:userid]).first
+    
+      
   end
  
 def create

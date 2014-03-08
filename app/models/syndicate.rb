@@ -29,14 +29,14 @@ def  add_lower_case_and_change_userid_fields
 
     @old_userid.syndicate_groups.delete_if {|code| code == self.syndicate_code}
   end
- 
-    if @new_userid.syndicate_groups.length == 0 then
-     @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
-    end 
-   @new_userid.syndicate_groups << self.syndicate_code
-  
+    unless @new_userid.nil? then
+        if @new_userid.syndicate_groups.length == 0 then
+           @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
+        end 
+       @new_userid.syndicate_groups << self.syndicate_code
+    end
    @old_userid.save!  unless @old_userid.nil?
-   @new_userid.save!
+   @new_userid.save!  unless @new_userid.nil?
 
 end
 

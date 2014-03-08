@@ -1,3 +1,4 @@
+Page Identification UserDetals: Show<p>
 <p style="text-align: center"><b>Details for:<%=@userid.userid %></p></b>
 
 <div style="float:left;"> <%= button_to 'Edit Details', edit_userid_detail_path(@userid), method: :get %></div>
@@ -73,7 +74,7 @@
    </tr>
   <%end%> 
 <tr>
-   <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups unless @userid.person_role == 'country_coordinator' %>  </td>   
+   <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups if @userid.person_role == 'country_coordinator' %>  </td>   
    </tr>
    <tr>
    <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>   

@@ -5,7 +5,7 @@ class ChurchesController < InheritedResources::Base
  require 'chapman_code'
 
   def show
-    p "show"
+    
           @chapman_code = session[:chapman_code] 
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
@@ -16,38 +16,30 @@ class ChurchesController < InheritedResources::Base
           load(params[:id])
           @names = Array.new
          @alternate_church_names = @church.alternatechurchnames.all
-         p "at church"
-         p  @alternate_church_names
+         
          @alternate_church_names.each do |acn|
           name = acn.alternate_name
           @names << name
          end
-         p @names
+       
           
   end
 
   def new
    
-    if session[:errors].nil?
-      #coming through new for the first time so get a new instance
+   
       @church = Church.new
       @county = session[:county]
       session[:form] = @church
       @place = Place.where(:chapman_code => ChapmanCode.values_at(@county)).all
       @places = Array.new
-      @place.each do |place|
-       @places << place.place_name
-      end
+          @place.each do |place|
+            @places << place.place_name
+          end
       @county = session[:county]
       session[:errors] = nil
       @first_name = session[:first_name]
-    else
-     #Coming through new with errors
-      @first_name = session[:first_name]
-      @church = session[:form]
-      @county = session[:county]
-    end
-     @user = UseridDetail.where(:userid => session[:userid]).first
+      @user = UseridDetail.where(:userid => session[:userid]).first
 
     
   end
