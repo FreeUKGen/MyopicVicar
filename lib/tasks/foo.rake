@@ -113,6 +113,7 @@ task :create_freereg_csv_indexes => [:environment] do
   Place.create_indexes()
   puts "Indexes complete."
 end
+
 desc "Create the search record indices "
 task :create_search_records_indexes => [:environment] do  
   #task is there to creat indexes after running of freereg_csv_processor
@@ -140,11 +141,11 @@ end
  task :create_syndicate_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_syndicate_docs'
-  range = "syndicate.csv"
+  range = "syndicate_coordinators.csv"
   puts "Creating Syndicate Docs"
   
     CreateSyndicateDocs.process(args.type,range )
-
+    Syndicate.create_indexes()
   
   puts "Task complete."
  end
@@ -153,10 +154,11 @@ end
  task :create_county_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_county_docs'
-  range = "syndicate.csv"
+  range = "county_coordinators.csv"
   puts "Creating County Docs"
   
     CreateCountyDocs.process(args.type,range )
+    County.create_indexes()
 
   
   puts "Task complete."
@@ -165,19 +167,24 @@ end
 task :create_country_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
   require 'create_country_docs'
-  range = "syndicate.csv"
+  range = "country_coordinators.csv"
   puts "Creating Country Docs"
   
     CreateCountryDocs.process(args.type,range )
-
+    Country.create_indexes()
   
   puts "Task complete."
  end
 
-end
-
-
-
+task :update_freereg_with_new_syndicate  => [:environment] do |t,args|
+   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+  require 'update_freereg_syndicate'
   
-
-
+  puts "Updating Freereg Files with updated syndicate"
+  
+   UpdateFreeregSyndicate.process( )
+    Freereg1CsvFile.create_indexes()
+  
+  puts "Task complete."
+ end
+end

@@ -53,15 +53,16 @@ class Freereg1CsvFile
   field :uploaded_date, type: DateTime
   field :error, type: Integer, default: 0
   field :digest, type: String
-  field :locked, type: String, default: -> {false} 
+  field :locked, type: String, default: 'false' 
   field :lds, type: String
+  field :action, type: String
   field :characterset, type: String
   field :alternate_register_name,  type: String
   field :csvfile, type: String
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 
-  after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
+  #after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
 
  
   VALID_DAY = /\A\d{1,2}\z/

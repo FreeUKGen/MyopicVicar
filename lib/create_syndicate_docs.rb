@@ -20,7 +20,7 @@ def self.slurp_the_csv_file(filename)
  def self.process(type,range)
       Syndicate.delete_all if type = "recreate"
       @@array_of_data_lines = Array.new {Array.new}
-      base_directory = Rails.application.config.datafiles
+      base_directory = File.join(Rails.root,'db','setup')
       header = Hash.new
  	   file_for_warning_messages = "log/syndicate_messages.log"
      FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)

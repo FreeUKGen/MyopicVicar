@@ -15,7 +15,6 @@ class PlacesController < InheritedResources::Base
   end
 
   def show
-    p "show"
           load(params[:id])
          
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
@@ -23,16 +22,13 @@ class PlacesController < InheritedResources::Base
           session[:errors] = nil
           session[:form] = nil
           session[:parameters] = params
-          
           @names = Array.new
          @alternate_place_names = @place.alternateplacenames.all
-         p "at place"
-         p  @alternate_place_names
          @alternate_place_names.each do |acn|
           name = acn.alternate_name
           @names << name
          end
-         p @names
+        
    end
 
   def edit
@@ -45,8 +41,7 @@ class PlacesController < InheritedResources::Base
   end
 
 def new
-      if session[:errors].nil?
-      #coming through new for the first time so get a new instance
+     
       @place = Place.new
       @place.chapman_code = session[:chapman_code]
       session[:form] = @place
@@ -59,12 +54,8 @@ def new
       session[:errors] = nil
       @first_name = session[:first_name]
        @user = UseridDetail.where(:userid => session[:userid]).first
-    else
-     @first_name = session[:first_name]
-      @place = session[:form]
-      @county = session[:county]
-    end
-      @user = UseridDetail.where(:userid => session[:userid]).first
+    
+      
   end
  
 def create

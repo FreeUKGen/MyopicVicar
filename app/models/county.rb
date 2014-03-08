@@ -25,35 +25,29 @@ class County
 
   def  add_lower_case_and_change_userid_fields
    self.county_coordinator_lower_case = self.county_coordinator.downcase
-   p 'before' 
-   p self
+  
   @old_userid = UseridDetail.where(:userid => self.previous_county_coordinator).first 
   @new_userid = UseridDetail.where(:userid => self.county_coordinator).first
-  p 'before'
-  p  @old_userid.person_role
   
-  p @old_userid.county_groups
-  p  @new_userid.person_role
-  p @new_userid.county_groups
   unless @old_userid.nil?
-     if @old_userid.county_groups.length == 1
-       @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator')
-     end 
+      if @old_userid.county_groups.length == 1
+          unless  @old_userid.person_role.nil?
+            @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator')
+          end 
+      end
 
-     @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
+      @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
   end
+  
+   unless @new_userid.nil?
     if @new_userid.county_groups.length == 0 then
      @new_userid.person_role = 'county_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher')
     end 
    @new_userid.county_groups << self.chapman_code
+  end
    @old_userid.save!  unless @old_userid.nil?
-   @new_userid.save!
-    p 'after'
-  p   @old_userid.person_role
-  
-  p @old_userid.county_groups
-  p @new_userid.person_role
-  p @new_userid.county_groups
+   @new_userid.save!  unless @new_userid.nil?
+   
  end
 
 end

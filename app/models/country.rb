@@ -28,23 +28,23 @@ class Country
   
   unless @old_userid.nil?
      if @old_userid.country_groups.length == 1
-       @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator')
-     end 
-
+          unless  @old_userid.person_role.nil?
+            @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator')
+          end 
+     end
+ 
      @old_userid.country_groups.delete_if {|code| code == self.country_code}
   end
-    if @new_userid.country_groups.length == 0 then
-     @new_userid.person_role = 'country_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher' || @new_userid.person_role == 'conty_coordinator' )
-    end 
-   @new_userid.country_groups << self.country_code
+
+  unless @new_userid.nil?
+     if @new_userid.country_groups.length == 0 then
+       @new_userid.person_role = 'country_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher' || @new_userid.person_role == 'conty_coordinator' )
+      end 
+     @new_userid.country_groups = self.counties_included
+  end
    @old_userid.save!  unless @old_userid.nil?
-   @new_userid.save!
-    p 'after'
-  
-  
-  
-  p @new_userid.person_role
-  p @new_userid.country_groups
+   @new_userid.save!  unless @new_userid.nil?
+   
  end
 
 end

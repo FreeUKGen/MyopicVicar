@@ -1,8 +1,9 @@
+Page Identification Countries:index<p>
 
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="float:left;"> <%= button_to 'Create a new county', new_county_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
   <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -33,8 +34,9 @@
   
 </table>
 </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+
 <div style="float:left;"> <%= button_to 'Create a new country', new_country_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
