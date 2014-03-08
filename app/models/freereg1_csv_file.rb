@@ -62,7 +62,7 @@ class Freereg1CsvFile
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 
-  after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
+  #after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
 
  
   VALID_DAY = /\A\d{1,2}\z/
