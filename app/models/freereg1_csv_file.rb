@@ -40,6 +40,7 @@ class Freereg1CsvFile
   field :datemax, type: String
   field :daterange, type: Array
   field :userid, type: String
+  field :userid_lower_case, type: String
   field :file_name, type: String
   field :transcriber_name, type: String
   field :transcriber_email, type: String
@@ -62,7 +63,8 @@ class Freereg1CsvFile
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 
-  #after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
+  before_save :add_lower_case_userid
+  after_save :create_or_update_last_amended_date  #after_update :create_or_update_last_amended_date
 
  
   VALID_DAY = /\A\d{1,2}\z/
@@ -88,6 +90,10 @@ class Freereg1CsvFile
    Register.create_or_update_last_amended_date(self)
    Church.create_or_update_last_amended_date(self)
    
+  end
+
+  def add_lower_case_userid
+    self[:userid_lower_case] = self[:userid].downcase
   end
 
   def ordered_display_fields
