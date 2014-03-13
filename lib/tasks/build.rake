@@ -29,22 +29,20 @@ namespace :build do
 'countries' => 'Country'
 
 }
-EXPORT_COMMAND =  "mongoexport --db myopic_vicar_development --collection  "
+EXPORT_COMMAND =  "mongoexport --db "
  EXPORT_OUT = " --out  "
- IMPORT_COMMAND =  "mongoimport --db myopic_vicar_development --collection  "
+ IMPORT_COMMAND =  "mongoimport --db "
  IMPORT_IN = " --file  "
 
-
-
-# example build:freereg[recreate,create_search_records,e:/freereg8/,a-d,e-f]
-#This processes the csv files located at e:/freereg8/ and creates the search records at the same time. Before doing so it
+# example build:freereg[recreate,create_search_records,a-d,e-f,g-h]
+#This processes the csv files and creates the search records at the same time. Before doing so it
 # saves a copy of the Master and Alias; it drops Places/Churches/Registers/Freere1_csv_files,Freereg1_csv_entries and search records.
 #it then runs a csv_process on all userids starting with a, b, c and then d with another process doing e, and f. and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
 #and indexes everything
-# example build:freereg[recreate,create_search_records,e:/freereg8/,*.WRY*.csv,*.NFK*.csv]
+# example build:freereg[recreate,create_search_records,*/WRY*.csv,*/NFK*.csv,*/DEN*.csv]
 # this creates a database for WRY and NFK  with search records from all files
 # it saves Master and Alias before dropping everything and rebuilding and re-indexing
-#example build:freereg[add,create_search_records,e:/freereg8/,userid/wryconba.csv,useridb/norabsma.csv]
+#example build:freereg[add,create_search_records,userid/wryconba.csv,userid/norabsma.csv,]
 #this adds the records for 2 specific files to the existing database
 #******************************NOTE************************************
 #it uses a number of settings located in config environment development 
@@ -73,6 +71,8 @@ end
  task :setup_save,[:type] => [:setup, :environment] do |t, args| 
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
  @tmp_location =   Rails.application.config.mongodb_collection_temp
+ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
  #@datafile_location =  Rails.application.config.mongodb_datafile
  #save master_place_names and alias
  p "Save started"
@@ -81,12 +81,12 @@ end
 
    collections_to_save.each  do |col|
     coll  = col.to_i
-    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
+    collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --collection " + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
     puts "#{$collections[coll]} being saved in #{@tmp_location}"
      output =  `#{collection}`
      p output
    end
-   p "Save finished"
+    p "Save finished"
   end
 
   task :setup_drop,[:type]  => [:setup_save, :environment] do |t, args| 
@@ -107,28 +107,30 @@ end
 
 task :setup_index => [:setup_drop, :environment] do |t, args| 
   puts "Creating minimum indexes"
- script_index_places = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.places.ensureIndex({place_name:1 })"'
+    
+  
+    script_index_places = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({place_name:1 })\""
    `#{script_index_places}`
    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-  script_index_places_chapman = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.places.ensureIndex({chapman_code: 1, place_name:1 })"'
+  script_index_places_chapman = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({chapman_code: 1, place_name:1 })\""
  `#{script_index_places_chapman}`
    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers_alternate = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.registers.ensureIndex({church_id:1, alternate_register_name: 1 })"'
+ script_index_registers_alternate = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id:1, alternate_register_name: 1 })\""
  `#{script_index_registers_alternate}`
     p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.registers.ensureIndex({church_id:1, register_name: 1 })"'
+ script_index_registers = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id:1, register_name: 1 })\""
  `#{script_index_registers}`
    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-  script_index_churches = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.churches.ensureIndex({place_id: 1, church_name: 1 })"'
+  script_index_churches = @mongodb_bin + "mongo #{@db} --eval \"db.churches.ensureIndex({place_id: 1, church_name: 1 })\""
  `#{script_index_churches}`
    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_freereg1_csv_files = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.freereg1_csv_files.ensureIndex({file_name: 1, userid: 1, county: 1, place: 1 , church_name: 1, register_type: 1})"'
+ script_index_freereg1_csv_files = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_files.ensureIndex({file_name: 1, userid: 1, county: 1, place: 1 , church_name: 1, register_type: 1})\""
  `#{script_index_freereg1_csv_files}`
     p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_freereg1_csv_entries = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id:1 })"'
+ script_index_freereg1_csv_entries = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id:1 })\""
  `#{script_index_freereg1_csv_entries}`
     p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-   script_index_search_records_entries = @mongodb_bin + 'mongo myopic_vicar_development --eval "db.search_records.ensureIndex({freereg1_csv_entry_id :1 })"' 
+   script_index_search_records_entries = @mongodb_bin + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id:1 })\"" 
       `#{script_index_search_records_entries}`    
     p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
      puts "Minimum indexes created"
@@ -287,11 +289,15 @@ end
 
 task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:environment] do |t,args|
  puts "Saving collections"
- EXPORT_COMMAND =  "mongoexport --db myopic_vicar_development --collection  "
+  Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
+ EXPORT_COMMAND =  "mongoexport --db #{@db} --collection  "
  EXPORT_OUT = " --out  "
  collections_to_save = Array.new
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
  @tmp_location =   Rails.application.config.mongodb_collection_temp
+ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
  unless args[:save].nil?
  collections_to_save = args[:save].split("/")
    collections_to_save.each  do |col|
@@ -321,7 +327,9 @@ end
 
 task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:drop_freereg_collections, :environment] do |t,args|
  puts "Reloading collections"
- IMPORT_COMMAND =  "mongoimport --db myopic_vicar_development --collection  "
+ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
+ IMPORT_COMMAND =  "mongoimport --db #{@db} --collection  "
  IMPORT_IN = " --file  "
  collections_to_reload = Array.new
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
@@ -342,7 +350,9 @@ end
 
 task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:reload_freereg_collections_from_temp, :environment] do |t,args|
  puts "Loading collections"
- IMPORT_COMMAND =  "mongoimport --db myopic_vicar_development --collection  "
+ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
+ IMPORT_COMMAND =  "mongoimport --db #{@db} --collection  "
  IMPORT_IN = " --file  "
  collections_to_load = Array.new
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
