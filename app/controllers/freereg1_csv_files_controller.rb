@@ -3,67 +3,27 @@ class Freereg1CsvFilesController < InheritedResources::Base
   def index
  
     @register = session[:register_id]
-    @user = session[:user]
+    @user = UseridDetail.where(:userid => session[:userid]).first
     @first_name = session[:first_name]
     session[:my_own] = 'no'
-    userids = Array.new
-    @freereg1_csv_files = Array.new
-     case 
-       when @user.person_role == "system_administrator" || @user.person_role == "volunteer_coordinator"
-         @freereg1_csv_files = Freereg1CsvFile.all.order_by(file_name: 1) 
-         
-       when @user.person_role == "country_coordinator" 
-          countries = Syndicate.where(:country_coordinator => @user.userid).all
-          countries.each do |country|
-          freereg1_csv_files = Freereg1CsvFile.where(:county => country.chapman_code).all.order_by(file_name: 1) 
-          freereg1_csv_files.each do |freereg1_csv_file|
-          @freereg1_csv_files << freereg1_csv_file
-         end
-         end
-
-       when @user.person_role == "county_coordinator" 
-          counties = County.where(:county_coordinator => @user.userid)
-          counties.each do |county|
-          freereg1_csv_files = Freereg1CsvFile.where(:county => county.chapman_code).all.order_by(file_name: 1) 
-          freereg1_csv_files.each do |freereg1_csv_file|
-          @freereg1_csv_files << freereg1_csv_file
-         end
-         end
-          
-       when @user.person_role == "syndicate_coordinator"
-
-         syndicates = Syndicate.where(:syndicate_coordinator => @user.userid)
-         syndicates.each do |synd|
-           user = UseridDetail.where(:syndicate => synd.syndicate_code)
-           userids << user
-         end
-           userids.each do |userid|
-           freereg1_csv_files = Freereg1CsvFile.where(:userid => userid.userid ).all
-           @freereg1_csv_files << freereg1_csv_files
-         end
-
-       else
-        
-      end
-    
-  end
+    @freereg1_csv_files = Freereg1CsvFile.where(:transcriber_syndicate => session[:syndicate] ).all.order_by(session[:sort]) 
+      
+   end
 
   def show
     load(params[:id])
-     @first_name = session[:first_name]
+    
   end
 
   def edit
     load(params[:id])
-     @first_name = session[:first_name]
     @freereg1_csv_file_name = session[:freereg1_csv_file_name] 
   end
 
 
   def update
       load(params[:id])
-     @first_name = session[:first_name]
-   
+     
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
     
     flash[:notice] = 'The change in file contents was succsessful'
@@ -71,7 +31,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
       session[:form] = @freereg1_csv_file
       session[:errors] = @freereg1_csv_file.errors.messages
       flash[:notice] = 'The update of the file was unsuccsessful'
-      redirect_to :action => 'edit'
+    render :action => 'edit'
      
     else
       session[:type] = "edit"
@@ -91,7 +51,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @lines = Array.new
     File.open(my_file, 'r') do |f1|  
       while line = f1.gets
-        @lines << line
+         @lines << line
       end
     end
    
@@ -99,17 +59,49 @@ class Freereg1CsvFilesController < InheritedResources::Base
   
   def my_own
     @first_name = session[:first_name]
-    @freereg1_csv_files = Freereg1CsvFile.where(:userid => session[:userid]).all.order_by(file_name: 1)
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @freereg1_csv_file = Freereg1CsvFile.new
     session[:my_own] = 'my_own'
-    render "index"
   end
 
+def create
+  if session[:my_own] == 'my_own'
+    case 
+      when params[:freereg1_csv_file][:action] == 'By filename'
+      session[:sort] =  sort = "file_name ASC"
+     
+     when params[:freereg1_csv_file][:action] == 'By number of errors then filename'
+      session[:sort] =  sort = "error DESC, file_name ASC"
+      
+     
+      when params[:freereg1_csv_file][:action] == 'By uploaded date (descending)'
+      session[:sort] =  sort = "uploaded_date DESC, userid ASC"
+      
+     when params[:freereg1_csv_file][:action] == 'By uploaded date (ascending)'
+      session[:sort] =  sort = "uploaded_date ASC, userid ASC"
+      
+    end #end case
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @freereg1_csv_files = Freereg1CsvFile.where(:userid => session[:userid]).all.order_by(session[:sort]) 
+    render "index"
+  end #end if
+end
 
   def lock
     load(params[:id])
-    @freereg1_csv_file.update_attributes(:locked => true)
+ 
+    if  @freereg1_csv_file.locked == 'false'
+     
+      @freereg1_csv_file.locked = 'true'
+     @freereg1_csv_file.save
+   else
+   
+    @freereg1_csv_file.locked = 'false'
+     @freereg1_csv_file.save
+    end
     flash[:notice] = 'The update of the file was succsessful'
-
+   
     if session[:my_own] == 'my_own'
        @freereg1_csv_files = Freereg1CsvFile.where(:userid => session[:userid] ).all.order_by(file_name: 1)
        render 'index'
@@ -147,7 +139,13 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     session[:freereg1_csv_file_id] = file_id
     session[:freereg1_csv_file_name] =@freereg1_csv_file_name
+    @user = UseridDetail.where(:userid => session[:userid]).first
     @first_name = session[:first_name] 
+     session[:county] = @freereg1_csv_file.county
+     session[:place_name] = @freereg1_csv_file.place
+       session[:church_name] = @freereg1_csv_file.church_name
+
+
   end
  
 end

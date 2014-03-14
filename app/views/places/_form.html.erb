@@ -1,24 +1,22 @@
 <%= semantic_form_for(@place) do |f| %>
  
-  
-   <% if flash[:notice] && session[:errors].nil? %>
-    <div id="notice" style="color:green"><br>
-  <% else %>
-   <div id="notice" style="color:red"><br> 
-    <% end %>
-   <%= flash[:notice] %> 
-   <% session[:errors] = nil %>
-   <br>
-    </div>
-  
+    
 <div id="main"style="color:black">
   <%= f.input :place_name,{ :as => :select,:label => "Select from the Master Place Name collection",:include_blank => false,
           :required => true, :collection => @placenames, :size => 15 } %> 
+
    
   <br>
-   <%= f.input :alternate_place_name,:label => "Any other names used for this place :",:input_html => { :size => 60 }%>
+  <%= f.inputs :alternate_name, :for => :alternateplacenames, :name => 'Edit Existing Alternate Place Name #%i', :input_html => { :size => 60 }%>
+       
+  <%= f.inputs :alternate_name, :for => :alternateplacename, :name => 'Add Altername Place Name',  :size => 60 %>
+
+
  <br>
    <%= f.input :place_notes,:label => "Any notes:",:input_html => { :size => 100 }%>
+
+   <%= f.input :last_amended, :label => "The last date when a register in the place was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
+
 
    <%= f.action :submit, :as => :input, :label => 'Update' %>
   

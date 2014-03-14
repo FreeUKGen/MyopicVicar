@@ -14,11 +14,12 @@ class Register
   field :register_notes,  type: String
   field :last_amended, type: String
   
-  has_many :freereg1_csv_files
+  has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
   index({ church_id: 1, register_name: 1}, { unique: true })
   index({ register_name: 1})
   index({ alternate_register_name: 1})
+   index({ church_id: 1, alternate_register_name: 1}, { unique: true })
   
   def self.update_or_create_register(freereg1_csv_file)
     # find if register exists
@@ -86,9 +87,6 @@ class Register
   end
 
   def self.create_or_update_last_amended_date(freereg_file)
-    p "register date"
-    p self
-    p freereg_file
     register = freereg_file.register._id
     register = Register.find(register)
     original_last_amended_date = register.last_amended

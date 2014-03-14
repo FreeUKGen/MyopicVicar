@@ -1,43 +1,81 @@
-<% require 'record_type' %>
- <% if flash[:notice] && session[:errors].nil? %>
-    <div id="notice" style="color:green"><br>
-  <% else %>
-   <div id="notice" style="color:red"><br> 
-    <% end %>
-   <%= flash[:notice] %> 
-   <% session[:errors] = nil %>
-   <br>
-    </div>
-<p>Details of the Register <b><%= @register_name %></b> for 
-  Church of
-  <b><%= @church_name %></b>
-  in 
-   <b><%= @place_name %></b>
-   for the County of:
-   <b><%= @county %></b>
-</p>
+ Page Identification Registers:show<p>
 
- 
- <p><b>Register name :</b> <%= @register.register_name %></p>
-   <p><b>Alternate register name :</b> <%= @register.alternate_register_name%></p>
-   <p><b>Register Type :</b> <%= @register.register_type %></p>
-   <p><b>Quality :</b> <%= @register.quality%></p>
-   <p><b>Source :</b> <%= @register.source %></p>
-   <p><b>Copyright :</b> <%= @register.copyright %></p>
-   <p><b>Register notes :</b> <%= @register.register_notes %></p>
-    <p><b>Last amended :</b> <%= @register.last_amended %></p>
-  
-  <ol>
-  
-    <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
-    <li>
-    <p><b>File :</b><%= link_to(file_name.file_name,freereg1_csv_file_path(file_name)) %></p>
-    </li>
- 
-  
-<% end %>
-</ol>
+ <p style="text-align: center">Details of the Register <b><%= @register_name %></b> for <b><%= @church_name %></b> in 
+   <b><%= @place_name %></b> for the County of:  <b><%= @county %></b>
+</p>
+   
  <div style="float:left;">  <%= button_to 'Edit Register', edit_register_path(@register), method: :get %></div>    
 <div style="float:left;">  <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></div> 
-<div style="float:left;">  <%= button_to_function "Back to Previous Page", "history.back()" %></div>  
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %></div>  
+<div style="clear:both;"> </div><br>
+
+    <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+    <div id="main"style="color:black">
+<table  CLASS="boldtable" style="width: 100%">
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+  </tr>
+ <% if @register.register_name.nil? %>
+  <tr> 
+
+   <td>Register name :</td><td > <%= @register.alternate_register_name%> </td>
+  </tr>
+<%else%>
+    <tr> 
+
+   <td>Register name :</td><td > <%= @register.register_name%> </td>
+  </tr>
+  <tr>
+   <td>Alternate register name :</td><td > <%= @register.alternate_register_name%>  </td>   
+   </tr>
+   <%end%>
+   <tr>
+   <td>Register Type :</td><td ><%= @register.register_type %></td>   
+   </tr>
+   <tr>
+   <td>Quality :</td><td > <%= @register.quality%></td>   
+   </tr>
+   <tr>
+   <td>Source :</td><td > <%= @register.source %> </td>   
+   </tr>
+   <tr>
+   <td>Copyright :</td><td > <%= @register.copyright %>  </td>   
+   </tr>
+  <tr>
+   <td>Register notes :</td><td > <%= @register.register_notes %>  </td>   
+   </tr>
+ <tr>
+   <td>Last amended :</td><td ><%= @register.last_amended %> </td>   
+   </tr>  
+<tr><td>Batches :</td><td> <table>
+ <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
+ <% if file_name.error == 0 %>
+  <tr id="<%=file_name.id%>"  style="color:green">
+ <% else %> 
+<tr id="<%=file_name.id%>"  style="color:red">
+ <% end %>
+  
+  <td ><%= link_to(file_name.file_name,freereg1_csv_file_path(file_name)) %></td> 
+<td><%=file_name.userid%></td><td> <%=file_name.uploaded_date.strftime("%d %b %Y")%>   <td><%=file_name.datemin%></td>
+<td><%=file_name.datemax%></td><td>Errors: <%=file_name.error%></td>
+  
+    </tr></tr>
+    <% end %>
+</table></td>
+   </tr>
+</table>
+</div>
+
+ <div style="float:left;">  <%= button_to 'Edit Register', edit_register_path(@register), method: :get %></div>    
+<div style="float:left;">  <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></div> 
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %></div>  
 <div style="clear:both;"> </div><br>

@@ -7,7 +7,7 @@ class PlacesController < InheritedResources::Base
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
           @first_name = session[:first_name]
-          
+           @user = UseridDetail.where(:userid => session[:userid]).first
   end
 
   def list
@@ -15,8 +15,21 @@ class PlacesController < InheritedResources::Base
   end
 
   def show
-    load(params[:id])
-  end
+          load(params[:id])
+         
+          @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
+         
+          session[:errors] = nil
+          session[:form] = nil
+          session[:parameters] = params
+          @names = Array.new
+         @alternate_place_names = @place.alternateplacenames.all
+         @alternate_place_names.each do |acn|
+          name = acn.alternate_name
+          @names << name
+         end
+        
+   end
 
   def edit
      load(params[:id])
@@ -27,10 +40,8 @@ class PlacesController < InheritedResources::Base
         end
   end
 
-
 def new
- 
-      #coming through new for the first time so get a new instance
+     
       @place = Place.new
       @place.chapman_code = session[:chapman_code]
       session[:form] = @place
@@ -42,15 +53,21 @@ def new
         end
       session[:errors] = nil
       @first_name = session[:first_name]
+       @user = UseridDetail.where(:userid => session[:userid]).first
+    
+      
   end
-
+ 
 def create
+   session[:errors] = nil
+   @user = UseridDetail.where(:userid => session[:userid]).first
    @place = Place.new
      # save place name change in Place
     @place.place_notes = params[:place][:place_notes] unless params[:place][:place_notes].nil?
     @place.place_name = params[:place][:place_name] unless params[:place][:place_name].nil?
     @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
     @place.chapman_code = session[:chapman_code]
+     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.save
     flash[:notice] = 'The addition of the Place was succsessful'
    if @place.errors.any?
@@ -81,6 +98,9 @@ def update
     @place.place_name = params[:place][:place_name] unless params[:place][:place_name].nil?
     @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
     @place.chapman_code = session[:chapman_code]
+    @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
+    @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
+    
     @place.save
   
    if @place.errors.any? then
@@ -116,6 +136,7 @@ def update
 
   
   def load(place_id)
+     @user = UseridDetail.where(:userid => session[:userid]).first
    @place = Place.find(place_id)
    session[:place_id] = place_id
    @place_name = @place.place_name
