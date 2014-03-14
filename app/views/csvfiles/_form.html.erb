@@ -1,12 +1,8 @@
-<% if !@csvfile.errors.empty? %>
-    <div >
-    <ul>
-    <% @csvfile.errors.full_messages.each do |msg| %>
-    <li><%= msg %></li>
-    <% end %>
-    </ul>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
     </div>
-    <% end %>
+   <% end %>  
      
     <div >
     <%= semantic_form_for @csvfile, html: { multipart: true } do |f| %>

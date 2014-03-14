@@ -22,12 +22,18 @@ MyopicVicar::Application.routes.draw do
   mount Refinery::Core::Engine, :at => '/'
 
 
+
+ 
+  resources :manage_syndicates   
+  
+  resources :csvfiles
   get 'csvfiles/:id/error(.:format)', :to => 'csvfiles#replace', :as => :replace_csvfile
   get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
-  resources :csvfiles
 
-
+  get 'manage_freeregs', :to => 'manage_freeregs#index', :as => :manage_freeregs
+  
   resources :countries
+
 
 
   resources :counties

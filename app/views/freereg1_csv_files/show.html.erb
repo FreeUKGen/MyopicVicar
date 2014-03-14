@@ -1,132 +1,120 @@
-<p id="notice"><%= notice %></p>
-<p>Showing  file:<b><%= @freereg1_csv_file_name %></b> </p>
-<div style="float:left;"> <%= button_to 'Edit file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+Page Identification Freereg Files:show<p>
+<p style="text-align: center">Showing  batch:<b><%= @freereg1_csv_file_name %></b> </p>
+<div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
+
+<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %></div>
 <div style="clear:both;"> </div><br>
-<p>
-  <b>County:</b>
-  <%= @freereg1_csv_file.county %>
-</p>
 
-<p>
-  <b>Place:</b>
-  <%= @freereg1_csv_file.place %>
-</p>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>  
 
-<p>
-  <b>Church:</b>
-  <%= @freereg1_csv_file.church_name %>
-</p>
-
-<p>
-  <b>Register type:</b>
-  <%= @freereg1_csv_file.register_type %>
-</p>
+<table  style="width: 100%">
+ 
 
 
-<p>
-  <b>Record type:</b>
-  <%= @freereg1_csv_file.record_type %>
-</p>
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+  </tr>
 
-<p>
-  <b>Records:</b>
-  <%= @freereg1_csv_file.records %>
-</p>
+  <tr> 
+   <td>County </td> <td> <%=  @freereg1_csv_file.county%>  </td>
+  </tr><tr>
+   <td> Place name </td><td > <%= @freereg1_csv_file.place %>  </td>   
+   </tr>
+   <tr>
+   <td>Church name </td><td ><%= @freereg1_csv_file.church_name %></td>   
+   </tr>
+   <tr>
+   <td>Register type</td><td ><%= @freereg1_csv_file.register_type %></td>   
+   </tr>
+   <tr>
+   <td>Record type </td><td >  <%= @freereg1_csv_file.record_type %> </td>   
+   </tr>
+   <tr> 
+   <td>Number of records </td> <td> <%= @freereg1_csv_file.records %> </td>
+  </tr><tr>
+   <td>Minimum year in dataset </td><td >  <%= @freereg1_csv_file.datemin %> </td>   
+   </tr>
+   <tr>
+   <td>Maximum year in dataset </td><td > <%= @freereg1_csv_file.datemax %></td>   
+   </tr>
+   <tr>
+   <td>Number of years in each decade starting in 1530</td><td > <%= @freereg1_csv_file.daterange %></td>   
+   </tr>
+   <tr>
+   <td>Uploaded by userid </td><td >   <%= @freereg1_csv_file.userid %> </td>   
+   </tr>
+   <tr>
+   <td>Batch name</td><td ><%= @freereg1_csv_file.file_name %></td>   
+   </tr>
+   <tr>
+   <td>Transcribed by </td><td >  <%= @freereg1_csv_file.transcriber_name %></td>   
+   </tr>
+   <tr> 
+   <td>Transcribers email address </td> <td> <%= @freereg1_csv_file.transcriber_email %></td>
+  </tr>
+  <tr>
+   <td>Syndicate transcribed for </td><td >   <%= @freereg1_csv_file.transcriber_syndicate %></td>   
+   </tr>
+   <tr>
+   <td>Date of upload </td><td > <%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %></td>   
+   </tr>
+  <%case%>
+ <%when @freereg1_csv_file.error == 0%>
+ <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
+  <% when  @freereg1_csv_file.error > 0 %>
+  <tr id="<%= @freereg1_csv_file.id%>"  style="color:red" >
+ <% end %>
 
-<p>
-  <b>Minimum Year:</b>
-  <%= @freereg1_csv_file.datemin %>
-</p>
+   <td>Number of errors</td><td > <%= @freereg1_csv_file.error %></td>   
+   </tr>
+  <%case%>
+ <%when @freereg1_csv_file.error == 0%>
+ <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
+ <%when @freereg1_csv_file.locked == true %> 
+  <tr id="<%= @freereg1_csv_file.id%>"  style="color:yellow" >
+   <% end %>
+   <td>Batch is locked from overriding </td><td > <%= @freereg1_csv_file.locked %></td>   
+   </tr>
+   <tr>
+   <td>Credit the following for the transcription</td><td ><%= @freereg1_csv_file.credit_name %></td>   
+   </tr>
+   <tr>
+   <td>Email address for the person who has been credited </td><td > <%= @freereg1_csv_file.credit_email %></td>   
+   </tr>
+   <tr> 
+   <td>First set of comments about the batch </td> <td> <%= @freereg1_csv_file.first_comment %></td>
+  </tr>
+  <tr>
+   <td>Second set of comments about the batch </td><td >    <%= @freereg1_csv_file.second_comment %></td>   
+   </tr>
+   <tr>
+   <td>Date transcribed </td><td >  <%= @freereg1_csv_file.transcription_date %></td>   
+   </tr>
+   <tr>
+   <td>Date modified</td><td ><%= @freereg1_csv_file.modification_date %></td>   
+   </tr>
+   <tr>
+   <td>Registers were from the Church of Latter Day Saints </td><td >   <%= @freereg1_csv_file.lds %> </td>   
+   </tr>
+ 
+   <tr>
+   <td>Character set of original file</td><td > <%= @freereg1_csv_file.characterset %></td>   
+   </tr>
+</table>  
 
-<p>
-  <b>Maximum year:</b>
-  <%= @freereg1_csv_file.datemax %>
-</p>
 
-<p>
-  <b>Data range:</b>
-  <%= @freereg1_csv_file.daterange %>
-</p>
 
-<p>
-  <b>UserID:</b>
-  <%= @freereg1_csv_file.userid %>
-</p>
-<p>
-  <b>File name:</b>
-  <%= @freereg1_csv_file.file_name %>
-</p>
 
-<p>
-  <b>Transcriber name:</b>
-  <%= @freereg1_csv_file.transcriber_name %>
-</p>
+<div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
 
-<p>
-  <b>Transcriber email:</b>
-  <%= @freereg1_csv_file.transcriber_email %>
-</p>
-
-<p>
-  <b>Transcriber syndicate:</b>
-  <%= @freereg1_csv_file.transcriber_syndicate %>
-</p>
-<p>
-  <b>Uploaded:</b>
-<%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %>
-</p>
-<p>
-  <b>Errors:</b>
-<%= @freereg1_csv_file.error %>
-</p>
-<p>
-  <b>Locked:</b>
-<%= @freereg1_csv_file.locked %>
-</p>
-<p>
-  <b>Credit name:</b>
-  <%= @freereg1_csv_file.credit_name %>
-</p>
-
-<p>
-  <b>Credit email:</b>
-  <%= @freereg1_csv_file.credit_email %>
-</p>
-
-<p>
-  <b>First comment:</b>
-  <%= @freereg1_csv_file.first_comment %>
-</p>
-
-<p>
-  <b>Second comment:</b>
-  <%= @freereg1_csv_file.second_comment %>
-</p>
-
-<p>
-  <b>Transcription date:</b>
-  <%= @freereg1_csv_file.transcription_date %>
-</p>
-
-<p>
-  <b>Modification date:</b>
-  <%= @freereg1_csv_file.modification_date %>
-</p>
-
-<p>
-  <b>LDS:</b>
-  <%= @freereg1_csv_file.lds %>
-</p>
-
-<p>
-  <b>Character set:</b>
-  <%= @freereg1_csv_file.characterset %>
-</p>
- <br>
-
-<div style="float:left;"> <%= button_to 'Edit this file', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
+<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %></div>
 <div style="clear:both;"> </div><br>

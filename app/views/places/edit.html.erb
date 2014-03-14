@@ -1,9 +1,30 @@
-<p>Editing <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+Page Identification Places:edit<p>
+
+<p style="text-align: center">Editing <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+<div  style="float:left;"> <%= button_to 'Create New Place', new_place_path, method: :get %></div>
+ <div style="float:left;"><%=button_to 'Show Place', places_path, method: :get%> </div>
+<div  style="float:left;"><%= button_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' } %></div>
+<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+ <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="clear:both;"> </div><br> 
+
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %> 
 
 <%= render 'form' %>
 
-<div style="float:left;"> <%= button_to 'Back to Index of Places', places_path( :anchor => "#{@place.id}"), method: :get%></div>
-<div  style="float:left;"> <%= button_to 'Back to County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Back to my Resource Management options', manage_resource_path(session[:user]), method: :get %> </div>
-</div>
-<div style="clear:both;"> </div><br>
+
+
+<div  style="float:left;"> <%= button_to 'Create New Place', new_place_path, method: :get %></div>
+ <div style="float:left;"><%=button_to 'Show Place', places_path, method: :get%> </div>
+<div  style="float:left;"><%= button_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' } %></div>
+<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
+ <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="clear:both;"> </div><br> 

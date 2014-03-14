@@ -1,5 +1,30 @@
-<h1>New county</h1>
+Page Identification Counties:new<p>
+<p style="text-align: center">Create a new County</p>
 
-<%= render 'form' %>
+   <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>  
 
-<%= link_to 'Back', counties_path %>
+    <%= semantic_form_for @county do |f| %>
+
+  
+
+    <%= f.input :chapman_code,:label => "County name :",:input_html => { :size => 40 }%>
+<%= f.input :county_coordinator, {:as => :select,  :collection => @people,:include_blank => false,:label => "Please select the coordinator :", :size => 5} %>
+<%= f.input :county_description,:label => "County description :",:input_html => { :size => 80 }%>
+<%= f.input :county_notes,:label => "County notes :",:input_html => { :size => 100 }%>
+
+    
+     <%= f.submit "Create" %>
+     <% end %>
+    </div>
+   
+
+
+<div  style="float:left;"> <%= button_to 'Back to my FreeREG management', manage_freeregs_path, method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
+<div style="clear:both;"> </div><br>
+
+ 

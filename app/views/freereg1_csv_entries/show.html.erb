@@ -1,260 +1,218 @@
-<p id="notice"><%= notice %></p>
-<p>Showing entry <b><%= @freereg1_csv_entry.file_line_number %></b> for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+Page Identification Freereg Entries:show<p>
+<p style="text-align: center">Showing entry <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+
+
+<div style="float:left;"> <%= button_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>  </div>
+<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="clear:both;"> </div><br>
+<div id="main"style="color:black">
 <% case %>
-<% when @freereg1_csv_file.record_type == "ba" %>      
-<p>
-  <b>Register entry number:</b>
-  <%= @freereg1_csv_entry.register_entry_number %>
-</p>
-<p>
-  <b>Baptism date:</b>
-  <%= @freereg1_csv_entry.baptism_date %>
-</p>
-<p>
-  <b>Birth date:</b>
-  <%= @freereg1_csv_entry.birth_date %>
-</p>
-<p>
-  <b>Person forename:</b>
-  <%= @freereg1_csv_entry.person_forename %>
-</p>
+<% when @freereg1_csv_file.record_type == "ba" %> 
 
+<table  style="width: 100%">
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+  </tr>
 
-<p>
-  <b>Person sex:</b>
-  <%= @freereg1_csv_entry.person_sex %>
-</p>
+  <tr> 
+   <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
+  </tr><tr>
+   <td> Baptism date </td><td > <%= @freereg1_csv_entry.baptism_date %> </td>   
+   </tr>
+   <tr>
+   <td>Birth date</td><td > <%= @freereg1_csv_entry.birth_date %></td>   
+   </tr>
+   <tr>
+   <td>Forename of the person baptised</td><td ><%= @freereg1_csv_entry.person_forename %></td>   
+   </tr>
+   <tr>
+   <td>Sex of the person baptised</td><td > <%= @freereg1_csv_entry.person_sex %> </td>   
+   </tr>
+   <tr> 
+   <td>Forename of the father </td> <td>   <%= @freereg1_csv_entry.father_forename %> </td>
+  </tr>
+  <tr>
+   <td>Surname of the father </td><td >  <%= @freereg1_csv_entry.father_surname %> </td>   
+   </tr>
+   <tr>
+   <td>Forename of the mother</td><td >   <%= @freereg1_csv_entry.mother_forename %></td>   
+   </tr>
+   <tr>
+   <td>Surname of the mother</td><td > <%= @freereg1_csv_entry.mother_surname %></td>   
+   </tr>
+   <tr>
+   <td>Occupation of the father</td><td >  <%= @freereg1_csv_entry.father_occupation %> </td>   
+   </tr>
+   <tr>
+   <td>Abode of the person</td><td >   <%= @freereg1_csv_entry.person_abode %></td>   
+   </tr>
+   <tr>
+   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes %></td>   
+   </tr>
+   <tr>
+   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
+   </tr>
+   <tr>
+   <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
+   </tr>
+</table>  
 
-
-<p>
-  <b>Father forename:</b>
-  <%= @freereg1_csv_entry.father_forename %>
-</p>
-
-
-<p>
-  <b>Father surname:</b>
-  <%= @freereg1_csv_entry.father_surname %>
-</p>
-<p>
-  <b>Father occupation:</b>
-  <%= @freereg1_csv_entry.father_occupation %>
-</p>
-<p>
-  <b>Mother forename:</b>
-  <%= @freereg1_csv_entry.mother_forename %>
-</p>
-
-<p>
-  <b>Mother surname:</b>
-  <%= @freereg1_csv_entry.mother_surname %>
-</p>
-<p>
-  <b>Person abode:</b>
-  <%= @freereg1_csv_entry.person_abode %>
-</p>
-
-<p>
-  <b>Notes:</b>
-  <%= @freereg1_csv_entry.notes %>
-</p>
-<p>
-  <b>Line:</b>
-  <%= @freereg1_csv_entry.line_id %>
-</p>
 <% when @freereg1_csv_file.record_type == "ma" %> 
+<table  style="width: 100%">
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+  </tr>
 
-<p>
-  <b>Register entry number:</b>
-  <%= @freereg1_csv_entry.register_entry_number %>
-</p>
+  <tr> 
+   <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
+  </tr><tr>
+   <td>Forename of the bride </td><td >  <%= @freereg1_csv_entry.bride_forename %> </td>   
+   </tr>
+   <tr>
+   <td>Surname of the bride</td><td > <%= @freereg1_csv_entry.bride_surname %></td>   
+   </tr>
+   <tr>
+   <td>Age of the bride</td><td > <%= @freereg1_csv_entry.bride_age %></td>   
+   </tr>
+   <tr>
+   <td>Abode of the bride</td><td > <%= @freereg1_csv_entry.bride_abode %> </td>   
+   </tr>
+   <tr> 
+   <td>Occupation of the bride </td> <td>   <%= @freereg1_csv_entry.bride_occupation %> </td>
+  </tr>
+  <tr>
+   <td>Condition of the bride </td><td >  <%= @freereg1_csv_entry.bride_condition %></td>   
+   </tr>
+   <tr>
+   <td>Parish of the bride</td><td >   <%= @freereg1_csv_entry.bride_parish %></td>   
+   </tr>
+   <tr>
+   <td>Forename of the bride's father</td><td >  <%= @freereg1_csv_entry.bride_father_forename %></td>   
+   </tr>
+   <tr>
+   <td>Surname of the bride's father</td><td >  <%= @freereg1_csv_entry.bride_father_surname %> </td>   
+   </tr>
+   <tr>
+   <td>Occupation of the bride's father</td><td >   <%= @freereg1_csv_entry.bride_father_occupation %></td>   
+   </tr>
+   <tr>
+   <td>Forename of the groom</td><td > <%= @freereg1_csv_entry.groom_surname %></td>   
+   </tr>
 
-<p>
-  <b>Bride abode:</b>
-  <%= @freereg1_csv_entry.bride_abode %>
-</p>
+   <tr>
+   <td>Surname of the groom</td><td > <%= @freereg1_csv_entry.groom_surname %></td>   
+   </tr>
+   <tr>
+   <td>Age of the groom</td><td > <%= @freereg1_csv_entry.groom_age %></td>   
+   </tr>
+   <tr>
+   <td>Abode of the groom</td><td > <%= @freereg1_csv_entry.groom_abode %> </td>   
+   </tr>
+   <tr> 
+   <td>Occupation of the groom </td> <td>   <%= @freereg1_csv_entry.groom_occupation %> </td>
+  </tr>
+  <tr>
+   <td>Condition of the groom </td><td >  <%= @freereg1_csv_entry.groom_condition %></td>   
+   </tr>
+   <tr>
+   <td>Parish of the groom</td><td >   <%= @freereg1_csv_entry.groom_parish %></td>   
+   </tr>
+   <tr>
+   <td>Forename of the groom's father</td><td >  <%= @freereg1_csv_entry.groom_father_forename %></td>   
+   </tr>
+   <tr>
+   <td>Suranme of the groom's father</td><td >  <%= @freereg1_csv_entry.groom_father_surname %> </td>   
+   </tr>
+   <tr>
+   <td>Occupation of the groom's father</td><td >   <%= @freereg1_csv_entry.groom_father_occupation %></td>   
+   </tr>
+   <tr>
+   <td>Date of the marriage</td><td > <%= @freereg1_csv_entry.marriage_date %></td>   
+   </tr>
+   <tr>
+   <td>Forename for witness</td><td >  <%= @freereg1_csv_entry.witness1_forename %></td>   
+   </tr>
+   <tr>
+   <td>Surname for witness</td><td > <%= @freereg1_csv_entry.witness1_surname %> </td>   
+   </tr>
+   <tr>
+   <td>Forename for witness</td><td >  <%= @freereg1_csv_entry.witness2_forename %></td>   
+   </tr>
+   <tr>
+   <td>Surname for witness</td><td > <%= @freereg1_csv_entry.witness2_surname %> </td>   
+   </tr>
+   <tr>
+   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes %></td>   
+   </tr>
+   <tr>
+   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
+   </tr>
+   <tr>
+   <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
+   </tr>
+</table>  
 
-<p>
-  <b>Bride age:</b>
-  <%= @freereg1_csv_entry.bride_age %>
-</p>
-
-<p>
-  <b>Bride condition:</b>
-  <%= @freereg1_csv_entry.bride_condition %>
-</p>
-
-<p>
-  <b>Bride father forename:</b>
-  <%= @freereg1_csv_entry.bride_father_forename %>
-</p>
-
-<p>
-  <b>Bride fathr occupation:</b>
-  <%= @freereg1_csv_entry.bride_father_occupation %>
-</p>
-
-<p>
-  <b>Bride father surname:</b>
-  <%= @freereg1_csv_entry.bride_father_surname %>
-</p>
-
-<p>
-  <b>Bride firstname:</b>
-  <%= @freereg1_csv_entry.bride_forename %>
-</p>
-
-<p>
-  <b>Bride occupation:</b>
-  <%= @freereg1_csv_entry.bride_occupation %>
-</p>
-
-<p>
-  <b>Bride parish:</b>
-  <%= @freereg1_csv_entry.bride_parish %>
-</p>
-
-<p>
-  <b>Bride surname:</b>
-  <%= @freereg1_csv_entry.bride_surname %>
-</p>
-<p>
-  <b>Groom abode:</b>
-  <%= @freereg1_csv_entry.groom_abode %>
-</p>
-
-<p>
-  <b>Groom age:</b>
-  <%= @freereg1_csv_entry.groom_age %>
-</p>
-
-<p>
-  <b>Groom condition:</b>
-  <%= @freereg1_csv_entry.groom_condition %>
-</p>
-
-<p>
-  <b>Groom father forename:</b>
-  <%= @freereg1_csv_entry.groom_father_forename %>
-</p>
-
-<p>
-  <b>Groom father occupation:</b>
-  <%= @freereg1_csv_entry.groom_father_occupation %>
-</p>
-
-<p>
-  <b>Groom father surname:</b>
-  <%= @freereg1_csv_entry.groom_father_surname %>
-</p>
-
-<p>
-  <b>Groom forename:</b>
-  <%= @freereg1_csv_entry.groom_forename %>
-</p>
-
-<p>
-  <b>Groom occupation:</b>
-  <%= @freereg1_csv_entry.groom_occupation %>
-</p>
-
-<p>
-  <b>Groom parish:</b>
-  <%= @freereg1_csv_entry.groom_parish %>
-</p>
-
-<p>
-  <b>Groom surname:</b>
-  <%= @freereg1_csv_entry.groom_surname %>
-</p>
-
-
-<p>
-  <b>Marriage date:</b>
-  <%= @freereg1_csv_entry.marriage_date %>
-</p>
-<p>
-  <b>Witness1 forename:</b>
-  <%= @freereg1_csv_entry.witness1_forename %>
-</p>
-
-<p>
-  <b>Witness1 surname:</b>
-  <%= @freereg1_csv_entry.witness1_surname %>
-</p>
-
-<p>
-  <b>Witness2 forename:</b>
-  <%= @freereg1_csv_entry.witness2_forename %>
-</p>
-
-<p>
-  <b>Witness2 surname:</b>
-  <%= @freereg1_csv_entry.witness2_surname %>
-</p>
-<p>
-  <b>Notes:</b>
-  <%= @freereg1_csv_entry.notes %>
-</p>
-<p>
-  <b>Line:</b>
-  <%= @freereg1_csv_entry.line_id %>
-</p>
-
+ 
 <% when @freereg1_csv_file.record_type %> 
-<p>
-  <b>Register entry number:</b>
-  <%= @freereg1_csv_entry.register_entry_number %>
-</p>
 
-<p>
-  <b>Burial date:</b>
-  <%= @freereg1_csv_entry.burial_date %>
-</p>
+<table  style="width: 100%">
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+  </tr>
 
-<p>
-  <b>Burial person forename:</b>
-  <%= @freereg1_csv_entry.burial_person_forename %>
-</p>
-<p>
-  <b>Burial person surname:</b>
-  <%= @freereg1_csv_entry.burial_person_surname %>
-</p>
-<p>
-  <b>Burial person abode:</b>
-  <%= @freereg1_csv_entry.burial_person_abode %>
-</p>
-<p>
-  <b>Relationship:</b>
-  <%= @freereg1_csv_entry.relationship %>
-</p>
-<p>
-  <b>Person age:</b>
-  <%= @freereg1_csv_entry.person_age %>
-</p>
+  <tr> 
+   <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
+  </tr><tr>
+   <td> Baptism date </td><td > <%= @freereg1_csv_entry.burial_date %> </td>   
+   </tr>
+   <tr>
+   <td>Birth date</td><td > <%= @freereg1_csv_entry.birth_date %></td>   
+   </tr>
+   <tr>
+   <td>Forename of the person buried</td><td ><%= @freereg1_csv_entry.burial_person_forename %></td>   
+   </tr>
+   <tr>
+   <td>Surname of the person buried</td><td > <%= @freereg1_csv_entry.burial_person_surname %> </td>   
+   </tr>
+   <tr> 
+   <td>Forename of the female relative </td> <td>    <%= @freereg1_csv_entry.female_relative_forename %></td>
+  </tr>
+  <tr>
+   <td>Surname of the relative </td><td >   <%= @freereg1_csv_entry.relative_surname %> </td>   
+   </tr>
+   <tr>
+   <td>Forename of the male relative</td><td >   <%= @freereg1_csv_entry.male_relative_forename %></td>   
+   </tr>
+   <tr>
+   <td>Age of person buried</td><td >  <%= @freereg1_csv_entry.person_age %></td>   
+   </tr>
+   <tr>
+   <td>Relationship with a person</td><td > <%= @freereg1_csv_entry.relationship %> </td>   
+   </tr>
+   <tr>
+   <td>Abode of the person buried</td><td >  <%= @freereg1_csv_entry.burial_person_abode %></td>   
+   </tr>
+   <tr>
+   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes %></td>   
+   </tr>
+   <tr>
+   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
+   </tr>
+   <tr>
+   <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
+   </tr>
+</table>  
 
-<p>
-  <b>Female relative forename:</b>
-  <%= @freereg1_csv_entry.female_relative_forename %>
-</p>
-<p>
-  <b>Male relative forename:</b>
-  <%= @freereg1_csv_entry.male_relative_forename %>
-</p>
-
-<p>
-  <b>Relative surname:</b>
-  <%= @freereg1_csv_entry.relative_surname %>
-</p>
-<p>
-  <b>Notes:</b>
-  <%= @freereg1_csv_entry.notes %>
-</p>
-<p>
-  <b>Line:</b>
-  <%= @freereg1_csv_entry.line_id %>
-</p>
 <%end%>
 
-<%= button_to 'Edit Entry', edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>
-<%= button_to_function "Back to Previous Page", "history.back()" %> 
+
+
+<div style="float:left;"> <%= button_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>  </div>
+
+<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="clear:both;"> </div><br>

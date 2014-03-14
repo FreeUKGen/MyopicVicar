@@ -3,7 +3,7 @@ This is a temporary landing page until the full Security system is in place
  
 <div id="main"style="color:black">
 
-<%= f.input :userid, { :as => :select, :include_blank => true, :collection => @coordinators, :label => "Select a userid :", :input_html => { :size => 10 }}%>
-   <%= f.action :submit, :as => :input, :label => 'Select'   %>         
+<%= f.input :userid, { :as => :select, :include_blank => false,  :collection => @people, :label => "Select a userid :",  :size => 10 }%>
+   <%= f.action :submit, :as => :input, :label => 'Select'    %>         
 <% end %>
 </div>

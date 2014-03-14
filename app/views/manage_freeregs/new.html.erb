@@ -1,0 +1,21 @@
+Page Identification Manage Freereg:new<p>
+<p style="text-align: center"><b>From here you can manage FreeREG</b></p>
+<div id="nav">
+
+<div style="float:left;"> <%= button_to 'Manage Syndicates', syndicates_path, method: :get  %> </div>
+<div style="float:left;"><%= button_to 'Manage Counties',  counties_path, method: :get  %></div>
+
+<div style="float:left;"><%= button_to 'Manage Countries', countries_path, method: :get  %></div>
+
+<div style="float:left;"><%= button_to 'Retrieve Attic files', saved_searches_path, method: :get %></div>
+
+
+<div style="float:left;"><%= button_to "Retrieve Activity logs ", saved_searches_path, method: :get   %> </div>
+<div  style="float:left;"> <%= button_to 'Back to my Resource Management', manage_resource_path(@user), method: :get %> </div>
+
+<div style="float:left;"><%= button_to 'Logout' , manage_resources_path, method: :get  %>
+</div>
+
+
+<div style="clear:both;"> </div><br>
+</div>
