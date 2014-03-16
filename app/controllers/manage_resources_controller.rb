@@ -21,7 +21,7 @@ def index
     people.each do |mine|
     @people << mine unless @people.include?(mine) 
     end 
-    @people.sort
+    @people = @people.sort
 end
 
 def new

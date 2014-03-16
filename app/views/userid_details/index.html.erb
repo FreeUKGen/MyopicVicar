@@ -1,5 +1,11 @@
-Page Identification UserDetals: Index<p>
+Page Identification UserDetails: Index<p>
+<% if @user.person_role == 'system_administrator'%>
+<p style="text-align: center"><b>Userid Profile Management fo REGManager</b></p>
+
+<%else%>
 <p style="text-align: center"><b>Syndicate Members Management for <%=session[:syndicate]%></b></p>
+ <% end %>
+
 <div style="float:left;"> <%= button_to 'Create a new Profile', new_userid_detail_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>

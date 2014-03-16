@@ -9,6 +9,7 @@ Page Identification Places:show<p>
 <div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
  <div style="float:left;"><%= button_to 'Edit Place', edit_place_path(@place) , method: :get %></div>
 <div  style="float:left;"><%= button_to 'Discard Place', place_path(@place), method: :delete, data: { confirm: 'Are you really sure?' } %></div>
+<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
@@ -72,8 +73,12 @@ Page Identification Places:show<p>
 
  <td ><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></td> 
 <td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>   <td><%=freeregfile.datemin%></td>
-<td><%=freeregfile.datemax%></td><td>Errors: <%=freeregfile.error%></td></td></td></tr>
-
+<td><%=freeregfile.datemax%></td>
+<% if freeregfile.error != 0 %>
+<td>Errors <%= link_to(freeregfile.error , error_freereg1_csv_file_path(freeregfile))%></td></td></td></tr>
+<%else%>
+<td>Errors <%= freeregfile.error %></td></td></td></tr>
+<% end %>
 <% end %>
 </table>
 <% end%>
@@ -88,6 +93,7 @@ Page Identification Places:show<p>
 <div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %></div>
  <div style="float:left;"><%= button_to 'Edit Place', edit_place_path(@place) , method: :get %></div>
 <div  style="float:left;"><%= button_to 'Discard Place', place_path(@place), method: :delete, data: { confirm: 'Are you really sure?' } %></div>
+<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
