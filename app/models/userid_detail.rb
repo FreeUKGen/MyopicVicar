@@ -45,7 +45,7 @@ before_save :add_lower_case_userid
 before_create :save_to_attic
 after_create :write_userid_file
 #validate :syndicate_is_valid, on: :create
- before_update :save_userid_file_to_attic
+ before_update :save_to_attic
   after_update :write_userid_file
 
 def self.update_files(freereg_file)
