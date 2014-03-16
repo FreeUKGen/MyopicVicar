@@ -57,7 +57,20 @@ class RegistersController < InheritedResources::Base
    # transcriber = params[:register][:transcribers]
    # params[:register][:transcribers] = [transcriber]
     load(params[:id])
+     @register.alternate_register_name =  @church_name.to_s + " " + params[:register][:register_type].to_s
+     type_change = nil
+    type_change = params[:register][:register_type] unless params[:register][:register_type] == @register.register_type
+
     @register.update_attributes(params[:register])
+
+  unless type_change.nil?
+#need to propogate  register type change
+     files =  @register.freereg1_csv_files
+       files.each do |file|
+        file.register_type = type_change
+        file.save!
+      end
+  end
     
     flash[:notice] = 'The update the Register was succsessful'
     if @register.errors.any? then
