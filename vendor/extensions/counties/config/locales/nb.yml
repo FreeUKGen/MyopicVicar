@@ -1,0 +1,29 @@
+nb:
+  refinery:
+    plugins:
+      counties:
+        title: Counties
+    counties:
+      admin:
+        counties:
+          actions:
+            create_new: Lag en ny County
+            reorder: Endre rekkefølgen på Counties
+            reorder_done: Ferdig å endre rekkefølgen Counties
+          records:
+            title: Counties
+            sorry_no_results: Beklager! Vi fant ikke noen resultater.
+            no_items_yet: Det er ingen Counties enda. Klikk på "Lag en ny County" for å legge til din første county.
+          county:
+            view_live_html: Vis hvordan denne county ser ut offentlig <br/><em>(åpner i et nytt vindu)</em>
+            edit: Rediger denne county
+            delete: Fjern denne county permanent
+      counties:
+        show:
+          other: Andre Counties
+  activerecord:
+    attributes:
+      'refinery/counties/county':
+        county: County
+        chapman_code: Chapman Code
+        content: Content

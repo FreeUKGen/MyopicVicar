@@ -1,0 +1,29 @@
+nl:
+  refinery:
+    plugins:
+      counties:
+        title: Counties
+    counties:
+      admin:
+        counties:
+          actions:
+            create_new: Nieuwe County toevoegen
+            reorder: De volgorde van de Counties wijzigen
+            reorder_done: Klaar met het wijzingen van de van de County-volgorde
+          records:
+            title: Counties
+            sorry_no_results: Helaas! Er zijn geen resultaten gevonden.
+            no_items_yet: Er zijn nog geen Counties. Druk op 'Nieuwe County toevoegen' om de eerste toe te voegen.
+          county:
+            view_live_html: Deze county op de website bekijken <br/><em>(opent in een nieuw venster)</em>
+            edit: Bewerk deze county
+            delete: Deze county definitief verwijderen
+      counties:
+        show:
+          other: Andere Counties
+  activerecord:
+    attributes:
+      'refinery/counties/county':
+        county: County
+        chapman_code: Chapman Code
+        content: Content

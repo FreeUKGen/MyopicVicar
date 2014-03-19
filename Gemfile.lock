@@ -4,6 +4,12 @@ GIT
   specs:
     osgb (0.3.1)
 
+PATH
+  remote: vendor/extensions
+  specs:
+    refinerycms-counties (1.0)
+      refinerycms-core (~> 2.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -341,6 +347,7 @@ DEPENDENCIES
   pry-stack_explorer
   rails (= 3.2.13)
   refinerycms
+  refinerycms-counties!
   rmagick (= 2.13.2)
   rspec-rails
   rubyzip

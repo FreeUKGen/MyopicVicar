@@ -1,0 +1,29 @@
+en:
+  refinery:
+    plugins:
+      counties:
+        title: Counties
+    counties:
+      admin:
+        counties:
+          actions:
+            create_new: Add New County
+            reorder: Reorder Counties
+            reorder_done: Done Reordering Counties
+          records:
+            title: Counties
+            sorry_no_results: Sorry! There are no results found.
+            no_items_yet: There are no Counties yet. Click "Add New County" to add your first county.
+          county:
+            view_live_html: View this county live <br/><em>(opens in a new window)</em>
+            edit: Edit this county
+            delete: Remove this county forever
+      counties:
+        show:
+          other: Other Counties
+  activerecord:
+    attributes:
+      'refinery/counties/county':
+        county: County
+        chapman_code: Chapman Code
+        content: Content

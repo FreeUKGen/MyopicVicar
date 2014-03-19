@@ -70,3 +70,5 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'ruby-debug'
+
+gem 'refinerycms-counties', :path => 'vendor/extensions'

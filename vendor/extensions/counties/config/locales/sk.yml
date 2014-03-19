@@ -1,0 +1,29 @@
+sk:
+  refinery:
+    plugins:
+      counties:
+        title: Counties
+    counties:
+      admin:
+        counties:
+          actions:
+            create_new: Pridať County
+            reorder: Preusporiadať Counties
+            reorder_done: Koniec radenia Counties
+          records:
+            title: Counties
+            sorry_no_results: Ľutujeme, ale neboli nájdené žiadne výsledky.
+            no_items_yet: Nie sú vytvorené žiadne Counties. Kliknite na "Pridať County" pre pridanie prvého county.
+          county:
+            view_live_html: Zobraziť náhľad county<br/><em>(otvorí sa v novom okne)</em>
+            edit: Upraviť county
+            delete: Zmazať county
+      counties:
+        show:
+          other: Daľšie Counties
+  activerecord:
+    attributes:
+      'refinery/counties/county':
+        county: County
+        chapman_code: Chapman Code
+        content: Content

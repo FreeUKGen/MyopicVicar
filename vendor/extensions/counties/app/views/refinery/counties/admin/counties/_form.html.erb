@@ -1,0 +1,32 @@
+<%= form_for [refinery, :counties_admin, @county] do |f| -%>
+  <%= render '/refinery/admin/error_messages',
+              :object => @county,
+              :include_object_name => true %>
+
+  <div class='field'>
+    <%= f.label :county -%>
+    <%= f.text_field :county, :class => 'larger widest' -%>
+  </div>
+  <%= f.hidden_field :chapman_code -%>
+
+
+  <div class='field'>
+    <%= render '/refinery/admin/wysiwyg',
+                :f => f,
+                :fields => [:content],
+                :object => "counties/county" -%>
+  </div>
+
+  <%= render '/refinery/admin/form_actions', :f => f,
+             :continue_editing => false,
+             :delete_title => t('delete', :scope => 'refinery.counties.admin.counties.county'),
+             :delete_confirmation => t('message', :scope => 'refinery.admin.delete', :title => @county.county) -%>
+<% end -%>
+
+<% content_for :javascripts do -%>
+  <script>
+    $(document).ready(function(){
+      page_options.init(false, '', '');
+    });
+  </script>
+<% end -%>

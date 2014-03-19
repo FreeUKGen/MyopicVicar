@@ -1,0 +1,29 @@
+fr:
+  refinery:
+    plugins:
+      counties:
+        title: Counties
+    counties:
+      admin:
+        counties:
+          actions:
+            create_new: Créer un(e) nouve(au/l/lle) County
+            reorder: Réordonner les Counties
+            reorder_done: Fin de réordonnancement des Counties
+          records:
+            title: Counties
+            sorry_no_results: "Désolé ! Aucun résultat."
+            no_items_yet: 'Il n''y a actuellement aucun(e) County. Cliquer sur "Créer un(e) nouve(au/l/lle) County" pour créer votre premi(er/ère) county.'
+          county:
+            view_live_html: Voir ce(t/tte) county <br/><em>(Ouvre une nouvelle fenêtre)</em>
+            edit: Modifier ce(t/tte) county
+            delete: Supprimer définitivement ce(t/tte) county
+      counties:
+        show:
+          other: Autres Counties
+  activerecord:
+    attributes:
+      'refinery/counties/county':
+        county: County
+        chapman_code: Chapman Code
+        content: Content

@@ -1,0 +1,31 @@
+zh-CN:
+  refinery:
+    plugins:
+      counties:
+        title: Counties
+    counties:
+      admin:
+        counties:
+          actions:
+            create_new: 建立新的 County
+            reorder: 对 Counties 重新排序
+            reorder_done: 对 Counties 的重新排序结束
+          records:
+            title: Counties
+            sorry_no_results: 对不起，未找到结果。 #Sorry! There are no results found.
+
+            # There are no Counties yet. Click "Add New County" to add your first county.
+            no_items_yet: 目前没有 Counties . 点击 "Add New County" 创建一个county.
+          county:
+            view_live_html: 查看 county 的最新内容.<br/><em>(新窗口中打开)</em>
+            edit: 编辑 county
+            delete: 永久删除 county
+      counties:
+        show:
+          other: 其他 Counties
+  activerecord:
+    attributes:
+      'refinery/counties/county':
+        county: County
+        chapman_code: Chapman Code
+        content: Content
