@@ -2,10 +2,8 @@ Page Identification Freereg Files:show<p>
 <p style="text-align: center">Showing  batch:<b><%= @freereg1_csv_file_name %></b> </p>
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
 <div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
+<%= render 'nav' %>
 
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %></div>
-<div style="clear:both;"> </div><br>
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -72,8 +70,9 @@ Page Identification Freereg Files:show<p>
   <tr id="<%= @freereg1_csv_file.id%>"  style="color:red" >
  <% end %>
 
-   <td>Number of errors</td><td > <%= @freereg1_csv_file.error %></td>   
+   <td>Number of errors</td><td > <%= link_to(@freereg1_csv_file.error , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>   
    </tr>
+  
   <%case%>
  <%when @freereg1_csv_file.error == 0%>
  <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
@@ -115,6 +114,4 @@ Page Identification Freereg Files:show<p>
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
 <div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
 
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %></div>
-<div style="clear:both;"> </div><br>
+<%= render 'nav' %>

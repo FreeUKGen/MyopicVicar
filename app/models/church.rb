@@ -18,6 +18,7 @@ class Church
   index({ place_id: 1, church_name: 1 }, { unique: true })
   validates_presence_of :church_name
   validate :church_does_not_exist, on: :create
+  
 
    def church_does_not_exist 
     p "checking for church"
@@ -25,6 +26,7 @@ class Church
      # errors.add(:church_name, "already exits") unless place.nil?
 
   end 
+
 
   def self.find_by_name_and_place(chapman_code, place_name,church_name)
     #see if church exists
