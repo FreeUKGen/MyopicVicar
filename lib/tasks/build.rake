@@ -76,9 +76,8 @@ end
  #@datafile_location =  Rails.application.config.mongodb_datafile
  #save master_place_names and alias
  p "Save started"
-  collections_to_save = ["0","1","8","9","10","11"] if args.type == "recreate"
-  collections_to_save = ["0"] if args.type != "recreate" #,"1","2","3","4","5","6","7","8","9","10","11"
-
+  collections_to_save = ["0","1","9","10","11"] 
+ 
    collections_to_save.each  do |col|
     coll  = col.to_i
     collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --collection " + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
@@ -94,7 +93,7 @@ end
   #dops place, church, register, files
   if args.type == "recreate"
    
-  collections_to_drop = ["2","3","4","5","6","7"]
+  collections_to_drop = ["2","3","4","5","6","7","8"]
    collections_to_drop.each  do |col|
      coll  = col.to_i
      model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll]) 
@@ -197,50 +196,16 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
 
 end
 
-task :create_userid_docs, [:type]  => [:create_syndicate_docs,:create_county_docs,:create_country_docs,:environment] do |t, args| 
+task :create_userid_docs, [:type]  => [:parallelp,:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
-  require 'create_userid_docs'
-   puts "Creating Transcriber Docs"
-   range = "*/.uDetails"
-    CreateUseridDocs.process(args.type,range )
-  
-  puts "Task complete."
+   require 'create_userid_docs'
+   require "userid_detail"
+      puts "Creating Transcriber Docs"
+     range = "*/*.uDetails"
+      CreateUseridDocs.process(args.type,range )
+    puts "Task complete."
  end
-
- task :create_syndicate_docs, [:type]  => [:parallelp,:environment] do |t, args| 
-   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
-  require 'create_syndicate_docs'
  
-  puts "Creating Syndicate Docs"
-
-  range = "syndicate.csv"
-  
-    CreateSyndicateDocs.process(args.type,range )
-  
-  puts "Task complete."
- end
-
-  task :create_county_docs, [:type]  => [:create_syndicate_docs, :environment] do |t, args| 
-   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
-  require 'create_county_docs'
-  range = "syndicate.csv"
-  puts "Creating County Docs"
-  
-    CreateCountyDocs.process(args.type,range )
-
-  puts "Task complete."
- end
-
- task :create_country_docs, [:type]  => [ :create_county_docs,:environment] do |t, args| 
-   # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
-  require 'create_country_docs'
-  range = "syndicate.csv"
-  puts "Creating Country Docs"
-  
-    CreateCountryDocs.process(args.type,range )
-  
-  puts "Task complete."
- end
 
 desc "Create the indices after all FreeREG processes have completed"
 task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_userid_docs, :environment] do  

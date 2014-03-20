@@ -20,7 +20,10 @@ class Register
   index({ register_name: 1})
   index({ alternate_register_name: 1})
    index({ church_id: 1, alternate_register_name: 1}, { unique: true })
-  
+
+
+     
+ 
   def self.update_or_create_register(freereg1_csv_file)
     # find if register exists
    register = find_register(freereg1_csv_file.to_register)

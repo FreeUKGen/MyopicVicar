@@ -31,7 +31,8 @@ MyopicVicar::Application.routes.draw do
   get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
 
   get 'manage_freeregs', :to => 'manage_freeregs#index', :as => :manage_freeregs
-  
+  get 'manage_freereg/all', :to => 'manage_freeregs#all', :as => :all_manage_freereg
+   get 'manage_freereg/all_files', :to => 'manage_freeregs#all_files', :as => :all_files_manage_freereg
   resources :countries
 
 

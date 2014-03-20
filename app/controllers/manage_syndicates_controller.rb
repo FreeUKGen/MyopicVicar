@@ -49,6 +49,7 @@ def new
       session[:sort] =  sort = "file_name ASC"
       redirect_to freereg1_csv_files_path
       return
+       
      when params[:manage_syndicate][:action] == 'Review Batches listed by number of errors then filename'
       session[:sort] =  sort = "error DESC, file_name ASC"
       redirect_to freereg1_csv_files_path
@@ -57,12 +58,12 @@ def new
       session[:sort] =  sort = "userid ASC, file_name ASC"
       redirect_to freereg1_csv_files_path
       return
-      when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date (ascending) then userid'
-      session[:sort] =  sort = "uploaded_date DESC, userid ASC"
+      when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date'
+      session[:sort] =  sort = "uploaded_date DESC"
       redirect_to freereg1_csv_files_path
       return
-     when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date (descending) then userid'
-      session[:sort] =  sort = "uploaded_date ASC, userid ASC"
+     when params[:manage_syndicate][:action] == 'Review Batches listed by userid and then uploaded date'
+      session[:sort] =  sort = "userid ASC, uploaded_date DESC"
       redirect_to freereg1_csv_files_path
       return
     end
