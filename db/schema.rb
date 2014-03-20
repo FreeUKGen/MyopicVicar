@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140319183115) do
+ActiveRecord::Schema.define(:version => 20140320025549) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -163,6 +163,7 @@ ActiveRecord::Schema.define(:version => 20140319183115) do
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
     t.string   "slug"
+    t.string   "userid_detail_id"
   end
 
   add_index "refinery_users", ["id"], :name => "index_refinery_users_on_id"

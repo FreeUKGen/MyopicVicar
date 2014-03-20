@@ -1,9 +1,9 @@
 require 'chapman_code'
 
 task :load_refinery => :environment do
-#  load_users
-#  load_syndicates
-  load_counties
+  load_syndicates
+#  load_counties
+  load_users
 end
 
 # def load_syndicates
@@ -12,16 +12,17 @@ end
   # end  
 # end
 # 
-# def load_users
-  # UseridDetail.all.each do |detail|
-    # u = Refinery::User.new
-    # u.username = detail.userid
-    # u.email = detail.email_address
-    # u.password = 'Password'
-    # u.password_confirmation = 'Password'
-    # u.save
-  # end
-# end
+def load_users
+  UseridDetail.all.each do |detail|
+    u = Refinery::User.new
+    u.username = detail.userid
+    u.email = detail.email_address
+    u.password = 'Password'
+    u.password_confirmation = 'Password'
+    u.userid_detail_id = detail.id.to_s
+    u.save
+  end
+end
 
 
 def load_counties
