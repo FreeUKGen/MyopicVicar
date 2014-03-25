@@ -6,8 +6,7 @@ class UseridDetailsController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     session[:type] = "manager"
     session[:my_own] = "no"
-
-     users = UseridDetail.where(:syndicate => session[:syndicate]).all.order_by(userid_lower_case: 1) 
+      users = UseridDetail.where(:syndicate => session[:syndicate]).all.order_by(userid_lower_case: 1) 
      
       @userids = Array.new
            users.each do |user|
@@ -26,6 +25,7 @@ class UseridDetailsController < ApplicationController
     synd.each do |syn|
         @syndicates << syn.syndicate_code
      end
+   
     
   end
    
@@ -56,20 +56,34 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
      @userid = UseridDetail.new(params[:userid_detail])
      @userid.sign_up_date = DateTime.now
-     @userid.syndicate =  session[:syndicate]
-     @userid.person_role = 'transcriber'
+     @userid.syndicate =  session[:syndicate]  unless @user.person_role == 'system_administrator'
+     @userid.person_role = 'transcriber' unless @user.person_role == 'system_administrator'
      @userid.save
    
       if @userid.errors.any?
      session[:errors] = @userid.errors.messages
+     p @userid.errors.messages
      flash[:notice] = 'The addition of the person was unsuccsessful'
      render :action => 'new'
      return
      else
      flash[:notice] = 'The addition of the person was succsessful'
+      if @user.person_role == 'system_administrator'
+        @userids = Array.new
+         profiles = UseridDetail.all.order_by(userid_lower_case: 1)
+    
+          profiles.each do |profile|
+            @userids << profile
+          end
+          render :action => 'index'
+          return
+      else
       redirect_to userid_details_path(:anchor => "#{ @userid.id}")
+      end
     end
   end
 
@@ -79,7 +93,7 @@ class UseridDetailsController < ApplicationController
   	 params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil? || @userid.disabled_date.empty?
      params[:userid_detail][:active]  = false  
     end
-    params[:userid_detail][:person_role] = UseridRole.name_from_code(params[:userid_detail][:person_role]).to_s unless params[:userid_detail][:person_role].nil?
+    params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
    
     @userid.update_attributes!(params[:userid_detail])
     if @userid.errors.any?
@@ -93,7 +107,18 @@ class UseridDetailsController < ApplicationController
        render :action => 'show'
        return
       else
-         redirect_to userid_details_path(:anchor => "#{ @userid.id}")
+          if @user.person_role == 'system_administrator'
+            @userids = Array.new
+              profiles = UseridDetail.all.order_by(userid_lower_case: 1)
+    
+                profiles.each do |profile|
+                  @userids << profile
+                end
+           render :action => 'index'
+           return
+      else
+      redirect_to userid_details_path(:anchor => "#{ @userid.id}")
+      end
        end
      
      end

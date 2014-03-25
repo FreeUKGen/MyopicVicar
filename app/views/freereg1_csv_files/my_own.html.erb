@@ -8,15 +8,13 @@ Page Identification Freereg Files:my_own<p>
 
 <div id="main"style="color:black">
 
-<%= f.input :action, { :as => :select, :include_blank => false, :collection => ['By filename', 'By number of errors then filename','By uploaded date (ascending)', 'By uploaded date (descending)' ], :label => " #{@first_name} how would you like you batches listed? ",  :size => 10  }%>
-<br>
+<div style="float:left;"><%= f.input :action, { :as => :select, :include_blank => false, :collection => ['By filename', 'By number of errors then filename','By uploaded date (ascending)', 'By uploaded date (descending)' ], :label => " #{@first_name} how would you like you batches listed? ",  :size => 10  }%></div>
 
-    <%= f.action :submit, :as => :input, :label => 'Select'   %>
+
+    <div style="float:left;"><%= f.action :submit, :as => :input, :label => 'Select'   %></div>
    <% end %>
-
+<div style="clear:both;"> </div><br>
 
 <p>
 <div style="float:left;"> <%= button_to 'File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
-<div style="clear:both;"> </div><br>
+<%= render 'nav' %>

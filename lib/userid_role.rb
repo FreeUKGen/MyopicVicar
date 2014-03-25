@@ -1,43 +1,10 @@
 module UseridRole
 
-  def self.name_from_code(code)
-    CODES.invert[code]
-  end
+  
+VALUES = ['researcher','trainee', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
+ 'volunteer_coordinator','system_administrator','data_manager']
 
-  
-  def self.values
-    CODES::values
-  end
-  def self.has_key?(code)
-    CODES.has_key?(code)
-  end
 
-  def self.values_at(value)
-    array = CODES.values_at(value)
-    array[0]
-  end
-  
-  def self.select_hash
-    CODES
-  end
-  
-  def self.select_hash_with_parenthetical_codes
-    Hash[UseridRole::CODES.map { |k,v| ["#{k} (#{v})", v] }]
-  end
+SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
 
-  def self.has_key(value)
-    CODES.key(value)
-  end
-  
-  CODES = {
-   'researcher' => "Results", 
-   'trainee' => "Profile",
-   'transcriber' => "Files", 
-   'syndicate_coordinator' => "Syndicate", 
-   'county_coordinator' => "County",
-   'country_coordinator' => "Country",
-   'volunteer_coordinator' => "All people",
-   'system_administrator' => "All Assets", 
-   'data_manager' => "All Data" 
-  }
 end
