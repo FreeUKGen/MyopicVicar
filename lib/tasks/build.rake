@@ -93,7 +93,7 @@ end
   #dops place, church, register, files
   if args.type == "recreate"
    
-  collections_to_drop = ["2","3","4","5","6","7","8"]
+  collections_to_drop = ["2","3","4","5","6","7",]
    collections_to_drop.each  do |col|
      coll  = col.to_i
      model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll]) 
@@ -138,7 +138,7 @@ end
  
  
 #This spinning off 1,2 or 3 rake csv_processes.
-task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:setup_index, :environment]  do |t, args| 
+task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:create_userid_docs, :environment]  do |t, args| 
   p "Starting processors"
     
     search_records = args.search_records
@@ -196,13 +196,16 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
 
 end
 
-task :create_userid_docs, [:type]  => [:parallelp,:environment] do |t, args| 
+task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
    require 'create_userid_docs'
    require "userid_detail"
       puts "Creating Transcriber Docs"
+      base = Rails.application.config.datafiles
+      FileUtils.chmod "ugo=wrx", base
      range = "*/*.uDetails"
-      CreateUseridDocs.process(args.type,range )
+     type = "add"
+      CreateUseridDocs.process(type,range)
     puts "Task complete."
  end
  

@@ -72,13 +72,13 @@ MyopicVicar::Application.routes.draw do
   resources :church_names
 
   resources :toponyms
-
+ get 'freereg1_csv_entries/:id/error(.:format)', :to => 'freereg1_csv_entries#error', :as => :error_freereg1_csv_entry
   resources :freereg1_csv_entries
 
  get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
  get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
  get 'freereg1_csv_files/my-own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
- 
+ get 'freereg1_csv_files/:id/by_userid',  :to => 'freereg1_csv_files#by_userid', :as => :by_userid_freereg1_csv_file
   resources :freereg1_csv_files
 
   resources :emendation_types

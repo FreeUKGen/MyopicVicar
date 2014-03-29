@@ -6,6 +6,8 @@ def index
 	@userid = session[:userid]
   @first_name = session[:first_name]
   @user = UseridDetail.where(:userid => session[:userid]).first
+  session[:role] = 'counties'
+
   @counties = @user.county_groups
   @countries = @user.country_groups
  unless @countries.nil?

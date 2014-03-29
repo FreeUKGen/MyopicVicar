@@ -3,9 +3,16 @@ Page Identification Freereg Entries:show<p>
 
 
 <div style="float:left;"> <%= button_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>  </div>
+<div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path, method: :get %>  </div>
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+   <% end %>
+
 <div id="main"style="color:black">
 <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %> 
@@ -55,7 +62,18 @@ Page Identification Freereg Entries:show<p>
    <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
    </tr>
    <tr>
-   <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
+   <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.file_line_number %> </td> 
+   </tr>
+ 
+   <% if @freereg1_csv_entry.error_flag == 'true' %>
+     <tr style= "color:blue">
+     <%else%>
+      <tr style= "color:black">
+      <%end%>
+   <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td> 
+
+   </tr>
+   <tr style= "color:black">
    </tr>
 </table>  
 
@@ -153,6 +171,16 @@ Page Identification Freereg Entries:show<p>
    <tr>
    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
    </tr>
+   <% if @freereg1_csv_entry.error_flag == 'true' %>
+     <tr style= "color:blue">
+     <%else%>
+      <tr style= "color:black">
+      <%end%>
+   <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td> 
+
+   </tr>
+   <tr style= "color:black">
+   </tr>
 </table>  
 
  
@@ -205,6 +233,16 @@ Page Identification Freereg Entries:show<p>
    <tr>
    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
    </tr>
+   <% if @freereg1_csv_entry.error_flag == 'true' %>
+     <tr style= "color:blue">
+     <%else%>
+      <tr style= "color:black">
+      <%end%>
+   <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td> 
+
+   </tr>
+   <tr style= "color:black">
+   </tr>
 </table>  
 
 <%end%>
@@ -212,7 +250,7 @@ Page Identification Freereg Entries:show<p>
 
 
 <div style="float:left;"> <%= button_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>  </div>
-
+<div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path( :anchor => "#{@freereg1_csv_entry.id}"), method: :get %>  </div>
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>

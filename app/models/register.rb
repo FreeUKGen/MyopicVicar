@@ -90,6 +90,7 @@ class Register
   end
 
   def self.create_or_update_last_amended_date(freereg_file)
+ 
     register = freereg_file.register._id
     register = Register.find(register)
     original_last_amended_date = register.last_amended

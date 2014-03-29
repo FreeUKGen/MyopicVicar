@@ -74,12 +74,19 @@ end
     @church.church_name = params[:church][:church_name]
     @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
     @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
-  
-#update registers
+    @church.denomination = params[:church][:denomination] unless params[:church][:denomination].nil?
+    @church.church_notes = params[:church][:church_notes] unless params[:church][:church_notes].nil?
+
+     unless  old_church_name = params[:church][:church_name]
+
+     #update registers
+
+
     @church.registers.each do |register|
         register.alternate_register_name = params[:church][:church_name].to_s + " " + register.register_type.to_s
         register.church_name = params[:church][:church_name]
-#update files   
+    #update files  
+
     my_files = Freereg1CsvFile.where(:register_id => register._id).all
     if my_files then
       my_files.each do |myfile|
@@ -87,7 +94,7 @@ end
         myfile.church_name = params[:church][:church_name]
         myfile.save!
 
-# update entry
+    # update entry
         myfile_id = myfile._id
        
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).to_a
@@ -100,6 +107,7 @@ end
     # This saves registers, files and entries
         register.save!
    end
+  end #test of church name
          @church.save
    # we need to deal with merging of identical church and register names
    

@@ -66,7 +66,7 @@ class UseridDetailsController < ApplicationController
    
       if @userid.errors.any?
      session[:errors] = @userid.errors.messages
-     p @userid.errors.messages
+   
      flash[:notice] = 'The addition of the person was unsuccsessful'
      render :action => 'new'
      return

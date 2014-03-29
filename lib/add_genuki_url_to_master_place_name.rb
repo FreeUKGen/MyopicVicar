@@ -8,7 +8,7 @@ require 'chapman_code'
     number_of_loops = 0
     kirk =  nil
     records = MasterPlaceName.where(:genuki_url => kirk).order_by(chapman_code: "asc", place_name: "asc").all
-     p records.length
+  
         records.each do |master_record|
         number_of_loops = number_of_loops + 1
         type = 1
