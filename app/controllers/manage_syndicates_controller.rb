@@ -2,6 +2,9 @@ class ManageSyndicatesController < ApplicationController
 layout "manage_counties"
 
 	def index
+  
+  clean_session
+  
 
 	@userid = session[:userid]
   @first_name = session[:first_name]
@@ -31,6 +34,7 @@ layout "manage_counties"
      
 end
 
+
 def select_userid
 
   
@@ -52,11 +56,11 @@ def new
      return
      when params[:manage_syndicate][:action] == 'Review Batches listed by filename'
       session[:sort] =  sort = "file_name ASC"
-      @freereg1_csv_files = Freereg1CsvFile.where(:transcriber_syndicate => session[:syndicate] ).all.order_by(session[:sort]) 
+  
        
      when params[:manage_syndicate][:action] == 'Review Batches with errors'
         session[:sort] =  sort = "error DESC, file_name ASC"
-         @freereg1_csv_files = Freereg1CsvFile.where(:transcriber_syndicate => session[:syndicate], :error.gt => 0  ).all.order_by(session[:sort]) 
+        
     
       when params[:manage_syndicate][:action] == 'Review Batches listed by userid then filename'
       session[:sort] =  sort = "userid ASC, file_name ASC"
@@ -64,22 +68,18 @@ def new
       
       when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date'
       session[:sort] =  sort = "uploaded_date DESC"
-     @freereg1_csv_files = Freereg1CsvFile.where(:transcriber_syndicate => session[:syndicate] ).all.order_by(session[:sort]) 
+    
    
      when params[:manage_syndicate][:action] == 'Review Batches listed by userid and then uploaded date'
-       @freereg1_csv_files = Freereg1CsvFile.where(:transcriber_syndicate => session[:syndicate] ).all.order_by(session[:sort]) 
+     
       
     else
        @user = UseridDetail.where(:userid => session[:userid]).first
       redirect_to manage_resource_path(@user)
       return
     end
-       @type = params[:manage_syndicate][:action]
-        @register = session[:register_id]
-        @user = UseridDetail.where(:userid => session[:userid]).first
-        @first_name = session[:first_name]
-        session[:my_own] = 'no'
-        render 'freereg1_csv_files/index'
+      
+        redirect_to freereg1_csv_files_path
    
   	
   

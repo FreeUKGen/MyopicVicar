@@ -10,8 +10,8 @@ class ChurchesController < InheritedResources::Base
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
           @first_name = session[:first_name]
-          session[:errors] = nil
-          session[:form] = nil
+         
+         
           session[:parameters] = params
           load(params[:id])
           @names = Array.new
@@ -27,14 +27,14 @@ class ChurchesController < InheritedResources::Base
    
       @church = Church.new
       @county = session[:county]
-      session[:form] = @church
+     
       @place = Place.where(:chapman_code => ChapmanCode.values_at(@county)).all
       @places = Array.new
           @place.each do |place|
             @places << place.place_name
           end
       @county = session[:county]
-      session[:errors] = nil
+      
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
   end
@@ -47,7 +47,7 @@ class ChurchesController < InheritedResources::Base
   church.save
     flash[:notice] = 'The addition of the Church was succsessful'
    if church.errors.any?
-     session[:errors] = church.errors.messages
+    
      flash[:notice] = 'The addition of the Church was unsuccsessful'
      redirect_to :action => 'new'
      return
@@ -177,8 +177,8 @@ end
   
      flash[:notice] = 'The update the Church was succsessful'
    if @church.errors.any? then
-     session[:form] =  @church
-     session[:errors] = @church.errors.messages
+   
+    
      flash[:notice] = 'The update of the Church was unsuccsessful'
      render :action => 'edit'
      return 
@@ -211,13 +211,13 @@ end
 
  def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the Church was unsuccessful because there were dependant documents; please delete them first'
-   session[:errors]  = "errors"
+  
    redirect_to :action => 'show'
  end
 
  def record_validation_errors
   flash[:notice] = 'The update of the children to Church with a church name change failed'
-  session[:errors] = "errors"
+ 
     redirect_to :action => 'show'
  end
 

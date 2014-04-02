@@ -17,3 +17,17 @@ require 'name_role'
 class ApplicationController < ActionController::Base
   protect_from_forgery
 end
+def clean_session
+  session[:freereg1_csv_file_id] = nil
+    session[:freereg1_csv_file_name] = nil
+    session[:county] = nil
+    session[:place_name] = nil
+    session[:church_name] = nil
+    session[:sort] = nil  
+  session[:csvfile] = nil
+  session[:my_own] = nil
+ 
+  session[:freereg] = nil
+  session[:edit] = nil
+  
+end

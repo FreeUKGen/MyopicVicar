@@ -1,4 +1,5 @@
 class CsvfilesController < InheritedResources::Base
+  require 'freereg_csv_processor'
 def index
 end
  
@@ -13,7 +14,7 @@ get_userids_and_transcribers
 end
 
 def edit
- 
+
   #code to move existing file to attic
   @user = UseridDetail.where(:userid => session[:userid]).first
   @first_name = session[:first_name]  
@@ -27,37 +28,47 @@ def edit
 end
 
 def update
+ 
   if params[:commit] == 'Process'
-     @csvfile = Csvfile.find(session[:csvfile])
+    @csvfile = Csvfile.find(session[:csvfile])
     place  = @csvfile.file_name
     range = File.join(@csvfile[:userid] ,@csvfile.file_name)
-          unless params[:csvfile][:process] == 'Scheduled'
+         
             start = Time.now
-            pid1 = Kernel.spawn("rake build:process_freereg1_csv[recreate,no,#{range}]") 
-             Process.waitall if params[:csvfile][:process]  == 'Now'
-            endtime = Time.now - start
-          end #unless
+            if params[:csvfile][:process]  == "Not waiting"
+            pid1 = Kernel.spawn("rake build:process_freereg1_csv[add,create_search_records,#{range}]") 
+
+           #  Process.waitall if params[:csvfile][:process]  == 'Now'
+           # endtime = Time.now - start
+            else
+             FreeregCsvProcessor.process("add",'create_search_records',range)
+             process_time = Time.now - start
+             p  process_time
+           end #if
      @csvfile.delete
    flash[:notice] =  "The csv file #{place}  has been uploaded if you 'Waited' or will soon be if you did not."
-     case
-      when session[:role] == 'syndicate'
-         if session[:my_own] == 'my_own'
-            redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
+ 
+  
+   case  
+     when  session[:my_own] == "my_own"
+          redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
           return
-         end #my_own
-          redirect_to freereg1_csv_files_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
+     when session[:role] == "syndicate"
+            redirect_to freereg1_csv_files_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
          return
-     when session[:role] == 'counties'
+     when session[:role] == "counties"
          redirect_to places_path
          return
      else
+      p "fell through"
        redirect_to :back
      end #case
   end  #commit
-
 end
 
 def create
+  
+  @first_name = session[:first_name]  
   @csvfile  = Csvfile.new(params[:csvfile])
   @csvfile[:freereg1_csv_file_id] = session[:freereg] 
   session[:freereg]  = nil
@@ -77,8 +88,8 @@ def create
      flash[:notice] = 'The upload of the file was succsessful'
      place = File.join(Rails.application.config.datafiles,@csvfile[:userid] ,@csvfile.file_name)
       size = (File.size("#{place}"))
-      unit = 0.001
-     @processing_time = 60 + (size.to_i*unit) 
+      unit = 0.0002
+     @processing_time = (size.to_i*unit).to_i 
      render 'process' 
      return
   end #end unless
@@ -111,15 +122,18 @@ end
 
 def get_userids_and_transcribers
  @user = UseridDetail.where(:userid => session[:userid]).first
+        syndicate = @user.syndicate
+        syndicate = session[:syndicate] unless session[:syndicate].nil?
   case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
         @userids = UseridDetail.all.order_by(userid_lower_case: 1)
     when  @user.person_role == 'country_cordinator'
-        @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+
+        @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
     when  @user.person_role == 'county_coordinator'  
-        @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
-    when  @user.person_role == 'sydicate_coordinator'  
-        @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
+       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)  
+    when  @user.person_role == 'syndicate_coordinator'  
+       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
     else
        @userids = @user
     end #end case

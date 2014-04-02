@@ -21,6 +21,7 @@ gem 'pry'
 gem 'pry-stack_explorer'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
+gem 'kaminari'
 
 gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
@@ -30,7 +31,7 @@ gem 'activeadmin-mongoid'
 gem 'devise'
 gem 'nokogiri'
 gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
-
+gem 'quiet_assets', :group => :development
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
 gem 'rubyzip'
 

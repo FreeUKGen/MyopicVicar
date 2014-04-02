@@ -28,6 +28,8 @@ MyopicVicar::Application.routes.draw do
   get 'manage_freeregs', :to => 'manage_freeregs#index', :as => :manage_freeregs
   get 'manage_freereg/all', :to => 'manage_freeregs#all', :as => :all_manage_freereg
    get 'manage_freereg/all_files', :to => 'manage_freeregs#all_files', :as => :all_files_manage_freereg
+
+
   resources :countries
 
 
@@ -42,7 +44,7 @@ MyopicVicar::Application.routes.draw do
  
   get 'userid_details/:id/disable(.:format)', :to => 'userid_details#disable', :as => :disable_userid_detail
   get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
-  get 'userid_details/my-own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
+  get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   
   resources :userid_details
   
@@ -77,8 +79,9 @@ MyopicVicar::Application.routes.draw do
 
  get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
  get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
- get 'freereg1_csv_files/my-own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
+ get 'freereg1_csv_files/my_own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
  get 'freereg1_csv_files/:id/by_userid',  :to => 'freereg1_csv_files#by_userid', :as => :by_userid_freereg1_csv_file
+  get 'freereg1_csv_files/all_files',  :to => 'freereg1_csv_files#all_files', :as => :all_files_freereg1_csv_file
   resources :freereg1_csv_files
 
   resources :emendation_types

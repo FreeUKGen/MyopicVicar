@@ -2,12 +2,14 @@ class ManageCountiesController < ActionController::Base
 
 	 
 def index
-
+  
+  clean_session
+   
 	@userid = session[:userid]
   @first_name = session[:first_name]
   @user = UseridDetail.where(:userid => session[:userid]).first
   session[:role] = 'counties'
-
+  session[:return] = request.referer
   @counties = @user.county_groups
   @countries = @user.country_groups
  unless @countries.nil?

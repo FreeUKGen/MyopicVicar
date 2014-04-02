@@ -25,7 +25,7 @@ class RegistersController < InheritedResources::Base
 
   
   def create
-   session[:errors] = nil
+  
    @user = UseridDetail.where(:userid => session[:userid]).first
    @church_name = session[:church_name]
    @county =  session[:county]
@@ -40,7 +40,7 @@ class RegistersController < InheritedResources::Base
      @register.save
     flash[:notice] = 'The addition of the Register was succsessful'
        if @register.errors.any?
-         session[:errors] = @register.errors.messages
+        
          flash[:notice] = "The addition of the Register #{register.register_name} was unsuccsessful"
          render :action => 'new'
          return
@@ -74,7 +74,7 @@ class RegistersController < InheritedResources::Base
     
     flash[:notice] = 'The update the Register was succsessful'
     if @register.errors.any? then
-      session[:errors] = @church.errors.messages
+     
       flash[:notice] = 'The update of the Register was unsuccsessful'
       render :action => 'edit'
       return 
@@ -106,13 +106,13 @@ class RegistersController < InheritedResources::Base
 
   def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the register was unsuccessful because there were dependant documents; please delete them first'
-   session[:errors] = 'errors'
+  
    redirect_to register_path(@register)
  end
 
  def record_validation_errors
    flash[:notice] = 'The update of the children to Register with a register name change failed'
-   session[:errors] = 'errors'
+  
    redirect_to register_path(@register)
  end
 end

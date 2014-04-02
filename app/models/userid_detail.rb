@@ -37,6 +37,7 @@ index({ userid: 1, country_coordinator: 1 })
 index({ userid: 1, syndicate: 1 })
 index({ userid: 1, chapman_code: 1 })
 index({ userid: 1, volunteer_coordinator: 1 })
+scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 
 
 validate :userid_does_not_exist, on: :create

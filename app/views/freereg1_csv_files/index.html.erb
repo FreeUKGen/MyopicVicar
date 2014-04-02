@@ -1,5 +1,5 @@
 Page Identification Freereg Files:index<p>
-<p style="text-align: center"><b>Listing of your batches: <%= @type%></b></p>
+<p style="text-align: center"><b>Listing of your batches: <%= @who%></b></p>
 
 <div style="float:left;"> <%= button_to 'Upload Batch of records', new_csvfile_path, method: :get %> </div>
 <% if @role =='counties' %>
@@ -20,6 +20,7 @@ Page Identification Freereg Files:index<p>
 
 <div id="main"style="color:black">
 <% unless @freereg1_csv_files.nil? %>
+<%= paginate @freereg1_csv_files %>
 <table CLASS="boldtable" >
   <tr>
     <th style="width:4%">Cnty</th>
@@ -82,6 +83,7 @@ Page Identification Freereg Files:index<p>
 <% end %>
 
 </table>
+<%= paginate @freereg1_csv_files %>
 <%else%>
    You have no files
    <%end%>

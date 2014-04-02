@@ -24,7 +24,7 @@ def create
     @county = County.new(params[:county])
 	@county.save
  if @county.errors.any?
-     session[:errors] = @county.errors.messages
+    
      flash[:notice] = "The addition of the County was unsuccsessful"
      render :action => 'edit'
      return
@@ -41,7 +41,7 @@ def update
 	 params[:county][:previous_county_coordinator] = previous_county_coordinator  unless @county.county_coordinator == params[:county][:county_coordinator]
 	 @county.update_attributes(params[:county])
      if @county.errors.any?
-       session[:errors] = @county.errors.messages
+      
        flash[:notice] = "The change to the county was unsuccsessful"
         render :action => 'edit'
         return
