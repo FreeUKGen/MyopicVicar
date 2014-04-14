@@ -79,10 +79,15 @@ class FreeregContentsController < InheritedResources::Base
      @place = session[:place_id]
      session[:register_id] = params[:id]
      @register = Register.find(params[:id])
-     session[:register_name] = @register.alternate_register_name
+
+
+    @register_name = @register.register_name 
+    @register_name = @register.alternate_register_name if @register_name.nil?
+
+     session[:register_name] = @register_name
      individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
      @files = Freereg1CsvFile.combine_files(individual_files)
-     @register_name =  session[:register_name] 
+    
 
   end
   

@@ -8,7 +8,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
  #VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
   VALID_NUMERIC  = /[\p{N}]/u
-  INVALID_TEXT = /[\p{C}]/u
+  INVALID_TEXT = /[^a-zA-Z\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#\p{N}]/u#/[\p{C}]/u
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
@@ -29,7 +29,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
             "/" => /\\/}
    WILD_CHARACTER = /[\*\[\]\-\_\?]/
    YEAR_MAX = 2015
-   YEAR_MIN = 1530
+   YEAR_MIN = 1500
    VALID_MALE_SEX = ["M","M." ,"SON","MALE","MM","SON OF"]
    UNCERTAIN_MALE_SEX = ["M?","SON?","[M]" ,"MF"]
    UNCERTAIN_FEMALE_SEX = ["F?", "DAU?"]

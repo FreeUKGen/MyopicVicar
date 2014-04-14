@@ -86,7 +86,11 @@ Page Identification Freereg Entries:show<p>
 
   <tr> 
    <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
-  </tr><tr>
+  </tr>
+   <tr>
+   <td>Date of the marriage</td><td > <%= @freereg1_csv_entry.marriage_date %></td>   
+   </tr>
+  <tr>
    <td>Forename of the bride </td><td >  <%= @freereg1_csv_entry.bride_forename %> </td>   
    </tr>
    <tr>
@@ -147,9 +151,7 @@ Page Identification Freereg Entries:show<p>
    <tr>
    <td>Occupation of the groom's father</td><td >   <%= @freereg1_csv_entry.groom_father_occupation %></td>   
    </tr>
-   <tr>
-   <td>Date of the marriage</td><td > <%= @freereg1_csv_entry.marriage_date %></td>   
-   </tr>
+  
    <tr>
    <td>Forename for witness</td><td >  <%= @freereg1_csv_entry.witness1_forename %></td>   
    </tr>
@@ -184,7 +186,7 @@ Page Identification Freereg Entries:show<p>
 </table>  
 
  
-<% when @freereg1_csv_file.record_type %> 
+<% when @freereg1_csv_file.record_type == "bu"%> 
 
 <table  style="width: 100%">
   <tr>    
@@ -195,10 +197,7 @@ Page Identification Freereg Entries:show<p>
   <tr> 
    <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
   </tr><tr>
-   <td> Baptism date </td><td > <%= @freereg1_csv_entry.burial_date %> </td>   
-   </tr>
-   <tr>
-   <td>Birth date</td><td > <%= @freereg1_csv_entry.birth_date %></td>   
+   <td> Burial date </td><td > <%= @freereg1_csv_entry.burial_date %> </td>   
    </tr>
    <tr>
    <td>Forename of the person buried</td><td ><%= @freereg1_csv_entry.burial_person_forename %></td>   

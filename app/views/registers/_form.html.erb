@@ -2,11 +2,11 @@
   
   
 
-  
+  <%= f.input :register_name,:label => "Preferred Register name :", :input_html => { :size => 40 }%>
 
    <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
           :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
-
+  
   <%= f.input :quality,:label => "Quality of the Register images :", :input_html => { :size => 40 }%>
   <%= f.input :source, :label => "Source of the Register images :",:input_html => { :size => 100 }%>
   <%= f.input :copyright, :label => "Any copyright issues ?",:input_html => { :size => 60 }%>

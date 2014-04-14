@@ -56,7 +56,7 @@ class Register
       my_place.churches << @@my_church
     end
 
-    #now creat the register
+    #now create the register
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register

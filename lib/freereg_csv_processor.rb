@@ -33,7 +33,7 @@ class FreeregCsvProcessor
   }
   VALID_DATE = /^\d{1,2}.[A-Za-z]{3,3}.\d{4}$/
   VALID_DATE_SHORT = /^\d{1,2}.[A-Za-z]{3,3}.\d{2}$/
-  VALID_DATE_NUMERIC = /^\d{1,2}.\d{1,2}.\d{2}$/
+  VALID_DATE_NUMERIC = /^\d{1,2}.\d{1,2}.\d{2,4}$/
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
   VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
@@ -163,7 +163,8 @@ COMMON_WORD_EXPANSIONS = {
   # validate the modern date of creation or modification
   def self.datevalmod(m)
     return true if @csvdata[m].nil? || @csvdata[m].empty?
-    if @csvdata[m] =~ VALID_DATE_SHORT 
+    case
+     when @csvdata[m] =~ VALID_DATE_SHORT 
          DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
           if date_parts.length == 3 then
@@ -172,31 +173,27 @@ COMMON_WORD_EXPANSIONS = {
           @csvdata[m] = date_parts.join(" ")
         end
         return true
-    else
-        if @csvdata[m] =~ VALID_DATE 
+     when @csvdata[m] =~ VALID_DATE 
          DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
           @csvdata[m] = date_parts.join(" ") if date_parts.length == 3
           end
           return true
-        else
-          if @csvdata[m] =~ VALID_DATE_NUMERIC 
+      when @csvdata[m] =~ VALID_DATE_NUMERIC 
             DATE_SPLITS.each_pair do |date_splitter, date_split|
              date_parts = @csvdata[m].split(date_split)
              if date_parts.length == 3 then
               date_parts[1] = VALID_MONTH[date_parts[1].to_i ]
-              date_parts[2] = (date_parts[2].to_i + 2000).to_s 
+              date_parts[2] = (date_parts[2].to_i + 2000).to_s if date_parts[2].length == 2
+              date_parts[2] = date_parts[2] if date_parts[2].length == 4
               @csvdata[m] = date_parts.join(" ") 
-             
-             end #end if
+              end #end if
             end #end do
             return true
-          else
+      else
            return false 
-          end # end if
-         return false 
-        end #end if
-    end # end if
+      end
+          
   end
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
@@ -842,14 +839,24 @@ COMMON_WORD_EXPANSIONS = {
           @@user_message_file.puts "Data_Error,#{datarecord[:file_line_number]},#{success},#{@@header[:record_type]},#{datarecord}"
         end #end success
       end #end @@data_hold
+       unless @@header_error.nil?
+        @@header_error.each do |error_key,error_value|
+          p "header error"
+          p error_key
+          p error_value
+          
+          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
+        end
+      end
        @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
        @freereg1_csv_file.save
+       @@user_message_file.close unless @@number_of_error_messages == 0
     end #end @@list
 
 
     puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines correctly with #{@@number_of_error_messages} error messages" 
     @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines correctly with #{@@number_of_error_messages} error messages"
-                  
+               
   end
 
   def self.create_db_record_for_entry(data_record)
@@ -929,6 +936,10 @@ COMMON_WORD_EXPANSIONS = {
                     @@message_file.puts "#{@@userid}\t#{@@filename}" + free.message + " at line #{@@number_of_line}"
                   
                     @@user_message_file.puts "Header_Error," + free.message + " at line,"+"#{@@number_of_line}," "#{@csvdata }" unless free.message == "Empty data line"
+                    @@header_error[@@number_of_error_messages] = Hash.new
+                    @@header_error[@@number_of_error_messages].store(:line,@@number_of_line)
+                    @@header_error[@@number_of_error_messages].store(:error,free.message)
+                    @@header_error[@@number_of_error_messages].store(:data,@csvdata)
                     end
                     @@number_of_line = @@number_of_line + 1
                      #    n = n - 1 unless n == 0
@@ -1041,6 +1052,8 @@ COMMON_WORD_EXPANSIONS = {
           @csvdata = Array.new
           @code_sets = Encoding.name_list
           @@list_of_registers = Hash.new()
+          @@header_error = Hash.new()
+          @@system_error = Hash.new()
           @@data_hold = Hash.new
           @data_record = Hash.new
           @@array_of_data_lines = Array.new {Array.new}
@@ -1095,12 +1108,13 @@ COMMON_WORD_EXPANSIONS = {
 
         n = process_the_data if success == true  && process == true
         nn = nn + n unless n.nil?
-
+   
      end #filename loop end 
 
      time = (((Time.now  - time_start )/(nn-1))*1000)
      p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
-     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n"  
+     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n" 
+      @@message_file.close   
   end #method end
  
 end #class end

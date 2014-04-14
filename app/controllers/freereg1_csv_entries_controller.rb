@@ -5,8 +5,6 @@ class Freereg1CsvEntriesController < InheritedResources::Base
 
   def index
   
-    @register = session[:register_id] 
-    @register_name = session[:register_name] 
     @church = session[:church_id]
     @church_name = session[:church_name]
     @place = session[:place_id]
@@ -17,6 +15,9 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @freereg1_csv_file_name =  session[:freereg1_csv_file_name]
     @freereg1_csv_file_id = session[:freereg1_csv_file_id]
     @freereg1_csv_file = Freereg1CsvFile.find(@freereg1_csv_file_id)
+    @register = @freereg1_csv_file.register
+    @register_name = @register.register_name 
+    @register_name = @register.alternate_register_name if @register_name.nil?
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1)
   end
 
@@ -146,8 +147,9 @@ end
     @freereg1_csv_file_name =  session[:freereg1_csv_file_name]
     @freereg1_csv_file = Freereg1CsvFile.find(@freereg1_csv_file_id)
    
-    #@register = register.@freereg1_csv_file
-    #@register_name = @register.alternate_register_name
+    @register = @freereg1_csv_file.register
+    @register_name = @register.register_name 
+    @register_name = @register.alternate_register_name if @register_name.nil?
     @church = session[:church_id]
     @church_name = session[:church_name]
     @place = session[:place_id]

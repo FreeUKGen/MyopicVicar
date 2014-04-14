@@ -51,7 +51,10 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @no_errors = 'no' if lines.nil?
     @lines = Array.new
     @system = Array.new
+    @header = Array.new
+    @owner = @freereg1_csv_file.userid
     lines.each do |line|
+      p line
          entry = Freereg1CsvEntry.where(freereg1_csv_file_id:  session[:freereg1_csv_file_id]).first
          @lines << line if line.error_type == 'Data_Error' 
          @system << line if line.error_type == 'System_Error' 

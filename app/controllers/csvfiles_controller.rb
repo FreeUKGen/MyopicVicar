@@ -14,16 +14,19 @@ get_userids_and_transcribers
 end
 
 def edit
-
+ 
   #code to move existing file to attic
   @user = UseridDetail.where(:userid => session[:userid]).first
   @first_name = session[:first_name]  
   @userid = session[:userid]  
   @csvfile  = Csvfile.new(:userid  => session[:userid])
-  @csvfile.file_name = Freereg1CsvFile.find(params[:id]).file_name
+  @file = Freereg1CsvFile.find(params[:id])
+
+  @csvfile.file_name = @file.file_name
+  @person = @file.userid
   session[:freereg]  = params[:id]
   @file = @csvfile.file_name 
-
+  
   get_userids_and_transcribers
 end
 
@@ -124,6 +127,8 @@ def get_userids_and_transcribers
  @user = UseridDetail.where(:userid => session[:userid]).first
         syndicate = @user.syndicate
         syndicate = session[:syndicate] unless session[:syndicate].nil?
+    @people =Array.new  
+     @people <<  @person 
   case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
         @userids = UseridDetail.all.order_by(userid_lower_case: 1)
@@ -136,9 +141,9 @@ def get_userids_and_transcribers
        @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
     else
        @userids = @user
-    end #end case
+  end #end case
     unless session[:my_own] == 'my_own'
-      @people =Array.new
+     
         @userids.each do |ids|
         @people << ids.userid
       end

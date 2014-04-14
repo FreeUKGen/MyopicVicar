@@ -34,9 +34,9 @@ class RegistersController < InheritedResources::Base
    @church = session[:church_id]
    @register = Register.new(params[:register])
 
-    @register[:church_id] = @church
+  @register[:church_id] = @church
   @register[:alternate_register_name] = @church_name + ' ' + params[:register][:register_type]
-  @register[:register_name] = nil
+ 
      @register.save
     flash[:notice] = 'The addition of the Register was succsessful'
        if @register.errors.any?
@@ -85,11 +85,16 @@ class RegistersController < InheritedResources::Base
   
   def load(register_id)
     @register = Register.find(register_id)
+    @register_name = @register.register_name
+    @register_name = @register.alternate_register_name if @register_name.nil? ||  @register_name.empty?
     session[:register_id] = register_id
-    session[:register_name] = @register.alternate_register_name
-    @register_name = session[:register_name]
-    @church = session[:church_id]
-    @church_name = session[:church_name]
+    session[:register_name] = @register_name
+    p "register"
+    p  @register.register_name
+    p @register.alternate_register_name
+    p @register_name
+    @church = @register.church
+    @church_name = @church.church_name
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 

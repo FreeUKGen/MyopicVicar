@@ -108,30 +108,30 @@ task :setup_index => [:setup_drop, :environment] do |t, args|
   puts "Creating minimum indexes"
     
   
-    script_index_places = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({place_name:1 })\""
+    script_index_places = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({place_name: 1 })\""
    `#{script_index_places}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-  script_index_places_chapman = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({chapman_code: 1, place_name:1 })\""
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+  script_index_places_chapman = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({chapman_code: 1, place_name: 1 })\""
  `#{script_index_places_chapman}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers_alternate = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id:1, alternate_register_name: 1 })\""
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ script_index_registers_alternate = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id: 1, alternate_register_name: 1 })\""
  `#{script_index_registers_alternate}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id:1, register_name: 1 })\""
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ script_index_registers = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id: 1, register_name: 1 })\""
  `#{script_index_registers}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
   script_index_churches = @mongodb_bin + "mongo #{@db} --eval \"db.churches.ensureIndex({place_id: 1, church_name: 1 })\""
  `#{script_index_churches}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
  script_index_freereg1_csv_files = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_files.ensureIndex({file_name: 1, userid: 1, county: 1, place: 1 , church_name: 1, register_type: 1})\""
  `#{script_index_freereg1_csv_files}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_freereg1_csv_entries = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id:1 })\""
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ script_index_freereg1_csv_entries = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id: 1 })\""
  `#{script_index_freereg1_csv_entries}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-   script_index_search_records_entries = @mongodb_bin + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id:1 })\"" 
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+   script_index_search_records_entries = @mongodb_bin + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id: 1 })\"" 
       `#{script_index_search_records_entries}`    
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
      puts "Minimum indexes created"
 
 end
@@ -172,8 +172,14 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
 
   task :create_search_records, [:type,:search_records,:range] => [:environment] do |t, args|
    require 'create_search_records_docs' 
- 
+  @mongodb_bin =   Rails.application.config.mongodb_bin_location
+   Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
   search_records = "create_search_records" 
+  script_index_search_records_entries = @mongodb_bin  + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id: 1 })\"" 
+   p script_index_search_records_entries
+      `#{script_index_search_records_entries}`    
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
 
      CreateSearchRecordsDocs.process(args.type,search_records,args.range )
   end
