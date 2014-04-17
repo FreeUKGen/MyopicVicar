@@ -31,8 +31,7 @@ require "#{Rails.root}/app/models/place"
         #master has a loaction for this place
           if place.location.nil? || (place.location[0].nil? && place.location[1].nil?)
             #place has no location
-            place.location[0] = location.latitude
-             place.location[1] == location.longitude
+            place.location = [location.latitude, location.longitude]
               place.master_place_lat = location.latitude
               place.master_place_lon = location.longitude
               place.genuki_url = location.genuki_url
