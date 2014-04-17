@@ -1,9 +1,19 @@
 Page Identification Freereg Files:edit<p>
 <p style="text-align: center">Editing file:<b><%= @freereg1_csv_file_name %></b> </p>
-
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>
 <br>
 <%= render 'form' %>
 <br>
-
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>

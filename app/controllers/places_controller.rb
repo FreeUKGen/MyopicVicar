@@ -19,8 +19,8 @@ class PlacesController < InheritedResources::Base
          
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
          
-          session[:errors] = nil
-          session[:form] = nil
+         
+         
           session[:parameters] = params
           @names = Array.new
          @alternate_place_names = @place.alternateplacenames.all
@@ -44,14 +44,14 @@ def new
      
       @place = Place.new
       @place.chapman_code = session[:chapman_code]
-      session[:form] = @place
+     
       @county = session[:county]
       placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
       @placenames = Array.new
         placenames.each do |placename|
           @placenames << placename.place_name
         end
-      session[:errors] = nil
+      
       @first_name = session[:first_name]
        @user = UseridDetail.where(:userid => session[:userid]).first
     
@@ -59,7 +59,7 @@ def new
   end
  
 def create
-   session[:errors] = nil
+ 
    @user = UseridDetail.where(:userid => session[:userid]).first
    @place = Place.new
      # save place name change in Place
@@ -71,7 +71,7 @@ def create
     @place.save
     flash[:notice] = 'The addition of the Place was succsessful'
    if @place.errors.any?
-     session[:errors] = @place.errors.messages
+     
      flash[:notice] = "The addition of the Place #{@place.place_name} was unsuccsessful"
      placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
       @placenames = Array.new
@@ -104,8 +104,8 @@ def update
     @place.save
   
    if @place.errors.any? then
-     session[:form] = @place
-     session[:errors] = @place.errors.messages
+   
+    
      flash[:notice] = 'The update of the Place was unsuccsessful'
      render :action => 'edit'
      return
@@ -150,12 +150,12 @@ def update
  def destroy
     load(params[:id])
     @place.destroy
-     session[:errors] = nil
+    
     flash[:notice] = 'The deletion of the place was successful'
     if @place.errors.any? then
      @place.errors
-     session[:form] = @place
-     session[:errors] = @place.errors.messages
+    
+    
      flash[:notice] = 'The deletion of the place was unsuccessful'
     end
 
@@ -164,13 +164,13 @@ def update
 
  def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
-   session[:errors] = 'errors'
+ 
    redirect_to places_path
  end
 
  def record_validation_errors
    flash[:notice] = 'The update of the children to Place with a place name change failed'
-   session[:errors] = 'errors'
+  
    redirect_to places_path
  end
 end

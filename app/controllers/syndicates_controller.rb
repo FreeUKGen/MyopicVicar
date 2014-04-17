@@ -23,7 +23,7 @@ def create
     @syndicate = Syndicate.new(params[:syndicate])
 	@syndicate.save
  if @syndicate.errors.any?
-     session[:errors] = @syndicate.errors.messages
+    
      flash[:notice] = "The addition of the Syndicate was unsuccsessful"
      render :action => 'edit'
      return
@@ -40,7 +40,7 @@ def update
 	 params[:syndicate][:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless @syndicate.syndicate_coordinator == params[:syndicate][:syndicate_coordinator]
 	 @syndicate.update_attributes(params[:syndicate])
 if @syndicate.errors.any?
-     session[:errors] = @syndicate.errors.messages
+   
      flash[:notice] = "The change to the Syndicate was unsuccsessful"
      render :action => 'edit'
      return

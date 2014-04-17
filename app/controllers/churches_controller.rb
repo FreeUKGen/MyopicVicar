@@ -10,8 +10,8 @@ class ChurchesController < InheritedResources::Base
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]
           @first_name = session[:first_name]
-          session[:errors] = nil
-          session[:form] = nil
+         
+         
           session[:parameters] = params
           load(params[:id])
           @names = Array.new
@@ -27,14 +27,14 @@ class ChurchesController < InheritedResources::Base
    
       @church = Church.new
       @county = session[:county]
-      session[:form] = @church
+     
       @place = Place.where(:chapman_code => ChapmanCode.values_at(@county)).all
       @places = Array.new
           @place.each do |place|
             @places << place.place_name
           end
       @county = session[:county]
-      session[:errors] = nil
+      
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
   end
@@ -47,7 +47,7 @@ class ChurchesController < InheritedResources::Base
   church.save
     flash[:notice] = 'The addition of the Church was succsessful'
    if church.errors.any?
-     session[:errors] = church.errors.messages
+    
      flash[:notice] = 'The addition of the Church was unsuccsessful'
      redirect_to :action => 'new'
      return
@@ -74,12 +74,19 @@ end
     @church.church_name = params[:church][:church_name]
     @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
     @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
-  
-#update registers
+    @church.denomination = params[:church][:denomination] unless params[:church][:denomination].nil?
+    @church.church_notes = params[:church][:church_notes] unless params[:church][:church_notes].nil?
+
+     unless  old_church_name = params[:church][:church_name]
+
+     #update registers
+
+
     @church.registers.each do |register|
         register.alternate_register_name = params[:church][:church_name].to_s + " " + register.register_type.to_s
         register.church_name = params[:church][:church_name]
-#update files   
+    #update files  
+
     my_files = Freereg1CsvFile.where(:register_id => register._id).all
     if my_files then
       my_files.each do |myfile|
@@ -87,7 +94,7 @@ end
         myfile.church_name = params[:church][:church_name]
         myfile.save!
 
-# update entry
+    # update entry
         myfile_id = myfile._id
        
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).to_a
@@ -100,6 +107,7 @@ end
     # This saves registers, files and entries
         register.save!
    end
+  end #test of church name
          @church.save
    # we need to deal with merging of identical church and register names
    
@@ -169,8 +177,8 @@ end
   
      flash[:notice] = 'The update the Church was succsessful'
    if @church.errors.any? then
-     session[:form] =  @church
-     session[:errors] = @church.errors.messages
+   
+    
      flash[:notice] = 'The update of the Church was unsuccsessful'
      render :action => 'edit'
      return 
@@ -203,13 +211,13 @@ end
 
  def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the Church was unsuccessful because there were dependant documents; please delete them first'
-   session[:errors]  = "errors"
+  
    redirect_to :action => 'show'
  end
 
  def record_validation_errors
   flash[:notice] = 'The update of the children to Church with a church name change failed'
-  session[:errors] = "errors"
+ 
     redirect_to :action => 'show'
  end
 

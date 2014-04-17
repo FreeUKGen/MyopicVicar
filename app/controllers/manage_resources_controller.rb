@@ -5,7 +5,7 @@ def index
     @manage_resources = ManageResource.new  
      @people =Array.new
     people = UseridDetail.where(:person_role => 'transcriber', :number_of_files.gt => 10, :number_of_records.gt => 1000).first
-    @people << people.userid_lower_case
+    @people << people.userid_lower_case unless people.nil?
     people = UseridDetail.where(:person_role => 'researcher').first
     @people << people.userid_lower_case unless people.nil?
     people = County.all.distinct(:county_coordinator_lower_case)

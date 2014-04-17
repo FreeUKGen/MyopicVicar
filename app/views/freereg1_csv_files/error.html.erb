@@ -1,14 +1,103 @@
 Page Identification Freereg Files:error<p>
-<p style="text-align: center"><b>Display error file</b></p>
-
-
-<%= render 'nav' %>
-<p>
-There are <b> <%= @lines.length %> errors</b><br><br>
-<% @lines.each do |line| %>
-<%= line %><br>
+<p style="text-align: center"><b>Display error message for batch  <%= @freereg1_csv_file_name %> for <%= @owner %></b></p>
+<div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
 <%end%>
 
+<%= render 'nav' %>
+
+<div id="main"style="color:black">
+<% if @no_errors == 'no' %>
+    There are no errors in this file
+<%else%>
+    <% unless @lines.nil? || @lines.empty?%>
+  <p style="text-align: center"><b> Data Errors</b></p>
+   <table CLASS="boldtable" >
+    <tr>
+
+    <th style="width:8%">Record number</th>
+    <th style="width:8%">Field number</th>
+    <th style="width:40%">Error message</th>
+    <th style="width:8%">Record type</th>
+     <th style="width:25%">Actual record</th>
+     <th style="width:11%">Action</th>
+    </tr>
+    <tr>
+
+    </tr>
+       <% @lines.each do |line| %>
+         <tr>
+         <td><%= line.record_number%></td>
+         <td><%= line.field_number%></td>   
+         <td><%= line.error_message %></td>
+         <td><%= line.record_type %></td>
+         <td><%= line.data_line %></td>
+         <td><%= link_to 'Edit', error_freereg1_csv_entry_path(line) %></td>
+         </tr>
+      <%end%>
+    </table>
+    <%end%> 
+
+     <% unless @system.nil? || @system.empty?%>
+    <p style="text-align: center"><b>System Errors</b></p>
+
+   <table CLASS="boldtable" >
+    <tr>
+
+    <th style="width:10%">Record number</th>
+    <th style="width:40%">Error message</th>
+    <th style="width:50%">Actual records</th>
+    </tr>
+    <tr>
+
+    </tr>
+       <% @system.each do |line| %>
+         <tr>
+         <td><%= line.record_number%></td>
+         <td><%= line.error_message %></td>
+         <td><%= line.data_line %></td>
+         </tr>
+      <%end%>
+    </table>
+    <%end%> 
+
+     <% unless @header.nil? || @header.empty?%>
+    <p style="text-align: center"><b>Header Errors</b></p>
+
+   <table CLASS="boldtable" >
+    <tr>
+
+    <th style="width:10%">Record number</th>
+    <th style="width:40%">Error message</th>
+    <th style="width:50%">Actual records</th>
+    </tr>
+    <tr>
+
+    </tr>
+       <% @header.each do |line| %>
+         <tr>
+         <td><%= line.record_number%></td>
+         <td><%= line.error_message %></td>
+         <td><%= line.data_line %></td>
+         </tr>
+      <%end%>
+    </table>
+    <%end%> 
 
 
+
+
+<%end%>
+</div>
+<div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>

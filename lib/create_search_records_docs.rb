@@ -67,9 +67,11 @@ include Mongoid::Document
       file_ids = Freereg1CsvFile.where({:file_name => @@filename, :userid => @@userid}).all
      
         file_ids.each do |file_id|
-         
-          entries = Freereg1CsvEntry.where({:freereg1_csv_file_id => file_id}).all
-            
+         entries = Array.new
+          entries_mongoid = Freereg1CsvEntry.where({:freereg1_csv_file_id => file_id}).all
+          entries_mongoid.each do |entry|
+            entries << entry
+          end 
           entries.each do |my_entry|
            
             SearchRecord.where({:freereg1_csv_entry_id => my_entry}).delete if recreate == "recreate"

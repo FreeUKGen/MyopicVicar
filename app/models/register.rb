@@ -56,7 +56,7 @@ class Register
       my_place.churches << @@my_church
     end
 
-    #now creat the register
+    #now create the register
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register
@@ -90,6 +90,7 @@ class Register
   end
 
   def self.create_or_update_last_amended_date(freereg_file)
+ 
     register = freereg_file.register._id
     register = Register.find(register)
     original_last_amended_date = register.last_amended

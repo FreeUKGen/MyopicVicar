@@ -7,45 +7,50 @@ Page Identification Freereg Entries:index<p>
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
 <div style="clear:both;"> </div><br>
+
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
 <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %>   
 <table CLASS="boldtable" >
   <tr>
+  <th>Record number</th>
     <th>Register entry number</th>
     <th>Baptism date</th>
     <th>Birth date</th>
     <th>Person forename</th>
-    <th>Person sex</th>
+  
     <th>Father forename</th>
     <th>Father surname</th>
-    <th>Father occupation</th>
+   
     <th>Mother forename</th>
     <th>Mother surname</th>
-    <th>Person abode</th>
-   
-    <th>Notes</th>
-    <th>Line</th>
-    <th></th>
-    <th></th>
-    <th></th>
+    
   </tr>
 
 <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-   <tr id="<%= freereg1_csv_entry.id %>">
-    
+ <% if freereg1_csv_entry.error_flag == 'true' %>
+  <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
+<%else%>
+   <tr id="<%= freereg1_csv_entry.id %>" style= "color:black">
+   <%end%>
+      <td><%= freereg1_csv_entry.file_line_number %></td>  
     <td><%= freereg1_csv_entry.register_entry_number %></td>
     <td><%= freereg1_csv_entry.baptism_date %></td>
     <td><%= freereg1_csv_entry.birth_date %></td>
     <td><%= freereg1_csv_entry.person_forename %></td>
-    <td><%= freereg1_csv_entry.person_sex %></td>
+    
     <td><%= freereg1_csv_entry.father_forename %></td>
     <td><%= freereg1_csv_entry.father_surname %></td>
-    <td><%= freereg1_csv_entry.father_occupation %></td>
+  
     <td><%= freereg1_csv_entry.mother_forename %></td>
     <td><%= freereg1_csv_entry.mother_surname %></td>
-    <td><%= freereg1_csv_entry.person_abode %></td>
-    <td><%= freereg1_csv_entry.notes %></td>
-    <td><%= freereg1_csv_entry.file_line_number%></td>
+   
+    </tr><tr>
+    
     <td><%= link_to 'Show', freereg1_csv_entry %></td>
     <td><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %></td>
     <td><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
@@ -54,37 +59,36 @@ Page Identification Freereg Entries:index<p>
 </table>
 <% when @freereg1_csv_file.record_type == "bu" %>   
 <table>
-  <tr>
+  <tr >
+   <th>Record number</th>
    <th>Register entry number</th>
    <th>Burial date</th>
    <th>Burial person forename</th>
     <th>Burial person surname</th>
-    <th>Relationship</th>
     <th>Male relaive forename</th>
     <th>Female relative forename</th>
     <th>Relative surname</th>
-    <th>Person age</th>
-    <th>Burial person abode</th>
-    <th>Notes</th>
-    <th>Line ID</th>
-    <th></th>
-    <th></th>
-    <th></th>
+   
+    
   </tr>
 <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-    <tr>
+    <% if freereg1_csv_entry.error_flag == 'true' %>
+  <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
+<%else%>
+   <tr id="<%= freereg1_csv_entry.id %>" style= "color:black">
+   <%end%>
+      <td><%= freereg1_csv_entry.file_line_number%></td>  
  <td><%= freereg1_csv_entry.register_entry_number %></td>
  <td><%= freereg1_csv_entry.burial_date %></td>
     <td><%= freereg1_csv_entry.burial_person_forename %></td>
     <td><%= freereg1_csv_entry.burial_person_surname %></td>
-    <td><%= freereg1_csv_entry.relationship %></td>
+  
     <td><%= freereg1_csv_entry.male_relative_forename %></td>
     <td><%= freereg1_csv_entry.female_relative_forename %></td>
     <td><%= freereg1_csv_entry.relative_surname %></td>
-    <td><%= freereg1_csv_entry.person_age %></td>
-    <td><%= freereg1_csv_entry.burial_person_abode %></td>
-    <td><%= freereg1_csv_entry.notes %></td>
-    <td><%= freereg1_csv_entry.line_id %></td>
+   
+    </tr><tr>
+   
     <td><%= link_to 'Show', freereg1_csv_entry %></td>
     <td><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %></td>
     <td><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
@@ -95,69 +99,33 @@ Page Identification Freereg Entries:index<p>
 <% when @freereg1_csv_file.record_type == "ma" %>   
 <table>
   <tr>
+  <th>Record number</th>
     <th>Register entry number</th>
     <th>Marriage date</th>
-    <th>Bride abode</th>
-    <th>Bride age</th>
-    <th>Bride condition</th>
-    <th>Bride father forename</th>
-    <th>Bride father occupation</th>
-    <th>Bride father surname</th>
     <th>Bride forename</th>
-    <th>Bride occupation</th>
-    <th>Bride parish</th>
     <th>Bride surname</th>
-    <th>Groom abode</th>
-    <th>Groom age</th>
-    <th>Groom condition</th>
-    <th>Groom father forename</th>
-    <th>Groom father occupation</th>
-    <th>Groom father surname</th>
     <th>Groom forename</th>
-    <th>Groom occupation</th>
-    <th>Groom parish</th>
     <th>Groom surname</th>
-    <th>Witness1 forename</th>
-    <th>Witness1 surname</th>
-    <th>Witness2 forename</th>
-    <th>Witness2 surname</th>
-    <th>Notes</th>
-    <th>Line ID</th>
-    <th></th>
-    <th></th>
-    <th></th>
+    
   </tr>
 
 <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-    <tr>
-     <td><%= freereg1_csv_entry.register_entry_number %></td>  
+   <% if freereg1_csv_entry.error_flag == 'true' %>
+  <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
+<%else%>
+   <tr id="<%= freereg1_csv_entry.id %>" style= "color:black">
+   <%end%>
+     <td><%= freereg1_csv_entry.file_line_number %></td>  
     <td><%= freereg1_csv_entry.marriage_date %></td>
-    <td><%= freereg1_csv_entry.bride_abode %></td>
-    <td><%= freereg1_csv_entry.bride_age %></td>
-    <td><%= freereg1_csv_entry.bride_condition %></td>
-    <td><%= freereg1_csv_entry.bride_father_forename %></td>
-    <td><%= freereg1_csv_entry.bride_father_occupation %></td>
-    <td><%= freereg1_csv_entry.bride_father_surname %></td>
+    
     <td><%= freereg1_csv_entry.bride_forename %></td>
-    <td><%= freereg1_csv_entry.bride_occupation %></td>
-    <td><%= freereg1_csv_entry.bride_parish %></td>
+   
     <td><%= freereg1_csv_entry.bride_surname %></td>
-    <td><%= freereg1_csv_entry.groom_abode %></td>
-    <td><%= freereg1_csv_entry.groom_age %></td>
-    <td><%= freereg1_csv_entry.groom_condition %></td>
-    <td><%= freereg1_csv_entry.groom_father_forename %></td>
-    <td><%= freereg1_csv_entry.groom_father_occupation %></td>
-    <td><%= freereg1_csv_entry.groom_father_surname %></td>
+    
     <td><%= freereg1_csv_entry.groom_forename %></td>
-    <td><%= freereg1_csv_entry.groom_occupation %></td>
-    <td><%= freereg1_csv_entry.groom_parish %></td>
+    
     <td><%= freereg1_csv_entry.groom_surname %></td>
-    <td><%= freereg1_csv_entry.witness1_forename %></td>
-    <td><%= freereg1_csv_entry.witness1_surname %></td>
-    <td><%= freereg1_csv_entry.witness2_forename %></td>
-    <td><%= freereg1_csv_entry.witness2_surname %></td>
-    <td><%= freereg1_csv_entry.notes %></td>
-    <td><%= freereg1_csv_entry.line_id %></td>
+    </tr><tr>
     <td><%= link_to 'Show', freereg1_csv_entry %></td>
     <td><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %></td>
     <td><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>

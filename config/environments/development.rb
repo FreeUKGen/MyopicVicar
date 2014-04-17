@@ -57,7 +57,7 @@ MyopicVicar::Application.configure do
   #Where the collections are stored
   config.mongodb_collection_location = File.join(Rails.root,'db','collections')
   #where do we store the Mongodb database 
-  config.datafiles = File.exist?("e:/freereg9/") ? "e:/freereg9/" : "/home/benwbrum/dev/clients/freeukgen/freereg1_data/partial"
+  config.datafiles = File.exist?("c:/freereg11/") ? "c:/freereg11/" : "/home/benwbrum/dev/clients/freeukgen/freereg1_data/partial"
   # Date of dataset used
-  config.dataset_date = "22 Jan 2014"
+  config.dataset_date = "2 April 2014"
 end

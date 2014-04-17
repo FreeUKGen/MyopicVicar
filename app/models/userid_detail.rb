@@ -37,21 +37,23 @@ index({ userid: 1, country_coordinator: 1 })
 index({ userid: 1, syndicate: 1 })
 index({ userid: 1, chapman_code: 1 })
 index({ userid: 1, volunteer_coordinator: 1 })
+scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 
 
 validate :userid_does_not_exist, on: :create
 
 before_save :add_lower_case_userid
-before_create :save_to_attic
-after_create :write_userid_file
+#before_update :save_to_attic
+#after_update :write_userid_file
 #validate :syndicate_is_valid, on: :create
- before_update :save_to_attic
-  after_update :write_userid_file
+ 
 
 def self.update_files(freereg_file)
   user = freereg_file.userid
   files = Freereg1CsvFile.where(:userid => user).all
   userid = UseridDetail.where(:userid => user).first
+  p user if  userid.nil?
+  unless  userid.nil?
     if files.nil?
     userid.number_of_files = 0
     userid.number_of_records = 0
@@ -71,13 +73,13 @@ def self.update_files(freereg_file)
        userid.number_of_records = records
        userid.save 
     end
-
+  end
 end
 
 def write_userid_file
    
    details_dir = File.join(Rails.application.config.datafiles,self.userid)
-   details_dir = File.join(details_dir,".uDetails")
+   details_dir = File.join(details_dir,".uFDetails")
        if File.file?(details_dir)
          p "file should not be there"
        end
@@ -102,10 +104,9 @@ def save_to_attic
   #to-do unix permissions
   
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
-    details_file = File.join(details_dir,".uDetails")
+    details_file = File.join(details_dir,".uFDetails")
     
       if File.file?(details_file)
-        p "dealing with existing file"
         newdir = File.join(details_dir,'.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s

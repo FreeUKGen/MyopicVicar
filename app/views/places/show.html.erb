@@ -15,7 +15,7 @@ Page Identification Places:show<p>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+ <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %> 
 
@@ -72,7 +72,7 @@ Page Identification Places:show<p>
  <% end %>
 
  <td ><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></td> 
-<td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>   <td><%=freeregfile.datemin%></td>
+<td><%=freeregfile.userid%></td><td> <%=freeregfile.modification_date%> <td><%=freeregfile.records%></td>  <td><%=freeregfile.datemin%></td>
 <td><%=freeregfile.datemax%></td>
 <% if freeregfile.error != 0 %>
 <td>Errors <%= link_to(freeregfile.error , error_freereg1_csv_file_path(freeregfile))%></td></td></td></tr>

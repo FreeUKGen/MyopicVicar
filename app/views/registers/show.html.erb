@@ -14,7 +14,7 @@
 
     <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %>
     <div id="main"style="color:black">
@@ -23,12 +23,7 @@
     <th style="width:25%">Field</th>
     <th style="width:50">Value</th>
   </tr>
- <% if @register.register_name.nil? %>
-  <tr> 
 
-   <td>Register name :</td><td > <%= @register.alternate_register_name%> </td>
-  </tr>
-<%else%>
     <tr> 
 
    <td>Register name :</td><td > <%= @register.register_name%> </td>
@@ -36,7 +31,7 @@
   <tr>
    <td>Alternate register name :</td><td > <%= @register.alternate_register_name%>  </td>   
    </tr>
-   <%end%>
+   
    <tr>
    <td>Register Type :</td><td ><%= @register.register_type %></td>   
    </tr>

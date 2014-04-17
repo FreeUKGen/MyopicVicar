@@ -21,7 +21,7 @@ class Church
   
 
    def church_does_not_exist 
-    p "checking for church"
+  
    
      # errors.add(:church_name, "already exits") unless place.nil?
 

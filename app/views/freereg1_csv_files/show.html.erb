@@ -1,13 +1,21 @@
 Page Identification Freereg Files:show<p>
-<p style="text-align: center">Showing  batch:<b><%= @freereg1_csv_file_name %></b> </p>
+<p style="text-align: center">Showing  batch:<b><%= @freereg1_csv_file_name %> </b> </p>
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Download this batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
+<div style="float:left;"><%= button_to 'Replace this batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
 <div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>
 
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %>  
 
@@ -100,7 +108,7 @@ Page Identification Freereg Files:show<p>
    <td>Date modified</td><td ><%= @freereg1_csv_file.modification_date %></td>   
    </tr>
    <tr>
-   <td>Registers were from the Church of Latter Day Saints </td><td >   <%= @freereg1_csv_file.lds %> </td>   
+   <td>Image numbers available with record</td><td >   <%= @freereg1_csv_file.lds %> </td>   
    </tr>
  
    <tr>
@@ -112,6 +120,13 @@ Page Identification Freereg Files:show<p>
 
 
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<div style="float:left;"> <%= button_to 'Download this batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
+<div style="float:left;"><%= button_to 'Replace this batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
 <div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
-
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>
