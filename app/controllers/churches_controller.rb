@@ -64,20 +64,22 @@ end
           @places << @place_name
           @county = session[:county]
           @first_name = session[:first_name]
-          load(params[:id])
+          
   
   end
 
   def update
-    load(params[:id])
-    old_church_name = session[:church_name]
+  p params
+  load(params[:id])
+    old_church_name = Church.find(params[:id]).church_name
+    p  old_church_name
     @church.church_name = params[:church][:church_name]
     @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
     @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
     @church.denomination = params[:church][:denomination] unless params[:church][:denomination].nil?
     @church.church_notes = params[:church][:church_notes] unless params[:church][:church_notes].nil?
 
-     unless  old_church_name = params[:church][:church_name]
+     unless  old_church_name == params[:church][:church_name]
 
      #update registers
 
@@ -92,6 +94,8 @@ end
       my_files.each do |myfile|
       
         myfile.church_name = params[:church][:church_name]
+        myfile.locked = 'true'
+        myfile.modification_date = Time.now.strftime("%d %b %Y")
         myfile.save!
 
     # update entry
@@ -99,9 +103,11 @@ end
        
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).to_a
         my_entries.each do |myentries|
-            myentries.church_name =params[:church][:church_name]
+            myentries.church_name = params[:church][:church_name]
             myentries.save!
         end
+        Freereg1CsvFile.backup_file(myfile)
+         
       end
     end
     # This saves registers, files and entries

@@ -68,11 +68,7 @@ def new
       
       when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date'
       session[:sort] =  sort = "uploaded_date DESC"
-    
-   
-     when params[:manage_syndicate][:action] == 'Review Batches listed by userid and then uploaded date'
-     
-      
+        
     else
        @user = UseridDetail.where(:userid => session[:userid]).first
       redirect_to manage_resource_path(@user)

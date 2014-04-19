@@ -115,19 +115,22 @@ def update
   
  # save place name change in Freereg_csv_file
     my_files = Freereg1CsvFile.where(:county => session[:chapman_code], :place => old_place_name).all
-    if my_files
+    if my_files then
       my_files.each do |myfile|
         myfile.place = params[:place][:place_name]
+        myfile.locked = 'true'
+        myfile.modification_date = Time.now.strftime("%d %b %Y")
         myfile.save!
+
  # save place name change in Freereg_csv_entry
         myfile_id = myfile._id
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).all
         my_entries.each do |myentries|
             myentries.place = params[:place][:place_name]
             myentries.save!
-        end
-      end
-    else
+        end #end myentries
+          Freereg1CsvFile.backup_file(myfile)
+      end #end myfile
     end
   end
     flash[:notice] = 'The update the Place was succsessful'

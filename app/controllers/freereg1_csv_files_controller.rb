@@ -92,7 +92,6 @@ def my_own
     @user = UseridDetail.where(:userid => session[:userid]).first
     @who = @user.userid 
     @role = session[:role]
- 
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by(session[:sort]).page(params[:page])  unless @user.nil?
     render :index
     return
@@ -129,7 +128,7 @@ end
 
   def lock
 
-    #lock/unloack a file
+    #lock/unlock a file
     load(params[:id])
     if  @freereg1_csv_file.locked == 'false'
      @freereg1_csv_file.locked = 'true'
@@ -180,5 +179,5 @@ end
     @first_name = session[:first_name] 
 
   end
- 
+
 end
