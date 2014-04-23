@@ -94,7 +94,7 @@ end
       my_files.each do |myfile|
       
         myfile.church_name = params[:church][:church_name]
-        myfile.locked = 'true'
+        myfile.locked = "true"
         myfile.modification_date = Time.now.strftime("%d %b %Y")
         myfile.save!
 
@@ -164,6 +164,7 @@ end
                             second_register_files =  second_register.freereg1_csv_files
                                second_register_files.each do |file|
                                    first_register.freereg1_csv_files << file
+
                                end # file do
 
                        # first_register.save

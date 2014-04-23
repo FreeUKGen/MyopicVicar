@@ -307,9 +307,6 @@ index({error:1, file_name:1})
        #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     file_parts = Freereg1CsvFile.where(:file_name => file_name, :userid => file.userid).all
 
-    p "testing write integration"
-    p file_parts.length
-  
     CSV.open(csvfile, "wb", {:force_quotes => true}) do |csv|
         # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
     csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{file.record_type}","#{file.characterset}"]
@@ -325,10 +322,11 @@ index({error:1, file_name:1})
     type = fil.record_type
     records = fil.freereg1_csv_entries
       records.each do |rec|
+        church_name = fil.church_name.to_s + " " + fil.register_type.to_s
        case 
          when fil.record_type == "ba"
          
-            csv_hold =  ["#{fil.county}","#{fil.place}","#{fil.church_name}",
+            csv_hold =  ["#{fil.county}","#{fil.place}","#{church_name}",
              "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
              "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
              "#{rec.father_occupation}","#{rec.notes}"]
@@ -337,7 +335,7 @@ index({error:1, file_name:1})
 
          when fil.record_type == "bu"
            
-            csv_hold = ["#{fil.county}","#{fil.place}","#{fil.church_name}",
+            csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
             "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
             "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
             "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
@@ -345,7 +343,7 @@ index({error:1, file_name:1})
             csv << csv_hold
         
          when fil.record_type == "ma" 
-          csv_hold = ["#{fil.county}","#{fil.place}","#{fil.church_name}",
+          csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
           "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
           "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
           "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",

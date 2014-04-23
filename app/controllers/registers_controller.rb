@@ -67,10 +67,45 @@ class RegistersController < InheritedResources::Base
 #need to propogate  register type change
      files =  @register.freereg1_csv_files
        files.each do |file|
+        file.locked = "true"
+        file.modification_date = Time.now.strftime("%d %b %Y")
         file.register_type = type_change
         file.save!
+        Freereg1CsvFile.backup_file(file)
       end
   end
+  #merge registers with same name and type
+
+                  registers = @church.registers
+                
+                  if  registers.length > 1
+                    register_names = Array.new
+                      registers.each do |register|
+                         register_names << register.alternate_register_name
+                      end #register do
+
+                    duplicate_registers = register_names.select{|element| register_names.count(element) > 1 }
+                    duplicate_register_names = duplicate_registers.uniq
+                 
+                      if duplicate_registers.length >= 1 then
+                          duplicate_register_names.each do |duplicate_register_name|
+
+                            first_register = registers[register_names.index(duplicate_register_name)]
+                            second_register = registers[register_names.rindex(duplicate_register_name)]
+                            second_register_files =  second_register.freereg1_csv_files
+                               second_register_files.each do |file|
+                                   first_register.freereg1_csv_files << file
+                                  
+                               end # file do
+
+                       # first_register.save
+                           second_register.delete 
+                          end #duplicate register do
+                      end # duplicate_registers.length
+                  end #register_length
+
+
+
     
     flash[:notice] = 'The update the Register was succsessful'
     if @register.errors.any? then
