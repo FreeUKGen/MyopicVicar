@@ -303,7 +303,8 @@ COMMON_WORD_EXPANSIONS = {
            @register_type = "DW" if @register_type == "DT"
            @register_type = "PH" if @register_type == "PT"
           else
-           raise FreeREGError,  "The apparent Register Type extracted from the Church name #{register_words[-1]} is not valid" 
+            @register_type = ""
+           return true
          end
         end
       end
@@ -637,6 +638,7 @@ COMMON_WORD_EXPANSIONS = {
   #process the first 4 columns of the data record
   # County, Place, Church, Reg #
   def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
+    #this code is needed to permit multiple places and churches in a single batch in any order
       @@datemax = DATEMIN
       @@datemin = DATEMAX
      @@daterange = Array.new(50){|i| i * 0 }
@@ -660,13 +662,13 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_register_location(n)
     data_record = Hash.new
     raise FreeREGError, "Empty data line"  if @csvdata[0].nil? 
-     data_record[:error_flag] = add_error_flag("The county code #{ @csvdata[0]} is invalid or you have a blank record line ",n,0) unless ChapmanCode::values.include?(@csvdata[0])
+     raise FreeREGError,"The county code #{ @csvdata[0]} is invalid or you have a blank record line " unless ChapmanCode::values.include?(@csvdata[0])
    
     # do we validate the Place field?
-    data_record[:error_flag] = add_error_flag("Place field #{@csvdata[1]} contains non numeric characters",n,1) unless validregister(@csvdata[1],"Place")
+     raise FreeREGError, "Place field #{@csvdata[1]} is invalid" unless validregister(@csvdata[1],"Place")
     data_record[:place] = @register
     # do we validate the register field 
-     data_record[:error_flag] = add_error_flag("Church field #{@csvdata[2]} contains non numeric characters",n,2) unless validregister(@csvdata[2],"Church")
+    raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
     data_record[:county] = @csvdata[0]
     data_record[:church_name] = @register
     data_record[:register_type] = @register_type
@@ -816,14 +818,17 @@ COMMON_WORD_EXPANSIONS = {
   end
  
   def self.process_register_headers
+   
     @@list_of_registers.each do |place_key,head_value|
+     
       @@header.merge!(head_value)
       #puts "header #{head} \n"
+     
       @freereg1_csv_file = Freereg1CsvFile.new(@@header)
        @freereg1_csv_file.update_register
         #write the data records for this place/church
       @@data_hold[place_key].each do |datakey,datarecord|
-        
+       
         datarecord[:county] = head_value[:county]
         datarecord[:place] = head_value[:place]
         datarecord[:church_name] = head_value[:church_name]
@@ -947,6 +952,7 @@ COMMON_WORD_EXPANSIONS = {
                     break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
                     retry  
                 rescue FreeREGEnd => free
+                  p "processing registers"
                    n = n - 1
                    
 
