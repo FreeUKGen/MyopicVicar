@@ -30,15 +30,24 @@ class Freereg1CsvFilesController < InheritedResources::Base
 
   def update
     #update the headers
+  
     load(params[:id])
+    
+    
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
+    
+    @freereg1_csv_file.update_attributes(:locked => "true")
+  
+    @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
+    
     if @freereg1_csv_file.errors.any?
     
       flash[:notice] = 'The update of the file was unsuccsessful'
       render :action => 'edit'
      else
       session[:type] = "edit"
-      flash[:notice] = 'The update of the file was successful'
+      flash[:notice] = 'The update of the file was successful' 
+        Freereg1CsvFile.backup_file(@freereg1_csv_file)
       redirect_to :back
      end
   end
