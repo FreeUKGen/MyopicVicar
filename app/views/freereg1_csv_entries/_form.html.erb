@@ -22,10 +22,10 @@
           :required => true, :collection => ['M','F','?'], :size => 15 } %> 
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
   <%= f.input :record_type %> 
-   <%= f.input :film %>
-     <%= f.input :film_number %>
-     <%= f.input :line_id %>
-      <%= f.input :file_line_number%> 
+   <%= f.input :film,      :input_html => { :size => 80 } %>
+     <%= f.input :film_number,      :input_html => { :size => 80 } %>
+     <%= f.input :line_id,      :input_html => { :size => 80 } %>
+      <%= f.input :file_line_number,      :input_html => { :size => 10 }%> 
   <% when @freereg1_csv_file.record_type == "ma" %>
   <%= f.input :register_entry_number , :label =>'Register entry number' ,    :input_html => { :size => 10 }%> 
   <%= f.input :marriage_date %> 
@@ -64,10 +64,10 @@
   <%= f.input :witness2_surname %>  
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
    <%= f.input :record_type%> 
-    <%= f.input :film %>
-     <%= f.input :film_number %>
-       <%= f.input :line_id %>
-      <%= f.input :file_line_number %> 
+    <%= f.input :film,      :input_html => { :size => 80 } %>
+     <%= f.input :film_number,      :input_html => { :size => 80 } %>
+       <%= f.input :line_id,      :input_html => { :size => 80 }%>
+      <%= f.input :file_line_number,      :input_html => { :size => 10 } %> 
   <% when @freereg1_csv_file.record_type == "bu" %>
   <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
   <%= f.input :burial_date %> 
@@ -82,10 +82,10 @@
   <%= f.input :relative_surname %> 
   <%= f.input :notes,      :input_html => { :size => 80 }%>
    <%= f.input :record_type %>  
-    <%= f.input :film %>
-     <%= f.input :film_number %>
-       <%= f.input :line_id %>
-      <%= f.input :file_line_number %> 
+    <%= f.input :film,      :input_html => { :size => 80 } %>
+     <%= f.input :film_number,      :input_html => { :size => 80 } %>
+       <%= f.input :line_id,      :input_html => { :size => 80 } %>
+      <%= f.input :file_line_number,      :input_html => { :size => 10 } %> 
   <% else %>
   <% end %>
       <%= f.action :submit, :as => :input, :label => 'Update'   %>

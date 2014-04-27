@@ -53,8 +53,7 @@ class RegistersController < InheritedResources::Base
 
 
   def update
-   
-   # transcriber = params[:register][:transcribers]
+      # transcriber = params[:register][:transcribers]
    # params[:register][:transcribers] = [transcriber]
     load(params[:id])
      @register.alternate_register_name =  @church_name.to_s + " " + params[:register][:register_type].to_s
@@ -62,7 +61,6 @@ class RegistersController < InheritedResources::Base
     type_change = params[:register][:register_type] unless params[:register][:register_type] == @register.register_type
 
     @register.update_attributes(params[:register])
-
   unless type_change.nil?
 #need to propogate  register type change
      files =  @register.freereg1_csv_files
@@ -75,38 +73,8 @@ class RegistersController < InheritedResources::Base
       end
   end
   #merge registers with same name and type
-
-                  registers = @church.registers
-                
-                  if  registers.length > 1
-                    register_names = Array.new
-                      registers.each do |register|
-                         register_names << register.alternate_register_name
-                      end #register do
-
-                    duplicate_registers = register_names.select{|element| register_names.count(element) > 1 }
-                    duplicate_register_names = duplicate_registers.uniq
-                 
-                      if duplicate_registers.length >= 1 then
-                          duplicate_register_names.each do |duplicate_register_name|
-
-                            first_register = registers[register_names.index(duplicate_register_name)]
-                            second_register = registers[register_names.rindex(duplicate_register_name)]
-                            second_register_files =  second_register.freereg1_csv_files
-                               second_register_files.each do |file|
-                                   first_register.freereg1_csv_files << file
-                                  
-                               end # file do
-
-                       # first_register.save
-                           second_register.delete 
-                          end #duplicate register do
-                      end # duplicate_registers.length
-                  end #register_length
-
-
-
-    
+        registers = @church.registers
+       Register.update_register_attributes(registers)
     flash[:notice] = 'The update the Register was succsessful'
     if @register.errors.any? then
      
@@ -114,7 +82,7 @@ class RegistersController < InheritedResources::Base
       render :action => 'edit'
       return 
     end
-     render :action => 'show'
+     redirect_to :action => 'show'
   end
 
   

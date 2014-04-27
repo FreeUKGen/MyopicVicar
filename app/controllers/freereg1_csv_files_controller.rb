@@ -9,13 +9,14 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @role = session[:role]
     session[:my_own] = 'no'
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page])
- 
+  session[:page] = request.original_url
    end
 
   def show
     #show an individual batch
     load(params[:id])
    @role = session[:role]
+    session[:page] = request.original_url
     
   end
 
@@ -73,6 +74,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
 
   def by_userid
     #entry by userid
+     session[:page] = request.original_url
       session[:my_own] = 'no'
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -96,15 +98,17 @@ end
 def my_own
     #entry for an individual
    unless  session[:my_own].nil?
+     session[:page] = request.original_url
     #when we know you we are then get the files
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
     @who = @user.userid 
     @role = session[:role]
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by(session[:sort]).page(params[:page])  unless @user.nil?
-    render :index
+    render :my_own_index
     return
   else
+     session[:page] = request.original_url
     #on an initial entry we need to find out what to do
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first

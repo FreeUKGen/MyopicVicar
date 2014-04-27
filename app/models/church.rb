@@ -60,4 +60,71 @@ class Church
     place.last_amended = church.last_amended if (my_place_date.nil? ||(Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(my_place_date)))
     place.save
   end 
+  
+  def self.merge(churches)
+     churches_names = Array.new
+        
+          if churches.length >1 then
+
+               churches.each do |church|
+                 churches_names << church.church_name
+               end # number of churches do
+         
+               duplicate_churches = churches_names.select{|element| churches_names.count(element) > 1 }
+               duplicate_church_names = duplicate_churches.uniq
+        
+                  if duplicate_churches.length >= 1 then
+                    #have duplicate church asume there is only one duplicate
+                     duplicate_church_names.each do |duplicate_church_name|
+
+                       first_church = churches[churches_names.index(duplicate_church_name)]
+                       second_church = churches[churches_names.rindex(duplicate_church_name)]
+                       second_church_registers =  second_church.registers
+                         second_church_registers.each do |reg|
+                            first_church.registers << reg
+                         end # reg do
+              
+                 first_church.save
+                 second_church.save
+
+        #we now need to merge registers within the church
+            
+                  registers = first_church.registers
+                
+                  if  registers.length > 1
+                    register_names = Array.new
+                      registers.each do |register|
+                         register_names << register.alternate_register_name
+                      end #register do
+
+                    duplicate_registers = register_names.select{|element| register_names.count(element) > 1 }
+                    duplicate_register_names = duplicate_registers.uniq
+                 
+                      if duplicate_registers.length >= 1 then
+                          duplicate_register_names.each do |duplicate_register_name|
+
+                            first_register = registers[register_names.index(duplicate_register_name)]
+                            second_register = registers[register_names.rindex(duplicate_register_name)]
+                            second_register_files =  second_register.freereg1_csv_files
+                               second_register_files.each do |file|
+                                   first_register.freereg1_csv_files << file
+
+                               end # file do
+
+                       # first_register.save
+                           second_register.delete 
+                          end #duplicate register do
+                      end # duplicate_registers.length
+                  
+                    second_church.delete 
+
+                  end #no registers to merge
+
+               end # duplicate church name
+
+        end # no duplicate churches
+               
+      end #only one church
+  end
+
 end

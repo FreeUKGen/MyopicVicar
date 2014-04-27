@@ -50,22 +50,15 @@ def update
            end #if
      @csvfile.delete
    flash[:notice] =  "The csv file #{place}  has been uploaded if you 'Waited' or will soon be if you did not."
- 
-  
-   case  
-     when  session[:my_own] == "my_own"
-          redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
-          return
-     when session[:role] == "syndicate"
-            redirect_to freereg1_csv_files_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
-         return
-     when session[:role] == "counties"
+      if session[:role] == "counties"
          redirect_to places_path
          return
-     else
-      p "fell through"
-       redirect_to :back
-     end #case
+      else
+        @current_page = session[:page]
+        session[:page] = session[:initial_page]
+        redirect_to @current_page
+  end 
+   
   end  #commit
 end
 

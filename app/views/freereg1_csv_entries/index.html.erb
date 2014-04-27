@@ -14,7 +14,8 @@ Page Identification Freereg Entries:index<p>
     </div>
    <% end %>  
 <% case %>
-<% when @freereg1_csv_file.record_type == "ba" %>   
+<% when @freereg1_csv_file.record_type == "ba" %> 
+<%= paginate @freereg1_csv_entries %>  
 <table CLASS="boldtable" >
   <tr>
   <th>Record number</th>
@@ -32,6 +33,7 @@ Page Identification Freereg Entries:index<p>
   </tr>
 
 <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
+
  <% if freereg1_csv_entry.error_flag == 'true' %>
   <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
 <%else%>
@@ -57,7 +59,9 @@ Page Identification Freereg Entries:index<p>
   </tr>
 <% end %>
 </table>
-<% when @freereg1_csv_file.record_type == "bu" %>   
+<%= paginate @freereg1_csv_entries %>
+<% when @freereg1_csv_file.record_type == "bu" %> 
+<%= paginate @freereg1_csv_entries %>  
 <table>
   <tr >
    <th>Record number</th>
@@ -95,8 +99,9 @@ Page Identification Freereg Entries:index<p>
   </tr>
 <% end %>
 </table>
-
-<% when @freereg1_csv_file.record_type == "ma" %>   
+<%= paginate @freereg1_csv_entries %>
+<% when @freereg1_csv_file.record_type == "ma" %> 
+<%= paginate @freereg1_csv_entries %>  
 <table>
   <tr>
   <th>Record number</th>
@@ -132,6 +137,7 @@ Page Identification Freereg Entries:index<p>
   </tr>
 <% end %>
 </table>
+<%= paginate @freereg1_csv_entries %>
 <% end %>
 <br />
 

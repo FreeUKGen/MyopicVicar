@@ -4,15 +4,13 @@ layout "manage_counties"
 	def index
   
   clean_session
-  
-
-	@userid = session[:userid]
+  @userid = session[:userid]
   @first_name = session[:first_name]
   @user = UseridDetail.where(:userid => session[:userid]).first
   syndicates =@user.syndicate_groups
   number_of_syndicates = syndicates.length
   session[:role] = 'syndicate'
-
+  session[:page] = request.original_url
    redirect_to manage_resource_path(@user) if number_of_syndicates == 0
    @manage_syndicate = ManageSyndicate.new
   

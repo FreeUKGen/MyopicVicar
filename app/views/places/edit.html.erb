@@ -17,8 +17,8 @@ Page Identification Places:edit<p>
    <% end %> 
 
 <%= render 'form' %>
-
-
+<div>
+Please note if you are changing the name of a place the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></div>
 
 <div  style="float:left;"> <%= button_to 'Create New Place', new_place_path, method: :get %></div>
  <div style="float:left;"><%=button_to 'Show Place', places_path, method: :get%> </div>

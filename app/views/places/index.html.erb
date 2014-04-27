@@ -17,6 +17,7 @@ Page Identification Places:index<p>
    <% end %> 
 
 <div id="main"style="color:black">
+<%= paginate @places %> 
 
 <table style="width: 100%">
   <tr>
@@ -50,7 +51,7 @@ Page Identification Places:index<p>
   </tr>
 <% end %>
 </table>
-
+<%= paginate @places %> 
 <br />
 
 <div style="float:left;">  <%= button_to 'Create Place entry', new_place_path, method: :get %></div>

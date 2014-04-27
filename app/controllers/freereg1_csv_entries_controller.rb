@@ -18,7 +18,7 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @register = @freereg1_csv_file.register
     @register_name = @register.register_name 
     @register_name = @register.alternate_register_name if @register_name.nil?
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1)
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
   end
 
   def show
@@ -121,7 +121,6 @@ end
 
     @freereg1_csv_entry.update_attributes(params[:freereg1_csv_entry])
     
-     @freereg1_csv_entry.save
      
      if @freereg1_csv_entry.errors.any?
      flash[:notice] = 'The update of the record was unsuccsessful'
@@ -131,7 +130,7 @@ end
     file = @freereg1_csv_file
   
     Freereg1CsvFile.backup_file(file)
-    file.locked = 'true'
+    file.locked = "true"
     file.modification_date = Time.now.strftime("%d %b %Y")
     file.save
     
