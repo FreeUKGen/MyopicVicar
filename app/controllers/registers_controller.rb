@@ -29,22 +29,24 @@ class RegistersController < InheritedResources::Base
    @user = UseridDetail.where(:userid => session[:userid]).first
    @church_name = session[:church_name]
    @county =  session[:county]
-   @place = session[:place_name] 
+    @place_name = session[:place_name] 
    @first_name = session[:first_name] 
    @church = session[:church_id]
    @register = Register.new(params[:register])
 
   @register[:church_id] = @church
-  @register[:alternate_register_name] = @church_name + ' ' + params[:register][:register_type]
+  @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
  
      @register.save
-    flash[:notice] = 'The addition of the Register was succsessful'
+   
        if @register.errors.any?
         
          flash[:notice] = "The addition of the Register #{register.register_name} was unsuccsessful"
          render :action => 'new'
          return
        else
+         flash[:notice] = 'The addition of the Register was succsessful'
+         @place_name = session[:place_name] 
         # redirect_to register_path
         render :action => 'show'
        end
