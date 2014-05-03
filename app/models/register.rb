@@ -56,7 +56,7 @@ class Register
       my_place.churches << @@my_church
     end
 
-    #now creat the register
+    #now create the register
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register
@@ -90,6 +90,7 @@ class Register
   end
 
   def self.create_or_update_last_amended_date(freereg_file)
+ 
     register = freereg_file.register._id
     register = Register.find(register)
     original_last_amended_date = register.last_amended
@@ -101,5 +102,33 @@ class Register
     new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
     register.last_amended = new_last_amended_date
     register.save
+  end
+
+  def self.update_register_attributes(registers)
+    if  registers.length > 1
+                    register_names = Array.new
+                      registers.each do |register|
+                         register_names << register.alternate_register_name
+                      end #register do
+
+                    duplicate_registers = register_names.select{|element| register_names.count(element) > 1 }
+                    duplicate_register_names = duplicate_registers.uniq
+                 
+                      if duplicate_registers.length >= 1 then
+                          duplicate_register_names.each do |duplicate_register_name|
+
+                            first_register = registers[register_names.index(duplicate_register_name)]
+                            second_register = registers[register_names.rindex(duplicate_register_name)]
+                            second_register_files =  second_register.freereg1_csv_files
+                               second_register_files.each do |file|
+                                   first_register.freereg1_csv_files << file
+                                  
+                               end # file do
+
+                       # first_register.save
+                           second_register.delete 
+                          end #duplicate register do
+                      end # duplicate_registers.length
+                  end #register_length
   end
 end

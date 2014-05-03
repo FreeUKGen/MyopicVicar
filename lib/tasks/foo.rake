@@ -131,7 +131,7 @@ end
   require 'create_userid_docs'
    require "userid_detail"
   puts "Creating Transcriber Docs"
-  range = "*/.uDetails"
+  range = "*/*.uDetails"
     CreateUseridDocs.process(args.type,range )
     UseridDetail.create_indexes()
   
@@ -187,4 +187,21 @@ task :update_freereg_with_new_syndicate  => [:environment] do |t,args|
   
   puts "Task complete."
  end
+
+  task :testbed => [:environment] do |t,args|
+  @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.sessions[:default][:database]
+
+    p 'Testing'
+    p db
+ script_index_places = @mongodb_bin + "mongo #{db} --eval \"db.places.ensureIndex({place_name:1 })\""
+   `#{script_index_places}`
+   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+
+  p "finished"
+    
+  end
+
+ 
 end

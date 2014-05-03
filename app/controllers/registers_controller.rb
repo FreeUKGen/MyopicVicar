@@ -25,26 +25,28 @@ class RegistersController < InheritedResources::Base
 
   
   def create
-   session[:errors] = nil
+  
    @user = UseridDetail.where(:userid => session[:userid]).first
    @church_name = session[:church_name]
    @county =  session[:county]
-   @place = session[:place_name] 
+    @place_name = session[:place_name] 
    @first_name = session[:first_name] 
    @church = session[:church_id]
    @register = Register.new(params[:register])
 
-    @register[:church_id] = @church
-  @register[:alternate_register_name] = @church_name + ' ' + params[:register][:register_type]
-  @register[:register_name] = nil
+  @register[:church_id] = @church
+  @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
+ 
      @register.save
-    flash[:notice] = 'The addition of the Register was succsessful'
+   
        if @register.errors.any?
-         session[:errors] = @register.errors.messages
+        
          flash[:notice] = "The addition of the Register #{register.register_name} was unsuccsessful"
          render :action => 'new'
          return
        else
+         flash[:notice] = 'The addition of the Register was succsessful'
+         @place_name = session[:place_name] 
         # redirect_to register_path
         render :action => 'show'
        end
@@ -53,8 +55,7 @@ class RegistersController < InheritedResources::Base
 
 
   def update
-   
-   # transcriber = params[:register][:transcribers]
+      # transcriber = params[:register][:transcribers]
    # params[:register][:transcribers] = [transcriber]
     load(params[:id])
      @register.alternate_register_name =  @church_name.to_s + " " + params[:register][:register_type].to_s
@@ -62,34 +63,43 @@ class RegistersController < InheritedResources::Base
     type_change = params[:register][:register_type] unless params[:register][:register_type] == @register.register_type
 
     @register.update_attributes(params[:register])
-
   unless type_change.nil?
 #need to propogate  register type change
      files =  @register.freereg1_csv_files
        files.each do |file|
+        file.locked = "true"
+        file.modification_date = Time.now.strftime("%d %b %Y")
         file.register_type = type_change
         file.save!
+        Freereg1CsvFile.backup_file(file)
       end
   end
-    
+  #merge registers with same name and type
+        registers = @church.registers
+       Register.update_register_attributes(registers)
     flash[:notice] = 'The update the Register was succsessful'
     if @register.errors.any? then
-      session[:errors] = @church.errors.messages
+     
       flash[:notice] = 'The update of the Register was unsuccsessful'
       render :action => 'edit'
       return 
     end
-     render :action => 'show'
+     redirect_to :action => 'show'
   end
 
   
   def load(register_id)
     @register = Register.find(register_id)
+    @register_name = @register.register_name
+    @register_name = @register.alternate_register_name if @register_name.nil? ||  @register_name.empty?
     session[:register_id] = register_id
-    session[:register_name] = @register.alternate_register_name
-    @register_name = session[:register_name]
-    @church = session[:church_id]
-    @church_name = session[:church_name]
+    session[:register_name] = @register_name
+    p "register"
+    p  @register.register_name
+    p @register.alternate_register_name
+    p @register_name
+    @church = @register.church
+    @church_name = @church.church_name
     @place = session[:place_id]
     @county =  session[:county]
     @place_name = session[:place_name] 
@@ -106,13 +116,13 @@ class RegistersController < InheritedResources::Base
 
   def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the register was unsuccessful because there were dependant documents; please delete them first'
-   session[:errors] = 'errors'
+  
    redirect_to register_path(@register)
  end
 
  def record_validation_errors
    flash[:notice] = 'The update of the children to Register with a register name change failed'
-   session[:errors] = 'errors'
+  
    redirect_to register_path(@register)
  end
 end

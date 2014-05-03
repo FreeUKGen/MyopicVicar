@@ -14,7 +14,7 @@ Page Identification UserDetails: Index<p>
 
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>
 
@@ -48,7 +48,10 @@ Page Identification UserDetails: Index<p>
     <td ><%= userid.number_of_records %> </td>  
     </tr>
     <tr>
-     <td></td><td></td><td><%= button_to 'Show', userid_detail_path(userid), method: :get  %></td><td><%= button_to 'Edit details', edit_userid_detail_path(userid), method: :get  %></td> <td><%= button_to 'Disable', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %></td> 
+     <td></td><td><%= button_to 'Show', userid_detail_path(userid), method: :get  %>
+     </td><td><%= button_to 'Edit details', edit_userid_detail_path(userid), method: :get  %>
+      </td><td><%= button_to 'List their batches', by_userid_freereg1_csv_file_path(userid), method: :get  %>
+     </td> <td><%= button_to 'Disable', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %></td> 
   </tr>
   <% end %>
   <%else%>

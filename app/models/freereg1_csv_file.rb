@@ -23,11 +23,12 @@ class Freereg1CsvFile
    require 'csv'
 
 
-  has_many :freereg1_csv_entries
+  has_many :freereg1_csv_entries, validate: false
   belongs_to :register, index: true
   #register belongs to church which belongs to place
   has_one :csvfile
-
+  embeds_many :batch_errors
+   index "batch_errors._id" => 1
 
 
   # Fields correspond to cells in CSV headers  
@@ -57,20 +58,23 @@ class Freereg1CsvFile
   field :error, type: Integer, default: 0
   field :digest, type: String
   field :locked, type: String, default: 'false' 
-  field :lds, type: String
+  field :lds, type: String, default: 'no'
   field :action, type: String
   field :characterset, type: String
   field :alternate_register_name,  type: String
   field :csvfile, type: String
+
+
+
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
-
+index({file_name:1,error:1})
+index({error:1, file_name:1})
   before_save :add_lower_case_userid
   after_save :create_or_update_last_amended_date 
-  before_update :save_file_to_attic
-  after_update :write_csv_file
-
- 
+  
+ scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
+ scope :userid, ->(userid) { where(:userid => userid) }
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4}\z/
@@ -90,102 +94,26 @@ class Freereg1CsvFile
     'Dec' => '12'
   }
 
+
+
+
+
   def create_or_update_last_amended_date
+   
    Register.create_or_update_last_amended_date(self)
+  
    Church.create_or_update_last_amended_date(self)
+   
    UseridDetail.update_files(self)
+   
   end
 
   def add_lower_case_userid
+ 
     self[:userid_lower_case] = self[:userid].downcase
   end
 
-  def save_file_to_attic
-    self.save_to_attic
-    self[:locked] = true
-    self[:modification_date] = Time.now.strftime("%d %b %Y")
-  end
-
-  def write_csv_file
-   file = self.file_name
-   csvdir = File.join(Rails.application.config.datafiles,self.userid)
-   csvfile = File.join(csvdir,file)
-   csv_hold = Array.new
-   if File.file?(csvfile)
-    p "file should not be there"
-   end
-  
-    CSV.open(csvfile, "wb") do |csv|
-        # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
-    csv << ["+INFO","#{self.transcriber_email}","PASSWORD","SEQUENCED","#{self.record_type}","#{self.characterset}"]
-      # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
-    csv << ['#','CCCC',self.transcriber_name,self.transcriber_syndicate,self.file_name,self.transcription_date]
-      # eg #,Credit,Libby,email address,,,,,,
-    csv << ['#','CREDIT',self.credit_name,self.credit_email]
-       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
-    csv << ['#',self.modification_date,self.first_comment,self.second_comment]
-       #eg +LDS,,,,
-    csv << ['+LDS'] if self.lds =='yes'
-    type = self.record_type
-    records = self.freereg1_csv_entries
-      records.each do |rec|
-     
-      case 
-         when self.record_type == "ba"
-         
-          csv_hold =  ["#{self.county}","#{self.place}","#{self.church_name}",
-             "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
-             "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
-             "#{rec.father_occupation}","#{rec.notes}"]
-            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if self.lds =='yes'
-            csv << csv_hold
-
-         when self.record_type == "bu"
-           
-         csv_hold = ["#{self.county}","#{self.place}","#{self.church_name}",
-            "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
-            "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
-            "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
-            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if self.lds =='yes'
-            csv << csv_hold
-        
-         when self.record_type == "ma" 
-             
-
-        csv_hold = ["#{self.county}","#{self.place}","#{self.church_name}",
-          "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
-          "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
-          "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
-          "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
-          "#{rec.witness1_forename}","#{rec.witness1_surname}","#{rec.witness2_forename}","#{rec.witness2_surname}","#{rec.notes}"]
-            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if self.lds =='yes'
-            csv << csv_hold
-      end
-
-     end
-    
-    end
-
  
-   end
-
-   def save_to_attic
-  #to-do unix permissions
-
-   file = self.file_name
-   csvdir = File.join(Rails.application.config.datafiles,self.userid)
-   csvfile = File.join(csvdir,file)
-    
-      if File.file?(csvfile)
-        newdir = File.join(csvdir,'.attic')
-        Dir.mkdir(newdir) unless Dir.exists?(newdir)
-        renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
-        File.rename(csvfile,renamed_file)
-        FileUtils.mv(renamed_file,newdir, verbose:  true)
-       else 
-         p "file does not exist"
-        end
- end
 
   def ordered_display_fields
     order = []
@@ -205,6 +133,7 @@ class Freereg1CsvFile
   end
   
   def update_register
+   
     Register.update_or_create_register(self)
   end
 
@@ -301,7 +230,7 @@ class Freereg1CsvFile
    
         # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
         # this function)
-        p "deleting #{csv_file}"
+       
          # fetch the IDs of all the entries on this file
         freereg_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => csv_file).all
         freereg_entries.each do |entry|
@@ -355,5 +284,107 @@ class Freereg1CsvFile
     my_days =  date_year.to_i*365 + date_month.to_i*30 + date_day.to_i 
     my_days
   end
+  def self.backup_file(file)
+    #this makes aback up copu of the file in the attic and
+  
+   file_name = file.file_name
+   csvdir = File.join(Rails.application.config.datafiles,file.userid)
+   csvfile = File.join(csvdir,file_name)
+    
+      if File.file?(csvfile)
+        newdir = File.join(csvdir,'.attic')
+        Dir.mkdir(newdir) unless Dir.exists?(newdir)
+        renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
+        File.rename(csvfile,renamed_file)
+        FileUtils.mv(renamed_file,newdir, verbose:  true)
+       else 
+         p "file does not exist"
+        end
+   csv_hold = Array.new
+       if File.file?(csvfile)
+          p "file should not be there"
+       end
+       #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
+    file_parts = Freereg1CsvFile.where(:file_name => file_name, :userid => file.userid).all
 
+    CSV.open(csvfile, "wb", {:force_quotes => true}) do |csv|
+        # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
+    record_type = RecordType.display_name(file.record_type).upcase
+    csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
+      # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
+    csv << ['#','CCCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
+      # eg #,Credit,Libby,email address,,,,,,
+    csv << ['#','CREDIT',file.credit_name,file.credit_email]
+       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
+    csv << ['#',file.modification_date,file.first_comment,file.second_comment]
+       #eg +LDS,,,,
+    csv << ['+LDS'] if file.lds =='yes'
+    file_parts.each do |fil|
+    type = fil.record_type
+    records = fil.freereg1_csv_entries
+      records.each do |rec|
+        church_name = fil.church_name.to_s + " " + fil.register_type.to_s
+       case 
+         when fil.record_type == "ba"
+         
+            csv_hold =  ["#{fil.county}","#{fil.place}","#{church_name}",
+             "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
+             "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
+             "#{rec.father_occupation}","#{rec.notes}"]
+            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv << csv_hold
+
+         when fil.record_type == "bu"
+           
+            csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
+            "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
+            "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
+            "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
+            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv << csv_hold
+        
+         when fil.record_type == "ma" 
+          csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
+          "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
+          "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
+          "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
+          "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
+          "#{rec.witness1_forename}","#{rec.witness1_surname}","#{rec.witness2_forename}","#{rec.witness2_surname}","#{rec.notes}"]
+            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv << csv_hold
+       end #end case
+     end #end records
+    end #file parts
+
+    end #end csv
+   end #end method
+  def self.update_file_attributes(my_files,attribute,change)
+    if my_files then
+      my_files.each do |myfile|
+        case 
+        when attribute == 'place'
+          myfile.place = change
+        when attribute == 'church'
+          myfile.church_name = change
+        end
+        myfile.locked = "true"
+        myfile.modification_date = Time.now.strftime("%d %b %Y")
+        myfile.save!
+
+ # save place name change in Freereg_csv_entry
+        myfile_id = myfile._id
+        my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).all
+        my_entries.each do |myentries|
+           case 
+           when attribute == 'place'
+            myentries.place = change
+           when attribute == 'church'
+            myentries.church_name = change
+           end
+            myentries.save!
+        end #end myentries
+          Freereg1CsvFile.backup_file(myfile)
+      end #end myfile
+    end #end my_files
+  end
 end

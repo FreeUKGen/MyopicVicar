@@ -5,60 +5,87 @@
   <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %>
   <%= f.input :register_entry_number , :input_html => { :size => 10} %> 
-  <%= f.input :baptism_date  %> 
-  <%= f.input :birth_date_elements,  :as => :date_select, 
-         :prompt => {:day => "Day", :month => "Month", :year => "Year"},
-         :start_year => 1530  %> 
-  
+ 
+  <%= f.input :baptism_date %> 
+  <%= f.input :birth_date %> 
+   <%= f.input :person_forename %> 
+ 
   <%= f.input :father_forename %> 
-  <%= f.input :father_occupation %> 
+ 
   <%= f.input :father_surname %> 
+   <%= f.input :father_occupation %> 
   <%= f.input :mother_forename %> 
   <%= f.input :mother_surname %> 
   <%= f.input :person_abode %> 
-  <%= f.input :person_forename %> 
-  <%= f.input :person_sex ,      :input_html => { :size => 2 }%> 
+ 
+   <%= f.input :person_sex,  {:as => :select,:label => "Sex of Individual",:include_blank => false,
+          :required => true, :collection => ['M','F','?'], :size => 15 } %> 
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
+  <%= f.input :record_type %> 
+   <%= f.input :film,      :input_html => { :size => 80 } %>
+     <%= f.input :film_number,      :input_html => { :size => 80 } %>
+     <%= f.input :line_id,      :input_html => { :size => 80 } %>
+      <%= f.input :file_line_number,      :input_html => { :size => 10 }%> 
   <% when @freereg1_csv_file.record_type == "ma" %>
-  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
-  <%= f.input :bride_abode %> 
-  <%= f.input :bride_age %> 
-  <%= f.input :bride_condition %> 
-  <%= f.input :bride_father_forename %> 
-  <%= f.input :bride_father_occupation %> 
-  <%= f.input :bride_father_surname %> 
+  <%= f.input :register_entry_number , :label =>'Register entry number' ,    :input_html => { :size => 10 }%> 
+  <%= f.input :marriage_date %> 
   <%= f.input :bride_forename %> 
+ <%= f.input :bride_surname %> 
+<%= f.input :bride_age %> 
+  <%= f.input :bride_condition %> 
+
+  <%= f.input :bride_abode %> 
   <%= f.input :bride_occupation %> 
   <%= f.input :bride_parish %> 
-  <%= f.input :bride_surname %> 
-  <%= f.input :groom_abode %> 
-  <%= f.input :groom_age %> 
+ 
+  
+  <%= f.input :bride_father_forename %> 
+ 
+  <%= f.input :bride_father_surname %> 
+   <%= f.input :bride_father_occupation %> 
+   <%= f.input :groom_forename %> 
+    <%= f.input :groom_surname %> 
+<%= f.input :groom_age %> 
   <%= f.input :groom_condition %> 
-  <%= f.input :groom_father_forename %> 
-  <%= f.input :groom_father_occupation %> 
-  <%= f.input :groom_father_surname %> 
-  <%= f.input :groom_forename %> 
-  <%= f.input :groom_occupation %> 
+
+  <%= f.input :groom_abode %> 
+   <%= f.input :groom_occupation %> 
   <%= f.input :groom_parish %> 
-  <%= f.input :groom_surname %> 
-  <%= f.input :marriage_date %> 
+  <%= f.input :groom_father_forename %> 
+  
+  <%= f.input :groom_father_surname %> 
+ <%= f.input :groom_father_occupation %> 
+ 
+ 
+  
   <%= f.input :witness1_forename %> 
   <%= f.input :witness1_surname %> 
   <%= f.input :witness2_forename %> 
   <%= f.input :witness2_surname %>  
   <%= f.input :notes,      :input_html => { :size => 80 }%> 
+   <%= f.input :record_type%> 
+    <%= f.input :film,      :input_html => { :size => 80 } %>
+     <%= f.input :film_number,      :input_html => { :size => 80 } %>
+       <%= f.input :line_id,      :input_html => { :size => 80 }%>
+      <%= f.input :file_line_number,      :input_html => { :size => 10 } %> 
   <% when @freereg1_csv_file.record_type == "bu" %>
   <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
   <%= f.input :burial_date %> 
   <%= f.input :burial_person_forename %> 
   <%= f.input :burial_person_surname %> 
   <%= f.input :burial_person_abode %> 
-  <%= f.input :female_relative_forename %>   
-  <%= f.input :male_relative_forename %>
-  <%= f.input :person_age %>  
+   <%= f.input :person_age %>  
   <%= f.input :relationship %> 
+  <%= f.input :male_relative_forename %>
+  <%= f.input :female_relative_forename %>   
+ 
   <%= f.input :relative_surname %> 
-  <%= f.input :notes,      :input_html => { :size => 80 }%> 
+  <%= f.input :notes,      :input_html => { :size => 80 }%>
+   <%= f.input :record_type %>  
+    <%= f.input :film,      :input_html => { :size => 80 } %>
+     <%= f.input :film_number,      :input_html => { :size => 80 } %>
+       <%= f.input :line_id,      :input_html => { :size => 80 } %>
+      <%= f.input :file_line_number,      :input_html => { :size => 10 } %> 
   <% else %>
   <% end %>
       <%= f.action :submit, :as => :input, :label => 'Update'   %>

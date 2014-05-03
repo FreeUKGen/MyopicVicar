@@ -2,7 +2,7 @@ Page Identification Freereg Files:my_own<p>
 <%= semantic_form_for(@freereg1_csv_file) do |f| %>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
 

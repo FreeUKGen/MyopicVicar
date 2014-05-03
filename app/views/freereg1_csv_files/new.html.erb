@@ -2,6 +2,12 @@ Page Identification Freereg Files:new<p>
 <p style="text-align: center">Create new file<p>
 <div style="float:left;"> <%= button_to 'Edit this batch', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
 <div style="float:left;"> <%= button_to 'File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>
 
 
@@ -9,5 +15,11 @@ Page Identification Freereg Files:new<p>
 
 <div style="float:left;"> <%= button_to 'Edit this batch', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
 <div style="float:left;"> <%= button_to 'File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>
 

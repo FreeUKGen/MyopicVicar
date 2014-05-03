@@ -6,26 +6,20 @@ class FreeregCsvProcessor
   require 'text'
   require "unicode"
   require 'chapman_code'
- require "#{Rails.root}/app/models/freereg1_csv_file"
+  require "#{Rails.root}/app/models/freereg1_csv_file"
   require "record_type"
   require 'digest/md5'
   require 'get_files'
- 
+  require "#{Rails.root}/app/models/userid_detail"
+  require 'freereg_validations'
   CONTAINS_PERIOD = /\./
   DATEMAX = 2020
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
   ST_PERIOD = /\A[Ss][Tt]\z/
-  VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120}
-  VALID_AGE_TYPE1 = /\A\d{1,3}\z/
-  VALID_AGE_TYPE2 = /^(\d{1,2})([dwmy])/
-  VALID_AGE_TYPE3 =  /^(\d{1,2})([dwmy])(\d{1,2})([dwmy])/
-  VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
-  VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age"]
+  
   VALID_CHAR = /[^a-zA-Z\d\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#]/
-  VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
-  VALID_YEAR = /\A\d{4,5}\z/
+  
   VALID_MALE= ["SON"]
   VALID_FEMALE =["DAU"]
   VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
@@ -39,15 +33,17 @@ class FreeregCsvProcessor
   }
   VALID_DATE = /^\d{1,2}.[A-Za-z]{3,3}.\d{4}$/
   VALID_DATE_SHORT = /^\d{1,2}.[A-Za-z]{3,3}.\d{2}$/
-  VALID_DATE_NUMERIC = /^\d{1,2}.\d{1,2}.\d{2}$/
+  VALID_DATE_NUMERIC = /^\d{1,2}.\d{1,2}.\d{2,4}$/
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
   VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
   VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
+  
   VALID_MALE_SEX = ["M","M." ,"SON","MALE","MM","SON OF"]
   UNCERTAIN_MALE_SEX = ["M?","SON?","[M]" ,"MF"]
   UNCERTAIN_FEMALE_SEX = ["F?", "DAU?"]
   UNCERTAIN_SEX = ["?", "-", "*","_","??"]
+   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_FEMALE_SEX = ["F","FF","FFF","FM","F.","FEMALE","DAUGHTER","WIFE","DAUGHTER OF","DAU", "DAU OF"]
   VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp\(][AaBbDdEeHhTtPpTtXxRrWw]?[TtXxRrWw]?'?[Ss]? ?[\)]?\z/
   VALID_REGISTER_TYPE = ["AT", "BT", "PR", "PH", "EX", "TR", "DW", "DT", "PT", "MI"]
@@ -159,58 +155,7 @@ COMMON_WORD_EXPANSIONS = {
   CAPITALIZATION_WORD_EXCEPTIONS = [
             "a", "an", "and", "at", "but", "by", "cum", "de", "for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
             "the", "to", "von", "with", "yet", "y"]
-  VALID_MARRIAGE_CONDITIONS = {
-          'Singleman' => 'Single Man',
-          'Singlaman' => 'Single Man',
-          'Singlewoman' => 'Single Woman',
-          'Singl Woman' => 'Single Woman',
-          'Single Person' => 'Single',
-          'Virgine' => 'Virgin',
-          'Bach' => 'Bachelor',
-          'Bac' => 'Bachelor',
-          'Bch' => 'Bachelor',
-          'Batchelor' => 'Bachelor',
-          'Batcher' => 'Bachelor',
-          'Bachelore' => 'Bachelor',
-          'B' => 'Bachelor',
-          'Sing' => 'Single',
-          'Spin' => 'Spinster',
-          'Spin.' => 'Spinster',
-          'Spiinster' => 'Spinster',
-          'Spinister' => 'Spinster',
-          'Spinspter' => 'Spinster',
-          'Maiden and Spinster' => 'Spinster',
-          'Maiden' => 'Spinster',
-          'Single Woman and Spinster' => 'Spinster',
-          'Minor and Spinster' => 'Spinster',
-          'Spinster and Minor' => 'Spinster',
-          'Spinster Minor' => 'Spinster',
-          'Sp' => 'Spinster',
-          'Spr' => 'Spinster',
-          'Singl' => 'Single',
-          'S' => 'Single',
-          'Wid' => 'Widowed',
-          'Wid.' => 'Widowed',
-          'Widw' => 'Widow',
-          'Widdow' => 'Widow',
-          'A Widowe' => 'Widow',
-          'Spinster Widow' => 'Widow',
-          'Widowe' => 'Widow',
-          'Wido' => 'Widow',
-          'Br Widow' => 'Widow',
-          'Widower [sic]' => 'Widower',
-          'Widdower' => 'Widower',
-          'Widwr' => 'Widower',
-          'Widr' => 'Widower',
-          'Wdr' => 'Widower',
-          'W' => 'Widowed',
-          'Relict' => 'Widow',
-          'Jun' => 'Minor',
-          'A Minor' => 'Minor',
-          '*' => '*',
-          '?' => '*',
-          'Divorcee' => "Divorcee",
-          'Juvenis' => 'Minor'}
+  
 
   attr_accessor :freereg1_csv_file
 
@@ -218,7 +163,8 @@ COMMON_WORD_EXPANSIONS = {
   # validate the modern date of creation or modification
   def self.datevalmod(m)
     return true if @csvdata[m].nil? || @csvdata[m].empty?
-    if @csvdata[m] =~ VALID_DATE_SHORT 
+    case
+     when @csvdata[m] =~ VALID_DATE_SHORT 
          DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
           if date_parts.length == 3 then
@@ -227,36 +173,31 @@ COMMON_WORD_EXPANSIONS = {
           @csvdata[m] = date_parts.join(" ")
         end
         return true
-    else
-        if @csvdata[m] =~ VALID_DATE 
+     when @csvdata[m] =~ VALID_DATE 
          DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
           @csvdata[m] = date_parts.join(" ") if date_parts.length == 3
           end
           return true
-        else
-          if @csvdata[m] =~ VALID_DATE_NUMERIC 
+      when @csvdata[m] =~ VALID_DATE_NUMERIC 
             DATE_SPLITS.each_pair do |date_splitter, date_split|
              date_parts = @csvdata[m].split(date_split)
              if date_parts.length == 3 then
               date_parts[1] = VALID_MONTH[date_parts[1].to_i ]
-              date_parts[2] = (date_parts[2].to_i + 2000).to_s 
+              date_parts[2] = (date_parts[2].to_i + 2000).to_s if date_parts[2].length == 2
+              date_parts[2] = date_parts[2] if date_parts[2].length == 4
               @csvdata[m] = date_parts.join(" ") 
-             
-             end
-            end
+              end #end if
+            end #end do
             return true
-          else
+      else
            return false 
-        end
-         return false 
-        end
-    end
+      end
+          
   end
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
   def self.datestat(x)
-    return true if x.nil? || x.empty?
       xx = x.to_i
       daterange = Array.new
        datemax = @@list_of_registers[@@place_register_key].fetch(:datemax)
@@ -272,152 +213,38 @@ COMMON_WORD_EXPANSIONS = {
   end
 
   #validate dates in the record and allow for the split date format 1567/8 and 1567/68 creates a base year and a split year eg /8
-  def self.datevalsplit(x,type_of_date)
-    @splityear = nil
-    return true if x.nil? || x.empty?
-      a = x.split(" ")
-      if a.length == 3
-        #work with  dd mmm yyyy/y
-        #firstly deal with the dd and allow the wild character
-        return false unless (a[0].to_s =~ VALID_DAY || a[0].to_s =~ WILD_CHARACTER)
-        #deal with the month allowing for the wild character
-        return false unless (VALID_MONTH.include?(Unicode::upcase(a[1])) || a[1].to_s =~ WILD_CHARACTER)
-          #deal with the year and split year
-          if a[2].length >4
-            #deal with the split year
-             @splityear = a[2]
-              a[2]= a[2][0..-(a[2].length-3)]
-              @splityear = @splityear[-(@splityear.length-4)..-1]
-              datestat(a[2]) unless  (a[2].to_s =~ WILD_CHARACTER || type_of_date == "Birth")
-              return true
-          else
-              #deal with the yyyy and permit the wild character
-              return false  unless (a[2].to_s =~ VALID_YEAR || a[2].to_s =~ WILD_CHARACTER)
-              datestat(a[2]) unless  (a[2].to_s =~ WILD_CHARACTER || type_of_date == "Birth")
-              return true
-          end
-      else
-        if a.length == 2
-         #deal with dates that are mmm yyyy firstly the mmm then the split year
-          return false unless (VALID_MONTH.include?(Unicode::upcase(a[0])) || a[0].to_s =~ WILD_CHARACTER)
-            if a[1].length >4
-              @splityear = a[1]
-              a[1]= a[1][0..-(a[1].length-3)]
-              @splityear = @splityear[-(@splityear.length-4)..-1]
-              datestat(a[1]) unless (a[1].to_s =~ WILD_CHARACTER || type_of_date == "Birth")
-              return true
-            else
-              return false  unless (a[1].to_s =~ VALID_YEAR || a[1].to_s =~ WILD_CHARACTER)
-              datestat(a[1]) unless  (a[1].to_s =~ WILD_CHARACTER || type_of_date == "Birth")
-              return true
-            end
-        else
-          if a.length == 1
-          #deal with dates that are year only
-            if a[0].length >4
-              @splityear = a[0]
-              a[0]= a[0][0..-(a[0].length-3)]
-              @splityear = @splityear[-(@splityear.length-4)..-1]
-              datestat(a[0]) unless  (a[0].to_s =~ WILD_CHARACTER || type_of_date == "Birth")
-              return true
-            else
-              return false  unless (a[0].to_s =~ VALID_YEAR || a[0].to_s =~ WILD_CHARACTER)
-              datestat(a[0]) unless  (a[0].to_s =~ WILD_CHARACTER || type_of_date == "Birth")
-              return true
-            end
-          end        
-        end
-      end
-  end
-
-  # clean up names
-  def self.cleanname(m)
-    #not convinced this code is effective or needed
-    return true if @csvdata[m].nil? || @csvdata[m].empty?
-    return true if @csvdata[m] !=~ VALID_NAME
-    return false
-  end
+  
+ 
 
   #clean up the sex field
-  def self.cleansex(m)
-    return true if @csvdata[m].nil? || @csvdata[m].empty?
+  def self.cleansex(field)
+   if field.nil? || field.empty?
+    field = nil
+   else
     case
-    when VALID_MALE_SEX.include?(@csvdata[m].upcase)
-     @csvdata[m] = "M" 
-     return true 
-    when UNCERTAIN_MALE_SEX.include?(@csvdata[m].upcase)
-      @csvdata[m] = "M?" 
-      return true 
-    when VALID_FEMALE_SEX.include?(@csvdata[m].upcase)
-     @csvdata[m] = "F"
-     return true  
-    when UNCERTAIN_FEMALE_SEX.include?(@csvdata[m].upcase)
-     @csvdata[m] = "F?"
-     return true  
-    when UNCERTAIN_SEX.include?(@csvdata[m].upcase)
-     @csvdata[m] = "?" 
-     return true 
+    when VALID_MALE_SEX.include?(field.upcase)
+    field = "M" 
+    
+    when UNCERTAIN_MALE_SEX.include?(field.upcase)
+     field = "M?" 
+    
+    when VALID_FEMALE_SEX.include?(field.upcase)
+    field = "F"
+   
+    when UNCERTAIN_FEMALE_SEX.include?(field.upcase)
+    field = "F?"
+   
+    when UNCERTAIN_SEX.include?(field.upcase)
+     field = "?" 
     else
-      return false
-    end
-  end
+      field
+    end #end case
+   end #end if
+   field
+  end #end method
 
-  #clean up a text field eg abode and notes fields
-  def self.cleantext(m)
-     #not convinced this code is effective or needed
-    return true if @csvdata[m].nil? || @csvdata[m].empty?
-      return true if @csvdata[m] !=~ VALID_TEXT
-      return false
-  end
-
-  # clean u the conditions field and make changes according to the valconditions hash
-  def self.cleancondition(m)
-    return true if @csvdata[m].nil? || @csvdata[m].empty?
-      @csvdata[m] = @csvdata[m].capitalize
-      @csvdata[m] = VALID_MARRIAGE_CONDITIONS[@csvdata[m]] if VALID_MARRIAGE_CONDITIONS.has_key?(@csvdata[m])
-      return true if VALID_MARRIAGE_CONDITIONS.has_value?(@csvdata[m])
-      return false
-  end
-
-  #clean up the age field
-  # check that the age is in one of several acceptable formats - infant
-  # 1d (day), 2w (week), 3m (month), 2y5m (2 years, 5 months), or - for 'no age'
-  # max 30d, 30w, 30m and 150y
-  def self.cleanage(m)
-     #the planning team requested this code be deactivated
-    return true if @csvdata[m].nil? || @csvdata[m].empty?
-      #test for valid words
-      return true if VALID_AGE_WORDS.include?(Unicode::downcase(@csvdata[m]))
-      #test for straight years
-     
-        if @csvdata[m] =~ VALID_AGE_TYPE1
-          return true unless @csvdata[m].to_i > VALID_AGE_MAXIMUM["y"]
-          return false
-        else
-         #permit the n(dwmy)
-          if @csvdata[m] =~ VALID_AGE_TYPE2
-            duration = $1.to_i
-            unit = $2.to_s
-            return true unless duration > VALID_AGE_MAXIMUM[unit]
-            return false
-          else
-            #permit the n(dwmy) m(dwmy)
-            if @csvdata[m] =~ VALID_AGE_TYPE3
-              duration1 = $1.to_i
-              unit1 = $2.to_s
-              duration2 = $1.to_i
-              unit2 = $2.to_s
-              return true unless duration1 > VALID_AGE_MAXIMUM[unit1]
-              return true unless duration2 > VALID_AGE_MAXIMUM[unit2]
-              return false
-            else
-              #permit the vulgar fractions
-              return true if @csvdata[m] !=~ VALID_AGE_TYPE4
-              return false
-            end
-          end
-        end
-  end
+  
+ 
 
   #test for the character set
   def self.charvalid(m)
@@ -476,7 +303,8 @@ COMMON_WORD_EXPANSIONS = {
            @register_type = "DW" if @register_type == "DT"
            @register_type = "PH" if @register_type == "PT"
           else
-           raise FreeREGError,  "The apparent Register Type extracted from the Church name #{register_words[-1]} is not valid" 
+            @register_type = ""
+           return true
          end
         end
       end
@@ -551,17 +379,20 @@ COMMON_WORD_EXPANSIONS = {
   #process the header line 1
   # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
   def self.process_header_line_one
-    raise FreeREGError,  "First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
+    raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
     # BWB: temporarily commenting out to test db interface
 #   address = EmailVeracity::Address.new(@csvdata[1])
 #   raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
     @@header [:transcriber_email] = @csvdata[1]
-    raise FreeREGError,  "Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
+    new_email  = UseridDetail.where(:userid =>  @@header [:userid] ).first
+    new_email = new_email.email_address unless new_email.nil?
+    @@header [:transcriber_email] = new_email unless new_email.nil?
+    raise FreeREGError,  "Header_Error,Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
     # canonicalize record type
     raw_record_type = @csvdata[4]
     scrubbed_record_type = Unicode::upcase(@csvdata[4]).gsub(/\s/, '')
     @@header [:record_type] =  RECORD_TYPE_TRANSLATION[scrubbed_record_type]
-    raise FreeREGError, "Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
+    raise FreeREGError, "Header_Error,Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
     @@header [:characterset] = @csvdata[5]
   end
 
@@ -570,7 +401,7 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_header_line_two
     @csvdata = @csvdata.compact
     @number_of_fields = @csvdata.length
-    raise FreeREGError, "The second header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+    raise FreeREGError, "Header_Error,The second header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
     @csvdata[1] = @csvdata[1].upcase unless @csvdata[1].nil?
     case
       when (@csvdata[0] =~ HEADER_FLAG && @csvdata[1] =~ VALID_CCC_CODE)
@@ -631,19 +462,23 @@ COMMON_WORD_EXPANSIONS = {
       process_header_line_two_block
         
     else
-      raise FreeREGError, "I did not know enough about your data format to extract transciber information at header line 2"
+      raise FreeREGError, "Header_Error,I did not know enough about your data format to extract transciber information at header line 2"
       
     end
   
   end
 
   def self.process_header_line_two_block
-    raise FreeREGError, "The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless cleanname(2)
+    raise FreeREGError, "Header_Error,The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless FreeregValidations.cleantext(@csvdata[2])
     @@header [:transcriber_name] = @csvdata[2]
-    raise FreeREGError, "The syndicate can only contain alphabetic and space characters in the second header line" unless cleanname(2)
+    raise FreeREGError, "Header_Error,The syndicate can only contain alphabetic and space characters in the second header line" unless FreeregValidations.cleantext(@csvdata[3])
     @@header [:transcriber_syndicate] = @csvdata[3]
-     raise FreeREGError, "The transcription date #{@csvdata[5]} is incorrectly formatted" unless datevalmod(5)
+     raise FreeREGError, "Header_Error,The transcription date #{@csvdata[5]} is incorrectly formatted" unless datevalmod(5)
     @@header [:transcription_date] = @csvdata[5]
+     userid = UseridDetail.where(:userid =>  @@header [:userid] ).first
+    
+     @@header [:transcriber_syndicate] = userid.syndicate unless userid.nil?
+
   end
 
   #process the @@headerer line 3
@@ -651,7 +486,7 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_header_line_threee
      @csvdata = @csvdata.compact
      @number_of_fields = @csvdata.length
-     raise FreeREGError, "The third header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+     raise FreeREGError, "Header_Error,The third header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
     
     case 
       when (@csvdata[0] =~ HEADER_FLAG &&  VALID_CREDIT_CODE.include?(@csvdata[1]))
@@ -679,13 +514,13 @@ COMMON_WORD_EXPANSIONS = {
           @csvdata[3] = @csvdata[4]
           process_header_line_three_block
       else
-        raise FreeREGError, "I did not know enough about your data format to extract Credit Information at header line 3"
+        raise FreeREGError, "Header_Error,I did not know enough about your data format to extract Credit Information at header line 3"
     end
   
   end
 
   def self.process_header_line_three_block
-    raise FreeREGError, "The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless cleanname(2)
+    raise FreeREGError, "Header_Error,The credit person name #{@csvdata[2]} can only contain alphabetic and space characters in the third header line" unless FreeregValidations.cleantext(@csvdata[2])
     @@header [:credit_name] = @csvdata[2]
     # # suppressing for the moment
     # address = EmailVeracity::Address.new(@csvdata[3])
@@ -699,7 +534,7 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_header_line_four
     @csvdata = @csvdata.compact
     @number_of_fields = @csvdata.length
-     raise FreeREGError, "The forth header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+     raise FreeREGError, "Header_Error,The forth header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
       case 
         when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
          #standard format
@@ -708,7 +543,7 @@ COMMON_WORD_EXPANSIONS = {
           @@header [:second_comment] = @csvdata[3]
        when (@number_of_fields == 1 && @csvdata[0] =~ HEADER_FLAG)
           # an empty line follows the #
-       when (@number_of_fields == 1 && @csvdata[0] !=~ HEADER_FLAG)
+       when (@number_of_fields == 1 && !(@csvdata[0] =~ HEADER_FLAG))
         # is an # folloed by something either  date or a comment
           a = Array.new
           a = @csvdata[0].split("")
@@ -722,7 +557,7 @@ COMMON_WORD_EXPANSIONS = {
              end
           else
             @@header [:modification_date] = @@header [:transcription_date]
-             raise FreeREGError, "I did not know enough about your data format to extract notes Information at header line 4"
+             raise FreeREGError, "Header_Error,I did not know enough about your data format to extract notes Information at header line 4"
             
           end
        when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
@@ -751,7 +586,7 @@ COMMON_WORD_EXPANSIONS = {
               end
           else
             @@header [:modification_date] = @@header [:transcription_date]
-             raise FreeREGError, "I did not know enough about your data format to extract notes Information at header line 4"
+             raise FreeREGError, "Header_Error,I did not know enough about your data format to extract notes Information at header line 4"
            
           end 
        when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1)) 
@@ -782,7 +617,7 @@ COMMON_WORD_EXPANSIONS = {
        
         else
             @@header [:modification_date] = @@header [:transcription_date]
-            raise FreeREGError, "I did not know enough about your data format to extract notes Information at header line 4"
+            raise FreeREGError, "Header_Error,I did not know enough about your data format to extract notes Information at header line 4"
             
       end
       @@header [:modification_date] = @@header[:transcription_date] if (@@header [:modification_date].nil? || (Freereg1CsvFile.convert_date(@@header [:transcription_date]) > Freereg1CsvFile.convert_date(@@header [:modification_date])))
@@ -799,9 +634,11 @@ COMMON_WORD_EXPANSIONS = {
       @@header [:lds]  = "no"
     end
   end
+
   #process the first 4 columns of the data record
   # County, Place, Church, Reg #
   def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
+    #this code is needed to permit multiple places and churches in a single batch in any order
       @@datemax = DATEMIN
       @@datemin = DATEMAX
      @@daterange = Array.new(50){|i| i * 0 }
@@ -813,6 +650,7 @@ COMMON_WORD_EXPANSIONS = {
         @@list_of_registers[place_register_key].store(:place,data_record[:place])
          @@list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
           @@list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
+          @@list_of_registers[place_register_key].store(:record_type,data_record[:record_type])
           @@list_of_registers[place_register_key].store(:alternate_register_name,data_record[:alternate_register_name])
            @@list_of_registers[place_register_key].store(:records,@number_of_records)
             @@list_of_registers[place_register_key].store(:datemax,@@datemax)
@@ -824,17 +662,17 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_register_location(n)
     data_record = Hash.new
     raise FreeREGError, "Empty data line"  if @csvdata[0].nil? 
-    raise FreeREGError, "The county code #{ @csvdata[0]} is invalid or you have a blank record line " unless ChapmanCode::values.include?(@csvdata[0])
+     raise FreeREGError,"The county code #{ @csvdata[0]} is invalid or you have a blank record line " unless ChapmanCode::values.include?(@csvdata[0])
    
     # do we validate the Place field?
-    raise FreeREGError, "Place field #{@csvdata[1]} contains non numeric characters" unless validregister(@csvdata[1],"Place")
+     raise FreeREGError, "Place field #{@csvdata[1]} is invalid" unless validregister(@csvdata[1],"Place")
     data_record[:place] = @register
     # do we validate the register field 
-    raise FreeREGError, "Register field #{@csvdata[2]} contains non numeric characters" unless validregister(@csvdata[2],"Church")
+    raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
     data_record[:county] = @csvdata[0]
     data_record[:church_name] = @register
     data_record[:register_type] = @register_type
-   
+    data_record[:record_type] = @@header[:record_type]
     data_record[:county] = "Blank" if data_record[:county].nil?
     data_record[:place] = "Blank" if data_record[:place].nil?
     data_record[:church_name] = "Blank" if data_record[:church_name].nil?
@@ -849,39 +687,29 @@ COMMON_WORD_EXPANSIONS = {
     @@place_register_key = place_register_key
   end
 
+  
+  
   #process the baptism record columns
   def self.process_baptism_data_records(n)
     data_record = Hash.new
     data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
     data_record[:file_line_number] = n
-    raise FreeREGError, "Register Entry Number #{@csvdata[3]} contains non numeric characters" unless cleantext(3)
-    data_record[:register_entry_nuber] = @csvdata[3]
-    raise FreeREGError, "The date of the birth #{@csvdata[4]} is in the wrong format" unless datevalsplit(@csvdata[4],"Birth")
-    data_record[:birth_date_split] = @splityear
+    data_record[:register_entry_number] = @csvdata[3]
     data_record[:birth_date] = @csvdata[4]
-    raise FreeREGError, "The date of the baptism #{@csvdata[5]} is in the wrong format" unless datevalsplit(@csvdata[5],"Baptism")
-    data_record[:baptism_date_split] = @splityear
     data_record[:baptism_date] = @csvdata[5]
-    raise FreeREGError, "The person's forename #{@csvdata[6]} contains invalid characters" unless cleanname(6)
-    data_record[:person_forename] = @csvdata[6]
-    raise FreeREGError, "The sex field #{@csvdata[7]} is not M F - or blank" unless cleansex(7)
-    data_record[:person_sex] = @csvdata[7]
-    raise FreeREGError, "The father's forename #{@csvdata[8]} contains invalid characters" unless cleanname(8)
-    data_record[:father_forename] = @csvdata[8]
-    raise FreeREGError, "The mother's forename #{@csvdata[9]} contains invalid characters" unless cleanname(9)
-    data_record[:mother_forename] = @csvdata[9]
-    aise FreeREGError, "The father's surname #{@csvdata[10]} contains invalid characters" unless cleanname(10)
+    data_record[:year] = FreeregValidations.year_extract(@csvdata[5])
+    datestat(data_record[:year]) unless data_record[:year].nil? 
+     data_record[:person_forename] = @csvdata[6]
+     data_record[:person_sex] = cleansex(@csvdata[7])
+     data_record[:father_forename] = @csvdata[8]
+     data_record[:mother_forename] = @csvdata[9]
     data_record[:father_surname] = Unicode::upcase(@csvdata[10]) unless @csvdata[10].nil?
     data_record[:father_surname] = @csvdata[10]  if @csvdata[10].nil?
-    raise FreeREGError, "The mother's surname #{@csvdata[11]} contains invalid characters" unless cleanname(11)
-    data_record[:mother_surname] = Unicode::upcase(@csvdata[11]) unless @csvdata[11].nil?
+     data_record[:mother_surname] = Unicode::upcase(@csvdata[11]) unless @csvdata[11].nil?
     data_record[:mother_surname] = @csvdata[11]  if @csvdata[11].nil?
-    raise FreeREGError, "The abode #{@csvdata[12]} contains invalid characters" unless cleantext(12)
     data_record[:person_abode] = @csvdata[12]
-    raise FreeREGError, "The father's occupation #{@csvdata[13]} contains invalid characters" unless cleantext(13)
-    data_record[:father_occupation] = @csvdata[13]
-    raise FreeREGError, "The notes #{@csvdata[14]} contains invalid characters" unless cleantext(14)
-    data_record[:notes] = @csvdata[14]
+      data_record[:father_occupation] = @csvdata[13]
+      data_record[:notes] = @csvdata[14]
     number = @@list_of_registers[@@place_register_key].fetch(:records)
     number = number + 1
     @@list_of_registers[@@place_register_key].store(:records,number)
@@ -899,70 +727,46 @@ COMMON_WORD_EXPANSIONS = {
     data_record = Hash.new
     data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
     data_record[:file_line_number] = n
-    raise FreeREGError, "Register Entry Number #{@csvdata[3]} contains non numeric characters" unless cleantext(3)
-    data_record[:register_entry_nuber] = @csvdata[3]
-    raise FreeREGError, "The date of the marriage #{@csvdata[4]} is in the wrong format" unless datevalsplit(@csvdata[4],"Marriage")
-    data_record[:marriage_date_split] = @splityear
+   
+    data_record[:register_entry_number] = @csvdata[3]
+    
     data_record[:marriage_date] = @csvdata[4]
-    raise FreeREGError, "The groom's forename #{@csvdata[5]} contains invalid characters" unless cleanname(5)
-    data_record[:groom_forename] = @csvdata[5]
-    raise FreeREGError, "The groom's surname #{@csvdata[6]} contains invalid characters" unless cleanname(6)
-    data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
-    data_record[:groom_surname] = @csvdata[6] if @csvdata[6].nil?
-    raise FreeREGError, "The groom's age #{@csvdata[7]} contains invalid characters" unless cleanage(7)
+    data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
+    datestat(data_record[:year]) unless data_record[:year].nil? 
+     data_record[:groom_forename] = @csvdata[5]
+     data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
+    data_record[:groom_surname] = @csvdata[6]  if @csvdata[6].nil?
     data_record[:groom_age] = @csvdata[7]
-    raise FreeREGError, "The groom's parish #{@csvdata[8]} contains invalid characters" unless cleantext(8)
-    data_record[:groom_parish] = @csvdata[8]
+   data_record[:groom_parish] = @csvdata[8]
 #    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleancondition(9)
-    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]}" unless cleantext(9)
-    data_record[:groom_condition] = @csvdata[9]
-    raise FreeREGError, "The groom's occupation #{@csvdata[10]} contains invalid characters" unless cleantext(10)
+     data_record[:groom_condition] = @csvdata[9]
     data_record[:groom_occupation] = @csvdata[10]
-    raise FreeREGError, "The groom's abode #{@csvdata[11]} contains invalid characters #{@csvdata[11]}" unless cleantext(11)
     data_record[:groom_abode] = @csvdata[11]
-    raise FreeREGError, "The bride's forename #{@csvdata[12]} contains invalid characters" unless cleanname(12)
-    data_record[:bride_forename] = @csvdata[12]
-    raise FreeREGError, "The bride's surname #{@csvdata[13]} contains invalid characters" unless cleanname(13)
+     data_record[:bride_forename] = @csvdata[12]
     data_record[:bride_surname] = Unicode::upcase(@csvdata[13]) unless @csvdata[13].nil?
     data_record[:bride_surname] = @csvdata[13] if @csvdata[13].nil?
-    raise FreeREGError, "The bride's age #{@csvdata[14]} field is invalid" unless cleanage(14)
-    data_record[:bride_age] = @csvdata[14]
-    raise FreeREGError, "The bride's parish #{@csvdata[15]} contains invalid characters" unless cleantext(15)
-    data_record[:bride_parish] = @csvdata[15]
+     data_record[:bride_age] = @csvdata[14]
+     data_record[:bride_parish] = @csvdata[15]
 #    raise FreeREGError, "The bride's condition #{@csvdata[16]} contains unknown condition in line #{n}" unless cleancondition(16)
-    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]}" unless cleantext(9)
-    data_record[:bride_condition] = @csvdata[16]
-    raise FreeREGError, "The bride's occupation #{@csvdata[17]} contains invalid characters" unless cleantext(17)
-    data_record[:bride_occupation] = @csvdata[17]
-    raise FreeREGError, "The bride's abode #{@csvdata[18]} contains invalid characters" unless cleantext(18)
-    data_record[:bride_abode] = @csvdata[18]
-    raise FreeREGError, "The groom's fathers forename #{@csvdata[19]} contains invalid characters" unless cleanname(19)
-    data_record[:groom_father_forename] = @csvdata[19]
-    raise FreeREGError, "The groom's fathers surname #{@csvdata[20]} contains invalid characters" unless cleanname(20)
-    data_record[:groom_father_surname] = Unicode::upcase(@csvdata[20]) unless @csvdata[20].nil?
+      data_record[:bride_condition] = @csvdata[16]
+      data_record[:bride_occupation] = @csvdata[17]
+     data_record[:bride_abode] = @csvdata[18]
+      data_record[:groom_father_forename] = @csvdata[19]
+     data_record[:groom_father_surname] = Unicode::upcase(@csvdata[20]) unless @csvdata[20].nil?
     data_record[:groom_father_surname] = @csvdata[20] if @csvdata[20].nil?
-    raise FreeREGError, "The groom's father's occupation #{@csvdata[21]} contains invalid characters" unless cleantext(21)
     data_record[:groom_father_occupation] = @csvdata[21]
-    raise FreeREGError, "The bride's fathers forename #{@csvdata[22]} contains invalid characters" unless cleanname(22)
-    data_record[:bride_father_forename] = @csvdata[22]
-    raise FreeREGError, "The bride's fathers surname #{@csvdata[23]} contains invalid characters" unless cleanname(23)
+       data_record[:bride_father_forename] = @csvdata[22]
     data_record[:bride_father_surname] = Unicode::upcase(@csvdata[23]) unless @csvdata[23].nil?
     data_record[:bride_father_surname] = @csvdata[23] if @csvdata[23].nil?
-    raise FreeREGError, "The bride's father's occupation #{@csvdata[24]} contains invalid characters" unless cleantext(24)
     data_record[:bride_father_occupation] = @csvdata[24]
-    raise FreeREGError, "The first witness forename #{@csvdata[25]} contains invalid characters" unless cleanname(25)
     data_record[:witness1_forename] = @csvdata[25]
-    raise FreeREGError, "The first witness's surname #{@csvdata[26]} contains invalid characters" unless cleanname(26)
     data_record[:witness1_surname] = Unicode::upcase(@csvdata[26]) unless @csvdata[26].nil?
     data_record[:witness1_surname] = @csvdata[26] if @csvdata[26].nil?
-    raise FreeREGError, "The second witness forename #{@csvdata[27]} contains invalid characters" unless cleanname(27)
     data_record[:witness2_forename] = @csvdata[27]
-    raise FreeREGError, "The second witness's surname #{@csvdata[28]} contains invalid characters" unless cleanname(28)
-    data_record[:witness2_surname] = Unicode::upcase(@csvdata[28]) unless @csvdata[28].nil?
+     data_record[:witness2_surname] = Unicode::upcase(@csvdata[28]) unless @csvdata[28].nil?
     data_record[:witness2_surname] = @csvdata[28] if @csvdata[28].nil?
-    raise FreeREGError, "The notes #{@csvdata[29]} contains invalid characters" unless cleantext(29)
-    data_record[:notes] = @csvdata[29]
-     data_record[:notes] = @csvdata[14]
+     data_record[:notes] = @csvdata[29]
+    
     number = @@list_of_registers[@@place_register_key].fetch(:records)
     number = number + 1
     @@list_of_registers[@@place_register_key].store(:records,number)
@@ -979,33 +783,23 @@ COMMON_WORD_EXPANSIONS = {
     data_record = Hash.new
     data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
     data_record[:file_line_number] = n
-    raise FreeREGError, "Register Entry Number #{@csvdata[3]} contains non numeric characters" unless cleantext(3)
-    data_record[:register_entry_nuber] = @csvdata[3]
-    raise FreeREGError, "The date of the burial #{@csvdata[4]} is in the wrong format" unless datevalsplit(@csvdata[4],"Burial")
-    data_record[:burial_date_split] = @splityear
-    data_record[:burial_date] = @csvdata[4]
-    raise FreeREGError, "The person's forename #{@csvdata[5]} contains invalid characters" unless cleanname(5)
-    data_record[:burial_person_forename] = @csvdata[5]
-    raise FreeREGError, "The relationship #{@csvdata[6]} contains invalid characters" unless cleanname(6)
-    data_record[:relationship] = @csvdata[6]
-    raise FreeREGError, "The male relative's forename #{@csvdata[7]} contains invalid characters" unless cleanname(7)
+     data_record[:register_entry_number] = @csvdata[3]
+     data_record[:burial_date] = @csvdata[4]
+    data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
+    datestat(data_record[:year]) unless data_record[:year].nil? 
+     data_record[:burial_person_forename] = @csvdata[5]
+     data_record[:relationship] = @csvdata[6]
     data_record[:male_relative_forename] = @csvdata[7]
-    raise FreeREGError, "The female relative's forename #{@csvdata[8]} contains invalid characters" unless cleanname(8)
-    data_record[:female_relative_forename] = @csvdata[8]
-    raise FreeREGError, "The relative's surname #{@csvdata[9]} contains invalid characters" unless cleanname(9)
-    data_record[:relative_surname] = Unicode::upcase(@csvdata[9]) unless @csvdata[9].nil?
+     data_record[:female_relative_forename] = @csvdata[8]
+     data_record[:relative_surname] = Unicode::upcase(@csvdata[9]) unless @csvdata[9].nil?
     data_record[:relative_surname] = @csvdata[9] if @csvdata[9].nil?
-    raise FreeREGError, "The person's surname #{@csvdata[10]} contains invalid characters" unless cleanname(10)
     data_record[:burial_person_surname] = Unicode::upcase(@csvdata[10])  unless @csvdata[10].nil?
     data_record[:burial_person_surname] = @csvdata[10]  if @csvdata[10].nil?
-    raise FreeREGError, "The person's age #{@csvdata[11]} field is invalid" unless cleanage(11)
     data_record[:person_age] = @csvdata[11]
-    raise FreeREGError, "The person's abode #{@csvdata[12]} contains invalid characters" unless cleantext(12)
     data_record[:burial_person_abode] = @csvdata[12]
-    raise FreeREGError, "The notes #{@csvdata[13]} contains invalid characters" unless cleantext(13)
-    data_record[:notes] = @csvdata[13]
+     data_record[:notes] = @csvdata[13]
  
-     data_record[:notes] = @csvdata[14]
+  
     number = @@list_of_registers[@@place_register_key].fetch(:records)
     number = number + 1
     @@list_of_registers[@@place_register_key].store(:records,number)
@@ -1017,40 +811,73 @@ COMMON_WORD_EXPANSIONS = {
     @@data_hold[@@place_register_key].store(number,data_record) 
   end
 
+  def self.delete_all
+    Freereg1CsvEntry.delete_all
+    Freereg1CsvFile.delete_all
+    SearchRecord.delete_freereg1_csv_entries
+  end
+ 
+  def self.process_register_headers
+   
+    @@list_of_registers.each do |place_key,head_value|
+     
+      @@header.merge!(head_value)
+      #puts "header #{head} \n"
+     
+      @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+       @freereg1_csv_file.update_register
+        #write the data records for this place/church
+      @@data_hold[place_key].each do |datakey,datarecord|
+       
+        datarecord[:county] = head_value[:county]
+        datarecord[:place] = head_value[:place]
+        datarecord[:church_name] = head_value[:church_name]
+        datarecord[:register_type] = head_value[:register_type]
+        datarecord[:record_type] = head_value[:record_type]
+        #puts "Data record #{datakey} \n #{datarecord} \n"
+        success = create_db_record_for_entry(datarecord)
+        unless  success.nil?
+
+          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
+          @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  if @@number_of_error_messages == 0
+          @@number_of_error_messages = @@number_of_error_messages + 1
+          @@user_message_file.puts "Data_Error,#{datarecord[:file_line_number]},#{success},#{@@header[:record_type]},#{datarecord}"
+        end #end success
+      end #end @@data_hold
+       unless @@header_error.nil?
+        @@header_error.each do |error_key,error_value|
+          p "header error"
+          p error_key
+          p error_value
+          
+          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
+        end
+      end
+       @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
+       @freereg1_csv_file.save
+       @@user_message_file.close unless @@number_of_error_messages == 0
+    end #end @@list
+
+
+    puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines correctly with #{@@number_of_error_messages} error messages" 
+    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines correctly with #{@@number_of_error_messages} error messages"
+               
+  end
+
   def self.create_db_record_for_entry(data_record)
     # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
 
     entry = Freereg1CsvEntry.new(data_record)
     entry.freereg1_csv_file = @freereg1_csv_file
     entry.save
-    entry.transform_search_record if  @@create_search_records == true
-    entry
-  end
+    if entry.errors.any? 
+     success = entry.errors.messages
 
- 
-  def self.delete_all
-    Freereg1CsvEntry.delete_all
-    Freereg1CsvFile.delete_all
-    SearchRecord.delete_freereg1_csv_entries
-  end
-
-  def self.process_register_headers
-    @@list_of_registers.each do |place_key,head_value|
-      @@header.merge!(head_value)
-      #puts "header #{head} \n"
-      @freereg1_csv_file = Freereg1CsvFile.new(@@header)
-      @freereg1_csv_file.update_register
-      #write the data records for this place/church
-      @@data_hold[place_key].each do |datakey,datarecord|
-        
-        datarecord[:county] = head_value[:county]
-        datarecord[:place] = head_value[:place]
-        datarecord[:church_name] = head_value[:church_name]
-        datarecord[:register_type] = head_value[:register_type]
-        #puts "Data record #{datakey} \n #{datarecord} \n"
-        create_db_record_for_entry(datarecord)
-      end
+    else
+      entry.transform_search_record if  @@create_search_records == true
+      success = nil
     end
+    success
   end
 
   def self.process_the_data
@@ -1083,7 +910,7 @@ COMMON_WORD_EXPANSIONS = {
                       process_header_line_five
                       @@header_line = @@header_line + 1
                     else 
-                     raise FreeREGError,  "Unknown header " 
+                     raise FreeREGError,  "Header_Error,Unknown header " 
                   end #end of case
 
                 else
@@ -1106,30 +933,36 @@ COMMON_WORD_EXPANSIONS = {
                 #rescue the freereg data errors and continue processing the file
         
                 rescue FreeREGError => free
-          
+                   unless free.message == "Empty data line" then
                    @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  if @@number_of_error_messages == 0
                    @@number_of_error_messages = @@number_of_error_messages + 1
-                   line_number = @@number_of_line + 1
-                    puts "#{@@userid} #{@@filename}" + free.message + " at line #{line_number}"
-                    @@message_file.puts "#{@@userid}\t#{@@filename}" + free.message + " at line #{line_number}"
-                    @@user_message_file.puts free.message + " at line #{line_number}"
+                    @csvdata = @@array_of_data_lines[@@number_of_line]
+                    puts "#{@@userid} #{@@filename}" + free.message + " at line #{@@number_of_line}"
+                    @@message_file.puts "#{@@userid}\t#{@@filename}" + free.message + " at line #{@@number_of_line}"
+                  
+                    @@user_message_file.puts "Header_Error," + free.message + " at line,"+"#{@@number_of_line}," "#{@csvdata }" unless free.message == "Empty data line"
+                    @@header_error[@@number_of_error_messages] = Hash.new
+                    @@header_error[@@number_of_error_messages].store(:line,@@number_of_line)
+                    @@header_error[@@number_of_error_messages].store(:error,free.message)
+                    @@header_error[@@number_of_error_messages].store(:data,@csvdata)
+                    end
                     @@number_of_line = @@number_of_line + 1
                      #    n = n - 1 unless n == 0
                       @@header_line = @@header_line + 1 if @line_type == 'Header'  
                     break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
                     retry  
                 rescue FreeREGEnd => free
+                  p "processing registers"
                    n = n - 1
-                   puts "#@@userid #{@@filename} processed  #{n} data lines correctly with #{@@number_of_error_messages} error messages" 
-                   @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{n} data lines correctly with #{@@number_of_error_messages} error messages"
-                   @@header[:error] = @@number_of_error_messages
+                   
 
                    process_register_headers
                    break
                 rescue  => e 
                   @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
-                  @@user_message_file.puts e.message  
-                  @@user_message_file.puts "Something seriously wrong with your file during processing please contact your coordinator"
+                  @csvdata = @@array_of_data_lines[@@number_of_line]
+                  @@user_message_file.puts "System_Error,Something seriously wrong with your file during processing please contact your coordinator," + "#{@@number_of_line}," + "#{@csvdata }"
+                  @@user_message_file.puts e.message
                    puts e.message
                    puts e.backtrace
                    @@message_file.puts "#{@@userid}\t#{@@filename} line #{n} crashed the processor\n"  
@@ -1155,7 +988,7 @@ COMMON_WORD_EXPANSIONS = {
           rescue => e 
                     @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
                    @@user_message_file.puts e.message  
-                   @@user_message_file.puts "Something seriously wrong with your file; it was not processed please contact your coordinator"
+                   @@user_message_file.puts "System_Error,Something seriously wrong with your file; it was not processed please contact your coordinator"
                    puts e.message
                    @@message_file.puts "#{@@userid}\t#{@@filename} *barfed the system*************"  
                    @@message_file.puts e.message  
@@ -1163,7 +996,7 @@ COMMON_WORD_EXPANSIONS = {
                    success = false
                   
           else
-            raise FreeREGError,  "Empty file" if @@array_of_data_lines.nil?
+            raise FreeREGError,  "System_Error,Empty file" if @@array_of_data_lines.nil?
           ensure
           #we ensure that processing keeps going by dropping outthrough the bottom     
     end #begin end
@@ -1185,14 +1018,14 @@ COMMON_WORD_EXPANSIONS = {
         #do not process if coordinator has locked
         p "#{@@header[:file_name]} has been locked by the coordinator"
          @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
-         @@user_message_file.puts "#{@@userid} #{@@header[:file_name]} has been locked by the coordinator"
+         @@user_message_file.puts "System_Error,#{@@userid} #{@@header[:file_name]} has been locked by the coordinator"
          @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has been locked by the coordinator"
         return false
       end
       if @@header[:digest] == check_for_file.digest then
         #file in database is same or more recent than we we are attempting to reload so do not process
               p  "#{@@userid} #{@@header[:file_name]} has not changed since last build"
-              @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
+              @@message_file.puts "System_Error,#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
           return false
       end
       
@@ -1225,6 +1058,8 @@ COMMON_WORD_EXPANSIONS = {
           @csvdata = Array.new
           @code_sets = Encoding.name_list
           @@list_of_registers = Hash.new()
+          @@header_error = Hash.new()
+          @@system_error = Hash.new()
           @@data_hold = Hash.new
           @data_record = Hash.new
           @@array_of_data_lines = Array.new {Array.new}
@@ -1236,7 +1071,6 @@ COMMON_WORD_EXPANSIONS = {
           parent_dirname = File.dirname(full_dirname)
           user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
           @@userid = user_dirname
-          print "#{user_dirname} #{standalone_filename}\n"
           @@message_file.puts "#{user_dirname}\t#{standalone_filename}\n"
           @@header[:digest] = Digest::MD5.file(filename).hexdigest 
           #delete any user log file for errors we put it in the same directory as the csv file came from    
@@ -1280,12 +1114,13 @@ COMMON_WORD_EXPANSIONS = {
 
         n = process_the_data if success == true  && process == true
         nn = nn + n unless n.nil?
-
+   
      end #filename loop end 
 
      time = (((Time.now  - time_start )/(nn-1))*1000)
      p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
-     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n"  
+     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n" 
+      @@message_file.close   
   end #method end
  
 end #class end

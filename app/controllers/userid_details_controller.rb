@@ -38,7 +38,7 @@ class UseridDetailsController < ApplicationController
     @userid = session[:userid]
     @first_name = session[:first_name]
     @userid = UseridDetail.where(:userid => session[:userid]).first
-    session[:my_own] = 'my-own'
+    session[:my_own] = 'my_own'
     render :action => 'show'
 
   end
@@ -65,8 +65,8 @@ class UseridDetailsController < ApplicationController
      @userid.save
    
       if @userid.errors.any?
-     session[:errors] = @userid.errors.messages
-     p @userid.errors.messages
+  
+   
      flash[:notice] = 'The addition of the person was unsuccsessful'
      render :action => 'new'
      return
@@ -97,13 +97,13 @@ class UseridDetailsController < ApplicationController
    
     @userid.update_attributes!(params[:userid_detail])
     if @userid.errors.any?
-      session[:errors] = @userid.errors.messages
+     
       flash[:notice] = 'The update of the details were unsuccsessful'
       render :action => 'edit'
       return
     else
       flash[:notice] = 'The update of the details were succsessful'
-      if session[:my_own] == "my-own"
+      if session[:my_own] == "my_own"
        render :action => 'show'
        return
       else
