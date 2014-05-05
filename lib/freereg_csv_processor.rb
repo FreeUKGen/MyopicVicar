@@ -820,11 +820,9 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_register_headers
    
     @@list_of_registers.each do |place_key,head_value|
-     
-      @@header.merge!(head_value)
+       @@header.merge!(head_value)
       #puts "header #{head} \n"
-     
-      @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+        @freereg1_csv_file = Freereg1CsvFile.new(@@header)
        @freereg1_csv_file.update_register
         #write the data records for this place/church
       @@data_hold[place_key].each do |datakey,datarecord|
@@ -837,25 +835,25 @@ COMMON_WORD_EXPANSIONS = {
         #puts "Data record #{datakey} \n #{datarecord} \n"
         success = create_db_record_for_entry(datarecord)
         unless  success.nil?
-
           @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
-          @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  if @@number_of_error_messages == 0
+          @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  unless File.exists?(@@user_file_for_warning_messages)
           @@number_of_error_messages = @@number_of_error_messages + 1
           @@user_message_file.puts "Data_Error,#{datarecord[:file_line_number]},#{success},#{@@header[:record_type]},#{datarecord}"
         end #end success
       end #end @@data_hold
        unless @@header_error.nil?
         @@header_error.each do |error_key,error_value|
-          p "header error"
-          p error_key
-          p error_value
-          
+                 
           @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
-        end
-      end
+        end #end header errors
+         
+      end # #header nil
+      
        @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
        @freereg1_csv_file.save
-       @@user_message_file.close unless @@number_of_error_messages == 0
+       @@number_of_error_messages = 0
+       @@header_error = nil
+    
     end #end @@list
 
 
@@ -934,7 +932,7 @@ COMMON_WORD_EXPANSIONS = {
         
                 rescue FreeREGError => free
                    unless free.message == "Empty data line" then
-                   @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  if @@number_of_error_messages == 0
+                   @@user_message_file = File.new(@@user_file_for_warning_messages, "w")   unless File.exists?(@@user_file_for_warning_messages)
                    @@number_of_error_messages = @@number_of_error_messages + 1
                     @csvdata = @@array_of_data_lines[@@number_of_line]
                     puts "#{@@userid} #{@@filename}" + free.message + " at line #{@@number_of_line}"
