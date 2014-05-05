@@ -28,58 +28,40 @@ layout "manage_counties"
        end
        @syndicates = synd
     end #end if
-
-     
+   
 end
 
 
 def select_userid
-
-  
 end
-
 
 def new
  end 
 
-
  def create
-  
- 
-  	session[:syndicate] = params[:manage_syndicate][:syndicate] if session[:muliple] == true
-  
-    case 
-    when params[:manage_syndicate][:action] == 'Review Members listed alphabetically'
-     redirect_to userid_details_path
-     return
-     when params[:manage_syndicate][:action] == 'Review Batches listed by filename'
-      session[:sort] =  sort = "file_name ASC"
-  
-       
-     when params[:manage_syndicate][:action] == 'Review Batches with errors'
-        session[:sort] =  sort = "error DESC, file_name ASC"
-        
-    
-      when params[:manage_syndicate][:action] == 'Review Batches listed by userid then filename'
-      session[:sort] =  sort = "userid ASC, file_name ASC"
-      
-      
-      when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date'
-      session[:sort] =  sort = "uploaded_date DESC"
-        
-    else
-       @user = UseridDetail.where(:userid => session[:userid]).first
-      redirect_to manage_resource_path(@user)
-      return
-    end
-      
-        redirect_to freereg1_csv_files_path
-   
-  	
-  
+    	session[:syndicate] = params[:manage_syndicate][:syndicate] if session[:muliple] == true
+      case 
+       when params[:manage_syndicate][:action] == 'Upload New Batch'
+         redirect_to new_csvfile_path
+         return
+        when params[:manage_syndicate][:action] == 'Review Members listed alphabetically'
+         redirect_to userid_details_path
+         return
+        when params[:manage_syndicate][:action] == 'Review Batches listed by filename'
+          session[:sort] =  sort = "file_name ASC"    
+        when params[:manage_syndicate][:action] == 'Review Batches with errors'
+          session[:sort] =  sort = "error DESC, file_name ASC" 
+        when params[:manage_syndicate][:action] == 'Review Batches listed by userid then filename'
+           session[:sort] =  sort = "userid ASC, file_name ASC"
+        when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date'
+           session[:sort] =  sort = "uploaded_date DESC"
+        else
+           @user = UseridDetail.where(:userid => session[:userid]).first
+            redirect_to manage_resource_path(@user)
+           return
+        end
+          redirect_to freereg1_csv_files_path
   end # create
-
-
 end
 
 
