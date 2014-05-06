@@ -120,23 +120,18 @@ def get_userids_and_transcribers
  @user = UseridDetail.where(:userid => session[:userid]).first
         syndicate = @user.syndicate
         syndicate = session[:syndicate] unless session[:syndicate].nil?
-    @people =Array.new  
-     @people <<  @person 
+        @people =Array.new  
+        @people <<  @person 
+    
   case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
         @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-    when  @user.person_role == 'country_cordinator'
-
+    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator' 
         @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
-    when  @user.person_role == 'county_coordinator'  
-       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)  
-    when  @user.person_role == 'syndicate_coordinator'  
-       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
     else
-       @userids = @user
+        @userids = @user
   end #end case
     unless session[:my_own] == 'my_own'
-     
         @userids.each do |ids|
         @people << ids.userid
       end

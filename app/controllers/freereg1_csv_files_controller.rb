@@ -125,13 +125,16 @@ def create
   #creation of the options for the individual entry
   if session[:my_own] == 'my_own'
     case 
-     when params[:freereg1_csv_file][:action] == 'By filename'
+     when params[:freereg1_csv_file][:action] == 'Upload New Batch'
+      redirect_to new_csvfile_path
+      return
+     when params[:freereg1_csv_file][:action] == 'List by name'
       session[:sort] =  "file_name ASC"
-     when params[:freereg1_csv_file][:action] == 'By number of errors then filename'
+     when params[:freereg1_csv_file][:action] == 'List by number of errors then name'
       session[:sort] =   "error DESC, file_name ASC"
-     when params[:freereg1_csv_file][:action] == 'By uploaded date (descending)'
+     when params[:freereg1_csv_file][:action] == 'List by uploaded date (descending)'
       session[:sort] =  "uploaded_date DESC, userid ASC"
-     when params[:freereg1_csv_file][:action] == 'By uploaded date (ascending)'
+     when params[:freereg1_csv_file][:action] == 'List by uploaded date (ascending)'
       session[:sort] =  "uploaded_date ASC, userid ASC"
      end #end case
     @first_name = session[:first_name]
