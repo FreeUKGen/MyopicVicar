@@ -13,6 +13,19 @@ desc "Create a missing locations list"
     puts "Task complete."
    end
   end
+desc "Create a database content report"
+ task :database_contents, [:limit,:type] => [:environment] do |t, args|
+ require 'database_contents' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          DatabaseContents.process(args.limit,args.type) 
+          
+     
+    puts "Task complete."
+   end
+  end
 
 desc "Create a report of files loaded by people"
  # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]

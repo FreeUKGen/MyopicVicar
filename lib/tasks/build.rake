@@ -207,9 +207,7 @@ task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args|
    require 'create_userid_docs'
    require "userid_detail"
       puts "Creating Transcriber Docs"
-     
-     
-     range = "*/*.uDetails"
+      range = "*/*.uDetails"
      type = "add"
       CreateUseridDocs.process(type,range)
     puts "Task complete."
