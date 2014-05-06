@@ -950,10 +950,7 @@ COMMON_WORD_EXPANSIONS = {
                     break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
                     retry  
                 rescue FreeREGEnd => free
-                  p "processing registers"
                    n = n - 1
-                   
-
                    process_register_headers
                    break
                 rescue  => e 
