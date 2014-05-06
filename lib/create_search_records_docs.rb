@@ -53,7 +53,7 @@ include Mongoid::Document
      @@message_file = File.new(file_for_warning_messages, "a")
     file_ids = Array.new
     entries = Array.new
-
+@@message_file.puts  "Started a Userid Detail build with options of #{recreate} with a base directory at #{base_directory} and a file range #{range}"
    
     filenames = GetFiles.get_all_of_the_filenames(base_directory,range)
      @@message_file.puts "#{filenames.length}\t files selected for processing\n"

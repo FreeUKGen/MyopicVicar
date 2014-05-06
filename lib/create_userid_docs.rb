@@ -202,9 +202,10 @@ header[:disabled] = header[:disabled].to_i
    detail = UseridDetail.new(header)
    detail.save 
     if detail.errors.any?
+      @@message_file.puts "#{header[:userid]} not created"
+      @@message_file.puts detail.errors.messages
       p "#{header[:userid]} not created"
       p detail.errors.messages
-     @@message_file.puts detail.errors.messages
     else
     p "#{header[:userid]} created"
     end #end errors
