@@ -82,7 +82,9 @@ include Mongoid::Document
           end # end entries loop
         end   #end file id loop 
       p "#{@@filename} Created  #{n} search records\n" 
-      @@message_file.puts  "#{@@filename} Created  #{n} search records\n"   
+      @@message_file.puts  "#{@@filename} Created  #{n} search records\n" 
+      time = (((Time.now  - time_start )/(n-1))*1000)
+    p "Process created  #{n} search records at an average time of #{time}ms per record\n"   
     end # end filename loop
     time = (((Time.now  - time_start )/(nn-1))*1000)
     p "Process created  #{nn} search records at an average time of #{time}ms per record\n" 
