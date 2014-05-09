@@ -76,13 +76,13 @@ def create
   if params[:commit] == 'Replace'
       @csvfile.save_to_attic
     end #end if
-  unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid] ,@csvfile.file_name)}")
+  unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
     @csvfile.save
 
   unless @csvfile.errors.any?
      @user = UseridDetail.where(:userid => session[:userid]).first
      flash[:notice] = 'The upload of the file was succsessful'
-     place = File.join(Rails.application.config.datafiles,@csvfile[:userid] ,@csvfile.file_name)
+     place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
       size = (File.size("#{place}"))
       unit = 0.0002
      @processing_time = (size.to_i*unit).to_i 
