@@ -246,26 +246,6 @@ COMMON_WORD_EXPANSIONS = {
   
  
 
-  #test for the character set
-  def self.charvalid(m)
-   return true if (m == "iso-8859-1"  || m.nil? || m.empty? || m == "chset")
-     #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-      m = "IBM437" if (m == "cp437")
-      m = m.upcase
-      m = "macRoman" if (m.downcase == "macintosh")
-      raise FreeREGError,  "Invalid Character Set" unless @code_sets.include?(m) 
-      if Encoding.find(m)
-        #if we have valid new character set; use it and change the file encoding
-        @@charset = Encoding.find(m)
-        
-         @@array_of_data_lines = CSV.read(@@file, external_encoding:@@charset , internal_encoding:"UTF-8")                              
-        
-        return true
-      else
-        return false
-      end
-  end
-
   def self.mycapitalize(word,num,type_of_name)
     word = CHURCH_WORD_EXPANSIONS[word] if CHURCH_WORD_EXPANSIONS.has_key?(word) && type_of_name == "Church"
     word = COMMON_WORD_EXPANSIONS[word] if COMMON_WORD_EXPANSIONS.has_key?(word)
@@ -392,8 +372,8 @@ COMMON_WORD_EXPANSIONS = {
     raw_record_type = @csvdata[4]
     scrubbed_record_type = Unicode::upcase(@csvdata[4]).gsub(/\s/, '')
     @@header [:record_type] =  RECORD_TYPE_TRANSLATION[scrubbed_record_type]
-    raise FreeREGError, "Header_Error,Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
-    @@header [:characterset] = @csvdata[5]
+    #raise FreeREGError, "Header_Error,Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
+    #@@header [:characterset] = @csvdata[5]
   end
 
   #process the header line 2
@@ -975,10 +955,25 @@ COMMON_WORD_EXPANSIONS = {
  def self.slurp_the_csv_file(filename)
                
     begin
-          #we slurp in the full csv file
-          @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
-
-          success = true
+      # normalise line endings
+       xxx = File.read(filename).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
+      # get character set
+       first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+       code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
+      #set rhge default      
+      code_set = "ISO-8859-1" if (code_set.nil? || code_set.empty? || code_set == "chset")
+     #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
+      code_set = "IBM437" if (code_set == "cp437")
+      code_set = code_set.upcase
+      code_set = "macRoman" if (code_set.downcase == "macintosh")
+      raise FreeREGError,  "Invalid Character Set" unless @code_sets.include?(code_set) 
+        #if we have valid new character set; use it and change the file encoding
+        @@charset = Encoding.find(code_set) if Encoding.find(code_set) 
+        xxx.encode!("UTF-8",@@charset)
+        #now get all the data
+        @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+        @@header [:characterset] = code_set
+        success = true
           #we rescue when for some reason the slurp barfs
           rescue => e 
                     @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)

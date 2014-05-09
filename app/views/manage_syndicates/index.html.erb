@@ -3,7 +3,12 @@ Page Identification Manage Syndicates:index<p>
 <p><%= @first_name%> you are managing the <b><%= @syndicates %></b> syndicate </p>
  <% end %>
 
- 
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>  
+    <div id="main"style="color:black">
 
   <%= semantic_form_for @manage_syndicate do |f| %>
 
