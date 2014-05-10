@@ -294,8 +294,10 @@ class SearchRecord
     p entry
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
-    record.place = entry.freereg1_csv_file.register.church.place
+    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).first
     
+    #record.place = entry.freereg1_csv_file.register.church.place
+    record.place = places
     record.save!  
     process_time = Time.now - start   
     p "entry finished #{process_time}"
