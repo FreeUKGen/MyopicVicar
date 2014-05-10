@@ -289,13 +289,16 @@ class SearchRecord
   def self.from_freereg1_csv_entry(entry)
 #   # assumes no existing entries for this line
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+    start = Time.now
     p "entry"
     p entry
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
     record.place = entry.freereg1_csv_file.register.church.place
     
-    record.save!    
+    record.save!  
+    process_time = Time.now - start   
+    p "entry finished #{process_time}"
   end
   
   def self.delete_freereg1_csv_entries
