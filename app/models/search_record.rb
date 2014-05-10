@@ -104,26 +104,18 @@ class SearchRecord
 
 
   def transform
-    p "Entered transform"
-     start = Time.now
     populate_search_from_transcript
-      process_time = Time.now - start
-    p "completed dearch from transcript #{process_time}"
+   
     downcase_all
-      process_time = Time.now - start
-    p "completed downcase #{process_time}"
+     
     separate_all
-      process_time = Time.now - start
-    p "completed separate #{process_time}"
+      
     emend_all
-      process_time = Time.now - start
-    p "completed emend #{process_time}"
+     
     create_soundex   
-      process_time = Time.now - start 
-    p  "completed soundex #{process_time}"
+      
     transform_date
-      process_time = Time.now - start
-    p "complted date #{process_time}"
+      
   end
 
   def populate_search_from_transcript
@@ -289,9 +281,7 @@ class SearchRecord
   def self.from_freereg1_csv_entry(entry)
 #   # assumes no existing entries for this line
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-    start = Time.now
-    p "entry"
-    p entry
+   
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
     places = Place.where(:chapman_code => entry.county, :place_name => entry.place).first
@@ -299,8 +289,7 @@ class SearchRecord
     #record.place = entry.freereg1_csv_file.register.church.place
     record.place = places
     record.save!  
-    process_time = Time.now - start   
-    p "entry finished #{process_time}"
+    
   end
   
   def self.delete_freereg1_csv_entries

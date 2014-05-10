@@ -57,10 +57,10 @@ include Mongoid::Document
    
     filenames = GetFiles.get_all_of_the_filenames(base_directory,range)
      @@message_file.puts "#{filenames.length}\t files selected for processing\n"
-     time_start = Time.now  
+      time_start = Time.now  
      nn = 0
     filenames.each do |filename|
-
+     
       setup_for_new_file(filename)
       n = 0
 
@@ -73,15 +73,14 @@ include Mongoid::Document
             entries << entry
           end 
           entries.each do |my_entry|
-            time_zero =  Time.now
+           
            
             SearchRecord.where({:freereg1_csv_entry_id => my_entry}).delete if recreate == "recreate"
 
             my_entry.transform_search_record
           n = n + 1
           nn = nn + 1
-          time = Time.now  - time_zero
-          p " search record created in #{time}"
+          
           end # end entries loop
         end   #end file id loop 
       p "#{@@filename} Created  #{n} search records\n" 

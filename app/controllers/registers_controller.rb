@@ -94,10 +94,6 @@ class RegistersController < InheritedResources::Base
     @register_name = @register.alternate_register_name if @register_name.nil? ||  @register_name.empty?
     session[:register_id] = register_id
     session[:register_name] = @register_name
-    p "register"
-    p  @register.register_name
-    p @register.alternate_register_name
-    p @register_name
     @church = @register.church
     @church_name = @church.church_name
     @place = session[:place_id]
