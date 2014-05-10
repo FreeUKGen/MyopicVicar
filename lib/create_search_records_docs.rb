@@ -91,6 +91,6 @@ include Mongoid::Document
     end # end filename loop
     timett = (((Time.now  - time_start )/(nn-1))*1000)
     p "Process created  #{nn} search records at an average time of #{timett}ms per record\n" 
-     @@message_file.puts  "Process created  #{nn} search records at an average time of #{time}ms per record\n"  
+     @@message_file.puts  "Process created  #{nn} search records at an average time of #{timett}ms per record\n"  
   end # end method
 end # end class
