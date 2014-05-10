@@ -58,12 +58,16 @@ task :freereg,[:type,:search_records,:range1,:range2,:range3] => [:setup,:create
 end
 
 task :setup => [ :environment] do |t, args| 
+  require 'emendation_rule'
+  require 'emendation_type'
   puts "Start Setup"
   file_for_warning_messages = "log/freereg_messages.log"
   File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
   puts "Freereg messages log deleted."
    x = system("rake load_emendations") 
   puts "Emendations loaded" if x
+  EmendationRule.create_indexes()
+  EmendationType.create_indexes()
   puts "Setup finished"
 
 end
@@ -180,8 +184,9 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
    p script_index_search_records_entries
       `#{script_index_search_records_entries}`    
    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
-
+ 
      CreateSearchRecordsDocs.process(args.type,search_records,args.range )
+     
   end
 
 
