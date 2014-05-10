@@ -67,12 +67,17 @@ include Mongoid::Document
       file_ids = Freereg1CsvFile.where({:file_name => @@filename, :userid => @@userid}).all
      
         file_ids.each do |file_id|
+
          entries = Array.new
           entries_mongoid = Freereg1CsvEntry.where({:freereg1_csv_file_id => file_id}).all
+
           entries_mongoid.each do |entry|
             entries << entry
           end 
+
           entries.each do |my_entry|
+            entry_time = Time.now
+
            
            
             SearchRecord.where({:freereg1_csv_entry_id => my_entry}).delete if recreate == "recreate"
@@ -80,6 +85,9 @@ include Mongoid::Document
             my_entry.transform_search_record
           n = n + 1
           nn = nn + 1
+             et = Time.now  - entry_time
+             eta = Time.now - time_start
+          p "search record #{n} created in #{et} elapse #{eta}"
           
           end # end entries loop
         end   #end file id loop 
