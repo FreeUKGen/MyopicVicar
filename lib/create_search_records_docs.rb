@@ -60,7 +60,7 @@ include Mongoid::Document
       time_start = Time.now  
      nn = 0
     filenames.each do |filename|
-     
+      time_file_start = Time.now
       setup_for_new_file(filename)
       n = 0
 
@@ -85,7 +85,7 @@ include Mongoid::Document
         end   #end file id loop 
       p "#{@@filename} Created  #{n} search records\n" 
       @@message_file.puts  "#{@@filename} Created  #{n} search records\n" 
-      timet = (((Time.now  - time_start )/(n-1))*1000)
+      timet = (((Time.now  - time_file_start )/(n-1))*1000)
     p "Process created  #{n} search records at an average time of #{timet}ms per record\n"   
     end # end filename loop
     timett = (((Time.now  - time_start )/(nn-1))*1000)
