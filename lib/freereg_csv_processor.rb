@@ -927,7 +927,7 @@ COMMON_WORD_EXPANSIONS = {
                     @@number_of_line = @@number_of_line + 1
                      #    n = n - 1 unless n == 0
                       @@header_line = @@header_line + 1 if @line_type == 'Header'  
-                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
+                    break if free.message == "Empty file" 
                     retry  
                 rescue FreeREGEnd => free
                    n = n - 1
@@ -966,9 +966,10 @@ COMMON_WORD_EXPANSIONS = {
       code_set = "IBM437" if (code_set == "cp437")
       code_set = code_set.upcase
       code_set = "macRoman" if (code_set.downcase == "macintosh")
-      raise FreeREGError,  "Invalid Character Set" unless @code_sets.include?(code_set) 
+      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed ISO-8859-1" unless @code_sets.include?(code_set) 
+       code_set = "ISO-8859-1" unless @code_sets.include?(code_set) 
         #if we have valid new character set; use it and change the file encoding
-        @@charset = Encoding.find(code_set) if Encoding.find(code_set) 
+        @@charset = Encoding.find(code_set) 
         xxx.encode!("UTF-8",@@charset)
         #now get all the data
         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
@@ -1065,7 +1066,7 @@ COMMON_WORD_EXPANSIONS = {
           @@header[:digest] = Digest::MD5.file(filename).hexdigest 
           #delete any user log file for errors we put it in the same directory as the csv file came from    
           @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-         
+          File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)
           @@header[:file_name] = standalone_filename #do not capitalize filenames
           @@header[:userid] = user_dirname
           @@uploaded_date = File.mtime(filename)
@@ -1080,7 +1081,6 @@ COMMON_WORD_EXPANSIONS = {
      EmailVeracity::Config[:skip_lookup]=true
      base_directory = Rails.application.config.datafiles
      file_for_warning_messages = "log/freereg_messages.log"
-     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
      @@message_file = File.new(file_for_warning_messages, "a")
      p "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
      @@message_file.puts "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
