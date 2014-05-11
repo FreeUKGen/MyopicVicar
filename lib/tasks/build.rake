@@ -63,6 +63,8 @@ task :setup => [ :environment] do |t, args|
   puts "Start Setup"
   file_for_warning_messages = "log/freereg_messages.log"
   File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
+  @@message_file = File.new(file_for_warning_messages, "a")
+  file.chmod( 0664 )
   puts "Freereg messages log deleted."
    x = system("rake load_emendations") 
   puts "Emendations loaded" if x
