@@ -188,7 +188,7 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
  
      CreateSearchRecordsDocs.process(args.type,search_records,args.range )
-     
+     exit(true)
   end
 
 
@@ -206,7 +206,7 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
   puts "processing CSV file with #{args.type} and #{search_records}"
     FreeregCsvProcessor.process(args.type,search_records,args.range)
   puts "Freereg task complete."
-
+    exit(true)
 end
 
 task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args| 
