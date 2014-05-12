@@ -43,7 +43,7 @@ include Mongoid::Document
         place.save!
   	 end
   	end  
-    puts "checked #{record_number} entries there were #{missing_records} missing search records"
+    puts "checked #{record_number} entries there were #{missing_records} incorrect master place records"
    
   end
 end
