@@ -1,8 +1,19 @@
 Page Identification Master Place:new<p>
 <p style="text-align: center">Create a new Place entry. <br></p>
+<div style="float:left;"> <%= button_to 'Edit Place', edit_master_place_name_path(@place), method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Discard', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %></div>
+<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <% params = session[:parameters] %></div>
+<div style="float:left;"> <%= button_to 'Back to Index of Places', master_place_names_path(params) %></div>
+ <div style="float:left;"> <%= button_to 'Back to County selection', master_place_names_path, method: :get %></div>
+<div style="clear:both;"> </div><br>
 
 <%= render 'form' %>
 
-<%= button_to_function "Back to Previous Page", "history.back()" %> 
-<% params = session[:parameters] %>
-<%= button_to 'Back to Index of Places', master_place_names_path(params) %>
+<div style="float:left;"> <%= button_to 'Edit Place', edit_master_place_name_path(@place), method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Discard', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %></div>
+<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <% params = session[:parameters] %></div>
+<div style="float:left;"> <%= button_to 'Back to Index of Places', master_place_names_path(params) %></div>
+ <div style="float:left;"> <%= button_to 'Back to County selection', master_place_names_path, method: :get %></div>
+<div style="clear:both;"> </div><br>
