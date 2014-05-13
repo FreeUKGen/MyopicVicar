@@ -956,9 +956,15 @@ COMMON_WORD_EXPANSIONS = {
                
     begin
       # normalise line endings
-       xxx = File.read(filename).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
+     
+
+
+      
       # get character set
-       first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+       #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+       
+       first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
+       p first_data_line
        code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
       #set rhge default      
       code_set = "ISO-8859-1" if (code_set.nil? || code_set.empty? || code_set == "chset")
@@ -970,10 +976,13 @@ COMMON_WORD_EXPANSIONS = {
        code_set = "ISO-8859-1" unless @code_sets.include?(code_set) 
         #if we have valid new character set; use it and change the file encoding
         @@charset = Encoding.find(code_set) 
+        xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
         xxx.encode!("UTF-8",@@charset)
         #now get all the data
         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+        p  @@array_of_data_lines[0]
         @@header [:characterset] = code_set
+
         success = true
           #we rescue when for some reason the slurp barfs
           rescue => e 
