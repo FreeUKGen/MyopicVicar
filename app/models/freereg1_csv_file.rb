@@ -27,8 +27,8 @@ class Freereg1CsvFile
   belongs_to :register, index: true
   #register belongs to church which belongs to place
   has_one :csvfile
-  embeds_many :batch_errors
-   index "batch_errors._id" => 1
+  has_many :batch_errors
+  
 
 
   # Fields correspond to cells in CSV headers  
