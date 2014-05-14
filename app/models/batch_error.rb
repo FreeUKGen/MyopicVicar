@@ -10,4 +10,5 @@ class BatchError
   field :entry_id, type: String
   belongs_to  :freereg1_csv_file, index: true
   index({entry_id:1})
+  index({freereg1_csv_file_id: 1,entry_id:1})
 end

@@ -815,7 +815,10 @@ COMMON_WORD_EXPANSIONS = {
         #puts "Data record #{datakey} \n #{datarecord} \n"
         success = create_db_record_for_entry(datarecord)
         unless  success.nil?
-          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
+          batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
+          batch_error.freereg1_csv_file = @freereg1_csv_file
+          batch_error.save
+
           @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  unless File.exists?(@@user_file_for_warning_messages)
           @@number_of_error_messages = @@number_of_error_messages + 1
           @@user_message_file.puts "Data_Error,#{datarecord[:file_line_number]},#{success},#{@@header[:record_type]},#{datarecord}"
@@ -824,7 +827,11 @@ COMMON_WORD_EXPANSIONS = {
        unless @@header_error.nil?
         @@header_error.each do |error_key,error_value|
                  
-          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
+          batch_error = BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
+          batch_error.freereg1_csv_file = @freereg1_csv_file
+          batch_error.save
+
+
         end #end header errors
          
       end # #header nil
@@ -964,7 +971,6 @@ COMMON_WORD_EXPANSIONS = {
        #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
        
        first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
-       p first_data_line
        code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
       #set rhge default      
       code_set = "ISO-8859-1" if (code_set.nil? || code_set.empty? || code_set == "chset")
@@ -980,7 +986,7 @@ COMMON_WORD_EXPANSIONS = {
         xxx.encode!("UTF-8",@@charset)
         #now get all the data
         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
-        p  @@array_of_data_lines[0]
+       
         @@header [:characterset] = code_set
 
         success = true
