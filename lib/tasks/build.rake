@@ -58,12 +58,18 @@ task :freereg,[:type,:search_records,:range1,:range2,:range3] => [:setup,:create
 end
 
 task :setup => [ :environment] do |t, args| 
+  require 'emendation_rule'
+  require 'emendation_type'
   puts "Start Setup"
   file_for_warning_messages = "log/freereg_messages.log"
   File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
+  @@message_file = File.new(file_for_warning_messages, "a")
+  @@message_file.chmod( 0664 )
   puts "Freereg messages log deleted."
    x = system("rake load_emendations") 
   puts "Emendations loaded" if x
+  EmendationRule.create_indexes()
+  EmendationType.create_indexes()
   puts "Setup finished"
 
 end
@@ -93,7 +99,7 @@ end
   #dops place, church, register, files
   if args.type == "recreate"
    
-  collections_to_drop = ["2","3","4","5","6","7","8"]
+  collections_to_drop = ["2","3","4","5","6","7",]
    collections_to_drop.each  do |col|
      coll  = col.to_i
      model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll]) 
@@ -108,37 +114,37 @@ task :setup_index => [:setup_drop, :environment] do |t, args|
   puts "Creating minimum indexes"
     
   
-    script_index_places = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({place_name:1 })\""
+    script_index_places = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({place_name: 1 })\""
    `#{script_index_places}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-  script_index_places_chapman = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({chapman_code: 1, place_name:1 })\""
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+  script_index_places_chapman = @mongodb_bin + "mongo #{@db} --eval \"db.places.ensureIndex({chapman_code: 1, place_name: 1 })\""
  `#{script_index_places_chapman}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers_alternate = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id:1, alternate_register_name: 1 })\""
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ script_index_registers_alternate = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id: 1, alternate_register_name: 1 })\""
  `#{script_index_registers_alternate}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_registers = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id:1, register_name: 1 })\""
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ script_index_registers = @mongodb_bin + "mongo #{@db} --eval \"db.registers.ensureIndex({church_id: 1, register_name: 1 })\""
  `#{script_index_registers}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
   script_index_churches = @mongodb_bin + "mongo #{@db} --eval \"db.churches.ensureIndex({place_id: 1, church_name: 1 })\""
  `#{script_index_churches}`
-   p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
  script_index_freereg1_csv_files = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_files.ensureIndex({file_name: 1, userid: 1, county: 1, place: 1 , church_name: 1, register_type: 1})\""
  `#{script_index_freereg1_csv_files}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
- script_index_freereg1_csv_entries = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id:1 })\""
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ script_index_freereg1_csv_entries = @mongodb_bin + "mongo #{@db} --eval \"db.freereg1_csv_entries.ensureIndex({freereg1_csv_file_id: 1 })\""
  `#{script_index_freereg1_csv_entries}`
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
-   script_index_search_records_entries = @mongodb_bin + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id:1 })\"" 
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+   script_index_search_records_entries = @mongodb_bin + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id: 1 })\"" 
       `#{script_index_search_records_entries}`    
-    p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0 
+    p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
      puts "Minimum indexes created"
 
 end
  
  
 #This spinning off 1,2 or 3 rake csv_processes.
-task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:setup_index, :environment]  do |t, args| 
+task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:create_userid_docs, :environment]  do |t, args| 
   p "Starting processors"
     
     search_records = args.search_records
@@ -172,10 +178,17 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
 
   task :create_search_records, [:type,:search_records,:range] => [:environment] do |t, args|
    require 'create_search_records_docs' 
- 
+  @mongodb_bin =   Rails.application.config.mongodb_bin_location
+   Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
   search_records = "create_search_records" 
-
+  script_index_search_records_entries = @mongodb_bin  + "mongo #{@db} --eval \"db.search_records.ensureIndex({freereg1_csv_entry_id: 1 })\"" 
+   p script_index_search_records_entries
+      `#{script_index_search_records_entries}`    
+   p "Index creation result #{$?.to_i}" unless $?.to_i == 0 
+ 
      CreateSearchRecordsDocs.process(args.type,search_records,args.range )
+     exit(true)
   end
 
 
@@ -193,16 +206,17 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
   puts "processing CSV file with #{args.type} and #{search_records}"
     FreeregCsvProcessor.process(args.type,search_records,args.range)
   puts "Freereg task complete."
-
+    exit(true)
 end
 
-task :create_userid_docs, [:type]  => [:parallelp,:environment] do |t, args| 
+task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
    require 'create_userid_docs'
    require "userid_detail"
       puts "Creating Transcriber Docs"
-     range = "*/*.uDetails"
-      CreateUseridDocs.process(args.type,range )
+      range = "*/*.uDetails"
+     type = "add"
+      CreateUseridDocs.process(type,range)
     puts "Task complete."
  end
  

@@ -1,8 +1,6 @@
 namespace :reports do
 	
 desc "Create a missing locations list"
- # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
- #valid options for type are rebuild, replace, add
  task :missing_locations, [:limit] => [:environment] do |t, args|
  require 'missing_locations' 
  
@@ -10,6 +8,19 @@ desc "Create a missing locations list"
    
      
           MissingLocations.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
+desc "Create a database content report"
+ task :database_contents, [:limit,:type] => [:environment] do |t, args|
+ require 'database_contents' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          DatabaseContents.process(args.limit,args.type) 
           
      
     puts "Task complete."
@@ -64,6 +75,39 @@ desc "Create a report of Userid Details"
    end
   end
 
+desc "Create a report of Forename Populations"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :forenames_report, [:limit] => [:environment] do |t, args|
+ require 'forenames_report' 
+ require 'freereg1_csv_entry'
+  
+  Mongoid.unit_of_work(disable: :all) do
+   
+     Freereg1CsvEntry.create_indexes()
+          ForenamesReport.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
+
+desc "Create a report of Surname Populations"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :surnames_report, [:limit] => [:environment] do |t, args|
+ require 'surnames_report' 
+ require 'freereg1_csv_entry'
+  
+  Mongoid.unit_of_work(disable: :all) do
+   
+     Freereg1CsvEntry.create_indexes()
+          SurnamesReport.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
 
 
 end

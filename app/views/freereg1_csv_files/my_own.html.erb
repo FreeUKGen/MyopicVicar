@@ -2,13 +2,13 @@ Page Identification Freereg Files:my_own<p>
 <%= semantic_form_for(@freereg1_csv_file) do |f| %>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
 
 <div id="main"style="color:black">
 
-<div style="float:left;"><%= f.input :action, { :as => :select, :include_blank => false, :collection => ['By filename', 'By number of errors then filename','By uploaded date (ascending)', 'By uploaded date (descending)' ], :label => " #{@first_name} how would you like you batches listed? ",  :size => 10  }%></div>
+<div style="float:left;"><%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Upload New Batch','List by number of errors then name', 'List by name', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ], :label => " #{@first_name} what would you like to do? ",  :size => 10  }%></div>
 
 
     <div style="float:left;"><%= f.action :submit, :as => :input, :label => 'Select'   %></div>

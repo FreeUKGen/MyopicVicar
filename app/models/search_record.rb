@@ -104,18 +104,18 @@ class SearchRecord
 
 
   def transform
-
     populate_search_from_transcript
-    
+   
     downcase_all
-    
+     
     separate_all
-    
+      
     emend_all
-    
-    create_soundex    
-
+     
+    create_soundex   
+      
     transform_date
+      
   end
 
   def populate_search_from_transcript
@@ -281,11 +281,15 @@ class SearchRecord
   def self.from_freereg1_csv_entry(entry)
 #   # assumes no existing entries for this line
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+   
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
-    record.place = entry.freereg1_csv_file.register.church.place
+    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).first
     
-    record.save!    
+    #record.place = entry.freereg1_csv_file.register.church.place
+    record.place = places
+    record.save!  
+    
   end
   
   def self.delete_freereg1_csv_entries

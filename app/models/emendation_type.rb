@@ -6,7 +6,9 @@ class EmendationType
   field :origin, type: String
   
   has_many :emendation_rules
-  
+  index({ name: 1, target_field: 1, origin: 1})
+  index({ target_field: 1, origin: 1})
+  index({ origin: 1})
   def target_field
     self[:target_field].to_sym
   end

@@ -23,7 +23,7 @@ def create
     @country = Country.new(params[:country])
 	@country.save
  if @country.errors.any?
-     session[:errors] = @country.errors.messages
+    
      flash[:notice] = "The addition of the Country was unsuccsessful"
      render :action => 'edit'
      return
@@ -40,7 +40,7 @@ def update
 	 params[:country][:previous_country_coordinator] = previous_country_coordinator  unless @country.country_coordinator == params[:country][:country_coordinator]
 	 @country.update_attributes(params[:country])
      if @country.errors.any?
-       session[:errors] = @country.errors.messages
+       
        flash[:notice] = "The change to the country was unsuccsessful"
         render :action => 'edit'
         return

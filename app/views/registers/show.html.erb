@@ -6,6 +6,7 @@
    
  <div style="float:left;">  <%= button_to 'Edit Register', edit_register_path(@register), method: :get %></div>    
 <div style="float:left;">  <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></div> 
+<div style="float:left;">  <%= button_to 'Create New Register', new_register_path, method: :get %></div>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
@@ -14,7 +15,7 @@
 
     <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %>
     <div id="main"style="color:black">
@@ -23,12 +24,7 @@
     <th style="width:25%">Field</th>
     <th style="width:50">Value</th>
   </tr>
- <% if @register.register_name.nil? %>
-  <tr> 
 
-   <td>Register name :</td><td > <%= @register.alternate_register_name%> </td>
-  </tr>
-<%else%>
     <tr> 
 
    <td>Register name :</td><td > <%= @register.register_name%> </td>
@@ -36,7 +32,7 @@
   <tr>
    <td>Alternate register name :</td><td > <%= @register.alternate_register_name%>  </td>   
    </tr>
-   <%end%>
+   
    <tr>
    <td>Register Type :</td><td ><%= @register.register_type %></td>   
    </tr>
@@ -82,6 +78,7 @@
 
  <div style="float:left;">  <%= button_to 'Edit Register', edit_register_path(@register), method: :get %></div>    
 <div style="float:left;">  <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></div> 
+<div style="float:left;">  <%= button_to 'Create New Register', new_register_path, method: :get %></div>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>

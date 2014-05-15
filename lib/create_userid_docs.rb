@@ -34,36 +34,32 @@ FIELD_NAMES = {
 
 }
 
-def self.check_for_replace(filename,header)
-                 
+def self.check_for_replace(filename,userid,digest)
     #check to see if we should process the file
     #is it aleady there?
-    check_for_file = UseridDetail.where({ :userid => header[:userid]}).first
+    check_for_file = UseridDetail.where(:userid => userid).first
     if check_for_file.nil?
-    #if file not there then need to create
+      #if file not there then need to create
       return true
     else
       #file is in the database
       
-      if header[:digest] == check_for_file.digest then
+      if digest == check_for_file.digest then
         #file in database is same or more recent than we we are attempting to reload so do not process
-              @@message_file.puts "#{userid} #{header[:file_name]} has not changed since last build"
-              return false
+              @@message_file.puts "#{userid} #{filename} has not changed since last build"
+        return false
       else
-        UseridDetail.delete_file(check_for_file._id)
-         return true
+        return true
       end
-         
+      
     end #check_for_file loop end
 
   end #method end
 
  def self.process(type,range)
- 	
+ 	Mongoid.load!("#{Rails.root}/config/mongoid.yml")
   base_directory = Rails.application.config.datafiles
-  UseridDetail.delete_all if type = "recreate"
-           
-
+  UseridDetail.delete_all if type == "recreate"
   filenames = Array.new
   files = Array.new
   userids = range.split("/")
@@ -200,14 +196,20 @@ header[:disabled] = header[:disabled].to_i
     end
 
    header[:person_role] = "system_administrator" if header[:userid] == "REGManager" 
-   process = true   
-   process = check_for_replace(filename,header) unless type == "recreate"   
-   
+     
+  
+   if check_for_replace(filename,header[:userid],header[:digest]) 
    detail = UseridDetail.new(header)
-   detail.save if process == true
+   detail.save 
     if detail.errors.any?
-     @@message_file.puts detail.errors
+      @@message_file.puts "#{header[:userid]} not created"
+      @@message_file.puts detail.errors.messages
+      p "#{header[:userid]} not created"
+      p detail.errors.messages
+    else
+    p "#{header[:userid]} created"
     end #end errors
+   end
     
   end # end filename
   @@message_file.puts"#{number} records added with #{number_of_syndicate_coordinators} syndicate coordinators, #{number_of_county_coordinators} county coordinators #{number_of_country_coordinators} country coordinators"

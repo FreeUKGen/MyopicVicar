@@ -9,7 +9,7 @@ Page Identification Places:new<p>
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %> 
 

@@ -13,7 +13,7 @@ class MasterPlaceNamesController < ActionController::Base
           session[:county] = @county
           session[:chapman_code] = params[:master_place_name][:chapman_code]
           #reset the session errors flag
-          session[:errors] = nil
+      
           session[:form] = nil
           session[:parameters] = params
     end
@@ -24,7 +24,7 @@ class MasterPlaceNamesController < ActionController::Base
     load(params[:id])
     #make sure the show is clean and ready for an edit
     session[:type] = "edit"
-    session[:errors] = nil
+ 
     
   end
 
@@ -70,12 +70,12 @@ class MasterPlaceNamesController < ActionController::Base
       #we have errors on the creation
    
     session[:form] =  @place
-    session[:errors] = @place.errors.messages
+   
     flash[:notice] = 'The addition to Master Place Name was unsuccsessful'
-    redirect_to :action => 'new'
+    render :new
    else
     #we are clean on the addition
-   session[:errors] = nil
+  
    session[:form] = nil
    session[:type] = "edit"
    flash[:notice] = 'The addition to Master Place Name was succsessful'
@@ -132,10 +132,10 @@ class MasterPlaceNamesController < ActionController::Base
     @place.save
    if @place.errors.any?
       #we have errors in the editing
-    session[:errors] = @place.errors.messages
+   
     session[:form] = @place
     flash[:notice] = 'The change in Master Place Name record was unsuccsessful'
-    redirect_to :action => 'edit'
+    render :edit
    else
    session[:form] =  nil
    flash[:notice] = 'The change in Master Place Name record was succsessful'
@@ -144,18 +144,18 @@ class MasterPlaceNamesController < ActionController::Base
  end
 
  def new
-    if session[:errors].nil?
+   
       #coming through new for the first time so get a new instance
       @place = MasterPlaceName.new
       @place.chapman_code = session[:chapman]
       @place.county = session[:county]
       session[:form] = @place
       @county = session[:county]
-      session[:errors] = nil
-    else
+     
+    
      #Coming through new with errors
      @place = session[:form]
-    end
+    
     session[:type] = "new"
   end
 
