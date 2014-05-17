@@ -6,7 +6,7 @@ gem 'rails', '3.2.13'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 
-gem 'mysql2'
+gem 'mysql2', '0.3.12'
 gem 'refinerycms'
 # MongoDB
 #gem 'bson_ext'
@@ -31,7 +31,7 @@ gem 'bourbon', '~> 2.1'
 gem 'activeadmin-mongoid' 
 gem 'devise'
 gem 'nokogiri'
-gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
+gem "osgb"#, :git => 'git://github.com/FreeUKGen/osgb.git'
 gem 'quiet_assets', :group => :development
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
 gem 'rubyzip'
