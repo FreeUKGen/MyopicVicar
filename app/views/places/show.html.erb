@@ -39,7 +39,10 @@ Page Identification Places:show<p>
    <%end%>
    </tr>
    <tr>
-   <td>Genuki page :</td><td ><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td>   
+   <td>Genuki page :</td><td ><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
+   <tr><td>Latitude :</td><td>  <%= @place.master_place_lat %>  </td>
+   </tr>
+    <tr><td>Longtitude :</td><td>  <%= @place.master_place_lon %>  </td>
    </tr>
    <tr>
    <td>Last date that a record for this Place was amended :</td><td ><%= @place.last_amended %></td>   

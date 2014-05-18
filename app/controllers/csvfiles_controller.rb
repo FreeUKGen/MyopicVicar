@@ -76,13 +76,13 @@ def create
   if params[:commit] == 'Replace'
       @csvfile.save_to_attic
     end #end if
-  unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid] ,@csvfile.file_name)}")
+  unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
     @csvfile.save
 
   unless @csvfile.errors.any?
      @user = UseridDetail.where(:userid => session[:userid]).first
      flash[:notice] = 'The upload of the file was succsessful'
-     place = File.join(Rails.application.config.datafiles,@csvfile[:userid] ,@csvfile.file_name)
+     place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
       size = (File.size("#{place}"))
       unit = 0.0002
      @processing_time = (size.to_i*unit).to_i 
@@ -120,23 +120,18 @@ def get_userids_and_transcribers
  @user = UseridDetail.where(:userid => session[:userid]).first
         syndicate = @user.syndicate
         syndicate = session[:syndicate] unless session[:syndicate].nil?
-    @people =Array.new  
-     @people <<  @person 
+        @people =Array.new  
+        @people <<  @person 
+    
   case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
         @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-    when  @user.person_role == 'country_cordinator'
-
+    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator' 
         @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
-    when  @user.person_role == 'county_coordinator'  
-       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)  
-    when  @user.person_role == 'syndicate_coordinator'  
-       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
     else
-       @userids = @user
+        @userids = @user
   end #end case
     unless session[:my_own] == 'my_own'
-     
         @userids.each do |ids|
         @people << ids.userid
       end

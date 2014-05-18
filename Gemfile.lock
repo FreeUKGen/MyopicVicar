@@ -1,9 +1,3 @@
-GIT
-  remote: git://github.com/FreeUKGen/osgb.git
-  revision: ce21033002ff8d53dbcfcd13533fb027d683a0cd
-  specs:
-    osgb (0.3.1)
-
 PATH
   remote: vendor/extensions
   specs:
@@ -178,6 +172,7 @@ GEM
     nokogiri (1.5.9-x86-mingw32)
     origin (1.1.0)
     orm_adapter (0.5.0)
+    osgb (0.3.1)
     polyamorous (0.5.0)
       activerecord (~> 3.0)
     polyglot (0.3.3)
@@ -193,6 +188,8 @@ GEM
     pry-stack_explorer (0.4.9)
       binding_of_caller (>= 0.7)
       pry (~> 0.9.11)
+    quiet_assets (1.0.2)
+      railties (>= 3.1, < 5.0)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -336,15 +333,17 @@ DEPENDENCIES
   fog
   jquery-rails
   json
+  kaminari
   listen
   meta_search (>= 1.1.0.pre)
   mongoid (~> 3.1)
   moped (~> 1)
-  mysql2
+  mysql2 (= 0.3.12)
   nokogiri
-  osgb!
+  osgb
   pry
   pry-stack_explorer
+  quiet_assets
   rails (= 3.2.13)
   refinerycms
   refinerycms-counties!

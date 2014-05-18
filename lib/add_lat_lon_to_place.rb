@@ -1,5 +1,13 @@
 class AddLatLonToPlace
 require "#{Rails.root}/app/models/place"
+require "#{Rails.root}/app/models/master_place_name"
+
+include Mongoid::Document
+
+def initialize
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    
+  end
      
  def self.process(type)
   number_processed = 0

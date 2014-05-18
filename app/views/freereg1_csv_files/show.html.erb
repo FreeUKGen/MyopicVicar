@@ -3,6 +3,7 @@ Page Identification Freereg Files:show<p>
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
 <div style="float:left;"> <%= button_to 'Download this batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
 <div style="float:left;"><%= button_to 'Replace this batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
+<div  style="float:left;"><%= button_to 'Destroy batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' } %></div>
 <div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
@@ -122,6 +123,7 @@ Page Identification Freereg Files:show<p>
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
 <div style="float:left;"> <%= button_to 'Download this batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
 <div style="float:left;"><%= button_to 'Replace this batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
+<div  style="float:left;"><%= button_to 'Destroy batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' } %></div>
 <div style="float:left;"> <%= button_to 'Show the records of this batch', freereg1_csv_entries_path, method: :get %></div>
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>

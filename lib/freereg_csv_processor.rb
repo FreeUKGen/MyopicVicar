@@ -246,26 +246,6 @@ COMMON_WORD_EXPANSIONS = {
   
  
 
-  #test for the character set
-  def self.charvalid(m)
-   return true if (m == "iso-8859-1"  || m.nil? || m.empty? || m == "chset")
-     #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-      m = "IBM437" if (m == "cp437")
-      m = m.upcase
-      m = "macRoman" if (m.downcase == "macintosh")
-      raise FreeREGError,  "Invalid Character Set" unless @code_sets.include?(m) 
-      if Encoding.find(m)
-        #if we have valid new character set; use it and change the file encoding
-        @@charset = Encoding.find(m)
-        
-         @@array_of_data_lines = CSV.read(@@file, external_encoding:@@charset , internal_encoding:"UTF-8")                              
-        
-        return true
-      else
-        return false
-      end
-  end
-
   def self.mycapitalize(word,num,type_of_name)
     word = CHURCH_WORD_EXPANSIONS[word] if CHURCH_WORD_EXPANSIONS.has_key?(word) && type_of_name == "Church"
     word = COMMON_WORD_EXPANSIONS[word] if COMMON_WORD_EXPANSIONS.has_key?(word)
@@ -392,8 +372,8 @@ COMMON_WORD_EXPANSIONS = {
     raw_record_type = @csvdata[4]
     scrubbed_record_type = Unicode::upcase(@csvdata[4]).gsub(/\s/, '')
     @@header [:record_type] =  RECORD_TYPE_TRANSLATION[scrubbed_record_type]
-    raise FreeREGError, "Header_Error,Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
-    @@header [:characterset] = @csvdata[5]
+    #raise FreeREGError, "Header_Error,Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
+    #@@header [:characterset] = @csvdata[5]
   end
 
   #process the header line 2
@@ -820,11 +800,9 @@ COMMON_WORD_EXPANSIONS = {
   def self.process_register_headers
    
     @@list_of_registers.each do |place_key,head_value|
-     
-      @@header.merge!(head_value)
+       @@header.merge!(head_value)
       #puts "header #{head} \n"
-     
-      @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+        @freereg1_csv_file = Freereg1CsvFile.new(@@header)
        @freereg1_csv_file.update_register
         #write the data records for this place/church
       @@data_hold[place_key].each do |datakey,datarecord|
@@ -837,25 +815,32 @@ COMMON_WORD_EXPANSIONS = {
         #puts "Data record #{datakey} \n #{datarecord} \n"
         success = create_db_record_for_entry(datarecord)
         unless  success.nil?
+          batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
+          batch_error.freereg1_csv_file = @freereg1_csv_file
+          batch_error.save
 
-          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
-          @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  if @@number_of_error_messages == 0
+          @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  unless File.exists?(@@user_file_for_warning_messages)
           @@number_of_error_messages = @@number_of_error_messages + 1
           @@user_message_file.puts "Data_Error,#{datarecord[:file_line_number]},#{success},#{@@header[:record_type]},#{datarecord}"
         end #end success
       end #end @@data_hold
        unless @@header_error.nil?
         @@header_error.each do |error_key,error_value|
-          p "header error"
-          p error_key
-          p error_value
-          
-          @freereg1_csv_file.batch_errors << BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
-        end
-      end
+                 
+          batch_error = BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data]) 
+          batch_error.freereg1_csv_file = @freereg1_csv_file
+          batch_error.save
+
+
+        end #end header errors
+         
+      end # #header nil
+      
        @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
        @freereg1_csv_file.save
-       @@user_message_file.close unless @@number_of_error_messages == 0
+       @@number_of_error_messages = 0
+       @@header_error = nil
+    
     end #end @@list
 
 
@@ -934,7 +919,7 @@ COMMON_WORD_EXPANSIONS = {
         
                 rescue FreeREGError => free
                    unless free.message == "Empty data line" then
-                   @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  if @@number_of_error_messages == 0
+                   @@user_message_file = File.new(@@user_file_for_warning_messages, "w")   unless File.exists?(@@user_file_for_warning_messages)
                    @@number_of_error_messages = @@number_of_error_messages + 1
                     @csvdata = @@array_of_data_lines[@@number_of_line]
                     puts "#{@@userid} #{@@filename}" + free.message + " at line #{@@number_of_line}"
@@ -949,13 +934,10 @@ COMMON_WORD_EXPANSIONS = {
                     @@number_of_line = @@number_of_line + 1
                      #    n = n - 1 unless n == 0
                       @@header_line = @@header_line + 1 if @line_type == 'Header'  
-                    break if (free.message == "Empty file" || free.message == "Invalid Character Set" )
+                    break if free.message == "Empty file" 
                     retry  
                 rescue FreeREGEnd => free
-                  p "processing registers"
                    n = n - 1
-                   
-
                    process_register_headers
                    break
                 rescue  => e 
@@ -980,10 +962,34 @@ COMMON_WORD_EXPANSIONS = {
  def self.slurp_the_csv_file(filename)
                
     begin
-          #we slurp in the full csv file
-          @@array_of_data_lines = CSV.read(filename, external_encoding:@@charset , internal_encoding:"UTF-8")
+      # normalise line endings
+     
 
-          success = true
+
+      
+      # get character set
+       #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+       
+       first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
+       code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
+      #set rhge default      
+      code_set = "ISO-8859-1" if (code_set.nil? || code_set.empty? || code_set == "chset")
+     #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
+      code_set = "IBM437" if (code_set == "cp437")
+      code_set = code_set.upcase
+      code_set = "macRoman" if (code_set.downcase == "macintosh")
+      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed ISO-8859-1" unless @code_sets.include?(code_set) 
+       code_set = "ISO-8859-1" unless @code_sets.include?(code_set) 
+        #if we have valid new character set; use it and change the file encoding
+        @@charset = Encoding.find(code_set) 
+        xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
+        xxx.encode!("UTF-8",@@charset)
+        #now get all the data
+        @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+       
+        @@header [:characterset] = code_set
+
+        success = true
           #we rescue when for some reason the slurp barfs
           rescue => e 
                     @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
@@ -1075,7 +1081,7 @@ COMMON_WORD_EXPANSIONS = {
           @@header[:digest] = Digest::MD5.file(filename).hexdigest 
           #delete any user log file for errors we put it in the same directory as the csv file came from    
           @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-         
+          File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)
           @@header[:file_name] = standalone_filename #do not capitalize filenames
           @@header[:userid] = user_dirname
           @@uploaded_date = File.mtime(filename)
@@ -1090,7 +1096,6 @@ COMMON_WORD_EXPANSIONS = {
      EmailVeracity::Config[:skip_lookup]=true
      base_directory = Rails.application.config.datafiles
      file_for_warning_messages = "log/freereg_messages.log"
-     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
      @@message_file = File.new(file_for_warning_messages, "a")
      p "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
      @@message_file.puts "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"

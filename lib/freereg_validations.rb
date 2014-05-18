@@ -9,7 +9,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
   VALID_NUMERIC  = /[\p{N}]/u
   INVALID_TEXT = /[^a-zA-Z\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#\p{N}]/u#/[\p{C}]/u
-  VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age"]
+  VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
   VALID_AGE_TYPE2 = /^(\d{1,2})([hdwmy\*\[\]\-\_\?])/
@@ -29,13 +29,12 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
             "/" => /\\/}
    WILD_CHARACTER = /[\*\[\]\-\_\?]/
    YEAR_MAX = 2015
-   YEAR_MIN = 1500
+   YEAR_MIN = 1300
    VALID_MALE_SEX = ["M","M." ,"SON","MALE","MM","SON OF"]
    UNCERTAIN_MALE_SEX = ["M?","SON?","[M]" ,"MF"]
    UNCERTAIN_FEMALE_SEX = ["F?", "DAU?"]
-   UNCERTAIN_SEX = ["?", "-", "*","_","??"]
+   UNCERTAIN_SEX = ["?", "-", "*","_","??",""," "]
    VALID_FEMALE_SEX = ["F","FF","FFF","FM","F.","FEMALE","DAUGHTER","WIFE","DAUGHTER OF","DAU", "DAU OF"]
-
    VALID_MARRIAGE_CONDITIONS = {
           'Singleman' => 'Single Man',
           'Singlaman' => 'Single Man',
@@ -93,8 +92,10 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
 def FreeregValidations.cleantext(field)
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
-    return false if field =~ INVALID_TEXT
-    return true
+     return false if field =~ INVALID_TEXT
+       return true  
+     
+   
   end
 def FreeregValidations.cleanname(field)
  
@@ -170,11 +171,15 @@ def FreeregValidations.cleanage(field)
 
 
  def  FreeregValidations.cleansex(field)
-    return true if field.nil? || field.empty?
-    return true if field =~ VALID_UCF
-    return true if field =~ WILD_CHARACTER
-     return false unless FreeregValidations.cleanname(field)
+  
+      return false unless FreeregValidations.cleanname(field)
     case
+       when field.nil? || field =~ VALID_UCF
+          field = "?" 
+          return true 
+        when UNCERTAIN_SEX.include?(field.upcase)
+          field = "?" 
+          return true 
        when VALID_MALE_SEX.include?(field.upcase)
           field = "M" 
           return true 
@@ -187,9 +192,7 @@ def FreeregValidations.cleanage(field)
        when UNCERTAIN_FEMALE_SEX.include?(field.upcase)
           field = "F?"
           return true  
-        when UNCERTAIN_SEX.include?(field.upcase)
-          field = "?" 
-          return true 
+            
         else
           return false
       end

@@ -8,5 +8,7 @@ class BatchError
   field :error_type, type: String
   field :data_line, type: Array
   field :entry_id, type: String
-  embedded_in :freereg1_csv_file
+  belongs_to  :freereg1_csv_file, index: true
+  index({entry_id:1})
+  index({freereg1_csv_file_id: 1,entry_id:1})
 end

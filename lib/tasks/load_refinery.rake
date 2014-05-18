@@ -1,8 +1,8 @@
 require 'chapman_code'
 
 task :load_refinery => :environment do
-  load_syndicates
-#  load_counties
+#  load_syndicates
+  load_counties
   load_users
 end
 

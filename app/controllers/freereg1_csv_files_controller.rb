@@ -9,14 +9,14 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @role = session[:role]
     session[:my_own] = 'no'
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page])
-  session[:page] = request.original_url
+    session[:page] = request.original_url
    end
 
   def show
     #show an individual batch
     load(params[:id])
    @role = session[:role]
-    session[:page] = request.original_url
+   
     
   end
 
@@ -49,7 +49,9 @@ class Freereg1CsvFilesController < InheritedResources::Base
       session[:type] = "edit"
       flash[:notice] = 'The update of the file was successful' 
         Freereg1CsvFile.backup_file(@freereg1_csv_file)
-      redirect_to :back
+        @current_page = session[:page]
+        session[:page] = session[:initial_page]    
+        redirect_to @current_page
      end
   end
 
@@ -64,7 +66,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @header = Array.new
     @owner = @freereg1_csv_file.userid
     lines.each do |line|
-      p line
+    
          entry = Freereg1CsvEntry.where(freereg1_csv_file_id:  session[:freereg1_csv_file_id]).first
          @lines << line if line.error_type == 'Data_Error' 
          @system << line if line.error_type == 'System_Error' 
@@ -123,13 +125,16 @@ def create
   #creation of the options for the individual entry
   if session[:my_own] == 'my_own'
     case 
-     when params[:freereg1_csv_file][:action] == 'By filename'
+     when params[:freereg1_csv_file][:action] == 'Upload New Batch'
+      redirect_to new_csvfile_path
+      return
+     when params[:freereg1_csv_file][:action] == 'List by name'
       session[:sort] =  "file_name ASC"
-     when params[:freereg1_csv_file][:action] == 'By number of errors then filename'
+     when params[:freereg1_csv_file][:action] == 'List by number of errors then name'
       session[:sort] =   "error DESC, file_name ASC"
-     when params[:freereg1_csv_file][:action] == 'By uploaded date (descending)'
+     when params[:freereg1_csv_file][:action] == 'List by uploaded date (descending)'
       session[:sort] =  "uploaded_date DESC, userid ASC"
-     when params[:freereg1_csv_file][:action] == 'By uploaded date (ascending)'
+     when params[:freereg1_csv_file][:action] == 'List by uploaded date (ascending)'
       session[:sort] =  "uploaded_date ASC, userid ASC"
      end #end case
     @first_name = session[:first_name]
@@ -156,7 +161,9 @@ end
        @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(file_name: 1).page(params[:page])
        render 'index'
      else 
-      redirect_to  freereg1_csv_files_path(:anchor => "#{params[:id]}")
+     @current_page = session[:page]
+        session[:page] = session[:initial_page]    
+        redirect_to @current_page
      end
   end
 
@@ -175,7 +182,9 @@ end
          @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid] ).order_by(file_name: 1).page(params[:page])
        render 'index'
        else 
-        redirect_to  freereg1_csv_files_path(:anchor => "#{params[:id]}")
+        @current_page = session[:page]
+        session[:page] = session[:initial_page]    
+        redirect_to @current_page
        end
      
   end
