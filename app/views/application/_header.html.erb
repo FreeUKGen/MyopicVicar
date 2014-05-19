@@ -1,0 +1,8 @@
+<% if current_refinery_user %>
+  <%= link_to("logout", refinery.logout_path) %>
+  TO BE USED AND MOVED BY KIRK: 
+  <%= current_refinery_user.userid_detail.inspect %>
+<% else %>
+  <%= link_to("login", refinery.login_path) %>
+  (currently logs in then infinite loops!)
+<% end %>
