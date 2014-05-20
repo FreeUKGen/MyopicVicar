@@ -5,4 +5,10 @@ Refinery::User.class_eval do
   def userid_detail
     UseridDetail.find(self.userid_detail_id)
   end
+
+
+  def downcase_username
+    self.username=self.username #no-op for case-sensitive usernames
+  end
+
 end
