@@ -1,4 +1,5 @@
 class SearchQueriesController < ApplicationController
+
   RECORDS_PER_PAGE = 100
   def index
     redirect_to :action => :new
