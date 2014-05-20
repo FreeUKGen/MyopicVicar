@@ -2,27 +2,23 @@ class ManageResourcesController < ApplicationController
   require "county"
 def index
     reset_session
-    @manage_resources = ManageResource.new 
+    p 'testing'
+    p current_refinery_user.username.inspect
+    @user = UseridDetail.where(:userid => current_refinery_user.username).first
+    @user = UseridDetail.where(:userid_lower_case => current_refinery_user.username).first if @user.nil?
     session[:initial_page] = request.original_url
-    @people =Array.new
-    people = UseridDetail.where(:person_role => 'transcriber', :number_of_files.gt => 10, :number_of_records.gt => 1000).first
-    @people << people.userid_lower_case unless people.nil?
-    people = UseridDetail.where(:person_role => 'researcher').first
-    @people << people.userid_lower_case unless people.nil?
-    people = County.all.distinct(:county_coordinator_lower_case)
+    p @user
+    unless  @user.nil?
+    @manage_resources = ManageResource.new 
    
-    people.each do |mine|
-    @people << mine  unless @people.include?(mine) 
-    end 
-    people = Syndicate.all.distinct(:syndicate_coordinator_lower_case)
-    people.each do |mine|
-    @people << mine unless @people.include?(mine) 
-    end 
-    people = Country.all.distinct(:country_coordinator_lower_case)
-    people.each do |mine|
-    @people << mine unless @people.include?(mine) 
-    end 
-    @people = @people.sort
+    session[:userid] = @user.userid
+    session[:first_name] = @user.person_forename
+    session[:manager] = false
+    session[:manager] = true if (@user.person_role == 'system_administrator' || @user.person_role == 'country_coordinator'  || @user.person_role == 'county_coordinator'  || @user.person_role == 'volunteer_coordinator' || @user.person_role == 'syndicate_coordinator')
+     redirect_to manage_resource_path(@user)
+ else
+    redirect_to '/', notice: "Pay attention to the road"
+ end
 end
 
 def new
