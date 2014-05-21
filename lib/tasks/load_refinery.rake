@@ -13,6 +13,8 @@ end
 # end
 # 
 def load_users
+#  base_role = Refinery::Role.where(:title => 'Refinery').first
+  
   UseridDetail.all.each do |detail|
     u = Refinery::User.new
     u.username = detail.userid
@@ -20,7 +22,10 @@ def load_users
     u.password = 'Password'
     u.password_confirmation = 'Password'
     u.userid_detail_id = detail.id.to_s
+    u.add_role("Refinery")
+    
     u.save
+    
   end
 end
 
