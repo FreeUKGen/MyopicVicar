@@ -1,7 +1,7 @@
 PATH
   remote: vendor/extensions
   specs:
-    refinerycms-counties (1.0)
+    refinerycms-county_pages (1.0)
       refinerycms-core (~> 2.1.1)
 
 GEM
@@ -346,7 +346,7 @@ DEPENDENCIES
   quiet_assets
   rails (= 3.2.13)
   refinerycms
-  refinerycms-counties!
+  refinerycms-county_pages!
   rmagick (= 2.13.2)
   rspec-rails
   rubyzip

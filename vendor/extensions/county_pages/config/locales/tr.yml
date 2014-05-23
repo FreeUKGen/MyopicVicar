@@ -1,0 +1,30 @@
+tr:
+  refinery:
+    plugins:
+      county_pages:
+        title: County Pages
+    county_pages:
+      admin:
+        county_pages:
+          actions:
+            create_new: Yeni Ekle County Page
+            reorder: Tekrar sirala County Pages
+            reorder_done: Tekrar siralama tamamlandiCounty Pages
+          records:
+            title: County Pages
+            sorry_no_results: Uzgunum! Herhangi bir sonuc bulunamadi.
+            no_items_yet: Herhangi bir County Pages yok henuz.  Tikla "Yeni Ekle County Page" eklemek senin ilk county page.
+          county_page:
+            view_live_html: Bunu canlu county page goruntule <br/><em>(yeni bir pencerede acar)</em>
+            edit: Bunu Duzenle county page
+            delete: Bunu Sil county page sonsuza dek
+      county_pages:
+        show:
+          other: Diger County Pages
+  activerecord:
+    attributes:
+      'refinery/county_pages/county_page':
+        name: Name
+        chapman_code: Chapman Code
+        content: Content
+        position: Position

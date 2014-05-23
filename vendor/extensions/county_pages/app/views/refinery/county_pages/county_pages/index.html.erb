@@ -1,0 +1,11 @@
+<% content_for :body do %>
+  <ul id="county_pages">
+    <% @county_pages.each do |county_page| %>
+      <li>
+        <%= link_to county_page.name, refinery.county_pages_county_page_path(county_page) %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= render '/refinery/content_page' %>

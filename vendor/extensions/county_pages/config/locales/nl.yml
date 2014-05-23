@@ -1,0 +1,30 @@
+nl:
+  refinery:
+    plugins:
+      county_pages:
+        title: County Pages
+    county_pages:
+      admin:
+        county_pages:
+          actions:
+            create_new: Nieuwe County Page toevoegen
+            reorder: De volgorde van de County Pages wijzigen
+            reorder_done: Klaar met het wijzingen van de van de County Page-volgorde
+          records:
+            title: County Pages
+            sorry_no_results: Helaas! Er zijn geen resultaten gevonden.
+            no_items_yet: Er zijn nog geen County Pages. Druk op 'Nieuwe County Page toevoegen' om de eerste toe te voegen.
+          county_page:
+            view_live_html: Deze county page op de website bekijken <br/><em>(opent in een nieuw venster)</em>
+            edit: Bewerk deze county page
+            delete: Deze county page definitief verwijderen
+      county_pages:
+        show:
+          other: Andere County Pages
+  activerecord:
+    attributes:
+      'refinery/county_pages/county_page':
+        name: Name
+        chapman_code: Chapman Code
+        content: Content
+        position: Position
