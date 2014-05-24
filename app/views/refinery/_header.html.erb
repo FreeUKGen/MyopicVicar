@@ -1,0 +1,11 @@
+<h1 id='logo'>
+
+  <%= link_to Refinery::Core.site_name, refinery.root_path %></h1>
+ <h3><div style="float:left;"> <%= button_to " Search Our Database", main_app.search_queries_path , method: :get%></div>
+<% if current_refinery_user %>
+ <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
+<% else %>
+ <div style="float:left;"> <%= button_to" Login for members", refinery.login_path, method: :get %></div>
+<% end %>
+</h3>
+
