@@ -8,6 +8,7 @@ gem 'rails', '3.2.13'
 
 gem 'mysql2', '0.3.12'
 gem 'refinerycms'
+gem 'refinerycms-authentication'
 # MongoDB
 #gem 'bson_ext'
 gem "mongoid", "~> 3.1"
