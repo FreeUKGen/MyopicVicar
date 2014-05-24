@@ -100,8 +100,8 @@ Devise.setup do |config|
   # a value less than 10 in other environments.
   config.stretches = Rails.env.test? ? 1 : 10
 
-  # Setup a pepper to generate the encrypted password.
-  # config.pepper = "c866d638b5abde482e43a5bad2618d0d02c90a503b7f434706cb2e34d47616959bc6d4dbda3d268052b6262c39fa69a454b43a5097713bb89c4ac257afd9bf0c"
+  ## Setup a pepper to generate the encrypted password.
+  ## config.pepper = "c866d638b5abde482e43a5bad2618d0d02c90a503b7f434706cb2e34d47616959bc6d4dbda3d268052b6262c39fa69a454b43a5097713bb89c4ac257afd9bf0c"
 
   # ==> Configuration for :confirmable
   # A period that the user is allowed to access the website even without
@@ -180,7 +180,7 @@ Devise.setup do |config|
   # Time interval you can reset your password with a reset password key.
   # Don't put a too small interval or your users won't have the time to
   # change their passwords.
-  
+
   config.reset_password_within = 6.hours
 
   # ==> Configuration for :encryptable
