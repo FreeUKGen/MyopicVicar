@@ -1,14 +1,14 @@
 class ManageResourcesController < ApplicationController
   require "county"
 def index
-    reset_session
-    p 'testing'
-    p current_refinery_user.username.inspect
+   
+    
     @user = UseridDetail.where(:userid => current_refinery_user.username).first
-    @user = UseridDetail.where(:userid_lower_case => current_refinery_user.username).first if @user.nil?
+    #@user = UseridDetail.where(:userid_lower_case => current_refinery_user.username).first if @user.nil?
     session[:initial_page] = request.original_url
-    p @user
+    
     unless  @user.nil?
+    reset_session 
     @manage_resources = ManageResource.new 
    
     session[:userid] = @user.userid
@@ -17,7 +17,7 @@ def index
     session[:manager] = true if (@user.person_role == 'system_administrator' || @user.person_role == 'country_coordinator'  || @user.person_role == 'county_coordinator'  || @user.person_role == 'volunteer_coordinator' || @user.person_role == 'syndicate_coordinator')
      redirect_to manage_resource_path(@user)
  else
-    redirect_to '/', notice: "Pay attention to the road"
+    redirect_to '/', notice: "You are not authorised to use these facilities"
  end
 end
 

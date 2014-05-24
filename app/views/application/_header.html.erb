@@ -1,9 +1,0 @@
-<% if current_refinery_user %>
-
-  
- Welcome back  <%= current_refinery_user.username.inspect %>
-   <%= link_to("logout", refinery.logout_path) %>
-<% else %>
-  <%= link_to("login", refinery.login_path) %>
-  (currently logs in then infinite loops!)
-<% end %>

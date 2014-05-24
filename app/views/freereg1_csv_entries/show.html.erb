@@ -56,10 +56,10 @@ Page Identification Freereg Entries:show<p>
    <td>Abode of the person</td><td >   <%= @freereg1_csv_entry.person_abode %></td>   
    </tr>
    <tr>
-   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes %></td>   
+   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>   
    </tr>
    <tr>
-   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
+   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>   
    </tr>
    <tr>
    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.file_line_number %> </td> 
@@ -151,24 +151,23 @@ Page Identification Freereg Entries:show<p>
    <tr>
    <td>Occupation of the groom's father</td><td >   <%= @freereg1_csv_entry.groom_father_occupation %></td>   
    </tr>
-  
    <tr>
-   <td>Forename for witness</td><td >  <%= @freereg1_csv_entry.witness1_forename %></td>   
+   <% if @forenames%>
+   <% i = 0 %>
+    <% while i < @forenames.length %>
+    <td>Forename for witness</td><td >  <%=  @forenames[i] %></td> 
+     </tr> 
+    <td>Surname for witness</td><td > <%=  @surnames[i] %></td>    
+   </tr>
+    <% i = i + 1 %>
+   <%end%>
+   <%end%>
+   
+   <tr>
+   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>   
    </tr>
    <tr>
-   <td>Surname for witness</td><td > <%= @freereg1_csv_entry.witness1_surname %> </td>   
-   </tr>
-   <tr>
-   <td>Forename for witness</td><td >  <%= @freereg1_csv_entry.witness2_forename %></td>   
-   </tr>
-   <tr>
-   <td>Surname for witness</td><td > <%= @freereg1_csv_entry.witness2_surname %> </td>   
-   </tr>
-   <tr>
-   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes %></td>   
-   </tr>
-   <tr>
-   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
+   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>   
    </tr>
    <tr>
    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   
@@ -224,10 +223,10 @@ Page Identification Freereg Entries:show<p>
    <td>Abode of the person buried</td><td >  <%= @freereg1_csv_entry.burial_person_abode %></td>   
    </tr>
    <tr>
-   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes %></td>   
+   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>   
    </tr>
    <tr>
-   <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes_from_register %> </td>   
+   <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>   
    </tr>
    <tr>
    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>   

@@ -64,7 +64,7 @@ class Freereg1CsvEntry
   field :mother_forename, type: String
   field :mother_surname, type: String
   field :notes, type: String
-  field :notes_from_register, type: String
+  field :notes_from_transcriber, type: String
   field :person_abode, type: String
   field :person_age, type: String
   field :person_forename, type: String

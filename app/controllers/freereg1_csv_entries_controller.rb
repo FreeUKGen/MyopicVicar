@@ -23,6 +23,16 @@ class Freereg1CsvEntriesController < InheritedResources::Base
 
   def show
     load(params[:id])
+     @forenames = Array.new
+     @surnames = Array.new
+         @multiple_witness = @freereg1_csv_entry.multiple_witnesses.all
+        
+          @multiple_witness.each do |witness|
+          name = witness.witness_forename
+          @forenames << name
+          name = witness.witness_surname
+          @surnames << name
+         end
   end
 
   def error
@@ -116,6 +126,7 @@ end
   def update
    
     load(params[:id])
+    p params[:id]
      record_type = @freereg1_csv_file.record_type
      params[:freereg1_csv_entry][:record_type] = record_type
 
