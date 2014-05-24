@@ -1,0 +1,30 @@
+sk:
+  refinery:
+    plugins:
+      county_pages:
+        title: County Pages
+    county_pages:
+      admin:
+        county_pages:
+          actions:
+            create_new: Pridať County Page
+            reorder: Preusporiadať County Pages
+            reorder_done: Koniec radenia County Pages
+          records:
+            title: County Pages
+            sorry_no_results: Ľutujeme, ale neboli nájdené žiadne výsledky.
+            no_items_yet: Nie sú vytvorené žiadne County Pages. Kliknite na "Pridať County Page" pre pridanie prvého county page.
+          county_page:
+            view_live_html: Zobraziť náhľad county page<br/><em>(otvorí sa v novom okne)</em>
+            edit: Upraviť county page
+            delete: Zmazať county page
+      county_pages:
+        show:
+          other: Daľšie County Pages
+  activerecord:
+    attributes:
+      'refinery/county_pages/county_page':
+        name: Name
+        chapman_code: Chapman Code
+        content: Content
+        position: Position

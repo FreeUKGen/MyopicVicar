@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140320025549) do
+ActiveRecord::Schema.define(:version => 20140523143725) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -28,8 +28,8 @@ ActiveRecord::Schema.define(:version => 20140320025549) do
   add_index "active_admin_comments", ["namespace"], :name => "index_active_admin_comments_on_namespace"
   add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
 
-  create_table "refinery_counties", :force => true do |t|
-    t.string   "county"
+  create_table "refinery_county_pages", :force => true do |t|
+    t.string   "name"
     t.string   "chapman_code"
     t.text     "content"
     t.integer  "position"

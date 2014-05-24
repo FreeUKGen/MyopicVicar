@@ -24,8 +24,9 @@ def load_users
     u.userid_detail_id = detail.id.to_s
     u.add_role("Refinery")
     
-    u.save
-    
+    unless u.save
+#        binding.pry		 
+    end
   end
 end
 
@@ -33,7 +34,7 @@ end
 def load_counties
   position = 1
   ChapmanCode::CODES.each_pair do |name, code|
-    Refinery::Counties::County.create( :county => name, :chapman_code => code, :position => position )
+    Refinery::CountyPages::CountyPage.create( :name => name, :chapman_code => code, :position => position )
     position = position+1
   end
 end

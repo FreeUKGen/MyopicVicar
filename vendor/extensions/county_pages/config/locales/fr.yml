@@ -1,0 +1,30 @@
+fr:
+  refinery:
+    plugins:
+      county_pages:
+        title: County Pages
+    county_pages:
+      admin:
+        county_pages:
+          actions:
+            create_new: Créer un(e) nouve(au/l/lle) County Page
+            reorder: Réordonner les County Pages
+            reorder_done: Fin de réordonnancement des County Pages
+          records:
+            title: County Pages
+            sorry_no_results: "Désolé ! Aucun résultat."
+            no_items_yet: 'Il n''y a actuellement aucun(e) County Page. Cliquer sur "Créer un(e) nouve(au/l/lle) County Page" pour créer votre premi(er/ère) county page.'
+          county_page:
+            view_live_html: Voir ce(t/tte) county page <br/><em>(Ouvre une nouvelle fenêtre)</em>
+            edit: Modifier ce(t/tte) county page
+            delete: Supprimer définitivement ce(t/tte) county page
+      county_pages:
+        show:
+          other: Autres County Pages
+  activerecord:
+    attributes:
+      'refinery/county_pages/county_page':
+        name: Name
+        chapman_code: Chapman Code
+        content: Content
+        position: Position
