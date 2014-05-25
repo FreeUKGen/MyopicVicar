@@ -1,48 +1,26 @@
 class MasterPlaceNamesController < ActionController::Base
     
  def index
- #on initial entry we display a county selection; a second entry displays an index of the Master Place Names for the selected county   
-    unless params[:commit] == "Search"
-      #coming through for the very first time so we will go get a county
-          reset_session
-          @places = MasterPlaceName.new
-    else  
-    #coming through for the second time with knowledge of the county so will offer the index of places in that county     
-          @places = MasterPlaceName.where( :chapman_code => params[:master_place_name][:chapman_code]).all.order_by( place_name: 1)
-          @county = ChapmanCode.has_key(params[:master_place_name][:chapman_code]) 
-          session[:county] = @county
-          session[:chapman_code] = params[:master_place_name][:chapman_code]
-          #reset the session errors flag
-      
-          session[:form] = nil
-          session[:parameters] = params
-    end
-
+         @chapman_code = session[:chapman_code]
+          @county = session[:county]
+           @first_name = session[:first_name]
+         
+          @places = MasterPlaceName.where( :chapman_code =>  @chapman_code).all.order_by( place_name: 1)
   end
 
   def show
     load(params[:id])
-    #make sure the show is clean and ready for an edit
-    session[:type] = "edit"
- 
-    
+       @first_name = session[:first_name]   
   end
 
  def edit
-   load(params[:id])
-  
-   @place = session[:form] if (!session[:form].nil? && session[:type] = "new")
+   load(params[:id]) 
    session[:type] = "edit"
-  
+     @first_name = session[:first_name]
  end
 
  def create
-  #our first pass through is following the selection of a county
-  if params[:commit] == "Search"
-    redirect_to master_place_names_path(params)
-  else
-    #this time we are creally creating a new entry
-    
+      
     @place =  session[:form] 
     @place.genuki_url = params[:master_place_name][:genuki_url]
     @place.chapman_code = params[:master_place_name][:chapman_code]
@@ -68,21 +46,19 @@ class MasterPlaceNamesController < ActionController::Base
     @place.save
     if @place.errors.any?
       #we have errors on the creation
-   
-    session[:form] =  @place
-   
+    
     flash[:notice] = 'The addition to Master Place Name was unsuccsessful'
     render :new
    else
     #we are clean on the addition
   
-   session[:form] = nil
-   session[:type] = "edit"
+  
+  
    flash[:notice] = 'The addition to Master Place Name was succsessful'
    redirect_to master_place_name_path(@place)
    end
 
-  end
+  
  end
 
  def update
@@ -145,27 +121,23 @@ class MasterPlaceNamesController < ActionController::Base
 
  def new
    
-      #coming through new for the first time so get a new instance
+    
       @place = MasterPlaceName.new
-      @place.chapman_code = session[:chapman]
+      @place.chapman_code = session[:chapman_code]
       @place.county = session[:county]
-      session[:form] = @place
+        @first_name = session[:first_name]
       @county = session[:county]
-     
-    
-     #Coming through new with errors
-     @place = session[:form]
-    
-    session[:type] = "new"
+       session[:type] = "new"
   end
 
  def destroy
     load(params[:id])
     @place.disabled = "true"
     @place.save
-    params = session[:parameters]
-    #redirect_to :action => 'index'
-    redirect_to master_place_names_path(params)
+   
+   
+     flash[:notice] = 'The discard of the Master Place Name record was succsessful'
+    redirect_to master_place_names_path
  end
 
  def load(place_id)

@@ -2,10 +2,9 @@ Page Identification Master Place:edit<p>
 <p style="text-align: center">Editing an entry in <b><%= @county %></b><br></p>
 
 <div style="float:left;"> <%= button_to 'Discard', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %></div>
-<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
-<div style="float:left;"> <% params = session[:parameters] %></div>
-<div style="float:left;"> <%= button_to 'Back to Index of Places', master_place_names_path(params) %></div>
- <div style="float:left;"> <%= button_to 'Back to County selection', master_place_names_path, method: :get %></div>
+<div style="float:left;"> <%= button_to 'Master Place Names', master_place_names_path , method: :get %></div>
+ <div style="float:left;"> <%= button_to 'Places Index', places_path, method: :get %></div>
+ <div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %> </div>
  <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <div style="clear:both;"> </div><br>
 
@@ -13,9 +12,8 @@ Page Identification Master Place:edit<p>
 
 
 <div style="float:left;"> <%= button_to 'Discard', master_place_name_path(@place),method: :delete,data:{confirm: 'Are you sure?'} %></div>
-<div style="float:left;"> <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
-<div style="float:left;"> <% params = session[:parameters] %></div>
-<div style="float:left;"> <%= button_to 'Back to Index of Places', master_place_names_path(params) %></div>
- <div style="float:left;"> <%= button_to 'Back to County selection', master_place_names_path, method: :get %></div>
+<div style="float:left;"> <%= button_to 'Master Place Names', master_place_names_path , method: :get %></div>
+ <div style="float:left;"> <%= button_to 'Places Index', places_path, method: :get %></div>
+ <div style="float:left;"> <%= button_to_function "Previous Page", "history.back()" %> </div>
  <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <div style="clear:both;"> </div><br>
