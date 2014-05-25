@@ -1,3 +1,3 @@
-class SavedSearch
+class MySavedSearch
   include Mongoid::Document
 end

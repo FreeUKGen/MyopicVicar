@@ -33,7 +33,7 @@ MyopicVicar::Application.routes.draw do
   resources :counties
 
 
-  resources :saved_searches
+  resources :my_saved_searches
 
 
   resources :manage_resources

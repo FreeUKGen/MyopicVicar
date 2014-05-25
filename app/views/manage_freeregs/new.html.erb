@@ -14,8 +14,7 @@ Page Identification Manage Freereg:new<p>
 <div style="float:left;"><%= button_to "Retrieve Activity logs ", saved_searches_path, method: :get   %> </div>
 <div  style="float:left;"> <%= button_to 'Back to my Resource Management', manage_resource_path(@user), method: :get %> </div>
 
-<div style="float:left;"><%= button_to 'Logout' , manage_resources_path, method: :get  %>
-</div>
+<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div></div>
 
 
 <div style="clear:both;"> </div><br>

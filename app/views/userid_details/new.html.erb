@@ -2,6 +2,7 @@ Page Identification UserDetals: New<p>
 <p style="text-align: center"><b>Syndicate Members Creation for <%=session[:syndicate]%></b></p>
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -14,4 +15,5 @@ Page Identification UserDetals: New<p>
 
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
 <div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %> </div>
+<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <div style="clear:both;"> </div><br>

@@ -4,6 +4,7 @@ Page Identification Syndicates:index<p>
 <div style="float:left;"> <%= button_to 'Create a new Syndicate', new_syndicate_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <div style="clear:both;"> </div><br>
 
    <% if flash[:notice] %>
@@ -40,6 +41,7 @@ Page Identification Syndicates:index<p>
 <div style="float:left;"> <%= button_to 'Create a new Syndicate', new_syndicate_path, method: :get %> </div>
 
 <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <div style="clear:both;"> </div><br>
 
 

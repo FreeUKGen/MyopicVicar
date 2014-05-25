@@ -21,6 +21,7 @@ Page Identification Master Place:index<p>
 <div id="nav">
 	<%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
   <%= button_to 'Create New Master Place Name entry', new_master_place_name_path, method: :get %>
+  <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 </div>
 <div id="main">
 <table style="width: 100%">
@@ -65,6 +66,7 @@ Page Identification Master Place:index<p>
 <div id="nav">
   <%= button_to 'Create New Master Place Name document', new_master_place_name_path, method: :get %>
   <%= button_to 'Back to County Search Page', master_place_names_path, method: :get %>
+  <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 </div>
 <% end %>
 
