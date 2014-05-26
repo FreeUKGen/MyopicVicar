@@ -2,7 +2,9 @@ class ManageSyndicatesController < ApplicationController
 layout "manage_counties"
 
 	def index
-  
+    if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
   clean_session
   @userid = session[:userid]
   @first_name = session[:first_name]

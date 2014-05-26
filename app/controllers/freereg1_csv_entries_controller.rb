@@ -4,7 +4,9 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     require 'freereg_validations'
 
   def index
-  
+    if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
     @church = session[:church_id]
     @church_name = session[:church_name]
     @place = session[:place_id]

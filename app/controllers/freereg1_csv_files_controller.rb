@@ -2,6 +2,9 @@ class Freereg1CsvFilesController < InheritedResources::Base
  require 'chapman_code'
 
   def index
+    if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
    #the common listing entry by syndicate
     @register = session[:register_id]
     @user = UseridDetail.where(:userid => session[:userid]).first

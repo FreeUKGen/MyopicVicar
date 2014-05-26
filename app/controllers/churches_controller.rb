@@ -5,7 +5,10 @@ class ChurchesController < InheritedResources::Base
  require 'chapman_code'
 
   def show
-    
+   
+    if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
           @chapman_code = session[:chapman_code] 
           @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
           @county = session[:county]

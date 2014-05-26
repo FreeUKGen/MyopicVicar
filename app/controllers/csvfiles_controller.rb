@@ -1,10 +1,15 @@
 class CsvfilesController < InheritedResources::Base
   require 'freereg_csv_processor'
 def index
+   if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
 end
  
 def new
- 
+  if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
  @user = UseridDetail.where(:userid => session[:userid]).first
 @first_name = session[:first_name]	
 @userid = session[:userid]	

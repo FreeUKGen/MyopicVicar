@@ -4,6 +4,7 @@ class FreeregContentsController < InheritedResources::Base
   #require 'freereg1_csv_file'
 	RECORDS_PER_PAGE = 1000
   def index
+    
     redirect_to :action => :new
   end
   def new

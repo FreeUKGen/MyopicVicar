@@ -2,6 +2,9 @@ class ManageFreeregsController < ApplicationController
 	layout "places"
   require "county"
 def index
+	 if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
     @first_name = session[:first_name]
    @user = UseridDetail.where(:userid => session[:userid]).first
     render 'new'

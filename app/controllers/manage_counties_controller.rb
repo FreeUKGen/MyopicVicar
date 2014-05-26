@@ -2,7 +2,9 @@ class ManageCountiesController < ActionController::Base
 
 	 
 def index
-  
+  if session[:userid].nil?
+      redirect_to '/', notice: "You are not authorised to use these facilities"
+    end
   clean_session
    
 	@userid = session[:userid]
