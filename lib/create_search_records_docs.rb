@@ -85,10 +85,7 @@ include Mongoid::Document
             my_entry.transform_search_record
           n = n + 1
           nn = nn + 1
-             et = Time.now  - entry_time
-             eta = Time.now - time_start
-          p "search record #{n} created in #{et} elapse #{eta}"
-          
+                       
           end # end entries loop
         end   #end file id loop 
       p "#{@@filename} Created  #{n} search records\n" 
