@@ -77,14 +77,28 @@ class MasterPlaceName
   def update_place
 
     county = self.chapman_code
-    place = self.place_name
+    place = self.place_name 
     my_place = Place.where(:chapman_code => county, :place_name =>  place).first
     unless my_place.nil?
      my_place.update_lat_and_lon_from_master_place_name 
-    end  
+    end 
+#Write backup
+    file_name = "master_place_name.json." + (Time.now.to_i).to_s 
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    @tmp_location =   Rails.application.config.mongodb_collection_temp 
+    @db = Mongoid.sessions[:default][:database]
+    collection = @mongodb_bin + "mongoexport --db #{@db}  --collection \"master_place_names\"  --out  " + File.join(@tmp_location, file_name )
+    unless File.file?(file_name)
+       output =  `#{collection}`
+     
+       else 
+         p "file already exists"
+       end
+   
+
   end
 
-  
+
  
   
 end

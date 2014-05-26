@@ -20,9 +20,10 @@ class MasterPlaceNamesController < ActionController::Base
  end
 
  def create
+     @place = MasterPlaceName.new
       
-    @place =  session[:form] 
-    @place.genuki_url = params[:master_place_name][:genuki_url]
+    @place.place_name =  params[:master_place_name][:place_name] 
+    @place.genuki_url = params[:master_place_name][:genuki_url] unless params[:master_place_name][:genuki_url].nil?
     @place.chapman_code = params[:master_place_name][:chapman_code]
     @place.county = ChapmanCode.has_key(params[:master_place_name][:chapman_code])
     @place.country = params[:master_place_name][:country]
@@ -55,6 +56,7 @@ class MasterPlaceNamesController < ActionController::Base
   
   
    flash[:notice] = 'The addition to Master Place Name was succsessful'
+
    redirect_to master_place_name_path(@place)
    end
 
@@ -121,13 +123,13 @@ class MasterPlaceNamesController < ActionController::Base
 
  def new
    
-    
-      @place = MasterPlaceName.new
+    @place = MasterPlaceName.new
       @place.chapman_code = session[:chapman_code]
       @place.county = session[:county]
-        @first_name = session[:first_name]
+      
+      @first_name = session[:first_name]
       @county = session[:county]
-       session[:type] = "new"
+      session[:type] = "new"
   end
 
  def destroy
