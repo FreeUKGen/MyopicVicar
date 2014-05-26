@@ -95,7 +95,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
       session[:my_own] = 'no'
    @first_name = session[:first_name]
    @user = UseridDetail.where(:userid => session[:userid]).first
-   session[:sort] =  "file_name ASC"
+   session[:sort] =   "error DESC, file_name ASC"
    @freereg1_csv_files = Freereg1CsvFile.all.order_by(session[:sort]).page(params[:page])  
    render :index
 end
