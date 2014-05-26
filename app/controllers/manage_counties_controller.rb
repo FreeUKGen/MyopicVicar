@@ -12,6 +12,13 @@ def index
   session[:return] = request.referer
   @counties = @user.county_groups
   @countries = @user.country_groups
+   if  @user.person_role == 'data_manager'
+     @countries = Array.new
+    counties = County.all.order_by(chapman_code: 1)
+    counties.each do |county|
+      @countries << county.chapman_code
+    end
+   end
  unless @countries.nil?
   
      @countries.each do |county|
