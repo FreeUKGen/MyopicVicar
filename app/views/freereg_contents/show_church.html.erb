@@ -5,14 +5,12 @@
 <b><%= @place_name %>;</b> for <b><%= @county %></b>. Select the register name link to get detailed information on the transcriptions that have been made.
 </p>
 
-
 <table>
   <tr>
     <th>Register name</th>
     <th>Register Type</th>
     <th>Source</th>
-    <th>Quality</th>
-    <th>Copyright</th>
+    
     <th>Register notes</th>
     <th>Last amended</th>
     
@@ -30,8 +28,7 @@
      <% end %>
     <td><%= register.register_type %></td> 
     <td><%= register.source %></td>
-    <td><%= register.quality %></td>
-    <td><%= register.copyright %></td>
+    
     <td><%= register.register_notes %></td>
     <td><%= register.last_amended %></td>
     
@@ -39,7 +36,7 @@
 <% end %>
 </table>
 <br>
-    <%= button_to 'Back to Places Page', show_freereg_content_path(@search_query,:page_number => @page_number, :anchor => "#{@place}"),method: :get %> 
+    <%= button_to 'Back to Places Index', show_freereg_content_path( @county_id,:anchor => "#{@place}"),method: :get %> 
  <br>      
 In this Table the Register Type indicates the source used for the transcription and can be: PR is from a Parish Register; AT is from an Archdeacon's Transcript; BT is from a Bishop's Transcript; TR is from a transcript of the Parish Registers; PH is from a Phillimore Transcript of a Parish Register; EX is from a selective extract of the Parish Register; DW is from a Dwelly's Transcript of a Parish register; and if there is no entry our transcription is from an unspecified source but is <b>most likely</b> transcribed from a Parish Register. 
 
