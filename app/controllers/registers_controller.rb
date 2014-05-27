@@ -84,7 +84,7 @@ class RegistersController < InheritedResources::Base
       render :action => 'edit'
       return 
     end
-     redirect_to :action => 'show'
+     redirect_to church_path(@church)
   end
 
   
