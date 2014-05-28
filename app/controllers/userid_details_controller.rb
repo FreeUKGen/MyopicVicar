@@ -93,7 +93,7 @@ class UseridDetailsController < ApplicationController
   def update
     load(params[:id])
   	if session[:type] == "disable" 
-  	 params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil? || @userid.disabled_date.empty?
+  	 params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil? 
      params[:userid_detail][:active]  = false  
     end
     params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
