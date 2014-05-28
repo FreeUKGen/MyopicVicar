@@ -19,7 +19,7 @@ Page Identification Manage Syndicates:index<p>
     <% end %>
 
   <br>
-  <div  style="float:left;"> <%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Review Members listed alphabetically', 'Upload New Batch','Review Batches with errors','Review Batches listed by filename', 'Review Batches with errors','Review Batches listed by userid then filename','Review Batches listed by uploaded date',  ], :label => "What would you like to do? ",  :size => 10  }%></div>
+  <div  style="float:left;"> <%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Review Batches with errors','Review Batches listed by filename', 'Upload New Batch','Review Batches listed by userid then filename','Review Batches listed by uploaded date','Review Members listed alphabetically'   ], :label => "What would you like to do? ",  :size => 10  }%></div>
 
 
     <div  style="float:left;"><%= f.action :submit, :as => :input, :label => 'Select'   %></div>
