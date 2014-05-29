@@ -26,29 +26,36 @@ Page Identification Freereg Files:my_own_index<p>
 <table CLASS="boldtable" >
   <tr>
     <th style="width:4%">Cnty</th>
-    <th style="width:15%">Place</th>
-    <th style="width:12%">Church</th>
+    <th style="width:14%">Place</th>
+    <th style="width:11%">Church</th>
     <th style="width:4%">Reg type</th>
     <th style="width:4%">Rec type</th>
     <th style="width:5%">Records</th>
    
     
-    <th style="width:13%">UserID</th>
+    <th style="width:11%">UserID</th>
     <th style="width:10%">File name</th>
-    <th style="width:9%">Loaded</th>
+    
     <th style="width:4%">Errs</th>
-    <th style="width:4%">Lock</th>
-    <th style="width:13%">Syndicate</th>
+    <th style="width:9%" >Loaded</th>
+    <th style="width:8%"colspan = 2>Locked<br> TR CC</th>
+    <th style="width:12%">Syndicate</th>
+    
     
    
   </tr>
 
 <% @freereg1_csv_files.each do |freereg1_csv_file| %>
-
- <% if freereg1_csv_file.error == 0 %>
-  <tr id="<%=freereg1_csv_file.id%>"  style="color:green">
- <% else %> 
+<%case%>
+ <% when freereg1_csv_file.error == 0 && freereg1_csv_file.locked_by_coordinator == 'false' && freereg1_csv_file.locked_by_transcriber == 'false' %>
+  <tr id="<%=freereg1_csv_file.id%>"  style="color:darkgreen">
+<% when freereg1_csv_file.error == 0 && (freereg1_csv_file.locked_by_coordinator == 'true' || freereg1_csv_file.locked_by_transcriber == 'true') %>
+ <tr id="<%=freereg1_csv_file.id%>"  style="color:darkviolet">
+<% when freereg1_csv_file.error != 0 && (freereg1_csv_file.locked_by_coordinator == 'true' || freereg1_csv_file.locked_by_transcriber == 'true')  %>
+<tr id="<%=freereg1_csv_file.id%>"  style="color:mediumvioletred">
+<% when freereg1_csv_file.error != 0 && freereg1_csv_file.locked_by_coordinator == 'false' && freereg1_csv_file.locked_by_transcriber == 'false'  %>
 <tr id="<%=freereg1_csv_file.id%>"  style="color:red">
+
  <% end %>
  
     <td><%= freereg1_csv_file.county %></td>
@@ -61,29 +68,34 @@ Page Identification Freereg Files:my_own_index<p>
    
     <td><%= freereg1_csv_file.userid %></td>
     <td><%= freereg1_csv_file.file_name[0..-5]  unless freereg1_csv_file.file_name.nil?%></td>
-    <td><%= freereg1_csv_file.uploaded_date.strftime("%d %b %Y") unless freereg1_csv_file.uploaded_date.nil?%></td>
+    
    
     <td ><%= freereg1_csv_file.error  %></td>
-    
-    <td><%= freereg1_csv_file.locked %></td>
+    <td><%= freereg1_csv_file.uploaded_date.strftime("%d %b %Y") unless freereg1_csv_file.uploaded_date.nil?%></td>
+    <td><%= freereg1_csv_file.locked_by_transcriber %></td>
+    <td><%= freereg1_csv_file.locked_by_coordinator %></td>
     <td><%= freereg1_csv_file.transcriber_syndicate %></td></tr>
     <tr> <td></td>
     <td><%= button_to 'Show', freereg1_csv_file, method: :get %></td>
     <td><%= button_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get %></td>
-    <td><%= button_to 'Lock/Unlock', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?'%>
-    </td>
+    
     <td></td><td><%= button_to 'Replace', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace this file?'%></td>
     
     <td></td><td><%= button_to 'Discard', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete %></td>
 
     <td><%= button_to 'Download', download_csvfile_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get %></td>
-  <td></td><td style="color:red"> <% if freereg1_csv_file.error != 0 %>
-     <%= button_to 'Errors', error_freereg1_csv_file_path(freereg1_csv_file), method: :get%></td>
-     <% end %>
-
+    <% if freereg1_csv_file.error != 0 %>
+    <td><%= button_to 'Errors', error_freereg1_csv_file_path(freereg1_csv_file), method: :get%></td>
+    <%else%>
+     <td></td>
+    <%end%>
+    <td></td>
+<td><%= button_to 'Lock/Unlock', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?'%>
+    </td>
   </tr>
 
 <% end %>
+
 
 </table>
 <%= paginate @freereg1_csv_files %>
