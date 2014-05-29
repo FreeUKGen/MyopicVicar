@@ -33,11 +33,10 @@
   <%= f.input :modification_date ,:input_html => { :disabled => true, :size => 50 }%>  
   <%= f.input :uploaded_date,:input_html => { :disabled => true, :size => 50  }%>
 
-  <% if @user.person_role == "transcriber" %>
-   <%= f.input :locked, :input_html => { :disabled => true, :size => 10 } %>
-   <% else %>
-   <%= f.input :locked, :input_html => { :size => 10 } %>
-   <% end %>
+  
+   <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
+   <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
+  
   <br>
  
      <%= f.action :submit, :as => :input, :label => 'Update'   %>

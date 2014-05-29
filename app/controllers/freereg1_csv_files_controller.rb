@@ -36,12 +36,17 @@ class Freereg1CsvFilesController < InheritedResources::Base
     #update the headers
   
     load(params[:id])
+
+   
     
     
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
     
-    @freereg1_csv_file.update_attributes(:locked => "true")
-  
+    @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own'
+
+
+    @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
+
     @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
     
     if @freereg1_csv_file.errors.any?
@@ -151,13 +156,26 @@ end
 
     #lock/unlock a file
     load(params[:id])
-    if  @freereg1_csv_file.locked == 'false'
-     @freereg1_csv_file.locked = 'true'
+    if  session[:my_own] == 'my_own'
+    if  @freereg1_csv_file.locked_by_transcriber == 'false'
+     @freereg1_csv_file.locked_by_transcriber = 'true'
      @freereg1_csv_file.save
-   else
-     @freereg1_csv_file.locked = 'false'
+      else
+     @freereg1_csv_file.locked_by_transcriber = 'false'
      @freereg1_csv_file.save
     end
+  else 
+    if  @freereg1_csv_file.locked_by_coordinator == 'false'
+     @freereg1_csv_file.locked_by_coordinator = 'true'
+     @freereg1_csv_file.save
+      else
+     @freereg1_csv_file.locked_by_coordinator = 'false'
+     @freereg1_csv_file.save
+    end
+
+
+
+  end
     flash[:notice] = 'The update of the file was succsessful'
    #determine how to return
     if session[:my_own] == 'my_own'
@@ -172,6 +190,14 @@ end
 
   def destroy
     load(params[:id])
+    
+    if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
+        flash[:notice] = 'The deletion of the file was unsuccsessful; the file is locked' 
+        @current_page = session[:page]
+        session[:page] = session[:initial_page]    
+        redirect_to @current_page 
+        return
+    end
     @csvfile = Csvfile.new
     @csvfile.file_name = @freereg1_csv_file_name
      @csvfile.userid = @freereg1_csv_file.userid

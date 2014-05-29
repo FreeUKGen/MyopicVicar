@@ -82,14 +82,24 @@ Page Identification Freereg Files:show<p>
    <td>Number of errors</td><td > <%= link_to(@freereg1_csv_file.error , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>   
    </tr>
   
-  <%case%>
- <%when @freereg1_csv_file.error == 0%>
- <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
- <%when @freereg1_csv_file.locked == true %> 
-  <tr id="<%= @freereg1_csv_file.id%>"  style="color:yellow" >
+ 
+ <%if @freereg1_csv_file.locked_by_transcriber == 'true'  %> 
+  <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
+  <%else%>
+  <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
    <% end %>
-   <td>Batch is locked from overriding </td><td > <%= @freereg1_csv_file.locked %></td>   
+   <td>Batch is locked from overriding by Transcriber</td><td > <%= @freereg1_csv_file.locked_by_transcriber %></td>   
    </tr>
+
+   <%if @freereg1_csv_file.locked_by_coordinator == 'true'  %> 
+  <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
+  <%else%>
+  <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
+   <% end %>
+   
+   <td>Batch is locked from overriding by Coordinator</td><td > <%= @freereg1_csv_file.locked_by_coordinator %></td>   
+   </tr>
+   
    <tr>
    <td>Credit the following for the transcription</td><td ><%= @freereg1_csv_file.credit_name %></td>   
    </tr>

@@ -57,7 +57,8 @@ class Freereg1CsvFile
   field :uploaded_date, type: DateTime
   field :error, type: Integer, default: 0
   field :digest, type: String
-  field :locked, type: String, default: 'false' 
+  field :locked_by_transcriber, type: String, default: 'false' 
+  field :locked_by_coordinator, type: String, default: 'false' 
   field :lds, type: String, default: 'no'
   field :action, type: String
   field :characterset, type: String
@@ -367,7 +368,7 @@ index({error:1, file_name:1})
         when attribute == 'church'
           myfile.church_name = change
         end
-        myfile.locked = "true"
+        myfile.locked_by_coordinator = "true"
         myfile.modification_date = Time.now.strftime("%d %b %Y")
         myfile.save!
 
