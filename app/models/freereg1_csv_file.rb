@@ -310,7 +310,7 @@ index({error:1, file_name:1})
 
     CSV.open(csvfile, "wb", {:force_quotes => true}) do |csv|
         # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
-    record_type = RecordType.display_name(file.record_type).upcase
+    record_type = RecordType.display_name(file.record_type).upcase + 'S'
     csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
       # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
     csv << ['#','CCCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
