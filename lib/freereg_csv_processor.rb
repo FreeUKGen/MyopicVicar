@@ -958,32 +958,32 @@ COMMON_WORD_EXPANSIONS = {
     return n       
  end #end of method
 
+def self.recode_windows_1252_to_utf8(string)
+  string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
+    force_encoding('windows-1252').encode('utf-8') }
+end
 
  def self.slurp_the_csv_file(filename)
                
     begin
       # normalise line endings
-     
-
-
-      
-      # get character set
+       # get character set
        #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
        
        first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
        code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
       #set rhge default      
-      code_set = "ISO-8859-1" if (code_set.nil? || code_set.empty? || code_set == "chset")
+      code_set = "windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-      code_set = "IBM437" if (code_set == "cp437")
+      code_set = "windows-1252" if (code_set == "cp437")
       code_set = code_set.upcase
       code_set = "macRoman" if (code_set.downcase == "macintosh")
-      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed ISO-8859-1" unless @code_sets.include?(code_set) 
-       code_set = "ISO-8859-1" unless @code_sets.include?(code_set) 
+      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed windows-1252" unless @code_sets.include?(code_set) 
+       code_set = "windows-1252" unless @code_sets.include?(code_set) 
         #if we have valid new character set; use it and change the file encoding
         @@charset = Encoding.find(code_set) 
         xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
-        xxx.encode!("UTF-8",@@charset)
+        xxx = recode_windows_1252_to_utf8(xxx) if code_set == "windows-1252"
         #now get all the data
         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
        
@@ -1020,12 +1020,12 @@ COMMON_WORD_EXPANSIONS = {
       return true
     else
       #file is in the database
-      if check_for_file.locked == true then
+      if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
         #do not process if coordinator has locked
-        p "#{@@header[:file_name]} has been locked by the coordinator"
+        p "#{@@header[:file_name]} has been locked by either yourself or the coordinator"
          @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
-         @@user_message_file.puts "System_Error,#{@@userid} #{@@header[:file_name]} has been locked by the coordinator"
-         @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has been locked by the coordinator"
+         @@user_message_file.puts "System_Error,#{@@userid} #{@@header[:file_name]} has been locked either by yourself or the coordinator"
+         @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has been locked by either yourself or the coordinator"
         return false
       end
       if @@header[:digest] == check_for_file.digest then

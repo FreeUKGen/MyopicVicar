@@ -5,10 +5,9 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
 	"Phillimore's Transcripts" => "PH",  "Dwellies Transcripts" => "DW", "Extract of a Register" => "EX", 
 	"Memorial Inscription" => "MI"}
   VALID_UCF = /[\}\{\?\*\_\]\[\,\-]/
- #VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
   VALID_NUMERIC  = /[\p{N}]/u
-  INVALID_TEXT = /[^a-zA-Z\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#\p{N}]/u#/[\p{C}]/u
+  VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/u
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
@@ -92,7 +91,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
 def FreeregValidations.cleantext(field)
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
-     return false if field =~ INVALID_TEXT
+     return true if field =~ VALID_TEXT
        return true  
      
    
@@ -119,6 +118,7 @@ def FreeregValidations.cleanname(field)
   # 1d (day), 2w (week), 3m (month), 2y5m (2 years, 5 months), or - for 'no age'
   # max 30d, 30w, 30m and 150y
 def FreeregValidations.cleanage(field)
+
      #the planning team requested this code be deactivated for burials
     return true if field.nil? || field.empty?
     return true if field =~ VALID_UCF
