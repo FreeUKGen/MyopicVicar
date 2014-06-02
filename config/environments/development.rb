@@ -61,5 +61,5 @@ MyopicVicar::Application.configure do
   #where do we store the Mongodb database 
   config.datafiles = "/home/benwbrum/tarfiles/current"
   # Date of dataset used
-  config.dataset_date = "1 May 2014"
+  config.dataset_date = "30 May 2014"
 end
