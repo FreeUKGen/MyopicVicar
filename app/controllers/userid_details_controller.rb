@@ -17,6 +17,8 @@ class UseridDetailsController < ApplicationController
            end
       
  	end #end method
+ 
+
 
   def new
     session[:type] = "add"
@@ -34,9 +36,8 @@ class UseridDetailsController < ApplicationController
    
   def show
     load(params[:id])
-  
-   
-  end
+   end
+
   def my_own
     @userid = session[:userid]
     @first_name = session[:first_name]
