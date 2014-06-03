@@ -17,8 +17,8 @@ Page Identification Freereg file upload:process<p>
     
      <%= f.input :process, {:as => :select,  :collection => ["While I wait", "Not waiting"],:include_blank => false,:label => "When do you want your file processed :", :size => 5}   %><br>
 
-      <p> <b>While I wait</b>; means you must wait until the process completes ( Recommended for files of less than 2-3000 records).
-      <br><b>Not waiting</b>: means you can do other things while processing takes place. You may shut your computer down and the process will continue to run to completion. You can check later to see that it has compeleted by looking at the index of your files.(Recommended for files of more than 3000).<br> </p><br>
+      <p> <b>While I wait</b>; means you must wait until the process completes ( Only for files of less than about 1500 records).
+      <br><b>Not waiting</b>: means you can do other things while processing takes place. You may shut your computer down and the process will continue to run to completion. You can check later to see that it has compeleted by looking at the index of your files. <b>Any file requiring more than 20 seconds of processing will automatically be processed as not waiting.</b><br> </p><br>
 
       <p> Estimated processing time for your file is  <%=  @processing_time%> seconds</p>
     
