@@ -99,16 +99,18 @@ def update
             start = Time.now
             if params[:csvfile][:process]  == "Not waiting" || processing_time > 15
             pid1 = Kernel.spawn("rake build:process_freereg1_csv[recreate,create_search_records_processor,#{range}]") 
-
+            processing_time = 3*processing_time
+            flash[:notice] =  "The csv file #{@place} is being processed into the database. Check your files status after at least #{processing_time} seconds."
+            @csvfile.delete
            #  Process.waitall if params[:csvfile][:process]  == 'Now'
            # endtime = Time.now - start
             else
              FreeregCsvProcessor.process("recreate",'create_search_records',range)
              process_time = Time.now - start
-             p  process_time
+              flash[:notice] =  "The csv file #{@place} has been processed into the database."
            end #if
      @csvfile.delete
-   flash[:notice] =  "The csv file #{@place} has or is being uploaded depending upon its size and your selection."
+   
       if session[:role] == "counties"
          redirect_to places_path
          return
