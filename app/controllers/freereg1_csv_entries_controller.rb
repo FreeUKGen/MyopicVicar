@@ -70,8 +70,8 @@ class Freereg1CsvEntriesController < InheritedResources::Base
      else
     Freereg1CsvFile.backup_file(@freereg1_csv_file)
     #update file with date and lock and delete error
-   file.locked_by_transcriber = "true" if session[:my_own] == 'my_own'
-    file.locked_by_coordinator = "true" unless session[:my_own] == 'my_own'
+   @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own] == 'my_own'
+    @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own] == 'my_own'
     @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
      @freereg1_csv_file.error =  @freereg1_csv_file.error - 1
     if session[:error_id].nil?
