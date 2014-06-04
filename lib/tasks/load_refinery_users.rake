@@ -1,6 +1,6 @@
 require 'chapman_code'
 
-task :load_refinery => :environment do
+task :load_refinery_users => :environment do
 #  load_syndicates
   load_counties
   load_users
