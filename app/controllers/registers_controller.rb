@@ -67,7 +67,8 @@ class RegistersController < InheritedResources::Base
 #need to propogate  register type change
      files =  @register.freereg1_csv_files
        files.each do |file|
-        file.locked = "true"
+        file.locked_by_transcriber = "true" if session[:my_own] == 'my_own'
+        file.locked_by_coordinator = "true" unless session[:my_own] == 'my_own'
         file.modification_date = Time.now.strftime("%d %b %Y")
         file.register_type = type_change
         file.save!
