@@ -25,7 +25,7 @@ include Mongoid::Document
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
   	limit = limit.to_i
-    puts "checking plsce/church/register content"
+    puts "checking place/church/register content"
     message_file.puts "UserID,Place Name,County,Church Name,Register Name,File Name,Entries"
   	record_number = 0
   	missing_records = 0
