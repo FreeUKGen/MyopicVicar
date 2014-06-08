@@ -43,6 +43,7 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
     @userid = UseridDetail.where(:userid => session[:userid]).first
     session[:my_own] = 'my_own'
+    @user = @userid
     render :action => 'show'
 
   end

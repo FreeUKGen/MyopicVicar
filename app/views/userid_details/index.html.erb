@@ -52,7 +52,7 @@ Page Identification UserDetails: Index<p>
      <td></td><td><%= button_to 'Show', userid_detail_path(userid), method: :get  %>
      </td><td><%= button_to 'Edit details', edit_userid_detail_path(userid), method: :get  %>
       </td><td><%= button_to 'List their batches', by_userid_freereg1_csv_file_path(userid), method: :get  %>
-     </td> <td><%= button_to 'Disable', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %></td> 
+     </td> <td><%= button_to 'Inactivate', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %></td> 
   </tr>
   <% end %>
   <%else%>
