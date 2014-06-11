@@ -31,6 +31,7 @@ gem 'bourbon', '~> 2.1'
 
 gem 'activeadmin-mongoid' 
 gem 'devise'
+gem 'devise-encryptable'
 gem 'nokogiri'
 gem "osgb"#, :git => 'git://github.com/FreeUKGen/osgb.git'
 gem 'quiet_assets', :group => :development

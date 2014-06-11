@@ -101,7 +101,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 10
 
 
-  #  config.secret_key = '88bf5660c2749544aae4339833e12518fd5971da3230bfd0e95e465c87bf0a8f8fabfba89137eae848d16233512763ae5623bb9e440eff32ea3a8a04af510a41'
+#  config.secret_key = 'this is a secret key'
 
 
   # Setup a pepper to generate the encrypted password.
@@ -197,7 +197,7 @@ Devise.setup do |config|
   # :authlogic_sha512 (then you should set stretches above to 20 for default behavior)
   # and :restful_authentication_sha1 (then you should set stretches to 10, and copy
   # REST_AUTH_SITE_KEY to pepper)
-  # config.encryptor = :sha512
+  config.encryptor = :freereg
 
   # ==> Configuration for :token_authenticatable
   # Defines name of the authentication token params key

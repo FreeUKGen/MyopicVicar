@@ -94,6 +94,8 @@ GEM
       orm_adapter (~> 0.1)
       railties (~> 3.1)
       warden (~> 1.2.1)
+    devise-encryptable (0.2.0)
+      devise (>= 2.1.0)
     diff-lcs (1.2.5)
     dragonfly (0.9.15)
       multi_json (~> 1.0)
@@ -325,6 +327,7 @@ DEPENDENCIES
   carrierwave-mongoid
   coffee-rails (~> 3.2.1)
   devise
+  devise-encryptable
   email_veracity
   execjs
   fog

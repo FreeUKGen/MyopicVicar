@@ -1,6 +1,9 @@
 # Open the Refinery::Page model for manipulation
+require Rails.root.join('lib', 'devise', 'encryptors', 'md5')
+
 Refinery::User.class_eval do
   attr_accessible :userid_detail_id
+  devise :encryptable, :encryptor => :freereg
 
 
   # for more on this voodoo, see http://gistflow.com/posts/749-canceling-validations-in-activerecord
