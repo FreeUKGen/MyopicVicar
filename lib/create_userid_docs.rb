@@ -112,6 +112,8 @@ def self.check_for_replace(filename,userid,digest)
         header[recs[1]] = x[1]
       end # end unless
     end #end field
+
+    p header
   
    header[:person_role] = "transcriber" if header[:person_role].nil?
    header[:previous_syndicate] = header[:syndicate]
@@ -128,22 +130,24 @@ def self.check_for_replace(filename,userid,digest)
     
    
  header[:active] = header[:active].to_i
-
+ header[:disabled] = header[:disabled].to_i
       if  header[:active] == 1
        header[:active] = true
      else
       header[:active] = false
      end
       
-header[:disabled] = header[:disabled].to_i
 
-     if  header[:disabled] == 1
+
+     if  header[:disabled] == 1 || !header[:disabled_date].nil? || !header[:disabled_reason].nil? 
        header[:active] = false
      
      else
        header[:active] = true
       
      end
+
+  p header
     
     syndicates_count = Syndicate.where(:syndicate_coordinator => header[:userid]).count
     
