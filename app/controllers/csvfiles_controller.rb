@@ -15,7 +15,7 @@ def new
 @userid = session[:userid]	
 @csvfile  = Csvfile.new(:userid  => session[:userid])
 get_userids_and_transcribers
-
+ @role = session[:role]
 end
 
 def create
@@ -82,7 +82,7 @@ def edit
   @person = @file.userid
   session[:freereg]  = params[:id]
   @file = @csvfile.file_name 
-  
+   @role = session[:role]
   get_userids_and_transcribers
 end
 
@@ -127,7 +127,7 @@ end
 
 
 def delete
- 
+  @role = session[:role]
  @csvfile  = Csvfile.new(:userid  => session[:userid])
  freefile = Freereg1CsvFile.find(params[:id])
  @csvfile.file_name = freefile.file_name
@@ -161,6 +161,7 @@ def get_userids_and_transcribers
 end
 
 def download
+   @role = session[:role]
   @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
   my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
   send_file( my_file, :filename => @freereg1_csv_file.file_name)

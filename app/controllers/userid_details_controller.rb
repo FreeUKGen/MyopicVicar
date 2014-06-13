@@ -10,7 +10,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "manager"
     session[:my_own] = "no"
       users = UseridDetail.where(:syndicate => session[:syndicate]).all.order_by(userid_lower_case: 1) 
-     
+      @role = session[:role]
       @userids = Array.new
            users.each do |user|
               @userids << user
@@ -26,6 +26,7 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
      @user = UseridDetail.where(:userid => session[:userid]).first
     synd = Syndicate.all.order_by(syndicate_code: 1)
+     @role = session[:role]
     @syndicates = Array.new
     synd.each do |syn|
         @syndicates << syn.syndicate_code
@@ -36,6 +37,7 @@ class UseridDetailsController < ApplicationController
    
   def show
     load(params[:id])
+    
    end
 
   def my_own
@@ -50,8 +52,7 @@ class UseridDetailsController < ApplicationController
 
   def edit
     session[:type] = "edit"
-   
-     load(params[:id])
+    load(params[:id])
      synd = Syndicate.all.order_by(syndicate_code: 1)
      @syndicates = Array.new
      synd.each do |syn|
@@ -142,7 +143,7 @@ end
     @user = UseridDetail.where(:userid => session[:userid]).first
     @userid = UseridDetail.find(userid_id)
     session[:userid_id] = userid_id
-  
+    @role = session[:role]
   end
 end
 
