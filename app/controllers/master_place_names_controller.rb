@@ -51,14 +51,14 @@ class MasterPlaceNamesController < ActionController::Base
     if @place.errors.any?
       #we have errors on the creation
     
-    flash[:notice] = 'The addition to Master Place Name was unsuccsessful'
+    flash[:notice] = 'The addition to Master Place Name was unsuccessful'
     render :new
    else
     #we are clean on the addition
   
   
   
-   flash[:notice] = 'The addition to Master Place Name was succsessful'
+   flash[:notice] = 'The addition to Master Place Name was successful'
 
    redirect_to master_place_name_path(@place)
    end
@@ -115,11 +115,11 @@ class MasterPlaceNamesController < ActionController::Base
       #we have errors in the editing
    
     session[:form] = @place
-    flash[:notice] = 'The change in Master Place Name record was unsuccsessful'
+    flash[:notice] = 'The change in Master Place Name record was unsuccessful'
     render :edit
    else
    session[:form] =  nil
-   flash[:notice] = 'The change in Master Place Name record was succsessful'
+   flash[:notice] = 'The change in Master Place Name record was successful'
    redirect_to :action => 'show'
    end
  end
@@ -141,7 +141,7 @@ class MasterPlaceNamesController < ActionController::Base
     @place.save
    
    
-     flash[:notice] = 'The discard of the Master Place Name record was succsessful'
+     flash[:notice] = 'The discard of the Master Place Name record was successful'
     redirect_to master_place_names_path
  end
 

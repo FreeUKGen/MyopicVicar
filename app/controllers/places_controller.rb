@@ -64,10 +64,10 @@ def create
     @place.chapman_code = session[:chapman_code]
      @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.save
-    flash[:notice] = 'The addition of the Place was succsessful'
+    flash[:notice] = 'The addition of the Place was successful'
    if @place.errors.any?
      
-     flash[:notice] = "The addition of the Place #{@place.place_name} was unsuccsessful"
+     flash[:notice] = "The addition of the Place #{@place.place_name} was unsuccessful"
      placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
       @placenames = Array.new
         placenames.each do |placename|
@@ -96,7 +96,7 @@ def update
     @place.save
   
    if @place.errors.any? then
-     flash[:notice] = 'The update of the Place was unsuccsessful'
+     flash[:notice] = 'The update of the Place was unsuccessful'
      render :action => 'edit'
      return
     end #errors
@@ -117,7 +117,7 @@ def update
     end # name change
       @current_page = session[:page]
       session[:page] = session[:initial_page]
-      flash[:notice] = 'The update the Place was succsessful'
+      flash[:notice] = 'The update the Place was successful'
       redirect_to @current_page
   end
 

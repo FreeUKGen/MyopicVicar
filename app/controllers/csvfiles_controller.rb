@@ -39,7 +39,7 @@ def create
     unless @csvfile.errors.any?
       p "no errors"
      @user = UseridDetail.where(:userid => session[:userid]).first
-     flash[:notice] = 'The upload of the file was succsessful'
+     flash[:notice] = 'The upload of the file was successful'
      place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
       size = (File.size("#{place}"))
       unit = 0.0002
@@ -49,7 +49,7 @@ def create
     end #end unless errors
     p "errors"
     p "#{@csvfile.errors.full_messages}"
-     flash[:notice] = 'The upload of the file was unsuccsessful'
+     flash[:notice] = 'The upload of the file was unsuccessful'
      render 'edit'
      return
    end #uless exists

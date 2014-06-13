@@ -27,11 +27,11 @@ def create
 	@country.save
  if @country.errors.any?
     
-     flash[:notice] = "The addition of the Country was unsuccsessful"
+     flash[:notice] = "The addition of the Country was unsuccessful"
      render :action => 'edit'
      return
  else
- 	flash[:notice] = "The addition of the Country was succsessful"
+ 	flash[:notice] = "The addition of the Country was successful"
  	 #Syndicate.change_userid_fields(params)
      redirect_to countries_path
  end
@@ -44,11 +44,11 @@ def update
 	 @country.update_attributes(params[:country])
      if @country.errors.any?
        
-       flash[:notice] = "The change to the country was unsuccsessful"
+       flash[:notice] = "The change to the country was unsuccessful"
         render :action => 'edit'
         return
      else
- 	   flash[:notice] = "The change to the country was succsessful"
+ 	   flash[:notice] = "The change to the country was successful"
  	
      redirect_to countries_path
      end

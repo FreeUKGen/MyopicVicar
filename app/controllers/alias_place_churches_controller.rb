@@ -94,7 +94,7 @@ class AliasPlaceChurchesController < InheritedResources::Base
     @alias_place_church.alias_notes = params[:alias_place_church][:alias_notes] 
     @alias_place_church.save!
     
-    flash[:notice] = 'The addition of the Alias document was succsessful'    
+    flash[:notice] = 'The addition of the Alias document was successful'    
     redirect_to alias_place_church_path(@alias_place_church)
     end
   end
@@ -105,7 +105,7 @@ class AliasPlaceChurchesController < InheritedResources::Base
     @alias_place_church.alternate_place_name = params[:alias_place_church][:alternate_place_name] 
     @alias_place_church.alias_notes = params[:alias_place_church][:alias_notes] 
     @alias_place_church.save!
-    flash[:notice] = 'The change in the Alias document was succsessful'    
+    flash[:notice] = 'The change in the Alias document was successful'    
     redirect_to alias_place_church_path(@alias_place_church)
   end
   

@@ -64,7 +64,7 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
     if @freereg1_csv_entry.errors.any?
-     flash[:notice] = 'The creation of the record was unsuccsessful'
+     flash[:notice] = 'The creation of the record was unsuccessful'
     
       render :action => 'error'
      else
@@ -99,7 +99,7 @@ class Freereg1CsvEntriesController < InheritedResources::Base
    end
     session[:error_id] = nil
     @freereg1_csv_file.save
-    flash[:notice] = 'The creation/update in entry contents was succsessful, backup of file made and locked' 
+    flash[:notice] = 'The creation/update in entry contents was successful, backup of file made and locked' 
     render :action => 'show'
     end
   else
@@ -137,7 +137,7 @@ end
     
      
      if @freereg1_csv_entry.errors.any?
-     flash[:notice] = 'The update of the record was unsuccsessful'
+     flash[:notice] = 'The update of the record was unsuccessful'
       render :action => 'edit'
      else
    
@@ -149,7 +149,7 @@ end
     file.modification_date = Time.now.strftime("%d %b %Y")
     file.save
     
-    flash[:notice] = 'The change in entry contents was succsessful, backup of file made and locked' 
+    flash[:notice] = 'The change in entry contents was successful, backup of file made and locked' 
     render :action => 'show'
     end
   end

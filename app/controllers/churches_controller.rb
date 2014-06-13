@@ -48,10 +48,10 @@ class ChurchesController < InheritedResources::Base
   place.churches << church
   church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
   church.save
-    flash[:notice] = 'The addition of the Church was succsessful'
+    flash[:notice] = 'The addition of the Church was successful'
    if church.errors.any?
     
-     flash[:notice] = 'The addition of the Church was unsuccsessful'
+     flash[:notice] = 'The addition of the Church was unsuccessful'
      redirect_to :action => 'new'
      return
    else
@@ -97,7 +97,7 @@ end
          @church.save
   
    if @church.errors.any? then
-     flash[:notice] = 'The update of the Church was unsuccsessful'
+     flash[:notice] = 'The update of the Church was unsuccessful'
      render :action => 'edit'
      return 
    end 
@@ -105,7 +105,7 @@ end
         place = @church.place
         churches = place.churches
         Church.merge(churches)
-       flash[:notice] = 'The update the Church was succsessful' 
+       flash[:notice] = 'The update the Church was successful' 
         @current_page = session[:page]
        session[:page] = session[:initial_page]    
        redirect_to @current_page
@@ -130,7 +130,7 @@ end
   def destroy
     load(params[:id])
     @church.destroy
-     flash[:notice] = 'The deletion of the Church was succsessful'
+     flash[:notice] = 'The deletion of the Church was successful'
     redirect_to places_path
  end
 

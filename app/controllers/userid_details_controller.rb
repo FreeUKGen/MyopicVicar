@@ -73,11 +73,11 @@ class UseridDetailsController < ApplicationController
       if @userid.errors.any?
   
    
-     flash[:notice] = 'The addition of the person was unsuccsessful'
+     flash[:notice] = 'The addition of the person was unsuccessful'
      render :action => 'new'
      return
      else
-     flash[:notice] = 'The addition of the person was succsessful'
+     flash[:notice] = 'The addition of the person was successful'
       if @user.person_role == 'system_administrator'
         @userids = Array.new
          profiles = UseridDetail.all.order_by(userid_lower_case: 1)
@@ -104,11 +104,11 @@ class UseridDetailsController < ApplicationController
     @userid.update_attributes!(params[:userid_detail])
     if @userid.errors.any?
      
-      flash[:notice] = 'The update of the details were unsuccsessful'
+      flash[:notice] = 'The update of the details were unsuccessful'
       render :action => 'edit'
       return
     else
-      flash[:notice] = 'The update of the details were succsessful'
+      flash[:notice] = 'The update of the details were successful'
       if session[:my_own] == "my_own"
        render :action => 'show'
        return

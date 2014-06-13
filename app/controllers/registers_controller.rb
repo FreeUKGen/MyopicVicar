@@ -41,11 +41,11 @@ class RegistersController < InheritedResources::Base
    
        if @register.errors.any?
         
-         flash[:notice] = "The addition of the Register #{register.register_name} was unsuccsessful"
+         flash[:notice] = "The addition of the Register #{register.register_name} was unsuccessful"
          render :action => 'new'
          return
        else
-         flash[:notice] = 'The addition of the Register was succsessful'
+         flash[:notice] = 'The addition of the Register was successful'
          @place_name = session[:place_name] 
         # redirect_to register_path
         render :action => 'show'
@@ -78,10 +78,10 @@ class RegistersController < InheritedResources::Base
   #merge registers with same name and type
         registers = @church.registers
        Register.update_register_attributes(registers)
-    flash[:notice] = 'The update the Register was succsessful'
+    flash[:notice] = 'The update the Register was successful'
     if @register.errors.any? then
      
-      flash[:notice] = 'The update of the Register was unsuccsessful'
+      flash[:notice] = 'The update of the Register was unsuccessful'
       render :action => 'edit'
       return 
     end
@@ -107,7 +107,7 @@ class RegistersController < InheritedResources::Base
    def destroy
     load(params[:id])
     @register.destroy
-     flash[:notice] = 'The deletion of the Register was succsessful'
+     flash[:notice] = 'The deletion of the Register was successful'
     redirect_to church_path(@church)
  end
 

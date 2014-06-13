@@ -51,7 +51,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     
     if @freereg1_csv_file.errors.any?
     
-      flash[:notice] = 'The update of the file was unsuccsessful'
+      flash[:notice] = 'The update of the file was unsuccessful'
       render :action => 'edit'
      else
       session[:type] = "edit"
@@ -176,7 +176,7 @@ end
 
 
   end
-    flash[:notice] = 'The update of the file was succsessful'
+    flash[:notice] = 'The update of the file was successful'
    #determine how to return
     if session[:my_own] == 'my_own'
        @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(file_name: 1).page(params[:page])
@@ -192,7 +192,7 @@ end
     load(params[:id])
     
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
-        flash[:notice] = 'The deletion of the file was unsuccsessful; the file is locked' 
+        flash[:notice] = 'The deletion of the file was unsuccessful; the file is locked' 
         @current_page = session[:page]
         session[:page] = session[:initial_page]    
         redirect_to @current_page 
@@ -206,7 +206,7 @@ end
      #call to delete file also deleted any entries and search records
      @freereg1_csv_file = Freereg1CsvFile.delete_file(@freereg1_csv_file)
       session[:type] = "edit"
-      flash[:notice] = 'The deletion of the file was succsessful'
+      flash[:notice] = 'The deletion of the file was successful'
        if session[:my_own] == 'my_own'
          @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid] ).order_by(file_name: 1).page(params[:page])
        render 'index'

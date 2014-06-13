@@ -28,11 +28,11 @@ def create
 	@county.save
  if @county.errors.any?
     
-     flash[:notice] = "The addition of the County was unsuccsessful"
+     flash[:notice] = "The addition of the County was unsuccessful"
      render :action => 'edit'
      return
  else
- 	flash[:notice] = "The addition of the County was succsessful"
+ 	flash[:notice] = "The addition of the County was successful"
  	 #Syndicate.change_userid_fields(params)
      redirect_to counties_path
  end
@@ -45,11 +45,11 @@ def update
 	 @county.update_attributes(params[:county])
      if @county.errors.any?
       
-       flash[:notice] = "The change to the county was unsuccsessful"
+       flash[:notice] = "The change to the county was unsuccessful"
         render :action => 'edit'
         return
      else
- 	   flash[:notice] = "The change to the county was succsessful"
+ 	   flash[:notice] = "The change to the county was successful"
  	
      redirect_to counties_path
      end

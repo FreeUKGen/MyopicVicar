@@ -27,11 +27,11 @@ def create
 	@syndicate.save
  if @syndicate.errors.any?
     
-     flash[:notice] = "The addition of the Syndicate was unsuccsessful"
+     flash[:notice] = "The addition of the Syndicate was unsuccessful"
      render :action => 'edit'
      return
  else
- 	flash[:notice] = "The addition of the Syndicate was succsessful"
+ 	flash[:notice] = "The addition of the Syndicate was successful"
  	 #Syndicate.change_userid_fields(params)
      redirect_to syndicates_path
  end
@@ -44,11 +44,11 @@ def update
 	 @syndicate.update_attributes(params[:syndicate])
 if @syndicate.errors.any?
    
-     flash[:notice] = "The change to the Syndicate was unsuccsessful"
+     flash[:notice] = "The change to the Syndicate was unsuccessful"
      render :action => 'edit'
      return
  else
- 	flash[:notice] = "The change to the Syndicate was succsessful"
+ 	flash[:notice] = "The change to the Syndicate was successful"
  	
      redirect_to syndicates_path
  end
