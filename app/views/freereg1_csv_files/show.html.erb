@@ -9,7 +9,7 @@ Page Identification Freereg Files:show<p>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
 <% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
 <%= render 'nav' %>
 
@@ -139,6 +139,6 @@ Page Identification Freereg Files:show<p>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
 <% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', userid_details_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
 <%= render 'nav' %>
