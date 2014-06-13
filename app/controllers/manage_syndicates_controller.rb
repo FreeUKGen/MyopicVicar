@@ -10,10 +10,14 @@ layout "manage_counties"
   @first_name = session[:first_name]
   @user = UseridDetail.where(:userid => session[:userid]).first
   syndicates =@user.syndicate_groups
+  syndicates = Syndicate.all.order_by(syndicate_code: 1) if session[:userid] == "SNDManager"
   number_of_syndicates = syndicates.length
   session[:role] = 'syndicate'
   session[:page] = request.original_url
    redirect_to manage_resource_path(@user) if number_of_syndicates == 0
+    p session[:userid]
+    p number_of_syndicates
+    p  syndicates
    @manage_syndicate = ManageSyndicate.new
   
     if number_of_syndicates == 1 
@@ -26,9 +30,11 @@ layout "manage_counties"
        session[:muliple] = true
        synd = Array.new
        syndicates.each do |syn|
-        synd << syn
+        synd << syn unless session[:userid] == "SNDManager"
+        synd << syn.syndicate_code if session[:userid] == "SNDManager"
        end
        @syndicates = synd
+
     end #end if
    
 end
