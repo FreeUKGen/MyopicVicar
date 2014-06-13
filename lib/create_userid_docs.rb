@@ -131,23 +131,15 @@ def self.check_for_replace(filename,userid,digest)
    
  header[:active] = header[:active].to_i
  header[:disabled] = header[:disabled].to_i
-      if  header[:active] == 1
-       header[:active] = true
-     else
-      header[:active] = false
-     end
-      
-
-
-     if  header[:disabled] == 1 || !header[:disabled_date].nil? || !header[:disabled_reason].nil? 
-       header[:active] = false
      
-     else
-       header[:active] = true
-      
+
+
+     if header[:active] == 0  || header[:disabled] == 1 || !header[:disabled_date].nil? || !header[:disabled_reason].nil? 
+       header[:active] = false     
      end
 
-  p header
+  
+
     
     syndicates_count = Syndicate.where(:syndicate_coordinator => header[:userid]).count
     
@@ -200,7 +192,7 @@ def self.check_for_replace(filename,userid,digest)
     end
 
    header[:person_role] = "system_administrator" if header[:userid] == "REGManager" 
-     
+    header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk"  
   
    if check_for_replace(filename,header[:userid],header[:digest]) 
    detail = UseridDetail.new(header)
