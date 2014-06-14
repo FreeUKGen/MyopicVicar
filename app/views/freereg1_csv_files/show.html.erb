@@ -11,6 +11,9 @@ Page Identification Freereg Files:show<p>
 <% if @role =='syndicate' %>
 <div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
+<% if @role =='data_manager' %>
+<div  style="float:left;"> <%= button_to 'Data Manager Tools Page', all_files_freereg1_csv_file_path, method: :get %></div>
+<%end%>
 <%= render 'nav' %>
 
 
@@ -140,5 +143,8 @@ Page Identification Freereg Files:show<p>
 <%end%>
 <% if @role =='syndicate' %>
 <div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
+<%end%>
+<% if @role =='data_manager' %>
+<div  style="float:left;"> <%= button_to 'Data Manager Tools Page', all_files_freereg1_csv_file_path, method: :get %></div>
 <%end%>
 <%= render 'nav' %>

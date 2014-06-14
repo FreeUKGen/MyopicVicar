@@ -5,7 +5,7 @@ def index
      if current_refinery_user.nil?
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
-    reset_session 
+    clean_session 
     @user = current_refinery_user.userid_detail
     session[:initial_page] = request.original_url
     @manage_resources = ManageResource.new 
@@ -22,7 +22,7 @@ def new
 end
 
 def create
-    reset_session
+    clean_session
     session[:userid_lower_case] = params[:manage_resource][:userid] 
     @user = UseridDetail.where(:userid_lower_case => session[:userid_lower_case]).first
     session[:userid] = @user.userid

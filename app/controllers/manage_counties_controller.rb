@@ -21,16 +21,16 @@ def index
       @countries << county.chapman_code
     end
    end
- unless @countries.nil?
+   unless @countries.nil?
   
      @countries.each do |county|
         @counties << county unless  @counties.include?(county)
      end
- end
- @number_of_counties = @counties.length
- redirect_to manage_resource_path(@user) if @number_of_counties == 0
+   end
+   @number_of_counties = @counties.length
+   redirect_to manage_resource_path(@user) if @number_of_counties == 0
    @manage_county = ManageCounty.new
-   if @number_of_counties == 1 
+    if @number_of_counties == 1 
         session[:chapman_code] = @counties[0]
         @county = ChapmanCode.has_key(@counties[0])
         session[:county] = @county
@@ -53,7 +53,13 @@ def new
    	session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
+    if session[:role] == 'county_selection'
+     session[:role] = 'data_manager' 
+     redirect_to all_files_freereg1_csv_file_path
+    return
+    end
     redirect_to places_path
+
   end # create
 
 

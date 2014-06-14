@@ -77,7 +77,7 @@ MyopicVicar::Application.routes.draw do
  get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
  get 'freereg1_csv_files/my_own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
  get 'freereg1_csv_files/:id/by_userid',  :to => 'freereg1_csv_files#by_userid', :as => :by_userid_freereg1_csv_file
-  get 'freereg1_csv_files/all_files',  :to => 'freereg1_csv_files#all_files', :as => :all_files_freereg1_csv_file
+ get 'freereg1_csv_files/all_files',  :to => 'freereg1_csv_files#all_files', :as => :all_files_freereg1_csv_file
   resources :freereg1_csv_files
 
   resources :emendation_types

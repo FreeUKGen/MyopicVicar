@@ -18,7 +18,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
   def show
     #show an individual batch
     load(params[:id])
-   @role = session[:role]
+    @role = session[:role]
    
     
   end
@@ -34,19 +34,10 @@ class Freereg1CsvFilesController < InheritedResources::Base
 
   def update
     #update the headers
-  
     load(params[:id])
-
-   
-    
-    
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
-    
     @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own'
-
-
     @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
-
     @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
     
     if @freereg1_csv_file.errors.any?
@@ -97,33 +88,46 @@ class Freereg1CsvFilesController < InheritedResources::Base
 
  def all_files
     #entry for REGManager and DataManager
-      session[:my_own] = 'no'
-   @first_name = session[:first_name]
-   @user = UseridDetail.where(:userid => session[:userid]).first
-   session[:sort] =   "error DESC, file_name ASC"
-   @freereg1_csv_files = Freereg1CsvFile.all.order_by(session[:sort]).page(params[:page])  
-   render :index
-end
+    session[:page] = request.original_url
+    session[:my_own] = 'no'
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    unless session[:role] == 'data_manager'
+    #first time we select the county
+      session[:role] = 'county_selection'
+      @counties = Array.new
+      counties = County.all.order_by(chapman_code: 1)
+        counties.each do |county|
+          @counties << county.chapman_code
+        end
+      @manage_county = ManageCounty.new
+      @number_of_counties = @counties.length
+      render "manage_counties/index"
+    else
+      #we know the county get the files
+      @county = session[:county]
+      who = County.where(:chapman_code => session[:chapman_code]).first
+      @who = who.county_coordinator
+      @email = UseridDetail.where(:userid => @who).first.email_address
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by( "error DESC, file_name ASC").page(params[:page])
+    end
+  end
   
 def my_own
     #entry for an individual
-   unless  session[:my_own].nil?
-     session[:page] = request.original_url
-    #when we know you we are then get the files
+    session[:page] = request.original_url
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @who = @user.userid 
     @role = session[:role]
+   unless  session[:my_own].nil?
+    #when we know you we are then get the files
+    @who = @user.userid 
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by(session[:sort]).page(params[:page])  unless @user.nil?
     render :my_own_index
     return
   else
-     session[:page] = request.original_url
     #on an initial entry we need to find out what to do
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @freereg1_csv_file = Freereg1CsvFile.new
-    @role = session[:role]
+     @freereg1_csv_file = Freereg1CsvFile.new
     @who =  @first_name
     session[:my_own] = 'my_own'
   end
@@ -182,7 +186,7 @@ end
        @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(file_name: 1).page(params[:page])
        render 'index'
      else 
-     @current_page = session[:page]
+        @current_page = session[:page]
         session[:page] = session[:initial_page]    
         redirect_to @current_page
      end

@@ -26,7 +26,7 @@ def clean_session
     session[:sort] = nil  
   session[:csvfile] = nil
   session[:my_own] = nil
- 
+ session[:role] = nil
   session[:freereg] = nil
   session[:edit] = nil
   

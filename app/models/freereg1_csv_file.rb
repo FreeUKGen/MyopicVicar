@@ -75,6 +75,7 @@ index({error:1, file_name:1})
   after_save :create_or_update_last_amended_date 
   
  scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
+ scope :county, ->(county) { where(:county => county) }
  scope :userid, ->(userid) { where(:userid => userid) }
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
