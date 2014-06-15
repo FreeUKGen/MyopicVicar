@@ -48,10 +48,10 @@ class MasterPlaceName
           if place.disabled == "true" 
           place.update_attributes(:disabled => "false") 
           errors.add(:place_name, "Place was previously disabled; it has been re-enabled; go to edit on the place")
-         else
+          else
            errors.add(:place_name, "already exits") 
          end 
-       end
+        end
   end
 
   def grid_reference_is_valid

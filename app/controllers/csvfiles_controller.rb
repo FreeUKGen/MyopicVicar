@@ -33,11 +33,11 @@ def create
       @csvfile.save_to_attic
   end #end if
    unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
-    p "saving"
+
     @csvfile.save
 
     unless @csvfile.errors.any?
-      p "no errors"
+   
      @user = UseridDetail.where(:userid => session[:userid]).first
      flash[:notice] = 'The upload of the file was successful'
      place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
@@ -47,13 +47,12 @@ def create
      render 'process' 
      return
     end #end unless errors
-    p "errors"
-    p "#{@csvfile.errors.full_messages}"
+   
      flash[:notice] = 'The upload of the file was unsuccessful'
      render 'edit'
      return
    end #uless exists
-   p "file upload on exiting file"
+  
     flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
           
          if session[:my_own] == 'my_own'

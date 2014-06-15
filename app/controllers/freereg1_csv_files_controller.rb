@@ -57,9 +57,10 @@ class Freereg1CsvFilesController < InheritedResources::Base
   def error
     #display the nerrors in a batch
     load(params[:id])
+    @errors = @freereg1_csv_file.batch_errors.count
+    unless @errors == 0
     lines = @freereg1_csv_file.batch_errors.all
     @role = session[:role]
-    @no_errors = 'no' if lines.nil?
     @lines = Array.new
     @system = Array.new
     @header = Array.new
@@ -71,6 +72,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
          @system << line if line.error_type == 'System_Error' 
          @header << line if line.error_type == 'Header_Error'
     end
+  end
   end
 
   def by_userid

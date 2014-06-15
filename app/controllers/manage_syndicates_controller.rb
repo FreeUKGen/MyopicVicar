@@ -15,9 +15,7 @@ layout "manage_counties"
   session[:role] = 'syndicate'
   session[:page] = request.original_url
    redirect_to manage_resource_path(@user) if number_of_syndicates == 0
-    p session[:userid]
-    p number_of_syndicates
-    p  syndicates
+    
    @manage_syndicate = ManageSyndicate.new
   
     if number_of_syndicates == 1 

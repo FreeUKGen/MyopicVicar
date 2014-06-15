@@ -113,9 +113,7 @@ def self.check_for_replace(filename,userid,digest)
       end # end unless
     end #end field
 
-    p header
-  
-   header[:person_role] = "transcriber" if header[:person_role].nil?
+    header[:person_role] = "transcriber" if header[:person_role].nil?
    header[:previous_syndicate] = header[:syndicate]
    header[:syndicate] = SyndicateTranslation.values_at(header[:syndicate])
    
@@ -192,7 +190,8 @@ def self.check_for_replace(filename,userid,digest)
     end
 
    header[:person_role] = "system_administrator" if header[:userid] == "REGManager" 
-    header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk"  
+    header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk" 
+     header[:person_role] = "data_manager" if header[:userid] == "ericb" 
   
    if check_for_replace(filename,header[:userid],header[:digest]) 
    detail = UseridDetail.new(header)

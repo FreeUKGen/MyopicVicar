@@ -79,7 +79,7 @@ end
 def write_userid_file
    
    details_dir = File.join(Rails.application.config.datafiles,self.userid)
-   details_dir = File.join(details_dir,".uFDetails")
+   details_dir = File.join(details_dir,".uDetails")
        if File.file?(details_dir)
          p "file should not be there"
        end
@@ -104,7 +104,7 @@ def save_to_attic
   #to-do unix permissions
   
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
-    details_file = File.join(details_dir,".uFDetails")
+    details_file = File.join(details_dir,".uDetails")
     
       if File.file?(details_file)
         newdir = File.join(details_dir,'.attic')
