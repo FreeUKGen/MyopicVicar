@@ -1,3 +1,4 @@
+<%require 'register_type' %>
 Page Identification Churches:show<p>
  <p style="text-align: center"> Place: <b><%= @place_name %></b> in the County of:   <b><%= @county %></b></p>
 
@@ -54,8 +55,9 @@ Page Identification Churches:show<p>
  <table>
 
 <tr>
-<% @church.registers.order_by(register: 1).each do |register| %>  
-   <tr><td><b>Register </b><br><%= link_to(register.alternate_register_name, register_path(register)) %></td>
+<% @church.registers.order_by(register_type: 1).each do |register| %>
+
+<tr><td><b>Register </b><br><%= link_to(RegisterType.display_name(register.register_type), register_path(register)) %></td>
 
   <td><table> 
   <tr><th colspan="6">Batches</th></tr>

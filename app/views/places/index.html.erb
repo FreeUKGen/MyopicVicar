@@ -1,4 +1,4 @@
-
+<%require 'register_type' %>
 Page Identification Places:index<p>
 <p style="text-align: center">The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>.</p> 
 
@@ -26,7 +26,7 @@ Page Identification Places:index<p>
   
     <th style="width:25%">Place</th>
     <th style="width:12%">Last amended</th>
-    <th style="width:50%">Churches/Registers</th>
+    <th style="width:63%">Churches  and  their  Registers</th>
        
   </tr>
 
@@ -35,14 +35,17 @@ Page Identification Places:index<p>
   <% session[:placeid] = place.id%>
     <td > <%= link_to(place.place_name, place_path(place)) %> </td>
     <td > <%= place.last_amended %> </td>
-    <td ><table style="width:100%"> 
+    <td ><table style="width:650px"> 
      
 <% place.churches.order_by(church: 1).each do |church| %>
 
 
-<tr ><td><%= link_to(church.church_name, church_path(church)) %> </td>
-<td><table style="width:100%"><% church.registers.order_by(alterate_register_name: 1).each do |register| %>
-<%= link_to(register.alternate_register_name, register_path(register)) %></td><br /></tr>
+<tr ><td style="width:300px"> <%= link_to(church.church_name, church_path(church)) %> </td>
+<td ><table style="width:250px"><% church.registers.order_by(register_type: 1).each do |register| %>
+
+<% registertype = RegisterType.display_name(register.register_type)%>
+
+<%= link_to(registertype, register_path(register)) %></td><br /></tr>
 
 
 <% end%>

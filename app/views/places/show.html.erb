@@ -63,8 +63,8 @@ Page Identification Places:show<p>
 
 <tr ><td><b>Church <br></b><%= link_to(church.church_name, church_path(church)) %></td>
 
- <td><table style="width:100%"> <% church.registers.order_by(register: 1).each do |register| %>
-<tr><th colspan="6">Registers  <%= link_to(register.alternate_register_name, register_path(register)) %></th></tr>
+ <td><table style="width:100%"> <% church.registers.order_by(register_type: 1).each do |register| %>
+<tr><th colspan="6">Registers : <%= link_to(RegisterType.display_name(register.register_type), register_path(register)) %></th></tr>
    <tr >
   <td><table style="width:100%"> 
 <tr><th colspan="6">Batches</th></tr>

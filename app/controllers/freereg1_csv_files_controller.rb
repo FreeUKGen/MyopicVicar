@@ -58,13 +58,13 @@ class Freereg1CsvFilesController < InheritedResources::Base
     #display the nerrors in a batch
     load(params[:id])
     @errors = @freereg1_csv_file.batch_errors.count
+    @owner = @freereg1_csv_file.userid
     unless @errors == 0
     lines = @freereg1_csv_file.batch_errors.all
     @role = session[:role]
     @lines = Array.new
     @system = Array.new
     @header = Array.new
-    @owner = @freereg1_csv_file.userid
     lines.each do |line|
     
          entry = Freereg1CsvEntry.where(freereg1_csv_file_id:  session[:freereg1_csv_file_id]).first

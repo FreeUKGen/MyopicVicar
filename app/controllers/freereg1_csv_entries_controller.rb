@@ -135,8 +135,9 @@ def display_info
     @freereg1_csv_file_id =  session[:freereg1_csv_file_id]
     @freereg1_csv_file_name =  session[:freereg1_csv_file_name]
     @register = @freereg1_csv_file.register
-    @register_name = @register.register_name 
-    @register_name = @register.alternate_register_name if @register_name.nil?
+    #@register_name = @register.register_name 
+    #@register_name = @register.alternate_register_name if @register_name.nil?
+    @register_name = RegisterType.display_name(@register.register_type)
     @church = session[:church_id]
     @church_name = session[:church_name]
     @place = session[:place_id]

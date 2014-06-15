@@ -91,8 +91,9 @@ class RegistersController < InheritedResources::Base
   
   def load(register_id)
     @register = Register.find(register_id)
-    @register_name = @register.register_name
-    @register_name = @register.alternate_register_name if @register_name.nil? ||  @register_name.empty?
+    #@register_name = @register.register_name
+    #@register_name = @register.alternate_register_name if @register_name.nil? ||  @register_name.empty?
+    @register_name = RegisterType.display_name(@register.register_type)
     session[:register_id] = register_id
     session[:register_name] = @register_name
     @church = @register.church
