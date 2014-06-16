@@ -3,6 +3,7 @@ class Register
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
    require 'record_type'
+    require 'register_type' 
 
   field :status, type: String
   field :register_name,  type: String

@@ -69,7 +69,7 @@ Page Identification Churches:show<p>
  <% end %>
 
  <td ><%= link_to(freeregfile.file_name,freereg1_csv_file_path(freeregfile)) %></td> 
-<td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>   <td><%=freeregfile.datemin%></td>
+<td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>  <td><%=freeregfile.records%></td>  <td><%=freeregfile.datemin%></td>
 <td><%=freeregfile.datemax%></td>
 
 <% if freeregfile.error != 0 %>

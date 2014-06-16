@@ -2,7 +2,7 @@ class Church
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
-  
+   require 'register_type' 
   field :church_name,type: String
   field :last_amended, type: String
   field :denomination, type: String

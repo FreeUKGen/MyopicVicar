@@ -21,6 +21,7 @@ class Freereg1CsvFile
    require 'record_type'
   # require 'csvfile'
    require 'csv'
+    require 'register_type' 
 
 
   has_many :freereg1_csv_entries, validate: false

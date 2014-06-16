@@ -8,6 +8,7 @@ class Place
   require 'open-uri'
   require 'net/http'
   require 'master_place_name'
+  require 'register_type' 
    
   field :chapman_code, type: String#, :required => true
   field :place_name, type: String#, :required => true
