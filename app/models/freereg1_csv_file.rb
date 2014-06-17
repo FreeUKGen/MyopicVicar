@@ -361,10 +361,11 @@ index({error:1, file_name:1})
 
     end #end csv
    end #end method
-  def self.update_file_attributes(my_files,attribute,change)
+
+ def self.update_file_attributes(my_files,attribute,change)
     if my_files then
       my_files.each do |myfile|
-        case 
+        case
         when attribute == 'place'
           myfile.place = change
         when attribute == 'church'
@@ -378,7 +379,7 @@ index({error:1, file_name:1})
         myfile_id = myfile._id
         my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).all
         my_entries.each do |myentries|
-           case 
+           case
            when attribute == 'place'
             myentries.place = change
            when attribute == 'church'
@@ -390,4 +391,5 @@ index({error:1, file_name:1})
       end #end myfile
     end #end my_files
   end
+      
 end

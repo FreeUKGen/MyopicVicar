@@ -29,29 +29,63 @@ class Freereg1CsvFilesController < InheritedResources::Base
     #session role is used to control return navigation options
     @role = session[:role]
     @freereg1_csv_file_name = session[:freereg1_csv_file_name] 
+    placenames = MasterPlaceName.where(:chapman_code => @freereg1_csv_file.county ).all.order_by(place_name: 1)
+      @placenames = Array.new
+        placenames.each do |placename|
+          @placenames << placename.place_name
+        end
   end
 
 
   def update
     #update the headers
     load(params[:id])
+    #keep a copy
+    old_freereg1_csv_file = @freereg1_csv_file.clone
+    #lets see if we are moving the file
+    change = nil
+    change = @freereg1_csv_file.register_type unless params[:freereg1_csv_file][:register_type] == @freereg1_csv_file.register_type
+    change = @freereg1_csv_file.church_name unless params[:freereg1_csv_file][:church_name] == @freereg1_csv_file.church_name
+    change = @freereg1_csv_file.place unless params[:freereg1_csv_file][:place] == @freereg1_csv_file.place
+    change = @freereg1_csv_file.county unless params[:freereg1_csv_file][:county] == @freereg1_csv_file.county
+
+    @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
     @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own'
     @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
     @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
     
     if @freereg1_csv_file.errors.any?
-    
-      flash[:notice] = 'The update of the file was unsuccessful'
+      flash[:notice] = 'The update of the batch was unsuccessful'
       render :action => 'edit'
-     else
-      session[:type] = "edit"
-      flash[:notice] = 'The update of the file was successful' 
+    end
+
+      if  change.nil?
         Freereg1CsvFile.backup_file(@freereg1_csv_file)
-        @current_page = session[:page]
-        session[:page] = session[:initial_page]    
-        redirect_to @current_page
-     end
+      else
+        #change location of file
+        new_freereg1_csv_file = @freereg1_csv_file.clone
+        new_freereg1_csv_file.register_id = nil
+        Register.update_or_create_register(new_freereg1_csv_file)
+        new_freereg1_csv_file.save
+
+       if  new_freereg1_csv_file.errors.any?
+         flash[:notice] = 'The update of the batch was unsuccessful'
+         render :action => 'edit'
+          return
+       else
+        #do final clean up
+        @freereg1_csv_file.delete
+        Register.clean_empty_registers(old_freereg1_csv_file)
+        Freereg1CsvFile.backup_file(new_freereg1_csv_file)
+        end
+      end #end type
+      session[:type] = "edit"
+      flash[:notice] = 'The update of the batch was successful' 
+      @current_page = session[:page]
+      session[:page] = session[:initial_page]    
+      redirect_to @current_page
+   
   end
 
   def error
