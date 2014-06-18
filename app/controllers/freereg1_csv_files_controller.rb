@@ -75,6 +75,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
           return
        else
         #do final clean up
+        Freereg1CsvEntry.change_file(@freereg1_csv_file._id,new_freereg1_csv_file._id)
         @freereg1_csv_file.delete
         Register.clean_empty_registers(old_freereg1_csv_file)
         Freereg1CsvFile.backup_file(new_freereg1_csv_file)
@@ -230,7 +231,6 @@ end
 
   def destroy
     load(params[:id])
-    
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
         flash[:notice] = 'The deletion of the file was unsuccessful; the file is locked' 
         @current_page = session[:page]
@@ -238,21 +238,15 @@ end
         redirect_to @current_page 
         return
     end
-    @csvfile = Csvfile.new
-    @csvfile.file_name = @freereg1_csv_file_name
-     @csvfile.userid = @freereg1_csv_file.userid
-     #places a copy of the file in the attic before deleting
-     @csvfile.save_to_attic
-     #call to delete file also deleted any entries and search records
-     @freereg1_csv_file = Freereg1CsvFile.delete_file(@freereg1_csv_file)
-      session[:type] = "edit"
+     @freereg1_csv_file.destroy
+     session[:type] = "edit"
       flash[:notice] = 'The deletion of the file was successful'
        if session[:my_own] == 'my_own'
          @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid] ).order_by(file_name: 1).page(params[:page])
        render 'index'
        else 
         @current_page = session[:page]
-        session[:page] = session[:initial_page]    
+        session[:page] = session[:initial_page] 
         redirect_to @current_page
        end
      

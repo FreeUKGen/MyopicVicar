@@ -19,11 +19,7 @@ class Freereg1CsvEntry
   require 'freereg_validations'
   
 
-  belongs_to :freereg1_csv_file, index: true
-  
-  has_one :search_record
-  embeds_many :multiple_witnesses
-  accepts_nested_attributes_for :multiple_witnesses
+ 
 
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
@@ -87,6 +83,15 @@ class Freereg1CsvEntry
   field :error_flag, type:String, default: 'false'
   field :record_type, type: String
 
+ belongs_to :freereg1_csv_file, index: true
+
+  before_destroy do |entry|
+    SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)       
+  end
+  
+  has_one :search_record
+  embeds_many :multiple_witnesses
+  accepts_nested_attributes_for :multiple_witnesses
 
   index({freereg1_csv_file_id: 1,file_line_number:1})
   index({file_line_number:1})
@@ -162,6 +167,16 @@ class Freereg1CsvEntry
     order << 'notes'
 
     order
+  end
+
+  def self.change_file(old_id,new_id)
+   entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => old_id).all
+   p "changing entries"
+   p old_id
+   p new_id
+    entries.each do |entry|
+     entry.update_attributes(:freereg1_csv_file_id => new_id)
+    end
   end
 
   def errors_in_fields

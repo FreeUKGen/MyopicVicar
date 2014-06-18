@@ -24,14 +24,6 @@ class Freereg1CsvFile
     require 'register_type' 
 
 
-  has_many :freereg1_csv_entries, validate: false
-  belongs_to :register, index: true
-  #register belongs to church which belongs to place
-  has_one :csvfile
-  has_many :batch_errors
-  
-
-
   # Fields correspond to cells in CSV headers  
   field :county, type: String 
   field :place, type: String 
@@ -72,8 +64,21 @@ class Freereg1CsvFile
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 index({file_name:1,error:1})
 index({error:1, file_name:1})
+before_destroy do |file|
+    file.save_to_attic
+    Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
+end
+
+  has_many :freereg1_csv_entries, validate: false
+  belongs_to :register, index: true
+  #register belongs to church which belongs to place
+  has_one :csvfile
+  has_many :batch_errors
+  
+
   before_save :add_lower_case_userid
   after_save :create_or_update_last_amended_date 
+  
   
  scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
  scope :county, ->(county) { where(:county => county) }
@@ -229,24 +234,24 @@ index({error:1, file_name:1})
 
       hold_file
   end
-  def self.delete_file(csv_file)
-   
-        # add it to a before_delete callback.  (N.B. then use destroy rather than delete from
-        # this function)
-       
-         # fetch the IDs of all the entries on this file
-        freereg_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => csv_file).all
-        freereg_entries.each do |entry|
-          # now we delete the SearchRecord records that point to any of those entry IDs
-          SearchRecord.where(:freereg1_csv_entry_id => entry._id).delete_all
-           # now delete the csv entry records
-          Freereg1CsvEntry.where(:_id => entry._id).delete_all
-        end
-       
-        # now we can delete the file
-       Freereg1CsvFile.where(:_id => csv_file).delete_all
-  end
 
+  
+  def save_to_attic
+  #to-do unix permissions
+   file = self.file_name
+   csvdir = File.join(Rails.application.config.datafiles,self.userid)
+   csvfile = File.join(csvdir,file)
+    
+      if File.file?(csvfile)
+        newdir = File.join(csvdir,'.attic')
+        Dir.mkdir(newdir) unless Dir.exists?(newdir)
+        renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
+        File.rename(csvfile,renamed_file)
+        FileUtils.mv(renamed_file,newdir)
+       else 
+         p "file does not exist"
+        end
+ end
 
   def self.convert_date(date_field)
     #use a custom date covertion to number of days for comparison purposes only
