@@ -24,22 +24,21 @@ class ChurchesController < InheritedResources::Base
               name = acn.alternate_name
               @names << name
             end
+
   end
 
   def new
-   
       @church = Church.new
       @county = session[:county]
-     
       @place = Place.where(:chapman_code => ChapmanCode.values_at(@county)).all
       @places = Array.new
           @place.each do |place|
             @places << place.place_name
           end
       @county = session[:county]
-      
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
+
   end
 
   def create
@@ -63,48 +62,60 @@ end
    
           load(params[:id])
           @chapman_code = session[:chapman_code]
-          @places = Array.new 
-          @places << @place_name
+          @place = MasterPlaceName.where(:chapman_code => ChapmanCode.values_at(@county)).all
+          @places = Array.new
+          @place.each do |place|
+            @places << place.place_name
+          end
           @county = session[:county]
           @first_name = session[:first_name]
-          
-  
+          @user = UseridDetail.where(:userid => session[:userid]).first
+          #set default place name
+          @church.update_attributes(:place_name => @place_name)
   end
 
   def update
   
-  load(params[:id])
-    old_church_name = Church.find(params[:id]).church_name
+    load(params[:id])
+    p "updating church"
+    p params
+    old_church = Church.find(params[:id])
+    old_church_name = old_church.church_name
+    old_place_name = old_church.place.place_name
     @church.church_name = params[:church][:church_name]
     @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
     @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
     @church.denomination = params[:church][:denomination] unless params[:church][:denomination].nil?
     @church.church_notes = params[:church][:church_notes] unless params[:church][:church_notes].nil?
-
-     unless  old_church_name == params[:church][:church_name]
-
-     #update registers
-    @church.registers.each do |register|
-        register.alternate_register_name = params[:church][:church_name].to_s + " " + register.register_type.to_s
-        register.church_name = params[:church][:church_name]
-    #update files  
-    my_files = Freereg1CsvFile.where(:register_id => register._id).all
-     Freereg1CsvFile.update_file_attributes( my_files,'church',params[:church][:church_name])
-    # This saves registers, files and entries
-        register.save!
-   end
-  end #test of church name
-         @church.save
+     p old_church_name
+    p params[:church][:church_name]
+     p old_place_name
+    p params[:church][:place_name]
+   
+   
+     @church.save
+     successful = true
+     if  (old_church_name == params[:church][:church_name] || old_place_name == params[:church][:place_name])
+      #deal with change in church or place name
+      p "dealing with name change"
+      p params[:church][:church_name]
+      p params[:church][:place_name]
+      @church.registers.each do |register|
+      register.freereg1_csv_files.each do |file|
+        success = Freereg1CsvFile.update_file_attribute( file,params[:church][:church_name],params[:church][:place_name] )
+        successful = flase unless success
+    end #register
+   end #@church
+     else
   
-   if @church.errors.any? then
+    end #test of church name
+   p "finished"
+  p successful
+   if @church.errors.any? || !successful then
      flash[:notice] = 'The update of the Church was unsuccessful'
      render :action => 'edit'
      return 
    end 
-    # we need to deal with merging of identical church and register names
-        place = @church.place
-        churches = place.churches
-        Church.merge(churches)
        flash[:notice] = 'The update the Church was successful' 
         @current_page = session[:page]
        session[:page] = session[:initial_page]    

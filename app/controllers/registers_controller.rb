@@ -63,24 +63,19 @@ class RegistersController < InheritedResources::Base
     type_change = params[:register][:register_type] unless params[:register][:register_type] == @register.register_type
 
     @register.update_attributes(params[:register])
+    successful = true
   unless type_change.nil?
+    
 #need to propogate  register type change
-     files =  @register.freereg1_csv_files
-       files.each do |file|
-        file.locked_by_transcriber = "true" if session[:my_own] == 'my_own'
-        file.locked_by_coordinator = "true" unless session[:my_own] == 'my_own'
-        file.modification_date = Time.now.strftime("%d %b %Y")
-        file.register_type = type_change
-        file.save!
-        Freereg1CsvFile.backup_file(file)
-      end
+     @register.freereg1_csv_files.each do |file|
+       file.update_attributes(:register_type => type_change)
+       success = Freereg1CsvFile.update_file_attribute(file,file.church_name,file.place)
+       successful = false unless success
+     end
   end
-  #merge registers with same name and type
-        registers = @church.registers
-       Register.update_register_attributes(registers)
+    
     flash[:notice] = 'The update the Register was successful'
-    if @register.errors.any? then
-     
+    if (@register.errors.any? || !successful) then
       flash[:notice] = 'The update of the Register was unsuccessful'
       render :action => 'edit'
       return 

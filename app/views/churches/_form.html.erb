@@ -1,5 +1,9 @@
 <%= semantic_form_for  @church do |f| %>
-   <%= f.input :place, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place that Church is located in :", :size => 15}%>
+<% if @user.person_role == 'data_manager'%>
+ <b> Please be sure to select the correct Place from the following list. Check with the name above and select if you are NOT changing the Place</b>
+<p>
+   <%= f.input :place_name, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place that Church is located in :", :required => true, :size => 15}%>
+ <% end %>
   <%= f.input :church_name, :label => "The most common Church Name :",:input_html => { :size => 60 }%>
  
  <%= f.inputs :alternate_name, :for => :alternatechurchnames, :name => 'Edit Existing Alternate Church Name #%i', :input_html => { :size => 60 }%>

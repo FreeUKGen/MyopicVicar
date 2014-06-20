@@ -84,10 +84,6 @@ def update
     load(params[:id])
     # save place name change in Place
     old_place_name = @place.place_name
-    unless old_place_name == params[:place][:place_name]
-    @place =  Place.find_by( :chapman_code => session[:chapman_code], :place_name => params[:place][:place_name]  ) 
-    end 
-       #just updating place fields except name
     @place.place_notes = params[:place][:place_notes] unless params[:place][:place_notes].nil?
     @place.alternate_place_name = params[:place][:alternate_place_name] unless params[:place][:alternate_place_name].nil?
     @place.chapman_code = session[:chapman_code] if @place.chapman_code.nil?
@@ -101,24 +97,29 @@ def update
      return
     end #errors
    unless old_place_name == params[:place][:place_name]
-    #we are merging places
-   # save a place name change in Freereg_csv_file
-    my_files = Freereg1CsvFile.where(:county => session[:chapman_code], :place => old_place_name).all
-    Freereg1CsvFile.update_file_attributes( my_files,'place',params[:place][:place_name])
-     #Need to merge church and registers
-        old_place = Place.find_by( :chapman_code => session[:chapman_code], :place_name => old_place_name)    
-        old_churches = old_place.churches
-        old_churches.each do |old_church|
-            @place.churches << old_church
-        end
-        churches = @place.churches
-        Church.merge(churches)
-        old_place.destroy
+    #deal with place name change
+    successful = true
+     @place.churches.each do |church|
+      church_name = church.church_name
+      church.registers.each do |register|
+       register.freereg1_csv_files.each do |file|
+        success = Freereg1CsvFile.update_file_attribute(file,church_name,params[:place][:place_name] )
+        successful = false unless success 
+       end #register
+      end #church
+     end #@place
     end # name change
+    if successful
       @current_page = session[:page]
       session[:page] = session[:initial_page]
       flash[:notice] = 'The update the Place was successful'
       redirect_to @current_page
+      return
+     else 
+     flash[:notice] = 'The update of the Place was unsuccessful'
+     render :action => 'edit'
+     return
+     end
   end
 
   

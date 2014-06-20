@@ -2,6 +2,9 @@
  
     
 <div id="main"style="color:black">
+
+<b> Please be sure to select the correct Place from the following list. Check with the name above and select if you are NOT changing the Place</b>
+<p>
   <%= f.input :place_name,{ :as => :select,:label => "Select from the Master Place Name collection",:include_blank => false,
           :required => true, :collection => @placenames, :size => 15 } %> 
 

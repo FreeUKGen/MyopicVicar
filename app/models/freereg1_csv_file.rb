@@ -366,35 +366,28 @@ end
 
     end #end csv
    end #end method
-
- def self.update_file_attributes(my_files,attribute,change)
-    if my_files then
-      my_files.each do |myfile|
-        case
-        when attribute == 'place'
-          myfile.place = change
-        when attribute == 'church'
-          myfile.church_name = change
-        end
-        myfile.locked_by_coordinator = "true"
-        myfile.modification_date = Time.now.strftime("%d %b %Y")
-        myfile.save!
-
- # save place name change in Freereg_csv_entry
-        myfile_id = myfile._id
-        my_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => myfile_id).all
-        my_entries.each do |myentries|
-           case
-           when attribute == 'place'
-            myentries.place = change
-           when attribute == 'church'
-            myentries.church_name = change
-           end
-            myentries.save!
-        end #end myentries
-          Freereg1CsvFile.backup_file(myfile)
-      end #end myfile
-    end #end my_files
+ def self.update_file_attribute(file,new_church_name,new_place_name)
+ p "updating file "
+ p new_church_name
+ p new_place_name
+  new_file = file.clone
+  new_file.register_id = nil
+  new_file.church_name = new_church_name
+  new_file.place = new_place_name
+  new_file.locked_by_coordinator = "true"
+  new_file.modification_date = Time.now.strftime("%d %b %Y")
+  Register.update_or_create_register(new_file)
+  new_file.save
+    success = true
+  if new_file.errors.any?
+    success = false
   end
-      
+  Freereg1CsvEntry.change_file(file._id,new_file._id)
+  file.delete
+  Register.clean_empty_registers(file)
+  Freereg1CsvFile.backup_file(new_file)
+  p success
+  success
+end
+   
 end
