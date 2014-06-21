@@ -29,15 +29,14 @@ class RegistersController < InheritedResources::Base
    @user = UseridDetail.where(:userid => session[:userid]).first
    @church_name = session[:church_name]
    @county =  session[:county]
-    @place_name = session[:place_name] 
+   @place_name = session[:place_name] 
    @first_name = session[:first_name] 
-   @church = session[:church_id]
+   
+   @church = Church.find(session[:church_id])
    @register = Register.new(params[:register])
-
-  @register[:church_id] = @church
-  @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
- 
-     @register.save
+   @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
+   @church.registers << @register
+     @church.save
    
        if @register.errors.any?
         

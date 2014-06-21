@@ -366,6 +366,7 @@ end
 
     end #end csv
    end #end method
+   
  def self.update_file_attribute(file,new_church_name,new_place_name)
  p "updating file "
  p new_church_name

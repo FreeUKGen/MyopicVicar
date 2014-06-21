@@ -42,18 +42,19 @@ class ChurchesController < InheritedResources::Base
   end
 
   def create
-  place = Place.where(:place_name => params[:church][:place_id]).first
+  place = Place.where(:chapman_code => ChapmanCode.values_at(session[:county]),:place_name => params[:church][:place_name]).first
   church = Church.new(params[:church])
   place.churches << church
   church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
-  church.save
-    flash[:notice] = 'The addition of the Church was successful'
+  place.save
+  # church.save
    if church.errors.any?
     
      flash[:notice] = 'The addition of the Church was unsuccessful'
      redirect_to :action => 'new'
      return
    else
+     flash[:notice] = 'The addition of the Church was successful'
     redirect_to places_path
    end
 end
@@ -77,8 +78,6 @@ end
   def update
   
     load(params[:id])
-    p "updating church"
-    p params
     old_church = Church.find(params[:id])
     old_church_name = old_church.church_name
     old_place_name = old_church.place.place_name
@@ -87,33 +86,34 @@ end
     @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
     @church.denomination = params[:church][:denomination] unless params[:church][:denomination].nil?
     @church.church_notes = params[:church][:church_notes] unless params[:church][:church_notes].nil?
-     p old_church_name
-    p params[:church][:church_name]
-     p old_place_name
-    p params[:church][:place_name]
-   
-   
+     
      @church.save
      successful = true
-     if  (old_church_name == params[:church][:church_name] || old_place_name == params[:church][:place_name])
-      #deal with change in church or place name
-      p "dealing with name change"
-      p params[:church][:church_name]
-      p params[:church][:place_name]
-      @church.registers.each do |register|
-      register.freereg1_csv_files.each do |file|
-        success = Freereg1CsvFile.update_file_attribute( file,params[:church][:church_name],params[:church][:place_name] )
-        successful = flase unless success
-    end #register
-   end #@church
+     if  (old_church_name != params[:church][:church_name] || old_place_name != params[:church][:place_name])
+    
+      if @church.registers.count != 0
+        @church.registers.each do |register|
+          if register.freereg1_csv_files.count != 0
+              register.freereg1_csv_files.each do |file|
+                success = Freereg1CsvFile.update_file_attribute( file,params[:church][:church_name],params[:church][:place_name] )
+                successful = flase unless success
+              end #register
+           else
+              flash[:notice] = 'The Church has no registers or files please delete this one and create a new one in the appropriate Place'
+               redirect_to edit_church_path(@church)
+              return 
+           end # register count
+      end #@church registers
      else
-  
+       flash[:notice] = 'The Church has no registers or files please delete this one and create a new one in the appropriate Place'
+       redirect_to edit_church_path(@church)
+       return 
+     end # church count
     end #test of church name
-   p "finished"
-  p successful
+
    if @church.errors.any? || !successful then
      flash[:notice] = 'The update of the Church was unsuccessful'
-     render :action => 'edit'
+    redirect_to edit_church_path(@church)
      return 
    end 
        flash[:notice] = 'The update the Church was successful' 
