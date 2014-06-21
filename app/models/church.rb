@@ -23,7 +23,7 @@ class Church
    def church_does_not_exist 
   
    
-     # errors.add(:church_name, "already exits") unless place.nil?
+      #errors.add(:church_name, "Church of that name already exits") unless place.church.nil?
 
   end 
 

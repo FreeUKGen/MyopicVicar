@@ -33,6 +33,13 @@ class RegistersController < InheritedResources::Base
    @first_name = session[:first_name] 
    
    @church = Church.find(session[:church_id])
+   @church.registers.each do |register|
+    if register.register_type == params[:register][:register_type]
+     flash[:notice] = "A register of that register #{register.register_type} type already exists"
+    redirect_to new_register_path
+         return
+     end
+   end
    @register = Register.new(params[:register])
    @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
    @church.registers << @register

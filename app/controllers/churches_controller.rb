@@ -43,15 +43,22 @@ class ChurchesController < InheritedResources::Base
 
   def create
   place = Place.where(:chapman_code => ChapmanCode.values_at(session[:county]),:place_name => params[:church][:place_name]).first
+  place.churches.each do |church|
+    if church.church_name == params[:church][:church_name]
+     flash[:notice] = "A church with that name already exists in this place #{place.place_name}"
+    redirect_to new_church_path
+         return
+     end
+   end
   church = Church.new(params[:church])
-  place.churches << church
   church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
+  place.churches << church
   place.save
   # church.save
    if church.errors.any?
     
      flash[:notice] = 'The addition of the Church was unsuccessful'
-     redirect_to :action => 'new'
+      redirect_to new_church_path
      return
    else
      flash[:notice] = 'The addition of the Church was successful'
