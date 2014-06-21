@@ -14,7 +14,7 @@ def index
   session[:return] = request.referer
   @counties = @user.county_groups
   @countries = @user.country_groups
-   if  @user.person_role == 'data_manager'
+   if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
      @countries = Array.new
     counties = County.all.order_by(chapman_code: 1)
     counties.each do |county|
@@ -28,14 +28,17 @@ def index
      end
    end
    @number_of_counties = @counties.length
+
    redirect_to manage_resource_path(@user) if @number_of_counties == 0
    @manage_county = ManageCounty.new
     if @number_of_counties == 1 
+       session[:muliple] = false
         session[:chapman_code] = @counties[0]
         @county = ChapmanCode.has_key(@counties[0])
         session[:county] = @county
-        redirect_to places_path
-    end
+    else
+       session[:muliple] = true
+   end
       
 end
 
@@ -50,15 +53,35 @@ def new
 
 
  def create
+    if session[:muliple] == true
    	session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
-    if session[:role] == 'county_selection'
-     session[:role] = 'data_manager' 
-     redirect_to all_files_freereg1_csv_file_path
-    return
-    end
-    redirect_to places_path
+   end
+    #if session[:role] == 'county_selection'
+    # session[:role] = 'data_manager'
+    # redirect_to all_files_freereg1_csv_file_path
+   # return
+   # end
+    case 
+
+      when params[:manage_county][:action] == 'Work with Places'
+         redirect_to places_path
+          return
+       when params[:manage_county][:action] == 'Upload New Batch'
+         redirect_to new_csvfile_path
+         return
+       when params[:manage_county][:action] == 'Review Batches listed by filename'
+          session[:sort] =  sort = "file_name ASC"    
+        when params[:manage_county][:action] == 'Review Batches with errors'
+          session[:sort] =  sort = "error DESC, file_name ASC" 
+        when params[:manage_county][:action] == 'Review Batches listed by userid then filename'
+           session[:sort] =  sort = "userid ASC, file_name ASC"
+        when params[:manage_county][:action] == 'Review Batches listed by uploaded date'
+           session[:sort] =  sort = "uploaded_date DESC"
+        end
+          redirect_to freereg1_csv_files_path
+   
 
   end # create
 

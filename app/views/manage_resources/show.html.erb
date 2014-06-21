@@ -14,7 +14,6 @@ Page Identification Manage Resources:show<p>
 <div style="float:left;"><%= button_to "Manage County Data ", manage_counties_path, method: :get  if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator' || @user.person_role == 'data_manager' || @user.county_groups.length > 0 %></div>
 
 <%end%>
-<div style="float:left;"><%= button_to 'List all Batches (by County)', all_files_freereg1_csv_file_path, method: :get  if @user.person_role  == 'data_manager'%></div>
 
 <div style="float:left;"><%= button_to 'Manage FreeREG' , manage_freeregs_path, method: :get  if @user.person_role  == 'system_administrator' %>
 </div>

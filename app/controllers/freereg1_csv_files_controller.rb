@@ -11,7 +11,8 @@ class Freereg1CsvFilesController < InheritedResources::Base
     @first_name = session[:first_name]
     @role = session[:role]
     session[:my_own] = 'no'
-    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'syndicate'
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'counties'
     session[:page] = request.original_url
    end
 
@@ -123,33 +124,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     render :index
   end
 
- def all_files
-    #entry for REGManager and DataManager
-    session[:page] = request.original_url
-    session[:my_own] = 'no'
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    unless session[:role] == 'data_manager'
-    #first time we select the county
-      session[:role] = 'county_selection'
-      @counties = Array.new
-      counties = County.all.order_by(chapman_code: 1)
-        counties.each do |county|
-          @counties << county.chapman_code
-        end
-      @manage_county = ManageCounty.new
-      @number_of_counties = @counties.length
-      render "manage_counties/index"
-    else
-      #we know the county get the files
-      @county = session[:county]
-      who = County.where(:chapman_code => session[:chapman_code]).first
-      @who = who.county_coordinator
-      @email = UseridDetail.where(:userid => @who).first.email_address
-      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by( "error DESC, file_name ASC").page(params[:page])
-    end
-  end
-  
+
 def my_own
     #entry for an individual
     session[:page] = request.original_url
