@@ -42,7 +42,13 @@ class ChurchesController < InheritedResources::Base
   end
 
   def create
+
+  if params[:church][:place_name].nil?
+    #Only data_manager has ability at this time to change Place so need to use the cuurent place
+  place = Place.find(session[:place_id])
+  else
   place = Place.where(:chapman_code => ChapmanCode.values_at(session[:county]),:place_name => params[:church][:place_name]).first
+  end
   place.churches.each do |church|
     if church.church_name == params[:church][:church_name]
      flash[:notice] = "A church with that name already exists in this place #{place.place_name}"
