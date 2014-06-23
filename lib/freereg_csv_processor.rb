@@ -972,14 +972,19 @@ end
        
        first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
        code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
-      #set rhge default      
+      #set rhge default  
+      p    code_set  
       code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
+      code_set = code_set.gsub(/\s+/, ' ').strip
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
       code_set = "macRoman" if (code_set.downcase == "macintosh")
-      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless @code_sets.include?(code_set) 
-       code_set = "Windows-1252" unless @code_sets.include?(code_set) 
+      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set) 
+        p    code_set  
+        p code_set  
+       code_set = "Windows-1252" unless Encoding.name_list.include?(code_set) 
         #if we have valid new character set; use it and change the file encoding
+        p code_set
         @@charset = Encoding.find(code_set) 
         xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
         xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
@@ -1058,10 +1063,9 @@ end
     # turn off domain checks -- some of these email accounts may no longer work and that's okay
     #initializes variables
     #gets information on the file to be processed
-                  
+             
           @@header = Hash.new
           @csvdata = Array.new
-          @code_sets = Encoding.name_list
           @@list_of_registers = Hash.new()
           @@header_error = Hash.new()
           @@system_error = Hash.new()
@@ -1114,9 +1118,10 @@ end
          process = true 
          process = check_for_replace(filename) unless recreate == "recreate"
 
-         success = slurp_the_csv_file(filename) if process == true
+         @success = slurp_the_csv_file(filename) if process == true
 
-        n = process_the_data if success == true  && process == true
+        n = process_the_data if @success == true  && process == true
+        @@message_file.puts "File not processed due to error in reading the file" if @success == false
         nn = nn + n unless n.nil?
    
      end #filename loop end 
@@ -1124,7 +1129,8 @@ end
      time = (((Time.now  - time_start )/(nn-1))*1000)
      p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
      @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n" 
-      @@message_file.close   
+      @@message_file.close 
+   @success  
   end #method end
  
 end #class end
