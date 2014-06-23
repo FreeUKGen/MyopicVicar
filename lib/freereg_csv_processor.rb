@@ -972,19 +972,16 @@ end
        
        first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
        code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
-      #set rhge default  
-      p    code_set  
+      #set Characterset default  
+
       code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
       code_set = code_set.gsub(/\s+/, ' ').strip
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
       code_set = "macRoman" if (code_set.downcase == "macintosh")
       @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set) 
-        p    code_set  
-        p code_set  
        code_set = "Windows-1252" unless Encoding.name_list.include?(code_set) 
         #if we have valid new character set; use it and change the file encoding
-        p code_set
         @@charset = Encoding.find(code_set) 
         xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
         xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
