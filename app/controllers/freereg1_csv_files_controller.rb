@@ -7,8 +7,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     end
    #the common listing entry by syndicate
     @register = session[:register_id]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @first_name = session[:first_name]
+    display_info
     @role = session[:role]
     session[:my_own] = 'no'
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'syndicate'
@@ -235,9 +234,13 @@ end
     session[:county] = @freereg1_csv_file.county
     session[:place_name] = @freereg1_csv_file.place
     session[:church_name] = @freereg1_csv_file.church_name
+    display_info
+  end
+
+  def display_info
+    @county =  session[:county]   
     @user = UseridDetail.where(:userid => session[:userid]).first
     @first_name = session[:first_name] 
-
   end
 
 end
