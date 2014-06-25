@@ -28,10 +28,12 @@ class MasterPlaceName
   field :other_reason_for_change, type: String
   field :genuki_url, type: String
   field :modified_place_name, type: String #This is used for comparison searching
-  field :disabled, type: String, default: -> {"false"} 
+  field :disabled, type: String, default: "false" 
   
   after_save :update_place
-  index({ chapman_code: 1, modified_place_name: 1 })
+  index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
+  index({ chapman_code: 1, place_name: 1, disabled: 1 })
+  index({ chapman_code: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
   index({ source: 1})
 

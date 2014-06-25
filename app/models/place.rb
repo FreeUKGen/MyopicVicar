@@ -82,7 +82,7 @@ class Place
 
   def add_lat_and_lon_from_master_place_name
     place = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place).first
+    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place,:disabled.ne => "true").first
    unless master_record.nil? 
           self.master_place_lat = master_record.latitude
           self.master_place_lon = master_record.longitude
@@ -90,7 +90,7 @@ class Place
           self.genuki_url  = master_record.genuki_url
          
     else 
-      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name).first
+      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name,:disabled.ne => "true").first
       unless master_record.nil? 
           self.master_place_lat = master_record.latitude
           self.master_place_lon = master_record.longitude
@@ -101,7 +101,7 @@ class Place
   end
 def update_lat_and_lon_from_master_place_name
     place = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place).first
+    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place,:disabled.ne => "true").first
    unless master_record.nil? 
           self.master_place_lat = master_record.latitude
           self.master_place_lon = master_record.longitude
@@ -109,7 +109,7 @@ def update_lat_and_lon_from_master_place_name
           self.genuki_url  = master_record.genuki_url
           self.save
     else 
-      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name).first
+      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name,:disabled.ne => "true").first
       unless master_record.nil? 
           self.master_place_lat = master_record.latitude
           self.master_place_lon = master_record.longitude

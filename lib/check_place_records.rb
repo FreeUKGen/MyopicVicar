@@ -35,7 +35,7 @@ include Mongoid::Document
   	  my_place = p.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
       my_chapman = p.chapman_code   
        
-      my_search_record = MasterPlaceName.where(:chapman_code => my_chapman,:modified_place_name => my_place ).first
+      my_search_record = MasterPlaceName.where(:chapman_code => my_chapman,:modified_place_name => my_place,:disabled.ne => "true" ).first
       
       unless my_search_record.nil? 
       	  csv_string = [my_chapman, my_place, my_search_record.latitude, my_search_record.longitude].to_csv

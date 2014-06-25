@@ -33,7 +33,7 @@ class PlacesController < InheritedResources::Base
 
   def edit
      load(params[:id])
-     placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
+     placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code],:disabled.ne => "true").all.order_by(place_name: 1)
       @placenames = Array.new
         placenames.each do |placename|
           @placenames << placename.place_name
@@ -44,7 +44,7 @@ def new
       @place = Place.new
       @place.chapman_code = session[:chapman_code]
       @county = session[:county]
-      placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
+      placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code],:disabled.ne => "true").all.order_by(place_name: 1)
       @placenames = Array.new
         placenames.each do |placename|
           @placenames << placename.place_name
@@ -68,7 +68,7 @@ def create
    if @place.errors.any?
      
      flash[:notice] = "The addition of the Place #{@place.place_name} was unsuccessful"
-     placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code]).all.order_by(place_name: 1)
+     placenames = MasterPlaceName.where(:chapman_code => session[:chapman_code],:disabled.ne => "true").all.order_by(place_name: 1)
       @placenames = Array.new
         placenames.each do |placename|
           @placenames << placename.place_name

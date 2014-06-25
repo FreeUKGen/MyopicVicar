@@ -76,7 +76,7 @@ end
    
           load(params[:id])
           @chapman_code = session[:chapman_code]
-          @place = MasterPlaceName.where(:chapman_code => ChapmanCode.values_at(@county)).all
+          @place = MasterPlaceName.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all
           @places = Array.new
           @place.each do |place|
             @places << place.place_name

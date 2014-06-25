@@ -29,11 +29,11 @@ def initialize
 
          
      
-       location = MasterPlaceName.where(:chapman_code => place.chapman_code, :place_name => place.place_name).first
+       location = MasterPlaceName.where(:chapman_code => place.chapman_code, :place_name => place.place_name ,:disabled.ne => "true").first
 
        if location.nil? then
            mod = place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-          location = MasterPlaceName.where(:chapman_code => place.chapman_code, :modified_place_name => mod).first
+          location = MasterPlaceName.where(:chapman_code => place.chapman_code, :modified_place_name => mod,:disabled.ne => "true").first
         end
        unless location.nil?
         #master has a loaction for this place
