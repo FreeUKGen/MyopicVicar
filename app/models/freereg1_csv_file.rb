@@ -1,19 +1,19 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 
-class Freereg1CsvFile  
+class Freereg1CsvFile
 
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -21,13 +21,13 @@ class Freereg1CsvFile
    require 'record_type'
   # require 'csvfile'
    require 'csv'
-    require 'register_type' 
+    require 'register_type'
 
 
-  # Fields correspond to cells in CSV headers  
-  field :county, type: String 
-  field :place, type: String 
-  field :church_name, type: String 
+  # Fields correspond to cells in CSV headers
+  field :county, type: String
+  field :place, type: String
+  field :church_name, type: String
   field :register_type, type: String
   field :record_type, type: String#, :in => RecordType::ALL_TYPES+[nil]
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
@@ -45,17 +45,17 @@ class Freereg1CsvFile
   field :credit_name, type: String
   field :first_comment, type: String
   field :second_comment, type: String
-  field :transcription_date, type: String, default: -> {"01 Jan 1998"} 
-  field :modification_date, type: String, default: -> {"01 Jan 1998"} 
+  field :transcription_date, type: String, default: -> {"01 Jan 1998"}
+  field :modification_date, type: String, default: -> {"01 Jan 1998"}
   field :uploaded_date, type: DateTime
   field :error, type: Integer, default: 0
   field :digest, type: String
-  field :locked_by_transcriber, type: String, default: 'false' 
-  field :locked_by_coordinator, type: String, default: 'false' 
+  field :locked_by_transcriber, type: String, default: 'false'
+  field :locked_by_coordinator, type: String, default: 'false'
   field :lds, type: String, default: 'no'
   field :action, type: String
   field :characterset, type: String
-  field :alternate_register_name,  type: String
+  field :alternate_register_name, type: String
   field :csvfile, type: String
 
 
@@ -64,6 +64,7 @@ class Freereg1CsvFile
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
 index({file_name:1,error:1})
 index({error:1, file_name:1})
+
 before_destroy do |file|
     file.save_to_attic
     Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
@@ -77,7 +78,7 @@ end
   
 
   before_save :add_lower_case_userid
-  after_save :create_or_update_last_amended_date 
+  after_save :create_or_update_last_amended_date
   
   
  scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
@@ -125,15 +126,15 @@ end
 
   def ordered_display_fields
     order = []
- #   order << 'county'
- #   order << 'place'
+ # order << 'county'
+ # order << 'place'
     order << 'register'
     order << 'register_type'
     order << 'record_type'
     order << 'file_name'
-#    order << 'transcriber_name'
+# order << 'transcriber_name'
     order << 'transcriber_syndicate'
-#    order << 'credit_name'
+# order << 'credit_name'
     order << 'first_comment'
     order << 'second_comment'
 
@@ -154,7 +155,7 @@ end
       :church_name => church_name,
       :alternate_register_name => alternate_register_name,
       :last_amended => modification_date,
-      :transcription_date => transcription_date,     
+      :transcription_date => transcription_date,
       :record_types => [record_type],
       
       }
@@ -171,25 +172,25 @@ end
      nbu = 0
 
     all_files.each do |individual_file|
-      case 
-       when individual_file.record_type == "ba" 
+      case
+       when individual_file.record_type == "ba"
         combine_now(hold_file_ba,individual_file,nba)
         nba = nba + 1
-       when individual_file.record_type == "bu" 
+       when individual_file.record_type == "bu"
         combine_now(hold_file_bu,individual_file,nbu)
         nbu = nbu + 1
-       when individual_file.record_type == "ma" 
+       when individual_file.record_type == "ma"
          combine_now(hold_file_ma,individual_file,nm)
         nm = nm + 1
       end
     end
     
-    hold_combined_files <<  hold_file_ba
-    hold_combined_files <<  hold_file_bu
-    hold_combined_files <<  hold_file_ma
+    hold_combined_files << hold_file_ba
+    hold_combined_files << hold_file_bu
+    hold_combined_files << hold_file_ma
     
     
-  end 
+  end
    
   def self.combine_now(hold_file,individual_file,n)
       if n == 0
@@ -204,30 +205,30 @@ end
                 
       else
               
-               hold_file.records = individual_file.records.to_i +  hold_file.records.to_i
-               hold_file.datemax = individual_file.datemax if individual_file.datemax >  hold_file.datemax 
-               hold_file.datemin = individual_file.datemin if individual_file.datemin <  hold_file.datemin
-               if hold_file.transcriber_name.nil? 
-                 hold_file.transcriber_name = individual_file.transcriber_name 
+               hold_file.records = individual_file.records.to_i + hold_file.records.to_i
+               hold_file.datemax = individual_file.datemax if individual_file.datemax > hold_file.datemax
+               hold_file.datemin = individual_file.datemin if individual_file.datemin < hold_file.datemin
+               if hold_file.transcriber_name.nil?
+                 hold_file.transcriber_name = individual_file.transcriber_name
                else
                 unless individual_file.transcriber_name.nil?
-                hold_file.transcriber_name = hold_file.transcriber_name + ", " + individual_file.transcriber_name unless  (hold_file.transcriber_name == individual_file.transcriber_name) 
+                hold_file.transcriber_name = hold_file.transcriber_name + ", " + individual_file.transcriber_name unless (hold_file.transcriber_name == individual_file.transcriber_name)
                 end
                end
-               if hold_file.credit_name.nil? 
-                 hold_file.credit_name = individual_file.transcriber_name 
+               if hold_file.credit_name.nil?
+                 hold_file.credit_name = individual_file.transcriber_name
                else
                 unless individual_file.credit_name.nil?
-                hold_file.credit_name = hold_file.credit_name + ", " + individual_file.credit_name unless  (hold_file.credit_name == individual_file.credit_name)
+                hold_file.credit_name = hold_file.credit_name + ", " + individual_file.credit_name unless (hold_file.credit_name == individual_file.credit_name)
                 end
                end
                           
                  hold_file.daterange.each_index do |i|
-                   hold_file.daterange[i] =  hold_file.daterange[i].to_i + individual_file.daterange[i].to_i
+                   hold_file.daterange[i] = hold_file.daterange[i].to_i + individual_file.daterange[i].to_i
 
                  end
-               hold_file.transcription_date = individual_file.transcription_date if (Freereg1CsvFile.convert_date(individual_file.transcription_date) <  Freereg1CsvFile.convert_date(hold_file.transcription_date))
-               hold_file.modification_date = individual_file.modification_date if (Freereg1CsvFile.convert_date(individual_file.modification_date) >  Freereg1CsvFile.convert_date(hold_file.modification_date))
+               hold_file.transcription_date = individual_file.transcription_date if (Freereg1CsvFile.convert_date(individual_file.transcription_date) < Freereg1CsvFile.convert_date(hold_file.transcription_date))
+               hold_file.modification_date = individual_file.modification_date if (Freereg1CsvFile.convert_date(individual_file.modification_date) > Freereg1CsvFile.convert_date(hold_file.modification_date))
               
                
       end
@@ -248,7 +249,7 @@ end
         renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
         File.rename(csvfile,renamed_file)
         FileUtils.mv(renamed_file,newdir)
-       else 
+       else
          p "file does not exist"
         end
  end
@@ -264,7 +265,7 @@ end
       case
 
       when a.length == 3
-        #work with  dd mmm yyyy
+        #work with dd mmm yyyy
         #firstly deal with the dd
        date_day = a[0].to_i if(a[0].to_s =~ VALID_DAY)
         #deal with the month
@@ -282,14 +283,14 @@ end
         date_month if (VALID_MONTH.include?(Unicode::upcase(a[0])))
         date_year if (a[1].to_s =~ VALID_YEAR)
                  
-      when a.length == 1 
+      when a.length == 1
           #deal with dates that are year only
             date_year if (a[0].to_s =~ VALID_YEAR)
         
       end
    
-    end 
-    my_days =  date_year.to_i*365 + date_month.to_i*30 + date_day.to_i 
+    end
+    my_days = date_year.to_i*365 + date_month.to_i*30 + date_day.to_i
     my_days
   end
   def self.backup_file(file)
@@ -304,8 +305,8 @@ end
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
         File.rename(csvfile,renamed_file)
-        FileUtils.mv(renamed_file,newdir, verbose:  true)
-       else 
+        FileUtils.mv(renamed_file,newdir, verbose: true)
+       else
          p "file does not exist"
         end
    csv_hold = Array.new
@@ -332,14 +333,14 @@ end
     records = fil.freereg1_csv_entries
       records.each do |rec|
         church_name = fil.church_name.to_s + " " + fil.register_type.to_s
-       case 
+       case
          when fil.record_type == "ba"
          
-            csv_hold =  ["#{fil.county}","#{fil.place}","#{church_name}",
+            csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
              "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
              "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
              "#{rec.father_occupation}","#{rec.notes}"]
-            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
             csv << csv_hold
 
          when fil.record_type == "bu"
@@ -348,17 +349,17 @@ end
             "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
             "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
             "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
-            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
             csv << csv_hold
         
-         when fil.record_type == "ma" 
+         when fil.record_type == "ma"
           csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
           "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
           "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
           "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
           "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
           "#{rec.witness1_forename}","#{rec.witness1_surname}","#{rec.witness2_forename}","#{rec.witness2_surname}","#{rec.notes}"]
-            csv_hold =  csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
             csv << csv_hold
        end #end case
      end #end records
@@ -392,3 +393,4 @@ end
 end
    
 end
+
