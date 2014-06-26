@@ -17,6 +17,7 @@ def load_users_from_mongo
   Refinery::User.delete_all
   
   UseridDetail.all.each do |detail|
+    
     u = Refinery::User.new
     u.username = detail.userid
     u.email = detail.email_address
