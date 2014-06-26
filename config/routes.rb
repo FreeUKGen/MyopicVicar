@@ -43,7 +43,8 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   
   resources :userid_details
-  
+
+ get  'manage_counties/select',  :to => 'manage_counties#select', :as => :select_manage_county
   resources :manage_counties
 
   resources :syndicates

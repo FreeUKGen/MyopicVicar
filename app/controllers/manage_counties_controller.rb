@@ -45,25 +45,34 @@ end
 
 def new
   	@manage_county = ManageCounty.new
+    @userid = session[:userid]
     @first_name = session[:first_name]
-    @county	= session[:county]
+    @user = UseridDetail.where(:userid => session[:userid]).first
      redirect_to places_path
  
  end #end new
 
+def select
+    @manage_county = ManageCounty.new
+    @userid = session[:userid]
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @county = session[:county]
+    @files = Array.new
+    Freereg1CsvFile.where(:county => ChapmanCode.values_at(@county)).all.order_by(file_name: 1).each do |file|
+      @files << file.file_name
+    end
+end
 
  def create
+  # Select is the normal option Select File is there when user selects a single file
+    if params[:commit] == 'Select' then
     if session[:muliple] == true
-   	session[:chapman_code] = params[:manage_county][:chapman_code]
+    session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
    end
-    #if session[:role] == 'county_selection'
-    # session[:role] = 'data_manager'
-    # redirect_to all_files_freereg1_csv_file_path
-   # return
-   # end
-    case 
+      case 
 
       when params[:manage_county][:action] == 'Work with Places'
          redirect_to places_path
@@ -71,6 +80,9 @@ def new
        when params[:manage_county][:action] == 'Upload New Batch'
          redirect_to new_csvfile_path
          return
+      when params[:manage_county][:action] == 'Review a specific Batch'
+        redirect_to select_manage_county_path
+        return
        when params[:manage_county][:action] == 'Review Batches listed by filename'
           session[:sort] =  sort = "file_name ASC"    
         when params[:manage_county][:action] == 'Review Batches with errors'
@@ -79,9 +91,22 @@ def new
            session[:sort] =  sort = "userid ASC, file_name ASC"
         when params[:manage_county][:action] == 'Review Batches listed by uploaded date'
            session[:sort] =  sort = "uploaded_date DESC"
+
         end
           redirect_to freereg1_csv_files_path
-   
+          return
+      end
+       @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:manage_county][:places]).all.page(params[:page]) 
+       if @freereg1_csv_files.length == 1
+       file = @freereg1_csv_files.first
+       redirect_to freereg1_csv_file_path(file)
+       return
+       else
+        @first_name = session[:first_name]
+        @user = UseridDetail.where(:userid => session[:userid]).first
+       @county = ChapmanCode.has_key(session[:chapman_code])
+       render 'freereg1_csv_files/index'
+     end
 
   end # create
 
