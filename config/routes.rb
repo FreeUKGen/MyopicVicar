@@ -72,6 +72,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :toponyms
  get 'freereg1_csv_entries/:id/error(.:format)', :to => 'freereg1_csv_entries#error', :as => :error_freereg1_csv_entry
+ get 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#select_page', :as => :select_page_freereg1_csv_entry
+ post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
  get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file

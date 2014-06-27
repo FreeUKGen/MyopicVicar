@@ -124,6 +124,21 @@ def update
     end
   end
 
+  def select_page
+     display_info
+     @max = @freereg1_csv_file.records
+  end
+
+  def selected_page
+    display_info
+    @number = params[:number].to_i
+    @number = @freereg1_csv_file.records.to_i if @number > @freereg1_csv_file.records.to_i
+    @page_number = @number/50 + 1
+    params[:page] = @page_number
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
+   
+  end
+
   def load(file_id)
     @freereg1_csv_entry = Freereg1CsvEntry.find(file_id)
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
