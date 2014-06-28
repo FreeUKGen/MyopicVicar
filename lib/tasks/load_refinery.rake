@@ -17,7 +17,7 @@ def load_users_from_mongo
   Refinery::User.delete_all
   
   UseridDetail.all.each do |detail|
-    
+    unless detail.userid == "Captainkirk"
     u = Refinery::User.new
     u.username = detail.userid
     u.email = detail.email_address
@@ -27,7 +27,7 @@ def load_users_from_mongo
     u.encrypted_password = detail.password # actual encrypted password
     u.userid_detail_id = detail.id.to_s
     u.add_role("Refinery")
-
+    end
 #    binding.pry  
 
     unless u.save
