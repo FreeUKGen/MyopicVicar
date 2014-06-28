@@ -27,12 +27,13 @@ def load_users_from_mongo
     u.encrypted_password = detail.password # actual encrypted password
     u.userid_detail_id = detail.id.to_s
     u.add_role("Refinery")
-    end
+    
 #    binding.pry  
 
     unless u.save
       print "Failed to save #{u.username} due to #{u.errors.messages}\n"
     end
+   end 
   end
 end
 
