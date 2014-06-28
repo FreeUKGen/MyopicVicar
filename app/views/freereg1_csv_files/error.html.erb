@@ -76,6 +76,7 @@ Page Identification Freereg Files:error<p>
     <th style="width:10%">Record number</th>
     <th style="width:40%">Error message</th>
     <th style="width:50%">Actual records</th>
+     <th style="width:11%">Action</th>
     </tr>
     <tr>
 
@@ -85,6 +86,7 @@ Page Identification Freereg Files:error<p>
          <td><%= line.record_number%></td>
          <td><%= line.error_message %></td>
          <td><%= line.data_line %></td>
+         <td><%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file) %></td>
          </tr>
       <%end%>
     </table>

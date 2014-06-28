@@ -19,6 +19,8 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
     VALID_AGE_TYPE2E = /^(\d{1,2})(hours)/
   VALID_AGE_TYPE3 =  /^(\d{1,2})([hdwmy\*\[\]\-\_\?])(\d{1,2})([hdwmy\*\[\]\-\_\?])/
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
+  #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
+  #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4,5}\z/
@@ -238,17 +240,19 @@ def FreeregValidations.cleanage(field)
      
       when a.length == 2
          #deal with dates that are mmm yyyy firstly the mmm then the split year
-          return false unless (VALID_MONTH.include?(Unicode::upcase(a[0])) || a[0].to_s =~ WILD_CHARACTER)
-            if a[1].length >4 then
-            
+         return true if a[0].to_s =~ WILD_CHARACTER || a[1].to_s =~ WILD_CHARACTER
+         if VALID_MONTH.include?(Unicode::upcase(a[0])) 
+           if a[1].length >4 then
               a[1]= a[1][0..-(a[1].length-3)]
-            end
-             return true if a[1] =~ WILD_CHARACTER
-              return false  unless (a[1].to_s =~ VALID_YEAR)
-              unless a[1].nil?
-               return false if a[1].to_i > YEAR_MAX || YEAR_MIN > a[1].to_i
-              end
+           end
+            
+           return false  unless (a[1].to_s =~ VALID_YEAR)
+           unless a[1].nil?
+                 return false if a[1].to_i > YEAR_MAX || YEAR_MIN > a[1].to_i
+           end
               return true
+         end
+             return false
        
        when a.length == 1
           #deal with dates that are year only

@@ -171,10 +171,7 @@ class Freereg1CsvEntry
 
   def self.change_file(old_id,new_id)
    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => old_id).all
-   p "changing entries"
-   p old_id
-   p new_id
-    entries.each do |entry|
+   entries.each do |entry|
      entry.update_attributes(:freereg1_csv_file_id => new_id)
     end
   end

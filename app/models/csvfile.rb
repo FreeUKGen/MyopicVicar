@@ -27,8 +27,7 @@ def save_to_attic
     	  Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
       	File.rename(csvfile,renamed_file)
-	      Freereg1CsvFile.delete_file(self.freereg1_csv_file_id)
-        FileUtils.mv(renamed_file,newdir, verbose:  true)
+	      FileUtils.mv(renamed_file,newdir, verbose:  true)
        else 
    	     p "file does not exist"
         end

@@ -21,6 +21,22 @@
 
    <%= f.input :lds,{ :as => :select,:label => "Image numbers available with record",:include_blank => false,
           :required => true, :collection => ['yes','no'], :size => 15 } %> 
+    <%= f.input :transcription_date ,:input_html => { :size => 50  }%>  
+     <%= f.input :modification_date ,:input_html => { :size => 50 }%>   
+    <% if session[:role] == 'counties' || session[:role] == 'syndicates'%>
+     <%= f.input :locked_by_transcriber, { :as => :select,:label => "Locked by transcriber :",:include_blank => false,
+          :required => true, :collection => [ 'true', 'false'], :size => 10 } %> 
+      <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,
+          :required => true, :collection => [ 'true', 'false'], :size => 10 } %> 
+   
+     
+    <%else%>    
+    <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
+   <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>       
+   
+ 
+  <%end%>
+    
    <p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>       
  <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
           :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
@@ -36,13 +52,8 @@
   <%= f.input :datemin , :label => "First year of records :",:input_html => { :disabled => true }%>
   <%= f.input :datemax ,  :label => "Last year of records :",:input_html => { :disabled => true }%>
   <%= f.input :daterange,  :label => "Number of records per decade starting in 1530 :",:input_html => { :disabled => true, :size => 130  }%>   
-  <%= f.input :transcription_date ,:input_html => { :disabled => true, :size => 50  }%>  
-  <%= f.input :modification_date ,:input_html => { :disabled => true, :size => 50 }%>  
-  <%= f.input :uploaded_date,:input_html => { :disabled => true, :size => 50  }%>
-
   
-   <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
-   <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
+  <%= f.input :uploaded_date,:input_html => { :disabled => true, :size => 50  }%>
   
   <br>
  

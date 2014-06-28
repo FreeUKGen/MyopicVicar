@@ -49,11 +49,22 @@ class Freereg1CsvFilesController < InheritedResources::Base
     change = @freereg1_csv_file.place unless params[:freereg1_csv_file][:place] == @freereg1_csv_file.place
     change = @freereg1_csv_file.county unless params[:freereg1_csv_file][:county] == @freereg1_csv_file.county
 
+   Freereg1CsvFile.date_change(@freereg1_csv_file,params[:freereg1_csv_file][:transcription_date],params[:freereg1_csv_file][:transcription_date])
+    
+    unlocking = "false"
+    unlocking = "true"   if ((@freereg1_csv_file.locked_by_transcriber == "true" && params[:freereg1_csv_file][:locked_by_transcriber] == "false") ||  (@freereg1_csv_file.locked_by_coordinator == "true"  &&  params[:freereg1_csv_file][:locked_by_coordinator]  == "false"))
+   
     @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
-    @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
-    @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own'
-    @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
+    @freereg1_csv_file.update_attributes(params[:freereg1_csv_file]) 
+    
+   if unlocking == "false" then
+     @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own' 
+     @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
+    end
     @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
+    
+
+
     
     if @freereg1_csv_file.errors.any?
       flash[:notice] = 'The update of the batch was unsuccessful'

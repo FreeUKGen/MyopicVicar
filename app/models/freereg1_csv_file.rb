@@ -79,9 +79,7 @@ end
 
   before_save :add_lower_case_userid
   after_save :create_or_update_last_amended_date
-  
-  
- scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
+  scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
  scope :county, ->(county) { where(:county => county) }
  scope :userid, ->(userid) { where(:userid => userid) }
   VALID_DAY = /\A\d{1,2}\z/
@@ -238,16 +236,17 @@ end
 
   
   def save_to_attic
+   
   #to-do unix permissions
    file = self.file_name
-   csvdir = File.join(Rails.application.config.datafiles,self.userid)
-   csvfile = File.join(csvdir,file)
+  
+   file_location = File.join(Rails.application.config.datafiles,self.userid,file)
     
-      if File.file?(csvfile)
-        newdir = File.join(csvdir,'.attic')
+      if File.file?(file_location)
+        newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
-        renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
-        File.rename(csvfile,renamed_file)
+        renamed_file = (file_location + "." + (Time.now.to_i).to_s).to_s
+        File.rename(file_location,renamed_file)
         FileUtils.mv(renamed_file,newdir)
        else
          p "file does not exist"
@@ -295,28 +294,13 @@ end
   end
   def self.backup_file(file)
     #this makes aback up copu of the file in the attic and
-  
-   file_name = file.file_name
-   csvdir = File.join(Rails.application.config.datafiles,file.userid)
-   csvfile = File.join(csvdir,file_name)
-    
-      if File.file?(csvfile)
-        newdir = File.join(csvdir,'.attic')
-        Dir.mkdir(newdir) unless Dir.exists?(newdir)
-        renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
-        File.rename(csvfile,renamed_file)
-        FileUtils.mv(renamed_file,newdir, verbose: true)
-       else
-         p "file does not exist"
-        end
-   csv_hold = Array.new
-       if File.file?(csvfile)
-          p "file should not be there"
-       end
+ 
+    file.save_to_attic
+    file_name = file.file_name
        #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     file_parts = Freereg1CsvFile.where(:file_name => file_name, :userid => file.userid).all
-
-    CSV.open(csvfile, "wb", {:force_quotes => true}) do |csv|
+    file_location = File.join(Rails.application.config.datafiles,file.userid,file_name)
+    CSV.open(file_location, "wb", {:force_quotes => true}) do |csv|
         # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
     record_type = RecordType.display_name(file.record_type).upcase + 'S'
     csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
@@ -369,9 +353,7 @@ end
    end #end method
    
  def self.update_file_attribute(file,new_church_name,new_place_name)
- p "updating file "
- p new_church_name
- p new_place_name
+
   new_file = file.clone
   new_file.register_id = nil
   new_file.church_name = new_church_name
@@ -388,9 +370,46 @@ end
   file.delete
   Register.clean_empty_registers(file)
   Freereg1CsvFile.backup_file(new_file)
-  p success
+ 
   success
 end
+
+def self.date_change(file,transcription_date,modification_date)
+ 
+ error = file.error
+ p error
+  if error > 0
+   
+   lines = file.batch_errors.all
+   lines.each do |line|
+         
+        if line.error_type == 'Header_Error'
+         
+          if /^Header_Error,The transcription date/ =~ line.error_message
+            
+            unless file.transcription_date == transcription_date
+             
+            line.destroy
+            error = error - 1
+            file.update_attributes(:error => error)
+            
+            end
+          end
+          if /^Header_Error,The modification date/ =~ line.error_message
+            
+            unless file.modification_date == modification_date
+            line.destroy
+            error = error - 1
+            file.update_attributes(:error => error)
+            
+            end
+          end
+        end
+    end
+   else
+    return 
+   end 
+  end
    
 end
 
