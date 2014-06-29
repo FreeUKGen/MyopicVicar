@@ -164,7 +164,9 @@ COMMON_WORD_EXPANSIONS = {
      if  @csvdata[m] =~ VALID_DATE 
         DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
-          return true if  VALID_MONTH.include?(date_parts[1].upcase)
+          unless date_parts[1].nil?
+           return true if  VALID_MONTH.include?(date_parts[1].upcase)
+          end
         end 
      end 
     return false     
