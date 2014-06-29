@@ -31,9 +31,7 @@ class FreeregCsvProcessor
     "MA" => RecordType::MARRIAGE, 
     "BU" => RecordType::BURIAL
   }
-  VALID_DATE = /^\d{1,2}.[A-Za-z]{3,3}.\d{4}$/
-  VALID_DATE_SHORT = /^\d{1,2}.[A-Za-z]{3,3}.\d{2}$/
-  VALID_DATE_NUMERIC = /^\d{1,2}.\d{1,2}.\d{2,4}$/
+  VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
   VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
@@ -163,37 +161,13 @@ COMMON_WORD_EXPANSIONS = {
   # validate the modern date of creation or modification
   def self.datevalmod(m)
     return true if @csvdata[m].nil? || @csvdata[m].empty?
-    case
-     when @csvdata[m] =~ VALID_DATE_SHORT 
-         DATE_SPLITS.each_pair do |date_splitter, date_split|
+     if  @csvdata[m] =~ VALID_DATE 
+        DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
-          if date_parts.length == 3 then
-            date_parts[2] = (date_parts[2].to_i + 2000).to_s 
-          end
-          @csvdata[m] = date_parts.join(" ")
-        end
-        return true
-     when @csvdata[m] =~ VALID_DATE 
-         DATE_SPLITS.each_pair do |date_splitter, date_split|
-          date_parts = @csvdata[m].split(date_split)
-          @csvdata[m] = date_parts.join(" ") if date_parts.length == 3
-          end
-          return true
-      when @csvdata[m] =~ VALID_DATE_NUMERIC 
-            DATE_SPLITS.each_pair do |date_splitter, date_split|
-             date_parts = @csvdata[m].split(date_split)
-             if date_parts.length == 3 then
-              date_parts[1] = VALID_MONTH[date_parts[1].to_i ]
-              date_parts[2] = (date_parts[2].to_i + 2000).to_s if date_parts[2].length == 2
-              date_parts[2] = date_parts[2] if date_parts[2].length == 4
-              @csvdata[m] = date_parts.join(" ") 
-              end #end if
-            end #end do
-            return true
-      else
-           return false 
-      end
-          
+          return true if  VALID_MONTH.include?(date_parts[1].upcase)
+        end 
+     end 
+    return false     
   end
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
@@ -819,9 +793,9 @@ COMMON_WORD_EXPANSIONS = {
           batch_error.freereg1_csv_file = @freereg1_csv_file
           batch_error.save
 
-          @@user_message_file = File.new(@@user_file_for_warning_messages, "w")  unless File.exists?(@@user_file_for_warning_messages)
+        
           @@number_of_error_messages = @@number_of_error_messages + 1
-          @@user_message_file.puts "Data_Error,#{datarecord[:file_line_number]},#{success},#{@@header[:record_type]},#{datarecord}"
+         
         end #end success
       end #end @@data_hold
        unless @@header_error.nil?
@@ -919,13 +893,13 @@ COMMON_WORD_EXPANSIONS = {
         
                 rescue FreeREGError => free
                    unless free.message == "Empty data line" then
-                   @@user_message_file = File.new(@@user_file_for_warning_messages, "w")   unless File.exists?(@@user_file_for_warning_messages)
+                  
                    @@number_of_error_messages = @@number_of_error_messages + 1
                     @csvdata = @@array_of_data_lines[@@number_of_line]
                     puts "#{@@userid} #{@@filename}" + free.message + " at line #{@@number_of_line}"
                     @@message_file.puts "#{@@userid}\t#{@@filename}" + free.message + " at line #{@@number_of_line}"
                   
-                    @@user_message_file.puts "Header_Error," + free.message + " at line,"+"#{@@number_of_line}," "#{@csvdata }" unless free.message == "Empty data line"
+                  
                     @@header_error[@@number_of_error_messages] = Hash.new
                     @@header_error[@@number_of_error_messages].store(:line,@@number_of_line)
                     @@header_error[@@number_of_error_messages].store(:error,free.message)
@@ -941,10 +915,8 @@ COMMON_WORD_EXPANSIONS = {
                    process_register_headers
                    break
                 rescue  => e 
-                  @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
-                  @csvdata = @@array_of_data_lines[@@number_of_line]
-                  @@user_message_file.puts "System_Error,Something seriously wrong with your file during processing please contact your coordinator," + "#{@@number_of_line}," + "#{@csvdata }"
-                  @@user_message_file.puts e.message
+                 
+                  
                    puts e.message
                    puts e.backtrace
                    @@message_file.puts "#{@@userid}\t#{@@filename} line #{n} crashed the processor\n"  
@@ -975,7 +947,7 @@ end
       #set Characterset default  
 
       code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
-      code_set = code_set.gsub(/\s+/, ' ').strip
+      #code_set = code_set.gsub(/\s+/, ' ').strip
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
       code_set = "macRoman" if (code_set.downcase == "macintosh")
@@ -993,10 +965,7 @@ end
         success = true
           #we rescue when for some reason the slurp barfs
           rescue => e 
-                    @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
-                   @@user_message_file.puts e.message  
-                   @@user_message_file.puts "System_Error,Something seriously wrong with your file; it was not processed please contact your coordinator"
-                   puts e.message
+                  
                    @@message_file.puts "#{@@userid}\t#{@@filename} *barfed the system*************"  
                    @@message_file.puts e.message  
                    @@message_file.puts e.backtrace.inspect 
@@ -1024,8 +993,7 @@ end
       if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
         #do not process if coordinator has locked
         p "#{@@header[:file_name]} has been locked by either yourself or the coordinator"
-         @@user_message_file = File.new(@@user_file_for_warning_messages, "w") unless File.exists?(@@user_file_for_warning_messages)
-         @@user_message_file.puts "System_Error,#{@@userid} #{@@header[:file_name]} has been locked either by yourself or the coordinator"
+         
          @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has been locked by either yourself or the coordinator"
         return false
       end
@@ -1127,6 +1095,9 @@ end
      p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
      @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n" 
       @@message_file.close 
+      at_exit do
+        p "goodbye"
+      end
    @success  
   end #method end
  

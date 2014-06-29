@@ -15,7 +15,7 @@ def new
 @userid = session[:userid]	
 @csvfile  = Csvfile.new(:userid  => session[:userid])
 get_userids_and_transcribers
- @role = session[:role]
+@role = session[:role]
 end
 
 def create
@@ -28,9 +28,9 @@ def create
   @csvfile[:userid] = session[:userid]
   @csvfile[:userid] = params[:csvfile][:userid] unless params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
-  p params
   if params[:commit] == 'Replace'
-      @csvfile.save_to_attic
+     Freereg1CsvFile.destroy_all(:userid => @csvfile[:userid], :file_name =>@csvfile.file_name)
+
   end #end if
    unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
 
@@ -83,31 +83,45 @@ def edit
   @file = @csvfile.file_name 
    @role = session[:role]
   get_userids_and_transcribers
+  p "editing"
+  p session
 end
 
 def update
   @user = UseridDetail.where(:userid => session[:userid]).first
+  p params
   if params[:commit] == 'Process'
     @csvfile = Csvfile.find(session[:csvfile])
     @place  = @csvfile.file_name
     range = File.join(@csvfile[:userid] ,@csvfile.file_name)
-     place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
-      size = (File.size("#{place}"))
-      unit = 0.0002
-     processing_time = (size.to_i*unit).to_i       
-            start = Time.now
+    place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
+    size = (File.size("#{place}"))
+    unit = 0.0002
+    processing_time = (size.to_i*unit).to_i       
+    start = Time.now
+                     
             if params[:csvfile][:process]  == "Not waiting" || processing_time > 15
-            pid1 = Kernel.spawn("rake build:process_freereg1_csv[recreate,create_search_records_processor,#{range}]") 
+            pid1 = Kernel.spawn("rake build:process_freereg1_individual_csv[#{@csvfile[:userid]},#{range}]") 
             processing_time = 3*processing_time
             flash[:notice] =  "The csv file #{@place} is being processed into the database. Check your files status after at least #{processing_time} seconds."
             @csvfile.delete
-           #  Process.waitall if params[:csvfile][:process]  == 'Now'
+          #  Process.waitall if params[:csvfile][:process]  == 'Now'
            # endtime = Time.now - start
             else
-             FreeregCsvProcessor.process("recreate",'create_search_records',range)
+             success = FreeregCsvProcessor.process("recreate",'create_search_records',range)
+
              process_time = Time.now - start
+             if success
               flash[:notice] =  "The csv file #{@place} has been processed into the database."
-           end #if
+             else
+               flash[:notice] =  "The csv file #{@place} was not processed into the database."
+
+               file = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
+                if File.exists?(file)
+                 File.delete(file)
+                end #exists
+             end #if success
+           end #if waiting
      @csvfile.delete
    
       if session[:role] == "counties"
@@ -117,7 +131,7 @@ def update
         @current_page = session[:page]
         session[:page] = session[:initial_page]
         redirect_to @current_page
-  end 
+      end #role
    
   end  #commit
 end
@@ -126,6 +140,7 @@ end
 
 
 def delete
+  p "deleting in csv controller"
   @role = session[:role]
  @csvfile  = Csvfile.new(:userid  => session[:userid])
  freefile = Freereg1CsvFile.find(params[:id])

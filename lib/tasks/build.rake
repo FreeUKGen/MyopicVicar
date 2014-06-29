@@ -158,6 +158,7 @@ task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:create_user
     process_time = time_end - time_start
     p "Completed processors in #{process_time}"
  end
+
 desc "Process the freereg1_csv_entries and create the SearchRecords documents"
  # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
  #valid options for type are rebuild, replace, add
@@ -204,11 +205,37 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
   search_records = "create_search_records" if args.search_record == "create_search_records_processor"
 
   puts "processing CSV file with #{args.type} and #{search_records}"
-    FreeregCsvProcessor.process(args.type,search_records,args.range)
+    success = FreeregCsvProcessor.process(args.type,search_records,args.range)
+  if success
   puts "Freereg task complete."
     exit(true)
+  else
+  puts "Freereg task failed"
+    
+    exit(false)
+  end
 end
+task :process_freereg1_individual_csv,[:userid,:file] => [:environment] do |t, args| 
 
+  require 'freereg_csv_processor'
+  # use the processor to initiate search record creation on add or update but not on recreation when we do at end
+ 
+  search_records = "create_search_records" 
+
+ 
+    success = FreeregCsvProcessor.process("recreate",search_records,args.file)
+  if success
+  
+    exit(true)
+  else
+  file = File.join(Rails.application.config.datafiles,args.userid,args.file)
+                if File.exists?(file)
+                  p file
+                  File.delete(file)
+                end
+    exit(false)
+  end
+end
 task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
    require 'create_userid_docs'

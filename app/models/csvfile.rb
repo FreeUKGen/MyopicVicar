@@ -16,8 +16,6 @@ end
 
 def save_to_attic
 	#to-do unix permissions
-
- 
 	 file = self.file_name
    csvdir = File.join(Rails.application.config.datafiles,self.userid)
    csvfile = File.join(csvdir,file)
