@@ -21,8 +21,7 @@ def save_to_attic
 	 file = self.file_name
    csvdir = File.join(Rails.application.config.datafiles,self.userid)
    csvfile = File.join(csvdir,file)
-    
-      if File.file?(csvfile)
+       if File.file?(csvfile)
    	    newdir = File.join(csvdir,'.attic')
     	  Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (csvfile + "." + (Time.now.to_i).to_s).to_s
