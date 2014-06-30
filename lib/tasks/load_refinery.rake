@@ -2,7 +2,7 @@ require 'chapman_code'
 
 task :load_refinery => :environment do
 #  load_syndicates
-#  load_counties
+  load_counties
   load_users_from_mongo
 end
 
@@ -14,27 +14,32 @@ end
 # 
 def load_users_from_mongo
 #  base_role = Refinery::Role.where(:title => 'Refinery').first
-  Refinery::User.delete_all
-  
+  #Refinery::User.delete_all
   UseridDetail.all.each do |detail|
-    unless detail.userid == "Captainkirk"
+   u = Refinery::User.where(:username => detail.userid).first
+    unless u.nil? 
+   p   "#{u.username} updated"  
+  else
+    "#{u.username} being added" 
     u = Refinery::User.new
+  end
     u.username = detail.userid
     u.email = detail.email_address
-    u.password = 'Password'                # no-op
-    u.password_confirmation = 'Password'   # no-op
+    u.password = 'Password' # no-op
+    u.password_confirmation = 'Password' # no-op
 
     u.encrypted_password = detail.password # actual encrypted password
     u.userid_detail_id = detail.id.to_s
     u.add_role("Refinery")
+   
     
-#    binding.pry  
+# binding.pry
 
     unless u.save
       print "Failed to save #{u.username} due to #{u.errors.messages}\n"
     end
    end 
-  end
+
 end
 
 
