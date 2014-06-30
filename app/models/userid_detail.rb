@@ -43,8 +43,8 @@ scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 validate :userid_does_not_exist, on: :create
 
 before_save :add_lower_case_userid
-#before_update :save_to_attic
-#after_update :write_userid_file
+before_update :save_to_attic
+after_update :write_userid_file
 #validate :syndicate_is_valid, on: :create
  
 
@@ -87,14 +87,24 @@ def write_userid_file
     details = File.new(details_dir, "w") 
     details.puts "Surname:#{self.person_surname}" 
     details.puts "UserID:#{self.userid}"
-    details.puts "DisabledDate:#{self.disabled_date}"
     details.puts "EmailID:#{self.email_address}"
-    details.puts "Active:1"
-    details.puts "Disabled:0"
+    details.puts "Password:#{self.password}"
     details.puts "GivenName:#{self.person_forename}" 
     details.puts "Country:#{self.address}" 
     details.puts "SyndicateID:#{ChapmanCode.values_at(self.syndicate)}" 
-    details.puts "SignUpDate:#{self.sign_up_date}"  
+    details.puts "SignUpDate:#{self.sign_up_date}" 
+    details.puts "Person:#{self.person_role}"
+    unless active
+
+    details.puts "DisabledDate:#{self.disabled_date}"
+    details.puts "DisabledReason:#{self.disabled_reason}"
+    details.puts "Active:0"
+    details.puts "Disabled:1"
+  else
+    details.puts "Active:1"
+    details.puts "Disabled:0"
+  end
+
             
 end
     
