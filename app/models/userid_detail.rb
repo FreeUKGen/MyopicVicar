@@ -105,9 +105,25 @@ def write_userid_file
     details.puts "Disabled:0"
   end
 
+   self.save_to_refinery
             
 end
-    
+def save_to_refinery
+
+   u = Refinery::User.where(:username => self.userid).first
+    if u.nil? 
+     u = Refinery::User.new
+    end
+    u.username = self.userid
+    u.email = self.email_address
+    u.password = 'Password' # no-op
+    u.password_confirmation = 'Password' # no-op
+
+    u.encrypted_password = self.password # actual encrypted password
+    u.userid_detail_id = self.id.to_s
+    u.add_role("Refinery")
+    u.save      
+end    
 
 
 def save_to_attic
