@@ -25,9 +25,9 @@ include Mongoid::Document
     l = 0
 	  l_errors = 0
 
-    number_of_places = MasterPlaceName.where.count
+    number_of_places = MasterPlaceName.count
     p "Prcoessing #{number_of_places} places"
-	   MasterPlaceName.where.all.no_timeout.each do |master_record|
+	   MasterPlaceName.all.no_timeout.each do |master_record|
        l = l + 1
       break if l == limit
       old_place = nil
