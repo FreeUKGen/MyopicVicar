@@ -191,12 +191,19 @@ def update
 
  def destroy
     load(params[:id])
+
+    unless @place.churches.count == 0
+       flash[:notice] = 'The Place cannot be disabled because there were dependant churches; please remove them first'
+       redirect_to places_path
+       return
+    end
+
     @place.disabled = "true"
     @place.save
-    flash[:notice] = 'The deletion of the place was successful'
+    flash[:notice] = 'The disabling of the place was successful'
       if @place.errors.any? then
          @place.errors
-         flash[:notice] = 'The deletion of the place was unsuccessful'
+         flash[:notice] = 'The disabling of the place was unsuccessful'
       end
     redirect_to places_path
  end
