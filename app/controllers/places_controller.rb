@@ -7,7 +7,7 @@ class PlacesController < InheritedResources::Base
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
           @chapman_code = session[:chapman_code]
-          @places = Place.where( :chapman_code => @chapman_code,:disabled.ne => "true") ).all.order_by( place_name: 1).page(params[:page])
+          @places = Place.where( :chapman_code => @chapman_code,:disabled.ne => "true" ).all.order_by( place_name: 1).page(params[:page])
           @county = session[:county]
           @first_name = session[:first_name]
            @user = UseridDetail.where(:userid => session[:userid]).first
@@ -20,7 +20,7 @@ class PlacesController < InheritedResources::Base
 
   def show
           load(params[:id])
-          @places = Place.where( :chapman_code => @chapman_code,  :disabled.ne => "true") ).all.order_by( place_name: 1)
+          @places = Place.where( :chapman_code => @chapman_code,  :disabled.ne => "true" ).all.order_by( place_name: 1)
           session[:parameters] = params
           @names = Array.new
          @alternate_place_names = @place.alternateplacenames.all

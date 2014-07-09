@@ -35,7 +35,7 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @error_line = error_file.record_number
     @error_message = error_file.error_message
     @place_names = Array.new
-    Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true")).all.each do |place|
+    Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
      @place_names << place.place_name
     end  
     
