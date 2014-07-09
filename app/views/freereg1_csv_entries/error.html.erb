@@ -1,6 +1,8 @@
 Page Identification Freereg Entries:error<p>
 <p style="text-align: center">Editing entry error in <b><%= @error_line %></b> for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br>
-The Error Message(s)<%= @error_message%></p>
+<b>The Error Message(s)<%= @error_message%></p></b><br>
+
+<b>If the error was because of the Place Name not being in the database you must DISCARD the batch and UPLOAD a corrected batch</b><br>
 
 <div style="float:left;"> <%= button_to 'Show Entry', freereg1_csv_entries_path(@freereg1_csv_entry), method: :get %>  </div>
 <div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path( :anchor => "#{@freereg1_csv_entry.id}"), method: :get %>  </div>

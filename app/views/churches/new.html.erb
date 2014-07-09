@@ -1,5 +1,5 @@
 Page Identification Churches:new<p>
-<p style="text-align: center">Adding a New Church in the County of <b><%= @county %></b></p>
+<p style="text-align: center">Adding a New Church in <b><%=@place%></b> for the County of <b><%= @county %></b></p>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>

@@ -34,6 +34,10 @@ class Freereg1CsvEntriesController < InheritedResources::Base
     @freereg1_csv_entry = Freereg1CsvEntry.new(error_file.data_line)
     @error_line = error_file.record_number
     @error_message = error_file.error_message
+    @place_names = Array.new
+    Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true")).all.each do |place|
+     @place_names << place.place_name
+    end  
     
   end
 
@@ -49,7 +53,17 @@ class Freereg1CsvEntriesController < InheritedResources::Base
      file_line_number = @freereg1_csv_file.records.to_i + 1
      line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
     end
+ 
      @freereg1_csv_entry.update_attributes(:line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
+        #need to deal with change in place
+   unless @freereg1_csv_file.place == params[:freereg1_csv_entry][:place]
+
+ #need to think about how to do this
+
+   end
+
+
+
      @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
      @freereg1_csv_entry.save
     if @freereg1_csv_entry.errors.any?
@@ -101,7 +115,9 @@ def new
 end
 
 def edit
+ 
     load(params[:id])
+    
 end
 
 def update

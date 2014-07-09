@@ -25,17 +25,22 @@ class Register
  
  
   def self.update_or_create_register(freereg1_csv_file)
+    @@result = nil
     # find if register exists
    register = find_register(freereg1_csv_file.to_register)
     if register
       #update register
       register.freereg1_csv_files << freereg1_csv_file
-      register.save!
+       create_or_update_last_amended_date(freereg1_csv_file,register)
+     
+     
       #freereg1_csv_file.save
     else 
     # create the register  
      register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)   
     end
+    
+     
   end
 
   def self.create_register_for_church(args,freereg1_csv_file)
@@ -49,6 +54,7 @@ class Register
       unless my_place
        #place does not exist so lets create new place first
        my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name]) 
+       @@result = "Place name in not in the database" 
        end
       #now create the church entry
       @@my_church = Church.new(:church_name => args[:church_name])
@@ -57,12 +63,16 @@ class Register
     #now create the register
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
+    create_or_update_last_amended_date(freereg1_csv_file,register)
     @@my_church.registers << register
     #and save everything
-    register.save
-    @@my_church.save
-    my_place.save
+    
+    Church.create_or_update_last_amended_date(freereg1_csv_file,@@my_church)
+   
+    Place.create_or_update_last_amended_date(freereg1_csv_file,my_place,@@my_church)
+    #my_place.save
     #freereg1_csv_file.save
+   
     register
   end
 
@@ -99,10 +109,8 @@ class Register
     #place.destroy unless place.churches.exists?
   end
 
-  def self.create_or_update_last_amended_date(freereg_file)
+  def self.create_or_update_last_amended_date(freereg_file,register)
  
-    register = freereg_file.register._id
-    register = Register.find(register)
     original_last_amended_date = register.last_amended
     file_creation_date = freereg_file.transcription_date
     file_amended_date = freereg_file.modification_date

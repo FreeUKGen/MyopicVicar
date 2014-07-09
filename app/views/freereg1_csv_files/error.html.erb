@@ -84,6 +84,7 @@ Page Identification Freereg Files:error<p>
        <% @header.each do |line| %>
          <tr>
          <td><%= line.record_number%></td>
+         <%session[:error_line] = line.record_number%>
          <td><%= line.error_message %></td>
          <td><%= line.data_line %></td>
          <td><%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file) %></td>

@@ -25,7 +25,22 @@ class Freereg1CsvFilesController < InheritedResources::Base
 
   def edit
     #edit the headers for a batch
+
     load(params[:id])
+    unless session[:error_line].nil?
+     #we are correcting the header
+      @error_message = Array.new
+      @content = Array.new
+      session[:error_id] = Array.new
+      @n = 0
+      @freereg1_csv_file.batch_errors.where(:freereg1_csv_file_id => params[:id], :error_type => 'Header_Error' ).all.each do |error|
+         @error_message[@n] = error.error_message
+         @content[@n] = error.data_line
+         session[:error_id][@n] = error
+         @n = @n + 1
+         session[:header_errors] = @n
+      end
+    end
     #session role is used to control return navigation options
     @role = session[:role]
     @freereg1_csv_file_name = session[:freereg1_csv_file_name] 
@@ -38,6 +53,8 @@ class Freereg1CsvFilesController < InheritedResources::Base
 
 
   def update
+    #the following variable is used in file processing
+    @@result = nil
     #update the headers
     load(params[:id])
     #keep a copy
@@ -50,37 +67,49 @@ class Freereg1CsvFilesController < InheritedResources::Base
     change = @freereg1_csv_file.county unless params[:freereg1_csv_file][:county] == @freereg1_csv_file.county
 
    Freereg1CsvFile.date_change(@freereg1_csv_file,params[:freereg1_csv_file][:transcription_date],params[:freereg1_csv_file][:transcription_date])
-    
+    # We avoid resetting the lock flags on an unlock
     unlocking = "false"
     unlocking = "true"   if ((@freereg1_csv_file.locked_by_transcriber == "true" && params[:freereg1_csv_file][:locked_by_transcriber] == "false") ||  (@freereg1_csv_file.locked_by_coordinator == "true"  &&  params[:freereg1_csv_file][:locked_by_coordinator]  == "false"))
-   
+    #update the file attributes
     @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
-    @freereg1_csv_file.update_attributes(params[:freereg1_csv_file]) 
-    
-   if unlocking == "false" then
-     @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own' 
-     @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
-    end
+    @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
+      # We avoid resetting the lock flags on an unlock
+    if unlocking == "false" then
+      @freereg1_csv_file.update_attributes(:locked_by_transcriber => "true") if session[:my_own] == 'my_own' 
+      @freereg1_csv_file.update_attributes(:locked_by_coordinator => "true") unless session[:my_own] == 'my_own'
+    end 
+
     @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
-    
-
-
     
     if @freereg1_csv_file.errors.any?
       flash[:notice] = 'The update of the batch was unsuccessful'
       render :action => 'edit'
     end
 
+    unless session[:error_line].nil?
+    #lets remove the header errors
+    @freereg1_csv_file.error =  @freereg1_csv_file.error - session[:header_errors]
+    session[:error_id].each do |id|
+        @freereg1_csv_file.batch_errors.delete( id)
+    end
+      @freereg1_csv_file.save
+    #clean out the session variables
+    session[:error_id] = nil
+    session[:header_errors] = nil
+    session[:error_line] = nil  
+    end
+   
       if  change.nil?
+        #lets make a backup copy
         Freereg1CsvFile.backup_file(@freereg1_csv_file)
       else
-        #change location of file
+        #need to change location of file
         new_freereg1_csv_file = @freereg1_csv_file.clone
         new_freereg1_csv_file.register_id = nil
         Register.update_or_create_register(new_freereg1_csv_file)
         new_freereg1_csv_file.save
 
-       if  new_freereg1_csv_file.errors.any?
+       if  new_freereg1_csv_file.errors.any? || !@@result.nil?
          flash[:notice] = 'The update of the batch was unsuccessful'
          render :action => 'edit'
           return
@@ -223,7 +252,9 @@ end
         redirect_to @current_page 
         return
     end
-     @freereg1_csv_file.destroy
+    Freereg1CsvFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).all.each do |file|
+     file.destroy
+    end
      session[:type] = "edit"
       flash[:notice] = 'The deletion of the file was successful'
        if session[:my_own] == 'my_own'

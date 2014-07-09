@@ -11,13 +11,10 @@ def load_users_from_mongo
   #Refinery::User.delete_all
   UseridDetail.all.each do |detail|
    u = Refinery::User.where(:username => detail.userid).first
-    unless u.nil? 
-   p   "#{detail.userid} updated"  
-   else
-     u = Refinery::User.new
-    p "#{detail.userid} being added" 
-   
-   end
+    if u.nil? 
+      u = Refinery::User.new
+      p "#{detail.userid} being added" 
+    end
     u.username = detail.userid
     u.email = detail.email_address
     u.password = 'Password' # no-op

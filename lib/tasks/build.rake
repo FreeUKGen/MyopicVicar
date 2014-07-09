@@ -2,7 +2,7 @@ namespace :build do
 
  $collections = Array.new
  $collections[0] = "master_place_names"
- $collections[1] = "alias_place_churches"  
+ $collections[1] = "batch_error"  
  $collections[2] = "places"
  $collections[3] = "churches"
  $collections[4] = "registers"
@@ -16,7 +16,7 @@ namespace :build do
 
  COLLECTIONS = {
 'master_place_names' => 'MasterPlaceName',
-'alias_place_churches' => 'AliasPlaceChurch',
+'batch_error' => 'BatchError',
 'places' => 'Place',
 'churches' => 'Church',
 'registers' => 'Register',
@@ -82,7 +82,7 @@ end
  #@datafile_location =  Rails.application.config.mongodb_datafile
  #save master_place_names and alias
  p "Save started"
-  collections_to_save = ["0","1","9","10","11"] 
+  collections_to_save = ["0","1","2","3","4","9","10","11"] 
  
    collections_to_save.each  do |col|
     coll  = col.to_i
@@ -99,7 +99,7 @@ end
   #dops place, church, register, files
   if args.type == "recreate"
    
-  collections_to_drop = ["2","3","4","5","6","7",]
+  collections_to_drop = ["5","6","7",]
    collections_to_drop.each  do |col|
      coll  = col.to_i
      model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll]) 
@@ -251,6 +251,7 @@ task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args|
 desc "Create the indices after all FreeREG processes have completed"
 task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_userid_docs, :environment] do  
   #task is there to creat indexes after running of freereg_csv_processor
+  require 'batch_error'
   require 'search_record'
   require 'freereg1_csv_file'
   require 'freereg1_csv_entry'
@@ -272,6 +273,7 @@ task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_us
   Register.create_indexes()
   Church.create_indexes()
   Place.create_indexes()
+  BatchError.create_indexes()
   puts "Indexes complete."
 end
 

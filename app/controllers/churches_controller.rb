@@ -35,6 +35,7 @@ class ChurchesController < InheritedResources::Base
           @place.each do |place|
             @places << place.place_name
           end
+      @place = Place.find(session[:place_id]).place_name
       @county = session[:county]
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
@@ -103,25 +104,23 @@ end
      @church.save
      successful = true
      if  (old_church_name != params[:church][:church_name] || old_place_name != params[:church][:place_name])
-    
+      
       if @church.registers.count != 0
+       
         @church.registers.each do |register|
           if register.freereg1_csv_files.count != 0
               register.freereg1_csv_files.each do |file|
                 success = Freereg1CsvFile.update_file_attribute( file,params[:church][:church_name],params[:church][:place_name] )
                 successful = flase unless success
               end #register
-           else
+          else
+           
               flash[:notice] = 'The Church has no registers or files please delete this one and create a new one in the appropriate Place'
                redirect_to edit_church_path(@church)
               return 
-           end # register count
-      end #@church registers
-     else
-       flash[:notice] = 'The Church has no registers or files please delete this one and create a new one in the appropriate Place'
-       redirect_to edit_church_path(@church)
-       return 
-     end # church count
+          end # register count
+        end #@church registers 
+      end # church count
     end #test of church name
 
    if @church.errors.any? || !successful then

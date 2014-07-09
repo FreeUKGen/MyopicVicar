@@ -9,16 +9,35 @@ class Place
   require 'net/http'
   require 'master_place_name'
   require 'register_type' 
-   
+
+  field :country, type: String
+  field :county, type: String
   field :chapman_code, type: String#, :required => true
   field :place_name, type: String#, :required => true
   field :last_amended, type: String
   field :alternate_place_name, type: String
   field :place_notes, type: String
   field :genuki_url, type: String
+  field :location, type: Array
+  field :grid_reference, type: String
+  field :latitude , type: String
+  field :longitude, type: String
+  field :original_place_name, type: String
+  field :original_county, type: String
+  field :original_chapman_code, type: String
+  field :original_country, type: String
+  field :original_grid_reference, type: String
+  field :original_latitude, type: String
+  field :original_longitude, type: String
+  field :original_source, type: String
+  field :source, type: String
+  field :reason_for_change, type: String
+  field :other_reason_for_change, type: String
+  field :modified_place_name, type: String #This is used for comparison searching
+  field :disabled, type: String, default: "false" 
   field :master_place_lat, type: String
   field :master_place_lon, type: String
-	field :location, type: Array
+
     
   embeds_many :alternateplacenames
   
@@ -31,7 +50,19 @@ class Place
  
   validate :place_does_not_exist, on: :create
 
-  before_save :add_lat_and_lon_from_master_place_name, on: :create
+
+  validate :grid_reference_is_valid
+  validate :grid_reference_or_location_present
+  validate :lat_long_is_valid
+
+
+  #before_save :add_lat_and_lon_from_master_place_name, on: :create
+   index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
+  index({ chapman_code: 1, place_name: 1, disabled: 1 })
+  index({ chapman_code: 1, disabled: 1 })
+  index({ place_name: 1, grid_reference: 1 })
+  index({ source: 1})
+
 
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
@@ -55,28 +86,38 @@ class Place
       OPTIONS.invert[system]
     end
   end
- 
-  
-  index({ chapman_code: 1, place_name: 1 }, { unique: true })
-  index({ place_name: 1 })
+ def grid_reference_is_valid
+       unless (self[:grid_reference].nil? || self[:grid_reference].empty?) then
+         errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
+     end
+  end
 
-  def place_does_not_exist 
-    
-      errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
-
-  end 
   def lat_long_is_valid
-   unless self[:master_place_lat].nil? || self[:master_place_lon].nil?
-    errors.add(:master_place_lat, "The latitude must be between 45 and 70") unless self[:master_place_lat].to_i > 45 && self[:master_place_lat].to_i < 70
-    errors.add(:master_place_lon, "The longitude must be between -10 and 5") unless self[:master_place_lon].to_i > -10 && self[:master_place_lon].to_i < 5
+   unless self[:latitude].nil? || self[:longitude].nil?
+    errors.add(:latitude, "The latitude must be between 45 and 70") unless self[:latitude].to_i > 45 && self[:latitude].to_i < 70
+    errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
    end
   end
 
-  def create_or_update_last_amended_date(freereg_file)
-    register = freereg_file.register._id
-    register = Register.find(register)
-    church = register.church.id
-    church = Church.find(church)
+  def grid_reference_or_location_present
+    case 
+    when ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
+      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
+    end
+  end
+  
+ 
+  def place_does_not_exist 
+  
+      errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
+
+  end 
+ 
+
+  def self.create_or_update_last_amended_date(freereg_file,place,church)
+    my_place_date = place.last_amended
+    place.last_amended = church.last_amended if (my_place_date.nil? ||(Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(my_place_date)))
+    place.save
     
   end
 

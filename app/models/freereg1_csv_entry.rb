@@ -177,7 +177,12 @@ class Freereg1CsvEntry
   end
 
   def errors_in_fields
-
+ 
+    unless  Place.where(:place_name => self.place, :disabled.ne => "true")).exists?
+  
+      errors.add(:place, "Place does not exit") 
+      self.error_flag = "true"
+    end
      unless FreeregValidations.cleantext(self.register_entry_number)
      errors.add(:register_entry_number, "Invalid characters") 
      self.error_flag = "true" 

@@ -83,13 +83,12 @@ def edit
   @file = @csvfile.file_name 
    @role = session[:role]
   get_userids_and_transcribers
-  p "editing"
-  p session
+ 
 end
 
 def update
   @user = UseridDetail.where(:userid => session[:userid]).first
-  p params
+
   if params[:commit] == 'Process'
     @csvfile = Csvfile.find(session[:csvfile])
     @place  = @csvfile.file_name
@@ -140,7 +139,7 @@ end
 
 
 def delete
-  p "deleting in csv controller"
+ 
   @role = session[:role]
  @csvfile  = Csvfile.new(:userid  => session[:userid])
  freefile = Freereg1CsvFile.find(params[:id])

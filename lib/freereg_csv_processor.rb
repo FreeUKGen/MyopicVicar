@@ -32,6 +32,7 @@ class FreeregCsvProcessor
     "BU" => RecordType::BURIAL
   }
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/
+  VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
   VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
   VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
@@ -165,7 +166,7 @@ COMMON_WORD_EXPANSIONS = {
         DATE_SPLITS.each_pair do |date_splitter, date_split|
           date_parts = @csvdata[m].split(date_split)
           unless date_parts[1].nil?
-           return true if  VALID_MONTH.include?(date_parts[1].upcase)
+           return true if  VALID_MONTH.include?(date_parts[1].upcase) || date_parts[1] =~ VALID_NUMERIC_MONTH
           end
         end 
      end 
@@ -622,6 +623,7 @@ COMMON_WORD_EXPANSIONS = {
    
     # do we validate the Place field?
      raise FreeREGError, "Place field #{@csvdata[1]} is invalid" unless validregister(@csvdata[1],"Place")
+     raise FreeREGError, "The Place #{@csvdata[1]} is not in the database" unless Place.where(:place_name => @csvdata[1]).exists
     data_record[:place] = @register
     # do we validate the register field 
     raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
@@ -779,7 +781,17 @@ COMMON_WORD_EXPANSIONS = {
        @@header.merge!(head_value)
       #puts "header #{head} \n"
         @freereg1_csv_file = Freereg1CsvFile.new(@@header)
-       @freereg1_csv_file.update_register
+      @freereg1_csv_file.update_register
+
+       unless @@result.nil?
+         @@number_of_error_messages = @@number_of_error_messages + 1
+         @@header_error[@@number_of_error_messages] = Hash.new
+         @@header_error[@@number_of_error_messages].store(:line,@@number_of_line)
+         @@header_error[@@number_of_error_messages].store(:error, @@result)
+         @@header_error[@@number_of_error_messages].store(:data,@@header)
+          @@result = nil
+
+       end
         #write the data records for this place/church
       @@data_hold[place_key].each do |datakey,datarecord|
        
@@ -820,8 +832,8 @@ COMMON_WORD_EXPANSIONS = {
     end #end @@list
 
 
-    puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines correctly with #{@@number_of_error_messages} error messages" 
-    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines correctly with #{@@number_of_error_messages} error messages"
+    puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines " 
+    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines "
                
   end
 
@@ -953,16 +965,16 @@ end
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
       code_set = "macRoman" if (code_set.downcase == "macintosh")
-      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set) 
-       code_set = "Windows-1252" unless Encoding.name_list.include?(code_set) 
+      @@message_file.puts "Invalid Character Set detected #{code_set.upcase} have assumed Windows-1252" unless Encoding.name_list.include?(code_set.upcase) 
+       code_set = "Windows-1252" unless Encoding.name_list.include?(code_set.upcase) 
         #if we have valid new character set; use it and change the file encoding
-        @@charset = Encoding.find(code_set) 
+        @@charset = Encoding.find(code_set.upcase) 
         xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
         xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
         #now get all the data
         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
        
-        @@header [:characterset] = code_set
+        @@header [:characterset] = code_set.upcase
 
         success = true
           #we rescue when for some reason the slurp barfs
@@ -1056,6 +1068,7 @@ end
           @@header[:userid] = user_dirname
           @@uploaded_date = File.mtime(filename)
           @@header[:uploaded_date] = @@uploaded_date 
+          @@result = nil
     
   end
 

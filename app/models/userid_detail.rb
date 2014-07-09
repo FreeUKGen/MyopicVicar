@@ -42,9 +42,9 @@ scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 
 validate :userid_does_not_exist, on: :create
 
-before_save :add_lower_case_userid
-before_update :save_to_attic
-after_update :write_userid_file
+#before_save :add_lower_case_userid
+#before_update :save_to_attic
+#after_update :write_userid_file
 #validate :syndicate_is_valid, on: :create
  
 
@@ -76,36 +76,36 @@ def self.update_files(freereg_file)
   end
 end
 
-def write_userid_file
+def write_userid_file(user)
    
-   details_dir = File.join(Rails.application.config.datafiles,self.userid)
+   details_dir = File.join(Rails.application.config.datafiles,user.userid)
    details_dir = File.join(details_dir,".uDetails")
        if File.file?(details_dir)
          p "file should not be there"
        end
   
     details = File.new(details_dir, "w") 
-    details.puts "Surname:#{self.person_surname}" 
-    details.puts "UserID:#{self.userid}"
-    details.puts "EmailID:#{self.email_address}"
-    details.puts "Password:#{self.password}"
-    details.puts "GivenName:#{self.person_forename}" 
-    details.puts "Country:#{self.address}" 
-    details.puts "SyndicateID:#{ChapmanCode.values_at(self.syndicate)}" 
-    details.puts "SignUpDate:#{self.sign_up_date}" 
-    details.puts "Person:#{self.person_role}"
+    details.puts "Surname:#{user.person_surname}" 
+    details.puts "UserID:#{user.userid}"
+    details.puts "EmailID:#{user.email_address}"
+    details.puts "Password:#{user.password}"
+    details.puts "GivenName:#{user.person_forename}" 
+    details.puts "Country:#{user.address}" 
+    details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}" 
+    details.puts "SignUpDate:#{user.sign_up_date}" 
+    details.puts "Person:#{user.person_role}"
     unless active
 
-    details.puts "DisabledDate:#{self.disabled_date}"
-    details.puts "DisabledReason:#{self.disabled_reason}"
+    details.puts "DisabledDate:#{user.disabled_date}"
+    details.puts "DisabledReason:#{user.disabled_reason}"
     details.puts "Active:0"
     details.puts "Disabled:1"
   else
     details.puts "Active:1"
     details.puts "Disabled:0"
   end
-
-   self.save_to_refinery
+   details.close
+   user.save_to_refinery
             
 end
 def save_to_refinery
@@ -126,10 +126,10 @@ def save_to_refinery
 end    
 
 
-def save_to_attic
+def save_to_attic(user)
   #to-do unix permissions
   
-    details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
     
       if File.file?(details_file)
@@ -138,6 +138,7 @@ def save_to_attic
         renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
         File.rename(details_file,renamed_file)
         FileUtils.mv(renamed_file,newdir)
+
        else 
         Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
         end
@@ -147,27 +148,27 @@ def save_to_attic
   errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).first
  end
  
- def add_lower_case_userid
- 	self[:userid_lower_case] = self[:userid].downcase
+ def add_lower_case_userid(user)
+ 	user[:userid_lower_case] = user[:userid].downcase
 
-    files = Freereg1CsvFile.where(:userid => self[:userid] ).all
+    files = Freereg1CsvFile.where(:userid => user[:userid] ).all
     if files.nil?
-     self[:number_of_files] = 0
-     self[:number_of_records] = 0
-     self[:last_upload] = nil
+     user[:number_of_files] = 0
+     user[:number_of_records] = 0
+     user[:last_upload] = nil
     else
      number = 0
      records = 0
       files.each do |my_file|
       	number  = number  + 1
       	records = records + my_file.records.to_i
-      	self[:last_upload] = my_file.uploaded_date if number == 1
-      	unless my_file.uploaded_date.nil? || self[:last_upload].nil?
-      	self[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > self[:last_upload].strftime("%s").to_i
+      	user[:last_upload] = my_file.uploaded_date if number == 1
+      	unless my_file.uploaded_date.nil? || user[:last_upload].nil?
+      	user[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > user[:last_upload].strftime("%s").to_i
          end
        end
-       self[:number_of_files] = number
-        self[:number_of_records] = records
+       user[:number_of_files] = number
+        user[:number_of_records] = records
         
     end
  end

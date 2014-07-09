@@ -78,7 +78,7 @@ end
   
 
   before_save :add_lower_case_userid
-  after_save :create_or_update_last_amended_date
+  
   scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
  scope :county, ->(county) { where(:county => county) }
  scope :userid, ->(userid) { where(:userid => userid) }
@@ -105,15 +105,7 @@ end
 
 
 
-  def create_or_update_last_amended_date
-   
-   Register.create_or_update_last_amended_date(self)
   
-   Church.create_or_update_last_amended_date(self)
-   
-   UseridDetail.update_files(self)
-   
-  end
 
   def add_lower_case_userid
  
@@ -142,6 +134,7 @@ end
   def update_register
    
     Register.update_or_create_register(self)
+
   end
 
   def to_register
@@ -377,7 +370,7 @@ end
 def self.date_change(file,transcription_date,modification_date)
  
  error = file.error
- p error
+
   if error > 0
    
    lines = file.batch_errors.all

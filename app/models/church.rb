@@ -42,23 +42,15 @@ class Church
   
   end
 
-  def self.create_or_update_last_amended_date(freereg_file)
-    register = freereg_file.register._id
-    register = Register.find(register)
-    church = register.church.id
-    church = Church.find(church)
-    original_last_amended_date = church.last_amended
+  def self.create_or_update_last_amended_date(freereg_file,church)
     file_amended_date = freereg_file.modification_date
     file_creation_date = freereg_file.transcription_date
     new_last_amended_date = freereg_file.modification_date
     new_last_amended_date = file_creation_date if (Freereg1CsvFile.convert_date(freereg_file.transcription_date) > Freereg1CsvFile.convert_date(freereg_file.modification_date))
-    new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
+    new_last_amended_date = church.last_amended if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(new_last_amended_date))
     church.last_amended = new_last_amended_date
     church.save
-    place = church.place
-    my_place_date = place.last_amended
-    place.last_amended = church.last_amended if (my_place_date.nil? ||(Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(my_place_date)))
-    place.save
+    
   end 
   
 end
