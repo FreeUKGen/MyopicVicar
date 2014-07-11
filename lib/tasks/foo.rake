@@ -72,22 +72,6 @@ task :add_lat_lon_to_place, [:type]  => [:environment] do |t, args|
   Place.create_indexes()
   puts "Task complete."
 end
-desc "check place documents"
-task :create_place_docs_from_mpn, [:type,:limit]  => [:environment] do |t, args| 
-  require 'master_place_name'
-  require 'create_place_docs_from_mpn'
-  require 'place'
-  type_of_build = args.type
-
-  puts "Create Place Docs from Mpn"
-     Place.create_indexes()
-  
-    CreatePlaceDocsFromMpn.process(type_of_build,args.limit)
-
-  
-  puts "Task complete."
-end
-
 
 desc "check place documents"
 task :check_place_docs, [:type]  => [:environment] do |t, args| 

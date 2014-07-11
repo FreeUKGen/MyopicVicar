@@ -33,7 +33,7 @@ gem 'activeadmin-mongoid'
 gem 'devise'
 gem 'devise-encryptable'
 gem 'nokogiri'
-gem "osgb"#, :git => 'git://github.com/FreeUKGen/osgb.git'
+gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
 gem 'quiet_assets', :group => :development
 gem 'rmagick', "2.13.2"    #version added by kirk as windows requires this version
 gem 'rubyzip', "~> 0.9.9"

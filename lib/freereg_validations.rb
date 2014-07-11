@@ -288,5 +288,11 @@ def FreeregValidations.cleanage(field)
      year = nil if year.to_s =~ WILD_CHARACTER
      year
   end
+  def FreeregValidations.place_exists(field)
+    return false unless Place.where(:place_name => field).exists?
+    return false if Place.where(:place_name => field).first.disabled != 'true'
+    return true
+    
+  end
 
 end

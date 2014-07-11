@@ -108,9 +108,11 @@ class Place
   
  
   def place_does_not_exist 
-  
-      errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
-
+      unless self.disabled == 'true'
+        errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
+      else
+       errors.add(:place_name, "disabled") 
+       end  
   end 
  
 
