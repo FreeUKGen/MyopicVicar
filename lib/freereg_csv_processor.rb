@@ -965,16 +965,17 @@ end
      #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
       code_set = "macRoman" if (code_set.downcase == "macintosh")
-      @@message_file.puts "Invalid Character Set detected #{code_set.upcase} have assumed Windows-1252" unless Encoding.name_list.include?(code_set.upcase) 
-       code_set = "Windows-1252" unless Encoding.name_list.include?(code_set.upcase) 
+      code_set = code_set.upcase if code_set.length == 5 || code_set.length == 6
+      @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set) 
+       code_set = "Windows-1252" unless Encoding.name_list.include?(code_set) 
         #if we have valid new character set; use it and change the file encoding
-        @@charset = Encoding.find(code_set.upcase) 
+        @@charset = Encoding.find(code_set) 
         xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
         xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
         #now get all the data
         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
        
-        @@header [:characterset] = code_set.upcase
+        @@header [:characterset] = code_set
 
         success = true
           #we rescue when for some reason the slurp barfs
@@ -1097,7 +1098,9 @@ end
 
          process = true 
          process = check_for_replace(filename) unless recreate == "recreate"
-
+         if Freereg1CsvFile.where({ :file_name => filename, :userid =>@@userid}).exists? && recreate == "recreate"
+          Freereg1CsvFile.delete_file(Freereg1CsvFile.where({ :file_name => filename, :userid =>@@userid}).first.id) 
+         end
          @success = slurp_the_csv_file(filename) if process == true
 
         n = process_the_data if @success == true  && process == true

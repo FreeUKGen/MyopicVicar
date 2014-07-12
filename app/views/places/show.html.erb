@@ -94,8 +94,11 @@ Page Identification Places:show<p>
    <td>Other Reason for changes:</td><td > <%= @place.other_reason_for_change %></td>   
    </tr>
  <tr>
-   <td>Last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>   
-   </tr>
+   <td>Date place information last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>   
+    </tr>
+    <tr>
+   <td>Date when record last amended:</td><td > <%= @place.last_amended %></td>   
+    </tr>
  <tr>
    <td>Modified Place Name:</td><td > <%= @place.modified_place_name %></td>   
    </tr>

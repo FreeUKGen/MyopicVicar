@@ -108,19 +108,40 @@ class Place
   
  
   def place_does_not_exist 
-      unless self.disabled == 'true'
-        errors.add(:place_name, "already exits") if Place.where('chapman_code' => self[:chapman_code] , 'place_name' => self[:place_name]).first
-      else
-       errors.add(:place_name, "disabled") 
-       end  
+     
+        errors.add(:place_name, "already exits") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true' ).first
+
   end 
  
 
-  def self.create_or_update_last_amended_date(freereg_file,place,church)
-    my_place_date = place.last_amended
-    place.last_amended = church.last_amended if (my_place_date.nil? ||(Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(my_place_date)))
+  def self.recalculate_last_amended_date(place)
+   
+   
+    place.churches.each do |church|
+      
+      church.registers.each do |register|
+        
+          register.freereg1_csv_files.each do |file|
+          
+            file_creation_date = file.transcription_date
+            file_amended_date = file.modification_date if (Freereg1CsvFile.convert_date(file.modification_date)  > Freereg1CsvFile.convert_date(file_creation_date))
+            
+            file_amended_date =  file_creation_date if file_amended_date.nil?
+           
+            register.last_amended = file_amended_date if (Freereg1CsvFile.convert_date(file_amended_date)  > Freereg1CsvFile.convert_date(register.last_amended))
+            #p register.last_amended
+
+          end #end of file
+        register.save
+
+        church.last_amended = register.last_amended if (Freereg1CsvFile.convert_date(register.last_amended ) > Freereg1CsvFile.convert_date(church.last_amended))
+       # p church.last_amended
+      end #end of register
+      church.save
+      place.last_amended = church.last_amended if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(place.last_amended))
+      #p place.last_amended
+    end #end of church
     place.save
-    
   end
 
   def add_lat_and_lon_from_master_place_name

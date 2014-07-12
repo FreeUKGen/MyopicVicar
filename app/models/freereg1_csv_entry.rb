@@ -85,11 +85,14 @@ class Freereg1CsvEntry
 
  belongs_to :freereg1_csv_file, index: true
 
+  before_save :embed_witness
+
   before_destroy do |entry|
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)       
   end
   
   has_one :search_record
+  
   embeds_many :multiple_witnesses
   accepts_nested_attributes_for :multiple_witnesses
 
@@ -98,7 +101,7 @@ class Freereg1CsvEntry
   index ({line_id:1})
 
   validate :errors_in_fields
-  before_save :embed_witness
+ 
 
 
   def embed_witness

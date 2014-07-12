@@ -290,9 +290,8 @@ def FreeregValidations.cleanage(field)
   end
   def FreeregValidations.place_exists(field)
     return false unless Place.where(:place_name => field).exists?
-    return false if Place.where(:place_name => field).first.disabled != 'true'
+    return false if Place.where(:place_name => field).first.disabled == 'true'
     return true
-    
   end
 
 end

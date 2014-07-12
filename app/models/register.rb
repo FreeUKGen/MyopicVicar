@@ -17,6 +17,8 @@ class Register
   
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
+
+ 
   index({ church_id: 1, register_name: 1}, { unique: true })
   index({ register_name: 1})
   index({ alternate_register_name: 1})
@@ -31,9 +33,6 @@ class Register
     if register
       #update register
       register.freereg1_csv_files << freereg1_csv_file
-       create_or_update_last_amended_date(freereg1_csv_file,register)
-     
-     
       #freereg1_csv_file.save
     else 
     # create the register  
@@ -63,13 +62,11 @@ class Register
     #now create the register
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
-    create_or_update_last_amended_date(freereg1_csv_file,register)
-    @@my_church.registers << register
-    #and save everything
-    
-    Church.create_or_update_last_amended_date(freereg1_csv_file,@@my_church)
    
-    Place.create_or_update_last_amended_date(freereg1_csv_file,my_place,@@my_church)
+    @@my_church.registers << register
+    @@my_church.save
+    #and save everything
+      
     #my_place.save
     #freereg1_csv_file.save
    
@@ -109,17 +106,6 @@ class Register
     #place.destroy unless place.churches.exists?
   end
 
-  def self.create_or_update_last_amended_date(freereg_file,register)
- 
-    original_last_amended_date = register.last_amended
-    file_creation_date = freereg_file.transcription_date
-    file_amended_date = freereg_file.modification_date
-    file_amended_date =  file_creation_date if file_amended_date.nil?
-    new_last_amended_date = file_amended_date
-    new_last_amended_date = file_creation_date if (Freereg1CsvFile.convert_date(freereg_file.transcription_date) > Freereg1CsvFile.convert_date(freereg_file.modification_date))
-    new_last_amended_date = original_last_amended_date if (Freereg1CsvFile.convert_date(original_last_amended_date ) > Freereg1CsvFile.convert_date(new_last_amended_date))
-    register.last_amended = new_last_amended_date
-    register.save
-  end
-
+  
+  
 end

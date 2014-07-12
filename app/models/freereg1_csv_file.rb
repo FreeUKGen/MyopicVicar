@@ -62,22 +62,25 @@ class Freereg1CsvFile
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
-index({file_name:1,error:1})
-index({error:1, file_name:1})
+  index({file_name:1,error:1})
+  index({error:1, file_name:1})
 
+before_save :add_lower_case_userid
+after_save :recalculate_last_amended
 before_destroy do |file|
     file.save_to_attic
     Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
 end
+ after_destroy :clean_up  
+
 
   has_many :freereg1_csv_entries, validate: false
   belongs_to :register, index: true
   #register belongs to church which belongs to place
   has_one :csvfile
   has_many :batch_errors
-  
-
-  before_save :add_lower_case_userid
+ 
+ 
   
   scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
  scope :county, ->(county) { where(:county => county) }
@@ -229,18 +232,21 @@ end
 
   
   def save_to_attic
-   
+  
   #to-do unix permissions
    file = self.file_name
   
+  
    file_location = File.join(Rails.application.config.datafiles,self.userid,file)
-    
+
+
       if File.file?(file_location)
         newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (file_location + "." + (Time.now.to_i).to_s).to_s
+    
         File.rename(file_location,renamed_file)
-        FileUtils.mv(renamed_file,newdir)
+        FileUtils.mv(renamed_file,newdir,:verbose => true)
        else
          p "file does not exist"
         end
@@ -402,6 +408,25 @@ def self.date_change(file,transcription_date,modification_date)
    else
     return 
    end 
+  end
+  def clean_up
+   
+    register = self.register
+  
+    church = register.church
+    
+    place = church.place
+   
+    Register.clean_empty_registers(self)
+    Place.recalculate_last_amended_date(place)
+
+  end
+
+  def recalculate_last_amended
+    register = self.register
+    church = register.church
+     place = church.place
+     Place.recalculate_last_amended_date(place)
   end
    
 end

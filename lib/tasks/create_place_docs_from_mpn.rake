@@ -15,12 +15,13 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     
     l = 0
 	  l_errors = 0
+    l_dis = 0
 
     number_of_places = MasterPlaceName.count
     p "Prcoessing #{number_of_places} places"
      details = Hash.new
      details[:location] = Array.new
-	   MasterPlaceName.all.each do |master_record|
+	   MasterPlaceName.all.no_timeout.each do |master_record|
        l = l + 1
       break if l == lim
       details[:country] = master_record.country
@@ -49,7 +50,7 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
       details[:modified_place_name] = master_record.modified_place_name#This is used for comparison searching
       details[:disabled] = master_record.disabled
       
-     
+     unless details[:disabled] == 'true'
        place = Place.create(details)
        place.save
       
@@ -61,9 +62,12 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
         else
          
         end  #errors
+      else
+        l_dis = l_dis + 1
+      end
      
     end #do
     Place.create_indexes()
-     p "#{l} names processed with #{l_errors} errors"
+     p "#{l} names processed with #{l_errors} errors and #{l_dis} disabled"
  end #method
 
