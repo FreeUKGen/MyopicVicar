@@ -1098,12 +1098,8 @@ end
 
          process = true 
          process = check_for_replace(filename) unless recreate == "recreate"
-         if Freereg1CsvFile.where({ :file_name => filename, :userid =>@@userid}).exists? && recreate == "recreate"
-          Freereg1CsvFile.delete_file(Freereg1CsvFile.where({ :file_name => filename, :userid =>@@userid}).first.id) 
-         end
          @success = slurp_the_csv_file(filename) if process == true
-
-        n = process_the_data if @success == true  && process == true
+         n = process_the_data if @success == true  && process == true
         @@message_file.puts "File not processed due to error in reading the file" if @success == false
         nn = nn + n unless n.nil?
    
