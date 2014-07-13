@@ -54,7 +54,7 @@ class Register
        #place does not exist so lets create new place first
        my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805') 
            
-       my_place.error_flag = "Place name in not in the database" 
+       my_place.error_flag = "Place name is not approved" 
 
        end
       #now create the church entry
