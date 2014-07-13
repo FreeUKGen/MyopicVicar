@@ -37,6 +37,7 @@ class Place
   field :disabled, type: String, default: "false" 
   field :master_place_lat, type: String
   field :master_place_lon, type: String
+  field :error_flag,type: String, default: nil
 
     
   embeds_many :alternateplacenames
@@ -89,8 +90,13 @@ class Place
  def grid_reference_is_valid
        unless (self[:grid_reference].nil? || self[:grid_reference].empty?) then
          errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
-     end
-  end
+            if self[:latitude].nil? ||self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
+               location = self[:grid_reference].to_latlng.to_a 
+               self[:latitude] = location[0]
+               self[:longitude]= location[1]
+            end
+      end
+ end
 
   def lat_long_is_valid
    unless self[:latitude].nil? || self[:longitude].nil?

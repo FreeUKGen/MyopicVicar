@@ -35,10 +35,23 @@ Page Identification Places:index<p>
   </tr>
 
 <% @places.each do |place| %>
-  <tr id="<%=place.id%>">
-  <% session[:placeid] = place.id%>
+   <% session[:placeid] = place.id%>
+ 
+
+    <% unless place.error_flag.nil? %>
+     <tr style= "color:red" id="<%=place.id%>">
+   
+     <%else%>
+    <tr style= "color:black" id="<%=place.id%>"> 
+      <%end%>
+   
     <td > <%= link_to(place.place_name, place_path(place)) %> </td>
+    <% unless place.error_flag.nil? %>
+    <td> <%= place.error_flag %> </td>
+     <%else%>
     <td > <%= place.last_amended %> </td>
+  <%end%>
+   
     <td ><table style="width:650px"> 
      
 <% place.churches.order_by(church: 1).each do |church| %>

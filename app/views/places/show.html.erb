@@ -102,9 +102,14 @@ Page Identification Places:show<p>
     <tr>
    <td>Date when record last amended:</td><td > <%= @place.last_amended %></td>   
     </tr>
- <tr>
-   <td>Modified Place Name:</td><td > <%= @place.modified_place_name %></td>   
+   <% unless @place.error_flag.nil? %>
+     <tr style= "color:red">
+   <td >Error in place</td><td >  <%= @place.error_flag %> </td>   
+     <%else%>
+      <tr style= "color:black">
+      <%end%>
    </tr>
+  
  
 </table>  
 

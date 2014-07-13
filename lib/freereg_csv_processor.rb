@@ -430,7 +430,7 @@ COMMON_WORD_EXPANSIONS = {
     @@header [:transcriber_name] = @csvdata[2]
     raise FreeREGError, "Header_Error,The syndicate can only contain alphabetic and space characters in the second header line" unless FreeregValidations.cleantext(@csvdata[3])
     @@header [:transcriber_syndicate] = @csvdata[3]
-     raise FreeREGError, "Header_Error,The transcription date #{@csvdata[5]} is incorrectly formatted" unless datevalmod(5)
+     @csvdata[5] = '01 Jan 1998' unless datevalmod(5)
     @@header [:transcription_date] = @csvdata[5]
      userid = UseridDetail.where(:userid =>  @@header [:userid] ).first
     

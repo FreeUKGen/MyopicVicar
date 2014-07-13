@@ -52,8 +52,10 @@ class Register
       my_place = Place.where('chapman_code' => args[:chapman_code], 'place_name' => args[:place_name]).first
       unless my_place
        #place does not exist so lets create new place first
-       my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name]) 
-       @@result = "Place name in not in the database" 
+       my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805') 
+           
+       my_place.error_flag = "Place name in not in the database" 
+
        end
       #now create the church entry
       @@my_church = Church.new(:church_name => args[:church_name])
@@ -67,8 +69,9 @@ class Register
     @@my_church.save
     #and save everything
       
-    #my_place.save
+    my_place.save!
     #freereg1_csv_file.save
+   
    
     register
   end

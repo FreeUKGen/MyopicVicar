@@ -221,9 +221,9 @@ task :process_freereg1_individual_csv,[:userid,:file] => [:environment] do |t, a
   # use the processor to initiate search record creation on add or update but not on recreation when we do at end
  
   search_records = "create_search_records" 
-
+ file = File.join(args.userid,args.file)
  
-    success = FreeregCsvProcessor.process("recreate",search_records,args.file)
+    success = FreeregCsvProcessor.process("recreate",search_records,file)
   if success
   
     exit(true)
