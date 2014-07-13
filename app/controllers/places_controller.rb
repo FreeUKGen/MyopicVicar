@@ -7,7 +7,16 @@ class PlacesController < InheritedResources::Base
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
           @chapman_code = session[:chapman_code]
-          @places = Place.where( :chapman_code => @chapman_code,:disabled.ne => "true" ).all.order_by( place_name: 1).page(params[:page])
+         
+          if session[:active_place] == 'Active'
+              @places = Array.new
+                Place.where( :chapman_code => @chapman_code).all.each do |place|
+                  @places << place if place.churches.exists?
+                end
+               @places = Kaminari.paginate_array(@places).page(params[:page])
+           else 
+            @places = Place.where( :chapman_code => @chapman_code,:disabled.ne => "true").all.order_by( place_name: 1).page(params[:page])  
+           end
           @county = session[:county]
           @first_name = session[:first_name]
            @user = UseridDetail.where(:userid => session[:userid]).first

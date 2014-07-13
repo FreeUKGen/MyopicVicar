@@ -74,9 +74,14 @@ end
    end
       case 
 
-      when params[:manage_county][:action] == 'Work with Places'
+      when params[:manage_county][:action] == 'Work with All Places'
+        session[:active_place] = 'All'
          redirect_to places_path
           return
+       when params[:manage_county][:action] == 'Work with Active Places'
+        session[:active_place] = 'Active'
+         redirect_to places_path
+          return    
        when params[:manage_county][:action] == 'Upload New Batch'
          redirect_to new_csvfile_path
          return
