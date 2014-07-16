@@ -148,27 +148,27 @@ def save_to_attic(user)
   errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).first
  end
  
- def add_lower_case_userid(user)
- 	user[:userid_lower_case] = user[:userid].downcase
-
-    files = Freereg1CsvFile.where(:userid => user[:userid] ).all
+ def add_lower_case_userid
+ 	self[:userid_lower_case] = self[:userid].downcase
+ 
+    files = Freereg1CsvFile.where(:userid => self[:userid] ).all
     if files.nil?
-     user[:number_of_files] = 0
-     user[:number_of_records] = 0
-     user[:last_upload] = nil
+     self[:number_of_files] = 0
+     self[:number_of_records] = 0
+     self[:last_upload] = nil
     else
      number = 0
      records = 0
       files.each do |my_file|
       	number  = number  + 1
       	records = records + my_file.records.to_i
-      	user[:last_upload] = my_file.uploaded_date if number == 1
-      	unless my_file.uploaded_date.nil? || user[:last_upload].nil?
-      	user[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > user[:last_upload].strftime("%s").to_i
+      	self[:last_upload] = my_file.uploaded_date if number == 1
+      	unless my_file.uploaded_date.nil? || self[:last_upload].nil?
+      	self[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > self[:last_upload].strftime("%s").to_i
          end
        end
-       user[:number_of_files] = number
-        user[:number_of_records] = records
+       self[:number_of_files] = number
+        self[:number_of_records] = records
         
     end
  end

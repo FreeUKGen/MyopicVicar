@@ -108,7 +108,7 @@ class UseridDetailsController < ApplicationController
       render :action => 'edit'
       return
     else
-      UseridDetail.add_lower_case_userid(@userid)
+     
       UseridDetail.save_to_attic(@userid)
       UseridDetail.write_userid_file(@userid)
       flash[:notice] = 'The update of the details were successful'
