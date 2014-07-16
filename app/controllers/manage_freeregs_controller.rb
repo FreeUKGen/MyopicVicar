@@ -14,11 +14,12 @@ def all
 	@first_name = session[:first_name]
 	  @user = UseridDetail.where(:userid => session[:userid]).first
 	 @userids = Array.new
-	 profiles = UseridDetail.all.order_by(userid_lower_case: 1)
+	 profiles = UseridDetail.all.order_by(userid_lower_case: 1) 
 	  
 	 profiles.each do |profile|
 	 	@userids << profile
 	 end
+	  @userids = Kaminari.paginate_array(@userids).page(params[:page]) 
 	 render "userid_details/index"
 end
 

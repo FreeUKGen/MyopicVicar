@@ -15,7 +15,7 @@ class UseridDetailsController < ApplicationController
            users.each do |user|
               @userids << user
            end
-      
+       @userids = Kaminari.paginate_array(@userids).page(params[:page]) 
  	end #end method
  
 
