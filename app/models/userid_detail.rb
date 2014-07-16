@@ -94,7 +94,7 @@ def self.write_userid_file(user)
     details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}" 
     details.puts "SignUpDate:#{user.sign_up_date}" 
     details.puts "Person:#{user.person_role}"
-    unless active
+    unless user.active
 
     details.puts "DisabledDate:#{user.disabled_date}"
     details.puts "DisabledReason:#{user.disabled_reason}"
