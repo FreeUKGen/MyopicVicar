@@ -76,7 +76,7 @@ def self.update_files(freereg_file)
   end
 end
 
-def write_userid_file(user)
+def self.write_userid_file(user)
    
    details_dir = File.join(Rails.application.config.datafiles,user.userid)
    details_dir = File.join(details_dir,".uDetails")
@@ -126,7 +126,7 @@ def save_to_refinery
 end    
 
 
-def save_to_attic(user)
+def self.save_to_attic(user)
   #to-do unix permissions
   
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
@@ -150,7 +150,7 @@ def save_to_attic(user)
  
  def add_lower_case_userid
  	self[:userid_lower_case] = self[:userid].downcase
- 
+
     files = Freereg1CsvFile.where(:userid => self[:userid] ).all
     if files.nil?
      self[:number_of_files] = 0
