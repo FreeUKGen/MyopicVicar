@@ -42,7 +42,7 @@ scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 
 validate :userid_does_not_exist, on: :create
 
-#before_save :add_lower_case_userid
+before_save :add_lower_case_userid
 #before_update :save_to_attic
 #after_update :write_userid_file
 #validate :syndicate_is_valid, on: :create
