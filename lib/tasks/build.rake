@@ -202,7 +202,7 @@ task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |
   require 'freereg_csv_processor'
   # use the processor to initiate search record creation on add or update but not on recreation when we do at end
   search_records = "no_search_records" 
-  search_records = "create_search_records" if args.search_record == "create_search_records_processor"
+  search_records = "create_search_records" if args.search_records == "create_search_records_processor"
 
   puts "processing CSV file with #{args.type} and #{search_records}"
     success = FreeregCsvProcessor.process(args.type,search_records,args.range)
