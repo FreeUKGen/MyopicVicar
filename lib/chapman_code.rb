@@ -34,7 +34,15 @@ module ChapmanCode
   def self.select_hash
     CODES
   end
-  
+
+  def self.keys
+  mine = Array.new
+  CODES.each_key do |k| 
+    mine << k
+   end   
+   mine
+  end
+
   def self.select_hash_with_parenthetical_codes
     Hash[ChapmanCode::CODES.map { |k,v| ["#{k} (#{v})", v] }]
   end
@@ -167,6 +175,8 @@ module ChapmanCode
     'Guernsey' => 'GSY',
     'Sark' => 'SRK',
     'Alderney' => 'ALD',
-    'Wales' => 'WLS'
+    'Wales' => 'WLS',
+    'Unknown' => 'UNK'
   }
+    
 end

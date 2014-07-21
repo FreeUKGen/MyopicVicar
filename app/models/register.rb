@@ -69,7 +69,7 @@ class Register
     @@my_church.save
     #and save everything
       
-    my_place.save!
+    my_place.save
     #freereg1_csv_file.save
    
    

@@ -51,13 +51,10 @@ class Place
  
   validate :place_does_not_exist, on: :create
 
-
-  validate :grid_reference_is_valid
   validate :grid_reference_or_location_present
-  validate :lat_long_is_valid
+  
 
-
-  #before_save :add_lat_and_lon_from_master_place_name, on: :create
+ 
    index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
   index({ chapman_code: 1, disabled: 1 })
@@ -87,47 +84,43 @@ class Place
       OPTIONS.invert[system]
     end
   end
- def grid_reference_is_valid
-       unless (self[:grid_reference].nil? || self[:grid_reference].empty?) then
-         errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
-            if self[:latitude].nil? ||self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
+ 
+
+ 
+
+  def grid_reference_or_location_present
+    #in addition to checking for validities it also sets the location
+    if ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
+      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
+    else
+      unless (self[:grid_reference].nil? || self[:grid_reference].empty?) 
+        errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
+           if self[:latitude].nil? ||self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
                location = self[:grid_reference].to_latlng.to_a 
                self[:latitude] = location[0]
                self[:longitude]= location[1]
             end
-      end
- end
-
-  def lat_long_is_valid
-   unless self[:latitude].nil? || self[:longitude].nil?
-    errors.add(:latitude, "The latitude must be between 45 and 70") unless self[:latitude].to_i > 45 && self[:latitude].to_i < 70
-    errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
-   end
-  end
-
-  def grid_reference_or_location_present
-    case 
-    when ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
-      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
-    end
+           self.location = [self[:latitude],self[:longitude]] 
+        else
+           unless self[:latitude].nil? || self[:longitude].nil?
+            errors.add(:latitude, "The latitude must be between 45 and 70") unless self[:latitude].to_i > 45 && self[:latitude].to_i < 70
+            errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+            self.location = [self[:latitude],self[:longitude]]
+           end #lat/lon
+       end #grid reference
+    end # something
   end
   
  
   def place_does_not_exist 
-     
-        errors.add(:place_name, "already exits") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true' ).first
-
+      errors.add(:place_name, "already exits") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true' ).first
   end 
  
 
   def self.recalculate_last_amended_date(place)
-   
-   
     place.churches.each do |church|
-      
       church.registers.each do |register|
-        
-          register.freereg1_csv_files.each do |file|
+         register.freereg1_csv_files.each do |file|
           
             file_creation_date = file.transcription_date
             file_amended_date = file.modification_date if (Freereg1CsvFile.convert_date(file.modification_date)  > Freereg1CsvFile.convert_date(file_creation_date))
@@ -150,48 +143,6 @@ class Place
     place.save
   end
 
-  def add_lat_and_lon_from_master_place_name
-    place = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place,:disabled.ne => "true").first
-   unless master_record.nil? 
-          self.master_place_lat = master_record.latitude
-          self.master_place_lon = master_record.longitude
-          self.location = [self.master_place_lat, self.master_place_lon]
-          self.genuki_url  = master_record.genuki_url
-         
-    else 
-      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name,:disabled.ne => "true").first
-      unless master_record.nil? 
-          self.master_place_lat = master_record.latitude
-          self.master_place_lon = master_record.longitude
-          self.location = [self.master_place_lat, self.master_place_lon]
-          self.genuki_url  = master_record.genuki_url
-      end
-    end
-  end
-def update_lat_and_lon_from_master_place_name
-    place = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-    master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :modified_place_name => place,:disabled.ne => "true").first
-   unless master_record.nil? 
-          self.master_place_lat = master_record.latitude
-          self.master_place_lon = master_record.longitude
-          self.location = [self.master_place_lat, self.master_place_lon]
-          self.genuki_url  = master_record.genuki_url
-          self.save
-    else 
-      master_record = MasterPlaceName.where(:chapman_code => self.chapman_code, :place_name =>self.place_name,:disabled.ne => "true").first
-      unless master_record.nil? 
-          self.master_place_lat = master_record.latitude
-          self.master_place_lon = master_record.longitude
-          self.location = [self.master_place_lat, self.master_place_lon]
-          self.genuki_url  = master_record.genuki_url
-          self.save
-      end
-    end
-  end
-
-  
-
   def places_near(radius, system=MeasurementSystem::ENGLISH)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
 
@@ -202,5 +153,28 @@ def update_lat_and_lon_from_master_place_name
     places
   end
 
+  def save_to_original
+    self.original_chapman_code = self.chapman_code unless !self.original_chapman_code.nil?
+    self.original_county = self.county 
+    self.original_country = self.country 
+    self.original_place_name = self.place_name 
+    self.original_grid_reference = self.grid_reference 
+    self.original_latitude = self.latitude 
+    self.original_longitude = self.longitude 
+    self.original_source =  self.source 
+  end
+def change_name(place_name)
+  successful = true
+  self.churches.each do |church|
+      church_name = church.church_name
+      church.registers.each do |register|
+       register.freereg1_csv_files.each do |file|
+        success = Freereg1CsvFile.update_file_attribute(file,church_name,place_name )
+        successful = false unless success 
+       end #register
+      end #church
+     end #@place
+    successful 
+end
   
 end

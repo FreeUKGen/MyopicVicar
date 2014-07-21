@@ -53,7 +53,7 @@ include Mongoid::Document
      @@message_file = File.new(file_for_warning_messages, "a")
     file_ids = Array.new
     entries = Array.new
-@@message_file.puts  "Started a Userid Detail build with options of #{recreate} with a base directory at #{base_directory} and a file range #{range}"
+@@message_file.puts  "Started a Search Record build with options of #{recreate} with a base directory at #{base_directory} and a file range #{range}"
    
     filenames = GetFiles.get_all_of_the_filenames(base_directory,range)
      @@message_file.puts "#{filenames.length}\t files selected for processing\n"
@@ -95,6 +95,6 @@ include Mongoid::Document
     end # end filename loop
     timett = (((Time.now  - time_start )/(nn-1))*1000)
     p "Process created  #{nn} search records at an average time of #{timett}ms per record\n" 
-     @@message_file.puts  "Process created  #{nn} search records at an average time of #{timett}ms per record\n"  
+     @@message_file.puts  "Process with a file range #{range} created  #{nn} search records at an average time of #{timett}ms per record\n"  
   end # end method
 end # end class

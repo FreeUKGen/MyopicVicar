@@ -13,11 +13,15 @@
 
 <p>
 <%if @user.person_role == 'data_manager' %> 
-  <%= f.input :place_name,{ :as => :select,:label => "Select the Place Name",:include_blank => false,
-          :required => true, :collection => @placenames, :size => 15 } %> 
+  <% if session[:type] == "relocate" then %>
+   <%= f.input :place_name,{ :as => :select,:label => "Select the Place name",:include_blank => false,
+          :required => true, :collection => @placenames,:size => 15 } %> 
+  <%else%>
+    <%= f.input :place_name, :label => "Enter the Place Name",:input_html => { :size => 15 } %> 
+  <%end%>
         
-<%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
-          :required => true, :collection => @counties, :size => 15 } %> 
+ <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
+          :required => true, :collection => @counties,:size => 15 } %> 
  <%= f.input :country,{ :as => :select,:label => "Select the Country",:include_blank => false,
           :required => true, :collection => @countries, :size => 15 } %>   
   <br>

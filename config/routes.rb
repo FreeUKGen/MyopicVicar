@@ -66,6 +66,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :master_place_names
 
+  get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place
   resources :places
   
   resources :church_names

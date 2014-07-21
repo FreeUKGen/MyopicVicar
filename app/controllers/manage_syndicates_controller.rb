@@ -22,10 +22,10 @@ layout "manage_counties"
         @syndicates = syndicates[0]
        session[:syndicate] =  @syndicates
       
-      session[:muliple] = false
+      session[:multiple] = false
 
     else
-       session[:muliple] = true
+       session[:multiple] = true
        synd = Array.new
        syndicates.each do |syn|
         synd << syn unless session[:userid] == "SNDManager"
@@ -45,7 +45,7 @@ def new
  end 
 
  def create
-    	session[:syndicate] = params[:manage_syndicate][:syndicate] if session[:muliple] == true
+    	session[:syndicate] = params[:manage_syndicate][:syndicate] if session[:multiple] == true
       case 
        when params[:manage_syndicate][:action] == 'Upload New Batch'
          redirect_to new_csvfile_path

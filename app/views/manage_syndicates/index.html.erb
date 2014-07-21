@@ -1,5 +1,5 @@
 Page Identification Manage Syndicates:index<p>
-<%if session[:muliple] == false%>
+<%if session[:multiple] == false%>
 <p><%= @first_name%> you are managing the <b><%= @syndicates %></b> syndicate </p>
  <% end %>
 
@@ -12,7 +12,7 @@ Page Identification Manage Syndicates:index<p>
 
   <%= semantic_form_for @manage_syndicate do |f| %>
 
-  <%if  session[:muliple] == true%>
+  <%if  session[:multiple] == true%>
       <%= f.input :syndicate, 
         { :as => :select, :label => "#{@first_name} you have multiple syndicates. Which would you like to work with?",
           :include_blank => false, :required => true, :collection => @syndicates, :size => 15 }  %>
