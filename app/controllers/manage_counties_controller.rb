@@ -32,12 +32,12 @@ def index
    redirect_to manage_resource_path(@user) if @number_of_counties == 0
    @manage_county = ManageCounty.new
     if @number_of_counties == 1 
-       session[:muliple] = false
+       session[:multiple] = false
         session[:chapman_code] = @counties[0]
         @county = ChapmanCode.has_key(@counties[0])
         session[:county] = @county
     else
-       session[:muliple] = true
+       session[:multiple] = true
    end
       
 end
@@ -67,11 +67,11 @@ end
  def create
   # Select is the normal option Select File is there when user selects a single file
     if params[:commit] == 'Select' then
-    if session[:muliple] == true
-    session[:chapman_code] = params[:manage_county][:chapman_code]
-    @county = ChapmanCode.has_key(session[:chapman_code])
-    session[:county] = @county
-   end
+    if session[:multiple] == true
+      session[:chapman_code] = params[:manage_county][:chapman_code]
+      @county = ChapmanCode.has_key(session[:chapman_code])
+      session[:county] = @county
+    end
       case 
 
       when params[:manage_county][:action] == 'Work with All Places'
