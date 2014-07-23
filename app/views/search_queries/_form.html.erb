@@ -21,29 +21,6 @@
          		  :label => 'County',
          		  :input_html => { :multiple => true } } %>
 
-    <li class="select input optional" id="search_query_places_input">
-	<label class=" label" for="search_query_place_ids">Place</label>
-	<select id="search_query_place_ids" multiple="multiple" name="search_query[place_ids][]">
-		<option value=""></option>
-		<% @places.each do |place| %>
-			<option value="<%= place.id %>" class="<%=place.chapman_code%>"><%= place.place_name %> (<%=ChapmanCode::name_from_code(place.chapman_code)%>)</option>		
-		<% end %>
-	</select>	
-	</li>
-    <% f.input :places, 
-				{ :as => :select, 
-				  :include_blank => true,
-				  :member_label => :place_name,
-				  :required => false,
-         		  :label => 'Place',
-         		  :input_html => { :multiple => true } } %>
-
-	<%= f.input :place_radius %>
-    <%= f.input :place_system,
-				{ :as => :select,
-				  :required => false,
-				  :include_blank => true,
-				  :collection => Place::MeasurementSystem::OPTIONS} %>
 
 
     <%= f.input :inclusive, :as => :boolean %>
@@ -55,6 +32,3 @@
 <% end %>
 
 
-<script type="text/javascript" charset="utf-8">
-	$("#search_query_place_ids").chained("#search_query_chapman_codes");
-</script>
