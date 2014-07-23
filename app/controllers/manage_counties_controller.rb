@@ -93,7 +93,7 @@ end
         when params[:manage_county][:action] == 'Review Batches with errors'
           session[:sort] =  sort = "error DESC, file_name ASC" 
         when params[:manage_county][:action] == 'Review Batches listed by userid then filename'
-           session[:sort] =  sort = "userid ASC, file_name ASC"
+           session[:sort] =  sort = "userid_lower_case ASC, file_name ASC"
         when params[:manage_county][:action] == 'Review Batches listed by uploaded date'
            session[:sort] =  sort = "uploaded_date DESC"
 
