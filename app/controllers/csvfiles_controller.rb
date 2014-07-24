@@ -28,15 +28,30 @@ def create
   @csvfile[:userid] = session[:userid]
   @csvfile[:userid] = params[:csvfile][:userid] unless params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
-  if params[:commit] == 'Replace'
-     Freereg1CsvFile.destroy_all(:userid => @csvfile[:userid], :file_name =>@csvfile.file_name)
-
-  end #end if
-   unless File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
-
+ 
+  case
+  when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Replace'
+    Freereg1CsvFile.destroy_all(:userid => @csvfile[:userid], :file_name =>@csvfile.file_name)
+  when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Upload'
+   if Freereg1CsvFile.where(userid: @csvfile[:userid], file_name: @csvfile.file_name).first.nil?
+      FileUtils.rm("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
+   else
+      flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
+        if session[:my_own] == 'my_own'
+            redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
+          return
+        end #session
+       redirect_to freereg1_csv_files_path(:anchor =>"#{session[:freereg1_csv_file_id]}") 
+       return 
+   end #if
+  end #case
     @csvfile.save
 
-    unless @csvfile.errors.any?
+    if @csvfile.errors.any?
+     flash[:notice] = 'The upload of the file was unsuccessful'
+     render 'edit'
+     return 
+    end #errors
    
      @user = UseridDetail.where(:userid => session[:userid]).first
      flash[:notice] = 'The upload of the file was successful'
@@ -45,22 +60,8 @@ def create
       unit = 0.0002
      @processing_time = (size.to_i*unit).to_i 
      render 'process' 
-     return
-    end #end unless errors
-   
-     flash[:notice] = 'The upload of the file was unsuccessful'
-     render 'edit'
-     return
-   end #uless exists
-  
-    flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
-          
-         if session[:my_own] == 'my_own'
-            redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
-          return
-         end
-          redirect_to freereg1_csv_files_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
-   end
+    
+end #method
 
 def edit
  
