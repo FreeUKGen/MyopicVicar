@@ -68,6 +68,8 @@ class Register
     @@my_church.registers << register
     @@my_church.save
     #and save everything
+
+    my_place.data_present = true
       
     my_place.save
     #freereg1_csv_file.save

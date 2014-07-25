@@ -38,6 +38,7 @@ class Place
   field :master_place_lat, type: String
   field :master_place_lon, type: String
   field :error_flag,type: String, default: nil
+  field :data_present, type: Boolean, default: false
 
     
   embeds_many :alternateplacenames
@@ -60,7 +61,7 @@ class Place
   index({ chapman_code: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
   index({ source: 1})
-
+ 
 
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
