@@ -1,0 +1,25 @@
+<h1>Listing place_caches</h1>
+
+<table>
+  <tr>
+    <th>Chapman code</th>
+    <th>Places json</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @place_caches.each do |place_cach| %>
+  <tr>
+    <td><%= place_cach.chapman_code %></td>
+    <td><%= place_cach.places_json %></td>
+    <td><%= link_to 'Show', place_cach %></td>
+    <td><%= link_to 'Edit', edit_place_cach_path(place_cach) %></td>
+    <td><%= link_to 'Destroy', place_cach, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Place cache', new_place_cach_path %>

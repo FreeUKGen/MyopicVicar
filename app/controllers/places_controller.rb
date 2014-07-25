@@ -185,4 +185,18 @@ def update
    flash[:notice] = 'The validation of Place failed when it should not have done'
     redirect_to places_path
  end
+  
+  def for_search_form
+    chapman_codes = params[:search_query][:chapman_codes]
+    
+    county_places = PlaceCache.in(:chapman_code => chapman_codes)
+    county_response = ""
+    county_places.each { |pc| county_response << pc.places_json }
+
+    respond_to do |format|
+      format.json do 
+        render :json => county_response
+      end
+    end
+  end
 end

@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Chapman code:</b>
+  <%= @place_cach.chapman_code %>
+</p>
+
+<p>
+  <b>Places json:</b>
+  <%= @place_cach.places_json %>
+</p>
+
+
+<%= link_to 'Edit', edit_place_cach_path(@place_cach) %> |
+<%= link_to 'Back', place_caches_path %>
