@@ -67,8 +67,8 @@ def create
       if @place.latitude.nil? || @place.longitude.nil? || @place.latitude.empty? || @place.longitude.empty? then
          unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
             location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
-             @place.latitude = location[0]
-             @place.longitude = location[1]
+             @place.latitude = location[1]
+             @place.longitude = location[0]
          end
       end
     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''

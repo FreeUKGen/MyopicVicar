@@ -101,12 +101,12 @@ class Place
                self[:latitude] = location[0]
                self[:longitude]= location[1]
             end
-           self.location = [self[:latitude],self[:longitude]] 
+           self.location = [self[:longitude],self[:latitude]] 
         else
            unless self[:latitude].nil? || self[:longitude].nil?
             errors.add(:latitude, "The latitude must be between 45 and 70") unless self[:latitude].to_i > 45 && self[:latitude].to_i < 70
             errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
-            self.location = [self[:latitude],self[:longitude]]
+            self.location = [self[:longitude],self[:latitude]]
            end #lat/lon
        end #grid reference
     end # something
