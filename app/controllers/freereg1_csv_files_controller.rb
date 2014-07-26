@@ -159,7 +159,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     user = UseridDetail.find(params[:id])
     @who = user.userid 
     @role = session[:role]
-    @freereg1_csv_files = Freereg1CsvFile.userid(user.userid).order_by("file_name ASC").page(params[:page])  unless user.nil?
+    @freereg1_csv_files = Freereg1CsvFile.userid(user.userid).order_by("file_name ASC", "userid_lower_case ASC").page(params[:page])  unless user.nil?
     render :index
   end
 

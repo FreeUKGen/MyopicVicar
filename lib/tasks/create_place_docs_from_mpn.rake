@@ -27,7 +27,7 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
       details[:country] = master_record.country
       details[:county] = master_record.county
       details[:chapman_code] = master_record.chapman_code
-      details[:place_name] = master_record.place_name
+      details[:place_name] = master_record.place_name.strip
       details[:master_place_lat] = master_record.latitude
       details[:master_place_lon] = master_record.longitude
       details[:location][0] =  master_record.latitude
