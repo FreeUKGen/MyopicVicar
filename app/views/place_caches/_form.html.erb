@@ -1,0 +1,25 @@
+<%= form_for(@place_cach) do |f| %>
+  <% if @place_cach.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@place_cach.errors.count, "error") %> prohibited this place_cach from being saved:</h2>
+
+      <ul>
+      <% @place_cach.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :chapman_code %><br />
+    <%= f.text_field :chapman_code %>
+  </div>
+  <div class="field">
+    <%= f.label :places_json %><br />
+    <%= f.text_field :places_json %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

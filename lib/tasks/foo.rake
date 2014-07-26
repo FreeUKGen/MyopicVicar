@@ -1,3 +1,6 @@
+require 'chapman_code'
+
+
 namespace :foo do
 
  desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
@@ -145,5 +148,14 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
      puts "Search Records complete in #{process_time}."
     end
   end
+
+  task :refresh_places_cache => [:environment] do |t,args|
+    PlaceCache.destroy_all
+    
+    ChapmanCode::values.each do |chapman_code|
+      PlaceCache.refresh(chapman_code)        
+    end
+  end
+
 
 end

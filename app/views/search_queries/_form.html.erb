@@ -21,6 +21,20 @@
          		  :label => 'County',
          		  :input_html => { :multiple => true } } %>
 
+    <li class="select input optional" id="search_query_places_input">
+	<label class=" label" for="search_query_place_ids">Place</label>
+	<select id="search_query_place_ids" multiple="multiple" name="search_query[place_ids][]">
+		<option value="">--</option>
+	</select>	
+	</li>
+
+	
+	<%= f.input :place_radius %>
+    <%= f.input :place_system,
+				{ :as => :select,
+				  :required => false,
+				  :include_blank => true,
+				  :collection => Place::MeasurementSystem::OPTIONS} %>
 
 
     <%= f.input :inclusive, :as => :boolean %>
@@ -32,3 +46,12 @@
 <% end %>
 
 
+<script type="text/javascript" charset="utf-8">
+	
+	$("#search_query_place_ids").remoteChained({
+	  parents : "#search_query_chapman_codes",
+	  url : "/places/for_search_form.json",
+	  loading : "Loading..."
+	});
+	
+</script>

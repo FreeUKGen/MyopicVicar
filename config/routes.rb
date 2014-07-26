@@ -15,6 +15,9 @@
 MyopicVicar::Application.routes.draw do
  
  
+  resources :place_caches
+
+
   resources :manage_syndicates   
   
   resources :csvfiles
@@ -67,6 +70,7 @@ MyopicVicar::Application.routes.draw do
   resources :master_place_names
 
   get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place
+  get 'places/for_search_form(.:format)', :to => 'places#for_search_form', :as => :places_for_search_form
   resources :places
   
   resources :church_names

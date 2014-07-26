@@ -9,13 +9,10 @@ class SearchQueriesController < ApplicationController
   def new
     if params[:search_id]
       old_query = SearchQuery.find(params[:search_id])
-#      old_fields = old_query.attributes.delete('_id')
-#      binding.pry
       @search_query = SearchQuery.new(old_query.attributes)
     else
       @search_query = SearchQuery.new    
     end
-    @places = []#Place.all.order_by(:chapman_code.asc, :place_name.asc) # TODO filter places with no records
   end
 
   def create
