@@ -71,7 +71,7 @@ before_destroy do |file|
     file.save_to_attic
     Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
 end
- after_destroy :clean_up  
+ after_destroy :clean_up
 
 
   has_many :freereg1_csv_entries, validate: false
@@ -406,8 +406,8 @@ def self.date_change(file,transcription_date,modification_date)
         end
     end
    else
-    return 
-   end 
+    return
+   end
   end
   def clean_up
    

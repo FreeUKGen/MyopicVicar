@@ -52,11 +52,11 @@ class Place
  
   validate :place_does_not_exist, on: :create
 
-  validate :grid_reference_or_location_present
+  validate :grid_reference_or_lat_lon_present_and_valid
   
-
+  before_save :add_location_if_not_present
  
-   index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
+  index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
   index({ chapman_code: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
@@ -89,34 +89,65 @@ class Place
 
  
 
-  def grid_reference_or_location_present
+  def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location
-    if ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
-      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") 
-    else
+    
+      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") if ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
       unless (self[:grid_reference].nil? || self[:grid_reference].empty?) 
         errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
-           if self[:latitude].nil? ||self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
-               location = self[:grid_reference].to_latlng.to_a 
-               self[:latitude] = location[0]
-               self[:longitude]= location[1]
-            end
-           self.location = [self[:longitude],self[:latitude]] 
-        else
-           unless self[:latitude].nil? || self[:longitude].nil?
+      end  
+      unless self[:latitude].nil? || self[:longitude].nil?
             errors.add(:latitude, "The latitude must be between 45 and 70") unless self[:latitude].to_i > 45 && self[:latitude].to_i < 70
             errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
-            self.location = [self[:longitude],self[:latitude]]
-           end #lat/lon
-       end #grid reference
-    end # something
-  end
+      end #lat/lon
+   end
   
  
   def place_does_not_exist 
       errors.add(:place_name, "already exits") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true' ).first
   end 
- 
+
+ def add_location_if_not_present
+    if self.location.nil? || self.location.empty?
+      if self[:latitude].nil? ||self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
+               my_location = self[:grid_reference].to_latlng.to_a 
+               p my_location
+               self[:latitude] = my_location[0]
+               self[:longitude]= my_location[1]
+      end
+           self.location = [self[:longitude].to_f,self[:latitude].to_f] 
+    end
+
+ end
+
+ def change_grid_reference(grid)
+   unless grid.nil?
+     unless self.grid_reference == grid
+      self.grid_reference = grid
+      my_location = self.grid_reference.to_latlng.to_a 
+      self.latitude = my_location[0]
+      self.longitude = my_location[1]
+      self.location = [self.longitude.to_f,self.latitude.to_f] 
+      self.save(:validate => false)
+     end
+   end
+end
+
+
+ def change_lat_lon(lat,lon)
+  change = "unchanged"
+    unless lat.nil?  || lon.nil? 
+      unless self.latitude == lat && self.longitude == lon
+        self.latitude = lat
+        self.longitude = lon
+        self.location = [self.longitude.to_f,self.latitude.to_f]
+        self.save(:validate => false)
+        change = "changed"
+      end 
+    end
+  change
+ end
+
 
   def self.recalculate_last_amended_date(place)
     place.churches.each do |church|
@@ -164,6 +195,7 @@ class Place
     self.original_longitude = self.longitude 
     self.original_source =  self.source 
   end
+
 def change_name(place_name)
   successful = true
   self.churches.each do |church|

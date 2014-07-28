@@ -64,13 +64,8 @@ def create
     @place.chapman_code = ChapmanCode.values_at(params[:place][:county])
     @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
         #use the lat/lon if present if not calculate from the grid reference
-      if @place.latitude.nil? || @place.longitude.nil? || @place.latitude.empty? || @place.longitude.empty? then
-         unless (@place.grid_reference.nil? || !@place.grid_reference.is_gridref?) then
-            location = @place.grid_reference.to_latlng.to_a if @place.grid_reference.is_gridref?
-             @place.latitude = location[1]
-             @place.longitude = location[0]
-         end
-      end
+
+      
     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.save
      if @place.errors.any?
@@ -95,14 +90,23 @@ def update
     place_name_change = true unless @place.place_name == params[:place][:place_name]
        #save the original entry we had
     end
-    @place.save_to_original
+    @place.save_to_original # this the last change data for the place
     @place.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     @place.chapman_code = session[:chapman_code] if @place.chapman_code.nil?
     @place.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     @place.chapman_code = session[:chapman_code] if @place.chapman_code.nil?
     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
-    @place.update_attributes(params[:place])
+    
+    #We use the lat/lon if provided and the grid reference if  lat/lon not available
+     change = @place.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) 
+   
+     @place.change_grid_reference(params[:place][:grid_reference]) if  change = "unchanged"
+
+     params[:place].delete :latitude
+     params[:place].delete :longitude
+     params[:place].delete :grid_reference
+     @place.update_attributes(params[:place])
     
    if @place.errors.any? then
      flash[:notice] = 'The update of the Place was unsuccessful'
