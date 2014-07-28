@@ -2,7 +2,7 @@ namespace :build do
 
  $collections = Array.new
  $collections[0] = "master_place_names"
- $collections[1] = "batch_error"  
+ $collections[1] = "batch_errors"  
  $collections[2] = "places"
  $collections[3] = "churches"
  $collections[4] = "registers"
@@ -16,7 +16,7 @@ namespace :build do
 
  COLLECTIONS = {
 'master_place_names' => 'MasterPlaceName',
-'batch_error' => 'BatchError',
+'batch_errors' => 'BatchError',
 'places' => 'Place',
 'churches' => 'Church',
 'registers' => 'Register',
