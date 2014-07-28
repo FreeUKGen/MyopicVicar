@@ -101,7 +101,7 @@ def update
     start = Time.now
                      
             if params[:csvfile][:process]  == "Not waiting" || processing_time > 15
-            pid1 = Kernel.spawn("rake build:process_freereg1_individual_csv[#{range}]") 
+            pid1 = Kernel.spawn("rake build:process_freereg1_individual_csv[#{@csvfile[:userid]},#{@csvfile.file_name}]") 
             processing_time = 3*processing_time
             flash[:notice] =  "The csv file #{@place} is being processed into the database. Check your files status after at least #{processing_time} seconds."
             @csvfile.delete
