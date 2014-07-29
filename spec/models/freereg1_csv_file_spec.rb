@@ -12,7 +12,7 @@ describe Freereg1CsvFile do
   it "should load file data from the sample file" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       Freereg1CsvFile.count.should eq(index)
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
       Freereg1CsvFile.count.should eq(index+1)
 
     end
@@ -21,7 +21,7 @@ describe Freereg1CsvFile do
   it "should parse user, type, and chapman code" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       puts "Testing #{file[:filename]}"
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
 
       #FreeregCsvProcessor.process(file[:filename])      
       record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 

@@ -36,8 +36,7 @@ describe Freereg1CsvEntry do
     SearchRecord.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
-      
+      process_test_file(file)
       record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
   
       record.freereg1_csv_entries.count.should eq(file[:entry_count])     
@@ -47,7 +46,7 @@ describe Freereg1CsvEntry do
   it "should parse each entry correctly" do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
       file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
 
       ['first', 'last'].each do |entry_key|

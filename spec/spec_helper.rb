@@ -19,6 +19,8 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'record_type'
 
+require 'freereg_csv_processor'
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
@@ -47,9 +49,18 @@ RSpec.configure do |config|
 end
 
 
+def process_test_file(file)
+  Rails.application.config.datafiles=file[:basedir]
+  FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
+
+end
+
+
+
 FREEREG1_CSV_FILES = [
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::BURIAL,
     :user => 'kirknorfolk',
     :chapman_code => 'NFK',
@@ -73,6 +84,7 @@ FREEREG1_CSV_FILES = [
    },
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEBA.CSV",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::BAPTISM,
     :user => 'kirkbedfordshire',
     :chapman_code => 'BDF',
@@ -101,6 +113,7 @@ FREEREG1_CSV_FILES = [
    },
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
@@ -128,6 +141,7 @@ FREEREG1_CSV_FILES = [
    },
   { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTWILMA.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
