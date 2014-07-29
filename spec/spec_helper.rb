@@ -171,3 +171,17 @@ FREEREG1_CSV_FILES = [
       }
     }
    }]
+
+
+ARTIFICIAL_FILES = [
+  { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  }
+]

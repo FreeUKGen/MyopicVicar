@@ -73,7 +73,7 @@ describe Freereg1CsvEntry do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::BAPTISM
       puts "Testing searches on #{file[:filename]}. SearchRecord.count=#{SearchRecord.count}"
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -103,7 +103,7 @@ describe Freereg1CsvEntry do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::BURIAL
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -123,7 +123,7 @@ describe Freereg1CsvEntry do
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::MARRIAGE
 #
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]
@@ -147,7 +147,7 @@ describe Freereg1CsvEntry do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file[:filename]), File.basename(file[:filename]))
+      process_test_file(file)
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]       
@@ -178,8 +178,7 @@ describe Freereg1CsvEntry do
     filename = FREEREG1_CSV_FILES.last[:filename]
 
 
-#    file_record = FreeregCsvProcessor.process(filename)      
-    FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(filename), File.basename(filename))
+    process_test_file(FREEREG1_CSV_FILES.last)
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
     entry = file_record.freereg1_csv_entries.last
     search_record = entry.search_record
@@ -199,13 +198,10 @@ describe Freereg1CsvEntry do
 
 
   it "should not create duplicate names" do
-    [
-      "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
-      "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv"
-    ].each do |filename|
+    ARTIFICIAL_FILES.each do |file|
 
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(filename), File.basename(filename))
-      file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
+      process_test_file(file)
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
       
       file_record.freereg1_csv_entries.count.should eq 1
       entry = file_record.freereg1_csv_entries.first
@@ -222,29 +218,21 @@ describe Freereg1CsvEntry do
 
   it "should filter by place" do
     # first create something to test against
-    different_filename = "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv"
-    FreeregCsvProcessor.process(
-      'recreate', 
-      'create_search_records', 
-      File.dirname(different_filename), 
-      File.basename(different_filename))
-    different_file = Freereg1CsvFile.where(:file_name => File.basename(different_filename)).first 
+    different_filespec = FREEREG1_CSV_FILES[2]
+    process_test_file(different_filespec)
+    different_file = Freereg1CsvFile.where(:file_name => File.basename(different_filespec[:filename])).first 
 
     different_entry = different_file.freereg1_csv_entries.first
     different_search_record = different_entry.search_record
     different_place = different_search_record.place
 
     [
-      "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKALEBU.csv",
-      "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEMA.CSV"
-    ].each do |filename|
+      FREEREG1_CSV_FILES[0],
+      FREEREG1_CSV_FILES[1],
+    ].each do |filespec|
       
-      FreeregCsvProcessor.process(
-        'recreate', 
-        'create_search_records', 
-        File.dirname(filename), 
-        File.basename(filename))
-      file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
+      process_test_file(filespec)
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
       entry = file_record.freereg1_csv_entries.first
       search_record = entry.search_record
       place = search_record.place
@@ -255,6 +243,7 @@ describe Freereg1CsvEntry do
                        :place_ids => [place.id] }
       q = SearchQuery.create!(query_params)
       result = q.search.to_a
+      binding.pry
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
       

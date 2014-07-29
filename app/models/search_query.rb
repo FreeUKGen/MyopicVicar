@@ -61,7 +61,7 @@ class SearchQuery
   def radius_place_ids
     radius_ids = []
     all_radius_places.map { |place| radius_ids << place.id }
-    radius_ids << place_ids
+    radius_ids.concat(place_ids)
     radius_ids.uniq
   end
 
