@@ -43,15 +43,11 @@
 			<% if @search_query.radius_search? %>
 				<br />
 				Including:
-				<% @search_query.all_radius_places.each_with_index do |nearby_place, i|  %>
-					<%= "," if i > 0%>
-					<strong>
-						<%= nearby_place.place_name %>  (<%=ChapmanCode::name_from_code(nearby_place.chapman_code)%>)					
-					</strong>
-					
-				<% end %>
-					within <%= @search_query.place_radius %> <%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>
-				<% end %>
+				<%= @search_query.all_radius_places.size  %>
+				places within <%= @search_query.all_radius_places.first.geo_near_distance  %>
+				<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>
+			<% end %>
+
 
 		<% else %>
 			<br />	

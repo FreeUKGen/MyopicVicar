@@ -178,7 +178,7 @@ end
   def places_near(radius, system=MeasurementSystem::ENGLISH)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
 
-    places = Place.geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
+    places = Place.where(:data_present => true).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
     # get rid of this place
     places.shift
     
