@@ -45,7 +45,7 @@
 				<br />
 				Including:
 				<%= @search_query.all_radius_places.size  %>
-				places within <%= @search_query.all_radius_places.first.geo_near_distance  %>
+				places within <%= @search_query.all_radius_places.last.geo_near_distance  %>
 				<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>
 			<% end %>
 
