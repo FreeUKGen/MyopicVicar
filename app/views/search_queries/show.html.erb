@@ -1,6 +1,7 @@
 <div id="nav">
 	<ul>
 	    <li><%= link_to "New Search", new_search_query_path(:search_id => @search_query) %></li>
+	    <li><%= link_to "Revise Search", new_search_query_path %></li>
 	</ul>
 </div>
 
@@ -69,6 +70,8 @@
 		<% end%>
 
 	<% end%>
+	<br />
+	<i><%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number))%></i>
 </div>
 <% if @search_results.size == 0 %>
     No results found!

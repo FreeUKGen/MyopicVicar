@@ -37,5 +37,14 @@ class SearchQueriesController < ApplicationController
     @search_results = @search_query.search.skip(@page_number*RECORDS_PER_PAGE).limit(RECORDS_PER_PAGE)
   end
 
+  def about
+    if params[:page_number]
+      @page_number = params[:page_number].to_i
+    else
+      @page_number = 0
+    end
+    @search_query = SearchQuery.find(params[:id])
+  end
+
 
 end

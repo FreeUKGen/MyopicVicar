@@ -1,0 +1,58 @@
+<div id="nav">
+	<ul>
+	    <li><%= link_to "New Search", new_search_query_path(:search_id => @search_query) %></li>
+	    <li><%= link_to "Revise Search", new_search_query_path %></li>
+	</ul>
+</div>
+
+
+<h1>About This Query</h1>
+
+<p>How did your query match against the FreeREG database?</p>
+
+<h2>Name</h2>
+<i>to do</i>
+
+
+<h2>Date</h2>
+<i>to do</i>
+
+
+<h2>Location</h2>
+
+
+<% if @search_query.radius_search? %>
+	<p>
+		Search Critera: 
+			<b>Radius Search</b> within 
+			<b><%= @search_query.place_radius %></b> 
+			<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %> of 
+			<b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b> 
+			<br>
+	</p>
+	<p>
+		Search Logic:
+			Records within these places:
+			<ul>
+				<% @search_query.all_radius_places.each do |near_place| %>
+					<li>
+						<%= near_place.place_name%> (<%= near_place.geo_near_distance %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
+					</li>
+				<% end %>
+			</ul>
+	</p>
+<% end %>
+	
+<i>to do: counties, specific places</i>
+
+<h2>Record Type</h2>
+
+<i>to do</i>
+
+<div id="nav">
+	<ul>
+	    <li>
+	    	<%= link_to "back", search_query_path(@search_query, :page_number => @page_number) %>
+    	</li>
+	</ul>
+</div>
