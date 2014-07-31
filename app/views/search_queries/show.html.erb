@@ -43,10 +43,16 @@
 			<% end %>
 			<% if @search_query.radius_search? %>
 				<br />
-				Including:
-				<%= @search_query.all_radius_places.size  %>
-				places within <%= @search_query.all_radius_places.last.geo_near_distance  %>
-				<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>
+				<% if @search_query.all_radius_places.size > 0 %>
+				
+					Including:
+					<%= @search_query.all_radius_places.size  %>
+					places within <%= @search_query.all_radius_places.last.geo_near_distance  %>
+					<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>
+				<% else %>
+					(No places with data within  <%= @search_query.radius_search  %>
+					<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>)
+				<% end %>
 			<% end %>
 
 
