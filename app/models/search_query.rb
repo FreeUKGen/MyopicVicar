@@ -26,6 +26,7 @@ class SearchQuery
 
 
   validate :name_not_blank
+  validate :radius_is_valid
   before_save :clean_blanks
 
   def search
@@ -103,6 +104,12 @@ class SearchQuery
   def name_not_blank
     if first_name.blank? && last_name.blank?
       errors.add(:last_name, "Both name fields cannot be blank.")
+    end
+  end
+
+  def radius_is_valid
+    if !place_radius.blank? && places.size < 1
+      errors.add(:place_radius, "You must choose a place to perform a radius search.")
     end
   end
 
