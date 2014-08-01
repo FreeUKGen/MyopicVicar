@@ -47,13 +47,20 @@
 
 
 <script type="text/javascript" charset="utf-8">
+	<% if @search_query && @search_query.chapman_codes.size > 0 %>
+	    var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+     	<% if @search_query.places.size > 0 %>
+			selection["selected"]="<%= @search_query.places.first.id %>";	 
+		<% end %>
+	<% end %>
+
 	
 	$("#search_query_place_ids").remoteChained({
 	  parents : "#search_query_chapman_codes",
 	  url : "/places/for_search_form.json",
 	  loading : "Loading..."
 	  <% if @search_query && @search_query.chapman_codes.size > 0 %>
-	  , bootstrap:<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>
+	  , bootstrap: selection
 	  <% end %>
 	});
 	
