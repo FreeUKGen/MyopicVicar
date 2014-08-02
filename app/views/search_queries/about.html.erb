@@ -11,10 +11,59 @@
 <p>How did your query match against the FreeREG database?</p>
 
 <h2>Name</h2>
-<i>to do</i>
+
+<p>
+	Search Criteria: 
+	<b>First Name</b> is <b><i><%= @search_query.first_name || "blank"%></i></b>, 
+	<b>Last Name</b> is <b><i><%= @search_query.last_name  || "blank" %></i></b>.
+	<b>Fuzzy matching</b> is <b><i><%= @search_query.fuzzy ? "enabled" : "disabled" %></i></b>
+</p>
+<p>
+	Search Logic:
+	<% if @search_query.first_name %>
+		Records with a first name of <b><i><%= @search_query.first_name %></i></b> (ignoring capitalization)
+		<% if @search_query.fuzzy %>
+			and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
+		<% end %>.
+		<% emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a %>
+		<% if emendations && emendations.size > 0 %>
+			In addition, match records whose first name is
+			<b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
+		<% end %>
+	<% end %>
+	<% if @search_query.last_name %>
+		<br />Records with a last name of <b><i><%= @search_query.last_name %></i></b> (ignoring capitalization)	
+		<% if @search_query.fuzzy %>
+			and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
+		<% end %>
+	<% end %>
+</p>
 
 
 <h2>Date</h2>
+<p>
+	<% if @search_query.start_year || @search_query.end_year %>
+		Search Criteria: 
+		<% if @search_query.start_year %>
+			<b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
+		<% end %>
+		
+		<% if @search_query.end_year %>
+			<b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>.
+		<% end %>
+	<% else %>
+		<i>No date criteria specified.</i>
+	<% end %>
+</p>
+<p>
+	Search Logic:
+		Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style) and dates  <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
+		
+
+
+</p>
+
+<h2>Records</h2>
 <i>to do</i>
 
 
@@ -45,9 +94,6 @@
 	
 <i>to do: counties, specific places</i>
 
-<h2>Record Type</h2>
-
-<i>to do</i>
 
 <div id="nav">
 	<ul>
