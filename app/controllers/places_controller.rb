@@ -64,14 +64,13 @@ def create
     @place.chapman_code = ChapmanCode.values_at(params[:place][:county])
     @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
         #use the lat/lon if present if not calculate from the grid reference
-
+    @place.add_location_if_not_present
       
     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.save
      if @place.errors.any?
         #we have errors on the creation
         flash[:notice] = 'The addition to Place Name was unsuccessful'
-        p @place.errors.full_messages
         get_places_counties_and_contries
         @place_name = Place.find(session[:place_id]).place_name
         render :new
@@ -101,7 +100,7 @@ def update
     #We use the lat/lon if provided and the grid reference if  lat/lon not available
      change = @place.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) 
    
-     @place.change_grid_reference(params[:place][:grid_reference]) if  change = "unchanged"
+     @place.change_grid_reference(params[:place][:grid_reference]) if  change == "unchanged"
 
      params[:place].delete :latitude
      params[:place].delete :longitude
@@ -110,10 +109,8 @@ def update
     
    if @place.errors.any? then
      flash[:notice] = 'The update of the Place was unsuccessful'
-      p @place.errors.full_messages
-     get_places_counties_and_contries
-     @place_name = Place.find(session[:place_id]).place_name
      #need to prepare for the edit
+     get_places_counties_and_contries
      render :action => 'edit'
      return
     end #errors
