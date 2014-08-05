@@ -10,7 +10,7 @@ class ChurchesController < InheritedResources::Base
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
           @chapman_code = session[:chapman_code] 
-          @places = Place.where( :chapman_code => @chapman_code ).all.order_by( place_name: 1)
+          @places = Place.where( :chapman_code => @chapman_code ,:disabled.ne => "true").all.order_by( place_name: 1)
           @county = session[:county]
           @first_name = session[:first_name]
          
@@ -30,7 +30,7 @@ class ChurchesController < InheritedResources::Base
   def new
       @church = Church.new
       @county = session[:county]
-      @place = Place.where(:chapman_code => ChapmanCode.values_at(@county)).all
+      @place = Place.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all.order_by( place_name: 1)
       @places = Array.new
           @place.each do |place|
             @places << place.place_name
@@ -46,9 +46,9 @@ class ChurchesController < InheritedResources::Base
 
   if params[:church][:place_name].nil?
     #Only data_manager has ability at this time to change Place so need to use the cuurent place
-  place = Place.find(session[:place_id])
+    place = Place.find(session[:place_id])
   else
-  place = Place.where(:chapman_code => ChapmanCode.values_at(session[:county]),:place_name => params[:church][:place_name]).first
+    place = Place.where(:chapman_code => ChapmanCode.values_at(session[:county]),:place_name => params[:church][:place_name]).first
   end
   place.churches.each do |church|
     if church.church_name == params[:church][:church_name]
@@ -77,7 +77,7 @@ end
    
           load(params[:id])
           @chapman_code = session[:chapman_code]
-          @place = MasterPlaceName.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all
+          @place = Place.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all.order_by( place_name: 1)
           @places = Array.new
           @place.each do |place|
             @places << place.place_name

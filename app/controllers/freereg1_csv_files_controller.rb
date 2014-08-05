@@ -44,7 +44,7 @@ class Freereg1CsvFilesController < InheritedResources::Base
     #session role is used to control return navigation options
     @role = session[:role]
     @freereg1_csv_file_name = session[:freereg1_csv_file_name] 
-    placenames = MasterPlaceName.where(:chapman_code => @freereg1_csv_file.county,:disabled.ne => "true" ).all.order_by(place_name: 1)
+    placenames = Place.where(:chapman_code => @freereg1_csv_file.county,:disabled.ne => "true" ).all.order_by(place_name: 1)
       @placenames = Array.new
         placenames.each do |placename|
           @placenames << placename.place_name
