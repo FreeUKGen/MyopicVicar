@@ -6,6 +6,10 @@ skip_before_filter :require_login, only: [:index]
 def index
     clean_session 
     session[:initial_page] = request.original_url
+    if current_refinery_user.nil?
+     redirect_to refinery.logout_path
+     return
+    end
     @user = current_refinery_user.userid_detail
     @manage_resources = ManageResource.new 
     session[:userid] = @user.userid
