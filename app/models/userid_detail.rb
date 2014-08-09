@@ -149,11 +149,14 @@ end
 
 def userid_and_email_address_does_not_exist
   errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
+   errors.add(:userid, "Already exits") if Refinery::User.where(:username => self[:userid]).exists?
    errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
+   errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
 end
 
 def email_address_does_not_exist
    errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
+   errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
  end
  
 def add_lower_case_userid
