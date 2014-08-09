@@ -1,7 +1,7 @@
 module UseridRole
 
   
-VALUES = ['researcher','trainee', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
+VALUES = ['researcher','trainee','pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
  'volunteer_coordinator','data_manager', 'technical','system_administrator']
 
 

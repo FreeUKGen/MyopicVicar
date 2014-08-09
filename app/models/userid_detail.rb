@@ -201,7 +201,7 @@ def add_fields(type)
     when type == 'Register Transcriber'
        self.person_role = 'transcriber'
     when type == 'Technical Registration'
-      self.person_role = 'technical'
+      self.person_role = 'pending'
       self.syndicate = 'General'
     end
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
