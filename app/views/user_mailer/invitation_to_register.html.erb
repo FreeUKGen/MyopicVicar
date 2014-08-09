@@ -1,0 +1,22 @@
+
+
+<p> Dear <%= @user.person_forename %>;</p>
+<p>Welcome. </p>
+
+<p>Your coordinator has invited you to register as a transcriber for FreeREG with a userid of <b><%= @user.userid %>.</b> You need to follow the link below to reset your password to something only you know.
+</p>
+
+<p>http://xanthus.freereg2.zomo.co.uk/refinery/users/password/edit?initial=true&reset_password_token=<%= @user_token %></p>
+
+<p> After setting the password you will be logged into the transcriber tools for FreeREG for the first time.
+
+<p> <b>In the future go to the following link to login to the server. </b></p>
+
+<p>http://xanthus.freereg2.zomo.co.uk/refinery/users/login</p>
+
+<p> Do not reply to this email but instead contact your coordinator who has been informed of your registration.</p>
+
+<p> <%= @coordinator.person_forename %>  <%= @coordinator.person_surname %> with an email address of <%= @coordinator%> </p>
+<p> We hope you enjoy working on FreeREG transcriptions.
+
+<p> The FreeREG Team</p>

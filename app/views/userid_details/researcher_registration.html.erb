@@ -1,0 +1,52 @@
+Page Identification UserDetals: Researcher Registration<p>
+<p style="text-align: center"><b>Welcome to the FreeREG Researcher Registration process.</b></p>
+<p>Please provide us with the following information</p>
+
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+   <% end %>  
+
+<%= semantic_form_for @userid do |f| %>
+
+
+    <div id="main"style="color:black">
+<table  style="width: 100%">
+  <tr>    
+    <th style="width:70%">Field</th>
+    <th style="width:30">Value</th>
+  </tr>
+
+<tr><td>
+Please provide us with a unique idenfification code. This will be used by the system to identify you. The code must only contain alphabetic characters and numbers; it must NOT contain any special characters or spaces. It can be of any length. Avoid using codes that just contain your forename as it likely tooo have already been taken. 
+</td><td> 
+<%= f.input :userid,:input_html => { :size => 35 }%> </td></tr>
+<tr><td>
+Your forename or given name
+</td><td>
+<%= f.input :person_forename,:input_html => { :size => 35 }%></td></tr>
+<tr><td>Your surname</td><td>
+<%= f.input :person_surname,:input_html => { :size => 35 }%></td></tr>
+<tr><td>Your email address</td><td>
+<%= f.input :email_address,:input_html => { :size => 35 } %></td></tr>
+<tr><td>
+Please provide us with you physical location, i.e. what part of the world you are located in.
+</td><td>
+<%= f.input :address,:input_html => { :size => 35 }%></td></tr>
+<tr><td>
+
+</table>
+<p><b>After submitting this form you will be redirected to the home page and will receive an email that contains a link to complete the registration process. Click on that link or copy and paste it into you browser addres window WITHIN 24HRS. </b></p>
+
+  
+    <%= f.action :submit, :as => :input, :label => 'Register Researcher' %>
+   <% end %>
+</div>
+
+
+
+
+
+
+

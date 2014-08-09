@@ -2,6 +2,7 @@ Page Identification UserDetails: Show<p>
 <p style="text-align: center"><b>Details for:<%=@userid.userid %></p></b>
 
 <div style="float:left;"> <%= button_to 'Edit Details', edit_userid_detail_path(@userid), method: :get %></div>
+<div style="float:left;"><%= button_to "Change your password", change_password_userid_detail_path(@userid), method: :get %></div>
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
@@ -41,6 +42,12 @@ Page Identification UserDetails: Show<p>
    <td>Physical Location:</td><td > <%= @userid.address  %>  </td>   
    </tr>
    <tr>
+   <%unless @userid.sign_up_date.nil?%>
+   <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td> 
+   <%end%>   
+   </tr>
+<%unless @userid.person_role == 'researcher'%>
+   <tr>
    <td>Telephone number:</td><td > <%= @userid.telephone_number %>  </td>   
    </tr>
    <tr>
@@ -51,11 +58,6 @@ Page Identification UserDetails: Show<p>
    </tr>
  <tr>
    <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>   
-   </tr>
-<tr>
-   <%unless @userid.sign_up_date.nil?%>
-   <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td> 
-   <%end%>   
    </tr>
 
 <tr>
@@ -101,7 +103,7 @@ Page Identification UserDetails: Show<p>
    <td>Reason for making inactive:</td><td > <%=@userid.disabled_reason %>  </td>   
    </tr>
    <%end%>
-
+ <%end%> 
 <%end%>
 
 </table>

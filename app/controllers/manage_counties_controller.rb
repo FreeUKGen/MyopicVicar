@@ -1,17 +1,13 @@
-class ManageCountiesController < ActionController::Base
+class ManageCountiesController < ApplicationController
 
 	 
 def index
-  if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-    end
+ 
   clean_session
-   
-	@userid = session[:userid]
-  @first_name = session[:first_name]
-  @user = UseridDetail.where(:userid => session[:userid]).first
   session[:role] = 'counties'
   session[:return] = request.referer
+  get_user_info(session[:userid],session[:first_name])
+ 
   @counties = @user.county_groups
   @countries = @user.country_groups
    if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'

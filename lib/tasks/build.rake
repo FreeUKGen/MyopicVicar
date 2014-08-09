@@ -218,6 +218,7 @@ end
 task :process_freereg1_individual_csv,[:user,:file] => [:environment] do |t, args| 
 
   require 'freereg_csv_processor'
+  require 'user_mailer'
   # use the processor to initiate search record creation on add or update but not on recreation when we do at end
   range = File.join(args.user ,args.file)
   search_records = "create_search_records" 
@@ -225,9 +226,9 @@ task :process_freereg1_individual_csv,[:user,:file] => [:environment] do |t, arg
     success = FreeregCsvProcessor.process("recreate",search_records,range)
   if success
     UserMailer.batch_processing_success(args.user,args.file).deliver
-      exit(true)
+    exit(true)
   else
-  file = File.join(Rails.application.config.datafiles,args.user,args.file)
+    file = File.join(Rails.application.config.datafiles,args.user,args.file)
                 if File.exists?(file)
                   p file
                   File.delete(file)

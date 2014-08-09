@@ -1,0 +1,73 @@
+<% require 'record_type' %>
+
+
+<p style="text-align: center">Churches and Registers held in the FreeREG database for <b><%= @church %></b> in
+<b><%= @place_name %>;</b> for <b><%= @county %></b>. Select the church or register name link to get detailed information on the transcriptions that have been made.
+</p>
+
+
+<table  style="width: 100%">
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+  </tr>
+  <tr> 
+   <td>Place : </td> <td> <%= @place.place_name %>  </td>
+  </tr>
+<tr>
+   <td>County:</td> <td><%= @place.county %></td>
+ <tr>
+   <td>Country:</td> <td><%= @place.country %></td>
+ 
+  
+  <tr>
+   <% if @names%>
+   <%  @names.each do |name| %>
+   <td>Other possible place names :</td><td ><%= name %>  </td>  
+   <%end%>
+   <%end%>
+   </tr>
+   <tr>
+   <td>Genuki page :</td><td ><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
+  
+   
+   <tr>
+   <td>Notes about the Place :</td><td > <%= @place.place_notes %> </td>   
+   </tr>
+    <tr>
+   <td>Grid Reference:</td><td > <%= @place.grid_reference %></td>   
+   </tr>
+ <tr>
+   <td>Latitude:</td><td > <%= @place.latitude%></td>   
+   </tr>
+ <tr>
+   <td>Longitude:</td><td > <%= @place.longitude%></td>   
+   </tr>
+ <tr>
+   <td>Source:</td><td > <%= @place.source %></td>   
+   </tr>
+ 
+ <tr>
+   <td>Last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>   
+   </tr>
+  
+</table>  
+
+
+ 
+ 
+<tr>
+<td><table style="width:100%"> 
+
+<% @place.churches.order_by(church: 1).each do |church| %>
+
+<tr ><td><b>Church <br></b><%= link_to(church.church_name, show_church_path(church)) %></td>
+
+ <td><table style="width:100%"> <% church.registers.order_by(register_type: 1).each do |register| %>
+<tr><th colspan="6">Registers : <%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %></th></tr>
+   
+<% end%>
+</table>
+<% end%>
+</table>
+</div>  

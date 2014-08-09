@@ -3,4 +3,6 @@ class ManageResource
  field :chapman_code, type: String
  
  field :userid, type: String
+
+ 
 end

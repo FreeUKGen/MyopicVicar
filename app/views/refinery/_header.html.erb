@@ -6,6 +6,7 @@
  <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <% else %>
  <div style="float:left;"> <%= button_to" Login for members", refinery.login_path, method: :get %></div>
+ <div style="float:left;"> <%= button_to" Signup", main_app.general_userid_detail_path, method: :get %></div>
 <% end %>
 </h3>
 

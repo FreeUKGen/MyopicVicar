@@ -9,6 +9,7 @@ class Syndicate
   field :previous_syndicate_coordinator, type: String
   field :syndicate_description, type: String
   field :syndicate_notes, type: String
+  field :accepting_transcribers, type: Boolean, default: true 
   before_save :add_lower_case_and_change_userid_fields
 
  index ({ syndicate_code: 1, syndicate_coordinator: 1 })
@@ -40,5 +41,21 @@ def  add_lower_case_and_change_userid_fields
 
 end
 
+def self.get_syndicates_open_for_transcription
+  @syndicates = Array.new
+  syndicates = Syndicate.where(:accepting_transcribers.ne => false).all.order_by(syndicate_code: 1)
+  syndicates.each do |syn|
+   @syndicates << syn.syndicate_code
+ end
+ return @syndicates
+end
+def self.get_syndicates
+   synd = Syndicate.all.order_by(syndicate_code: 1)
+   @syndicates = Array.new
+    synd.each do |syn|
+        @syndicates << syn.syndicate_code
+    end 
+     return @syndicates
+  end
 
 end

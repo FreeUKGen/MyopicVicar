@@ -26,7 +26,7 @@ FIELD_NAMES = {
                'Country' => :address,
                 'SubmitterNumber' => :submitter_number,
                  'SyndicateID' => :syndicate,
-
+                  'SyndicateName' => :syndicate_name
                  
                    'SignUpDate' => :sign_up_date,
                   'Person' => :person_role
@@ -115,8 +115,9 @@ def self.check_for_replace(filename,userid,digest)
 
     header[:person_role] = "transcriber" if header[:person_role].nil?
    header[:previous_syndicate] = header[:syndicate]
-   header[:syndicate] = SyndicateTranslation.values_at(header[:syndicate])
-   
+   header[:syndicate] = SyndicateTranslation.values_at(header[:syndicate]) if header[:syndicate_name].nil?
+   #files written in F2 may have a non county syndicate name
+   header[:syndicate] = header[:syndicate_name] unless header[:syndicate_name].nil?
    header[:digest] = Digest::MD5.file(filename).hexdigest 
     
   header[:sign_up_date] = DateTime.strptime(header[:sign_up_date],'%s') unless header[:sign_up_date].nil?
@@ -192,7 +193,7 @@ def self.check_for_replace(filename,userid,digest)
    header[:person_role] = "system_administrator" if header[:userid] == "REGManager" 
     header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk" 
      header[:person_role] = "data_manager" if header[:userid] == "ericb" 
-  
+      header[:person_role] = "data_manager" if header[:userid] == "kirkbedordshire" 
    if check_for_replace(filename,header[:userid],header[:digest]) 
    detail = UseridDetail.new(header)
    detail.save 

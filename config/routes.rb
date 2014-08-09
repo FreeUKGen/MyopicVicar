@@ -40,10 +40,15 @@ MyopicVicar::Application.routes.draw do
 
 
   resources :manage_resources
- 
+get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail 
+  get 'userid_details/researcher_registration', :to =>'userid_details#researcher_registration', :as => :researcher_registration_userid_detail 
+  get 'userid_details/transcriber_registration', :to =>'userid_details#transcriber_registration', :as => :transcriber_registration_userid_detail 
+  get 'userid_details/technical_registration', :to =>'userid_details#technical_registration', :as => :technical_registration_userid_detail 
+  get 'userid_details/general', :to =>'userid_details#general', :as => :general_userid_detail 
   get 'userid_details/:id/disable(.:format)', :to => 'userid_details#disable', :as => :disable_userid_detail
   get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
   get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
+  get 'userid_details/all', :to => 'userid_details#all', :as => :all_userid_detail
   
   resources :userid_details
 
@@ -114,7 +119,6 @@ MyopicVicar::Application.routes.draw do
   resources :image_lists
   
   #root :to => 'search_queries#index'
-
   
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

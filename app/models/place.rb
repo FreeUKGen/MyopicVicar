@@ -91,8 +91,7 @@ class Place
 
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location
-    
-      errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") if ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
+     errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") if ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?))) 
       unless (self[:grid_reference].nil? || self[:grid_reference].empty?) 
         errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
       end  
@@ -111,7 +110,6 @@ class Place
     if self.location.nil? || self.location.empty?
       if self[:latitude].nil? ||self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
                my_location = self[:grid_reference].to_latlng.to_a 
-               p my_location
                self[:latitude] = my_location[0]
                self[:longitude]= my_location[1]
       end

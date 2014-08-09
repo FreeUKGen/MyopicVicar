@@ -2,18 +2,15 @@ class ManageSyndicatesController < ApplicationController
 layout "manage_counties"
 
 	def index
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-    end
   clean_session
-  @userid = session[:userid]
-  @first_name = session[:first_name]
-  @user = UseridDetail.where(:userid => session[:userid]).first
-  syndicates =@user.syndicate_groups
-  syndicates = Syndicate.all.order_by(syndicate_code: 1) if session[:userid] == "SNDManager"
-  number_of_syndicates = syndicates.length
   session[:role] = 'syndicate'
   session[:page] = request.original_url
+  get_user_info(session[:userid],session[:first_name])
+  
+  syndicates = @user.syndicate_groups
+  syndicates = Syndicate.all.order_by(syndicate_code: 1) if session[:userid] == "SNDManager"
+  number_of_syndicates = syndicates.length
+  
    redirect_to manage_resource_path(@user) if number_of_syndicates == 0
     
    @manage_syndicate = ManageSyndicate.new
@@ -69,6 +66,7 @@ def new
                 users.each do |user|
                 @userids << user
              end
+             @userids = Kaminari.paginate_array(@userids).page(params[:page]) 
           render 'userid_details/index'
           return
 

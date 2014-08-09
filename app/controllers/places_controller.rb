@@ -1,4 +1,4 @@
-class PlacesController < InheritedResources::Base
+class PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
   

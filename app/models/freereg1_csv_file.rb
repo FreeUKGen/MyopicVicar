@@ -423,8 +423,8 @@ def self.date_change(file,transcription_date,modification_date)
   end
 
   def recalculate_last_amended
-    register = self.register
-    church = register.church
+     register = self.register
+     church = register.church
      place = church.place
      Place.recalculate_last_amended_date(place)
   end

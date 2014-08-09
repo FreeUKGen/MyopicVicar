@@ -1,4 +1,4 @@
-class RegistersController < InheritedResources::Base
+class RegistersController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
  layout "places"

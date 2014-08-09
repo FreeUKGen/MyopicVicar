@@ -1,5 +1,6 @@
 class SearchRecordsController < ApplicationController
   before_filter :viewed
+  skip_before_filter :require_login
   def show
     @page_number = params[:page_number].to_i
     @search_record = SearchRecord.find(params[:id])

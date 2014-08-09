@@ -1,3 +1,3 @@
-class MySavedSearchesController < InheritedResources::Base
+class MySavedSearchesController < ApplicationController
 	
 end

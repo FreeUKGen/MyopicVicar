@@ -32,8 +32,8 @@ Page Identification UserDetails: Index<p>
     
     <th style="width:14%">UserID</th>
     <th style="width:10">Forename</th>
-    <th style="width:10%">Surname</th>
-    <th style="width:35%">Email</th>
+    <th style="width:12%">Surname</th>
+    <th style="width:33%">Email</th>
     <th style="width:4%">Active</th>
     <th style="width:13%">Last Upload</th>
     <th style="width:7%">Files</th>
@@ -56,15 +56,20 @@ Page Identification UserDetails: Index<p>
     <td ><%= userid.number_of_records %> </td>  
     </tr>
     <tr>
-     <td></td><td><%= button_to 'Show', userid_detail_path(userid), method: :get  %>
+     <td><%= button_to 'Show', userid_detail_path(userid), method: :get  %>
      </td><td><%= button_to 'Edit details', edit_userid_detail_path(userid), method: :get  %>
       </td><td><%= button_to 'List their batches', by_userid_freereg1_csv_file_path(userid), method: :get  %>
+       </td><td><%= button_to 'Send password change request', change_password_userid_detail_path(userid), method: :get %>
+  
       <% if userid.active %>
      </td> <td><%= button_to 'Inactivate', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
        </td> 
       <% else%>
      </td> <td><%= button_to 'Activate', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
        </td>
+      <% end %>   
+      <% if @user.person_role == 'system_administrator' || @user.person_role  == 'technical'%>     
+     </td><td> </td> <td><%= button_to 'Destroy', userid_detail_path(userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  %>
       <% end %>   
   </tr>
   <% end %>

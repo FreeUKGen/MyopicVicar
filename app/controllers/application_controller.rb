@@ -12,22 +12,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
+
+class ApplicationController < ActionController::Base
+
+ protect_from_forgery
+ before_filter :require_login
+ 
 require 'record_type'
 require 'name_role'
-class ApplicationController < ActionController::Base
-  protect_from_forgery
-end
+require 'chapman_code'
+require 'userid_role'
 def clean_session
   session[:freereg1_csv_file_id] = nil
-    session[:freereg1_csv_file_name] = nil
-    session[:county] = nil
-    session[:place_name] = nil
-    session[:church_name] = nil
-    session[:sort] = nil  
+  session[:freereg1_csv_file_name] = nil
+  session[:county] = nil
+  session[:place_name] = nil
+  session[:church_name] = nil
+  session[:sort] = nil  
   session[:csvfile] = nil
   session[:my_own] = nil
- session[:role] = nil
+  session[:role] = nil
   session[:freereg] = nil
   session[:edit] = nil
   
+end
+
+private
+ 
+  def require_login
+    if session[:userid].nil?
+      flash[:error] = "You must be logged in to access this section"
+      redirect_to refinery.login_path # halts request cycle
+    end
+  end
+
+  def after_sign_in_path_for(resource_or_scope)
+    p 'In directing to home place'
+     @user = current_refinery_user.userid_detail
+     scope = Devise::Mapping.find_scope!(resource_or_scope)
+    home_path = "#{scope}_root_path"
+    if @user.person_role == 'system_administrator' || @user.person_role == 'technical'
+      p @user
+      respond_to?(home_path, true) ? refinery.send(home_path) :  refinery.admin_root_path
+    else
+      p @user
+    respond_to?(home_path, true) ? refinery.send(home_path) : main_app.manage_resources_path
+    end
+  end
+def  get_user_info(userid,name)
+  @userid = userid
+  @first_name = name
+  @user = UseridDetail.where(:userid => @userid).first
+end
+def manager?(user)
+  #sets the manager flag status
+   a = false
+   a = true if (user.person_role == 'technical' || user.person_role == 'system_administrator' || user.person_role == 'country_coordinator'  || user.person_role == 'county_coordinator'  || user.person_role == 'volunteer_coordinator' || user.person_role == 'syndicate_coordinator')
+end
+
+
 end
