@@ -54,7 +54,7 @@ after_create :write_userid_file, :save_to_refinery, :send_invitation_to_create_p
 before_update :save_to_attic
 after_update  :update_number_of_files, :write_userid_file, :save_to_refinery
 #validate :syndicate_is_valid, on: :create
-before_destroy :delete_refinery_user
+before_destroy :delete_refinery_user_and_userid_folder
 
 
 
@@ -228,9 +228,11 @@ def self.get_userids_for_display(syndicate,page)
            end
    @userids = Kaminari.paginate_array(@userids).page(page) 
  end
- def delete_refinery_user
+ def delete_refinery_user_and_userid_folder
    refinery_user = Refinery::User.where(:username => self.userid).first
    refinery_user.destroy unless refinery_user.nil?
+   details_dir = File.join(Rails.application.config.datafiles,self.userid)
+   FileUtils.rmdir(details_dir) if File.file?(details_dir)
  end
 
  
