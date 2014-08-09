@@ -31,6 +31,7 @@ field :county_groups, type: Array
 field :country_groups, type: Array
 field :digest, type: String, default: nil
 field :skill_notes, type: String 
+index({ email_address: 1 })
 index({ userid: 1, system_administrator: 1 })
 index({ userid: 1, data_manager: 1 })
 index({ userid: 1, syndicate_coordinator: 1 })
@@ -43,8 +44,8 @@ scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 attr_protected 
 #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
 
-validate :userid_does_not_exist, on: :create
-
+validate :userid_and_email_address_does_not_exist, on: :create
+validate :email_address_does_not_exist, on: :update
 
 before_create :add_lower_case_userid
 
@@ -63,6 +64,7 @@ def write_userid_file
     Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
    details_dir = File.join(details_dir,".uDetails")
        if File.file?(details_dir)
+        save_to_attic
          p "file should not be there"
        end
   
@@ -114,8 +116,7 @@ def save_to_refinery
     u.add_role('Superuser') if self.person_role == 'technical'
 
     u.save! 
-    p "refinery"
-    p u
+    
 end    
 def send_invitation_to_create_password
   type = self.person_role
@@ -146,9 +147,14 @@ def save_to_attic
       end
 end
 
-def userid_does_not_exist
-  errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).first
+def userid_and_email_address_does_not_exist
+  errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
+   errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
 end
+
+def email_address_does_not_exist
+   errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
+ end
  
 def add_lower_case_userid
   self[:userid_lower_case] = self[:userid].downcase
@@ -223,5 +229,7 @@ def self.get_userids_for_display(syndicate,page)
    refinery_user = Refinery::User.where(:username => self.userid).first
    refinery_user.destroy unless refinery_user.nil?
  end
+
+ 
 
 end #end class
