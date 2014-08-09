@@ -16,7 +16,7 @@
 class ApplicationController < ActionController::Base
 
  protect_from_forgery
- before_filter :require_login
+ #before_filter :require_login
  
 require 'record_type'
 require 'name_role'
