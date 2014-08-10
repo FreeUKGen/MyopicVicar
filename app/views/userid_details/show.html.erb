@@ -95,7 +95,7 @@ Page Identification UserDetails: Show<p>
    <tr>
    <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>   
    </tr>
-<%if  @userid.active == false%>
+<%unless  @userid.active %>
    <tr>
    <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>   
    </tr>
