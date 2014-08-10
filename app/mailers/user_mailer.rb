@@ -78,7 +78,10 @@ def notification_of_registration_completion(user)
    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration") unless @coordinator.nil?
   
 end
-def reset_notification(user)
+def reset_notification(user,z)
+  p 'resetting'
+  p user
+  p z
    invitation_to_reset_password(user)
 end
 

@@ -96,10 +96,10 @@ def save_to_refinery
   #avoid looping on password changes
   
    u = Refinery::User.where(:username => self.userid).first
-    unless u.nil? 
-      u.destroy
+   unless u.nil? 
+    u.destroy 
     end
-     u = Refinery::User.new
+    u = Refinery::User.new
     u.username = self.userid
     u.email = self.email_address
     u.password = 'Password' # no-op
@@ -113,8 +113,11 @@ def save_to_refinery
     #u.add_role("Refinery_dashboard") if self.person_role == 'technical' || 'system_administrator'
 
     u.add_role('Refinery')
-    u.add_role('Superuser') if self.person_role == 'technical'
-
+    p 'checking'
+    a = self.active && self.person_role == 'technical'
+    p a
+    u.add_role('Superuser') if (self.active && self.person_role == 'technical') 
+    
     u.save! 
     
 end    
@@ -155,9 +158,11 @@ def userid_and_email_address_does_not_exist
 end
 
 def email_address_does_not_exist
+  unless self.changed.include?('password')
    errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
    errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
  end
+end
  
 def add_lower_case_userid
   self[:userid_lower_case] = self[:userid].downcase
@@ -203,6 +208,7 @@ end
 
 def add_fields(type)
    self.sign_up_date =  DateTime.now 
+   self.active = true
     case 
     when type == 'Register Researcher'
       self.person_role = 'researcher'
@@ -210,13 +216,13 @@ def add_fields(type)
     when type == 'Register Transcriber'
        self.person_role = 'transcriber'
     when type == 'Technical Registration'
-      self.person_role = 'pending'
-      self.syndicate = 'General'
+      self.active  = false
+      self.person_role = 'technical'
+      self.syndicate = 'Technical'
     end
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     self.password = password
     self.password_confirmation = password
-    self.active = true
     self.userid = self.userid.downcase
 end
 def self.get_userids_for_display(syndicate,page)
