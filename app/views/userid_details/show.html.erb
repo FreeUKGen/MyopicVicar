@@ -97,7 +97,9 @@ Page Identification UserDetails: Show<p>
    </tr>
 <%unless  @userid.active %>
    <tr>
-   <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>   
+   <%unless @userid.disabled_date.nil?%>
+   <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td> 
+    <%end%> 
    </tr>
 <tr>
    <td>Reason for making inactive:</td><td > <%=@userid.disabled_reason %>  </td>   

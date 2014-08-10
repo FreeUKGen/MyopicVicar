@@ -16,6 +16,6 @@
 
 <p> Do not reply to this email but instead contact your coordinator who has been informed of your registration.</p>
 <% unless @coordinator.nil? %>
-<p> <%= @coordinator.person_forename %>  <%= @coordinator.person_surname %> with an email address of <%= @coordinator%></p>
+<p> <%= @coordinator.person_forename %>  <%= @coordinator.person_surname %> at <%= @coordinator.email_address%></p>
 <%end%>
 <p> The FreeREG Team</p>

@@ -1,9 +1,9 @@
 
 
-<p> Dear <%= @coordinator.person_forename %>; (</p>
+<p> Dear <%= @coordinator.person_forename %>; </p>
 
 
-<p>A person <%= @user.person_forename%>  <%= @user.person_surname %> with an email address of <%= @user.email_address%> has confirmed their email address and registered a password with FreeREG using an userid of <b><%= @user.userid %>.</b> </p>
+<p>The registrant <%= @user.person_forename%>  <%= @user.person_surname %> at <%= @user.email_address%> has confirmed their email address and registered a password with FreeREG using an userid of <b><%= @user.userid %>.</b> </p>
 
 <p>They are now your responsibility</p>
 
