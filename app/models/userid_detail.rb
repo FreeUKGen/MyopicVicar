@@ -30,7 +30,8 @@ field :syndicate_groups, type: Array
 field :county_groups, type: Array
 field :country_groups, type: Array
 field :digest, type: String, default: nil
-field :skill_notes, type: String 
+field :skill_notes, type: String
+field :transcription_agreement, type: Boolean
 index({ email_address: 1 })
 index({ userid: 1, system_administrator: 1 })
 index({ userid: 1, data_manager: 1 })
@@ -43,6 +44,8 @@ index({ userid: 1, volunteer_coordinator: 1 })
 scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 attr_protected 
 #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
+
+validates_presence_of :userid, :email_address
 
 validate :userid_and_email_address_does_not_exist, on: :create
 validate :email_address_does_not_exist, on: :update
@@ -109,11 +112,7 @@ def save_to_refinery
     u.reset_password_sent_at = Time.now
     u.userid_detail_id = self.id.to_s
     u.add_role('Refinery')
-    p 'checking'
-    a = self.active && self.person_role == 'technical'
-    p a
     u.add_role('Superuser') if (self.active && self.person_role == 'technical') 
-    
     u.save! 
     
 end    
@@ -123,6 +122,7 @@ def send_invitation_to_create_password
   UserMailer.invitation_to_register_transcriber(self).deliver if type == 'transcriber'
   UserMailer.invitation_to_register_technical(self).deliver if type == 'technical'
 end
+
 def send_invitation_to_reset_password
   UserMailer.invitation_to_reset_password(self).deliver
   
@@ -147,11 +147,13 @@ def save_to_attic
 end
 
 def userid_and_email_address_does_not_exist
-  errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
+   errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
    errors.add(:userid, "Already exits") if Refinery::User.where(:username => self[:userid]).exists?
+   errors.add(:transcription_agreement, "Must be accepted") unless self[:transcription_agreement].include?(true)
+  
    errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
    errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
-end
+end   
 
 def email_address_does_not_exist
   if self.changed.include?('email_address')

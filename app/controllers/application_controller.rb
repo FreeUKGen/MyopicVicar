@@ -47,16 +47,13 @@ private
   end
 
   def after_sign_in_path_for(resource_or_scope)
-    p 'In directing to home place'
      @user = current_refinery_user.userid_detail
      scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)
-      p @user
       respond_to?(home_path, true) ? refinery.send(home_path) :  refinery.admin_root_path
     else
-      p @user
-    respond_to?(home_path, true) ? refinery.send(home_path) : main_app.manage_resources_path
+      respond_to?(home_path, true) ? refinery.send(home_path) : main_app.manage_resources_path
     end
   end
 def  get_user_info(userid,name)

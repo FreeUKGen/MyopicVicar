@@ -5,4 +5,32 @@ a:hover, active
 {
 color:red; 
 }
+.boldtable, .boldtable TD, .boldtable TH
+{
+font-family:sans-serif;
+font-size:10pt;
+
+}
+
+.inline-errors
+{
+text-decoration: underline;
+text-decoration-color: red;
+background-color: yellow;
+}
+.field_with_errors
+{
+	border: 2px solid red;
+}
+flash_notice {
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+  color: #468847;
+}
+
+.flash_alert {
+  background-color: #f2dede;
+  border-color: #eed3d7;
+  color: #b94a48;
+}
 

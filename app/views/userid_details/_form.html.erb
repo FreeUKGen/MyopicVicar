@@ -5,7 +5,7 @@
     <div id="main"style="color:black">
 
 <%if session[:type] == "add"%> 
-<%= f.input :userid,:label => "The UserId itself:",:input_html => { :size => 30 }%> 
+<%= f.input :userid,:label => "The UserID itself:",:input_html => { :size => 30 }%> 
  <%= f.input :syndicate, { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true,
   :collection => @syndicates, :size => 15 }  %>
 <%else%>
@@ -15,7 +15,7 @@
 <%= f.input :person_forename,:label => "Forename :",:input_html => { :size => 40 }%>
 <%= f.input :person_surname,:label => "Surname :",:input_html => { :size => 40 }%>
 <%= f.input :email_address,:label => "Email :",:input_html => { :size => 60 }%>
-<%= f.input :address,:label => "Physical address :",:input_html => { :size => 100 }%>
+<%= f.input :address,:label => "Physical location :",:input_html => { :size => 100 }%>
 <%= f.input :telephone_number,:label => "Telephone :",:input_html => { :size => 40 }%>
 <%= f.input :fiche_reader, {:as => :select,  :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :", :size => 5}%>
 <% if session[:manager] == true %>
@@ -33,7 +33,7 @@
 <%end%>
 <%= f.input :last_upload,:label => "Date of last upload :",:input_html => { :disabled => true ,:size => 30 }%>
 <%= f.input :sign_up_date,:label => "Date signed up :",:input_html => { :disabled => true, :size => 30 }%>
-<%if @user.person_role == 'system_administrator' || @user.person_role == 'technical'%>
+<%if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
 <%= f.input :person_role, {:as => :select,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Person's role in FreeREG :", :size => 8 } %>
  <% end %>
   

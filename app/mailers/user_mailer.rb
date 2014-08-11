@@ -79,9 +79,7 @@ def notification_of_registration_completion(user)
   
 end
 def reset_notification(user,z)
-  p 'resetting'
-  p user
-  p z
+   user = UseridDetail.find(user.userid_detail_id)
    invitation_to_reset_password(user)
 end
 
