@@ -158,7 +158,7 @@ def userid_and_email_address_does_not_exist
 end
 
 def email_address_does_not_exist
-  unless self.changed.include?('password')
+  if self.changed.include?('email_address')
    errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
    errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
  end

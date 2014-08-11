@@ -24,6 +24,7 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
    
   def show
     load(params[:id])
+
   end
 
   def all
@@ -36,6 +37,7 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
   def my_own
     session[:my_own] = 'my_own'
     get_user_info(session[:userid],session[:first_name])
+    @userid = @user
     render :action => 'show'
 
   end
