@@ -52,7 +52,7 @@ before_create :add_lower_case_userid
 after_create :write_userid_file, :save_to_refinery, :send_invitation_to_create_password
 
 before_update :save_to_attic
-after_update  :update_number_of_files, :write_userid_file, :save_to_refinery
+after_update  :write_userid_file
 #validate :syndicate_is_valid, on: :create
 before_destroy :delete_refinery_user_and_userid_folder
 
@@ -96,10 +96,10 @@ def save_to_refinery
   #avoid looping on password changes
   
    u = Refinery::User.where(:username => self.userid).first
-   unless u.nil? 
-    u.destroy 
+   if u.nil? 
+   u = Refinery::User.new
     end
-    u = Refinery::User.new
+    
     u.username = self.userid
     u.email = self.email_address
     u.password = 'Password' # no-op
@@ -108,10 +108,6 @@ def save_to_refinery
     u.reset_password_token= Refinery::User.reset_password_token 
     u.reset_password_sent_at = Time.now
     u.userid_detail_id = self.id.to_s
-    #u.add_role("Refinery")
-    #u.add_role("Refinery_pages") if self.person_role == 'technical' || 'system_administrator'
-    #u.add_role("Refinery_dashboard") if self.person_role == 'technical' || 'system_administrator'
-
     u.add_role('Refinery')
     p 'checking'
     a = self.active && self.person_role == 'technical'
@@ -168,25 +164,28 @@ def add_lower_case_userid
   self[:userid_lower_case] = self[:userid].downcase
 end
 
-def update_number_of_files
-   files = Freereg1CsvFile.where(:userid => self[:userid] ).all
+def self.update_number_of_files(user)
+#need to think about doing an update
+   userid = UseridDetail.where(:userid => user).first
+   files = Freereg1CsvFile.where(:userid => user ).all
     if files.nil?
-     self[:number_of_files] = 0
-     self[:number_of_records] = 0
-     self[:last_upload] = nil
+     userid[:number_of_files] = 0
+     userid[:number_of_records] = 0
+     userid[:last_upload] = nil
     else
      number = 0
      records = 0
       files.each do |my_file|
       	number  = number  + 1
       	records = records + my_file.records.to_i
-      	self[:last_upload] = my_file.uploaded_date if number == 1
-      	  unless my_file.uploaded_date.nil? || self[:last_upload].nil?
-      	   self[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > self[:last_upload].strftime("%s").to_i
+      	userid[:last_upload] = my_file.uploaded_date if number == 1
+      	  unless my_file.uploaded_date.nil? || userid[:last_upload].nil?
+      	   uderid[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > userid[:last_upload].strftime("%s").to_i
           end
        end
-       self[:number_of_files] = number
-        self[:number_of_records] = records
+       userid[:number_of_files] = number
+       userid[:number_of_records] = records
+       userid.save!
     end
  end
 

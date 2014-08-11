@@ -97,10 +97,10 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
      if @userid.errors.any?
         flash[:notice] = 'The registration was unsuccessful'
           @syndicates = Syndicate.get_syndicates_open_for_transcription
-        next_place_to_go_unsuccessful
+        next_place_to_go_unsuccessful_create
      else
-       flash[:notice] = 'The addition of the person was successful'
-       next_place_to_go_successful(@userid)
+       flash[:notice] = 'The addition of the user deatils was successful'
+       next_place_to_go_successful_create(@userid)
      end
   end
 
@@ -111,15 +111,16 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
      params[:userid_detail][:active]  = false  
     end
     params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
-    @userid.update_attributes!(params[:userid_detail])
+    @userid.update_attributes(params[:userid_detail])
+    @userid.save_to_refinery
     
    if @userid.errors.any?
-        flash[:notice] = 'The registration was unsuccessful'
+        flash[:notice] = 'The update of the user details was unsuccessful'
           @syndicates = Syndicate.get_syndicates_open_for_transcription
-        next_place_to_go_unsuccessful
+        next_place_to_go_unsuccessful_update
      else
-       flash[:notice] = 'The addition of the person was successful'
-       next_place_to_go_successful(@userid)
+       flash[:notice] = 'The update of the user details was successful'
+       next_place_to_go_successful_update(@userid)
      end
 end
 
@@ -144,7 +145,7 @@ end
     @role = session[:role]
   end
 
-def next_place_to_go_unsuccessful
+def next_place_to_go_unsuccessful_create
    case 
          when session[:type] == "add"
           render :action => 'new' 
@@ -163,8 +164,29 @@ def next_place_to_go_unsuccessful
           return
     end
 end
+def next_place_to_go_unsuccessful_update
+   case 
+     when session[:my_own] == 'my_own'
+            render :action => 'edit'
+            return
+         when session[:type] == "edit"
+          
+           if @user.person_role == 'system_administrator'
+              redirect_to :action => 'all'
+              return
+           else
+              redirect_to userid_details_path(:anchor => "#{ @userid.id}")
+              return
+           end
+          
+          else
+            redirect_to refinery.login_path
+            return
+    end
+end
 
-  def next_place_to_go_successful(userid)
+
+  def next_place_to_go_successful_create(userid)
      @userid.finish_creation_setup if params[:commit] == 'Submit'
      @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
      @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
@@ -188,11 +210,33 @@ end
     end
     redirect_to refinery.login_path
 end
+def next_place_to_go_successful_update(userid)
+     
+   case 
+         when session[:my_own] == 'my_own'
+            redirect_to :action => 'my_own'
+            return
+         when session[:type] == "edit"
+          
+           if @user.person_role == 'system_administrator'
+              redirect_to :action => 'all'
+              return
+           else
+              redirect_to userid_details_path(:anchor => "#{ @userid.id}")
+              return
+           end
+          
+          else
+            redirect_to refinery.login_path
+            return
+    end
+   
+end
 
 def record_validation_errors(exception)
   flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
   @userid.delete
-  next_place_to_go_unsuccessful
+  next_place_to_go_unsuccessful_update
 end
 
 end

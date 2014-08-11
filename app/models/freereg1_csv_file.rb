@@ -66,7 +66,7 @@ class Freereg1CsvFile
   index({error:1, file_name:1})
 
 before_save :add_lower_case_userid
-after_save :recalculate_last_amended
+after_save :recalculate_last_amended, :update_number_of_files
 before_destroy do |file|
     file.save_to_attic
     Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
@@ -428,6 +428,11 @@ def self.date_change(file,transcription_date,modification_date)
      place = church.place
      Place.recalculate_last_amended_date(place)
   end
+
+ def  update_number_of_files
+  
+  UseridDetail.update_number_of_files(self.userid) 
+ end
    
 end
 
