@@ -102,6 +102,7 @@ get 'userid_details/:id/change_password', :to =>'userid_details#change_password'
   resources :search_records
 
   get 'search_queries/:id/about(.:format)', :to => 'search_queries#about', :as => :about_search_query
+  post 'search_queries/:id/remember(.:format)', :to => 'search_queries#remember', :as => :remember_search_query
   resources :search_queries
 
   resources :s3buckets

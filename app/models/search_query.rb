@@ -24,7 +24,8 @@ class SearchQuery
   field :place_system, type: String
   validates_inclusion_of :place_system, :in => Place::MeasurementSystem::ALL_SYSTEMS+[nil]  
 
-
+  belongs_to :userid_detail
+  
   validate :name_not_blank
   validate :radius_is_valid
   before_save :clean_blanks

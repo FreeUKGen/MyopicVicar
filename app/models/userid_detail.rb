@@ -45,6 +45,8 @@ scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
 attr_protected 
 #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
 
+has_many :search_queries
+
 validates_presence_of :userid, :email_address
 
 validate :userid_and_email_address_does_not_exist, on: :create
@@ -59,6 +61,11 @@ after_update  :write_userid_file
 #validate :syndicate_is_valid, on: :create
 before_destroy :delete_refinery_user_and_userid_folder
 
+
+
+def remember_search(search_query)
+  self.search_queries << search_query
+end
 
 
 def write_userid_file

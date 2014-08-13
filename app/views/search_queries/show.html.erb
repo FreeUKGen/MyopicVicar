@@ -2,16 +2,24 @@
 	<ul>
 	    <li><%= link_to "New Search", new_search_query_path %></li>
 	    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
+	    <% if current_refinery_user && !current_refinery_user.userid_detail.search_queries.include?(@search_query )%>
+		    <li><%= button_to "Remember Search", remember_search_query_path %></li>    
+	    <% end %>
 	</ul>
 </div>
 
+ <% if flash[:green] %>
+    <div id="success" style="color:green"><br>
+	   <%= flash[:notice] %>  <% flash[:green] = nil%> <br>
+    </div>
+<% end %>
 
 <h1>Search results</h1>
 
 <div id="query_parameters">
 	<% print_br=false%>
 	<% @search_query.attributes.each do |query_field, query_value|%>
-		<% unless ["_id", "chapman_codes", "place_ids", "place_radius", "place_system"].include?(query_field) || query_value==false %>
+		<% unless ["_id", "chapman_codes", "place_ids", "place_radius", "place_system", "userid_detail_id"].include?(query_field) || query_value==false %>
 			<% if print_br %>
 				<br />
 			<% end %>

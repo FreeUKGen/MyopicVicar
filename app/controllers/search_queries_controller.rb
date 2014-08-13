@@ -15,6 +15,13 @@ class SearchQueriesController < ApplicationController
     end
   end
 
+  def remember
+    @search_query = SearchQuery.find(params[:id])
+    current_refinery_user.userid_detail.remember_search(@search_query)
+    flash[:success] = "This search has been added to your remembered searches"
+    redirect_to search_query_path(@search_query)
+  end
+
   def create
     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
 

@@ -1,10 +1,29 @@
-<p> Under Contruction</p>
-
-<br>
-
  
- 
- <div style="float:left;">  <%= button_to_function "Back to Previous Page", "history.back()" %> </div>
+
+<table>
+	<thead>
+		<th>
+			Query
+		</th>
+		<th>&nbsp;</th>
+	</thead>
+	<tbody>
+		<% current_refinery_user.userid_detail.search_queries.each do |query| %>
+		 	<tr>
+		 		<td>
+		 			Name: <%= query.first_name if query.first_name %>
+		 			<%= query.last_name if query.last_name %></br>
+		 			Location: <%= query.places.all.map{|place| place.place_name}.join(" ")%>
+		 			<%= query.chapman_codes.map{|county| county }.join(" ") %>
+	 			</td>
+		 		<td>
+		 			<%= button_to("Run", search_query_path(query), :method=>:get)%>
+		 		</td>
+	 		</tr>`			
+		<% end %>
+		
+	</tbody>
+</table>
 
 
 <div style="clear:both;"> </div><br>
