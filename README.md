@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/freeukgen/myopicvicar.png?label=ready&title=Ready)](https://waffle.io/freeukgen/myopicvicar)
 # MyopicVicar
 
 MyopicVicar is an administrative application for preparing and loading images
