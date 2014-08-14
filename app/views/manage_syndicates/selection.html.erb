@@ -1,0 +1,20 @@
+Page Identification UserDetals: Selection<p>
+ <%= semantic_form_for @userid, :url => { :action => "select"  } do |f| %>
+ <% if session[:type] == 'userid' %>
+      <%= f.input :userid, 
+        { :as => :select, :label => "#{@first_name} which userid would you like to work with?",
+          :include_blank => false,
+          :required => true,
+          :collection => @userids, :size => 10 } %>
+    <%= f.action :submit, :as => :input, :label => 'Select Userid'   %>
+   <% end %>
+    
+<% if session[:type] == 'email' %>
+      <%= f.input :email_address, 
+        { :as => :select, :label => "#{@first_name} which email address would you like to work with?",
+          :include_blank => false,
+          :required => true,
+          :collection => @userids, :size => 10 } %>
+    <%= f.action :submit, :as => :input, :label => 'Select Email'  %>
+   <% end %>
+<% end %>

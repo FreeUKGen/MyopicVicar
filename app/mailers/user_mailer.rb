@@ -30,52 +30,52 @@ class UserMailer < ActionMailer::Base
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG Registration")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Registration")
   end
  def invitation_to_register_researcher(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG Registration")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Registration")
   end
 
   def invitation_to_register_technical(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG Registration")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Registration")
   end
   def invitation_to_reset_password(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG Password Reset")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Password Reset")
   end
   def notification_of_transcriber_creation(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
   end
    def notification_of_researcher_registration(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
   end
 def notification_of_technical_registration(user)
    @user = user
    get_coordinator_name
-   mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration") unless @coordinator.nil?
+   mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
 end
 def notification_of_registration_completion(user)
    @user = user
    get_coordinator_name
-   mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration") unless @coordinator.nil?
+   mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
   
 end
 def reset_notification(user,z)

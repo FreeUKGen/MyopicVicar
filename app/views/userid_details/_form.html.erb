@@ -12,6 +12,7 @@
 <%= f.input :person_surname,:label => "Surname :",:input_html => { :size => 40 }%>
 <%= f.input :email_address,:label => "Email :",:input_html => { :size => 60 }%>
 <%= f.input :address,:label => "Physical location :",:input_html => { :size => 100 }%>
+<%unless @user.person_role == 'researcher' %>
 <%= f.input :telephone_number,:label => "Telephone :",:input_html => { :size => 40 }%>
 <%= f.input :fiche_reader, {:as => :select, :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :", :size => 5}%>
 <% if session[:manager] == true %>
@@ -29,3 +30,8 @@
 <%= f.action :submit, :as => :input, :label => 'Submit' %>
 <% end %>
 </div>
+
+ <%= f.action :submit, :as => :input, :label => 'Submit' %>
+ <% end %>
+</div>
+
