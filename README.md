@@ -1,9 +1,14 @@
-[![Stories in Ready](https://badge.waffle.io/freeukgen/myopicvicar.png?label=ready&title=Ready)](https://waffle.io/freeukgen/myopicvicar)
 # MyopicVicar
 
 MyopicVicar is an administrative application for preparing and loading images
 into a transcription tool based on Zooniverse Scribe.
 
+## Current Sprint
+
+[![Stories in Sprint Backlog](https://badge.waffle.io/freeukgen/myopicvicar.png?label=committed&title=Sprint Backlog)](https://waffle.io/freeukgen/myopicvicar) 
+[![Stories in Sprint Backlog](https://badge.waffle.io/freeukgen/myopicvicar.png?label=in progress&title=In Progress)](https://waffle.io/freeukgen/myopicvicar) 
+[![Stories in Sprint Backlog](https://badge.waffle.io/freeukgen/myopicvicar.png?label=need review &title=In Review)](https://waffle.io/freeukgen/myopicvicar)
+[![Stories in Sprint Backlog](https://badge.waffle.io/freeukgen/myopicvicar.png?label=testing &title=Done)](https://waffle.io/freeukgen/myopicvicar)
 
 ## Getting Started
 
