@@ -17,7 +17,8 @@ MyopicVicar::Application.routes.draw do
  
   resources :place_caches
 
-
+  post 'manage_syndicates/select', :to =>'manage_syndicates#select', :as => :select_manage_syndicate 
+  get 'manage_syndicates/selection', :to =>'manage_syndicates#selection', :as => :selection_manage_syndicate 
   resources :manage_syndicates   
   
   resources :csvfiles
@@ -40,7 +41,8 @@ MyopicVicar::Application.routes.draw do
 
 
   resources :manage_resources
-get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail 
+ 
+  get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail 
   get 'userid_details/researcher_registration', :to =>'userid_details#researcher_registration', :as => :researcher_registration_userid_detail 
   get 'userid_details/transcriber_registration', :to =>'userid_details#transcriber_registration', :as => :transcriber_registration_userid_detail 
   get 'userid_details/technical_registration', :to =>'userid_details#technical_registration', :as => :technical_registration_userid_detail 
@@ -54,6 +56,7 @@ get 'userid_details/:id/change_password', :to =>'userid_details#change_password'
 
  get  'manage_counties/select',  :to => 'manage_counties#select', :as => :select_manage_county
   resources :manage_counties
+
 
   resources :syndicates
 

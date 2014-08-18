@@ -99,6 +99,7 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
           @syndicates = Syndicate.get_syndicates_open_for_transcription
         next_place_to_go_unsuccessful_create
      else
+       @userid.send_invitation_to_create_password
        flash[:notice] = 'The addition of the user deatils was successful'
        next_place_to_go_successful_create(@userid)
      end

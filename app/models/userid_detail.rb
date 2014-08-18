@@ -54,7 +54,7 @@ validate :email_address_does_not_exist, on: :update
 
 before_create :add_lower_case_userid
 
-after_create :write_userid_file, :save_to_refinery, :send_invitation_to_create_password
+after_create :write_userid_file, :save_to_refinery
 
 before_update :save_to_attic
 after_update  :write_userid_file
@@ -156,7 +156,9 @@ end
 def userid_and_email_address_does_not_exist
    errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
    errors.add(:userid, "Already exits") if Refinery::User.where(:username => self[:userid]).exists?
-   errors.add(:transcription_agreement, "Must be accepted") unless self[:transcription_agreement].include?(true)
+   unless self[:transcription_agreement].nil? # deals with off line updating
+    errors.add(:transcription_agreement, "Must be accepted") unless self[:transcription_agreement].include?(true)
+   end
   
    errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
    errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
@@ -242,6 +244,40 @@ def self.get_userids_for_display(syndicate,page)
            end
    @userids = Kaminari.paginate_array(@userids).page(page) 
  end
+ def self.get_active_userids_for_display(syndicate,page)
+  users = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
+   users = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+   @userids = Array.new
+           users.each do |user|
+              @userids << user
+           end
+   @userids = Kaminari.paginate_array(@userids).page(page) 
+ end
+ def self.get_userids_for_selection(syndicate)
+  p 'getting'
+   users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+   users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+   @userids = Array.new
+           users.each do |user|
+              @userids << user.userid
+           end
+           p  @userids
+ end
+ def self.get_emails_for_selection(syndicate)
+  p 'getting emails '
+   users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+   users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+   p users
+   @userids = Array.new
+           users.each do |user|
+            p 'each'
+            p user
+            p user.email_address
+              @userids << user.email_address
+           end
+          p  @userids
+  end
+
  def delete_refinery_user_and_userid_folder
    refinery_user = Refinery::User.where(:username => self.userid).first
    refinery_user.destroy unless refinery_user.nil?

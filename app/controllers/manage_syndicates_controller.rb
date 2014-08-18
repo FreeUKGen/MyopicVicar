@@ -1,5 +1,4 @@
 class ManageSyndicatesController < ApplicationController
-layout "manage_counties"
 
 	def index
   clean_session
@@ -35,11 +34,16 @@ layout "manage_counties"
 end
 
 
-def select_userid
+def selection
+  get_user_info(session[:userid],session[:first_name])
+  @userids = UseridDetail.get_emails_for_selection(session[:syndicate]) if session[:type] == "email"
+  @userids = UseridDetail.get_userids_for_selection(session[:syndicate]) if session[:type] == "userid"
+  @manage_syndicate = session[:syndicate]
+  
 end
 
 def new
- end 
+end 
 
  def create
     	session[:syndicate] = params[:manage_syndicate][:syndicate] if session[:multiple] == true
@@ -57,24 +61,29 @@ def new
         when params[:manage_syndicate][:action] == 'Review Batches listed by uploaded date'
            session[:sort] =  sort = "uploaded_date DESC"
          when params[:manage_syndicate][:action] == 'Review Active Members' 
+           get_user_info(session[:userid],session[:first_name])
+            @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page]) 
+             session[:type] = "manager"
+             session[:my_own] = "no"
+             render 'userid_details/index'
+          return
+         when params[:manage_syndicate][:action] == 'Select Specific Member by Userid'
+            session[:type] = "userid"
+            redirect_to selection_manage_syndicate_path
+            return
+
+         when params[:manage_syndicate][:action] == 'Select Specific Member by Email Address' 
+           session[:type] = "email"
+           redirect_to selection_manage_syndicate_path
+            return
+     
+          when params[:manage_syndicate][:action] == 'Review all Members'
+            @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page]) 
              @first_name = session[:first_name]
              @user = UseridDetail.where(:userid => session[:userid]).first
              session[:type] = "manager"
              session[:my_own] = "no"
-             users = UseridDetail.where(:syndicate => session[:syndicate], :active => true).all.order_by(userid_lower_case: 1) 
-             @userids = Array.new
-                users.each do |user|
-                @userids << user
-             end
-             @userids = Kaminari.paginate_array(@userids).page(params[:page]) 
-          render 'userid_details/index'
-          return
-
-
-       
-         
-          when params[:manage_syndicate][:action] == 'Review all Members'
-             redirect_to userid_details_path  
+             render 'userid_details/index'
              return
         else
            @user = UseridDetail.where(:userid => session[:userid]).first
@@ -83,6 +92,21 @@ def new
         end
           redirect_to freereg1_csv_files_path
   end # create
+def select
+  case 
+   when params[:commit] == 'Select Userid'
+    userid = UseridDetail.where(:userid => params[session[:syndicate]][:userid]).first
+    redirect_to userid_detail_path(userid)
+    return
+   when params[:commit] == 'Select Email'
+     userid = UseridDetail.where(:email_address => params[session[:syndicate]][:email_address]).first
+    redirect_to userid_detail_path(userid)
+    return
+   else
+  end
+     
+end # update
+
 end
 
 

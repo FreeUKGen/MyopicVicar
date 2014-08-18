@@ -1,21 +1,27 @@
 Page Identification UserDetals: Selection<p>
- <%= semantic_form_for @manage_syndicate, :url => { :action => "select"  } do |f| %>
- 
- <% if session[:type] == 'userid' %>
+ <%= semantic_form_for @userids do |f| %>
+ <% if session[:type] == 'userid'
       <%= f.input :userid, 
         { :as => :select, :label => "#{@first_name} which userid would you like to work with?",
           :include_blank => false,
           :required => true,
-          :collection => @userids, :size => 10 } %>
+          :collection => @counties, :size => 10 } %>
     <%= f.action :submit, :as => :input, :label => 'Select Userid'   %>
    <% end %>
-    
-<% if session[:type] == 'email' %>
+     <% end %>
+<% if session[:type] == 'emails'
       <%= f.input :email_address, 
         { :as => :select, :label => "#{@first_name} which email address would you like to work with?",
           :include_blank => false,
           :required => true,
-          :collection => @userids, :size => 10 } %>
-    <%= f.action :submit, :as => :input, :label => 'Select Email'  %>
+          :collection => @counties, :size => 10 } %>
+    <%= f.action :submit, :as => :input, :label => 'Select Email'   %>
    <% end %>
-<% end %>
+     <% end %>
+
+
+
+
+
+
+
