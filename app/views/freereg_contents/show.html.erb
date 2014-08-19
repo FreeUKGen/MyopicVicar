@@ -2,48 +2,45 @@
 <p>This table contains a listing of those Places and Churches for <b> <%= @county  %></b> for which we have searchable data. Select the Location link, where it exists, to find out the actual location of the Place from Genuki. Select the Church link to obtain additional information about the specific registers that have been transcribed for that church.
  
 </p>
+<%= paginate @places %> 
 
-<table>
-<tr>
-    <th >Place</th>
-    <th >Alternate place name</th>
-    
-    <th >Record last amended</th>
-    <th >Churches</th>
-    <th >Location </th>
-</tr>
-
-
-<% @places.each do |place|%>
-<tr id="<%=place.id%>">
- <td >
-     <%= place.place_name %>
-    </td>
-       <td >
-     <%= place.alternate_place_name %>
-      </td>
+<table style="width: 100%">
+  <tr>
   
-     <td >
-     <%= place.last_amended %>
-      </td>
+    <th style="width:25%">Place</th>
+    <th style="width:12%">Record last amended</th>
+    <th style="width:63%">Churches  and  their  Registers</th>
+       
+  </tr>
+
+<% @places.each do |place| %>
+   <% session[:placeid] = place.id%>
+  <tr style= "color:black" id="<%=place.id%>"> 
+
+   
+    <td > <%= link_to(place.place_name, show_place_path(place)) %> </td>
     
-  <td><ul>
-	  <% place.churches.order_by(:church_name.asc).each do |church| %>
-	  	<li>
-		  	<%= link_to(church.church_name, show_church_path(church)) %>
-			<%= church.denomination %>	
-			<%= church.location %>	<br />
-	  	</li>
-	  <% end %>  	
-  </ul>
-</td>
-<td >
-     <%= link_to('Location', place.genuki_url) unless place.genuki_url.nil?%>
-      </td>
-</tr>
+    <td > <%= place.last_amended %> </td>
 
-<% end %> 
+    <td ><table style="width:650px"> 
+     
+<% place.churches.order_by(church: 1).each do |church| %>
 
 
+<tr ><td style="width:300px"> <%= link_to(church.church_name, show_church_path(church)) %> </td>
+<td ><table style="width:250px"><% church.registers.order_by(register_type: 1).each do |register| %>
+
+<% registertype = RegisterType.display_name(register.register_type)%>
+
+<%= link_to(registertype, show_register_path(register)) %></td><br /></tr>
+
+
+<% end%>
 </table>
-
+<% end%>
+</table>
+  </td>
+  </tr>
+<% end %>
+</table>
+<%= paginate @places %> 

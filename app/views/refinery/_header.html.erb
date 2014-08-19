@@ -2,6 +2,7 @@
 
   <%= link_to Refinery::Core.site_name, refinery.root_path %></h1></div>
  <h3><div style="float:left;"> <%= button_to " Search Our Database", main_app.search_queries_path , method: :get%></div>
+ <div style="float:left;"> <%= button_to " Content of Our Database", refinery.county_pages_county_pages_path , method: :get%></div>
 <% if current_refinery_user %>
  <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
 <% else %>

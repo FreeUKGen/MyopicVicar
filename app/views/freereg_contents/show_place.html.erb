@@ -1,8 +1,8 @@
 <% require 'record_type' %>
 
 
-<p style="text-align: center">Churches and Registers held in the FreeREG database for <b><%= @church %></b> in
-<b><%= @place_name %>;</b> for <b><%= @county %></b>. Select the church or register name link to get detailed information on the transcriptions that have been made.
+<p style="text-align: center">Information about
+<b><%= @place_name %>;</b> for <b><%= @county %></b>. 
 </p>
 
 
@@ -61,13 +61,15 @@
 
 <% @place.churches.order_by(church: 1).each do |church| %>
 
-<tr ><td><b>Church <br></b><%= link_to(church.church_name, show_church_path(church)) %></td>
+<tr ><td><b>Church </b><%= link_to(church.church_name, show_church_path(church)) %></td>
 
  <td><table style="width:100%"> <% church.registers.order_by(register_type: 1).each do |register| %>
-<tr><th colspan="6">Registers : <%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %></th></tr>
+<tr><th >Registers  <%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %></th></tr>
    
 <% end%>
 </table>
 <% end%>
 </table>
-</div>  
+</div> 
+<div style="float:left;"><%= button_to_function "Previous Page", "history.back()" %> </div>
+ <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %> </div>

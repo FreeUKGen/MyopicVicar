@@ -1,12 +1,6 @@
 
 <p style="text-align: center">This Table shows the number of records in each decade held in the FreeREG database from 1530 to 2019 for
-the <b><%= @record_type %></b> Registers of <b><%= @register_name %></b> for 
-<b><%= @place_name %>;</b>
-  
-  <b><%= @church %></b>
-   
-   in the County of:
-   <b><%= @county %></b>
+the <b><%= @record_type %></b> Registers for <b><%= @church %></b> in <b><%= @place_name %></b>  in the County of: <b><%= @county %></b>
 </p>
 <div style="float:left;"><%= button_to_function "Previous Page", "history.back()" %> </div>
  <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> </div>
@@ -70,6 +64,6 @@ the <b><%= @record_type %></b> Registers of <b><%= @register_name %></b> for
 
 </table><br>
  <div style="float:left;"><%= button_to_function "Previous Page", "history.back()" %> </div>
- <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> </div>
+ <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %> </div>
 
 

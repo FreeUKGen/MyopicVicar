@@ -254,28 +254,25 @@ def self.get_userids_for_display(syndicate,page)
    @userids = Kaminari.paginate_array(@userids).page(page) 
  end
  def self.get_userids_for_selection(syndicate)
-  p 'getting'
+
    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
    @userids = Array.new
            users.each do |user|
               @userids << user.userid
            end
-           p  @userids
+         
  end
  def self.get_emails_for_selection(syndicate)
-  p 'getting emails '
+ 
    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-   p users
+ 
    @userids = Array.new
            users.each do |user|
-            p 'each'
-            p user
-            p user.email_address
-              @userids << user.email_address
+             @userids << user.email_address
            end
-          p  @userids
+         
   end
 
  def delete_refinery_user_and_userid_folder

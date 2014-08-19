@@ -1,30 +1,37 @@
-class FreeregContentsController < InheritedResources::Base
-  require 'record_type'
-  require 'chapman_code'
-  #require 'freereg1_csv_file'
-	RECORDS_PER_PAGE = 1000
+class FreeregContentsController < ApplicationController
+  skip_before_filter :require_login
+  
   def index
     
     redirect_to :action => :new
   end
-  def new
-    
-    
-  end
-
-  def create
-            
-    redirect_to freereg_content_path(@search_query)
-
-  end
+  
 
   def show
-   
-     session[:county_id] = params[:id]
-     @county = ChapmanCode.values_at(params[:id]) 
-     session[:county] = @county
-     @places = Place.where(:chapman_code => @county)
+
+   @county = params[:id]
+
+   @chapman_code = ChapmanCode.values_at( @county)
+   @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
+   @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
  
+   session[:page] = request.original_url
+   session[:county] = @county
+    session[:county_id]  = params[:id]
+ 
+  end
+  def show_place
+     @place = Place.find(params[:id])
+     @county = session[:county]
+     @place_name = @place.place_name
+     
+    
+      @county_id =  session[:county_id]
+     session[:place] = @place_name
+     session[:place_id] = @place
+    
+    
+   
   end
 
   def show_church

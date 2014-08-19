@@ -1,7 +1,7 @@
 module Refinery
   module CountyPages
     class CountyPagesController < ::ApplicationController
-
+      skip_before_filter :require_login
       before_filter :find_all_county_pages
       before_filter :find_page
 
