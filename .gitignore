@@ -26,7 +26,8 @@ tmp/**/*
 mongo.log
 #*.csv
 *.out
-
+#ignore backup files in collections
+/db/collection/*.json
 /public/assets/images/working
 /test_data/warning/
 

@@ -405,6 +405,33 @@ desc "Create the indices after all FreeREG processes have completed"
  end
     puts " Index task complete."
  end
+task :backup_freereg_collections,[:save] => [:environment] do |t,args|
+ puts "Backingp collections"
+  Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
+ EXPORT_COMMAND =  "mongoexport --db #{@db} --collection  "
+ EXPORT_OUT = " --out  "
+ collections_to_save = ["0","1","2","3","4","9","10","11"] if args.save == 'partial'
+ collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11"] if args.save == 'full'
+ @mongodb_bin =   Rails.application.config.mongodb_bin_location
+ @tmp_location =   Rails.application.config.mongodb_collection_location
+ @tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
+ FileUtils.mkdir @tmp_location, :mode => 664  
+ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @db = Mongoid.sessions[:default][:database]
+ 
+
+   collections_to_save.each  do |col|
+    coll  = col.to_i
+    collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
+    puts "#{$collections[coll]} being saved in #{@tmp_location}"
+     output =  `#{collection}`
+     p output
+  end
+
+ puts "Save task compelete"
+end
+
 end
 
 
