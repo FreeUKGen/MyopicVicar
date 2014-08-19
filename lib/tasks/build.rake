@@ -416,7 +416,8 @@ task :backup_freereg_collections,[:save] => [:environment] do |t,args|
  @mongodb_bin =   Rails.application.config.mongodb_bin_location
  @tmp_location =   Rails.application.config.mongodb_collection_location
  @tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
- FileUtils.mkdir @tmp_location, :mode => 664  
+ FileUtils.mkdir(@tmp_location)
+ FileUtils.chmod_R(775,@tmp_location)
  Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @db = Mongoid.sessions[:default][:database]
  
