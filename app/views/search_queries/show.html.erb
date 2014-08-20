@@ -14,77 +14,13 @@
     </div>
 <% end %>
 
-<h1>Search results</h1>
+
+<h1><%= @search_query.result_count %> Search Results</h1>
 
 <div id="query_parameters">
-	<% print_br=false%>
-	<% @search_query.attributes.each do |query_field, query_value|%>
-		<% unless ["_id", "chapman_codes", "place_ids", "place_radius", "place_system", "userid_detail_id"].include?(query_field) || query_value==false %>
-			<% if print_br %>
-				<br />
-			<% end %>
-			<%= query_field.gsub("_", " ").titlecase %>:
-			<strong>
-				<%= query_value %>				
-			</strong>			
-			<% print_br = true %>
-		<% end%>
+	<% search_params_for_display(@search_query).each do |name, value| %>
+		<%= name %>: <strong><%= value %></strong><br />
 	<% end %>
-	<% if @search_query.chapman_codes.size > 0 %>
-		<% if @search_query.place_search? %>
-			<br />
-			<% if @search_query.places.size > 1 %>
-				Places:
-			<% else %>
-				Place:
-			<% end %>		
-			<% print_or = false %>
-			<% @search_query.places.each do |place| %>
-				<% if print_or %>
-					or 
-				<% end %>
-				<strong>
-					<%= place.place_name %> (<%=ChapmanCode::name_from_code(place.chapman_code)%>)
-				</strong>
-
-				<% print_or = true %>
-			<% end %>
-			<% if @search_query.radius_search? %>
-				<br />
-				<% if @search_query.all_radius_places.size > 0 %>
-				
-					Including:
-					<%= @search_query.all_radius_places.size  %>
-					additional places within <%= @search_query.all_radius_places.last.geo_near_distance  %>
-					<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>
-				<% else %>
-					(No places with data within  <%= @search_query.radius_search  %>
-					<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %>)
-				<% end %>
-			<% end %>
-
-
-		<% else %>
-			<br />	
-			<% if @search_query.chapman_codes.size > 1 %>
-				Counties:
-			<% else %>
-				County:
-			<% end %>
-			<% print_or = false %>
-			<% @search_query.chapman_codes.each do |chapman_code| %>
-				<% if print_or %>
-					or 
-				<% end %>
-				<strong>
-					<%= ChapmanCode::name_from_code(chapman_code) %>
-				</strong>
-				<% print_or = true %>
-			<% end %>
-		<% end%>
-
-	<% end%>
-	<br />
 	<i><%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number))%></i>
 </div>
 <% if @search_results.size == 0 %>

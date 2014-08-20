@@ -1,5 +1,7 @@
 class SearchQuery
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
 
   require 'chapman_code'
   require 'name_role'
@@ -23,6 +25,9 @@ class SearchQuery
   field :place_radius, type: Integer
   field :place_system, type: String
   validates_inclusion_of :place_system, :in => Place::MeasurementSystem::ALL_SYSTEMS+[nil]  
+ 
+  field :result_count, type: Integer
+
 
   belongs_to :userid_detail
   
@@ -30,8 +35,13 @@ class SearchQuery
   validate :radius_is_valid
   before_save :clean_blanks
 
+
   def search
-    SearchRecord.where(search_params).asc(:search_date).all
+    records = SearchRecord.where(search_params).asc(:search_date).all
+    self.result_count = records.count
+    self.save
+
+    records
   end
   
   def search_params

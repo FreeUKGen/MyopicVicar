@@ -5,21 +5,24 @@
 		<th>
 			Query
 		</th>
+		<th>Last Run</th>
+		<th>Last Results</th>
 		<th>&nbsp;</th>
 	</thead>
 	<tbody>
 		<% current_refinery_user.userid_detail.search_queries.each do |query| %>
 		 	<tr>
 		 		<td>
-		 			Name: <%= query.first_name if query.first_name %>
-		 			<%= query.last_name if query.last_name %></br>
-		 			Location: <%= query.places.all.map{|place| place.place_name}.join(" ")%>
-		 			<%= query.chapman_codes.map{|county| county }.join(" ") %>
+					<% search_params_for_display(query).each do |name, value| %>
+						<%= name %>: <strong><%= value %></strong><br />
+					<% end %>
 	 			</td>
+	 			<td><%= time_ago(query.updated_at) %></td>
+	 			<td><%= query.result_count %></td>
 		 		<td>
 		 			<%= button_to("Run", search_query_path(query), :method=>:get)%>
 		 		</td>
-	 		</tr>`			
+	 		</tr>
 		<% end %>
 		
 	</tbody>
