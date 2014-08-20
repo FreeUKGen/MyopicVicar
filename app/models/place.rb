@@ -207,5 +207,8 @@ def change_name(place_name)
      end #@place
     successful 
 end
+
+
+  
   
 end

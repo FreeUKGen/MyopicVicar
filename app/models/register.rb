@@ -27,19 +27,17 @@ class Register
  
  
   def self.update_or_create_register(freereg1_csv_file)
-    p 'registering file'
-    p freereg1_csv_file
     @@result = nil
     # find if register exists
    register = find_register(freereg1_csv_file.to_register)
     if register
-      p 'updating register'
+     
       #update register
       register.freereg1_csv_files << freereg1_csv_file
       #freereg1_csv_file.save
     else 
     # create the register  
-    p 'creating register'
+   
      register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)   
     end
     
@@ -49,41 +47,39 @@ class Register
   def self.create_register_for_church(args,freereg1_csv_file)
     # look for the church
     if @@my_church
-      p 'locating place as church exists'
+      
       # locate place
      my_place = @@my_church.place
     else
-      p 'no church lets find if place exists'
+      
       #church does not exist so see if Place exists with another church
       my_place = Place.where('chapman_code' => args[:chapman_code], 'place_name' => args[:place_name],:disabled => 'false').first
       unless my_place
-      p 'no place '
+      
        #place does not exist so lets create new place first
        my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805') 
-       p   "Place name is not approved"   
+      
        my_place.error_flag = "Place name is not approved" 
 
        end
       #now create the church entry
-      p 'now create church entry'
+     
       @@my_church = Church.new(:church_name => args[:church_name])
       my_place.churches << @@my_church
     end
     #now create the register
-    p 'now create register'
+    
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
-   p register
+ 
     @@my_church.registers << register
     @@my_church.save
     #and save everything
- p @@my_church
+ 
     my_place.data_present = true
       
     my_place.save!
     #freereg1_csv_file.save
-   
-   p my_place
     register
   end
 

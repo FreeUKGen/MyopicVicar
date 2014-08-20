@@ -3,19 +3,16 @@ class PlacesController < ApplicationController
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
   
   def index
-     if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-    end
           @chapman_code = session[:chapman_code]
           @county = ChapmanCode.has_key(session[:chapman_code])
           if session[:active_place] == 'Active'
               @places = Array.new
-                Place.where( :chapman_code => @chapman_code).all.each do |place|
+                Place.where( :chapman_code => @chapman_code,).all.each do |place|
                   @places << place if place.churches.exists?
                 end
                @places = Kaminari.paginate_array(@places).page(params[:page])
            else 
-            @places = Place.where( :chapman_code => @chapman_code,:disabled.ne => "true").all.order_by( place_name: 1).page(params[:page])  
+            @places = Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).page(params[:page])  
            end
          
           @first_name = session[:first_name]
@@ -170,7 +167,7 @@ def update
       Country.all.order_by(country_code: 1).each do |country|
         @countries << country.country_code
       end 
-   placenames = Place.where(:chapman_code => session[:chapman_code],:disabled.ne => "true").all.order_by(place_name: 1)
+   placenames = Place.where(:chapman_code => session[:chapman_code],:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
    @placenames = Array.new
      placenames.each do |placename|
          @placenames << placename.place_name unless placename.county.nil? && placename.country.nil?
