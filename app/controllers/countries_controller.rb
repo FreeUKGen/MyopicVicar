@@ -1,5 +1,5 @@
 class CountriesController < InheritedResources::Base
-layout "places"
+
 
 def index
       if session[:userid].nil?

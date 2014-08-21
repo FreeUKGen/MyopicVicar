@@ -1,4 +1,4 @@
-class Freereg1CsvFilesController < InheritedResources::Base
+class Freereg1CsvFilesController < ApplicationController
  require 'chapman_code'
 
   def index

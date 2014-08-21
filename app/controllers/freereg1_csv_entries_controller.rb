@@ -1,5 +1,4 @@
-class Freereg1CsvEntriesController < InheritedResources::Base
-   layout "places"
+class Freereg1CsvEntriesController < ApplicationController
    require 'chapman_code'
     require 'freereg_validations'
 

@@ -1,5 +1,5 @@
 class CountiesController < InheritedResources::Base
-layout "places"
+
 require 'county'
 
 def index

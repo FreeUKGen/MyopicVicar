@@ -1,7 +1,7 @@
 class ChurchesController < InheritedResources::Base
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
- layout "places"
+
  require 'chapman_code'
 
   def show

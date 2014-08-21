@@ -1,5 +1,5 @@
 class ManageFreeregsController < ApplicationController
-	layout "places"
+	
   require "county"
 def index
    get_user_info(session[:userid],session[:first_name])
