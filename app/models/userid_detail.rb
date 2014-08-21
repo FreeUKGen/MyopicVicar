@@ -48,7 +48,7 @@ attr_protected
 has_many :search_queries
 
 validates_presence_of :userid, :email_address
-
+validates :email_address,:format => {:with => /^[^@][\w.-]+@[\w.-]+[.][a-z]{2,4}$/i}
 validate :userid_and_email_address_does_not_exist, on: :create
 validate :email_address_does_not_exist, on: :update
 
