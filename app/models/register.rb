@@ -110,9 +110,9 @@ class Register
     church = Church.find(church)
     place = church.place._id
     place = Place.find(place)
-    register.destroy if place.error_flag == "Place name is not approved" @@ !register.freereg1_csv_files.exists?
-    church.destroy if place.error_flag == "Place name is not approved" @@ !church.registers.exists?
-    place.destroy if place.error_flag == "Place name is not approved" @@ !place.churches.exists?
+    register.destroy if place.error_flag == "Place name is not approved" && !register.freereg1_csv_files.exists?
+    church.destroy if place.error_flag == "Place name is not approved" && !church.registers.exists?
+    place.destroy if place.error_flag == "Place name is not approved" && !place.churches.exists?
   end
 
   
