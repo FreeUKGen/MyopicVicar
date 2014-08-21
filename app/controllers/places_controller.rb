@@ -126,9 +126,11 @@ def update
        flash[:notice] = 'The Place cannot be disabled because there were dependant churches; please remove them first'
        redirect_to places_path
        return
+
     end
 
     @place.disabled = "true"
+     @place.data_present = false
     @place.save
     flash[:notice] = 'The disabling of the place was successful'
       if @place.errors.any? then
