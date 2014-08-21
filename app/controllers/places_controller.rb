@@ -75,35 +75,36 @@ def create
 
 def update
     load(params[:id])
-    #save the orginal data
+    if session[:type] == 'relocate' #place_name_change
+     successful = true
+     successful = @place.change_name(params[:place][:place_name])
+     unless successful
+      flash[:notice] = 'The update of the Place was unsuccessful'
+      get_places_counties_and_contries
+      @place_name = Place.find(session[:place_id]).place_name
+      render :action => 'edit'
+      return
+     end 
+    else
+     #save the orginal data
     @place.save_to_original 
     #adjust lat and lon and other fields
     @place.adjust_params_before_applying(params,session)
-    @place.update_attributes(params[:place])
-    
-   if @place.errors.any? then
-     flash[:notice] = 'The update of the Place was unsuccessful'
-     #need to prepare for the edit
-     get_places_counties_and_contries
-     render :action => 'edit'
-     return
-    end #errors
-     successful = true
-     successful = @place.change_name(params[:place][:place_name]) if session[:type] == 'relocate' #place_name_change
-    if successful
+    @place.update_attributes(params[:place]) 
+     if @place.errors.any? then
+      flash[:notice] = 'The update of the Place was unsuccessful'
+      #need to prepare for the edit
+      get_places_counties_and_contries
+      render :action => 'edit'
+      return
+     end #errors 
+    end
       session[:type] = nil
       @current_page = session[:page]
       session[:page] = session[:initial_page]
       flash[:notice] = 'The update of the Place was successful'
       redirect_to @current_page
-      return
-     else 
-     flash[:notice] = 'The update of the Place was unsuccessful'
-      get_places_counties_and_contries
-      @place_name = Place.find(session[:place_id]).place_name
-     render :action => 'edit'
-     return
-     end
+     
   end
 
   
@@ -150,7 +151,7 @@ def update
    placenames = Place.where(:chapman_code => session[:chapman_code],:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
    @placenames = Array.new
      placenames.each do |placename|
-         @placenames << placename.place_name unless placename.county.nil? && placename.country.nil?
+         @placenames << placename.place_name 
      end
  end
 

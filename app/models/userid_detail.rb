@@ -68,18 +68,13 @@ end
 
 
 def write_userid_file
-  p 'writing file'
    user = self
    details_dir = File.join(Rails.application.config.datafiles,user.userid)
     Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
-    p details_dir
-   details_file = File.join(details_dir,".uDetails")
-    p details_file
+    details_file = File.join(details_dir,".uDetails")
+    
        if File.file?(details_file)
-        p "file saving to attic"
-
         save_to_attic
-         
        end
   
     details = File.new(details_file, "w") 
@@ -141,13 +136,11 @@ end
 
 def save_to_attic
   #to-do unix permissions
-  p 'saving to attic'
-  p self
+ 
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
-    p details_file
-    
+   
     
         newdir = File.join(details_dir,'.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)

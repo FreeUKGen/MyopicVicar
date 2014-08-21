@@ -299,7 +299,7 @@ end
        #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     file_parts = Freereg1CsvFile.where(:file_name => file_name, :userid => file.userid).all
     file_location = File.join(Rails.application.config.datafiles,file.userid,file_name)
-    CSV.open(file_location, "wb", {:force_quotes => true}) do |csv|
+    CSV.open(file_location, "wb", {:force_quotes => true, :row_sep => "\r\n"}) do |csv|
         # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
     record_type = RecordType.display_name(file.record_type).upcase + 'S'
     csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
@@ -352,7 +352,7 @@ end
    end #end method
    
  def self.update_file_attribute(file,new_church_name,new_place_name)
-
+ 
   new_file = file.clone
   new_file.register_id = nil
   new_file.church_name = new_church_name
@@ -410,13 +410,9 @@ def self.date_change(file,transcription_date,modification_date)
    end
   end
   def clean_up
-   
     register = self.register
-  
     church = register.church
-    
     place = church.place
-   
     Register.clean_empty_registers(self)
     Place.recalculate_last_amended_date(place)
 

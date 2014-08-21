@@ -27,15 +27,18 @@ class Register
  
  
   def self.update_or_create_register(freereg1_csv_file)
+  
     @@result = nil
     # find if register exists
    register = find_register(freereg1_csv_file.to_register)
     if register
+    
      #update register
       register.freereg1_csv_files << freereg1_csv_file
       #freereg1_csv_file.save
     else 
-    # create the register  
+    # create the register 
+    
      register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)   
     end
     
@@ -44,19 +47,20 @@ class Register
 
   def self.create_register_for_church(args,freereg1_csv_file)
     # look for the church
+    
     if @@my_church
      # locate place
      my_place = @@my_church.place
      
     else
-      #church does not exist so see if Place exists with another church
-      my_place = Place.where(:chapman_code => args[:chapman_code], :place_name => args[:place_name],:disabled.ne => 'true').first
-      unless my_place
+      #church does not exist so see if Place exists 
+      my_place = Place.where(:chapman_code => args[:chapman_code], :place_name => args[:place_name],:disabled => 'false').first
+     unless my_place
        #place does not exist so lets create new place first
        my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805') 
       
        my_place.error_flag = "Place name is not approved" 
-    end
+     end
       #now create the church entry
       @@my_church = Church.new(:church_name => args[:church_name])
       my_place.churches << @@my_church
@@ -104,11 +108,11 @@ class Register
     register = Register.find(register)
     church = register.church._id
     church = Church.find(church)
-    #place = church.place._id
-    #place = Place.find(place)
-    register.destroy unless register.freereg1_csv_files.exists?
-    church.destroy unless church.registers.exists?
-    #place.destroy unless place.churches.exists?
+    place = church.place._id
+    place = Place.find(place)
+    register.destroy if place.error_flag == "Place name is not approved" @@ !register.freereg1_csv_files.exists?
+    church.destroy if place.error_flag == "Place name is not approved" @@ !church.registers.exists?
+    place.destroy if place.error_flag == "Place name is not approved" @@ !place.churches.exists?
   end
 
   

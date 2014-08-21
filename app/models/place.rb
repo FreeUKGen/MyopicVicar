@@ -195,11 +195,15 @@ end
   end
 
 def change_name(place_name)
+ 
   successful = true
   self.churches.each do |church|
+    
       church_name = church.church_name
       church.registers.each do |register|
+       
        register.freereg1_csv_files.each do |file|
+       
         success = Freereg1CsvFile.update_file_attribute(file,church_name,place_name )
         successful = false unless success 
        end #register
