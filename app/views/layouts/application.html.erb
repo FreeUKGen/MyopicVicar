@@ -1,0 +1,58 @@
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title></title>
+
+	<!-- Styles -->
+
+	<link href='http://fonts.googleapis.com/css?family=Corben' rel='stylesheet' type='text/css'>
+
+	<%= stylesheet_link_tag "normalize" %>
+	<%= stylesheet_link_tag "layout" %>
+	<%= stylesheet_link_tag "freereg" %>
+    <%= stylesheet_link_tag "application" if controller.controller_name == "search_queries" && controller.action_name == "new" %>
+	<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
+	<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
+
+    </head>
+    <body>
+    <div id="container"> <h1 id='logo'> <%= link_to Refinery::Core.site_name, refinery.root_path %></h1></div>
+  <div id="navhead">
+ <h3><div style="float:left;"> <%= button_to " Search Our Database", main_app.search_queries_path , method: :get%></div>
+ <div style="float:left;"> <%= button_to " County and Parish Content", refinery.county_pages_county_pages_path , method: :get%></div>
+ <% if current_refinery_user %>
+   <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
+ <% else %>
+   <div style="float:left;"> <%= button_to" Login for members", refinery.login_path, method: :get %></div>
+    <div style="float:left;"> <%= button_to" Signup", main_app.general_userid_detail_path, method: :get %></div>
+
+ <% end %> 
+
+</h3>
+</div>
+<%if controller.controller_name == "freereg_contents"  %>
+<div id="Heading">Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>. </div>
+<%end%>
+<%if controller.controller_name == "search_records"  %>
+<div id="nav">
+		<ul>
+		    <li><%= link_to "New Search", new_search_query_path %></li>
+		    <li><%= link_to "Revise Search", new_search_query_path(:search_id => params[:search_id]) %></li>
+		    <li><%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}") %></li>
+		</ul>
+	    </div>
+<%end%>
+<%unless @first_name.nil?%>
+<div id="personal">
+<p style="text-align: center"><b><%= @first_name%> these are your management tools</b></p>
+</div>
+
+<%end%>
+ <div id="content">
+			<%= yield %>
+ </div>
+
+
+
+    </body>
+</html>
