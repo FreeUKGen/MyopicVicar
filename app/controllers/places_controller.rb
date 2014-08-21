@@ -7,12 +7,12 @@ class PlacesController < ApplicationController
           @county = ChapmanCode.has_key(session[:chapman_code])
           if session[:active_place] == 'Active'
               @places = Array.new
-                Place.where( :chapman_code => @chapman_code,).all.each do |place|
+                Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).each do |place|
                   @places << place if place.churches.exists?
                 end
                @places = Kaminari.paginate_array(@places).page(params[:page])
            else 
-            @places = Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).page(params[:page])  
+            @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(params[:page])  
            end
          
           @first_name = session[:first_name]
@@ -32,12 +32,7 @@ class PlacesController < ApplicationController
           load(params[:id])
           @places = Place.where( :chapman_code => @chapman_code,  :disabled.ne => "true" ).all.order_by( place_name: 1)
           session[:parameters] = params
-          @names = Array.new
-          @alternate_place_names = @place.alternateplacenames.all
-          @alternate_place_names.each do |acn|
-          name = acn.alternate_name
-          @names << name
-         end
+          @names = @place.get_alternate_place_names
         
    end
 
@@ -80,29 +75,11 @@ def create
 
 def update
     load(params[:id])
-    place_name_change = false
-    # save place name change in Place
-    unless params[:place][:county].nil? && params[:place][:country].nil? && params[:place][:place_name].nil?
-    place_name_change = true unless @place.place_name == params[:place][:place_name]
-       #save the original entry we had
-    end
-    @place.save_to_original # this the last change data for the place
-    @place.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
-    @place.chapman_code = session[:chapman_code] if @place.chapman_code.nil?
-    @place.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
-    @place.chapman_code = session[:chapman_code] if @place.chapman_code.nil?
-    @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
-    @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
-    
-    #We use the lat/lon if provided and the grid reference if  lat/lon not available
-     change = @place.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) 
-   
-     @place.change_grid_reference(params[:place][:grid_reference]) if  change == "unchanged"
-
-     params[:place].delete :latitude
-     params[:place].delete :longitude
-     params[:place].delete :grid_reference
-     @place.update_attributes(params[:place])
+    #save the orginal data
+    @place.save_to_original 
+    #adjust lat and lon and other fields
+    @place.adjust_params_before_applying(params,session)
+    @place.update_attributes(params[:place])
     
    if @place.errors.any? then
      flash[:notice] = 'The update of the Place was unsuccessful'
@@ -112,8 +89,9 @@ def update
      return
     end #errors
      successful = true
-     successful = @place.change_name(params[:place][:place_name]) if place_name_change
+     successful = @place.change_name(params[:place][:place_name]) if session[:type] == 'relocate' #place_name_change
     if successful
+      session[:type] = nil
       @current_page = session[:page]
       session[:page] = session[:initial_page]
       flash[:notice] = 'The update of the Place was successful'
@@ -174,6 +152,7 @@ def update
      end
  end
 
+
  def record_cannot_be_deleted
    flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
     redirect_to places_path
@@ -197,4 +176,5 @@ def update
       end
     end
   end
+
 end

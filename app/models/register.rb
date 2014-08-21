@@ -31,13 +31,11 @@ class Register
     # find if register exists
    register = find_register(freereg1_csv_file.to_register)
     if register
-     
-      #update register
+     #update register
       register.freereg1_csv_files << freereg1_csv_file
       #freereg1_csv_file.save
     else 
     # create the register  
-   
      register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)   
     end
     
@@ -47,28 +45,23 @@ class Register
   def self.create_register_for_church(args,freereg1_csv_file)
     # look for the church
     if @@my_church
-      
-      # locate place
+     # locate place
      my_place = @@my_church.place
+     
     else
-      
       #church does not exist so see if Place exists with another church
-      my_place = Place.where('chapman_code' => args[:chapman_code], 'place_name' => args[:place_name],:disabled => 'false').first
+      my_place = Place.where(:chapman_code => args[:chapman_code], :place_name => args[:place_name],:disabled.ne => 'true').first
       unless my_place
-      
        #place does not exist so lets create new place first
        my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805') 
       
        my_place.error_flag = "Place name is not approved" 
-
-       end
+    end
       #now create the church entry
-     
       @@my_church = Church.new(:church_name => args[:church_name])
       my_place.churches << @@my_church
     end
     #now create the register
-    
     register = Register.new(args) 
     register.freereg1_csv_files << freereg1_csv_file
  
@@ -77,7 +70,7 @@ class Register
     #and save everything
  
     my_place.data_present = true
-      
+   
     my_place.save!
     #freereg1_csv_file.save
     register
@@ -90,11 +83,11 @@ class Register
     
     @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
     if @@my_church
-      p "found church"
+     
       my_church_id = @@my_church[:_id]
       register = Register.where(:church_id =>my_church_id, :alternate_register_name=> args[:alternate_register_name] ).first
       unless register then
-        p 'found register'
+      
         register = Register.where(:church_id =>my_church_id, :register_name=> args[:alternate_register_name] ).first
         unless register
           register = nil

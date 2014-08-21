@@ -54,10 +54,9 @@ validate :email_address_does_not_exist, on: :update
 
 before_create :add_lower_case_userid
 
-after_create :write_userid_file, :save_to_refinery
+after_create :save_to_refinery
 
-before_update :save_to_attic
-after_update  :write_userid_file
+
 #validate :syndicate_is_valid, on: :create
 before_destroy :delete_refinery_user_and_userid_folder
 
@@ -69,16 +68,21 @@ end
 
 
 def write_userid_file
+  p 'writing file'
    user = self
    details_dir = File.join(Rails.application.config.datafiles,user.userid)
     Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
-   details_dir = File.join(details_dir,".uDetails")
-       if File.file?(details_dir)
+    p details_dir
+   details_file = File.join(details_dir,".uDetails")
+    p details_file
+       if File.file?(details_file)
+        p "file saving to attic"
+
         save_to_attic
-         p "file should not be there"
+         
        end
   
-    details = File.new(details_dir, "w") 
+    details = File.new(details_file, "w") 
     details.puts "Surname:#{user.person_surname}" 
     details.puts "UserID:#{user.userid}"
     details.puts "EmailID:#{user.email_address}"
@@ -120,7 +124,7 @@ def save_to_refinery
     u.userid_detail_id = self.id.to_s
     u.add_role('Refinery')
     u.add_role('Superuser') if (self.active && self.person_role == 'technical') 
-    u.save! 
+    u.save
     
 end    
 def send_invitation_to_create_password
@@ -137,20 +141,22 @@ end
 
 def save_to_attic
   #to-do unix permissions
+  p 'saving to attic'
+  p self
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
+    p details_file
     
-      if File.file?(details_file)
+    
         newdir = File.join(details_dir,'.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
+        p renamed_file
         File.rename(details_file,renamed_file)
         FileUtils.mv(renamed_file,newdir)
 
-      else 
-        Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
-      end
+      
 end
 
 def userid_and_email_address_does_not_exist

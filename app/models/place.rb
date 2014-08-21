@@ -133,14 +133,14 @@ end
 
 
  def change_lat_lon(lat,lon)
-  change = "unchanged"
+  change = false
     unless lat.nil?  || lon.nil? 
       unless self.latitude == lat && self.longitude == lon
         self.latitude = lat
         self.longitude = lon
         self.location = [self.longitude.to_f,self.latitude.to_f]
         self.save(:validate => false)
-        change = "changed"
+        change = true
       end 
     end
   change
@@ -208,7 +208,31 @@ def change_name(place_name)
     successful 
 end
 
+def adjust_params_before_applying(params,session)
+    self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
+    self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
+    self.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
+    self.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
+    
+    #We use the lat/lon if provided and the grid reference if  lat/lon not available
+     change = self.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) 
+     self.change_grid_reference(params[:place][:grid_reference]) unless change 
+     #have already saved the appropriate location information so remove those parameters
+     params[:place].delete :latitude
+     params[:place].delete :longitude
+     params[:place].delete :grid_reference
+     params
+end
 
+def get_alternate_place_names
+          @names = Array.new
+          @alternate_place_names = self.alternateplacenames.all
+          @alternate_place_names.each do |acn|
+          name = acn.alternate_name
+          @names << name
+         end
+         @names
+end
   
   
 end

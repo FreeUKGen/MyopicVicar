@@ -20,5 +20,13 @@ def search_params
     params[:chapman_code] = county if county
     params
   end
-
+ def get_alternate_place_names
+          @names = Array.new
+          @alternate_place_names = self.alternateplacenames.all
+          @alternate_place_names.each do |acn|
+          name = acn.alternate_name
+          @names << name
+         end
+         @names
+  end
 end

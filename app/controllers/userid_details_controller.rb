@@ -100,6 +100,7 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
         next_place_to_go_unsuccessful_create
      else
        @userid.send_invitation_to_create_password
+       @userid.write_userid_file
        flash[:notice] = 'The addition of the user deatils was successful'
        next_place_to_go_successful_create(@userid)
      end
@@ -113,6 +114,7 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
     end
     params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     @userid.update_attributes(params[:userid_detail])
+    @userid.write_userid_file
     @userid.save_to_refinery
     
    if @userid.errors.any?

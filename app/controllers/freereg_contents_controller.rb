@@ -24,7 +24,7 @@ class FreeregContentsController < ApplicationController
      @place = Place.find(params[:id])
      @county = session[:county]
      @place_name = @place.place_name
-     
+     @names = @place.get_alternate_place_names
     
       @county_id =  session[:county_id]
      session[:place] = @place_name

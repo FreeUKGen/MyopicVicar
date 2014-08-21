@@ -26,7 +26,7 @@ FIELD_NAMES = {
                'Country' => :address,
                 'SubmitterNumber' => :submitter_number,
                  'SyndicateID' => :syndicate,
-                  'SyndicateName' => :syndicate_name
+                  'SyndicateName' => :syndicate_name,
                  
                    'SignUpDate' => :sign_up_date,
                   'Person' => :person_role
@@ -59,7 +59,7 @@ def self.check_for_replace(filename,userid,digest)
  def self.process(type,range)
  	Mongoid.load!("#{Rails.root}/config/mongoid.yml")
   base_directory = Rails.application.config.datafiles
-  UseridDetail.delete_all if type == "recreate"
+  
   filenames = Array.new
   files = Array.new
   userids = range.split("/")
@@ -81,14 +81,16 @@ def self.check_for_replace(filename,userid,digest)
      @@message_file = File.new(file_for_warning_messages, "w")
      
      @@message_file.puts  "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
-
-
+ p "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
+ p filenames.length
   number = 0
    number_of_syndicate_coordinators = 0
    number_of_county_coordinators = 0
  number_of_country_coordinators = 0
 
   filenames.each do |filename|
+ 
+
   
    number = number + 1
    
@@ -193,8 +195,18 @@ def self.check_for_replace(filename,userid,digest)
    header[:person_role] = "system_administrator" if header[:userid] == "REGManager" 
     header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk" 
      header[:person_role] = "data_manager" if header[:userid] == "ericb" 
-      header[:person_role] = "data_manager" if header[:userid] == "kirkbedordshire" 
+      header[:person_role] = "data_manager" if header[:userid] == "kirkbedfordshire"
+       header[:person_role] = "data_manager" if header[:userid] == "kirkkent" 
    if check_for_replace(filename,header[:userid],header[:digest]) 
+     if type == "recreate"
+
+      old_detail = UseridDetail.where(:userid => header[:userid]).first
+    
+      old_detail.delete unless old_detail.nil?
+      refinery_user = Refinery::User.where(:username => header[:userid]).first
+    
+      refinery_user.destroy unless refinery_user.nil?
+     end
    detail = UseridDetail.new(header)
    detail.save 
     if detail.errors.any?
