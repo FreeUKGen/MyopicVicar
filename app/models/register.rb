@@ -106,13 +106,22 @@ class Register
     #clean out empty register/church/places
     register = freereg_file.register._id
     register = Register.find(register)
+    freereg_file.delete 
+    if register.freereg1_csv_files.count == 0
+    
     church = register.church._id
     church = Church.find(church)
-    place = church.place._id
-    place = Place.find(place)
-    register.destroy if place.error_flag == "Place name is not approved" && !register.freereg1_csv_files.exists?
-    church.destroy if place.error_flag == "Place name is not approved" && !church.registers.exists?
-    place.destroy if place.error_flag == "Place name is not approved" && !place.churches.exists?
+      if church.registers.count == 1
+
+       place = church.place._id
+       place = Place.find(place)
+       register.destroy if place.error_flag == "Place name is not approved" 
+       if place.churches.count == 1
+         church.destroy if place.error_flag == "Place name is not approved" 
+         place.destroy if place.error_flag == "Place name is not approved" 
+       end
+      end
+    end
   end
 
   
