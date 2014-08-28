@@ -8,8 +8,8 @@
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %></div> 
-<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div> 
+
+
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -20,12 +20,3 @@
 <%= render 'form' %>
 <div>
 Please note if you are changing the Register Type of a register the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></div>
-<div style="float:left;">  <%= button_to 'Show Register', register_path(@register), method: :get %></div>    
-<div style="float:left;">  <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></div> 
-<div style="float:left;">  <%= button_to 'Create New Register', new_register_path, method: :get %></div>
-<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-<div style="float:left;">  <%= button_to_function "Previous Page", "history.back()" %></div> 
-<div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div> 
-<div style="clear:both;"> </div><br>

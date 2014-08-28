@@ -19,10 +19,3 @@ Page Identification Freereg Files:edit<p>
 <br>
 <%= render 'form' %>
 <br>
-<% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<%end%>
-<% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
-<%end%>
-<%= render 'nav' %>
