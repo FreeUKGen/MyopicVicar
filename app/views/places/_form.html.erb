@@ -12,21 +12,17 @@
 
 
 <p>
-<%if @user.person_role == 'data_manager' %> 
-  <% if session[:type] == "relocate" then %>
+<%if session[:type] == 'relocate' %> 
+ 
    <%= f.input :place_name,{ :as => :select,:label => "Select the Place name",:include_blank => false,
-          :required => true, :collection => @placenames,:size => 15 } %> 
+          :required => true, :collection => @placenames,:size => 15 } %>
+   <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
+          :required => true, :collection => @counties,:size => 15 } %>  
   <%else%>
-    <%= f.input :place_name, :label => "Enter the Place Name",:input_html => { :size => 15 } %> 
-  <%end%>
-        
- <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
-          :required => true, :collection => @counties,:size => 15 } %> 
- <%= f.input :country,{ :as => :select,:label => "Select the Country",:include_blank => false,
-          :required => true, :collection => @countries, :size => 15 } %>   
-  <br>
-  <%end%>
-  <%= f.inputs :alternate_name, :for => :alternateplacenames, :name => 'Edit Existing Alternate Place Name #%i', :input_html => { :size => 60 }%>
+    <p>Please take extreme care if entering/changing the Place Name</p>
+  <%= f.input :place_name, :label => "Enter the Place Name",:input_html => { :size => 15 } %> 
+ 
+   <%= f.inputs :alternate_name, :for => :alternateplacenames, :name => 'Edit Existing Alternate Place Name #%i', :input_html => { :size => 60 }%>
        
   <%= f.inputs :alternate_name, :for => :alternateplacename, :name => 'Add Altername Place Name',  :size => 60 %>
 
@@ -55,6 +51,8 @@ It will be used to calculate the latitude and longitude if those fields were lef
    <%= f.input :last_amended, :label => "The last date when a register in the place was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
 
 
+  <%end%></p>
+ 
    <%= f.action :submit, :as => :input, :label => 'Submit' %>
   
   </div>
