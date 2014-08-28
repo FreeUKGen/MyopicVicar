@@ -60,7 +60,7 @@ class SearchRecord
   embeds_many :search_names, :class_name => 'SearchName'
 
   # derived search fields
-
+  field :location_name, type:String
   field :search_soundex, type: Array, default: []
 
 
@@ -78,6 +78,16 @@ class SearchRecord
   
 
 
+  def location_name
+    return self[:location_name] if self[:location_name]
+    
+    place_name = self.place.place_name
+    if self.freereg1_csv_entry
+      church_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.church_name
+    end
+    
+    "#{place_name} (#{church_name})"
+  end
 
   def ordered_display_fields
     order = []

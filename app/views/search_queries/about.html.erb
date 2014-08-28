@@ -16,7 +16,7 @@
 	Search Criteria: 
 	<b>First Name</b> is <b><i><%= @search_query.first_name || "blank"%></i></b>, 
 	<b>Last Name</b> is <b><i><%= @search_query.last_name  || "blank" %></i></b>.
-	<b>Fuzzy matching</b> is <b><i><%= @search_query.fuzzy ? "enabled" : "disabled" %></i></b>
+	<b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
 </p>
 <p>
 	Search Logic:
