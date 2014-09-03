@@ -1,5 +1,5 @@
 class SyndicatesController < ApplicationController
-layout "places"
+
 
 def index
      if session[:userid].nil?

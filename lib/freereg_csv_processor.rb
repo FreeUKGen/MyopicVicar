@@ -782,16 +782,6 @@ COMMON_WORD_EXPANSIONS = {
       #puts "header #{head} \n"
         @freereg1_csv_file = Freereg1CsvFile.new(@@header)
       @freereg1_csv_file.update_register
-
-       unless @@result.nil?
-         @@number_of_error_messages = @@number_of_error_messages + 1
-         @@header_error[@@number_of_error_messages] = Hash.new
-         @@header_error[@@number_of_error_messages].store(:line,@@number_of_line)
-         @@header_error[@@number_of_error_messages].store(:error, @@result)
-         @@header_error[@@number_of_error_messages].store(:data,@@header)
-          @@result = nil
-
-       end
         #write the data records for this place/church
       @@data_hold[place_key].each do |datakey,datarecord|
        
@@ -1023,7 +1013,7 @@ end
        
            #file is in the database but we have a more recent copy uploaded
             #so delete what is there and process the new file
-            Freereg1CsvFile.delete_file(check_for_file._id)
+            Freereg1CsvFile.delete_file(check_for_file)
             
             return true
       else
@@ -1068,9 +1058,7 @@ end
           @@header[:file_name] = standalone_filename #do not capitalize filenames
           @@header[:userid] = user_dirname
           @@uploaded_date = File.mtime(filename)
-          @@header[:uploaded_date] = @@uploaded_date 
-          @@result = nil
-    
+          @@header[:uploaded_date] = @@uploaded_date     
   end
 
   def self.process(recreate,create_search_records,range)

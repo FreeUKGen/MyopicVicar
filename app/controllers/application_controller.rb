@@ -22,6 +22,7 @@ require 'record_type'
 require 'name_role'
 require 'chapman_code'
 require 'userid_role'
+require 'register_type'
 def clean_session
   session[:freereg1_csv_file_id] = nil
   session[:freereg1_csv_file_name] = nil
