@@ -59,7 +59,6 @@ def self.check_for_replace(filename,userid,digest)
  def self.process(type,range)
  	Mongoid.load!("#{Rails.root}/config/mongoid.yml")
   base_directory = Rails.application.config.datafiles
-  
   filenames = Array.new
   files = Array.new
   userids = range.split("/")
@@ -74,24 +73,17 @@ def self.check_for_replace(filename,userid,digest)
      else
       P "unknown range style"
      end
-
-       
-     file_for_warning_messages = "log/userid_detail_messages.log"
-     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
-     @@message_file = File.new(file_for_warning_messages, "w")
-     
-     @@message_file.puts  "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
- p "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
- p filenames.length
-  number = 0
+    file_for_warning_messages = "log/userid_detail_messages.log"
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    @@message_file = File.new(file_for_warning_messages, "w")
+    @@message_file.puts  "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a range #{range} that translates to #{filenames.length} userids"
+ p "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a range #{range} that translates to #{filenames.length} userids"
+    number = 0
    number_of_syndicate_coordinators = 0
    number_of_county_coordinators = 0
  number_of_country_coordinators = 0
 
   filenames.each do |filename|
- 
-
-  
    number = number + 1
    
   fields = Hash.new
@@ -196,26 +188,31 @@ def self.check_for_replace(filename,userid,digest)
     header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk" 
      header[:person_role] = "data_manager" if header[:userid] == "ericb" 
       header[:person_role] = "data_manager" if header[:userid] == "kirkbedfordshire"
-       header[:person_role] = "data_manager" if header[:userid] == "kirkkent" 
+      
    if check_for_replace(filename,header[:userid],header[:digest]) 
      if type == "recreate"
-
       old_detail = UseridDetail.where(:userid => header[:userid]).first
-    
       old_detail.delete unless old_detail.nil?
       refinery_user = Refinery::User.where(:username => header[:userid]).first
-    
       refinery_user.destroy unless refinery_user.nil?
      end
-   detail = UseridDetail.new(header)
-   detail.save 
-    if detail.errors.any?
+
+   userid = UseridDetail.where(:userid => header[:userid]).first
+   unless userid.nil?
+    header[:email_address].delete  if header[:email_address] == userid.email_address
+     userid.update_attributes(header)
+   else
+   userid = UseridDetail.new(header) 
+  end
+  
+  
+    if userid.errors.any?
       @@message_file.puts "#{header[:userid]} not created"
-      @@message_file.puts detail.errors.messages
-      p "#{header[:userid]} not created"
-      p detail.errors.messages
+      @@message_file.puts userid.errors.messages
+      p "#{header[:userid]} not updated"
+      p userid.errors.messages
     else
-    p "#{header[:userid]} created"
+    p "#{header[:userid]} updated"
     end #end errors
    end
     
