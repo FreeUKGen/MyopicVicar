@@ -8,10 +8,9 @@ Page Identification Freereg Files:my_own<p>
 
 <div id="main"style="color:black">
 
-<div style="float:left;"><%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Upload New Batch','List by number of errors then name', 'List by name', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ], :label => " #{@first_name} what would you like to do? ",  :size => 10  }%></div>
+<%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Upload New Batch','List by number of errors then name', 'List by name', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ], :label => " #{@first_name} what would you like to do? ",  :size => 10  }%>
 
-
-    <div style="float:left;"><%= f.action :submit, :as => :input, :label => 'Select'   %></div>
+   <%= f.action :submit, :as => :input, :label => 'Select'   %>
    <% end %>
 <div style="clear:both;"> </div><br>
 
