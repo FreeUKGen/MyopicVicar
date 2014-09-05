@@ -56,8 +56,6 @@ before_create :add_lower_case_userid
 
 after_create :save_to_refinery
 
-
-#validate :syndicate_is_valid, on: :create
 before_destroy :delete_refinery_user_and_userid_folder
 
 
@@ -145,11 +143,8 @@ def save_to_attic
         newdir = File.join(details_dir,'.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
         renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
-        p renamed_file
-        File.rename(details_file,renamed_file)
+       File.rename(details_file,renamed_file)
         FileUtils.mv(renamed_file,newdir)
-
-      
 end
 
 def userid_and_email_address_does_not_exist
@@ -173,33 +168,6 @@ end
 def add_lower_case_userid
   self[:userid_lower_case] = self[:userid].downcase
 end
-
-def self.update_number_of_files(user)
-#need to think about doing an update
-   userid = UseridDetail.where(:userid => user).first
-   files = Freereg1CsvFile.where(:userid => user ).all
-    if files.nil?
-     userid[:number_of_files] = 0
-     userid[:number_of_records] = 0
-     userid[:last_upload] = nil
-    else
-     number = 0
-     records = 0
-      files.each do |my_file|
-      	number  = number  + 1
-      	records = records + my_file.records.to_i
-      	userid[:last_upload] = my_file.uploaded_date if number == 1
-      	  unless my_file.uploaded_date.nil? || userid[:last_upload].nil?
-      	   userid[:last_upload] = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > userid[:last_upload].strftime("%s").to_i
-          end
-       end
-       userid[:number_of_files] = number
-       userid[:number_of_records] = records
-       userid.save!
-    end
- end
-
-
 
 def finish_creation_setup
   UserMailer.notification_of_transcriber_creation(self).deliver   

@@ -55,17 +55,7 @@ task :create_search_records_indexes => [:environment] do
   puts "Indexes complete."
 end
 
- task :create_userid_docs, [:type]  => [:environment] do |t, args| 
- #this task reads the .uDetails file for each userid and creates the userid_detail collection  
-  require 'create_userid_docs'
-   require "userid_detail"
-  puts "Creating Transcriber Docs"
-  range = "*/*.uDetails"
-    CreateUseridDocs.process(args.type,range )
-    UseridDetail.create_indexes()
-  
-  puts "Task complete."
- end
+ 
  
  task :create_syndicate_docs, [:type]  => [:environment] do |t, args| 
    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
@@ -156,6 +146,15 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
       PlaceCache.refresh(chapman_code)        
     end
   end
-
+task :create_userid_docs, [:type,:range]  => [:environment] do |t, args| 
+ #this task reads the .uDetails file for each userid and creates the userid_detail collection  
+   require 'create_userid_docs'
+   require "userid_detail"
+      puts "Creating Transcriber Docs"
+      
+   
+      CreateUseridDocs.process(args.type,args.range)
+    puts "Task complete."
+ end
 
 end

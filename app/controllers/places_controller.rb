@@ -59,7 +59,7 @@ def create
     @place.add_location_if_not_present
       
     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
-    @place.save
+    @place.update_attributes(params[:place])
      if @place.errors.any?
         #we have errors on the creation
         flash[:notice] = 'The addition to Place Name was unsuccessful'
@@ -76,21 +76,38 @@ def create
 def update
     load(params[:id])
     if session[:type] == 'relocate' #place_name_change
-     successful = true
-     successful = @place.change_name(params[:place][:place_name])
+      p "relocating"
+      if  ChapmanCode.values_at(params[:place][:county]) == session[:chapman_code]
+        #not changing county
+        successful = @place.change_name(params[:place][:place_name],params[:place][:county])
+      else
+        #changing county
+        @county = params[:place][:county]
+        flash[:notice] = 'Relocating to a place in the new county'
+        session[:chapman_code] = ChapmanCode.values_at(params[:place][:county])
+        get_places_counties_and_contries
+        render :action => 'edit'
+        return
+      end # county change
      unless successful
       flash[:notice] = 'The update of the Place was unsuccessful'
       get_places_counties_and_contries
       @place_name = Place.find(session[:place_id]).place_name
       render :action => 'edit'
       return
-     end 
+     end # successfull
     else
+      #not relocating
+    old_place_name = @place.place_name
+    new_place_name = params[:place][:place_name]
+    #just changing fields for place
      #save the orginal data
     @place.save_to_original 
-    #adjust lat and lon and other fields
+     #adjust lat and lon and other fields
     @place.adjust_params_before_applying(params,session)
-    @place.update_attributes(params[:place]) 
+    @place.update_attributes(params[:place])
+    @place.update_attributes(:modified_place_name => @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)
+    @place.change_name(new_place_name,ChapmanCode.name_from_code(@place.chapman_code)) unless new_place_name.nil? || old_place_name == new_place_name
      if @place.errors.any? then
       flash[:notice] = 'The update of the Place was unsuccessful'
       #need to prepare for the edit
@@ -98,7 +115,7 @@ def update
       render :action => 'edit'
       return
      end #errors 
-    end
+    end # relocate
       session[:type] = nil
       @current_page = session[:page]
       session[:page] = session[:initial_page]
@@ -122,16 +139,15 @@ def update
 
  def destroy
     load(params[:id])
-
-    unless @place.churches.count == 0
+    unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
+      unless @place.churches.count == 0
        flash[:notice] = 'The Place cannot be disabled because there were dependant churches; please remove them first'
        redirect_to places_path
        return
-
+      end
     end
-
     @place.disabled = "true"
-     @place.data_present = false
+    @place.data_present = false
     @place.save
     flash[:notice] = 'The disabling of the place was successful'
       if @place.errors.any? then
@@ -142,13 +158,14 @@ def update
  end
 
  def get_places_counties_and_contries
+   @countries = Array.new
+   Country.all.each do |country|
+    @countries << country.country_code
+   end
+   @countries.insert(0,'England')
    @counties = ChapmanCode.keys
    @counties.insert(0,@county)
-   @countries = Array.new
-      Country.all.order_by(country_code: 1).each do |country|
-        @countries << country.country_code
-      end 
-   placenames = Place.where(:chapman_code => session[:chapman_code],:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+     placenames = Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
    @placenames = Array.new
      placenames.each do |placename|
          @placenames << placename.place_name 

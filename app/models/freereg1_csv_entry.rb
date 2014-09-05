@@ -40,7 +40,7 @@ class Freereg1CsvEntry
   field :burial_person_forename, type: String
   field :burial_person_surname, type: String
   field :burial_person_abode, type: String
-  field :county, type: String
+  field :county, type: String # note this is actually a chapman code in the records
   field :father_forename, type: String
   field :father_occupation, type: String
   field :father_surname, type: String
@@ -172,12 +172,7 @@ class Freereg1CsvEntry
     order
   end
 
-  def self.change_file(old_id,new_id)
-   entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => old_id).all
-   entries.each do |entry|
-     entry.update_attributes(:freereg1_csv_file_id => new_id)
-    end
-  end
+  
 
   def errors_in_fields
  

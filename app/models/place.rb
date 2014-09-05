@@ -10,6 +10,7 @@ class Place
   require 'master_place_name'
   require 'register_type' 
 
+
   field :country, type: String
   field :county, type: String
   field :chapman_code, type: String#, :required => true
@@ -175,11 +176,9 @@ end
 
   def places_near(radius, system=MeasurementSystem::ENGLISH)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
-
     places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
     # get rid of this place
     places.shift
-    
     places
   end
 
@@ -194,22 +193,35 @@ end
     self.original_source =  self.source 
   end
 
-def change_name(place_name)
- 
+def change_name(place_name,county)
+  chapman_code = ChapmanCode.values_at(county)
+  chapman_code = self.chapman_code if chapman_code.nil? || chapman_code.empty?
   successful = true
+  new_place = Place.where(:chapman_code => chapman_code, :place_name => place_name, :disabled => 'false').first
+  param = {:place => place_name, :county => chapman_code }
+  self.relocate_with_no_churches(param) unless self.churches.exists
   self.churches.each do |church|
-    
-      church_name = church.church_name
-      church.registers.each do |register|
-       
-       register.freereg1_csv_files.each do |file|
-       
-        success = Freereg1CsvFile.update_file_attribute(file,church_name,place_name )
-        successful = false unless success 
-       end #register
-      end #church
-     end #@place
-    successful 
+    church_name = church.church_name
+    param[:church_name] = church_name 
+    church.registers.each do |register|
+      param[:register_type] = register.register_type 
+      register.relocate_with_no_files(param) unless register.freereg1_csv_files.exists?
+      register.freereg1_csv_files.each do |file|
+        new_file = Freereg1CsvFile.update_location(file,param)
+        successful = false if new_file.nil? 
+       end #file
+     end #register
+    end #church
+    self.churches.each do |church|
+    church_name = church.church_name
+    param[:church_name] = church_name 
+     Church.relocate_with_no_registers(church,param) unless church.registers.exists?
+    end
+   successful 
+end
+
+def relocate_with_no_churches(param)
+   self.update_attributes(:chapman_code => param[:county],:place_name => param[:place])
 end
 
 def adjust_params_before_applying(params,session)
@@ -217,8 +229,7 @@ def adjust_params_before_applying(params,session)
     self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
     self.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     self.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
-    
-    #We use the lat/lon if provided and the grid reference if  lat/lon not available
+     #We use the lat/lon if provided and the grid reference if  lat/lon not available
      change = self.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) 
      self.change_grid_reference(params[:place][:grid_reference]) unless change 
      #have already saved the appropriate location information so remove those parameters
@@ -236,6 +247,18 @@ def get_alternate_place_names
           @names << name
          end
          @names
+end
+
+def data_present?
+  self.churches.each do |church|
+    church.registers.each do |register|
+      if register.freereg1_csv_files.count != 0
+       true
+       return
+      end #if
+    end #church
+  end #self
+  false
 end
   
   

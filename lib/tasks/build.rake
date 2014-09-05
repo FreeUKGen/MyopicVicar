@@ -82,7 +82,7 @@ end
  #@datafile_location =  Rails.application.config.mongodb_datafile
  #save master_place_names and alias
  p "Save started"
-  collections_to_save = ["0","1","2","3","4","9","10","11"] 
+  collections_to_save = ["0","1","2","3","4","8","9","10","11"] 
  
    collections_to_save.each  do |col|
     coll  = col.to_i

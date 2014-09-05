@@ -70,7 +70,7 @@ class Freereg1CsvEntriesController < ApplicationController
       display_info
       render :action => 'error'
      else
-      Freereg1CsvFile.backup_file(@freereg1_csv_file)
+      @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
       @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own] == 'my_own'
       @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own] == 'my_own'
@@ -129,7 +129,7 @@ def update
     render :action => 'edit'
   else
     file = @freereg1_csv_file
-    Freereg1CsvFile.backup_file(file)
+    file.backup_file
     file.locked_by_transcriber = "true" if session[:my_own] == 'my_own'
     file.locked_by_coordinator = "true" unless session[:my_own] == 'my_own'
     file.modification_date = Time.now.strftime("%d %b %Y")

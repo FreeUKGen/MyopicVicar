@@ -1,7 +1,7 @@
  <%require 'register_type' %>
  Page Identification Registers:show<p>
 
- <p style="text-align: center">Details of the <b><%= @register_name %></b> Register for <b><%= @church_name %></b> in 
+ <p style="text-align: center">Details of the <b><%= @register_name %></b> for <b><%= @church_name %></b> in 
    <b><%= @place_name %></b> for the County of:  <b><%= @county %></b>
 </p>
 <div style="float:left;">  <%= button_to 'Create New Register', new_register_path, method: :get %></div>   
@@ -42,6 +42,9 @@
   <tr>
    <td>Register notes :</td><td > <%= @register.register_notes %>  </td>   
    </tr>
+   <tr>
+   <td>Staus of the transcriptions :</td><td ><%= @register.status %> </td>   
+   </tr>  
  <tr>
    <td>Record last amended :</td><td ><%= @register.last_amended %> </td>   
    </tr>  
