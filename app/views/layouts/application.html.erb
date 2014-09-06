@@ -21,7 +21,7 @@
  <h3><div style="float:left;"> <%= button_to " Search Our Database", main_app.search_queries_path , method: :get%></div>
  <div style="float:left;"> <%= button_to " County and Parish Content", refinery.county_pages_county_pages_path , method: :get%></div>
  <% if current_refinery_user %>
-  <div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(current_refinery_user.userid_detail), method: :get %> </div>
+  <div  style="float:left;"> <%= button_to 'Resource Management', main_app.manage_resource_path(current_refinery_user.userid_detail), method: :get %> </div>
    <div style="float:left;"> <%= button_to" Logout", refinery.logout_path , method: :get%></div>
  <% else %>
    <div style="float:left;"> <%= button_to" Login for members", refinery.login_path, method: :get %></div>
