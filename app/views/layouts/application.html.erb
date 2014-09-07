@@ -19,7 +19,7 @@
     <div id="container" > <h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %></h2></div>
   <div id="navhead"><br>
  <h4><div style="float:left;"> <%= button_to " Search Our Database", main_app.search_queries_path , method: :get%></div>
- <div style="float:left;"><%= button_to 'Advise on Searching', "../tips-for-searching-the-database" , method: :get  %></div>
+ <div style="float:left;"><%= button_to 'Advice on Searching', "../tips-for-searching-the-database" , method: :get  %></div>
  <div style="float:left;"> <%= button_to " County and Parish Content", refinery.county_pages_county_pages_path , method: :get%></div>
  <% if current_refinery_user %>
   <div  style="float:left;"> <%= button_to 'Resource Management', main_app.manage_resource_path(current_refinery_user.userid_detail), method: :get %> </div>
