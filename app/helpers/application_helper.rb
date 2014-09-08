@@ -14,6 +14,21 @@
 # 
 module ApplicationHelper
 
+
+  def freereg1_csv_file_for_display(freereg1_csv_file)
+    display_map = {}
+    display_map["Register Type"] = RegisterType.display_name(freereg1_csv_file.register.register_type)
+    display_map["Record Type"] = RecordType::display_name(freereg1_csv_file.record_type)
+    display_map["Oldest Entry"] = freereg1_csv_file.datemin
+    display_map["Newest Entry"] = freereg1_csv_file.datemax
+    display_map["File Name"] = freereg1_csv_file.file_name
+    display_map["Transcriber Syndicate"] = freereg1_csv_file.transcriber_syndicate
+    display_map["Comment #1"] = freereg1_csv_file.first_comment if freereg1_csv_file.first_comment
+    display_map["Comment #2"] = freereg1_csv_file.second_comment if freereg1_csv_file.second_comment
+    
+    display_map
+  end
+
   # generate proper display for the search query, in display order
   def search_params_for_display(search_query)
     display_map = {}
