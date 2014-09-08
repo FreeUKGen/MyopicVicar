@@ -1,6 +1,9 @@
 class PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
+
+  skip_before_filter :require_login, only: [:for_search_form]
+
   
   def index
           @chapman_code = session[:chapman_code]
