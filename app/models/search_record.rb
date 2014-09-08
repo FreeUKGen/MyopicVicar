@@ -83,7 +83,7 @@ class SearchRecord
     
     place_name = self.place.place_name
     if self.freereg1_csv_entry
-      church_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.church_name
+      church_name = self.freereg1_csv_entry.church_name
     end
     
     "#{place_name} (#{church_name})"
