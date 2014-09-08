@@ -36,15 +36,6 @@
 <%if controller.controller_name == "freereg_contents"  %>
 <div id="Heading">Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>. </div>
 <%end%>
-<%if controller.controller_name == "search_records"  %>
-<div id="nav">
-		<ul>
-		    <li><%= link_to "New Search", new_search_query_path %></li>
-		    <li><%= link_to "Revise Search", new_search_query_path(:search_id => params[:search_id]) %></li>
-		    <li><%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}") %></li>
-		</ul>
-	    </div>
-<%end%>
 <%unless @first_name.nil?%>
 <div id="personal">
 <p style="text-align: center"><b><%= @first_name%> these are your management tools</b></p>
