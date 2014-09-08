@@ -109,22 +109,6 @@ end
      self[:userid_lower_case] = self[:userid].downcase
   end
 
-  def ordered_display_fields
-    order = []
- # order << 'county'
- # order << 'place'
-    order << 'register'
-    order << 'register_type'
-    order << 'record_type'
-    order << 'file_name'
-# order << 'transcriber_name'
-    order << 'transcriber_syndicate'
-# order << 'credit_name'
-    order << 'first_comment'
-    order << 'second_comment'
-
-    order
-  end
   
   def update_register
        Register.update_or_create_register(self)

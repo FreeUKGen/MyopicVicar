@@ -40,6 +40,7 @@ class Freereg1CsvEntry
   field :burial_person_forename, type: String
   field :burial_person_surname, type: String
   field :burial_person_abode, type: String
+  field :church_name, type: String
   field :county, type: String # note this is actually a chapman code in the records
   field :father_forename, type: String
   field :father_occupation, type: String
@@ -128,8 +129,9 @@ class Freereg1CsvEntry
     order = []
     order << 'county'
     order << 'place'
+    order << 'church_name'
     order << 'register'
-    order << 'register_type'
+  #  order << 'register_type'
     order << 'register_entry_number'
     order << 'baptism_date'
     order << 'birth_date'
