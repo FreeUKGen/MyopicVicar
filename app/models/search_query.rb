@@ -34,6 +34,7 @@ class SearchQuery
   
   validate :name_not_blank
   validate :radius_is_valid
+  validate :date_range_is_valid
   before_validation :clean_blanks
 
 
@@ -122,6 +123,14 @@ class SearchQuery
   def radius_is_valid
     if !place_radius.blank? && places.size < 1
       errors.add(:place_radius, "You must choose a place to perform a radius search.")
+    end
+  end
+
+  def date_range_is_valid
+    if !start_year.blank? && !end_year.blank?
+      if start_year.to_i > end_year.to_i
+        errors.add(:place_radius, "Start year must precede end year.")
+      end
     end
   end
 
