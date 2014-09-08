@@ -139,13 +139,13 @@ desc "Process the freereg1_csv_entries and create the SearchRecords documents"
     end
   end
 
+
+  desc "Refresh the places cache"
   task :refresh_places_cache => [:environment] do |t,args|
-    PlaceCache.destroy_all
-    
-    ChapmanCode::values.each do |chapman_code|
-      PlaceCache.refresh(chapman_code)        
-    end
+    PlaceCache.refresh_all
   end
+
+
 task :create_userid_docs, [:type,:range]  => [:environment] do |t, args| 
  #this task reads the .uDetails file for each userid and creates the userid_detail collection  
    require 'create_userid_docs'
