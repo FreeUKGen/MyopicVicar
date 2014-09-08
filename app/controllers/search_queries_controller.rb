@@ -25,12 +25,11 @@ class SearchQueriesController < ApplicationController
   def create
     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
 
-    @search_query.save!
-
-    # find the search record result
-    # redirect to search records for that search_query ID?
-        
-    redirect_to search_query_path(@search_query)
+    if  @search_query.save
+      redirect_to search_query_path(@search_query)
+    else
+      render :new
+    end
 
   end
 

@@ -25,6 +25,7 @@ class SearchQuery
   field :place_radius, type: Integer
   field :place_system, type: String
   validates_inclusion_of :place_system, :in => Place::MeasurementSystem::ALL_SYSTEMS+[nil]  
+  
  
   field :result_count, type: Integer
 
@@ -33,7 +34,7 @@ class SearchQuery
   
   validate :name_not_blank
   validate :radius_is_valid
-  before_save :clean_blanks
+  before_validation :clean_blanks
 
 
   def search
@@ -123,6 +124,8 @@ class SearchQuery
       errors.add(:place_radius, "You must choose a place to perform a radius search.")
     end
   end
+
+
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
