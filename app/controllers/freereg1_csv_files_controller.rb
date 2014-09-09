@@ -130,10 +130,22 @@ class Freereg1CsvFilesController < ApplicationController
   #creation of the options for the individual entry
   if session[:my_own] == 'my_own'
     display_info
-    my_own_options
+    case 
+     when params[:freereg1_csv_file][:action] == 'Upload New Batch'
+      redirect_to new_csvfile_path
+      return
+     when params[:freereg1_csv_file][:action] == 'List by name'
+      session[:sort] =  "file_name ASC"
+     when params[:freereg1_csv_file][:action] == 'List by number of errors then name'
+      session[:sort] =   "error DESC, file_name ASC"
+     when params[:freereg1_csv_file][:action] == 'List by uploaded date (descending)'
+      session[:sort] =  "uploaded_date DESC, userid ASC"
+     when params[:freereg1_csv_file][:action] == 'List by uploaded date (ascending)'
+      session[:sort] =  "uploaded_date ASC, userid ASC"
+  end 
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort] ).page(params[:page])
     render "index"
-    return
+   
   end #end if
  end
 
