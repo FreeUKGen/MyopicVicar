@@ -167,6 +167,7 @@ def get_userids_and_transcribers
         @userids = @user
   end #end case
     unless session[:my_own] == 'my_own'
+       
         @userids.each do |ids|
         @people << ids.userid
       end
