@@ -40,13 +40,14 @@ class County
   end
   
    unless @new_userid.nil?
-    if @new_userid.county_groups.length == 0 then
+    if @new_userid.county_groups.nil? || @new_userid.county_groups.length == 0 then
      @new_userid.person_role = 'county_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher')
     end 
+     @new_userid.county_groups = Array.new if  @new_userid.county_groups.nil?
    @new_userid.county_groups << self.chapman_code
   end
-   @old_userid.save!  unless @old_userid.nil?
-   @new_userid.save!  unless @new_userid.nil?
+   @old_userid.save(:validate => false)  unless @old_userid.nil?
+   @new_userid.save(:validate => false)  unless @new_userid.nil?
    
  end
 

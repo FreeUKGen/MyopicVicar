@@ -34,6 +34,7 @@ def  add_lower_case_and_change_userid_fields
         if @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.length == 0 then
            @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
         end 
+        @new_userid.syndicate_groups = Array.new if  @new_userid.syndicate_groups.nil?
        @new_userid.syndicate_groups << self.syndicate_code
     end
    @old_userid.save(:validate => false)  unless @old_userid.nil?
