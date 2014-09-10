@@ -49,12 +49,9 @@ module ApplicationHelper
       place = search_query.places.first.place_name
       if search_query.all_radius_places.size > 0
         place << 
-          " (including " + 
-          search_query.all_radius_places.size + 
-          " additional places within " + 
-          search_query.all_radius_places.last.geo_near_distance +
-          Place::MeasurementSystem::system_to_units(search_query.place_system) +
-          ")"
+          " (including #{search_query.all_radius_places.size} additional places within  
+          #{search_query.all_radius_places.last.geo_near_distance} 
+          #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::SI)} )"
       end
       display_map["Place"] = place if search_query.places.size > 0
     end    

@@ -106,6 +106,8 @@ MyopicVicar::Application.routes.draw do
   resources :search_records
 
   get 'search_queries/:id/about(.:format)', :to => 'search_queries#about', :as => :about_search_query
+  get 'search_queries/:id/broaden(.:format)', :to => 'search_queries#broaden', :as => :broaden_search_query
+  get 'search_queries/:id/narrow(.:format)', :to => 'search_queries#narrow', :as => :narrow_search_query
   post 'search_queries/:id/remember(.:format)', :to => 'search_queries#remember', :as => :remember_search_query
   resources :search_queries
 

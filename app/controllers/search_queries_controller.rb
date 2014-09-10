@@ -22,6 +22,24 @@ class SearchQueriesController < ApplicationController
     redirect_to search_query_path(@search_query)
   end
 
+  def broaden
+    old_query = SearchQuery.find(params[:id])
+    @search_query = SearchQuery.new(old_query.attributes)
+    @search_query.radius_factor = @search_query.radius_factor * 2
+    @search_query.save
+    
+    redirect_to search_query_path(@search_query)
+  end
+
+  def narrow
+    old_query = SearchQuery.find(params[:id])
+    @search_query = SearchQuery.new(old_query.attributes)
+    @search_query.radius_factor = @search_query.radius_factor / 2
+    @search_query.save
+    
+    redirect_to search_query_path(@search_query)
+  end
+
   def create
     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
 

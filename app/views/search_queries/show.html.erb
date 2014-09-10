@@ -2,6 +2,12 @@
 	<ul>
 	    <li><%= link_to "New Search", new_search_query_path %></li>
 	    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
+	    <% if @search_query.can_be_broadened? %>
+		    <li><%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) %></li>
+	    <% end %>
+	    <% if @search_query.can_be_narrowed? %>
+		    <li><%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query) %></li>
+	    <% end %>
 	    <% if current_refinery_user && !current_refinery_user.userid_detail.search_queries.include?(@search_query )%>
 		    <li><%= button_to "Remember Search", remember_search_query_path %></li>    
 	    <% end %>

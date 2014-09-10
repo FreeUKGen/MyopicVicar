@@ -30,15 +30,10 @@
 	</li>
 
 	
-	<%= f.input :place_radius %>
-    <%= f.input :place_system,
-				{ :as => :select,
-				  :required => false,
-				  :include_blank => true,
-				  :collection => Place::MeasurementSystem::OPTIONS} %>
+	<%= f.input :search_nearby_places, :as => :boolean %>
 
 
-    <%= f.input :inclusive, :as => :boolean %>
+    <%= f.input :inclusive, :as => :boolean, :label => "Search family members?" %>
   <% end %>
 
   <%= f.actions do %>

@@ -1,7 +1,7 @@
 <div id="nav">
 	<ul>
-	    <li><%= link_to "New Search", new_search_query_path(:search_id => @search_query) %></li>
-	    <li><%= link_to "Revise Search", new_search_query_path %></li>
+	    <li><%= link_to "New Search",  new_search_query_path%></li>
+	    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
 	</ul>
 </div>
 
@@ -42,7 +42,7 @@
 
 <h2>Date</h2>
 <p>
-	<% if @search_query.start_year || @search_query.end_year %>
+	<% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
 		Search Criteria: 
 		<% if @search_query.start_year %>
 			<b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
@@ -55,13 +55,15 @@
 		<i>No date criteria specified.</i>
 	<% end %>
 </p>
-<p>
-	Search Logic:
-		Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style) and dates  <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
-		
-
-
-</p>
+<% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
+	<p>
+		Search Logic:
+			Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style) and dates  <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
+			
+	
+	
+	</p>
+<% end %>
 
 <h2>Records</h2>
 <i>to do</i>
@@ -73,11 +75,9 @@
 <% if @search_query.radius_search? %>
 	<p>
 		Search Critera: 
-			<b>Radius Search</b> within 
-			<b><%= @search_query.place_radius %></b> 
-			<%= Place::MeasurementSystem::system_to_units(@search_query.place_system)  %> of 
+			<b>Search additional places</b> 
+			near 
 			<b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b> 
-			<br>
 	</p>
 	<p>
 		Search Logic:

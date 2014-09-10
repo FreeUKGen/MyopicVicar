@@ -22,19 +22,18 @@ class SearchQuery
   field :start_year, type: Integer
   field :end_year, type: Integer
   has_and_belongs_to_many :places, inverse_of: nil
-  field :place_radius, type: Integer
-  field :place_system, type: String
-  validates_inclusion_of :place_system, :in => Place::MeasurementSystem::ALL_SYSTEMS+[nil]  
-  
+
+  field :radius_factor, type: Integer, default: 8
+  field :search_nearby_places, type: Boolean  
  
   field :result_count, type: Integer
-
+  field :place_system, type: String, default: Place::MeasurementSystem::SI
 
   belongs_to :userid_detail
   
   validate :name_not_blank
-  validate :radius_is_valid
   validate :date_range_is_valid
+  validate :radius_is_valid
   before_validation :clean_blanks
 
 
@@ -120,20 +119,20 @@ class SearchQuery
     end
   end
 
-  def radius_is_valid
-    if !place_radius.blank? && places.size < 1
-      errors.add(:place_radius, "You must choose a place to perform a radius search.")
-    end
-  end
 
   def date_range_is_valid
     if !start_year.blank? && !end_year.blank?
       if start_year.to_i > end_year.to_i
-        errors.add(:place_radius, "Start year must precede end year.")
+        errors.add(:end_year, "Start year must precede end year.")
       end
     end
   end
 
+  def radius_is_valid
+    if search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, "A place must be chosen to seach neaby places.")
+    end
+  end
 
 
   def clean_blanks
@@ -141,7 +140,7 @@ class SearchQuery
   end  
 
   def radius_search?
-    place_radius && place_radius > 0
+    search_nearby_places
   end
 
   def all_radius_places
@@ -156,11 +155,17 @@ class SearchQuery
     all_places.uniq
   end
 
+  def can_be_narrowed?
+    radius_search? && radius_factor > 2
+  end
 
+  def can_be_broadened?
+    radius_search? && radius_factor < 500 && result_count < 1000
+  end
 
   def radius_places(place_id)
     place = Place.find(place_id)
-    place.places_near(place_radius, place_system)    
+    place.places_near(radius_factor, place_system)    
   end
   
 end

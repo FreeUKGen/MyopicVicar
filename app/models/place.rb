@@ -174,9 +174,10 @@ end
     place.save
   end
 
-  def places_near(radius, system=MeasurementSystem::ENGLISH)
+  def places_near(radius_factor, system)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
-    places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
+    # places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
+    places = Place.where(:data_present => true).limit(radius_factor).geo_near(self.location).spherical.distance_multiplier(earth_radius).to_a
     # get rid of this place
     places.shift
     places
