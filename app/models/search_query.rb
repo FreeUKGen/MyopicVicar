@@ -23,7 +23,7 @@ class SearchQuery
   field :end_year, type: Integer
   has_and_belongs_to_many :places, inverse_of: nil
 
-  field :radius_factor, type: Integer, default: 8
+  field :radius_factor, type: Integer, default: 41
   field :search_nearby_places, type: Boolean  
  
   field :result_count, type: Integer
@@ -160,7 +160,8 @@ class SearchQuery
   end
 
   def can_be_broadened?
-    radius_search? && radius_factor < 500 && result_count < 1000
+    # radius_search? && radius_factor < 50 && result_count < 1000
+    false
   end
 
   def radius_places(place_id)
