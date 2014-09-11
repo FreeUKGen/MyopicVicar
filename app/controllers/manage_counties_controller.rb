@@ -20,7 +20,8 @@ def index
    unless @countries.nil?
   
      @countries.each do |county|
-        @counties << county unless  @counties.include?(county)
+        @counties << county if @counties.nil?
+        @counties << county unless  @counties.include?(county) 
      end
    end
    @number_of_counties = @counties.length
