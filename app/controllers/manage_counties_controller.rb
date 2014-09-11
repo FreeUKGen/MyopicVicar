@@ -18,7 +18,7 @@ def index
     end
    end
    unless @countries.nil?
-  
+    @counties = Array.new if @counties.nil?
      @countries.each do |county|
         @counties << county if @counties.nil?
         @counties << county unless  @counties.include?(county) 
