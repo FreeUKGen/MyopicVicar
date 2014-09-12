@@ -68,6 +68,7 @@ class SearchRecord
      ["search_names", "search_soundex"].each do |searchable|
        [{"chapman_code"=>1, "record_type"=>1},
        {"record_type" => 1},
+       {"place_id" => 1},
        {"chapman_code" => 1}].each do |prelude|
           index(prelude.merge({"#{searchable}.last_name" => 1, "#{searchable}.first_name" => 1, "search_date" => 1}), 
              {:name => (prelude.keys.join("_")+"_#{searchable}_ln_fn_sd")})
