@@ -109,6 +109,8 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/:id/broaden(.:format)', :to => 'search_queries#broaden', :as => :broaden_search_query
   get 'search_queries/:id/narrow(.:format)', :to => 'search_queries#narrow', :as => :narrow_search_query
   post 'search_queries/:id/remember(.:format)', :to => 'search_queries#remember', :as => :remember_search_query
+  get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
+  post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   resources :search_queries
 
   resources :s3buckets

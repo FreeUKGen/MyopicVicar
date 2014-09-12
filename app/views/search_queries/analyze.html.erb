@@ -1,0 +1,51 @@
+<div id="nav">
+	<ul>
+	    <li><%= link_to "Report",  search_query_report_path%></li>
+	</ul>
+</div>
+
+
+<h1>Performance Analysis</h1>
+
+<h2>Query</h2>
+
+<div>
+	<% search_params_for_display(@search_query).each do |name, value| %>
+		<%= name %>: <strong><%= value %></strong><br />
+	<% end %>	
+</div>
+
+<h2>Explain Plan</h2>
+
+<% unless @plan_error.blank? %>
+	Explain command failed with error <b><%= @plan_error %></b>!<br />
+	<br />
+	<h3>Unsorted Plan</h3>
+<% end %>
+
+<%= debug @plan %>
+
+<h2>Enabled Indexes</h2>
+<table>
+	<thead>
+		<th>
+			Index Name
+		</th>
+		<% SearchRecord.collection.indexes.map {|idx| idx["key"].size}.max.times.each_with_index do |i| %>
+			<th>Key <%=i%></th>
+		<% end %>
+	</thead>
+	<tbody>
+	<% SearchRecord.collection.indexes.each do |index| %>
+		<tr>
+			<td>
+				<%= index["name"]%>
+			</td>
+			<% index["key"].keys.each do |key| %>
+				<td>
+					<%= key %>
+				</td>
+			<% end %>
+		</tr>
+	<% end %>
+</table>

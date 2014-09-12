@@ -29,6 +29,9 @@ class SearchQuery
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::SI
 
+  field :session_id, type: String
+  field :runtime, type: Integer
+
   belongs_to :userid_detail
   
   validate :name_not_blank
@@ -40,9 +43,18 @@ class SearchQuery
   def search
     records = SearchRecord.where(search_params).asc(:search_date).all
     self.result_count = records.count
+    self.runtime = (Time.now.utc - self.created_at) * 1000
     self.save
 
     records
+  end
+  
+  def explain_plan
+    SearchRecord.where(search_params).asc(:search_date).all.explain
+  end
+  
+  def explain_plan_no_sort
+    SearchRecord.where(search_params).all.explain
   end
   
   def search_params

@@ -42,14 +42,38 @@ class SearchQueriesController < ApplicationController
 
   def create
     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+    @search_query.session_id = request.session_options[:id]
 
     if  @search_query.save
       redirect_to search_query_path(@search_query)
     else
       render :new
     end
-
   end
+  
+  # default criteria:
+  # today
+  def report
+    @start_day = DateTime.now
+    start_time = @start_day.at_beginning_of_day.utc
+    @end_day = DateTime.now
+    end_time = @end_day.end_of_day.utc
+    @search_queries = SearchQuery.where(:created_at.gte => start_time, :created_at.lte => end_time).desc(:runtime)
+  end
+
+
+
+  def analyze
+    @search_query = SearchQuery.find(params[:id])
+    begin 
+      @plan = @search_query.explain_plan
+    rescue => ex
+      @plan_error = ex.message
+      @plan = @search_query.explain_plan_no_sort
+    end
+    
+  end
+
 
   def show
     if params[:page_number]

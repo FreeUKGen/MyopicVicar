@@ -1,0 +1,41 @@
+
+<h1>Performance Reporting</h1>
+
+<p>Listing the longest-running queries from <b><%= @start_day.strftime("%Y-%m-%d %H:%M:%S") %></b> to <b><%= @end_day.strftime("%Y-%m-%d %H:%M:%S") %> (GMT<%= @end_day.zone %>)</b></p>
+<p>The 'Analyze' button will re-execute the query and analyze it.</p>
+
+<h2>Queries</h2>
+
+
+
+<table>
+	<thead>
+		<th>
+			Query
+		</th>
+		<th>Run Time (ms)</th>
+		<th>Start Time</th>
+		<th>Results Found</th>
+		<th>&nbsp;</th>
+	</thead>
+	<tbody>
+		<% @search_queries.each do |query| %>
+		 	<tr>
+		 		<td>
+					<% search_params_for_display(query).each do |name, value| %>
+						<%= name %>: <strong><%= value %></strong><br />
+					<% end %>
+	 			</td>
+	 			<td><b><%= query.runtime %></b></td>
+	 			<td><%= query.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	 			<td><%= query.result_count %></td>
+		 		<td>
+		 			<%= button_to("Analyze", analyze_search_query_path(query), :method=>:post)%>
+		 		</td>
+	 		</tr>
+		<% end %>
+		
+	</tbody>
+</table>
+
+
