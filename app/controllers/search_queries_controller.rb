@@ -54,11 +54,15 @@ class SearchQueriesController < ApplicationController
   # default criteria:
   # today
   def report
-    @start_day = DateTime.now
-    start_time = @start_day.at_beginning_of_day.utc
-    @end_day = DateTime.now
-    end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:created_at.gte => start_time, :created_at.lte => end_time).desc(:runtime)
+    if day_param = params[:day]
+      @start_day = DateTime.parse(day_param)
+    else
+      @start_day = DateTime.now
+    end
+    @end_day = @start_day
+    @start_time = @start_day.beginning_of_day.utc
+    @end_time = @end_day.end_of_day.utc
+    @search_queries = SearchQuery.where(:created_at.gte => @start_time, :created_at.lte => @end_time).desc(:runtime)
   end
 
 
