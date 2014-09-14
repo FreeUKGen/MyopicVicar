@@ -1,0 +1,34 @@
+
+
+<h1>Listing Feedback</h1>
+
+  <% unless Feedback.github_enabled %>
+    <div id="error_explanation">
+      <h2>Github integration is not enabled</h2>
+    </div>
+  <% end %>
+
+
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Date</th>
+    <th>User</th>
+    <th>Type</th>
+    <th></th>
+  </tr>
+
+<% @feedbacks.each do |feedback| %>
+  <tr>
+    <td><%= feedback.title %></td>
+    <td><%= feedback.feedback_time %></td>
+    <td><%= feedback.user_id %></td>
+    <td><%= feedback.feedback_type %></td>
+    <td><%= link_to 'Show', feedback %></td>
+ </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Feedback', new_feedback_path %>

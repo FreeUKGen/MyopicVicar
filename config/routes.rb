@@ -15,6 +15,10 @@
 MyopicVicar::Application.routes.draw do
  
  
+  post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
+  resources :feedbacks
+
+
   resources :place_caches
 
   post 'manage_syndicates/select', :to =>'manage_syndicates#select', :as => :select_manage_syndicate 

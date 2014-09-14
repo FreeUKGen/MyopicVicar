@@ -62,4 +62,10 @@ MyopicVicar::Application.configure do
   config.datafiles = "/home/benwbrum/tarfiles/current"
   # Date of dataset used
   config.dataset_date = "30 May 2014"
+  
+    
+  config.github_login = 'FreeUKGenIssues'
+  config.github_password = nil
+  config.github_repo = 'FreeUKGen/FreeUKGenProductIssues'
+
 end
