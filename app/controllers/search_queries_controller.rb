@@ -63,7 +63,6 @@ class SearchQueriesController < ApplicationController
     @start_time = @start_day.beginning_of_day.utc
     @end_time = @end_day.end_of_day.utc
     @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(:runtime)
-    binding.pry
   end
 
 
