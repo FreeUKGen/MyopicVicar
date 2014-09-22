@@ -82,16 +82,22 @@ class SearchRecord
   def location_names
     return self[:location_names] if self[:location_names] && self[:location_names].size > 0
     
+    self[:location_names] = format_location
+  end
+
+  def format_location
     place_name = self.place.place_name
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
     end
     
-    self[:location_names] << "#{place_name}"
-    self[:location_names] << "(#{church_name})" if church_name
-    self[:location_names] << "[#{register_type}]" if RegisterType.specified?(register_type)
-    self[:location_names]
+    location_array = []
+    location_array << "#{place_name}"
+    location_array << "(#{church_name})" if church_name
+    location_array << "[#{register_type}]" if RegisterType.specified?(register_type)
+        
+    location_array
   end
 
   def ordered_display_fields
@@ -130,6 +136,8 @@ class SearchRecord
     create_soundex   
       
     transform_date
+    
+    populate_location
       
   end
 
@@ -143,6 +151,9 @@ class SearchRecord
     self.search_date = DateParser::searchable(transcript_date)
   end
 
+  def populate_location
+    self.location_names = format_location
+  end
   
   def create_soundex
     search_names.each do |name|
