@@ -14,25 +14,25 @@
 
 <p>
 	Search Criteria: 
-	<b>First Name</b> is <b><i><%= @search_query.first_name || "blank"%></i></b>, 
-	<b>Last Name</b> is <b><i><%= @search_query.last_name  || "blank" %></i></b>.
+	<b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>, 
+	<b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
 	<b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
 </p>
 <p>
 	Search Logic:
 	<% if @search_query.first_name %>
-		Records with a first name of <b><i><%= @search_query.first_name %></i></b> (ignoring capitalization)
+		Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalization)
 		<% if @search_query.fuzzy %>
 			and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
 		<% end %>.
-		<% emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a %>
+		<% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
 		<% if emendations && emendations.size > 0 %>
 			In addition, match records whose first name is
 			<b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
 		<% end %>
 	<% end %>
 	<% if @search_query.last_name %>
-		<br />Records with a last name of <b><i><%= @search_query.last_name %></i></b> (ignoring capitalization)	
+		<br />Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)	
 		<% if @search_query.fuzzy %>
 			and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
 		<% end %>
