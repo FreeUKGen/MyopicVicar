@@ -142,7 +142,7 @@ class SearchQuery
 
   def radius_is_valid
     if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "A place must be chosen to seach neaby places.")
+      errors.add(:search_nearby_places, "Please select a place.")
     end
   end
 
