@@ -38,10 +38,18 @@
 	    <tr>
 		<th>Participants</th>
 		<th>Other Names</th>
-		<th>Type</th>
-		<th>Date</th>
-		<th>County</th>
-		<th>Location</th>
+		<th>
+			<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+		</th>
+		<th>
+			<%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
+		</th>
+		<th>
+			<%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
+		</th>
+		<th>
+			<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+		</th>
 		<th></th>
 	    </tr>
 	</thead>

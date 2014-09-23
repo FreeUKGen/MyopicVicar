@@ -78,6 +78,22 @@ class SearchQueriesController < ApplicationController
     
   end
 
+  def reorder
+    old_query = SearchQuery.find(params[:id])
+    @search_query = SearchQuery.new(old_query.attributes)
+
+    order_field=params[:order_field]
+    if order_field==old_query.order_field
+      # reverse the directions
+      @search_query.order_asc = !old_query.order_asc
+    else
+      @search_query.order_field = order_field
+      @search_query.order_asc = true
+    end
+    @search_query.save!
+    
+    redirect_to search_query_path(@search_query)
+  end
 
   def show
     if params[:page_number]
@@ -88,6 +104,8 @@ class SearchQueriesController < ApplicationController
     @search_query = SearchQuery.find(params[:id])
     @search_results = @search_query.search.skip(@page_number*RECORDS_PER_PAGE).limit(RECORDS_PER_PAGE)
   end
+
+
 
   def about
     if params[:page_number]
