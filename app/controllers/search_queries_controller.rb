@@ -59,10 +59,13 @@ class SearchQueriesController < ApplicationController
     else
       @start_day = DateTime.now
     end
+    unless order_param = params[:order]
+      order_param = :runtime
+    end
     @end_day = @start_day
     @start_time = @start_day.beginning_of_day.utc
     @end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(:runtime)
+    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param)
   end
 
 
