@@ -435,6 +435,7 @@ def date_change(transcription_date,modification_date)
        
         number  = number  + 1
         records = records + my_file.records.to_i
+
         userid.last_upload  = my_file.uploaded_date if number == 1
           unless my_file.uploaded_date.nil? || userid.last_upload .nil?
            userid.last_upload  = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > userid.last_upload.strftime("%s").to_i

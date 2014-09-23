@@ -182,6 +182,7 @@ describe Freereg1CsvEntry do
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filename)).first 
     entry = file_record.freereg1_csv_entries.last
     search_record = entry.search_record
+
     raw_name = entry[:bride_forename]
     check_record(entry, :bride_forename, :bride_surname, true)
     name_parts = raw_name.split
@@ -243,7 +244,7 @@ describe Freereg1CsvEntry do
                        :place_ids => [place.id] }
       q = SearchQuery.create!(query_params)
       result = q.search.to_a
-      binding.pry
+
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
       
