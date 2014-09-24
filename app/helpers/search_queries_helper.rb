@@ -16,4 +16,15 @@ module SearchQueriesHelper
     raw(names.map{ |name| name.gsub(' ', '&nbsp;')}.join(' '))
   end
 
+  def format_location(search_record)
+    if search_record.respond_to? :location_name
+      search_record.location_name
+    elsif
+      search_record.respond_to? :location_names
+      format_for_line_breaks(search_record.location_names)
+    else
+      ""
+    end
+  end
+
 end
