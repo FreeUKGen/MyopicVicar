@@ -10,6 +10,7 @@ class Feedback
   field :previous_page_url, type: String
   field :feedback_type, type: String
   field :github_issue_url, type: String
+  field :session_data, type: Hash
  
   after_create :communicate
   

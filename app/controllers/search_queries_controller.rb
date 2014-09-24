@@ -18,7 +18,7 @@ class SearchQueriesController < ApplicationController
   def remember
     @search_query = SearchQuery.find(params[:id])
     current_refinery_user.userid_detail.remember_search(@search_query)
-    flash[:success] = "This search has been added to your remembered searches"
+    flash[:notice] = "This search has been added to your remembered searches"
     redirect_to search_query_path(@search_query)
   end
 
@@ -54,6 +54,14 @@ class SearchQueriesController < ApplicationController
   # default criteria:
   # today
   def report
+    if params[:session_id]
+      report_for_session
+    else
+      report_for_day
+    end
+  end
+
+  def report_for_day
     if day_param = params[:day]
       @start_day = DateTime.parse(day_param)
     else
@@ -65,9 +73,17 @@ class SearchQueriesController < ApplicationController
     @end_day = @start_day
     @start_time = @start_day.beginning_of_day.utc
     @end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param)
+    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param)    
   end
 
+  def report_for_session
+    @session_id = params[:session_id]
+    @feedback = nil
+    if params[:feedback_id]
+      @feedback = Feedback.find(params[:feedback_id])
+    end 
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)    
+  end
 
 
   def analyze
