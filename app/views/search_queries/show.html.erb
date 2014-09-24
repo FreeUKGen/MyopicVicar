@@ -36,8 +36,10 @@
     <table>			
 	<thead>
 	    <tr>
-		<th>Participants</th>
-		<th>Other Names</th>
+		<th>
+			<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+		</th>
+		<th>Family Members</th>
 		<th>
 			<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
 		</th>

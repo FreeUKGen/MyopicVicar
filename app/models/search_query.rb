@@ -11,13 +11,15 @@ class SearchQuery
     TYPE='record_type'
     DATE='search_date'
     COUNTY='chapman_code'
-    LOCATION='location_names'
+    LOCATION='location_names.0'
+    NAME='transcript_names.0.last_name'
     
     ALL_ORDERS = [
       TYPE,
       DATE,
       COUNTY,
-      LOCATION
+      LOCATION,
+      NAME
     ]
   end
   
