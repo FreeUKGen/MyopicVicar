@@ -37,6 +37,9 @@ Managers and above
 
 County coordinators and syndicate coordinators.
 
+We may find it useful to divide the county coordinators into two groups: those who we think will have a quick grasp of thing, and those who will need more guidance. 
+We can then roll out the release to these groups in two stages.
+
 ### Features
 
 - All records go live.
