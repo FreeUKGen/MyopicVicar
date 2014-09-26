@@ -13,7 +13,7 @@ These phases only refer to the database and changes which affect users.  We can 
 
 ### Targeted actors
 
-Managers and above
+Managers and Free UK Genealogy staff
 
 ### Features
 
