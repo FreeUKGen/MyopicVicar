@@ -1,5 +1,5 @@
 <% require 'record_type' %>
- <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %> </div>
+
 
 <p style="text-align: center">Registers held in the FreeREG database for <b><%= @church %></b> in
 <b><%= @place_name %>;</b> for <b><%= @county %></b>. Select the register name link to get detailed information on the transcriptions that have been made.
@@ -36,3 +36,4 @@
 <p>      
 In this Table the Register Type can be: PR is from a Parish Register; AT is from an Archdeacon's Transcript; BT is from a Bishop's Transcript; TR is from a transcript of the Parish Registers; PH is from a Phillimore Transcript of a Parish Register; EX is from a selective extract of the Parish Register; DW is from a Dwelly's Transcript of a Parish register; and if there is no entry our transcription is from an unspecified document but is <b>most likely</b> transcribed from a Parish Register. The Source is where FreeREG obtained the documents/images that were transcribed. Notes are additional comments made about the Register. The date given in the Record last amended column is the most recent date that a record in the register was entered or amended in the database.
 </p>
+ <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %> </div>

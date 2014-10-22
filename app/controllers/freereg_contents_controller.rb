@@ -28,7 +28,7 @@ class FreeregContentsController < ApplicationController
     
       @county_id =  session[:county_id]
      session[:place] = @place_name
-     session[:place_id] = @place
+     session[:place_id] = @place._id
     
     
    
@@ -39,12 +39,11 @@ class FreeregContentsController < ApplicationController
      @county = session[:county]
      @place_name = @church.place.place_name
      @place = @church.place
-     @place = @place.id
      @church = @church.church_name
      @county_id =  session[:county_id]
      session[:church] = @church
      session[:place] = @place_name
-     session[:place_id] = @place
+     session[:place_id] = @place.id
     
     
      @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
@@ -55,7 +54,7 @@ class FreeregContentsController < ApplicationController
      @church  = session[:church]
      @place_name = session[:place]
      @county = session[:county]
-     @place = session[:place_id]
+     @place = Place.find(session[:place_id])
       @county_id =  session[:county_id]
      session[:register_id] = params[:id]
      @register = Register.find(params[:id])
@@ -89,7 +88,7 @@ class FreeregContentsController < ApplicationController
         end
      
      @record_type = params[:id]  
-     @place = session[:place_id]
+     @place = Place.find(session[:place_id])
      @church  = session[:church]
      @place_name = session[:place]
      @county = session[:county]
