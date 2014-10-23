@@ -38,7 +38,7 @@ Please tell us if you have a fiche reader.
 </td><td>
 <%= f.input :fiche_reader, {:as => :select,  :collection => [true,false],:include_blank => false, :size => 35}%></td></tr>
 <tr><td>
-Please read the <%= link_to 'participation agreement', places_path%> and confirm that you accept these terms. PLEASE NOTE THE AGREEMENT IS NOT THERE YET
+Please review the <%= link_to 'participation agreement', "../contributing-to-the-freereg-project/free-uk-genealogy-transcriber-agreement"%> and confirm that you accept these terms. 
 </td><td>
 <%= f.input :transcription_agreement, {:as => :check_boxes,  :collection => [true], :include_blank => false, :required => true,:size => 35}%></td></tr>
 
