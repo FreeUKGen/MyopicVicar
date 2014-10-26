@@ -129,13 +129,16 @@ end
 
 def destroy
    load(params[:id])
+   session[:type] = "edit"
    if @userid.number_of_files > 0
     flash[:notice] = 'The destruction of the userid is not permitted as there are batches stored under this name'
+    next_place_to_go_unsuccessful_update
    else
    	@userid.destroy
    flash[:notice] = 'The destruction of the userid was successful'
+   next_place_to_go_successful_update(@userid)
    end
-    redirect_to :action => 'all'
+   
 end
 
  def disable
@@ -175,7 +178,7 @@ def next_place_to_go_unsuccessful_update
      when session[:my_own] == 'my_own'
             render :action => 'edit'
             return
-         when session[:type] == "edit"
+     when session[:type] == "edit"
           
            if @user.person_role == 'system_administrator'
               redirect_to :action => 'all'
@@ -185,10 +188,10 @@ def next_place_to_go_unsuccessful_update
               return
            end
           
-          else
+    else
             redirect_to refinery.login_path
             return
-    end
+   end
 end
 
 
