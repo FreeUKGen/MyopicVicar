@@ -28,7 +28,7 @@ end
      	dups = dups + 1
         duplicates = UseridDetail.where(:userid_lower_case => my_entry.userid_lower_case).all
         duplicates.each do |dup|
-        message_file.puts my_entry.userid dup.userid
+        message_file.puts "#{my_entry.userid} #{dup.userid}"
       end
      
     end #userid
