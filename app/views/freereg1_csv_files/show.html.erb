@@ -1,11 +1,10 @@
-Page Identification Freereg Files:show<p>
 <p style="text-align: center">Showing  batch:<b><%= @freereg1_csv_file_name %> </b> </p>
 <div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Download this batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
-<div style="float:left;"><%= button_to 'Replace this batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
+<div style="float:left;"> <%= button_to 'Download batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
+<div style="float:left;"><%= button_to 'Replace batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
 <div  style="float:left;"><%= button_to 'Destroy batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' } %></div>
-<div style="float:left;"> <%= button_to 'Browse the records of this batch', freereg1_csv_entries_path, method: :get %></div>
-<div style="float:left;"> <%= button_to 'Select page of records from this batch', select_page_freereg1_csv_entry_path, method: :get %></div>
+<div style="float:left;"> <%= button_to 'Browse records in batch', freereg1_csv_entries_path, method: :get %></div>
+<div style="float:left;"> <%= button_to 'Select page of records in batch', select_page_freereg1_csv_entry_path, method: :get %></div>
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
@@ -130,6 +129,7 @@ Page Identification Freereg Files:show<p>
    <td>Character set of original file</td><td > <%= @freereg1_csv_file.characterset %></td>   
    </tr>
 </table>  
+<br>
 
 
 

@@ -1,11 +1,6 @@
-Page Identification Freereg Files:edit<p>
+
 <p style="text-align: center">Editing file:<b><%= @freereg1_csv_file_name %></b> </p>
-<% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<%end%>
-<% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
-<%end%>
+
 <%= render 'nav' %>
 <%unless session[:error_line].nil?%>
 <b>If the header error involves an incorrect record type the file itself must be corrected and reloaded</b><br><br>
@@ -19,3 +14,9 @@ Page Identification Freereg Files:edit<p>
 <br>
 <%= render 'form' %>
 <br>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
+<%end%>
