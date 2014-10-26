@@ -1,13 +1,10 @@
-Page Identification UserDetals: New<p>
-<p style="text-align: center"><b>Syndicate Members Creation for <%=session[:syndicate]%></b></p>
+<p style="text-align: center"><b>Userid details creation for <%=session[:syndicate]%></b></p>
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
 <% if @role =='syndicate' %>
 <div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
-
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>

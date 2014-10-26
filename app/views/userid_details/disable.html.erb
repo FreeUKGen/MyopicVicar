@@ -1,4 +1,3 @@
-Page Identification UserDetals: Inactive<p>
 <p style="text-align: center"><b>Changing Userid to inactive</b> </p>
 <%= semantic_form_for @userid do |f| %>
 
@@ -12,6 +11,4 @@ Page Identification UserDetals: Inactive<p>
 <% if @role =='syndicate' %>
 <div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
-
 <div style="clear:both;"> </div><br>
