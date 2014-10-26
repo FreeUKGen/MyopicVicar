@@ -128,10 +128,13 @@ rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
 end
 
 def destroy
-   
    load(params[:id])
-   @userid.destroy
+   if @userid.number_of_files > 0
+    flash[:notice] = 'The destruction of the userid is not permitted as there are batches stored under this name'
+   else
+   	@userid.destroy
    flash[:notice] = 'The destruction of the userid was successful'
+   end
     redirect_to :action => 'all'
 end
 
