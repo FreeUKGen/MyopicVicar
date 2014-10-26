@@ -247,7 +247,7 @@ end
 def return_decision
    if session[:my_own] == 'my_own'
        @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(file_name: 1).page(params[:page])
-       render 'index'
+       render 'my_own_index'
     else 
         @current_page = session[:page]
         session[:page] = session[:initial_page]    
