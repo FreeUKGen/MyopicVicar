@@ -1,10 +1,9 @@
-Page Identification Freereg Entries:edit<p>
+
 <p style="text-align: center">Editing entry entry <b><%= @freereg1_csv_entry.file_line_number %></b> for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 
 <div style="float:left;"> <%= button_to 'Show Entry', freereg1_csv_entry_path(@freereg1_csv_entry),  method: :get %> </div>
 <div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path( :anchor => "#{@freereg1_csv_entry.id}"), method: :get %>  </div>
 <div style="float:left;"> <%= button_to 'Listing of Error Records', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
@@ -14,5 +13,5 @@ Page Identification Freereg Entries:edit<p>
    <% end %>  
 <%= render 'form' %>
 <br>
-
+Note:Boxes that are grayed out cannot be changed.<br>
 

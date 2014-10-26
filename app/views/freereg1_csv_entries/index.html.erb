@@ -1,10 +1,7 @@
-Page Identification Freereg Entries:index<p>
 <p style="text-align: center">Listing entries for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 
 
-<div style="float:left;"> <%= button_to 'New record entry', new_freereg1_csv_entry_path, method: :get %></div>
-
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<div style="float:left;"> <%= button_to 'Create new record entry', new_freereg1_csv_entry_path, method: :get %></div>
 
 <div style="clear:both;"> </div><br>
 

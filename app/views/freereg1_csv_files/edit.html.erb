@@ -13,6 +13,7 @@
  <%end%>
 <br>
 <%= render 'form' %>
+Note:Boxes that are grayed out cannot be changed.<br>
 <br>
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
