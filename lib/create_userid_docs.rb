@@ -199,20 +199,21 @@ def self.check_for_replace(filename,userid,digest)
 
    userid = UseridDetail.where(:userid => header[:userid]).first
    unless userid.nil?
-    header.delete(:email_address)  if header[:email_address] == userid.email_address
+     header.delete(:email_address)  if header[:email_address] == userid.email_address
      userid.update_attributes(header)
+     p "#{header[:userid]} updated"
    else
    userid = UseridDetail.new(header) 
+   p "#{header[:userid]} created"
+   userid.save
   end
   
   
     if userid.errors.any?
       @@message_file.puts "#{header[:userid]} not created"
       @@message_file.puts userid.errors.messages
-      p "#{header[:userid]} not updated"
+      p "#{header[:userid]} not created"
       p userid.errors.messages
-    else
-    p "#{header[:userid]} updated"
     end #end errors
    end
     

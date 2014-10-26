@@ -1,14 +1,16 @@
 require 'chapman_code'
 
 task :load_refinery_users => :environment do
-#
+# 
   load_users_from_mongo
 end
 
 
 def load_users_from_mongo
+  p "Starting load"
 #  base_role = Refinery::Role.where(:title => 'Refinery').first
   #Refinery::User.delete_all
+  n = 0
   UseridDetail.all.each do |detail|
    u = Refinery::User.where(:username => detail.userid).first
     if u.nil? 
@@ -23,15 +25,16 @@ def load_users_from_mongo
     u.encrypted_password = detail.password # actual encrypted password
     u.userid_detail_id = detail.id.to_s
     u.add_role("Refinery")
-   
+    u.add_role('Superuser') if (detail.active && detail.person_role == 'technical') 
     
 # binding.pry
 
     unless u.save
       print "Failed to save #{u.username} due to #{u.errors.messages}\n"
     end
+    n = n + 1
    end 
-
+ p " #{n} records processed"
 end
 
 
