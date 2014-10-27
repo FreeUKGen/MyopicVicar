@@ -13,9 +13,8 @@ Page Identification Manage Freereg:new<p>
 
 
 <div style="float:left;"><%= button_to "Retrieve Activity logs ", my_saved_searches_path, method: :get   %> </div>
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
-
-
+<div  style="float:left;"> <%= button_to 'Review Search Performance', search_query_report_path, method: :get %> </div>
+<div  style="float:left;"> <%= button_to 'Review Problem Feedback', feedbacks_path, method: :get %> </div>
 
 
 <div style="clear:both;"> </div><br>
