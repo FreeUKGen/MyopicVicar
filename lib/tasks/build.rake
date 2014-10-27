@@ -13,6 +13,8 @@ namespace :build do
  $collections[9] = "syndicates"
  $collections[10] = "counties"
  $collections[11] = "countries"
+ $collections[12] = "feedbacks"
+ $collections[13] = "search_queries"
 
  COLLECTIONS = {
 'master_place_names' => 'MasterPlaceName',
@@ -26,8 +28,9 @@ namespace :build do
 'userid_details' => 'UseridDetail',
 'syndicates' => 'Syndicate',
 'counties' => 'County',
-'countries' => 'Country'
-
+'countries' => 'Country',
+'search_queries' => 'SearchQuery',
+'feedbacks' => 'Feedback'
 }
 EXPORT_COMMAND =  "mongoexport --db "
  EXPORT_OUT = " --out  "
