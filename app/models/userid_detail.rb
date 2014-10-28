@@ -94,7 +94,7 @@ def write_userid_file
       details.puts "Disabled:1"
     else
       details.puts "Active:1"
-       details.puts "Disabled:0"
+      details.puts "Disabled:0"
     end
    details.close
 end
@@ -148,20 +148,20 @@ def save_to_attic
 end
 
 def userid_and_email_address_does_not_exist
-   errors.add(:userid, "Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
-   errors.add(:userid, "Already exits") if Refinery::User.where(:username => self[:userid]).exists?
+   errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
+   errors.add(:userid, "Refinery User Already exits") if Refinery::User.where(:username => self[:userid]).exists?
    unless self[:transcription_agreement].nil? # deals with off line updating
     errors.add(:transcription_agreement, "Must be accepted") unless self[:transcription_agreement].include?(true)
    end
   
-   errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
-   errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
+   errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
+   errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
 end   
 
 def email_address_does_not_exist
   if self.changed.include?('email_address')
-   errors.add(:email_address, "Already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
-   errors.add(:email_address, "Already exits") if Refinery::User.where(:email => self[:email_address]).exists?
+   errors.add(:email_address, "Userid email already exits on change") if UseridDetail.where(:email_address => self[:email_address]).exists?
+   errors.add(:email_address, "Refinery email already exits on change") if Refinery::User.where(:email => self[:email_address]).exists?
  end
 end
  
