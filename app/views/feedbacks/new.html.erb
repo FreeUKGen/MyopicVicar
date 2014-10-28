@@ -1,4 +1,8 @@
-<h1>New feedback</h1>
+<% if @feedback.feedback_type == Feedback::FeedbackType::ISSUE %>
+	<h1>Problem Report</h1>
+<% else %>
+	<h1>Give Feedback</h1>
+<% end %>
 
 <%= render 'form' %>
 
