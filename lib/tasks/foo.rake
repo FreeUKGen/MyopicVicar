@@ -157,4 +157,20 @@ task :create_userid_docs, [:type,:range]  => [:environment] do |t, args|
     puts "Task complete."
  end
 
+ desc "Update userids and create a report of any problem email addresses"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :report_problem_email_address, [:range] => [:environment] do |t, args|
+ require 'report_problem_email_address' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          ReportProblemEmailAddress.process(args.range) 
+          
+     
+    puts "Task complete."
+   end
+  end
+
 end
