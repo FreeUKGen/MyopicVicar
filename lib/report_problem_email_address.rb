@@ -116,7 +116,7 @@ FIELD_NAMES = {
     if !userid.nil? && (userid.errors.any? ) 
       previous_userid = UseridDetail.where(:email_address => header[:email_address]).first
       previous_userid = previous_userid.userid unless previous_userid.nil?
-      previous_user = Refinery::User.where(:email_address => header[:email_address]).first
+      previous_user = Refinery::User.where(:email => header[:email_address]).first
       previous_user = previous_user.username unless previous_user.nil?
       @@message_file.puts "#{header[:userid]};#{userid.errors.messages};#{header[:email_address]}; #{previous_userid}; #{previous_user}"
       p "#{header[:userid]};#{userid.errors.messages};#{header[:email_address]}; #{previous_userid}; #{previous_user}"
