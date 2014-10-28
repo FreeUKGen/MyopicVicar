@@ -5,8 +5,14 @@
 <%= f.input :syndicate, { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true,
 :collection => @syndicates, :size => 15 } %>
 <%else%>
+<%if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
+<%= f.input :userid, :label => "The UserId itself:",:input_html => { :disabled => true ,:size => 30 } %>
+<%= f.input :syndicate, { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true,
+:collection => @syndicates, :size => 15 } %>
+<%else%>
 <%= f.input :userid, :label => "The UserId itself:",:input_html => { :disabled => true ,:size => 30 } %>
 <%= f.input :syndicate,:label => "Syndicate :",:input_html => {:disabled => true , :size => 40 }%>
+<%end%>
 <%end%>
 <%= f.input :person_forename,:label => "Forename :",:input_html => { :size => 40 }%>
 <%= f.input :person_surname,:label => "Surname :",:input_html => { :size => 40 }%>
