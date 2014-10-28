@@ -105,6 +105,7 @@ FIELD_NAMES = {
    	unless header[:email_address] == userid.email_address
      u = Refinery::User.where(:username => header[:userid]).first 
      u.email = nil
+      u.save
      userid.update_attributes(:email_address => header[:email_address]) 
      u.email = header[:email_address]
      u.save
