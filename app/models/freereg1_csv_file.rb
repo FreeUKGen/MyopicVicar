@@ -403,6 +403,7 @@ def date_change(transcription_date,modification_date)
   end
 
   def clean_up
+    self.update_number_of_files
     register = self.register
     church = register.church
     place = church.place
