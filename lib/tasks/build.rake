@@ -84,7 +84,7 @@ namespace :build do
     #@datafile_location =  Rails.application.config.mongodb_datafile
     #save master_place_names and alias
     p "Save started"
-    collections_to_save = ["0","1","2","3","4","8","9","10","11"]
+    collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13"]
 
     collections_to_save.each  do |col|
       coll  = col.to_i
@@ -247,7 +247,7 @@ namespace :build do
 
   desc "Create the indices after all FreeREG processes have completed"
   task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_userid_docs, :environment] do
-  #task is there to creat indexes after running of freereg_csv_processor
+  #task is there to create indexes after running of freereg_csv_processor
     require 'batch_error'
     require 'search_record'
     require 'freereg1_csv_file'
@@ -280,13 +280,13 @@ namespace :build do
   # example build:freereg_from_files["","","","0/1","0/1"]
   #reloads the Mater and Alias collections from Github and indexes them
   # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7"]
-  #relaoads saved versions of Places/Churches/Registers/Files/Entries/Search_records from tmp and reloads the Mater and Alias
+  #reloads saved versions of Places/Churches/Registers/Files/Entries/Search_records from tmp and reloads the Mater and Alias
   #collections from Github and indexes them all
   #******************************NOTE************************************
   #it uses the @mongodb_bin =   Rails.application.config.mongodb_bin_location where the Mongodb binary are located
   # @tmp_location = Rails.application.config.mongodb_collection_temp to store the temp files
-  #@file_location =  Rails.application.config.mongodb_collection_location the location of the github ollections
-  #from the developmentapplication.config
+  #@file_location =  Rails.application.config.mongodb_collection_location the location of the github collections
+  #from the development application.config
   task :freereg_from_files,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:recreate_freereg_csv_indexes,:environment] do |t,args|
     puts "Completed rebuild of FreeREG"
   end
@@ -312,7 +312,7 @@ namespace :build do
         p output
       end
     end
-    puts "Save task compelete"
+    puts "Save task complete"
   end
 
   task :drop_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:save_freereg_collections, :environment] do |t,args|
@@ -349,7 +349,7 @@ namespace :build do
         p output
       end
     end
-    puts "Reload task compelete "
+    puts "Reload task complete "
   end
 
   task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:reload_freereg_collections_from_temp, :environment] do |t,args|
@@ -373,7 +373,7 @@ namespace :build do
         puts output
       end
     end
-    puts "Load task compelete"
+    puts "Load task complete"
   end
 
   desc "Create the indices after all FreeREG processes have completed"
@@ -402,13 +402,13 @@ namespace :build do
     puts " Index task complete."
   end
   task :backup_freereg_collections,[:save] => [:environment] do |t,args|
-    puts "Backingp collections"
+    puts "Backing collections"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @db = Mongoid.sessions[:default][:database]
     EXPORT_COMMAND =  "mongoexport --db #{@db} --collection  "
     EXPORT_OUT = " --out  "
-    collections_to_save = ["0","1","2","3","4","5","8","9","10","11"] if args.save == 'partial'
-    collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11"] if args.save == 'full'
+    collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13"] if args.save == 'partial'
+    collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13"] if args.save == 'full'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     @tmp_location =   Rails.application.config.mongodb_collection_location
     @tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
@@ -425,7 +425,7 @@ namespace :build do
       p output
     end
 
-    puts "Save task compelete"
+    puts "Save task complete"
   end
 
 end
