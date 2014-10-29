@@ -103,8 +103,10 @@ FIELD_NAMES = {
      u = Refinery::User.where(:username => header[:userid]).first 
    else
    	unless header[:email_address] == userid.email_address
-     userid.update_attributes(:email_address => header[:email_address]) 
      u = Refinery::User.where(:username => header[:userid]).first 
+     u.email = nil
+      u.save
+     userid.update_attributes(:email_address => header[:email_address]) 
      u.email = header[:email_address]
      u.save
       p "#{header[:userid]} email address updating"
