@@ -1,8 +1,14 @@
 <% if @feedback.feedback_type == Feedback::FeedbackType::ISSUE %>
 	<h1>Problem Report</h1>
+
+	<div>
+		Use this form to report a problem with the system.  The contents of your problem report will be visible on the Internet.
+	</div>
+
 <% else %>
 	<h1>Give Feedback</h1>
 <% end %>
+
 
 <%= render 'form' %>
 
