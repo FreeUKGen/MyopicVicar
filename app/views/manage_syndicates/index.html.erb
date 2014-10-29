@@ -1,34 +1,23 @@
-Page Identification Manage Syndicates:index<p>
-
-<%if session[:multiple] == false%>
-<p><%= @first_name%> you are managing the <b><%= @syndicates %></b> syndicate </p>
- <% end %>
-
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>  
-    <div id="main"style="color:black">
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
+<%if session[:multiple] == false%>  
+  <p><%= @first_name%> you are managing the <b><%= @syndicates %></b> syndicate </p>
+<% end %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <br>
+  </div>
+<% end %>  
+<div id="main"style="color:black">
   <%= semantic_form_for @manage_syndicate do |f| %>
-
-  <%if  session[:multiple] == true%>
+    <%if  session[:multiple] == true%>
       <%= f.input :syndicate, 
-        { :as => :select, :label => "#{@first_name} you have multiple syndicates. Which would you like to work with?",
-          :include_blank => false, :required => true, :collection => @syndicates, :size => 15 }  %>
+      { :as => :select, :label => "#{@first_name} you have multiple syndicates. Which would you like to work with?",
+      :include_blank => false, :required => true, :collection => @syndicates, :size => 15 }  %>
     <% end %>
-
-  <br>
-<%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Review Batches with errors','Review Batches listed by filename', 'Upload New Batch','Review Batches listed by userid then filename','Review Batches listed by uploaded date','Review Active Members' ,'Review all Members', 'Select Specific Member by Userid', 'Select Specific Member by Email Address'  ], :label => "What would you like to do? ",  :size => 10  }%>
-
-
- <%= f.action :submit, :as => :input, :label => 'Select'   %>
-   <% end %>
-
-
-
+    <br>
+    <%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Review Batches with errors','Review Batches listed by filename', 'Upload New Batch','Review Batches listed by userid then filename','Review Batches listed by uploaded date','Review Active Members' ,'Review all Members', 'Select Specific Member by Userid', 'Select Specific Member by Email Address'  ], :label => "What would you like to do? ",  :size => 10  }%>
+    <%= f.action :submit, :as => :input, :label => 'Select'   %>
+  <% end %>
   <br>        
- 
+
 
 
