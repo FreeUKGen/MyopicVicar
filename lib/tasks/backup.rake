@@ -71,7 +71,7 @@ namespace :freereg do
     end
 
     tarfile = File.join(Rails.application.config.backup_directory, 'files', "#{backup_stem}.taz")
-    system("tar czf #{tarfile} --directory #{working_dir} #{working_dir} \n")
+    system("tar czf #{tarfile} --directory #{working_dir} . \n")
     system("rm -r #{working_dir}/*\n")
   # cd /home/apache/hosts/freereg2/MyopicVicar
   # rake build:freereg_from_files["2/3/4/5/8/9/10/11/12/13",,,]
