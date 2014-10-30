@@ -53,17 +53,17 @@ MyopicVicar::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
   #location of the mongo binary folder
-  config.mongodb_bin_location = "/usr/local/bin/" 
+  config.mongodb_bin_location = "/usr/bin/" 
   #where to store the collections AliasPlaceChurch
   config.mongodb_collection_temp = File.join(Rails.root,'tmp')
   #Where the collections are stored
   config.mongodb_collection_location = File.join(Rails.root,'db','collections')
   #where do we store the Mongodb database 
-  config.datafiles = "/home/benwbrum/tarfiles/current"
+  config.datafiles = '/home/benwbrum/dev/clients/freeukgen/freereg1_data/partial' #File.join(Rails.root,'test_data','freereg1_csvs')
   # Date of dataset used
   config.dataset_date = "30 May 2014"
   
-  config.backup_directory = File.exist?("/raid/freereg2/backups/working") ? "/raid/freereg2/backups/working" : File.join(Rails.root, 'tmp', 'backups')
+  config.backup_directory = File.exist?("/raid/freereg2/backups") ? "/raid/freereg2/backups" : File.join(Rails.root, 'tmp', 'backups')
   
     
   config.github_login = 'FreeUKGenIssues'
