@@ -63,6 +63,8 @@ MyopicVicar::Application.configure do
   # Date of dataset used
   config.dataset_date = "30 May 2014"
   
+  config.backup_directory = File.exist?("/raid/freereg2/backups/working") ? "/raid/freereg2/backups/working" : File.join(Rails.root, 'tmp', 'backups')
+  
     
   config.github_login = 'FreeUKGenIssues'
   config.github_password = nil
