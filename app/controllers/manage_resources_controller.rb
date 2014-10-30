@@ -14,9 +14,8 @@ def index
     @manage_resources = ManageResource.new 
     session[:userid] = @user.userid
     session[:first_name] = @user.person_forename
-    session[:manager] = manager?(@user)
+    session[:manager] = manager?(@user)  
     redirect_to manage_resource_path(@user)
-   
 end
 
 def new
@@ -41,7 +40,6 @@ end
 def load(userid_id)
    @first_name = session[:first_name]
    @user = UseridDetail.find(userid_id)
-  
 end
 
 
