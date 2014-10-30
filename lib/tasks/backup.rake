@@ -32,7 +32,7 @@ namespace :freereg do
   def run_mongo(program, command_line)
     fq_program =  File.join(Rails.application.config.mongodb_bin_location, program)
     db = Mongoid.sessions[:default][:database]
-    print "#{fq_program} --db #{db} #{command_line}\n"
+    system "#{fq_program} --db #{db} #{command_line}\n"
     
   end
   
@@ -48,7 +48,7 @@ namespace :freereg do
     sql_password = db_config["password"]
     sql_database = db_config["database"]
     
-    print "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}\n"    
+    system "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}\n"    
   end
 
   desc "Save freereg databases to a backup file"
@@ -71,8 +71,8 @@ namespace :freereg do
     end
 
     tarfile = File.join(Rails.application.config.backup_directory, 'files', "#{backup_stem}.taz")
-    print("tar czf #{tarfile} #{working_dir}\n")
-    print("rm -r #{working_dir}/*\n")
+    system("tar czf #{tarfile} #{working_dir}\n")
+    system("rm -r #{working_dir}/*\n")
     # cd /home/apache/hosts/freereg2/MyopicVicar
     # rake build:freereg_from_files["2/3/4/5/8/9/10/11/12/13",,,]
     # tar czf /raid/freereg2/backups/files/$backup_stem.taz tmp/places.json tmp/churches.json tmp/registers.json tmp/freereg1_csv_files.json tmp/userid_details.json tmp/syndicates.json tmp/counties.json tmp/countries.json tmp/feedbacks.json tmp/search_queries.json $dumpfile*.dmp
