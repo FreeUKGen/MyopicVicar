@@ -32,7 +32,9 @@ namespace :freereg do
   def run_mongo(program, command_line)
     fq_program =  File.join(Rails.application.config.mongodb_bin_location, program)
     db = Mongoid.sessions[:default][:database]
-    system "#{fq_program} --db #{db} #{command_line}\n"
+    cmd = "#{fq_program} --db #{db} #{command_line}"
+    print "#{cmd}\n"
+    system cmd
 
   end
 
@@ -48,7 +50,9 @@ namespace :freereg do
     sql_password = db_config["password"]
     sql_database = db_config["database"]
 
-    system "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}\n"
+    cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
+    print "#{cmd}\n"
+    system cmd
   end
 
   desc "Save freereg databases to a backup file"
@@ -132,6 +136,10 @@ namespace :freereg do
       print "\tValid datasets are "+VALID_DATASETS.join('/')+"\n"
       exit
     end
+    if args[:datasets] == "all"
+      # do all the concrete datasets
+      datasets = VALID_DATASETS - ["all"]
+    end
     
     datasets    
   end
@@ -152,7 +160,7 @@ namespace :freereg do
     
   end
 
-  def extract_backup_dir
+  def extract_backup_dir(args)
     # unzip the file
     if Dir.exist? args[:backup_file]
       extract_dir = args[:backup_file]
@@ -172,22 +180,24 @@ namespace :freereg do
   end
 
   desc "Restore freereg database from backup file"
-  task :restore_from_backup,[:backup_file, :datasets] => [:environment] do  |t,args|
+  task :restore,[:backup_file, :datasets] => [:environment] do  |t,args|
     datasets = parse_args_for_datasets(args)
     validate_database
-    extract_dir = extract_backup_dir
+    extract_dir = extract_backup_dir(args)
 
     # all files should now be unzipped to extract_dir
 
-    json_dir = File.join(extract_dir, 'tmp')
-    sql_dir = File.join(extract_dir, 'raid', 'freereg2', 'backups', 'working')
+    json_dir = Dir.glob(File.join(extract_dir, '*')).find { |fn| File.directory?(fn) }
+
+    sql_dir = File.join(extract_dir)
 
     datasets.each do |dataset|
       files = BACKUP_FILES[dataset]
       if files[:json]
         files[:json].each do |collection|
-          json_file = Dir.glob(File.join(json_dir, "*#{collection}.json")).first
-          run_mongo("mongoimport", "--collection #{collection} --file #{json_file}")
+          json_file = Dir.glob(File.join(json_dir, "*#{collection}.bson")).first
+#          binding.pry
+          run_mongo("mongorestore", "--collection #{collection} #{json_file}")
         end
       end
       if files[:sql]
