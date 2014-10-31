@@ -89,6 +89,8 @@ def selection
   @type = params[:user]
   params[:user] = nil
   @manage_syndicate = session[:syndicate]
+  @location_email = 'location.href= "select?email=" + this.value'
+  @location_userid = 'location.href= "select?userid=" + this.value'
 end
 def select
   get_user_info(session[:userid],session[:first_name])

@@ -8,7 +8,7 @@
   :required => true,
   :collection => @userids, 
   :size => 10 , 
-  :input_html => {'onchange' => 'location.href= "select?userid=" + this.value'}
+  :input_html => {'onchange' => @location_userid}
   }%>
 
   <% end %>
@@ -21,7 +21,7 @@
     :required => true,
     :collection => @userids, 
     :size => 10 , 
-    :input_html => {'onchange' => 'location.href= "select?email=" + this.value'}
+    :input_html => {'onchange' => @location_email}
     }%>
 
     <% end %>
