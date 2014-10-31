@@ -12,8 +12,6 @@ def index
   @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page]) 
 end #end method
 
-  
-
 def new
   session[:type] = "add"
   @userid = UseridDetail.new
@@ -23,15 +21,18 @@ def new
 end
   
 def show
+  p "in show"
+  p params
   load(params[:id])
+
 end
 
 def all
+ p params
  get_user_info(session[:userid],session[:first_name])
  @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
  render "index"
 end
-
 
 def my_own
   session[:my_own] = 'my_own'
@@ -80,7 +81,29 @@ def technical_registration
  @first_name = session[:first_name]
 end 
 
-
+def selection
+  get_user_info(session[:userid],session[:first_name])
+  session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
+  @userids = UseridDetail.get_emails_for_selection(session[:syndicate]) if params[:user] == "email"
+  @userids = UseridDetail.get_userids_for_selection(session[:syndicate]) if params[:user] == "userid"
+  @type = params[:user]
+  params[:user] = nil
+  @manage_syndicate = session[:syndicate]
+end
+def select
+  get_user_info(session[:userid],session[:first_name])
+  case 
+  when !params[:userid].nil? 
+    userid = UseridDetail.where(:userid => params[:userid]).first
+    redirect_to userid_detail_path(userid)
+    return
+  when !params[:email].nil?
+   userid = UseridDetail.where(:email_address => params[:email]).first
+   redirect_to userid_detail_path(userid)
+   return
+  else
+  end
+end 
 
 def create
   @first_name = session[:first_name]

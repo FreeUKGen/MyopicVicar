@@ -25,14 +25,6 @@ def index
   end #end if
 end
 
-
-def selection
-  get_user_info(session[:userid],session[:first_name])
-  @userids = UseridDetail.get_emails_for_selection(session[:syndicate]) if session[:type] == "email"
-  @userids = UseridDetail.get_userids_for_selection(session[:syndicate]) if session[:type] == "userid"
-  @manage_syndicate = session[:syndicate]
-end
-
 def new
 end 
 
@@ -58,13 +50,11 @@ def create
   render 'userid_details/index'
   return
  when params[:manage_syndicate][:action] == 'Select Specific Member by Userid'
-  session[:type] = "userid"
-  redirect_to selection_manage_syndicate_path
+  redirect_to :controller => 'userid_details', :action => 'selection', :user =>"userid"
   return
  when params[:manage_syndicate][:action] == 'Select Specific Member by Email Address' 
-   session[:type] = "email"
-   redirect_to selection_manage_syndicate_path
-   return
+  redirect_to :controller => 'userid_details', :action => 'selection', :user =>"email"
+  return
  when params[:manage_syndicate][:action] == 'Review all Members'
     @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page]) 
     @first_name = session[:first_name]
@@ -80,20 +70,6 @@ def create
  end
  redirect_to freereg1_csv_files_path
 end # create
-
-def select
-  case 
-  when params[:commit] == 'Select Userid'
-    userid = UseridDetail.where(:userid => params[session[:syndicate]][:userid]).first
-    redirect_to userid_detail_path(userid)
-    return
-  when params[:commit] == 'Select Email'
-   userid = UseridDetail.where(:email_address => params[session[:syndicate]][:email_address]).first
-   redirect_to userid_detail_path(userid)
-   return
-  else
-  end
-end 
 
 end
 

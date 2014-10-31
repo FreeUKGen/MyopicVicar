@@ -21,8 +21,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :place_caches
 
-  post 'manage_syndicates/select', :to =>'manage_syndicates#select', :as => :select_manage_syndicate 
-  get 'manage_syndicates/selection', :to =>'manage_syndicates#selection', :as => :selection_manage_syndicate 
   resources :manage_syndicates   
   
   resources :csvfiles
@@ -55,7 +53,8 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
   get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   get 'userid_details/all', :to => 'userid_details#all', :as => :all_userid_detail
-  
+  get 'userid_details/select', :to =>'userid_details#select', :as => :select_userid_details
+  get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   resources :userid_details
 
  get  'manage_counties/select',  :to => 'manage_counties#select', :as => :select_manage_county

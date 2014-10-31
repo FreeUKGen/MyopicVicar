@@ -5,7 +5,7 @@
 <p style="text-align: center"><b>Syndicate Members Management for <%=session[:syndicate]%></b></p>
  <% end %>
 
-<div style="float:left;"> <%= button_to 'Create a new Profile', new_userid_detail_path, method: :get %> </div>
+
 <% if @role =='counties' %>
 <div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
 <%end%>

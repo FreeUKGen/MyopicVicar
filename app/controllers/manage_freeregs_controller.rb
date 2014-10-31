@@ -8,9 +8,19 @@ def index
 end
 
 def create
-	redirect_to manage_resources_path
+  p self
+  respond_to do |format|
+      format.html {redirect_to manage_resources_path}
+      format.js 
+    end
+	
 end
+def all
+  p "all"
+  p self
 
+  
+end
 
 end
 

@@ -1,7 +1,15 @@
 Page Identification Manage Freereg:new<p>
 <p style="text-align: center"><b>From here you can manage FreeREG</b></p>
-<div id="nav">
-<div style="float:left;"><%= button_to 'Manage All Profiles', all_userid_detail_path, method: :get  %></div>
+
+<div style="float:left;"><select onclick="if (this.value) window.location.href=this.value">
+    <option value="">Manage userids:</option>
+    <option value="/userid_details/all?user[]=system_administrator">Browse userids</option>
+    <option value="/userid_details/new">Create new userid</option>
+    <option value="/userid_details/selection?user=email">Select specific email </option>
+    <option value="/userid_details/selection?user=userid">Select specific userid </option>
+</select>
+</div>
+
 
 <div style="float:left;"> <%= button_to 'Manage Syndicate Coordinators', syndicates_path, method: :get  %> </div>
 <div style="float:left;"><%= button_to 'Manage County Coordinators',  counties_path, method: :get  %></div>
@@ -18,4 +26,3 @@ Page Identification Manage Freereg:new<p>
 
 
 <div style="clear:both;"> </div><br>
-</div>
