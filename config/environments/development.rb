@@ -59,9 +59,10 @@ MyopicVicar::Application.configure do
   #Where the collections are stored
   config.mongodb_collection_location = File.join(Rails.root,'db','collections')
   #where do we store the Mongodb database 
-  config.datafiles = '/home/benwbrum/dev/clients/freeukgen/freereg1_data/partial' #File.join(Rails.root,'test_data','freereg1_csvs')
+  config.datafiles = "/raid-test/freereg/users"
   # Date of dataset used
-  config.dataset_date = "30 May 2014"
+  config.dataset_date = "3 September 2014"
+ config.website = "http://test2.freereg.org.uk"
   
   config.backup_directory = File.exist?("/raid/freereg2/backups") ? "/raid/freereg2/backups" : File.join(Rails.root, 'tmp', 'backups')
   
