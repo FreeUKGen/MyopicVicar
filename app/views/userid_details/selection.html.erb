@@ -1,21 +1,31 @@
 <%= semantic_form_for @userid, :url => { :action => "select"  } do |f| %>
-   <% if @type == 'userid' %>
-    <%= f.input :userid, 
-    { :as => :select, :label => "Which userid would you like to work with?",
+<% if @type == 'userid' %>
+<%= f.input :userid, 
+{ :as => :select, 
+  :label => "Which userid would you like to work with?",
+  :include_blank => false,
+  :prompt => "Select userid",
+  :required => true,
+  :collection => @userids, 
+  :size => 10 , 
+  :input_html => {'onchange' => 'location.href= "select?userid=" + this.value'}
+  }%>
+
+  <% end %>
+  <% if @type == 'email' %>
+  <%= f.input :email_address, 
+  { :as => :select,
+    :label => "Which email address would you like to work with?",
     :include_blank => false,
+    :prompt => "Select email",
     :required => true,
-    :collection => @userids, :size => 10 , :input_html => {'onclick' => 'location.href= "select?userid=" + this.value'}} %>
-   
-   <% end %>
-   <% if @type == 'email' %>
-    <%= f.input :email_address, 
-    { :as => :select, :label => "Which email address would you like to work with?",
-    :include_blank => false,
-    :required => true,
-    :collection => @userids, :size => 10 , :input_html => {'onclick' => 'location.href= "select?email=" + this.value'}}%>
-   
-   <% end %>
- <% end %> 
+    :collection => @userids, 
+    :size => 10 , 
+    :input_html => {'onchange' => 'location.href= "select?email=" + this.value'}
+    }%>
+
+    <% end %>
+    <% end %> 
 
 
 
