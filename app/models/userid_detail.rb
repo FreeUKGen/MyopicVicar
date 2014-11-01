@@ -225,8 +225,8 @@ def self.get_userids_for_selection(syndicate)
 end
 
 def self.get_emails_for_selection(syndicate)
- users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
- users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+ users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
+ users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
  @userids = Array.new
  users.each do |user|
    @userids << user.email_address
