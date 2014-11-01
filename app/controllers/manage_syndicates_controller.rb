@@ -55,6 +55,9 @@ def create
  when params[:manage_syndicate][:action] == 'Select Specific Member by Email Address' 
   redirect_to :controller => 'userid_details', :action => 'selection', :user =>"email"
   return
+ when params[:manage_syndicate][:action] == 'Select Specific Member by name'
+  redirect_to :controller => 'userid_details', :action => 'selection', :user =>"name"
+  return
  when params[:manage_syndicate][:action] == 'Review all Members'
     @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page]) 
     @first_name = session[:first_name]
