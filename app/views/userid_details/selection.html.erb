@@ -31,6 +31,19 @@
     }%>
 
     <% end %>
+    <% if @type == 'name' %>
+<%= f.input :person_surname, 
+{ :as => :select, 
+  :label => "Which name would you like to work with?",
+  :include_blank => false,
+  :prompt => "Select name",
+  :required => true,
+  :collection => @userids, 
+  :size => 10 , 
+  :input_html => {'onchange' => @location_name}
+  }%>
+
+  <% end %>
     <% end %> 
 
 

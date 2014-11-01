@@ -233,7 +233,16 @@ def self.get_emails_for_selection(syndicate)
  end
  return @userids
 end
-
+def self.get_names_for_selection(syndicate)
+ users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
+ users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
+ @userids = Array.new
+ users.each do |user|
+   name = user.person_surname + ":" + user.person_forename
+   @userids << name
+ end
+ return @userids
+end
 def delete_refinery_user_and_userid_folder
  refinery_user = Refinery::User.where(:username => self.userid).first
  refinery_user.destroy unless refinery_user.nil?

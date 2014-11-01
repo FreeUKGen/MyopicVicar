@@ -86,11 +86,13 @@ def selection
   session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
   @userids = UseridDetail.get_emails_for_selection(session[:syndicate]) if params[:user] == "email"
   @userids = UseridDetail.get_userids_for_selection(session[:syndicate]) if params[:user] == "userid"
+  @userids = UseridDetail.get_names_for_selection(session[:syndicate]) if params[:user] == "name"
   @type = params[:user]
   params[:user] = nil
   @manage_syndicate = session[:syndicate]
   @location_email = 'location.href= "select?email=" + this.value'
   @location_userid = 'location.href= "select?userid=" + this.value'
+  @location_name = 'location.href= "select?name=" + this.value'
 end
 def select
   p params
@@ -113,6 +115,18 @@ def select
        return
     else
        userid = UseridDetail.where(:email_address => params[:email]).first
+       redirect_to userid_detail_path(userid)
+       return
+    end
+  when !params[:name].nil?
+    if params[:name] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+       name = params[:name].split(":")
+       p name
+       userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
        redirect_to userid_detail_path(userid)
        return
     end
