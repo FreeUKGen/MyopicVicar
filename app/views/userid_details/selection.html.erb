@@ -1,14 +1,20 @@
 <%= semantic_form_for @userid, :url => { :action => "select"  } do |f| %>
+<% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+
 <% if @type == 'userid' %>
 <%= f.input :userid, 
 { :as => :select, 
   :label => "Which userid would you like to work with?",
- 
+  :include_blank => false,
   :prompt => "Select userid",
   :required => true,
   :collection => @userids, 
   :size => 10 , 
-  :input_html => { :include_blank => false,'onchange' => @location_userid}
+  :input_html => {'onchange' => @location_userid}
   }%>
 
   <% end %>
@@ -16,12 +22,12 @@
   <%= f.input :email_address, 
   { :as => :select,
     :label => "Which email address would you like to work with?",
-    
+    :include_blank => true,
     :prompt => "Select email",
     :required => true,
     :collection => @userids, 
     :size => 10 , 
-    :input_html => {:include_blank => false,'onchange' => @location_email}
+    :input_html => {'onchange' => @location_email}
     }%>
 
     <% end %>

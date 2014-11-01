@@ -93,16 +93,29 @@ def selection
   @location_userid = 'location.href= "select?userid=" + this.value'
 end
 def select
+  p params
   get_user_info(session[:userid],session[:first_name])
   case 
   when !params[:userid].nil? 
-    userid = UseridDetail.where(:userid => params[:userid]).first
-    redirect_to userid_detail_path(userid)
+    if params[:userid] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+      userid = UseridDetail.where(:userid => params[:userid]).first
+      redirect_to userid_detail_path(userid)
     return
+    end    
   when !params[:email].nil?
-   userid = UseridDetail.where(:email_address => params[:email]).first
-   redirect_to userid_detail_path(userid)
-   return
+    if params[:email] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+       userid = UseridDetail.where(:email_address => params[:email]).first
+       redirect_to userid_detail_path(userid)
+       return
+    end
   else
     redirect_to selection_userid_detail_path
    return 
