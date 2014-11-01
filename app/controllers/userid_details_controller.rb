@@ -104,6 +104,8 @@ def select
    redirect_to userid_detail_path(userid)
    return
   else
+    redirect_to selection_userid_detail_path
+   return 
   end
 end 
 

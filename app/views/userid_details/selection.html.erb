@@ -3,12 +3,12 @@
 <%= f.input :userid, 
 { :as => :select, 
   :label => "Which userid would you like to work with?",
-  :include_blank => false,
+ 
   :prompt => "Select userid",
   :required => true,
   :collection => @userids, 
   :size => 10 , 
-  :input_html => {'onchange' => @location_userid}
+  :input_html => { :include_blank => false,'onchange' => @location_userid}
   }%>
 
   <% end %>
@@ -16,12 +16,12 @@
   <%= f.input :email_address, 
   { :as => :select,
     :label => "Which email address would you like to work with?",
-    :include_blank => false,
+    
     :prompt => "Select email",
     :required => true,
     :collection => @userids, 
     :size => 10 , 
-    :input_html => {'onchange' => @location_email}
+    :input_html => {:include_blank => false,'onchange' => @location_email}
     }%>
 
     <% end %>
