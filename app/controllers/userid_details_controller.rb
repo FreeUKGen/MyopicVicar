@@ -126,9 +126,16 @@ def select
     else
        name = params[:name].split(":")
        p name
-       userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
-       redirect_to userid_detail_path(userid)
-       return
+       number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
+       if  number == 1
+          userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
+          redirect_to userid_detail_path(userid)
+          return
+        else
+         @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page]) 
+          render 'index'
+          return
+        end
     end
   else
     redirect_to selection_userid_detail_path
