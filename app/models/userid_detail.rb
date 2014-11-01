@@ -238,7 +238,8 @@ def self.get_names_for_selection(syndicate)
  users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
  @userids = Array.new
  users.each do |user|
-   name = user.person_surname + ":" + user.person_forename
+  name = ""
+   name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil? 
    @userids << name
  end
  return @userids
