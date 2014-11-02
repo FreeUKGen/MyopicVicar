@@ -21,14 +21,10 @@ def new
 end
   
 def show
-  p "in show"
-  p params
-  load(params[:id])
-
+ load(params[:id])
 end
 
 def all
- p params
  get_user_info(session[:userid],session[:first_name])
  @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
  render "index"
@@ -95,7 +91,6 @@ def selection
   @location_name = 'location.href= "select?name=" + this.value'
 end
 def select
-  p params
   get_user_info(session[:userid],session[:first_name])
   case 
   when !params[:userid].nil? 
@@ -114,6 +109,8 @@ def select
        redirect_to :back
        return
     else
+      #adjust for + having been replaced with space
+       params[:email] = params[:email].gsub(/\s/,"+")
        userid = UseridDetail.where(:email_address => params[:email]).first
        redirect_to userid_detail_path(userid)
        return
@@ -125,7 +122,6 @@ def select
        return
     else
        name = params[:name].split(":")
-       p name
        number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
        if  number == 1
           userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
