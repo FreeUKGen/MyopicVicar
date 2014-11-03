@@ -80,14 +80,20 @@ def selection
       syndicates.each do |synd|
         @syndicates << synd.syndicate_code
       end
+      @location = 'location.href= "select?action=show&synd=" + this.value'
+    when params[:synd] == "Edit specific syndicate"
+      syndicates = Syndicate.all.order_by(syndicate_code: 1)
+      @syndicates = Array.new
+      syndicates.each do |synd|
+        @syndicates << synd.syndicate_code
+      end
+      @location = 'location.href= "select?action=edit&synd=" + this.value'
     else
       flash[:notice] = 'Invalid option'
       redirect_to :back
       return   
     end
-      @location = 'location.href= "select?synd=" + this.value'
       @prompt = 'Select syndicate'
-      params[:synd] = nil
       @syndicate = session[:syndicate]
 end
 def select
@@ -100,8 +106,13 @@ def select
        return
     else
       syndicate = Syndicate.where(:syndicate_code => params[:synd]).first
-      redirect_to syndicate_path(syndicate)
-      return
+      if params[:action] == "show"
+        redirect_to syndicate_path(syndicate)
+        return
+      else
+        redirect_to edit_syndicate_path(syndicate)
+        return
+      end
     end
   else
     flash[:notice] = 'Invalid option'

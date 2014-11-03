@@ -22,7 +22,69 @@ def edit
 	load(params[:id])
 	get_userids_and_transcribers
 end
-
+def selection
+  get_user_info(session[:userid],session[:first_name])
+  session[:county] = 'all' if @user.person_role == 'system_administrator'
+  case 
+    when params[:county] == "Browse counties"
+      @counties = County.all.order_by(chapman_code: 1)
+      render "index"
+      return
+    when params[:county] == "Create county"
+      redirect_to :action => 'new' 
+      return 
+     
+    when params[:county] == "Edit specific county"
+      counties = County.all.order_by(chapman_code: 1)
+      @counties = Array.new
+      counties.each do |county|
+        @counties << county.chapman_code
+      end
+      @location = 'location.href= "select?act=edit&county=" + this.value'
+    when params[:county] == "Show specific county"
+      counties = County.all.order_by(chapman_code: 1)
+      @counties = Array.new
+      counties.each do |county|
+        @counties << county.chapman_code
+      end
+       @location = 'location.href= "select?act=show&county=" + this.value'
+    else
+      flash[:notice] = 'Invalid option'
+      redirect_to :back
+      return   
+    end
+     
+      @prompt = 'Select county'
+      params[:county] = nil
+      @county = session[:county]
+end
+def select
+    p params
+  get_user_info(session[:userid],session[:first_name])
+  case 
+  when !params[:county].nil? 
+    if params[:county] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+      county = County.where(:chapman_code => params[:county]).first
+      if params[:act] == "show"
+        p "in show"
+        redirect_to county_path(county)
+        return
+      else
+        p 'in edit'
+        redirect_to edit_county_path(county)
+        return
+      end
+    end
+  else
+    flash[:notice] = 'Invalid option'
+    redirect_to :back
+    return   
+  end
+end 
 def create
     @county = County.new(params[:county])
 	@county.save
@@ -61,7 +123,7 @@ def show
 	person = UseridDetail.where(:userid => @county.county_coordinator).first
     @person = person.person_forename + ' ' + person.person_surname unless person.nil? 
     person = UseridDetail.where(:userid => @county.previous_county_coordinator).first
-     @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? 
+    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? 
 end
 
 def load(id)

@@ -35,7 +35,8 @@ MyopicVicar::Application.routes.draw do
   resources :countries
 
 
-
+  get 'counties/select', :to =>'counties#select', :as => :select_counties
+  get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
 
 

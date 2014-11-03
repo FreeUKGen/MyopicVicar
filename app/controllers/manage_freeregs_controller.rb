@@ -6,8 +6,10 @@ def index
    get_user_info(session[:userid],session[:first_name])
    @options_userids=["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname"]
    @location_manage_userid = 'location.href= "/userid_details/selection?userid=" + this.value'
-    @options_manage_sc =["Browse syndicates","Create syndicate","Show specific syndicate"]
+   @options_manage_sc =["Browse syndicates","Create syndicate","Show specific syndicate","Edit specific syndicate"]
    @location_manage_sc = 'location.href= "/syndicates/selection?synd=" + this.value'
+   @options_manage_cc =["Browse counties","Show specific county", "Edit specific county"]
+   @location_manage_cc = 'location.href= "/counties/selection?county=" + this.value'
    render 'new'
     
 end
