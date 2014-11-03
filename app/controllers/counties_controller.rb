@@ -123,7 +123,7 @@ def show
 	person = UseridDetail.where(:userid => @county.county_coordinator).first
     @person = person.person_forename + ' ' + person.person_surname unless person.nil? 
     person = UseridDetail.where(:userid => @county.previous_county_coordinator).first
-    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? 
+    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
 end
 
 def load(id)
