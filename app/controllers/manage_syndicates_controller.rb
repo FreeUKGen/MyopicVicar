@@ -50,13 +50,13 @@ def create
   render 'userid_details/index'
   return
  when params[:manage_syndicate][:action] == 'Select Specific Member by Userid'
-  redirect_to :controller => 'userid_details', :action => 'selection', :user =>"userid"
+  redirect_to :controller => 'userid_details', :action => 'selection', :userid => "Select specific userid"
   return
  when params[:manage_syndicate][:action] == 'Select Specific Member by Email Address' 
-  redirect_to :controller => 'userid_details', :action => 'selection', :user =>"email"
+  redirect_to :controller => 'userid_details', :action => 'selection', :userid =>"Select specific email"
   return
  when params[:manage_syndicate][:action] == 'Select Specific Member by name'
-  redirect_to :controller => 'userid_details', :action => 'selection', :user =>"name"
+  redirect_to :controller => 'userid_details', :action => 'selection', :userid =>"Select specific surname"
   return
  when params[:manage_syndicate][:action] == 'Review all Members'
     @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page]) 

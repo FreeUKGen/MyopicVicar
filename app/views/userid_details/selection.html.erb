@@ -5,45 +5,16 @@
     </div>
    <% end %>  
 
-<% if @type == 'userid' %>
 <%= f.input :userid, 
 { :as => :select, 
   :label => "Which userid would you like to work with?",
   :include_blank => false,
-  :prompt => "Select userid",
+  :prompt => @prompt,
   :required => true,
   :collection => @userids, 
   :size => 10 , 
-  :input_html => {'onchange' => @location_userid}
+  :input_html => {'onchange' => @location}
   }%>
-
-  <% end %>
-  <% if @type == 'email' %>
-  <%= f.input :email_address, 
-  { :as => :select,
-    :label => "Which email address would you like to work with?",
-    :include_blank => true,
-    :prompt => "Select email",
-    :required => true,
-    :collection => @userids, 
-    :size => 10 , 
-    :input_html => {'onchange' => @location_email}
-    }%>
-
-    <% end %>
-    <% if @type == 'name' %>
-<%= f.input :person_surname, 
-{ :as => :select, 
-  :label => "Which name would you like to work with?",
-  :include_blank => false,
-  :prompt => "Select name",
-  :required => true,
-  :collection => @userids, 
-  :size => 10 , 
-  :input_html => {'onchange' => @location_name}
-  }%>
-
-  <% end %>
     <% end %> 
 
 

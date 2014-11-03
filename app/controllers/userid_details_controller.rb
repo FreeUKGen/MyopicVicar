@@ -78,17 +78,36 @@ def technical_registration
 end 
 
 def selection
+  p params
   get_user_info(session[:userid],session[:first_name])
   session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
-  @userids = UseridDetail.get_emails_for_selection(session[:syndicate]) if params[:user] == "email"
-  @userids = UseridDetail.get_userids_for_selection(session[:syndicate]) if params[:user] == "userid"
-  @userids = UseridDetail.get_names_for_selection(session[:syndicate]) if params[:user] == "name"
-  @type = params[:user]
-  params[:user] = nil
+  case 
+    when params[:userid] == 'Browse userids'
+      @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
+      render "index"
+      return
+    when params[:userid] == "Create userid"
+      redirect_to :action => 'new' 
+      return
+    when params[:userid] == "Select specific email"
+      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      @location = 'location.href= "select?email=" + this.value'
+      @prompt = 'Select email address'
+    when params[:userid] == "Select specific userid"
+      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      @location = 'location.href= "select?userid=" + this.value'
+      @prompt = 'Select userid'
+    when params[:userid] == "Select specific surname"
+      @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
+      @location = 'location.href= "select?name=" + this.value'
+      @prompt = 'Select surname/forename'
+    else
+      flash[:notice] = 'Invalid option'
+      redirect_to :back
+      return   
+    end
+  params[:userid] = nil
   @manage_syndicate = session[:syndicate]
-  @location_email = 'location.href= "select?email=" + this.value'
-  @location_userid = 'location.href= "select?userid=" + this.value'
-  @location_name = 'location.href= "select?name=" + this.value'
 end
 def select
   get_user_info(session[:userid],session[:first_name])
@@ -134,7 +153,8 @@ def select
         end
     end
   else
-    redirect_to selection_userid_detail_path
+   flash[:notice] = 'Invalid option'
+   redirect_to :back
    return 
   end
 end 

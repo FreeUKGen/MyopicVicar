@@ -60,7 +60,8 @@ MyopicVicar::Application.routes.draw do
  get  'manage_counties/select',  :to => 'manage_counties#select', :as => :select_manage_county
   resources :manage_counties
 
-
+  get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
+  get 'syndicates/selection', :to =>'syndicates#selection', :as => :selection_syndicates
   resources :syndicates
 
   resources :coordinators
