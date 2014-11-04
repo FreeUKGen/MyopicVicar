@@ -1,4 +1,5 @@
 class FeedbacksController < InheritedResources::Base
+  skip_before_filter :require_login
   
   def new
     @feedback = Feedback.new(params)
@@ -9,7 +10,7 @@ class FeedbacksController < InheritedResources::Base
     @feedback.session_data = session
     @feedback.save!
 
-    flash[:notice] = "Thank you for your feedback!"
+    flash.notice = "Thank you for your feedback!"
     redirect_to @feedback.problem_page_url    
   end
   

@@ -1,5 +1,5 @@
 class SearchQueriesController < ApplicationController
- skip_before_filter :require_login
+  skip_before_filter :require_login
   RECORDS_PER_PAGE = 100
   def index
     redirect_to :action => :new
