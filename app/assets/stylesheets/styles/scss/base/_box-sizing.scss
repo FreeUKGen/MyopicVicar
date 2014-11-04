@@ -1,0 +1,19 @@
+@if $global-border-box == true{
+/*------------------------------------*\
+    $BOX-SIZING
+\*------------------------------------*/
+
+/**
+ * A class to remove border box on things and ALL ITS CHILDREN.
+ * Useful for third-party stuff like google maps.
+ */
+.no-border-box {
+  &,
+  *,
+  &:before,
+  &:after {
+    @include vendor(box-sizing, content-box);
+  }
+}
+
+}/* endif */

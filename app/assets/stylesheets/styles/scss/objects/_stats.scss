@@ -1,0 +1,100 @@
+/*------------------------------------*\
+   $STATS
+\*------------------------------------*/
+
+/**
+ * This expands on inuits default stats object to add a bunch of styling
+ * and remove the grid-like margins so we can center it all nicer with
+ * a wrapping `.text--center`. Markup like so:
+
+ <section class="text--center">
+
+   <div class="stat-group">
+
+     <header class="stat-group__header">
+       <h3 class="stat-group__header__title">FreeReg Status</h3>
+     </header>
+
+     <dl class="stat">
+       <dt class="stat__title">Marriages</dt>
+       <dd class="stat__value  text--magenta">4,678,103</dd>
+     </dl>
+
+     <dl class="stat">
+       <dt class="stat__title">Baptisms</dt>
+       <dd class="stat__value  text--teal">4,678,103</dd>
+     </dl>
+
+     <dl class="stat">
+       <dt class="stat__title">Burials</dt>
+       <dd class="stat__value  text--brown">4,678,103</dd>
+     </dl>
+
+     <footer class="stat-group__footer">
+       <p class="stat-group__footer__primary"><strong>LAST UPDATE:</strong> Started on 30.06.2014 and completed on 1.06.2014</p>
+       <p class="stat-group__footer__secondary">On 8 AUG 2014 FreeReg did 26,330 searches</p>
+     </footer>
+
+   </div>
+
+ </section>
+
+ *
+ */
+
+.stat-group {
+  text-align: center;
+  @include inline-block;
+  margin: 0; // remove grid
+}
+
+
+
+  .stat {
+    float: none;
+    margin: $base-spacing-unit; // remove grid
+  }
+
+    .stat__title {
+      text-transform: uppercase;
+      color: $navy;
+      font-weight: bold;
+    }
+
+    .stat__value {
+      @include font-size(42px);
+      font-weight: bold;
+    }
+
+
+
+  .stat-group__header {
+    border-bottom: 1px solid #dddddd;
+  }
+
+    .stat-group__header__title {
+      @include font-size(18px);
+      font-weight: bold;
+      margin-bottom: $base-spacing-unit / 4;
+      color: $navy;
+    }
+
+
+
+  .stat-group__footer {
+    border-top: 1px solid #dddddd;
+  }
+
+    .stat-group__footer__primary,
+    .stat-group__footer__secondary {
+      @include font-size(14px, false);
+      color: #888;
+      margin-top: $base-spacing-unit / 4;
+      margin-bottom: $half-spacing-unit;
+    }
+
+    .stat-group__footer__primary {
+      strong, b {
+        color: $navy;
+      }
+    }

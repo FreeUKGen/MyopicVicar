@@ -1,0 +1,57 @@
+@if $use-island == true{
+
+/*------------------------------------*\
+    $ISLAND
+\*------------------------------------*/
+
+
+/**
+ * Colours for islands
+ */
+@each $colour in $colours {
+  .banner--#{nth($colour, 1)},
+  .island--#{nth($colour, 1)},
+  .islet--#{nth($colour, 1)} {
+    color: nth($colour, 5);
+    background: nth($colour, 2);
+  }
+
+  a.banner--#{nth($colour, 1)},
+  a.island--#{nth($colour, 1)},
+  a.islet--#{nth($colour, 1)} {
+    color: nth($colour, 5);
+    background: nth($colour, 2);
+    &:hover {
+      color: nth($colour, 5);
+      background: nth($colour, 3);
+    }
+  }
+}
+
+.banner--grey,
+.island--grey,
+.islet--grey {
+  color: #fff;
+  background: #444444;
+  &:hover { color: #fff; }
+}
+
+.banner--dark,
+.island--dark,
+.islet--dark {
+  color: #fff;
+  background: #333333;
+  &:hover { color: #fff; }
+}
+
+
+/**
+ * We frequently drop containers inside islands so account for the last-child rule inside them
+ */
+.island > .container > :last-child,
+.islet > .container > :last-child{
+  margin-bottom:0;
+}
+
+
+}//endif

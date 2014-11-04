@@ -1,0 +1,28 @@
+@charset "UTF-8";
+/*------------------------------------*\
+    IE.CSS
+\*------------------------------------*/
+
+/**
+ * Vars and inuit - mixins as well so we have them in this file
+ */
+@import "vars";
+@import "../../bower_components/inuit.css/defaults";
+@import "../../bower_components/inuit.css/generic/mixins";
+@import "generic/mixins";
+
+
+/**
+ * IE opacity hack for hidden but still working inputs
+ *
+ * Ref: soup/base/_forms.scss
+ */
+.hide-inputs input {
+  height: $base-spacing-unit;
+  width: 70px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  filter: alpha(opacity=0);
+  z-index: 4;
+}

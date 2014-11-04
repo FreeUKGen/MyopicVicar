@@ -1,0 +1,69 @@
+/*------------------------------------*\
+    $VALIDATION
+\*------------------------------------*/
+
+/**
+ * Validation list - this is designed to sit directly under a `.text-input`
+ */
+.validation-list {
+  @extend .nav;
+  @extend .nav--stacked;
+  margin-bottom: $base-spacing-unit;
+  font-weight: bold;
+
+
+  >li {
+    margin-bottom: 0;
+  }
+
+  .validation-list__error {
+    color: $red;
+  }
+  .validation-list__success {
+    color: $teal-brighter;
+  }
+}
+
+
+
+/**
+ * Error/success styles for text inputs and selects
+ */
+.select--error,
+.select--success,
+.text-input--error,
+.text-input--success {
+  margin-bottom: $base-spacing-unit / 4;
+}
+
+.select--error,
+.text-input--error {
+  border-color: $red;
+  color: $red;
+  &:hover,
+  &:focus {
+    border-color: $red;
+  }
+}
+
+.select--success,
+.text-input--success {
+  border-color: $teal-brighter;
+  color: $teal-brighter;
+  &:hover,
+  &:focus {
+    border-color: $teal-brighter;
+  }
+
+}
+
+
+.text-input--success::-webkit-input-placeholder { color: $teal-lighter; }
+.text-input--success:-moz-placeholder           { color: $teal-lighter; }
+.text-input--success:-ms-placeholder            { color: $teal-lighter; }
+.text-input--success.placeholder                { color: $teal-lighter; }
+
+.text-input--error::-webkit-input-placeholder   { color: $red-lighter; }
+.text-input--error:-moz-placeholder             { color: $red-lighter; }
+.text-input--error:-ms-placeholder              { color: $red-lighter; }
+.text-input--error.placeholder                  { color: $red-lighter; }

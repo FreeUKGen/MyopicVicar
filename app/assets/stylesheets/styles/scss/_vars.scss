@@ -1,0 +1,146 @@
+/*------------------------------------*\
+    $VARS
+\*------------------------------------*/
+/**
+ * Any variables you find set in inuit.cssâ€™ `_vars.scss` that you do not wish to
+ * keep, simply redefine here. This means that if inuit.css, for example, sets
+ * your `$base-font-size` at 16px and you wish it to be 14px, simply redeclare
+ * that variable in this file. inuit.css ignores its own variables in favour of
+ * using your own, so you can completely modify how inuit.css works without ever
+ * having to alter the framework itself.
+ */
+$lap-start:         570px;
+$desk-start:        1024px;
+$desk-wide-start:   1200px;
+$base-font-size:    18px;
+$base-line-height:  28px;
+$brand-face:        "Foundry Sterling", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+
+/**
+ * Font-sizes
+ */
+$giga-size:         96px; // .giga
+$mega-size:         72px; // .mega
+$kilo-size:         60px; // .kilo
+
+$h1-size:           36px; // .alpha
+$h2-size:           32px; // .beta
+$h3-size:           22px; // .gamma
+$h4-size:           20px; // .delta
+$h5-size:           18px; // .epsilon
+$h6-size:           14px; // .zeta
+
+$milli-size:        13px; // .milli
+$micro-size:        12px; // .micro
+
+
+
+
+
+/*------------------------------------*\
+    $OBJECTS-AND-ABSTRACTIONS
+\*------------------------------------*/
+/**
+ * All of inuit.cssâ€™ objects and abstractions are initially turned off by
+ * default. This means that you start any project with as little as possible,
+ * and introducing objects and abstractions is as simple as switching the
+ * following variables to `true`.
+ */
+$use-grids:         true;
+$use-flexbox:       true;
+$use-columns:       true;
+$use-nav:           true;
+$use-options:       true;
+$use-pagination:    true;
+$use-breadcrumb:    true;
+$use-media:         true;
+$use-marginalia:    true;
+$use-island:        true;
+$use-block-list:    true;
+$use-matrix:        true;
+$use-split:         true;
+$use-this-or-this:  true;
+$use-link-complex:  true;
+$use-flyout:        true;
+$use-arrows:        true;
+$use-sprite:        true;
+$use-icon-text:     true;
+$use-beautons:      true;
+$use-lozenges:      true;
+$use-rules:         true;
+$use-stats:         true;
+$use-greybox:       true;
+
+
+
+/*------------------------------------*\
+    $COLOURS
+\*------------------------------------*/
+
+$navy:                 #354c54;
+$navy-brighter:        #1e383f;
+$navy-lighter:         #657275;
+
+$brown:                #a28879;
+$brown-brighter:       #895f49;
+$brown-lighter:        #ddcac3;
+
+$magenta:              #a1185a;
+$magenta-brighter:     #d72285;
+$magenta-lighter:      #efcbe1;
+
+$teal:                 #009f98;
+$teal-brighter:        #10c8a5;
+$teal-lighter:         #a7e8db;
+
+$blue:                 #188eb2;
+$blue-brighter:        #20b3d5;
+$blue-lighter:         #9ee4ef;
+
+$orange:               #f19000;
+$orange-brighter:      #eeb500;
+$orange-lighter:       #f9dea0;
+
+$red:                  #FF1D1D;
+$red-brighter:         #eb0000;
+$red-lighter:          #ef5a5a;
+
+$light:                #f4f4f4;
+
+
+// some english aliases that we use around the place
+
+$brand-color:          $teal;
+$brand-color-brighter: $teal-brighter;
+$brand-color-lighter:  $teal-lighter;
+
+$positive:             $teal;
+$positive-brighter:    $teal-brighter;
+$positive-lighter:     $teal-lighter;
+
+$negative:             $magenta;
+$negative-brighter:    $magenta-brighter;
+$negative-lighter:     $magenta-lighter;
+
+$alert:                $orange;
+$alert-brighter:       $orange-brighter;
+$alert-lighter:        $orange-lighter;
+
+
+// an array of english strings that give us access to all of the above
+
+$colours:(
+  "brand" $brand-color $brand-color-brighter $brand-color-lighter #fff,
+  "positive" $positive $positive-brighter $positive-lighter #fff,
+  "negative" $negative $negative-brighter $negative-lighter #fff,
+  "neutral" #9B9B9B #677270 #aaa #fff,
+  "alert" $alert $alert-brighter $alert-lighter #fff,
+  "navy" $navy $navy-brighter $navy-lighter #fff,
+  "brown" $brown $brown-brighter $brown-lighter #fff,
+  "magenta" $magenta $magenta-brighter $magenta-lighter #fff,
+  "teal" $teal $teal-brighter $teal-lighter #fff,
+  "blue" $blue $blue-brighter $blue-lighter #fff,
+  "orange" $orange $orange-brighter $orange-lighter #fff,
+  "light" $light $light $light #666
+);

@@ -1,0 +1,150 @@
+/*------------------------------------*\
+    $MIXINS
+\*------------------------------------*/
+/**
+ * Media query for the device pixel ratio
+ */
+@mixin media-query-res($point) {
+
+  @if $point == res2x {
+    // screens at double resolution (like the retina)
+    @media
+    only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (   -moz-min-device-pixel-ratio: 2),
+    only screen and (   min--moz-device-pixel-ratio: 2),
+    only screen and (     -o-min-device-pixel-ratio: 2/1),
+    only screen and (        min-device-pixel-ratio: 2),
+    only screen and (                min-resolution: 192dpi),
+    only screen and (                min-resolution: 2dppx) {
+      @content;
+    }
+  }
+
+}
+
+
+/**
+ * Make a max-width mq with manual pixel values.
+ */
+@mixin manual-media-query($media-query) {
+  @media only screen and (max-width:$media-query) { @content; }
+}
+// height alternate
+@mixin manual-media-query-height($media-query) {
+  @media only screen and (max-height:$media-query) { @content; }
+}
+
+
+/**
+ * Size an svg icon, does width, height and background size
+ */
+@mixin sizeSvgIcon($val1, $val2: $val1) {
+  width: $val1;
+  height: $val2;
+  @include vendor(background-size, $val1 $val2);
+}
+
+
+/**
+ * Go inline block
+ */
+@mixin inline-block {
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+/**
+ * A container setup
+ */
+@mixin container($width) {
+  max-width: $width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  @include media-query(portable) {
+    width: 100%;
+    padding-left: $half-spacing-unit;
+    padding-right: $half-spacing-unit;
+  }
+}
+
+
+/**
+ * Opacity
+ */
+@mixin opacity($val) {
+  /* IE 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=#{$val*100})";
+
+  /* IE 5-7 */
+  filter: alpha(opacity=$val*100);
+
+  /* Netscape */
+  -moz-opacity: $val;
+
+  /* Safari 1.x */
+  -khtml-opacity: $val;
+
+  /* Good browsers */
+  opacity: $val;
+}
+
+
+/**
+ * Disable text select
+ */
+@mixin no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: moz-none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
+/**
+ * Makes an image a block and fluid
+ */
+%fluid-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+
+
+/**
+ * State related things
+ */
+@each $state in palm, lap, lap-and-up, portable, desk, desk-wide{
+
+
+  /**
+   * This extends the defualt margin push/pull to add a responsive top / bottom one
+   *
+   */
+  @include media-query(#{$state}){
+    .#{$state}-push--top      { margin-top:   $base-spacing-unit!important; }
+    .#{$state}-push--bottom   { margin-bottom:$base-spacing-unit!important; }
+  }
+
+
+  /**
+   * This extends the defualt grid push/pull to just turn it off responsively.
+   *
+   * We do this and then we don't have to turn on the
+   * responsive push/pull which is huge as typically we
+   * just need to turn it off for mobile and leave on
+   * for everything else
+   */
+  @include media-query(#{$state}){
+    .push--#{$state}-none { left: auto; }
+    .pull--#{$state}-none { right: auto; }
+  }
+
+
+}

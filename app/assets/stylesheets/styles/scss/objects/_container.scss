@@ -1,0 +1,17 @@
+/*------------------------------------*\
+    $CONTAINER
+\*------------------------------------*/
+/**
+ * A 960 container on lap_and_up, we just leave it
+ * fullwidth and pad the sides here on palm
+ */
+.container {
+  padding-left: $base-spacing-unit;
+  padding-right: $base-spacing-unit;
+}
+// except inside containers...
+.island > .container,
+.islet > .container {
+  padding-left: 0;
+  padding-right: 0;
+}

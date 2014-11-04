@@ -1,89 +1,289 @@
-<html>
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en">
+	<!--<![endif]-->
+
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title></title>
+		<meta charset="utf-8"/>
+
+		<title>FreeReg</title>
+
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+
+		<!--[if lt IE 9]>
+		<!-- TODO: Transform to asset pipelines -->
+		<%= javascript_include_tag "scripts/dist/html5shiv.js" %>
+		<![endif]-->
+
+		<meta name="HandheldFriendly" content="True">
+		<meta name="MobileOptimized" content="568">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<%= favicon_link_tag image_path('favicon.ico')%>
+		<!-- TODO: copy icons over -->
+		<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+		<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
 
 		<!-- Styles -->
+		<%= stylesheet_link_tag "styles/css/palm.min" %>
+		<%= stylesheet_link_tag "styles/css/lap_and_up.min" %>
 
-		<link href='http://fonts.googleapis.com/css?family=Corben' rel='stylesheet' type='text/css'>
+		<!--[if (lt IE 9) & (!IEMobile)]>
+		<%= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
+		<![endif]-->
 
-		<%= stylesheet_link_tag "normalize" %>
-		<%= stylesheet_link_tag "layout" %>
-		<%= stylesheet_link_tag "freereg" %>
+		<!--[if lte IE 7]>
+		<%= stylesheet_link_tag "styles/css/ie.min" %>
+		<![endif]-->
+
 		<%= javascript_include_tag "application" %>
 		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
 
 	</head>
 	<body>
+		<% if false %>
 		<div id="container" >
-			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %></h2>
+			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %> </h2>
 		</div>
-		<div id="navhead">
-			<br>
-			<h4>
-			<div style="float:left;">
-				<%= button_to " Search Our Database", main_app.search_queries_path , method: :get%>
-			</div>
-			<div style="float:left;">
-				<%= button_to 'Advice on Searching', "../tips-for-searching-the-database" , method: :get  %>
-			</div>
-			<div style="float:left;">
-				<%= button_to " County and Parish Content", refinery.county_pages_county_pages_path , method: :get%>
-			</div> <% if current_refinery_user %>
-			<div  style="float:left;">
-				<%= button_to 'Resource Management', main_app.manage_resource_path(current_refinery_user.userid_detail), method: :get %>
-			</div>
-			<div style="float:left;">
-				<%= button_to" Logout", refinery.logout_path , method: :get%>
-			</div> <% else %>
-			<div style="float:left;">
-				<%= button_to" Login for members", refinery.login_path, method: :get %>
-			</div>
-			<div style="float:left;">
-				<%= button_to" Registration", main_app.general_userid_detail_path, method: :get %>
-			</div> <% end %>
-			<div style="float:left;">
-				<%= button_to_function "Previous Page", "history.back()" %>
-			</div></h4>
-		</div>
-		<%if controller.controller_name == "freereg_contents"  %>
-		<div id="Heading">
-			Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
-		</div>
-		<%end%>
-		<%unless @first_name.nil?%>
-		<div id="personal">
-			<p style="text-align: center">
-				<b><%= @first_name%> these are your management tools</b>
-			</p>
+		<% end %>
+
+		<div class="site__header__nav  offcanvas__secondary">
+			<nav role="navigation">
+				<ul>
+					<li>
+						<%= link_to "About Us", "../about" %>
+					</li>
+					<!-- TODO: Convert remainder to refinery page references -->
+
+					<li>
+						<%= link_to "Search", main_app.search_queries_path %>
+					</li>
+					<li>
+						<%= link_to 'Advice', "../tips-for-searching-the-database"%>
+					</li>
+					<li>
+						<%= link_to "Contents", refinery.county_pages_county_pages_path %>
+					</li>
+					<% if current_refinery_user %>
+
+					<li>
+						<%= link_to 'Resource Management', main_app.manage_resource_path(current_refinery_user.userid_detail) %>
+					</li>
+					<li>
+						<%= link_to "Logout", refinery.logout_path%>
+					</li>
+					<% else %>
+					<li>
+						<%= link_to "Login", refinery.login_path%>
+					</li>
+					<li>
+						<%= link_to "Sign Up", main_app.general_userid_detail_path%>
+					</li>
+					<% end %>
+					<% if false %>
+
+					<li>
+						<a href="#">Become a volunteer</a>
+					</li>
+					<li>
+						<a href="#">Donate</a>
+					</li>
+					<li>
+						<a href="#">Transcribers</a>
+					</li>
+					<% end %>
+				</ul>
+			</nav>
 		</div>
 
-		<%end%>
-		<div id="content">
-			<%= yield %>
-		</div>
+		<div class="offcanvas__primary">
+			<header class="site__header" role="banner">
+				<div class="container">
+					<div class="banner-horz">
+						<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+					</div>
 
-		<div id = "footer">
-			<div style="float:left;">
-				<%= button_to " About Us", "../about"  , method: :get%>
-			</div>
-			<div style="float:left;">
-				<%= button_to 'Contact Us', "../freereg2/contact" , method: :get  %>
-			</div>
+					<button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
+						<span>Menu</span>
+						<i class="icon__cancel" aria-hidden="true"></i>
+					</button>
 
-			<% if current_refinery_user %>
-			<div  style="float:left;">
-				<%= form_tag(problem_url, :method=>:get) do %>
-				<% problem_button_options.each_pair do |name, value| %>
-				<%= hidden_field_tag(name, value)%>
-				<% end %>
-				<input type="submit" value="Report a Problem" />
-				<% end %>
-			</div>
-			<% end %>
-			<div style="clear:both;"></div>
-			<br>
-			<small>© 1998-2014 The website, its layout, search engine, and database are copyright by the Trustees of Free UK Genealogy, a charity registered in England and Wales, Number 1096940.We make no warranty whatsoever as to the accuracy or completeness of the FreeREG data. Use of the FreeREG website is conditional upon acceptance of the <%= link_to "Terms and Conditions", "../freereg2/terms-and-conditions" %> </small><div>
+					<a href="#" class="site__header__logo  icon__freereg"><h1 class="accessibility">FreeReg</h1></a>
+
+					<a href="#" class="site__header__freeukgen-logo  icon__freeukgen__project--dark"><span class="accessibility">A project by FreeUKGenealogy</span></a>
+				</div>
+			</header>
+
+			<main role="main" class="site__content  icon__honeycomb--top-right">
+				<div class="container">
+					<article>
+						<div class="grid">
+							<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+
+								<%if controller.controller_name == "freereg_contents"  %>
+								<div id="Heading">
+									Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
+								</div>
+								<%end%>
+
+								<%unless @first_name.nil?%>
+								<div id="personal">
+									<p style="text-align: center">
+										<b><%= @first_name%> these are your management tools</b>
+									</p>
+								</div>
+
+								<%end%>
+
+								<section>
+									<div id="content">
+										<%= yield %>
+									</div>
+								</section>
+							</div>
+							<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+								<aside class="island  island--light">
+									<h3 class="beta  text--teal">Sidebar Content</h3>
+									<p>
+										Bacon ipsum dolor amet landjaeger fatback nulla, sint reprehenderit pork belly irure do fugiat ipsum corned beef rump ex magna spare ribs. Incididunt nostrud eu meatball deserunt nisi short loin short ribs shank biltong tri-tip. Sunt tenderloin non occaecat aliquip, do veniam chicken capicola enim fatback ipsum et beef ribs.
+									</p>
+								</aside>
+							</div>
+						</div>
+					</article>
+
+					<% if current_refinery_user %>
+					<div  style="float:left;">
+						<%= form_tag(problem_url, :method=>:get) do %>
+						<% problem_button_options.each_pair do |name, value| %>
+						<%= hidden_field_tag(name, value)%>
+						<% end %>
+						<input type="submit" value="Report a Problem" />
+						<% end %>
+					</div>
+					<% end %>
+
+					<footer class="site__footer">
+
+						<div class="island  island--magenta  flush--bottom">
+							<div class="container  text--center">
+								<p>
+									The FreeREG database is just a finding tool. It should not be considered to be *proof*, nor that it is 100% accurate, nor contains all of the information in the actual register.
+								</p>
+								<p>
+									Once you have found a record, always make a point of looking at the actual register on microfiche/film at a County Record Office or the local Family History Society or LDS family History Centre for confirmation.
+								</p>
+							</div>
+						</div>
+
+						<div class="icon__honeycomb--bottom-left  island  flush--bottom">
+							<div class="container  text--center">
+								<h3 class="epsilon  text--navy">Other FreeUkGenealogy</h3>
+
+								<ul class="icon-list">
+									<li>
+										<a href="#" class="icon__freecen"><span class="accessibility">FreeCen</span></a>
+									</li>
+									<li>
+										<a href="#" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="island  island--dark  flush--bottom  milli  text--white">
+							<div class="container">
+								<div class="grid">
+
+									<div class="grid__item  one-quarter  palm-one-third">
+										<ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+											<li>
+												<a href="#">Terms &amp; conditions</a>
+											</li>
+											<li>
+												<a href="#">Usage policy</a>
+											</li>
+											<li>
+												<%= link_to 'Contact Us', "../freereg2/contact" , method: :get  %>
+											</li>
+										</ul>
+									</div>
+
+									<div class="grid__item  one-quarter  palm-one-third">
+										<ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+											<li>
+												<a href="#">Become a transcriber</a>
+											</li>
+											<li>
+												<a href="#">Help with transcribing</a>
+											</li>
+											<li>
+												<a href="#">Stats and info</a>
+											</li>
+										</ul>
+									</div>
+
+									<div class="grid__item  one-quarter  palm-one-third">
+										<ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+											<li>
+												<a href="#">Donate</a>
+											</li>
+											<li>
+												<a href="#">Twitter</a>
+											</li>
+											<li>
+												<a href="#">Blog</a>
+											</li>
+										</ul>
+									</div>
+
+									<div class="grid__item  one-quarter  palm-one-whole">
+										<a href="#" class="icon__freeukgen__project--light"><span class="accessibility">A project by FreeUKGenealogy</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="island  island--grey  flush--bottom">
+							<div class="container  text--center">
+								<p class="micro  text--grey">
+									Search engine, layout and database Copyright © 1998-2015 The Trustees of Free UK Genealogy (Ben Laurie, Graham Hart, Camilla von Massenbach, David Mayall and Jim Killock), a charity registered in England and Wales, Number 1096940. We make no warranty whatsoever as to the accuracy or completeness of the FreeREG data.
+								</p>
+							</div>
+						</div>
+					</footer>
+
+				</div>
+				<!-- TODO fix above this -->
+
+				<!-- example offcanvas switching code -->
+				<script src="scripts/dist/classie.js"></script>
+				<script charset="utf-8">
+					var el = document.getElementById("trigger-offcanvas");
+
+					var switchOffCanvas = function() {
+						classie.toggle(document.body, 'offcanvas--active');
+						classie.toggle(el, 'site__header__menu-btn--active');
+					}
+					if (el.addEventListener) {
+						el.addEventListener('click', switchOffCanvas, false);
+					} else if (el.attachEvent) {
+						el.attachEvent('onclick', switchOffCanvas);
+					}
+
+				</script>
 	</body>
 </html>
