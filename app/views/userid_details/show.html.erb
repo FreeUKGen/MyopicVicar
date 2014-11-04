@@ -2,11 +2,16 @@
 
 <div style="float:left;"> <%= button_to 'Edit', edit_userid_detail_path(@userid), method: :get %></div>
 <div style="float:left;"><%= button_to "Send password change request", change_password_userid_detail_path(@userid), method: :get %></div>
+<%if @user.person_role == 'system_administrator'%>
+<div style="float:left;"><%= button_to 'Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  %></div>
+<div  style="float:left;"> <%= button_to 'FreeREG Management Tools Page', manage_freeregs_path, method: :get %></div>
+<%end%>
+
 <% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'County Management Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
 <% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Syndicate Management Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
 
 <div style="clear:both;"> </div><br>
@@ -54,6 +59,9 @@
    </tr>
  <tr>
    <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>   
+   </tr>
+ <tr>
+   <td>Transcription agreement accepted:</td><td > <%= @userid.transcription_agreement%>  </td>   
    </tr>
 
 <tr>

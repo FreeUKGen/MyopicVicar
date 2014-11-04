@@ -1,0 +1,15 @@
+<%= semantic_form_for @county do |f| %>
+<% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+
+<%= f.input :userid, 
+{ :as => :select, :label => "Which county would you like to work with?",:include_blank => false,:prompt => @prompt,
+  :required => true, :collection => @counties,  :size => 10 ,   :input_html => {'onchange' => @location}  }%>
+    <% end %> 
+
+
+
+

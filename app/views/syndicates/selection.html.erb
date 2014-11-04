@@ -1,0 +1,15 @@
+<%= semantic_form_for @syndicate do |f| %>
+<% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+
+<%= f.input :userid, 
+{ :as => :select, :label => "Which syndicate would you like to work with?",:include_blank => false,:prompt => @prompt,
+  :required => true, :collection => @syndicates,  :size => 10 ,   :input_html => {'onchange' => @location}  }%>
+    <% end %> 
+
+
+
+

@@ -12,8 +12,6 @@ def index
   @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page]) 
 end #end method
 
-  
-
 def new
   session[:type] = "add"
   @userid = UseridDetail.new
@@ -23,7 +21,7 @@ def new
 end
   
 def show
-  load(params[:id])
+ load(params[:id])
 end
 
 def all
@@ -31,7 +29,6 @@ def all
  @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
  render "index"
 end
-
 
 def my_own
   session[:my_own] = 'my_own'
@@ -80,7 +77,87 @@ def technical_registration
  @first_name = session[:first_name]
 end 
 
-
+def selection
+  p params
+  get_user_info(session[:userid],session[:first_name])
+  session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
+  case 
+    when params[:userid] == 'Browse userids'
+      @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
+      render "index"
+      return
+    when params[:userid] == "Create userid"
+      redirect_to :action => 'new' 
+      return
+    when params[:userid] == "Select specific email"
+      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      @location = 'location.href= "select?email=" + this.value'
+      @prompt = 'Select email address'
+    when params[:userid] == "Select specific userid"
+      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      @location = 'location.href= "select?userid=" + this.value'
+      @prompt = 'Select userid'
+    when params[:userid] == "Select specific surname"
+      @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
+      @location = 'location.href= "select?name=" + this.value'
+      @prompt = 'Select surname/forename'
+    else
+      flash[:notice] = 'Invalid option'
+      redirect_to :back
+      return   
+    end
+  params[:userid] = nil
+  @manage_syndicate = session[:syndicate]
+end
+def select
+  get_user_info(session[:userid],session[:first_name])
+  case 
+  when !params[:userid].nil? 
+    if params[:userid] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+      userid = UseridDetail.where(:userid => params[:userid]).first
+      redirect_to userid_detail_path(userid)
+    return
+    end    
+  when !params[:email].nil?
+    if params[:email] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+      #adjust for + having been replaced with space
+       params[:email] = params[:email].gsub(/\s/,"+")
+       userid = UseridDetail.where(:email_address => params[:email]).first
+       redirect_to userid_detail_path(userid)
+       return
+    end
+  when !params[:name].nil?
+    if params[:name] == ""
+       flash[:notice] = 'Blank cannot be selected'
+       redirect_to :back
+       return
+    else
+       name = params[:name].split(":")
+       number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
+       if  number == 1
+          userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
+          redirect_to userid_detail_path(userid)
+          return
+        else
+         @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page]) 
+          render 'index'
+          return
+        end
+    end
+  else
+   flash[:notice] = 'Invalid option'
+   redirect_to :back
+   return 
+  end
+end 
 
 def create
   @first_name = session[:first_name]
