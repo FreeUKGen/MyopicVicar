@@ -44,13 +44,19 @@ namespace :freereg do
     db_config["database"]
   end
 
-  def run_mysql(program, command_line)
+  def run_mysql(program, command_line, suppress_db=false)
     db_config = Rails.application.config.database_configuration[Rails.env]
     sql_user = db_config["username"]
     sql_password = db_config["password"]
     sql_database = db_config["database"]
 
-    cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
+    if suppress_db
+      cmd = "#{program} --user=#{sql_user} --password=#{sql_password}  #{command_line}"
+    else
+     cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{c
+ommand_line}"
+    end
+
     print "#{cmd}\n"
     system cmd
   end
@@ -67,7 +73,7 @@ namespace :freereg do
 
     SQL_TABLES.each do |table_name|
       dumpfile = File.join(working_dir, "#{table_name}.dmp")
-      run_mysql('mysqldump', "#{mysql_dbname} #{table_name} > #{dumpfile}")
+      run_mysql('mysqldump', "#{mysql_dbname} #{table_name} > #{dumpfile}", true)
     end
 
     MONGO_COLLECTIONS.each do |collection_name|
@@ -75,8 +81,12 @@ namespace :freereg do
     end
 
     tarfile = File.join(Rails.application.config.backup_directory, 'files', "#{backup_stem}.taz")
-    system("tar czf #{tarfile} --directory #{working_dir} . \n")
-    system("rm -r #{working_dir}/*\n")
+tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
+    print "#{tarcmd}\n"
+    system tarcmd
+	rmcmd="rm -r #{working_dir}/*"
+	print "#{rmcmd}\n"
+#	system "#{rmcmd}"
   # cd /home/apache/hosts/freereg2/MyopicVicar
   # rake build:freereg_from_files["2/3/4/5/8/9/10/11/12/13",,,]
   # tar czf /raid/freereg2/backups/files/$backup_stem.taz tmp/places.json tmp/churches.json tmp/registers.json tmp/freereg1_csv_files.json tmp/userid_details.json tmp/syndicates.json tmp/counties.json tmp/countries.json tmp/feedbacks.json tmp/search_queries.json $dumpfile*.dmp
