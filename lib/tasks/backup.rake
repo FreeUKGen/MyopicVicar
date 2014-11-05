@@ -53,8 +53,7 @@ namespace :freereg do
     if suppress_db
       cmd = "#{program} --user=#{sql_user} --password=#{sql_password}  #{command_line}"
     else
-     cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{c
-ommand_line}"
+     cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
     end
 
     print "#{cmd}\n"
@@ -96,17 +95,17 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
   BACKUP_FILES = {
     "users" => {
       :json => ['syndicates', 'userid_details'],
-      :sql  => ['refinery_users.dmp', 'refinery_roles.dmp', 'refinery_roles_users.dmp']
+      :sql  => ['refinery_users', 'refinery_roles', 'refinery_roles_users']
     },
     "pages" => {
       :sql => [
-        'refinery_county_pages.dmp',
-        'refinery_images.dmp',
-        'refinery_page_parts.dmp',
-        'refinery_page_part_translations.dmp',
-        'refinery_pages.dmp',
-        'refinery_page_translations.dmp',
-        'refinery_resources.dmp'
+        'refinery_county_pages',
+        'refinery_images',
+        'refinery_page_parts',
+        'refinery_page_part_translations',
+        'refinery_pages',
+        'refinery_page_translations',
+        'refinery_resources'
       ]
     },
     "locations" => {
@@ -123,9 +122,13 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
     },
     "queries" => {
       :json => ['search_queries']
+    },
+    "all" => {
+      :json => MONGO_COLLECTIONS,
+      :sql => SQL_TABLES
     }
   }
-  VALID_DATASETS = ["all"] + BACKUP_FILES.keys.map{|k| k.to_s}
+  VALID_DATASETS = BACKUP_FILES.keys.map{|k| k.to_s}
 
   def parse_args_for_datasets(args)
     unless args[:backup_file] && args[:datasets]
@@ -145,10 +148,6 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
       print "Error: #{bad_datasets.join(' and ')} are not valid datasets.\n"
       print "\tValid datasets are "+VALID_DATASETS.join('/')+"\n"
       exit
-    end
-    if args[:datasets] == "all"
-      # do all the concrete datasets
-      datasets = VALID_DATASETS - ["all"]
     end
     
     datasets    
@@ -212,7 +211,8 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
       end
       if files[:sql]
         files[:sql].each do |sql_pattern|
-          sql_file = Dir.glob(File.join(sql_dir, "*#{sql_pattern}")).first
+          sql_file = Dir.glob(File.join(sql_dir, "*#{sql_pattern}.dmp")).first
+#          binding.pry
           run_mysql("mysql", " < #{sql_file}")
         end
       end
