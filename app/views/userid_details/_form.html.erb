@@ -21,6 +21,8 @@
 <%unless @user.person_role == 'researcher' %>
 <%= f.input :telephone_number,:label => "Telephone :",:input_html => { :size => 40 }%>
 <%= f.input :fiche_reader, {:as => :select, :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :", :size => 5}%>
+<%= f.input :transcription_agreement,{:as => :select, :collection => [true,false],:include_blank => false,:label => "Transcription agreement accepted:", :size => 5}%>
+
 <% if session[:manager] == true %>
 <%= f.input :active,{:as => :select, :collection => [true,false],:include_blank => false,:label => "Active :", :size => 5}%>
 <%= f.input :disabled_date,:label => "Date made inactive :",:input_html => { :size => 30 }%>

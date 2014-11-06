@@ -1,25 +1,21 @@
- <%= semantic_form_for @userids do |f| %>
- <% if session[:type] == 'userid'
-  <%= f.input :userid, 
-  { :as => :select, :label => "#{@first_name} which userid would you like to work with?",
+<%= semantic_form_for @userid, :url => { :action => "select"  } do |f| %>
+<% if flash[:notice] %>
+    <div id="notice" style="color:red"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+
+<%= f.input :userid, 
+{ :as => :select, 
+  :label => "Which userid would you like to work with?",
   :include_blank => false,
+  :prompt => @prompt,
   :required => true,
-  :collection => @userids, :size => 10 } %>
-  <%= f.action :submit, :as => :input, :label => 'Select Userid'   %>
-  <% end %>
-  <% end %>
-  <% if session[:type] == 'emails'
-    <%= f.input :email_address, 
-    { :as => :select, :label => "#{@first_name} which email address would you like to work with?",
-    :include_blank => false,
-    :required => true,
-    :collection => @userids, :size => 10 } %>
-    <%= f.action :submit, :as => :input, :label => 'Select Email'   %>
-    <% end %>
-    <% end %>
-
-
-
+  :collection => @userids, 
+  :size => 10 , 
+  :input_html => {'onchange' => @location}
+  }%>
+    <% end %> 
 
 
 

@@ -58,6 +58,15 @@
 </p>
 
 <p>
+  <b>Screenshot:</b>
+  <% if @feedback.screenshot_url %>
+	<%= image_tag @feedback.screenshot_url %>
+  <% else %>
+	No screenshot attached.
+  <% end %>
+</p>
+
+<p>
   <b>Session Data:</b>
   <%= debug @feedback.session_data %>
 </p>

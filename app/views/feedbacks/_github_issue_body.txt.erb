@@ -1,0 +1,9 @@
+Issue reported by **<%= feedback.user_id%>** at <%= feedback.created_at%>
+Time: <%= feedback.feedback_time%>
+Session ID: <%= feedback.session_id%>
+Problem Page URL: [<%= feedback.problem_page_url%>](<%= feedback.problem_page_url%>)
+Previous Page URL: [<%= feedback.previous_page_url%>](<%= feedback.previous_page_url%>)
+Reported Issue:
+<%= feedback.body%>    
+
+![Screenshot](<%= Rails.application.config.website%><%= feedback.screenshot_url%>)

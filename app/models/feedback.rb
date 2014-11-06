@@ -11,6 +11,10 @@ class Feedback
   field :feedback_type, type: String
   field :github_issue_url, type: String
   field :session_data, type: Hash
+  field :screenshot, type: String
+ 
+  mount_uploader :screenshot, ScreenshotUploader
+
  
   after_create :communicate
   
@@ -49,15 +53,9 @@ class Feedback
   end
   
   def issue_body
-    issue_body = <<END_OF_ISSUE
-Issue reported by **#{user_id}** at #{created_at}
-Time: #{feedback_time}
-Session ID: #{session_id}
-Problem Page URL: [#{problem_page_url}](#{problem_page_url})
-Previous Page URL: [#{previous_page_url}](#{previous_page_url})
-Reported Issue:
-#{body}    
-END_OF_ISSUE
+    issue_body = ApplicationController.new.render_to_string(:partial => 'feedbacks/github_issue_body.txt', :locals => {:feedback => self})
+    
+    issue_body
   end
   
 end

@@ -62,6 +62,13 @@ def process_test_file(file)
 end
 
 
+def setup_userids
+
+  Dir.glob(File.join(Rails.root, 'test_data', 'freereg1_csvs', '*')).
+    map{|fn| File.basename(fn)}.
+    each{|uid| UseridDetail.create!(:userid => uid, :password => uid, :encrypted_password => uid, :email_address => "#{uid}@example.com") unless UseridDetail.where(:userid => uid).first}
+
+end
 
 FREEREG1_CSV_FILES = [
   { 

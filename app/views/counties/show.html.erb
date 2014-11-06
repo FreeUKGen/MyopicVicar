@@ -1,50 +1,45 @@
-Page Identification Counties:show<p>
 <p style="text-align: center"><b>Details for a County </p></b>
 
 <div style="float:left;"> <%= button_to 'Edit details', edit_county_path(@county), method: :get  %> </div>
-
-<div  style="float:left;"> <%= button_to 'FreeREG management', manage_freeregs_path, method: :get %> </div>
-
 <div style="clear:both;"> </div><br>
-
-   <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>  
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <br>
+</div>
+<% end %>  
 
 <div id="main"style="color:black">
-<table  CLASS="boldtable" style="width: 100%">
-  <tr>
-    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-     
-  </tr>
+  <table  CLASS="boldtable" style="width: 100%">
+    <tr>
+      
+      <th style="width:25%">Field</th>
+      <th style="width:50">Value</th>
+      
+    </tr>
 
-  <tr> 
-   <td>County</td><td > <%= @county.chapman_code %>  </td>
-  </tr><tr>
+    <tr> 
+     <td>County</td><td > <%= @county.chapman_code %>  </td>
+   </tr><tr>
    <td>County Coordinator Userid</td><td > <%= @county.county_coordinator %>  </td>   
-   </tr>
-   <tr>
+ </tr>
+ <tr>
    <td>County Coordinator Name</td><td > <%= @person unless @person.nil? %> </td>   
-   </tr>
-   <tr>
+ </tr>
+ <tr>
    <td>Previous County Coordinator Userid</td><td > <%= @county.previous_county_coordinator %>  </td>   
-   </tr>
-   <tr>
+ </tr>
+ <tr>
    <td>Previous County Coordinator Name</td><td > <%= @previous_person unless @previous_person.nil? %>  </td>   
-   </tr>
-   <tr>
+ </tr>
+ <tr>
    <td>County Description</td><td > <%= @county.county_description %>  </td>   
-   </tr>
-  <tr>
+ </tr>
+ <tr>
    <td>County Notes</td><td > <%= @county.county_notes %>  </td>   
-   </tr>
+ </tr>
  <tr>
    <td>County Last Updated</td><td > <%= @county.u_at.strftime("%d %b %Y") %>  </td>   
-   </tr>
+ </tr>
 
 </table>
 </div>

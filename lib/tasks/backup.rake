@@ -44,13 +44,18 @@ namespace :freereg do
     db_config["database"]
   end
 
-  def run_mysql(program, command_line)
+  def run_mysql(program, command_line, suppress_db=false)
     db_config = Rails.application.config.database_configuration[Rails.env]
     sql_user = db_config["username"]
     sql_password = db_config["password"]
     sql_database = db_config["database"]
 
-    cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
+    if suppress_db
+      cmd = "#{program} --user=#{sql_user} --password=#{sql_password}  #{command_line}"
+    else
+      cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
+    end
+
     print "#{cmd}\n"
     system cmd
   end
@@ -67,7 +72,7 @@ namespace :freereg do
 
     SQL_TABLES.each do |table_name|
       dumpfile = File.join(working_dir, "#{table_name}.dmp")
-      run_mysql('mysqldump', "#{mysql_dbname} #{table_name} > #{dumpfile}")
+      run_mysql('mysqldump', "#{mysql_dbname} #{table_name} > #{dumpfile}", true)
     end
 
     MONGO_COLLECTIONS.each do |collection_name|
@@ -75,28 +80,28 @@ namespace :freereg do
     end
 
     tarfile = File.join(Rails.application.config.backup_directory, 'files', "#{backup_stem}.taz")
-    system("tar czf #{tarfile} --directory #{working_dir} . \n")
-    system("rm -r #{working_dir}/*\n")
-  # cd /home/apache/hosts/freereg2/MyopicVicar
-  # rake build:freereg_from_files["2/3/4/5/8/9/10/11/12/13",,,]
-  # tar czf /raid/freereg2/backups/files/$backup_stem.taz tmp/places.json tmp/churches.json tmp/registers.json tmp/freereg1_csv_files.json tmp/userid_details.json tmp/syndicates.json tmp/counties.json tmp/countries.json tmp/feedbacks.json tmp/search_queries.json $dumpfile*.dmp
-  # rm $dumpfile*.dmp
+    tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
+    print "#{tarcmd}\n"
+    system tarcmd
+    rmcmd="rm -r #{working_dir}/*"
+    print "#{rmcmd}\n"
+    system "#{rmcmd}"
   end
 
   BACKUP_FILES = {
     "users" => {
       :json => ['syndicates', 'userid_details'],
-      :sql  => ['refinery_users.dmp', 'refinery_roles.dmp', 'refinery_roles_users.dmp']
+      :sql  => ['refinery_users', 'refinery_roles', 'refinery_roles_users']
     },
     "pages" => {
       :sql => [
-        'refinery_county_pages.dmp',
-        'refinery_images.dmp',
-        'refinery_page_parts.dmp',
-        'refinery_page_part_translations.dmp',
-        'refinery_pages.dmp',
-        'refinery_page_translations.dmp',
-        'refinery_resources.dmp'
+        'refinery_county_pages',
+        'refinery_images',
+        'refinery_page_parts',
+        'refinery_page_part_translations',
+        'refinery_pages',
+        'refinery_page_translations',
+        'refinery_resources'
       ]
     },
     "locations" => {
@@ -113,9 +118,13 @@ namespace :freereg do
     },
     "queries" => {
       :json => ['search_queries']
+    },
+    "all" => {
+      :json => MONGO_COLLECTIONS,
+      :sql => SQL_TABLES
     }
   }
-  VALID_DATASETS = ["all"] + BACKUP_FILES.keys.map{|k| k.to_s}
+  VALID_DATASETS = BACKUP_FILES.keys.map{|k| k.to_s}
 
   def parse_args_for_datasets(args)
     unless args[:backup_file] && args[:datasets]
@@ -136,12 +145,8 @@ namespace :freereg do
       print "\tValid datasets are "+VALID_DATASETS.join('/')+"\n"
       exit
     end
-    if args[:datasets] == "all"
-      # do all the concrete datasets
-      datasets = VALID_DATASETS - ["all"]
-    end
-    
-    datasets    
+
+    datasets
   end
 
   def validate_database
@@ -157,7 +162,7 @@ namespace :freereg do
       print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
       exit
     end
-    
+
   end
 
   def extract_backup_dir(args)
@@ -175,7 +180,7 @@ namespace :freereg do
       # now untar the file
       system "tar xzf #{args[:backup_file]} --directory #{extract_dir}"
     end
-    
+
     extract_dir
   end
 
@@ -196,13 +201,14 @@ namespace :freereg do
       if files[:json]
         files[:json].each do |collection|
           json_file = Dir.glob(File.join(json_dir, "*#{collection}.bson")).first
-#          binding.pry
+          #          binding.pry
           run_mongo("mongorestore", "--collection #{collection} #{json_file}")
         end
       end
       if files[:sql]
         files[:sql].each do |sql_pattern|
-          sql_file = Dir.glob(File.join(sql_dir, "*#{sql_pattern}")).first
+          sql_file = Dir.glob(File.join(sql_dir, "*#{sql_pattern}.dmp")).first
+          #          binding.pry
           run_mysql("mysql", " < #{sql_file}")
         end
       end
