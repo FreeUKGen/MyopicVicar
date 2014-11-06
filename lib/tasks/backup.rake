@@ -85,7 +85,7 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
     system tarcmd
 	rmcmd="rm -r #{working_dir}/*"
 	print "#{rmcmd}\n"
-#	system "#{rmcmd}"
+	system "#{rmcmd}"
   # cd /home/apache/hosts/freereg2/MyopicVicar
   # rake build:freereg_from_files["2/3/4/5/8/9/10/11/12/13",,,]
   # tar czf /raid/freereg2/backups/files/$backup_stem.taz tmp/places.json tmp/churches.json tmp/registers.json tmp/freereg1_csv_files.json tmp/userid_details.json tmp/syndicates.json tmp/counties.json tmp/countries.json tmp/feedbacks.json tmp/search_queries.json $dumpfile*.dmp
