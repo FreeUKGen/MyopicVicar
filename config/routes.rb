@@ -21,8 +21,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :place_caches
 
-  post 'manage_syndicates/select', :to =>'manage_syndicates#select', :as => :select_manage_syndicate 
-  get 'manage_syndicates/selection', :to =>'manage_syndicates#selection', :as => :selection_manage_syndicate 
   resources :manage_syndicates   
   
   resources :csvfiles
@@ -37,7 +35,8 @@ MyopicVicar::Application.routes.draw do
   resources :countries
 
 
-
+  get 'counties/select', :to =>'counties#select', :as => :select_counties
+  get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
 
 
@@ -55,13 +54,15 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
   get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   get 'userid_details/all', :to => 'userid_details#all', :as => :all_userid_detail
-  
+  get 'userid_details/select', :to =>'userid_details#select', :as => :select_userid_details
+  get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   resources :userid_details
 
  get  'manage_counties/select',  :to => 'manage_counties#select', :as => :select_manage_county
   resources :manage_counties
 
-
+  get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
+  get 'syndicates/selection', :to =>'syndicates#selection', :as => :selection_syndicates
   resources :syndicates
 
   resources :coordinators
@@ -113,6 +114,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/:id/broaden(.:format)', :to => 'search_queries#broaden', :as => :broaden_search_query
   get 'search_queries/:id/narrow(.:format)', :to => 'search_queries#narrow', :as => :narrow_search_query
   post 'search_queries/:id/remember(.:format)', :to => 'search_queries#remember', :as => :remember_search_query
+  get 'search_queries/:id/reorder(.:format)', :to => 'search_queries#reorder', :as => :reorder_search_query
   get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   resources :search_queries

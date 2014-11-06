@@ -1,9 +1,9 @@
 <% require 'record_type' %>
-<div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> </div>
+
 <p style="text-align: center">Transcription details of the 
  <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b>   
    of 
-   <b><%= @county %></b>. You may see the decade for which registers have been transcribed by following the "Decadal Data" link.
+   <b><%= @county %></b>. <br>You may see the decades for which data has been transcribed by following the "Link".
 <table>
   <tr>
    <th style="width:10%">Record Type</th>
@@ -33,7 +33,7 @@
     <%end%>
     <td style="width:12%"><%= file.transcription_date %></td>
     <td style="width:12%"><%= file.modification_date %></td>
-    <td style="width:12%"><%= link_to "Decadal Data", show_decade_path(value) %></td>
+    <td style="width:12%"><%= link_to "Link", show_decade_path(value) %></td>
    
      <%end%>
     
@@ -41,5 +41,5 @@
   </tr>
 <% end %>
 </table><br>
- 
+ <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> </div>
  

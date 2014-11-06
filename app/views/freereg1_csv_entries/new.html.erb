@@ -1,11 +1,8 @@
-Page Identification Freereg Entries:new<p>
 <p style="text-align: center">New entry for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br>
 
 
 
 <div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path( :anchor => "#{@freereg1_csv_entry.id}"), method: :get %>  </div>
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
-
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -14,11 +11,5 @@ Page Identification Freereg Entries:new<p>
    <% end %>  
 <%= render 'form' %>
 
-
-
-<div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path( :anchor => "#{@freereg1_csv_entry.id}"), method: :get %>  </div>
-<div  style="float:left;"> <%= button_to 'Resource Management', manage_resource_path(@user), method: :get %> </div>
-
-<div style="clear:both;"> </div><br>
 
 

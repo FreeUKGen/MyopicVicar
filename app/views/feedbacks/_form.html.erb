@@ -1,7 +1,7 @@
-<%= form_for(@feedback) do |f| %>
+<%= form_for(@feedback, :html => {:multipart => true}) do |f| %>
   <% if @feedback.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@feedback.errors.count, "error") %> prohibited this feedback from being saved:</h2>
+      <h2><%= pluralize(@feedback.errors.count, "error") %> prohibited your feedback from being reported:</h2>
 
       <ul>
       <% @feedback.errors.full_messages.each do |msg| %>
@@ -12,12 +12,16 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :title %><br />
-    <%= f.text_field :title %>
+    <%= f.label :title, "Summary" %><br />
+    <%= f.text_field :title, :size => 80 %>
   </div>
   <div class="field">
-    <%= f.label :body %><br />
-    <%= f.text_area :body %>
+    <%= f.label :body, "Description" %><br />
+    <%= f.text_area :body, :cols => 80, :rows => 10 %>
+  </div>
+  <div class="field">
+    <%= f.label :screenshot, "Screenshot" %><br />
+    <%= f.file_field :screenshot %>
   </div>
   <%= f.hidden_field :feedback_time %>
   <%= f.hidden_field :user_id %>
@@ -26,6 +30,6 @@
 	<%= f.hidden_field :previous_page_url %>
 	<%= f.hidden_field :feedback_type %>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit "Report Problem" %>
   </div>
 <% end %>

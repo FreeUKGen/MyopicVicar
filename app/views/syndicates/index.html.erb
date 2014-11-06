@@ -1,41 +1,35 @@
-Page Identification Syndicates:index<p>
-<p style="text-align: center"><b>Syndicates Management</b></p>
+<p style="text-align: center"><b>Syndicate Management</b></p>
 
-<div style="float:left;"> <%= button_to 'Create a new Syndicate', new_syndicate_path, method: :get %> </div>
-
-
-<div style="clear:both;"> </div><br>
-
-   <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>
+</div>
+<% end %>
 
 
 <div id="main"style="color:black">
-<table  CLASS="boldtable" style="width: 100%">
-  <tr>
-    
-    <th style="width:23%">Syndicate</th>
-    <th style="width:23">Syndicate Coordinator</th>
-     <th style="width:8">Transcribers?</th>
-     <th style="width:23%">Show</th>
-    <th style="width:23%">Edit</th>
-  </tr>
+  <table  CLASS="boldtable" style="width: 100%">
+    <tr>
 
-<% @syndicates.each do |syndicate| %>
-  <tr id="<%=syndicate.id%>">
-   <td > <%= syndicate.syndicate_code %>  </td>
-   <td > <%= syndicate.syndicate_coordinator %>  </td>   
-   <td > <%= syndicate.accepting_transcribers %>  </td>   
-   
-   
+      <th style="width:23%">Syndicate</th>
+      <th style="width:23">Syndicate Coordinator</th>
+      <th style="width:8">Accepting Transcribers?</th>
+      <th style="width:23%">Show</th>
+      <th style="width:23%">Edit</th>
+    </tr>
+
+    <% @syndicates.each do |syndicate| %>
+    <tr id="<%=syndicate.id%>">
+     <td > <%= syndicate.syndicate_code %>  </td>
+     <td > <%= syndicate.syndicate_coordinator %>  </td>   
+     <td > <%= syndicate.accepting_transcribers %>  </td>   
+
+
      <td><%= button_to 'Show', syndicate_path(syndicate), method: :get  %></td><td><%= button_to 'Edit details', edit_syndicate_path(syndicate), method: :get  %>
-  </tr>
-  <% end %>
-  
-</table>
+   </tr>
+   <% end %>
+
+ </table>
 </div>
 
 

@@ -403,6 +403,7 @@ def date_change(transcription_date,modification_date)
   end
 
   def clean_up
+    self.update_number_of_files
     register = self.register
     church = register.church
     place = church.place
@@ -423,7 +424,6 @@ def date_change(transcription_date,modification_date)
 #need to think about doing an update
    userid = UseridDetail.where(:userid_lower_case => self.userid.downcase).first
    files = Freereg1CsvFile.where(:userid_lower_case => self.userid.downcase).all
- 
     if files.nil?
      userid.number_of_files = 0
      userid.number_of_records = 0
@@ -432,7 +432,6 @@ def date_change(transcription_date,modification_date)
      number = 0
      records = 0
       files.each do |my_file|
-       
         number  = number  + 1
         records = records + my_file.records.to_i
         userid.last_upload  = my_file.uploaded_date if number == 1
@@ -440,11 +439,10 @@ def date_change(transcription_date,modification_date)
            userid.last_upload  = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > userid.last_upload.strftime("%s").to_i
           end
        end
-       userid.set(:number_of_files  => number)
-       userid.set(:number_of_records => records)
-     
+       userid.update_attributes(:number_of_files  => number, :number_of_records => records)
     end
  end
+
 def lock(type)
   if  type == 'my_own'
      if  self.locked_by_transcriber == 'false'

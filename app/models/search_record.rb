@@ -47,20 +47,16 @@ class SearchRecord
   #
   # It contains hashes with keys :first_name, :last_name, :role
   field :transcript_names, type: Array#, :required => true
-  # field :other_family_names, type: Array, :required => false
 
   # Date of the entry, whatever kind it is
   field :transcript_date, type: String#, :required => false
   field :search_date, type: String#, :required => false
 
   # search fields
-  # embeds_many :primary_names, :class_name => 'SearchName'
-  # embeds_many :inclusive_names, :class_name => 'SearchName'
-  
   embeds_many :search_names, :class_name => 'SearchName'
 
   # derived search fields
-  field :location_name, type:String
+  field :location_names, type:Array, default: []
   field :search_soundex, type: Array, default: []
 
 
@@ -79,15 +75,25 @@ class SearchRecord
   
 
 
-  def location_name
-    return self[:location_name] if self[:location_name]
+  def location_names
+    return self[:location_names] if self[:location_names] && self[:location_names].size > 0
     
+    self[:location_names] = format_location
+  end
+
+  def format_location
     place_name = self.place.place_name
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
+      register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
     end
     
-    "#{place_name} (#{church_name})"
+    location_array = []
+    location_array << "#{place_name}"
+    location_array << "(#{church_name})" if church_name
+    location_array << "[#{register_type}]" if RegisterType.specified?(register_type)
+        
+    location_array
   end
 
   def ordered_display_fields
@@ -126,30 +132,27 @@ class SearchRecord
     create_soundex   
       
     transform_date
+    
+    populate_location
       
   end
 
   def populate_search_from_transcript
     populate_search_names
-    # populate_primary_names
-    # populate_inclusive_names
   end
 
   def transform_date
     self.search_date = DateParser::searchable(transcript_date)
   end
 
+  def populate_location
+    self.location_names = format_location
+  end
   
   def create_soundex
     search_names.each do |name|
       search_soundex << soundex_name_type_triple(name)
     end
-    # primary_names.each do |name|
-      # primary_soundex << soundex_name_pair(name)
-    # end
-    # inclusive_names.each do |name|
-      # inclusive_soundex << soundex_name_pair(name)
-    # end
   end
   
   def soundex_name_type_triple(name)
@@ -165,29 +168,14 @@ class SearchRecord
       name[:first_name].downcase! if name[:first_name]
       name[:last_name].downcase! if name[:last_name]
     end
-    # primary_names.each do |name|
-      # name[:first_name].downcase! if name[:first_name]
-      # name[:last_name].downcase! if name[:last_name]
-    # end
-    # inclusive_names.each do |name|
-      # name[:first_name].downcase! if name[:first_name] 
-      # name[:last_name].downcase! if name[:last_name]
-    # end
   end
 
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
-# #    binding.pry
-    # self.primary_names = Emendor.emend(self.primary_names)
-# #    binding.pry
-    # self.inclusive_names = Emendor.emend(self.inclusive_names)
-# #    binding.pry
   end
 
   def separate_all
     separate_names(self.search_names)
-    # separate_names(self.primary_names)
-    # separate_names(self.inclusive_names)
   end
 
   def separate_names(names_array)
@@ -196,7 +184,7 @@ class SearchRecord
       tokens = name.first_name.split(/-|\s+/)
       if tokens.size > 1
         tokens.each do |token|
-          separated_names << search_name(token, name.last_name, Source::SEPARATION)
+          separated_names << search_name(token, name.last_name, name.type, Source::SEPARATION)
         end
       end
     end
@@ -218,39 +206,6 @@ class SearchRecord
   end
 
 
-
-  # def populate_primary_names
-# 
-    # if transcript_names && transcript_names.size > 0
-      # transcript_names.each_with_index do |name_hash|
-        # if name_hash[:type] == 'primary'
-          # name = search_name(name_hash[:first_name], name_hash[:last_name])
-          # primary_names << name if name          
-        # end
-# 
-      # end
-    # end
-# 
-  # end
-# 
-# 
-  # def populate_inclusive_names
-# 
-    # # primary names
-    # primary_names.each do |name|
-      # inclusive_names << name
-    # end
-#     
-    # if transcript_names && transcript_names.size > 0
-      # transcript_names.each do |name_hash|
-        # unless name_hash[:type] == 'primary'
-          # name = search_name(name_hash[:first_name], name_hash[:last_name])
-          # inclusive_names << name if name          
-        # end
-      # end
-    # end
-# 
-  # end
 
   def search_name(first_name, last_name, person_type, source = 'transcript')
     name = nil

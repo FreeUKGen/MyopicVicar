@@ -1,6 +1,5 @@
-Page Identification Freereg Entries:select record<p>
 <%= form_tag do %>
-Please select the record number in file <b><%=  @freereg1_csv_file_name %></b> that you want to display; it must be less than <%= @max%>
+Please select the record number in file <b><%=  @freereg1_csv_file_name %></b> that you want to display; it must be less than or equal to <%= @max%>
 <p>
   <%= label_tag(:number, "Record Number:") %>
   <%= text_field_tag(:number) %>

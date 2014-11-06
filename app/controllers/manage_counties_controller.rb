@@ -24,7 +24,8 @@ def index
         @counties << county unless  @counties.include?(county) 
      end
    end
-   @number_of_counties = @counties.length
+   @number_of_counties = 0
+   @number_of_counties = @counties.length unless @counties.nil?
 
    redirect_to manage_resource_path(@user) if @number_of_counties == 0
    @manage_county = ManageCounty.new

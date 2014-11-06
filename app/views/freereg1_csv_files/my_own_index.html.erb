@@ -1,17 +1,6 @@
-Page Identification Freereg Files:my_own_index<p>
-<p style="text-align: center"><b>Listing of your own batches: <%= @who%></b></p>
-
-<div style="float:left;"> <%= button_to 'Upload Batch of records', new_csvfile_path, method: :get %> </div>
-<% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<%end%>
-<% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
-<%end%>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-
-<div style="clear:both;"> </div><br>
-
+<p style="text-align: center"><b>Listing of your own batches: <%= @who%></b>
+<div style="text-align: center"> <%= button_to 'Upload Batch of records', new_csvfile_path, method: :get %> </div>
+</p>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -34,9 +23,9 @@ Page Identification Freereg Files:my_own_index<p>
     <th style="width:11%">UserID</th>
     <th style="width:10%">File name</th>
     
-    <th style="width:4%">Errs</th>
-    <th style="width:9%" >Loaded</th>
-    <th style="width:8%"colspan = 2>Locked<br> TR CC</th>
+    <th style="width:4%">Errors</th>
+    <th style="width:10%" >Loaded</th>
+    <th style="width:7%"colspan = 2>Locked by<br> Owner   Coord</th>
     <th style="width:12%">Syndicate</th>
     
     
@@ -77,7 +66,7 @@ Page Identification Freereg Files:my_own_index<p>
     <td><%= button_to 'Show', freereg1_csv_file, method: :get %></td>
     <td><%= button_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get %></td>
     
-    <td></td><td><%= button_to 'Replace', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace this file?'%></td>
+    <td colspan = 2><%= button_to 'Replace', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace this file?'%></td>
     
     <td></td><td><%= button_to 'Discard', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete %></td>
 
@@ -88,7 +77,7 @@ Page Identification Freereg Files:my_own_index<p>
      <td></td>
     <%end%>
     <td></td>
-<td><%= button_to 'Lock/Unlock', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?'%>
+<td colspan = 2><%= button_to 'Lock/Unlock', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?'%>
     </td>
   </tr>
 
@@ -97,9 +86,16 @@ Page Identification Freereg Files:my_own_index<p>
 
 </table>
 <%= paginate @freereg1_csv_files %>
+
 <%else%>
    You have no files
    <%end%>
 </div>
-
+<br>
+<% if @role =='counties' %>
+<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<%end%>
+<% if @role =='syndicate' %>
+<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
+<%end%>
 

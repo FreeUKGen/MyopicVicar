@@ -22,12 +22,31 @@ module ApplicationHelper
     previous_page_url=request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
     user_id = current_refinery_user.username
-    main_app.new_feedback_path({ :feedback_time => problem_time,
-                                 :session_id => session_id,
-                                 :user_id => user_id,
-                                 :problem_page_url => problem_page_url,
-                                 :previous_page_url => previous_page_url,
-                                 :feedback_type => feedback_type })
+    url = main_app.new_feedback_path({ :feedback_time => problem_time,
+                                       :session_id => session_id,
+                                       :user_id => user_id,
+                                       :problem_page_url => problem_page_url,
+                                       :previous_page_url => previous_page_url,
+                                       :feedback_type => feedback_type })
+    url
+  end
+
+  def problem_button_options
+    # construct url parameters for problem reports
+    problem_time = Time.now.utc
+    session_id = request.session["session_id"]
+    problem_page_url=request.env['REQUEST_URI']
+    previous_page_url=request.env['HTTP_REFERER']
+    feedback_type=Feedback::FeedbackType::ISSUE
+    user_id = current_refinery_user.username
+    
+    {  :feedback_time => problem_time,
+       :session_id => session_id,
+       :user_id => user_id,
+       :problem_page_url => problem_page_url,
+       :previous_page_url => previous_page_url,
+       :feedback_type => feedback_type }
+    
   end
 
 
@@ -49,8 +68,8 @@ module ApplicationHelper
   def search_params_for_display(search_query)
     display_map = {}
     # name fields
-    display_map["First Name"] = search_query.first_name if search_query.first_name
-    display_map["Last Name"] = search_query.last_name if search_query.last_name
+    display_map["First Name"] = search_query.first_name.upcase if search_query.first_name
+    display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
     display_map["Exact Match?"] = "Yes" unless search_query.fuzzy
     display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
 

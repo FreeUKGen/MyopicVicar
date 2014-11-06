@@ -176,14 +176,15 @@ COMMON_WORD_EXPANSIONS = {
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
   def self.datestat(x)
       xx = x.to_i
-      daterange = Array.new
+       daterange = Array.new
        datemax = @@list_of_registers[@@place_register_key].fetch(:datemax)
        datemin = @@list_of_registers[@@place_register_key].fetch(:datemin)
        daterange = @@list_of_registers[@@place_register_key].fetch(:daterange)
-      datemax = xx if xx > datemax
+      datemax = xx if xx > datemax && xx < DATEMAX
       datemin = xx if xx < datemin
-      xx = (xx-1530)/10 unless xx <= 1530 # avoid division into zero
-      daterange[xx] = daterange[xx] + 1 unless (xx < 0 || xx > 50) #avoid going outside the data range array
+      bin = (xx-DATEMIN)/10  
+      daterange[bin] = daterange[bin] + 1 unless xx > DATEMAX || xx < DATEMIN #avoid going beyond the range
+    #   p "data range #{datemax} #{datemin} #{bin} #{daterange}"
       @@list_of_registers[@@place_register_key].store(:datemax,datemax)
       @@list_of_registers[@@place_register_key].store(:datemin,datemin)
       @@list_of_registers[@@place_register_key].store(:daterange,daterange)

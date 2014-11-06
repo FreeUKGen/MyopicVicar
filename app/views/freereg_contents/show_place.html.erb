@@ -1,6 +1,6 @@
 <% require 'record_type' %>
 
- <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %> </div>
+ 
 <p style="text-align: center">Information about
 <b><%= @place_name %>;</b> for <b><%= @county %></b>. 
 </p>
@@ -71,4 +71,5 @@
 <% end%>
 </table>
 </div> 
-
+<br>
+<div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %> </div>

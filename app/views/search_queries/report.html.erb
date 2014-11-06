@@ -1,10 +1,42 @@
 
 <h1>Performance Reporting</h1>
+<div id="nav">
+	<ul>
+		<% if @session_id %>
+			<% if @feedback %>
+				<li>
+					<%= link_to("Feedback #{@feedback.title}", feedback_path(@feedback))%>
+				</li>		
+			<% end %>
+		<% else %>
+			<li>
+				<%= link_to("Previous Day", search_query_report_path(:day => @start_day.yesterday.strftime("%Y-%m-%d")))%>
+			</li>
+			<li>
+				<%= link_to("Next Day", search_query_report_path(:day => @start_day.tomorrow.strftime("%Y-%m-%d")))%>
+			</li>
+		<% end %>
+	</ul>
+</div>
 
-<p>Listing the longest-running queries from <b><%= @start_time.strftime("%Y-%m-%d %H:%M:%S") %></b> to <b><%= @end_time.strftime("%Y-%m-%d %H:%M:%S") %> (GMT<%= @end_day.zone %>)</b><br />
-	<%= link_to("previous day", search_query_report_path(:day => @start_day.yesterday.strftime("%Y-%m-%d")))%>
-</p>
+<% if @session_id %>
+	<p>
+		Listing queries from session <%= @session_id %>.
+		<% if @feedback %>
+			<br />
+			Problem reported at <b><%= @feedback.feedback_time.strftime("%Y-%m-%d %H:%M:%S") %></b>
+		<% end %>
+	</p>	
+<% else %>
+	<p>
+		Listing the longest-running queries from 
+		<b><%= @start_time.strftime("%Y-%m-%d %H:%M:%S") %></b> 
+		to <b><%= @end_time.strftime("%Y-%m-%d %H:%M:%S") %> (GMT<%= @end_day.zone %>)</b><br />
+	</p>
+<% end %>
+
 <p>The 'Analyze' button will re-execute the query and analyze it.</p>
+
 
 <h2>Queries</h2>
 
@@ -15,9 +47,27 @@
 		<th>
 			Query
 		</th>
-		<th>Run Time (ms)</th>
-		<th>Start Time</th>
-		<th>Results Found</th>
+		<% if @feedback %>
+			<th>
+				<%= link_to("Run Time (ms)", search_query_report_path(:feedback_id => @feedback, :order => "runtime")) %>
+			</th>
+			<th>
+				<%= link_to("Start Time", search_query_report_path(:feedback_id => @feedback, :order => "updated_at")) %>
+			</th>
+			<th>
+				<%= link_to("Results Found", search_query_report_path(:feedback_id => @feedback, :order => "result_count")) %>
+			</th>
+		<% else %>
+			<th>
+				<%= link_to("Run Time (ms)", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "runtime")) %>
+			</th>
+			<th>
+				<%= link_to("Start Time", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "updated_at")) %>
+			</th>
+			<th>
+				<%= link_to("Results Found", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "result_count")) %>
+			</th>
+		<% end %>
 		<th>&nbsp;</th>
 	</thead>
 	<tbody>

@@ -21,8 +21,9 @@
 </p>
 
 <p>
-  <b>Session:</b>
-  <%= @feedback.session_id %>
+  <b>Session ID:</b>
+  <%= @feedback.session_id %> 
+  (View <%= link_to("search queries for this session", search_query_report_path(:feedback_id => @feedback, :session_id => @feedback.session_id)) %>.)
 </p>
 
 <p>
@@ -55,6 +56,21 @@
 	<% end %>
   <% end %>
 </p>
+
+<p>
+  <b>Screenshot:</b>
+  <% if @feedback.screenshot_url %>
+	<%= image_tag @feedback.screenshot_url %>
+  <% else %>
+	No screenshot attached.
+  <% end %>
+</p>
+
+<p>
+  <b>Session Data:</b>
+  <%= debug @feedback.session_data %>
+</p>
+
 
 
 <%= link_to 'Back', feedbacks_path %>

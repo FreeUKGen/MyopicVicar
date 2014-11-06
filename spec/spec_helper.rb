@@ -51,6 +51,12 @@ end
 
 def process_test_file(file)
   Rails.application.config.datafiles=file[:basedir]
+  username = file[:user]
+  userid = UseridDetail.where(:userid => username).first
+  unless userid
+    UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com")
+  end
+
   FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
 
 end

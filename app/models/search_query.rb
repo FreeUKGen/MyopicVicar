@@ -7,6 +7,21 @@ class SearchQuery
   require 'name_role'
   require 'date_parser'
   # consider extracting this from entities
+  module SearchOrder
+    TYPE='record_type'
+    DATE='search_date'
+    COUNTY='chapman_code'
+    LOCATION='location_names.0'
+    NAME='transcript_names.0.last_name'
+    
+    ALL_ORDERS = [
+      TYPE,
+      DATE,
+      COUNTY,
+      LOCATION,
+      NAME
+    ]
+  end
   
   field :first_name, type: String#, :required => false
   field :last_name, type: String#, :required => false
@@ -31,6 +46,9 @@ class SearchQuery
 
   field :session_id, type: String
   field :runtime, type: Integer
+  field :order_field, type: String, default: SearchOrder::DATE
+  validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS 
+  field :order_asc, type: Boolean, default: true
 
   belongs_to :userid_detail
   
@@ -39,9 +57,12 @@ class SearchQuery
   validate :radius_is_valid
   before_validation :clean_blanks
 
-
-  def search
-    records = SearchRecord.where(search_params).asc(:search_date).all
+  def search    
+    if order_asc
+      records = SearchRecord.where(search_params).asc(self.order_field).all
+    else
+      records = SearchRecord.where(search_params).desc(self.order_field).all
+    end
     self.result_count = records.count
     self.runtime = (Time.now.utc - self.created_at) * 1000
     self.save
@@ -142,7 +163,7 @@ class SearchQuery
 
   def radius_is_valid
     if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "A place must be chosen to seach neaby places.")
+      errors.add(:search_nearby_places, "Please select a place.")
     end
   end
 
