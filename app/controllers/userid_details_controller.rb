@@ -4,7 +4,7 @@ class UseridDetailsController < ApplicationController
  skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
  rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
 
-def index
+ def index
   get_user_info(session[:userid],session[:first_name])
   session[:type] = "manager"
   session[:my_own] = "no"
@@ -19,7 +19,7 @@ def new
   @role = session[:role]
   @syndicates = Syndicate.get_syndicates_open_for_transcription   
 end
-  
+
 def show
  load(params[:id])
 end
@@ -77,86 +77,103 @@ def technical_registration
  @first_name = session[:first_name]
 end 
 
+def options
+ get_user_info(session[:userid],session[:first_name])
+ if session[:userid].nil? || params[:option] != 'manager'
+  redirect_to '/', notice: "You are not authorised to use these facilities"
+  return
+end
+p    "In options"
+@userid = UseridDetail.new
+@prompt = "Manage Userids"
+@options= ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname"]
+@location = 'location.href= "/userid_details/selection?userid=" + this.value'
+
+end
+
+
 def selection
   p params
   get_user_info(session[:userid],session[:first_name])
   session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
+  p session[:syndicate] 
   case 
-    when params[:userid] == 'Browse userids'
-      @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
-      render "index"
-      return
-    when params[:userid] == "Create userid"
-      redirect_to :action => 'new' 
-      return
-    when params[:userid] == "Select specific email"
-      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
-      @location = 'location.href= "select?email=" + this.value'
-      @prompt = 'Select email address'
-    when params[:userid] == "Select specific userid"
-      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
-      @location = 'location.href= "select?userid=" + this.value'
-      @prompt = 'Select userid'
-    when params[:userid] == "Select specific surname"
-      @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
-      @location = 'location.href= "select?name=" + this.value'
-      @prompt = 'Select surname/forename'
-    else
-      flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return   
-    end
+  when params[:userid] == 'Browse userids'
+    @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
+    render "index"
+    return
+  when params[:userid] == "Create userid"
+    redirect_to :action => 'new' 
+    return
+  when params[:userid] == "Select specific email"
+    @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+    @location = 'location.href= "select?email=" + this.value'
+    @prompt = 'Select email address'
+  when params[:userid] == "Select specific userid"
+    @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+    @location = 'location.href= "select?userid=" + this.value'
+    @prompt = 'Select userid'
+  when params[:userid] == "Select specific surname"
+    @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
+    @location = 'location.href= "select?name=" + this.value'
+    @prompt = 'Select surname/forename'
+  else
+    flash[:notice] = 'Invalid option'
+    redirect_to :back
+    return   
+  end
   params[:userid] = nil
   @manage_syndicate = session[:syndicate]
 end
+
 def select
   get_user_info(session[:userid],session[:first_name])
   case 
   when !params[:userid].nil? 
     if params[:userid] == ""
-       flash[:notice] = 'Blank cannot be selected'
-       redirect_to :back
-       return
-    else
-      userid = UseridDetail.where(:userid => params[:userid]).first
-      redirect_to userid_detail_path(userid)
+     flash[:notice] = 'Blank cannot be selected'
+     redirect_to :back
+     return
+   else
+    userid = UseridDetail.where(:userid => params[:userid]).first
+    redirect_to userid_detail_path(userid)
     return
-    end    
-  when !params[:email].nil?
-    if params[:email] == ""
-       flash[:notice] = 'Blank cannot be selected'
-       redirect_to :back
-       return
-    else
+  end    
+when !params[:email].nil?
+  if params[:email] == ""
+   flash[:notice] = 'Blank cannot be selected'
+   redirect_to :back
+   return
+ else
       #adjust for + having been replaced with space
-       params[:email] = params[:email].gsub(/\s/,"+")
-       userid = UseridDetail.where(:email_address => params[:email]).first
-       redirect_to userid_detail_path(userid)
-       return
+      params[:email] = params[:email].gsub(/\s/,"+")
+      userid = UseridDetail.where(:email_address => params[:email]).first
+      redirect_to userid_detail_path(userid)
+      return
     end
   when !params[:name].nil?
     if params[:name] == ""
-       flash[:notice] = 'Blank cannot be selected'
-       redirect_to :back
-       return
+     flash[:notice] = 'Blank cannot be selected'
+     redirect_to :back
+     return
+   else
+     name = params[:name].split(":")
+     number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
+     if  number == 1
+      userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
+      redirect_to userid_detail_path(userid)
+      return
     else
-       name = params[:name].split(":")
-       number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
-       if  number == 1
-          userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
-          redirect_to userid_detail_path(userid)
-          return
-        else
-         @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page]) 
-          render 'index'
-          return
-        end
-    end
-  else
-   flash[:notice] = 'Invalid option'
-   redirect_to :back
-   return 
-  end
+     @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page]) 
+     render 'index'
+     return
+   end
+ end
+else
+ flash[:notice] = 'Invalid option'
+ redirect_to :back
+ return 
+end
 end 
 
 def create
@@ -203,11 +220,11 @@ def destroy
  if @userid.number_of_files > 0
   flash[:notice] = 'The destruction of the userid is not permitted as there are batches stored under this name'
   next_place_to_go_unsuccessful_update
- else
+else
   @userid.destroy
   flash[:notice] = 'The destruction of the userid was successful'
   next_place_to_go_successful_update(@userid)
- end
+end
 end
 
 def disable
@@ -228,19 +245,19 @@ def next_place_to_go_unsuccessful_create
  when session[:type] == "add"
   render :action => 'new' 
   return
- when session[:type] == 'researcher_registration'
+when session[:type] == 'researcher_registration'
   render :action => 'researcher_registration'
   return
- when session[:type] == 'transcriber_registration'
+when session[:type] == 'transcriber_registration'
   render :action => 'transcriber_registration'
   return
- when session[:type] == 'technical_registration'
+when session[:type] == 'technical_registration'
   render :action => 'technical_registration'
   return
- else
+else
   render :action => 'new' 
   return
- end
+end
 end
 
 def next_place_to_go_unsuccessful_update
@@ -248,7 +265,7 @@ def next_place_to_go_unsuccessful_update
  when session[:my_own] == 'my_own'
   render :action => 'edit'
   return
- when session[:type] == "edit"
+when session[:type] == "edit"
   if @user.person_role == 'system_administrator'
     redirect_to :action => 'all'
     return
@@ -256,10 +273,10 @@ def next_place_to_go_unsuccessful_update
     redirect_to userid_details_path(:anchor => "#{ @userid.id}")
     return
   end
- else
+else
   redirect_to refinery.login_path
   return
- end
+end
 end
 
 
@@ -273,18 +290,18 @@ def next_place_to_go_successful_create(userid)
    if @user.person_role == 'system_administrator'
     redirect_to :action => 'all'
     return
-   else
+  else
     redirect_to userid_details_path(:anchor => "#{ @userid.id}")
     return
-   end
- when session[:type] == 'researcher_registration' || session[:type] == 'transcriber_registration' || session[:type] == 'technical_registration'
+  end
+when session[:type] == 'researcher_registration' || session[:type] == 'transcriber_registration' || session[:type] == 'technical_registration'
   redirect_to refinery.logout_path
   return
- else
+else
   redirect_to refinery.login_path
   return
- end
- redirect_to refinery.login_path
+end
+redirect_to refinery.login_path
 end
 
 def next_place_to_go_successful_update(userid)
@@ -292,7 +309,7 @@ def next_place_to_go_successful_update(userid)
  when session[:my_own] == 'my_own'
   redirect_to :action => 'my_own'
   return
- when session[:type] == "edit"
+when session[:type] == "edit"
   if @user.person_role == 'system_administrator'
     redirect_to :action => 'all'
     return
@@ -300,10 +317,10 @@ def next_place_to_go_successful_update(userid)
     redirect_to userid_details_path(:anchor => "#{ @userid.id}")
     return
   end
- else
+else
   redirect_to refinery.login_path
   return
- end
+end
 end
 
 def record_validation_errors(exception)

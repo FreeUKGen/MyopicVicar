@@ -3,4 +3,9 @@ class ManageCounty
  field :chapman_code, type: String
  field :action, type: Array
  field :places, type: String
+ 
+  
+
+
+
 end
