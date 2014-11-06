@@ -53,7 +53,7 @@ namespace :freereg do
     if suppress_db
       cmd = "#{program} --user=#{sql_user} --password=#{sql_password}  #{command_line}"
     else
-     cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
+      cmd = "#{program} --user=#{sql_user} --password=#{sql_password} --database=#{sql_database} #{command_line}"
     end
 
     print "#{cmd}\n"
@@ -80,16 +80,12 @@ namespace :freereg do
     end
 
     tarfile = File.join(Rails.application.config.backup_directory, 'files', "#{backup_stem}.taz")
-tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
+    tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
     print "#{tarcmd}\n"
     system tarcmd
-	rmcmd="rm -r #{working_dir}/*"
-	print "#{rmcmd}\n"
-	system "#{rmcmd}"
-  # cd /home/apache/hosts/freereg2/MyopicVicar
-  # rake build:freereg_from_files["2/3/4/5/8/9/10/11/12/13",,,]
-  # tar czf /raid/freereg2/backups/files/$backup_stem.taz tmp/places.json tmp/churches.json tmp/registers.json tmp/freereg1_csv_files.json tmp/userid_details.json tmp/syndicates.json tmp/counties.json tmp/countries.json tmp/feedbacks.json tmp/search_queries.json $dumpfile*.dmp
-  # rm $dumpfile*.dmp
+    rmcmd="rm -r #{working_dir}/*"
+    print "#{rmcmd}\n"
+    system "#{rmcmd}"
   end
 
   BACKUP_FILES = {
@@ -149,8 +145,8 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
       print "\tValid datasets are "+VALID_DATASETS.join('/')+"\n"
       exit
     end
-    
-    datasets    
+
+    datasets
   end
 
   def validate_database
@@ -166,7 +162,7 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
       print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
       exit
     end
-    
+
   end
 
   def extract_backup_dir(args)
@@ -184,7 +180,7 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
       # now untar the file
       system "tar xzf #{args[:backup_file]} --directory #{extract_dir}"
     end
-    
+
     extract_dir
   end
 
@@ -205,14 +201,14 @@ tarcmd="tar czf #{tarfile} --directory #{working_dir} ."
       if files[:json]
         files[:json].each do |collection|
           json_file = Dir.glob(File.join(json_dir, "*#{collection}.bson")).first
-#          binding.pry
+          #          binding.pry
           run_mongo("mongorestore", "--collection #{collection} #{json_file}")
         end
       end
       if files[:sql]
         files[:sql].each do |sql_pattern|
           sql_file = Dir.glob(File.join(sql_dir, "*#{sql_pattern}.dmp")).first
-#          binding.pry
+          #          binding.pry
           run_mysql("mysql", " < #{sql_file}")
         end
       end
