@@ -1,0 +1,48 @@
+<div class="site__header__nav  offcanvas__secondary">
+	<nav role="navigation">
+		<ul>
+			<li>
+				<%= link_to "About Us", "../about" %>
+			</li>
+			<!-- TODO: Convert remainder to refinery page references -->
+
+			<li>
+				<%= link_to "Search", main_app.search_queries_path %>
+			</li>
+			<li>
+				<%= link_to 'Advice', "../tips-for-searching-the-database"%>
+			</li>
+			<li>
+				<%= link_to "Contents", refinery.county_pages_county_pages_path %>
+			</li>
+			<% if current_refinery_user %>
+
+			<li>
+				<%= link_to 'Resource Management', main_app.manage_resource_path(current_refinery_user.userid_detail) %>
+			</li>
+			<li>
+				<%= link_to "Logout", refinery.logout_path%>
+			</li>
+			<% else %>
+			<li>
+				<%= link_to "Login", refinery.login_path%>
+			</li>
+			<li>
+				<%= link_to "Sign Up", main_app.general_userid_detail_path%>
+			</li>
+			<% end %>
+			<% if false %>
+
+			<li>
+				<a href="#">Become a volunteer</a>
+			</li>
+			<li>
+				<a href="#">Donate</a>
+			</li>
+			<li>
+				<a href="#">Transcribers</a>
+			</li>
+			<% end %>
+		</ul>
+	</nav>
+</div>

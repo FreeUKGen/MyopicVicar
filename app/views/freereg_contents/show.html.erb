@@ -3,14 +3,16 @@
 </p>
 <%= paginate @places %> 
 
-<table style="width: 100%">
-  <tr>
+
+  <div class="table-wrapper">
+<table>
+  <thead>
   
-    <th style="width:25%">Place</th>
-    <th style="width:12%">Record last amended</th>
-    <th style="width:63%">Churches  and  their  Registers</th>
+    <th>Place</th>
+    <th>Record last amended</th>
+    <th>Churches  and  their  Registers</th>
        
-  </tr>
+  </thead>
 
 <% @places.each do |place| %>
    <% session[:placeid] = place.id%>
@@ -42,4 +44,5 @@
   </tr>
 <% end %>
 </table>
+</div>
 <%= paginate @places %> 

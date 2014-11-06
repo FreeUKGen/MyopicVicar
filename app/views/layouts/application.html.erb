@@ -60,78 +60,21 @@
 		</div>
 		<% end %>
 
-		<div class="site__header__nav  offcanvas__secondary">
-			<nav role="navigation">
-				<ul>
-					<li>
-						<%= link_to "About Us", "../about" %>
-					</li>
-					<!-- TODO: Convert remainder to refinery page references -->
-
-					<li>
-						<%= link_to "Search", main_app.search_queries_path %>
-					</li>
-					<li>
-						<%= link_to 'Advice', "../tips-for-searching-the-database"%>
-					</li>
-					<li>
-						<%= link_to "Contents", refinery.county_pages_county_pages_path %>
-					</li>
-					<% if current_refinery_user %>
-
-					<li>
-						<%= link_to 'Resource Management', main_app.manage_resource_path(current_refinery_user.userid_detail) %>
-					</li>
-					<li>
-						<%= link_to "Logout", refinery.logout_path%>
-					</li>
-					<% else %>
-					<li>
-						<%= link_to "Login", refinery.login_path%>
-					</li>
-					<li>
-						<%= link_to "Sign Up", main_app.general_userid_detail_path%>
-					</li>
-					<% end %>
-					<% if false %>
-
-					<li>
-						<a href="#">Become a volunteer</a>
-					</li>
-					<li>
-						<a href="#">Donate</a>
-					</li>
-					<li>
-						<a href="#">Transcribers</a>
-					</li>
-					<% end %>
-				</ul>
-			</nav>
-		</div>
+		<%= render "layouts/main_nav" %>
 
 		<div class="offcanvas__primary">
-			<header class="site__header" role="banner">
-				<div class="container">
-					<div class="banner-horz">
-						<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-					</div>
-
-					<button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
-						<span>Menu</span>
-						<i class="icon__cancel" aria-hidden="true"></i>
-					</button>
-
-					<a href="#" class="site__header__logo  icon__freereg"><h1 class="accessibility">FreeReg</h1></a>
-
-					<a href="#" class="site__header__freeukgen-logo  icon__freeukgen__project--dark"><span class="accessibility">A project by FreeUKGenealogy</span></a>
-				</div>
-			</header>
+			<%= render "layouts/header" %>
 
 			<main role="main" class="site__content  icon__honeycomb--top-right">
 				<div class="container">
 					<article>
 						<div class="grid">
-							<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+
+							<% if content_for? :sidebar %>
+								<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+							<% else %>
+								<div class="grid__item  one-whole  lap-one-whole  palm-one-whole">
+							<% end %>
 
 								<%if controller.controller_name == "freereg_contents"  %>
 								<div id="Heading">
@@ -154,117 +97,29 @@
 									</div>
 								</section>
 							</div>
+							<% if content_for? :sidebar %>
 							<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
 								<aside class="island  island--light">
-									<h3 class="beta  text--teal">Sidebar Content</h3>
-									<p>
-										Bacon ipsum dolor amet landjaeger fatback nulla, sint reprehenderit pork belly irure do fugiat ipsum corned beef rump ex magna spare ribs. Incididunt nostrud eu meatball deserunt nisi short loin short ribs shank biltong tri-tip. Sunt tenderloin non occaecat aliquip, do veniam chicken capicola enim fatback ipsum et beef ribs.
-									</p>
+									<%= yield :sidebar %>
 								</aside>
 							</div>
+							<% end %>
+
 						</div>
 					</article>
 
 					<% if current_refinery_user %>
-					<div  style="float:left;">
-						<%= form_tag(problem_url, :method=>:get) do %>
-						<% problem_button_options.each_pair do |name, value| %>
-						<%= hidden_field_tag(name, value)%>
-						<% end %>
-						<input type="submit" value="Report a Problem" />
-						<% end %>
-					</div>
+						<div  style="float:left;">
+							<%= form_tag(problem_url, :method=>:get) do %>
+							<% problem_button_options.each_pair do |name, value| %>
+							<%= hidden_field_tag(name, value)%>
+							<% end %>
+							<input type="submit" value="Report a Problem" />
+							<% end %>
+						</div>
 					<% end %>
 
-					<footer class="site__footer">
-
-						<div class="island  island--magenta  flush--bottom">
-							<div class="container  text--center">
-								<p>
-									The FreeREG database is just a finding tool. It should not be considered to be *proof*, nor that it is 100% accurate, nor contains all of the information in the actual register.
-								</p>
-								<p>
-									Once you have found a record, always make a point of looking at the actual register on microfiche/film at a County Record Office or the local Family History Society or LDS family History Centre for confirmation.
-								</p>
-							</div>
-						</div>
-
-						<div class="icon__honeycomb--bottom-left  island  flush--bottom">
-							<div class="container  text--center">
-								<h3 class="epsilon  text--navy">Other FreeUkGenealogy</h3>
-
-								<ul class="icon-list">
-									<li>
-										<a href="#" class="icon__freecen"><span class="accessibility">FreeCen</span></a>
-									</li>
-									<li>
-										<a href="#" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
-									</li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="island  island--dark  flush--bottom  milli  text--white">
-							<div class="container">
-								<div class="grid">
-
-									<div class="grid__item  one-quarter  palm-one-third">
-										<ul class="nav  nav--stacked  lap-and-up-flush--bottom">
-											<li>
-												<a href="#">Terms &amp; conditions</a>
-											</li>
-											<li>
-												<a href="#">Usage policy</a>
-											</li>
-											<li>
-												<%= link_to 'Contact Us', "../freereg2/contact" , method: :get  %>
-											</li>
-										</ul>
-									</div>
-
-									<div class="grid__item  one-quarter  palm-one-third">
-										<ul class="nav  nav--stacked  lap-and-up-flush--bottom">
-											<li>
-												<a href="#">Become a transcriber</a>
-											</li>
-											<li>
-												<a href="#">Help with transcribing</a>
-											</li>
-											<li>
-												<a href="#">Stats and info</a>
-											</li>
-										</ul>
-									</div>
-
-									<div class="grid__item  one-quarter  palm-one-third">
-										<ul class="nav  nav--stacked  lap-and-up-flush--bottom">
-											<li>
-												<a href="#">Donate</a>
-											</li>
-											<li>
-												<a href="#">Twitter</a>
-											</li>
-											<li>
-												<a href="#">Blog</a>
-											</li>
-										</ul>
-									</div>
-
-									<div class="grid__item  one-quarter  palm-one-whole">
-										<a href="#" class="icon__freeukgen__project--light"><span class="accessibility">A project by FreeUKGenealogy</span></a>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="island  island--grey  flush--bottom">
-							<div class="container  text--center">
-								<p class="micro  text--grey">
-									Search engine, layout and database Copyright © 1998-2015 The Trustees of Free UK Genealogy (Ben Laurie, Graham Hart, Camilla von Massenbach, David Mayall and Jim Killock), a charity registered in England and Wales, Number 1096940. We make no warranty whatsoever as to the accuracy or completeness of the FreeREG data.
-								</p>
-							</div>
-						</div>
-					</footer>
+					<%= render "layouts/footer" %>
 
 				</div>
 				<!-- TODO fix above this -->
