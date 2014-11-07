@@ -51,7 +51,7 @@
 		<%= javascript_include_tag "application" %>
 		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
-
+		<%= javascript_include_tag "application" %>
 	</head>
 	<body>
 		<% if false %>
@@ -71,52 +71,52 @@
 						<div class="grid">
 
 							<% if content_for? :sidebar %>
-								<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
-							<% else %>
+							<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+								<% else %>
 								<div class="grid__item  one-whole  lap-one-whole  palm-one-whole">
-							<% end %>
+									<% end %>
 
-								<%if controller.controller_name == "freereg_contents"  %>
-								<div id="Heading">
-									Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
-								</div>
-								<%end%>
-
-								<%unless @first_name.nil?%>
-								<div id="personal">
-									<p style="text-align: center">
-										<b><%= @first_name%> these are your management tools</b>
-									</p>
-								</div>
-
-								<%end%>
-
-								<section>
-									<div id="content">
-										<%= yield %>
+									<%if controller.controller_name == "freereg_contents"  %>
+									<div id="Heading">
+										Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
 									</div>
-								</section>
-							</div>
-							<% if content_for? :sidebar %>
-							<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
-								<aside class="island  island--light">
-									<%= yield :sidebar %>
-								</aside>
-							</div>
-							<% end %>
+									<%end%>
 
-						</div>
+									<%unless @first_name.nil?%>
+									<div id="personal">
+										<p style="text-align: center">
+											<b><%= @first_name%> these are your management tools</b>
+										</p>
+									</div>
+
+									<%end%>
+
+									<section>
+										<div id="content">
+											<%= yield %>
+										</div>
+									</section>
+								</div>
+								<% if content_for? :sidebar %>
+								<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+									<aside class="island  island--light">
+										<%= yield :sidebar %>
+									</aside>
+								</div>
+								<% end %>
+
+							</div>
 					</article>
 
 					<% if current_refinery_user %>
-						<div  style="float:left;">
-							<%= form_tag(problem_url, :method=>:get) do %>
-							<% problem_button_options.each_pair do |name, value| %>
-							<%= hidden_field_tag(name, value)%>
-							<% end %>
-							<input type="submit" value="Report a Problem" />
-							<% end %>
-						</div>
+					<div  style="float:left;">
+						<%= form_tag(problem_url, :method=>:get) do %>
+						<% problem_button_options.each_pair do |name, value| %>
+						<%= hidden_field_tag(name, value)%>
+						<% end %>
+						<input type="submit" value="Report a Problem" />
+						<% end %>
+					</div>
 					<% end %>
 
 					<%= render "layouts/footer" %>

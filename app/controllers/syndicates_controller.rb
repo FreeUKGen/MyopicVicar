@@ -2,8 +2,7 @@ class SyndicatesController < ApplicationController
 
 
     def index
-        if session[:userid].nil?
-
+        if session[:userid].nil? || params[:option] != 'manager'
           redirect_to '/', notice: "You are not authorised to use these facilities"
       end
       @first_name = session[:first_name]

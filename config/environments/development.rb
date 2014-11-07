@@ -52,19 +52,60 @@ MyopicVicar::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
-  #location of the mongo binary folder
-  config.mongodb_bin_location = "/usr/bin/" 
   #where to store the collections AliasPlaceChurch
   config.mongodb_collection_temp = File.join(Rails.root,'tmp')
   #Where the collections are stored
   config.mongodb_collection_location = File.join(Rails.root,'db','collections')
-  #where do we store the Mongodb database 
-  config.datafiles = "/raid-test/freereg/users"
   # Date of dataset used
   config.dataset_date = "3 September 2014"
- config.website = "http://test2.freereg.org.uk"
-  
-  config.backup_directory = File.exist?("/raid/freereg2/backups") ? "/raid/freereg2/backups" : File.join(Rails.root, 'tmp', 'backups')
+
+
+  # Machine-specific options
+  if File.exist? "/raid/freereg2/backups"
+    # we are on vervet
+    #location of the mongo binary folder
+    config.mongodb_bin_location = "/usr/local/bin/" 
+    #where do we store the Mongodb database 
+    config.datafiles = "/raid-test/freereg/users"
+    #static website to be used for emails and github issue URLs
+    config.website = "http://test2.freereg.org.uk"
+    #directory to put backups in
+    config.backup_directory = "/raid/freereg2/backups"
+    
+  elsif File.exist? '/home/benwbrum/dev/clients/freeukgen'
+    # we are on Ben's development laptop
+    #location of the mongo binary folder
+    config.mongodb_bin_location = "/usr/bin/" 
+    #where do we store the Mongodb database 
+    config.datafiles = "/home/benwbrum/dev/clients/freeukgen/freereg1_data/full/tar6"
+    #static website to be used for emails and github issue URLs
+    config.website = "http://localhost:3000"
+    #directory to put backups in
+    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
+
+  elsif File.exist? '/home/benwbrum/dev/freereg'
+    # we are on Ben's server
+    #location of the mongo binary folder
+    config.mongodb_bin_location = "/usr/bin/" 
+    #where do we store the Mongodb database 
+    config.datafiles = "/media/data/slow/dev/freeukgen/old_data/freereg/tarC"
+    #static website to be used for emails and github issue URLs
+    config.website = "http://mv.aspengrovefarm.com"
+    #directory to put backups in
+    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
+
+  else
+    # we are probably on Kirk's system
+    #location of the mongo binary folder
+    config.mongodb_bin_location = "/usr/bin/" 
+    #where do we store the Mongodb database 
+    config.datafiles = "/raid-test/freereg/users"
+    #static website to be used for emails and github issue URLs
+    config.website = "http://test2.freereg.org.uk"
+    #directory to put backups in
+    config.backup_directory = File.exist?("/raid/freereg2/backups") ? "/raid/freereg2/backups" : File.join(Rails.root, 'tmp', 'backups')    
+    
+  end
   
     
   config.github_login = 'FreeUKGenIssues'
