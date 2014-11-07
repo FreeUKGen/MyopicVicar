@@ -52,7 +52,7 @@ MyopicVicar::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
-  #where to store the collections AliasPlaceChurch
+  #where to store the collections PlaceChurch
   config.mongodb_collection_temp = File.join(Rails.root,'tmp')
   #Where the collections are stored
   config.mongodb_collection_location = File.join(Rails.root,'db','collections')
@@ -75,7 +75,7 @@ MyopicVicar::Application.configure do
   elsif File.exist? '/home/benwbrum/dev/clients/freeukgen'
     # we are on Ben's development laptop
     #location of the mongo binary folder
-    config.mongodb_bin_location = "/usr/bin/" 
+    config.mongodb_bin_location = "/usr/bin/"
     #where do we store the Mongodb database 
     config.datafiles = "/home/benwbrum/dev/clients/freeukgen/freereg1_data/full/tar6"
     #static website to be used for emails and github issue URLs
@@ -94,16 +94,18 @@ MyopicVicar::Application.configure do
     #directory to put backups in
     config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
 
-  else
-    # we are probably on Kirk's system
+  elsif File.exist? "d:/mongodb/bin/"
+    # we are on Kirk's system
     #location of the mongo binary folder
-    config.mongodb_bin_location = "/usr/bin/" 
+    config.mongodb_bin_location = "d:/mongodb/bin/"
     #where do we store the Mongodb database 
-    config.datafiles = "/raid-test/freereg/users"
+    config.datafiles = 'c:/freereg12/'
     #static website to be used for emails and github issue URLs
-    config.website = "http://test2.freereg.org.uk"
+    config.website = "http://localhost:3000"
     #directory to put backups in
-    config.backup_directory = File.exist?("/raid/freereg2/backups") ? "/raid/freereg2/backups" : File.join(Rails.root, 'tmp', 'backups')    
+    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')    
+  else
+    #who knows where we are!!!!!we don't
     
   end
   
