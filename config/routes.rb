@@ -42,7 +42,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :my_saved_searches
 
-
+  get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
  
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail 
@@ -56,9 +56,13 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/all', :to => 'userid_details#all', :as => :all_userid_detail
   get 'userid_details/select', :to =>'userid_details#select', :as => :select_userid_details
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
+  get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
   resources :userid_details
 
- get  'manage_counties/select',  :to => 'manage_counties#select', :as => :select_manage_county
+ get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
+ get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
+ get 'manage_counties/select', :to =>'manage_counties#select', :as => :select_manage_counties
+  get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   resources :manage_counties
 
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates

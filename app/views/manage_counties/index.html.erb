@@ -1,22 +1,6 @@
-Page Identification Manage Counties :index <p>
-
-   <%= semantic_form_for @manage_county do |f| %>
- <% if  @number_of_counties > 1 %>  
-
-     <%= f.input :chapman_code, 
-        { :as => :select, :label => "#{@first_name} you have access to multiple counties. Which would you like to work with?  ",
-          :include_blank => false,
-          :required => true,
-          :collection => @counties, :size => 15 } %>
-  <% end %>
-
- <%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Work with All Places', 'Work with Active Places','Review Batches with errors','Review Batches listed by filename', 'Upload New Batch','Review Batches listed by userid then filename','Review Batches listed by uploaded date','Review a specific Batch'], :label => "What would you like to do?  ",  :size => 10  }%>
-
-  <%= f.action :submit, :as => :input, :label => 'Select'   %>
 
 
-   <% end %></div> 
-  
+
  
 
  
