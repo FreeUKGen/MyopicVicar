@@ -48,15 +48,16 @@
 		<%= stylesheet_link_tag "styles/css/ie.min" %>
 		<![endif]-->
 
-		<%= javascript_include_tag "application" %>
-		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
+		<%= stylesheet_link_tag "normalize" %>
+		<%= stylesheet_link_tag "layout" %>
+		<%= stylesheet_link_tag "freereg" %>
+    <%= javascript_include_tag "jquery.min.js" %>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
-
+    <%= javascript_include_tag "application" %>
 	</head>
 	<body>
 		<% if false %>
-		<div id="container" >
-			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %> </h2>
+		<div id="container" >			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %> </h2>
 		</div>
 		<% end %>
 
@@ -80,15 +81,6 @@
 								<div id="Heading">
 									Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
 								</div>
-								<%end%>
-
-								<%unless @first_name.nil?%>
-								<div id="personal">
-									<p style="text-align: center">
-										<b><%= @first_name%> these are your management tools</b>
-									</p>
-								</div>
-
 								<%end%>
 
 								<section>
@@ -138,7 +130,6 @@
 					} else if (el.attachEvent) {
 						el.attachEvent('onclick', switchOffCanvas);
 					}
-
 				</script>
 	</body>
 </html>
