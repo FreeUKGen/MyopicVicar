@@ -79,24 +79,25 @@ end
 
 def options
  get_user_info(session[:userid],session[:first_name])
- if session[:userid].nil? || params[:option] != 'manager'
+ if session[:userid].nil? 
   redirect_to '/', notice: "You are not authorised to use these facilities"
   return
 end
-p    "In options"
-@userid = UseridDetail.new
-@prompt = "Manage Userids"
-@options= ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname"]
+if params[:option] == 'manager'
+  p    "In options"
+  @options= ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
+else
+  @options= ["Select specific email","Select specific userid", "Select specific surname/forename"]
+end
 @location = 'location.href= "/userid_details/selection?userid=" + this.value'
-
+@userid = UseridDetail.new
+@prompt = "Userid Details"
 end
 
 
 def selection
-  p params
   get_user_info(session[:userid],session[:first_name])
   session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
-  p session[:syndicate] 
   case 
   when params[:userid] == 'Browse userids'
     @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
@@ -113,7 +114,7 @@ def selection
     @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
     @location = 'location.href= "select?userid=" + this.value'
     @prompt = 'Select userid'
-  when params[:userid] == "Select specific surname"
+  when params[:userid] == "Select specific surname/forename"
     @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
     @location = 'location.href= "select?name=" + this.value'
     @prompt = 'Select surname/forename'
