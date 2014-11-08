@@ -32,6 +32,9 @@ class UseridDetail
   field :digest, type: String, default: nil
   field :skill_notes, type: String
   field :transcription_agreement, type: Boolean
+  field :technical_agreement, type: Boolean
+  field :research_agreement, type: Boolean
+  
   index({ email_address: 1 })
   index({ userid: 1, system_administrator: 1 })
   index({ userid: 1, data_manager: 1 })
@@ -47,7 +50,7 @@ class UseridDetail
 
 has_many :search_queries
 
-validates_presence_of :userid, :email_address
+validates_presence_of :userid, :email_address, :person_role
 validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
 validate :userid_and_email_address_does_not_exist, on: :create
 validate :email_address_does_not_exist, on: :update
@@ -110,6 +113,7 @@ def save_to_refinery
   u.reset_password_sent_at = Time.now
   u.userid_detail_id = self.id.to_s
   u.add_role('Refinery')
+  u.add_role('Pages') if (self.active && (self.person_role == 'system_administrator' ||  self.person_role =='county_coordinator'))
   u.add_role('Superuser') if (self.active && self.person_role == 'technical') 
   u.save
 end 
@@ -181,17 +185,17 @@ def add_fields(type)
  when type == 'Register Researcher'
   self.person_role = 'researcher'
   self.syndicate = 'Researcher'
- when type == 'Register Transcriber'
+when type == 'Register Transcriber'
   self.person_role = 'transcriber'
- when type == 'Technical Registration'
+when type == 'Technical Registration'
   self.active  = false
   self.person_role = 'technical'
   self.syndicate = 'Technical'
- end
- password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
- self.password = password
- self.password_confirmation = password
- self.userid = self.userid.downcase
+end
+password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+self.password = password
+self.password_confirmation = password
+self.userid = self.userid.downcase
 end
 
 def self.get_userids_for_display(syndicate,page)
@@ -239,10 +243,10 @@ def self.get_names_for_selection(syndicate)
  @userids = Array.new
  users.each do |user|
   name = ""
-   name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil? 
-   @userids << name
- end
- return @userids
+  name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil? 
+  @userids << name
+end
+return @userids
 end
 def delete_refinery_user_and_userid_folder
  refinery_user = Refinery::User.where(:username => self.userid).first

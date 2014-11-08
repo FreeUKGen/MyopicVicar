@@ -83,6 +83,7 @@ def options
   redirect_to '/', notice: "You are not authorised to use these facilities"
   return
 end
+session[:option] = params[:option]
 if params[:option] == 'manager'
   p    "In options"
   @options= ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
@@ -97,7 +98,8 @@ end
 
 def selection
   get_user_info(session[:userid],session[:first_name])
-  session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
+  session[:syndicate] = 'all' if @user.person_role == 'system_administrator' || session[:option] == 'access'
+  session[:option] = nil
   case 
   when params[:userid] == 'Browse userids'
     @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
@@ -130,6 +132,7 @@ end
 def select
   get_user_info(session[:userid],session[:first_name])
   case 
+    #selection by userid
   when !params[:userid].nil? 
     if params[:userid] == ""
      flash[:notice] = 'Blank cannot be selected'
@@ -141,6 +144,7 @@ def select
     return
   end    
 when !params[:email].nil?
+  #selection by email
   if params[:email] == ""
    flash[:notice] = 'Blank cannot be selected'
    redirect_to :back
@@ -153,6 +157,7 @@ when !params[:email].nil?
       return
     end
   when !params[:name].nil?
+    #selection by name
     if params[:name] == ""
      flash[:notice] = 'Blank cannot be selected'
      redirect_to :back

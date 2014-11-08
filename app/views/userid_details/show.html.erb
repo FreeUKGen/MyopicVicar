@@ -1,4 +1,4 @@
-<p style="text-align: center"><b>Profile Details %></p></b>
+<p style="text-align: center"><b>Profile Details </p></b>
 <%if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role == 
   'volunteer_coordinator'%>
   <div style="float:left;"> <%= button_to 'Edit', edit_userid_detail_path(@userid), method: :get %></div>
