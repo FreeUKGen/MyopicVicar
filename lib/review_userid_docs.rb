@@ -174,7 +174,7 @@ end
 
 new_number = 0
 new_userid.each_key do |userid|
-  if new_userid.assoc(userid).nil?
+  if old_userid.assoc(userid).nil?
    new_number = new_number + 1
    missing_userid = userid
    missing_detail = new_userid[userid]
