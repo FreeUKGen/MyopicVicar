@@ -173,13 +173,13 @@ task :create_userid_docs, [:type,:range]  => [:environment] do |t, args|
    end
   end
 desc "report on user details"
- task :review_userid_docs, [:range] => [:environment] do |t, args|
+ task :review_userid_docs, [:oldset, :newset, :range] => [:environment] do |t, args|
  require 'review_userid_docs' 
  
   Mongoid.unit_of_work(disable: :all) do
    
      
-          ReviewUseridDocs.process(args.range) 
+          ReviewUseridDocs.process(args.oldset,args.newset,args.range) 
           
      
     puts "Task complete."
