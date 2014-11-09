@@ -4,71 +4,12 @@
 \*------------------------------------*/
 
 
-
 /**
- * Vars and inuit
+ * Vars and core
  */
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/vars";
 @import "vars";
-@import "../../bower_components/inuit.css/inuit";
-
-
-
-/**
- * Generic utility styles etc.
- */
-@import "generic/mixins";
-
-
-
-/**
- * Base styles; unclassed HTML elements etc.
- */
-@import "base/box-sizing";
-@import "base/main";
-@import "base/type";
-@import "base/fonts";
-@import "base/smallprint";
-@import "base/paragraphs";
-@import "base/headings";
-@import "base/forms";
-@import "base/tables";
-
-
-
-/**
- * Objects and abstractions
- */
-@import "objects/offcanvas";
-@import "objects/alerts";
-@import "objects/beautons";
-@import "objects/container";
-@import "objects/nav";
-@import "objects/grids";
-@import "objects/stats";
-@import "objects/island";
-@import "objects/banner";
-@import "objects/matrix";
-@import "objects/pagination";
-@import "objects/breadcrumbs";
-@import "objects/data";
-@import "objects/validation";
-
-
-
-/**
- * Style trumps; helper and brand classes
- */
-@import "generic/helper";
-@import "generic/debug";
-
-
-
-/**
- * Slient classes used for extending further down
- */
-%nav          { @extend .nav; }
-%nav--stacked { @extend .nav--stacked; }
-
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/palm";
 
 
 /**

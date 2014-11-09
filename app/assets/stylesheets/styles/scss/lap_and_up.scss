@@ -4,24 +4,12 @@
 \*------------------------------------*/
 
 
-
 /**
- * Vars and inuit - mixins as well so we have them in this file
+ * Vars and core
  */
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/vars";
 @import "vars";
-@import "../../bower_components/inuit.css/defaults";
-@import "../../bower_components/inuit.css/generic/mixins";
-@import "generic/mixins";
-
-
-
-/**
- * any 'Lap and Up' specific stuff
- */
-@import "objects/banner_lau";
-@import "objects/container_lau";
-@import "objects/stats_lau";
-
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/lap_and_up";
 
 
 /**

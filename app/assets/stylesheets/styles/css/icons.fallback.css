@@ -1,6 +1,6 @@
 
-.icon__arrow-down-white {
-  background-image: url('../../images/png/arrow-down-white.png');
+.icon__arrow-down--white {
+  background-image: url('../../images/png/arrow-down--white.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 18px;
@@ -23,8 +23,8 @@
 
 
 
-.icon__arrow-left-white {
-  background-image: url('../../images/png/arrow-left-white.png');
+.icon__arrow-left--white {
+  background-image: url('../../images/png/arrow-left--white.png');
   background-repeat: no-repeat;
   width: 18px;
   height: 24px;
@@ -47,8 +47,8 @@
 
 
 
-.icon__arrow-right-white {
-  background-image: url('../../images/png/arrow-right-white.png');
+.icon__arrow-right--white {
+  background-image: url('../../images/png/arrow-right--white.png');
   background-repeat: no-repeat;
   width: 18px;
   height: 24px;
@@ -71,8 +71,8 @@
 
 
 
-.icon__arrow-up-white {
-  background-image: url('../../images/png/arrow-up-white.png');
+.icon__arrow-up--white {
+  background-image: url('../../images/png/arrow-up--white.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 18px;
@@ -94,12 +94,24 @@
 }
 
 
+.icon__cancel:hover,.icon__cancel:active,
+.icon__cancel--brighter {
+  background-image: url('../../images/png/cancel--brighter.png');
+  background-repeat: no-repeat;
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
 
 .icon__cancel {
   background-image: url('../../images/png/cancel.png');
   background-repeat: no-repeat;
-  width: 23px;
-  height: 23px;
+  width: 22px;
+  height: 22px;
   display: inline-block;
  *display: inline;
   zoom: 1;
@@ -158,8 +170,8 @@
 .icon__error {
   background-image: url('../../images/png/error.png');
   background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   display: inline-block;
  *display: inline;
   zoom: 1;
@@ -182,7 +194,7 @@
 .icon__freebmd {
   background-image: url('../../images/png/freebmd.png');
   background-repeat: no-repeat;
-  width: 290px;
+  width: 287px;
   height: 87px;
   display: inline-block;
  *display: inline;
@@ -194,7 +206,7 @@
 .icon__freecen {
   background-image: url('../../images/png/freecen.png');
   background-repeat: no-repeat;
-  width: 276px;
+  width: 274px;
   height: 87px;
   display: inline-block;
  *display: inline;
@@ -206,7 +218,19 @@
 .icon__freereg {
   background-image: url('../../images/png/freereg.png');
   background-repeat: no-repeat;
-  width: 270px;
+  width: 266px;
+  height: 87px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+
+.icon__freeukgen {
+  background-image: url('../../images/png/freeukgen.png');
+  background-repeat: no-repeat;
+  width: 486px;
   height: 87px;
   display: inline-block;
  *display: inline;
@@ -218,7 +242,7 @@
 .icon__freeukgen__project--dark {
   background-image: url('../../images/png/freeukgen__project--dark.png');
   background-repeat: no-repeat;
-  width: 213px;
+  width: 211px;
   height: 49px;
   display: inline-block;
  *display: inline;
@@ -230,7 +254,7 @@
 .icon__freeukgen__project--light {
   background-image: url('../../images/png/freeukgen__project--light.png');
   background-repeat: no-repeat;
-  width: 213px;
+  width: 211px;
   height: 50px;
   display: inline-block;
  *display: inline;
@@ -262,12 +286,60 @@
 }
 
 
+.icon__reply:hover,.icon__reply:active,
+.icon__reply--dark {
+  background-image: url('../../images/png/reply--dark.png');
+  background-repeat: no-repeat;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+
+.icon__reply {
+  background-image: url('../../images/png/reply.png');
+  background-repeat: no-repeat;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+.icon__repost:hover,.icon__repost:active,
+.icon__repost--dark {
+  background-image: url('../../images/png/repost--dark.png');
+  background-repeat: no-repeat;
+  width: 22px;
+  height: 13px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+
+.icon__repost {
+  background-image: url('../../images/png/repost.png');
+  background-repeat: no-repeat;
+  width: 22px;
+  height: 13px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
 
 .icon__select-error {
   background-image: url('../../images/png/select-error.png');
   background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   display: inline-block;
  *display: inline;
   zoom: 1;
@@ -278,8 +350,8 @@
 .icon__select-success {
   background-image: url('../../images/png/select-success.png');
   background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   display: inline-block;
  *display: inline;
   zoom: 1;
@@ -290,8 +362,32 @@
 .icon__select {
   background-image: url('../../images/png/select.png');
   background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+.icon__star:hover,.icon__star:active,
+.icon__star--dark {
+  background-image: url('../../images/png/star--dark.png');
+  background-repeat: no-repeat;
+  width: 17px;
+  height: 16px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+
+.icon__star {
+  background-image: url('../../images/png/star.png');
+  background-repeat: no-repeat;
+  width: 17px;
+  height: 16px;
   display: inline-block;
  *display: inline;
   zoom: 1;
@@ -302,8 +398,8 @@
 .icon__success {
   background-image: url('../../images/png/success.png');
   background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   display: inline-block;
  *display: inline;
   zoom: 1;

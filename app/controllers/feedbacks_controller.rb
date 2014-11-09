@@ -17,7 +17,7 @@ class FeedbacksController < InheritedResources::Base
   def convert_to_issue
     @feedback = Feedback.find(params[:id])
     @feedback.github_issue
-    flash[:notice] = "Issue created on Github."
+    flash.notice = "Issue created on Github."
     show
   end
 end
