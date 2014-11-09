@@ -49,7 +49,7 @@ class ReviewUseridDocs
         old_filenames << fil[0] unless fil[0].nil?
       end
     else
-     @@message_file.puts"unknown range style"
+     @@message_file.puts "unknown range style"
     end
 
     new_filenames = Array.new
@@ -66,14 +66,14 @@ class ReviewUseridDocs
        new_filenames << fil[0] unless fil[0].nil?
       end
     else
-   @@message_file.puts"unknown range style"
+   @@message_file.puts "unknown range style"
     end
 
- @@message_file.puts"Comparison of numbers #{old_filenames.length} in old set and #{new_filenames.length } in the new"
+ @@message_file.puts "Comparison of numbers #{old_filenames.length} in old set and #{new_filenames.length } in the new"
 
   
 
- @@message_file.puts"Started a Userid Detail review with a base directory at #{old_base_directory} and a range #{range} that translates to #{old_filenames.length} userids"
+ @@message_file.puts "Started a Userid Detail review with a base directory at #{old_base_directory} and a range #{range} that translates to #{old_filenames.length} userids"
   
 
   old_number = 0
@@ -167,7 +167,7 @@ old_number = 0
    old_number = old_number + 1
    missing_userid = userid
    missing_detail = old_userid[userid]
-  @@message_file.puts"Dropped #{missing_userid} missing in the new file set with details #{missing_detail}"
+  @@message_file.puts "Dropped #{missing_userid} missing in the new file set with details #{missing_detail}"
  end 
 end
 
@@ -177,12 +177,12 @@ new_userid.each_key do |userid|
    new_number = new_number + 1
    missing_userid = userid
    missing_detail = new_userid[userid]
-  @@message_file.puts"Added #{missing_userid} missing in the old file set with details #{missing_detail}"
+  @@message_file.puts "Added #{missing_userid} missing in the old file set with details #{missing_detail}"
  end 
 end
 
 
-@@message_file.puts"#{old_number} missing in new and #{new_number} missing in old"
+@@message_file.puts "#{old_number} missing in new and #{new_number} missing in old"
 
 old_number = 0
 old_userid.each_key do |userid|
@@ -191,8 +191,8 @@ old_userid.each_key do |userid|
    old_number = old_number + 1
    duplicated_userid = userid
    duplicated_detail = old_userid[userid]
-  @@message_file.putsduplicated_userid
-  @@message_file.putsduplicated_detail
+  @@message_file.puts duplicated_userid
+  @@message_file.puts duplicated_detail
  end 
 end 
 
@@ -203,12 +203,12 @@ new_userid.each_key do |userid|
    new_number = new_number + 1
    duplicated_userid = userid
    duplicated_detail = new_userid[userid]
-  @@message_file.putsduplicated_userid
-  @@message_file.putsduplicated_detail
+  @@message_file.puts duplicated_userid
+  @@message_file.puts duplicated_detail
  end 
 end 
 
-@@message_file.puts"#{old_number} case sensitive duplicates in old and #{new_number} case sensitive duplicates in new "
+@@message_file.puts "#{old_number} case sensitive duplicates in old and #{new_number} case sensitive duplicates in new "
 
 old_number = 0
 old_hash_email_addresses = Hash.new
@@ -261,7 +261,7 @@ duplicated_email_addresses.each do |dupemail|
   duplicated_email[dupemail] =  duplicated_userid
 end
 @@message_file.puts "Duplicated email #{duplicated_email} in new data set"
-@@message_file.puts"#{ old_duplicated_email_addresses} duplicated email addresses in old and #{new_duplicated_email_addresses} duplicated email addresses in new "
+@@message_file.puts "#{ old_duplicated_email_addresses} duplicated email addresses in old and #{new_duplicated_email_addresses} duplicated email addresses in new "
 
 
  
