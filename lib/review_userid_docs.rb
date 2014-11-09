@@ -28,6 +28,9 @@ class ReviewUseridDocs
   
 
   def self.process(range)
+    file_for_warning_messages = "log/review_userid_detail_messages.log"
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  @@message_file = File.new(file_for_warning_messages, "w")
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     old_base_directory = "/raid-test/freereg/users"
     new_base_directory = "/raid-test/freereg2/users"
@@ -68,9 +71,7 @@ class ReviewUseridDocs
 
  @@message_file.puts"Comparison of numbers #{old_filenames.length} in old set and #{new_filenames.length } in the new"
 
-  file_for_warning_messages = "log/review_userid_detail_messages.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
-  @@message_file = File.new(file_for_warning_messages, "w")
+  
 
  @@message_file.puts"Started a Userid Detail review with a base directory at #{old_base_directory} and a range #{range} that translates to #{old_filenames.length} userids"
   
