@@ -226,8 +226,13 @@ unless userid.nil?
  p "#{header[:userid]} updated"
 else
  userid = UseridDetail.new(header) 
+ if type == 'recreate'
  p "#{header[:userid]} created"
+ userid.save(:validate => false)
+ else
+  p "#{header[:userid]} created"
  userid.save
+ end
 end
 
 
