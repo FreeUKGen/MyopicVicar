@@ -16,7 +16,7 @@ namespace :foo do
     end
  end
 
-desc "Create the indices after all FreeREG processes have completed"
+desc "Create the indexes after all FreeREG processes have completed"
 task :create_freereg_csv_indexes => [:environment] do  
   #task is there to creat indexes after running of freereg_csv_processor
   require 'search_record'

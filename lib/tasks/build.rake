@@ -234,18 +234,8 @@ namespace :build do
 			exit(false)
 		end
 	end
-	task :create_userid_docs, [:type]  => [:setup_index,:environment] do |t, args|
-	#this task reads the .uDetails file for each userid and creates the userid_detail collection
-		require 'create_userid_docs'
-		require "userid_detail"
-		puts "Creating Transcriber Docs"
-		range = "*/*.uDetails"
-		type = "add"
-		CreateUseridDocs.process(type,range)
-		puts "Task complete."
-	end
-
-	desc "Create the indices after all FreeREG processes have completed"
+	
+	desc "Create the indexes after all FreeREG processes have completed"
 	task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_userid_docs, :environment] do
 	#task is there to create indexes after running of freereg_csv_processor
 		require 'batch_error'
@@ -376,7 +366,7 @@ namespace :build do
 		puts "Load task complete"
 	end
 
-	desc "Create the indices after all FreeREG processes have completed"
+	desc "Create the indexes after all FreeREG processes have completed"
 	task :recreate_freereg_csv_indexes,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:load_freereg_collections_from_file, :environment] do  |t,args|
 		require "county"
 		require "country"
