@@ -196,8 +196,8 @@ header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk
 header[:person_role] = "data_manager" if header[:userid] == "ericb" 
 header[:person_role] = "data_manager" if header[:userid] == "kirkbedfordshire"
 
-if check_for_replace(filename,header[:userid],header[:digest]) 
- if type == "recreate"
+if check_for_replace(filename,header[:userid],header[:digest]) ||  type == "recreate"
+ if type == "recreate" 
   old_detail = UseridDetail.where(:userid => header[:userid]).first
   unless old_detail.nil?
     header[:last_upload] = old_detail.last_upload
