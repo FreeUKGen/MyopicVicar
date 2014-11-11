@@ -66,7 +66,7 @@ MyopicVicar::Application.configure do
     #location of the mongo binary folder
     config.mongodb_bin_location = "/usr/local/bin/" 
     #where do we store the Mongodb database 
-    config.datafiles = "/raid-test/freereg/users"
+    config.datafiles = "/raid-test/freereg2/users"
     #static website to be used for emails and github issue URLs
     config.website = "http://test2.freereg.org.uk"
     #directory to put backups in
@@ -99,7 +99,7 @@ MyopicVicar::Application.configure do
     #location of the mongo binary folder
     config.mongodb_bin_location = "d:/mongodb/bin/"
     #where do we store the Mongodb database 
-    config.datafiles = 'c:/freereg12/'
+    config.datafiles = 'c:/freereg2/'
     #static website to be used for emails and github issue URLs
     config.website = "http://localhost:3000"
     #directory to put backups in
