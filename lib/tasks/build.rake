@@ -236,7 +236,7 @@ namespace :build do
 	end
 	
 	desc "Create the indexes after all FreeREG processes have completed"
-	task :create_freereg_csv_indexes => [:parallel_create_search_records, :create_userid_docs, :environment] do
+	task :create_freereg_csv_indexes => [:parallel_create_search_records, :setup_index, :environment] do
 	#task is there to create indexes after running of freereg_csv_processor
 		require 'batch_error'
 		require 'search_record'
