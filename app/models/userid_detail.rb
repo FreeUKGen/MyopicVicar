@@ -58,6 +58,7 @@ validate :email_address_does_not_exist, on: :update
 before_create :add_lower_case_userid
 
 after_create :save_to_refinery
+after_update :update_refinery
 
 before_destroy :delete_refinery_user_and_userid_folder
 
@@ -113,10 +114,20 @@ def save_to_refinery
   u.reset_password_sent_at = Time.now
   u.userid_detail_id = self.id.to_s
   u.add_role('Refinery')
-  u.add_role('Pages') if (self.active && (self.person_role == 'system_administrator' ||  self.person_role =='county_coordinator'))
-  u.add_role('Superuser') if (self.active && self.person_role == 'technical') 
+  u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator' 
+  u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
   u.save
-end 
+end
+
+def update_refinery
+  u = Refinery::User.where(:username => self.userid).first
+  u.email = self.email_address
+  u.userid_detail_id = self.id.to_s
+  u.add_role('Refinery')
+  u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
+  u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
+  u.save 
+end
 
 def send_invitation_to_create_password
   type = self.person_role
@@ -150,13 +161,16 @@ def userid_and_email_address_does_not_exist
   end
   
   errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
-  errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
+  errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists? 
+
 end   
 
 def email_address_does_not_exist
   if self.changed.include?('email_address')
-   errors.add(:email_address, "Userid email already exits on change") if UseridDetail.where(:email_address => self[:email_address]).exists?
-   errors.add(:email_address, "Refinery email already exits on change") if Refinery::User.where(:email => self[:email_address]).exists?
+   errors.add(:email_address, "Userid email already exits on change") if 
+   UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::User.where(:username => self[:userid]))
+   errors.add(:email_address, "Refinery email already exits on change") if 
+   Refinery::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::User.where(:username => self[:userid]))
  end
 end
 
