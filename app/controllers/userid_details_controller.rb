@@ -14,10 +14,10 @@ end #end method
 
 def new
   session[:type] = "add"
-  @userid = UseridDetail.new
   get_user_info(session[:userid],session[:first_name])
   @role = session[:role]
-  @syndicates = Syndicate.get_syndicates_open_for_transcription   
+  @syndicates = Syndicate.get_syndicates_open_for_transcription 
+  @userid = UseridDetail.new  
 end
 
 def show
@@ -85,7 +85,6 @@ def options
 end
 session[:option] = params[:option]
 if params[:option] == 'manager'
-  p    "In options"
   @options= ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
 else
   @options= ["Select specific email","Select specific userid", "Select specific surname/forename"]
