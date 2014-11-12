@@ -144,7 +144,7 @@ namespace :build do
 	end
 
 	#This spinning off 1,2 or 3 rake csv_processes.
-	task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:create_userid_docs, :environment]  do |t, args|
+	task :parallelp,[:type,:search_records,:range1,:range2,:range3] => [:setup_index, :environment]  do |t, args|
 		p "Starting processors"
 
 		search_records = args.search_records
