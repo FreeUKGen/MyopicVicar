@@ -9,6 +9,8 @@ This is a roadmap for a staged transition from FreeREG1 to FreeREG2. It starts w
 
 These phases only refer to the database and changes which affect users.  We can keep adding extra facilities, such as maps, when we like.
 
+Version numbers refer to releases of the FreeREG 2 (FR2) project:
+
 ## Version 1.0
 
 ### Targeted actors
@@ -17,18 +19,22 @@ Managers and Free UK Genealogy staff
 
 ### Features
 
-- MPN
-- MCN (Churches)
-- SC list
-- CC list
-- UserID list
+- MPN Master Placenames List
+- MCN (Master Churches List)
+- SC list (Syndicate coordinators list)
+- CC list (County coordinators list)
+- UserID list (List of users)
 
 ### Changes required in order to effect release
 
 - F1 must not update these lists.
-- All changes in F1 by CCs to these records to be frozen.
+- Changes to the above lists in F1 by CCs to these records to be frozen.
 - John Pingram (Executive member responsible for Coordinators/Syndicates) and Mick Claxton (Executive member responsible for Data) to be involved.
-- EricB, if he wants to, to be appointed Manager of Places.
+- EricB appointed Manager of Places.
+
+### Post release activities
+
+- EricD to introduce John Pingram (Executive member responsible for Coordinators/Syndicates) and Mick Claxton (Executive member responsible for Data) to v1.0 system.
 - New UserIDs will need to be entered into F2.
 
 ## Version v1.1
