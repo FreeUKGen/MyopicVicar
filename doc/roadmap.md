@@ -41,7 +41,7 @@ Researchers
 - Supercool's design implemented across the public facing pages
 - Search function stable under load
 - Adverts are served and click-tracking works
-- Donation page needs to work
+- Donations page
 
 Researcher registration, and the extra features asociated with being registered, are not part of this release.
 
@@ -74,9 +74,9 @@ Researchers
 ### Features
 
  - Researchers can register
- - Extra features are accessible to registered users extra facilities. (What are these features?)
+ - Extra features are accessible to registered users. (What are these features?)
 
-## Future releases
+## Features we may include in future releases
 
 - WinReg to match F2 for uploading directly.
 - Emailing of CC, SC and Transcribers.
