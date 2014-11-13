@@ -1,15 +1,8 @@
 # FreeREG 2 roadmap
 
-This is a roadmap for a staged transition from FreeREG1 to FreeREG2. It starts with those with most experience and who can give constructive feedback, working eventually to researchers. This is also basically the same sequence that will be used for new data through transcription to research:
+This is a roadmap for the development of the FreeREG2 software. Each release is specified to benefit a particular actor and outlines the high-level features or areas we expect to deliver or address for them. Not listed are the data or documentation changes that need to be made in parallel with the software features being developed.
 
-- Managers will set up the basic structure.
-- CCs will enter register (and eventually image) information, from which Transcribers will select work.
-- Transcribers then upload and SCs monitor their work and performance.
-- Eventually we have online data entry.
-
-These phases only refer to the database and changes which affect users.  We can keep adding extra facilities, such as maps, when we like.
-
-Version numbers refer to releases of the FreeREG 2 (FR2) project:
+Version numbers refer to releases of the FreeREG 2 (FR2) project.
 
 ## Version 1.0
 
