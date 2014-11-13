@@ -41,27 +41,28 @@ Managers and Free UK Genealogy staff
 
 ### Targeted actors
 
-County coordinators and syndicate coordinators.
-
-We may find it useful to divide the county coordinators into two groups: those who we think will have a quick grasp of thing, and those who will need more guidance. 
-We can then roll out the release to these groups in two stages.
+Researchers
 
 ### Features
 
-- All records go live.
+- Supercool's design implemented across the public facing pages
+- Search function stable under load
+- Adverts are served and click-tracking works
+- Donation page needs to work
 
-### Changes required in order to effect release:
+Researcher registration, and the extra features asociated with being registered, are not part of this release.
 
-- Transcribers will still use F1.
-- CCs and SC to be trained and use F2 only.
-- Register and Batch records to be checked.
-- Register records to be created for data waiting to be transcribed.  (Needed for the RAP and for Transcribers to select.)
-- Changed CSV batches will need to be copied across from time to time.  This will be from the Test server not the database update.
-- The batches of F1 data brought across to be validated against MPN, MCN and Register records and rejected if no match.  CSV files will need correcting and re-uploading by SCs.
-- CCs will not update the F1 PPP but the DAP and RAP would be used instead.
-- F1 updates could continue, but the database will not match the PPP.
+## Version v1.2
 
-## Version 1.2
+### Targeted actors
+
+County coordinators and syndicate coordinators.
+
+### Features
+
+- TBD
+
+## Version 1.3
 
 ### Targeted actor
 
@@ -69,18 +70,9 @@ Transcribers
 
 ### Features
 
-- Load transcription CSV files into F2
-- Register as a transcriber in F2
-- WinREG matched to F2 (but if not, could still be used without the upload feature)
-- Front-end style implementation complete across entire site
-- All transcriber help and information screens complete.
+- TBD
 
-### Changes required in order to effect release
-
- - F1 is frozen and UserID login blocked.
- - No more updates from F1 allowed.
-
-## Version 1.3
+## Version 1.4
 
 ### Targeted actor
 
@@ -88,8 +80,8 @@ Researchers
 
 ### Features
 
- - Researchers can register to access extra facilities. (What are these features?)
- - All researcher help and information screens complete.
+ - Researchers can register
+ - Extra features are accessible to registered users extra facilities. (What are these features?)
 
 ## Future releases
 
