@@ -1,5 +1,5 @@
 module UseridRole
-  VALUES = ['researcher','trainee','pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
+  VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
     'volunteer_coordinator','data_manager', 'technical','system_administrator']
     OPTIONS = {'researcher' => ["Saved Searches", "Profile", "Help"], 
       'trainee' => ["Saved Searches", "Profile", "Files","Help"],
@@ -36,6 +36,23 @@ module UseridRole
           "Help" => "/information-for-transcribers" ,
           "Logout" => "/refinery/logout"
         }
+        USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
+        USERID_ACCESS_OPTIONS = ["Select specific email","Select specific userid", "Select specific surname/forename"]
+        
+        USERID_OPTIONS_TRANSLATION = {
+        "Browse userids" => "selection_userid_details_path(option=mine)",
+        "Create userid"=> "/userid_details/selection",
+        "Select specific email"=>  "/userid_details/selection?option=Select specific email",
+        "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
+        "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename" 
+        }
+      
+
+
+
+
+
+
         SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
 
       end

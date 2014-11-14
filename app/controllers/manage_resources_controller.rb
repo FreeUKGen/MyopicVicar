@@ -18,14 +18,13 @@
       @user = current_refinery_user.userid_detail
       @manage_resources = ManageResource.new 
       session[:userid] = @user.userid
+      @first_name = @user.person_forename
       session[:first_name] = @user.person_forename
       session[:manager] = manager?(@user)  
       session[:role] = @user.person_role
-      p session[:role]
       @roles = UseridRole::OPTIONS.fetch(session[:role])
-      p @roles
-      @location = 'location.href= "/manage_resources/selection?option=" + this.value'
-      @prompt = 'Select Function'
+      #@location = 'location.href= "/manage_resources/selection?option=" + this.value'
+      #@prompt = 'Select Function'
       #redirect_to manage_resource_path(@user) 
   end
 

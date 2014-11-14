@@ -3,9 +3,22 @@
    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %> 
-<%= semantic_form_for(@manage_resources) do |f| %>
- <%= f.input :userid, { :as => :select, :include_blank => false, :label => "#{@user.person_forename} what activity would you like to undertake today?",:prompt => "Manage Userids",  :required => false,:size => 5 , :collection => @roles,:prompt => @prompt,:input_html => {'onchange' => @location} }%> </div>
-<%end%>
+   <b>Information for Members</b><br>
+You will notice a change in the initial pages of FR2 as we commence the move towards a better and approved styling. Members may log in by clicking the Member button.
 
-<div style="clear:both;"> </div>
-<br>
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+We are about to do a rebuild of FR2 data please DO NOT change Places/Churches/Registers until told it is clear to so do
+
+Those changes will be lost!!!!!!!!!!!!!!!!!!!!!!!!
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+*******************************************************************************************
+
+The FR2 userids have all been updated. Case sensitivity and duplicate email addresses have been eliminated thanks to the hard work of EricD. You may find that your level of access has changed (I hope not). You may find that your file access has some issues until we have completed the rebuild that is just starting
+
+*******************************************************************************************
+
+The Freereg2 Database has been updated to the September 3rd status.
+<%= render "resource_sidebar" %>

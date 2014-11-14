@@ -1,9 +1,9 @@
-<p style="text-align: center">Editing details for :<%=@userid.userid %></p>
+<p style="text-align: center"><b>Editing profile for :<%=@userid.userid %></b></p>
 <% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'County Management Tools Page', manage_counties_path, method: :get %></div>
 <%end%>
 <% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
+<div  style="float:left;"> <%= button_to 'Syndicate Management Tools Page', manage_syndicates_path, method: :get %></div>
 <%end%>
 
 
@@ -15,6 +15,7 @@
     </div>
    <% end %>
 
-
 <%= render 'form' %>
-Note:Boxes that are grayed out cannot be changed.<br>
+
+Note:Boxes that are grayed out cannot be changed.
+<br>

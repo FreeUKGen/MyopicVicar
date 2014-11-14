@@ -51,17 +51,24 @@ def require_login
    @user = current_refinery_user.userid_detail
    scope = Devise::Mapping.find_scope!(resource_or_scope)
    home_path = "#{scope}_root_path"
-   if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)
-    respond_to?(home_path, true) ? refinery.send(home_path) : refinery.admin_root_path
-  else
-    respond_to?(home_path, true) ? refinery.send(home_path) : main_app.manage_resources_path
-  end
+   respond_to?(home_path, true) ? refinery.send(home_path) : main_app.manage_resources_path
+end
+def  get_user_info_from_userid
+  @user = current_refinery_user.userid_detail
+  @userid = @user._id
+  @first_name = @user.person_forename
+  @manager = manager?(@user)  
+  @roles = UseridRole::OPTIONS.fetch(@user.person_role)
 end
 def  get_user_info(userid,name)
+  #old version for compatibility
   @userid = userid
-  @first_name = name
   @user = UseridDetail.where(:userid => @userid).first
+  @first_name = @user.person_forename
+  @roles = UseridRole::OPTIONS.fetch(@user.person_role)
 end
+
+
 def manager?(user)
   #sets the manager flag status
   a = false

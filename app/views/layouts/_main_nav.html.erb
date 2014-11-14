@@ -18,12 +18,15 @@
 			<% if current_refinery_user %>
 
 			<li>
-				<%= link_to 'Members', main_app.new_manage_resource_path %>
+				<%= link_to 'Member Functions', main_app.new_manage_resource_path %>
+			</li>
+			<li>
+				<%= link_to "Logout", refinery.logout_path%>
 			</li>
 			
 			<% else %>
 			<li>
-				<%= link_to "Members", refinery.login_path%>
+				<%= link_to "Member Login", refinery.login_path%>
 			</li>
 			<li>
 				<%= link_to "Register", main_app.general_userid_detail_path%>

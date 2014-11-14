@@ -1,0 +1,9 @@
+<div>
+<% content_for :sidebar do %>
+  <b><%=@first_name%> your functions</b>
+  <%@roles.each do |role| %>
+    <%= button_to role, UseridRole::OPTIONS_TRANSLATION[role], method: :get %> 
+   <%end%>
+<% end %>
+</div>
+

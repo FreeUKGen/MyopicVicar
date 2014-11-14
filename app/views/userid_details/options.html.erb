@@ -1,13 +1,16 @@
-<% if flash[:notice] %>
 <div id="notice" style="color:red"><br>
+<% if flash[:notice] %>
  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-</div>
 <% end %>  
-<%= semantic_form_for @userid do |f| %>
+</div>
+<div>
+<%@options.each do |option| %>
+    <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get %> 
+    <br>
+  <%end%>
+</div>
 
-<%= f.input :userid, { :as => :select, :include_blank => false, :label => ".",:prompt => @prompt,  :required => false,:size => 5 , :collection => @options,:input_html => {'onchange' => @location} }%> </div>
-<% end %> 
-
+<%= render "resource_sidebar" %>
 
 
 
