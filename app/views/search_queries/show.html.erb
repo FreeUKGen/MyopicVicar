@@ -35,7 +35,6 @@
 
     <table>			
 	<thead>
-	    <tr>
 		<th>
 			<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
 		</th>
@@ -53,7 +52,6 @@
 			<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
 		</th>
 		<th></th>
-	    </tr>
 	</thead>
 	<% @search_results.each do |search_record| %>
 	    <tbody>
@@ -73,14 +71,15 @@
 				<% if i > 0 %>
 					<br/>
 				<% end%>
-				<%= "#{name['first_name']} #{name['last_name']} (#{NameRole::OPTIONS.invert[name['role']]})" %>
+				<%= raw("#{name['first_name']}&nbsp;#{name['last_name']}") %>
+				<%= raw("(#{NameRole::OPTIONS.invert[name['role']].gsub(' ', '&nbsp;')})") %>
 			<% end%>
 		    </td>
 		    <td>
 			<%= RecordType::display_name(search_record.record_type) %>
 		    </td>
 		    <td>
-			<%= search_record.transcript_date %>
+			<%= raw(search_record.transcript_date.gsub(' ', '&nbsp;')) %>
 		    </td>
 		    <td>
 			<%= ChapmanCode::name_from_code(search_record.chapman_code) %>
