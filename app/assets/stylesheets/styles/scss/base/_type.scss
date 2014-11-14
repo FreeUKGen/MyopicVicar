@@ -1,0 +1,91 @@
+/*------------------------------------*\
+    $TYPE
+\*------------------------------------*/
+
+
+
+/**
+ * Colour in selected text
+ */
+::-moz-selection {
+  background: $brand-color;
+  color: #fff;
+  text-shadow: none;
+}
+::selection {
+  background: $brand-color;
+  color: #fff;
+  text-shadow: none;
+}
+
+
+
+/**
+ * Default links
+ */
+a {
+  color: $brand-color;
+  text-decoration: none;
+  &:hover { color: $brand-color-brighter; }
+  &:focus { outline: none; }
+}
+
+
+
+/**
+ * Body text resets
+ */
+.body {
+  ul, ol {
+    margin-left: 22px;
+    li {
+      padding-left: $half-spacing-unit;
+      margin-bottom: $half-spacing-unit;
+    }
+  }
+}
+
+
+
+/**
+ * a default time style that might be used anywhere
+ */
+%time {
+  color: #999;
+  font-weight: bold;
+}
+
+
+
+/**
+ * Coloured text and links
+ */
+@each $colour in $colours {
+  .text--#{nth($colour, 1)} {
+    color: #{nth($colour, 2)};
+  }
+  .text--#{nth($colour, 1)} a,
+  a.text--#{nth($colour, 1)} {
+    color: #{nth($colour, 2)};
+    &:hover {
+      color: #{nth($colour, 3)};
+    }
+  }
+}
+
+// .text--grey { color: #aaaaaa; }
+.text--white,
+.text--white a,
+a.text--white { color: #fff; }
+
+
+
+
+/**
+ * Headings
+ */
+.title {
+  @include font-size(60px);
+  font-weight: lighter;
+  border-bottom: solid 1px #999;
+}

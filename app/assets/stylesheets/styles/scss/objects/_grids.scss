@@ -1,0 +1,41 @@
+@if $use-grids == true{
+/*------------------------------------*\
+    $GRIDS
+\*------------------------------------*/
+  /**
+   * Modify the grid system to be float-based
+   */
+  .grid {
+    overflow: hidden;
+  }
+
+    /**
+     * Grid
+     */
+    .grid__item {
+      display: block;
+      float: left;
+    }
+
+
+  /**
+   * Extends `.grid` and is half the gutters
+   */
+  .grid--half {
+    margin-left: -$half-spacing-unit;
+    .grid__item {
+      padding-left: $half-spacing-unit;
+    }
+  }
+
+
+  /**
+   * Extends `.grid` and is double the gutters
+   */
+  .grid--double {
+    margin-left: -($base-spacing-unit * 2);
+    .grid__item {
+      padding-left: $base-spacing-unit * 2;
+    }
+  }
+}//endif

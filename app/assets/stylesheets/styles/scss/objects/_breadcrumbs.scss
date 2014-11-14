@@ -1,0 +1,17 @@
+@if $use-breadcrumb == true{
+/*------------------------------------*\
+    $BREADCRUMBS
+\*------------------------------------*/
+
+/**
+ * Overrides inuit's default
+ */
+.breadcrumb > li + li:before {
+  @extend .icon;
+  @include inline-block;
+  vertical-align: top;
+  font-size: 1.2em;
+  margin-top: 0.13em;
+  content: "\bb";
+}
+}//endif

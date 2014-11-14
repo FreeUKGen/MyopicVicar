@@ -1,0 +1,10 @@
+/*------------------------------------*\
+    $CONTAINER
+\*------------------------------------*/
+/**
+ * Make the container 960 on lap_and_up and the reset
+ * again when we run out of width
+ */
+.container {
+  @include container(960px);
+}

@@ -1,0 +1,129 @@
+@if $use-beautons == true{
+/*------------------------------------*\
+    $BEAUTONS
+\*------------------------------------*/
+
+/**
+ * General style adjustments
+ */
+.btn {
+  background: $brand-color;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+
+  // slightly adjust inuits sizing
+  padding-left: 1.25em;
+  padding-right: 1.25em;
+  line-height: 2.5;
+
+  // add a bit of bottom margin to account for box-shadow
+  // clipping when inside other containers that clip
+  margin-bottom:  0.3em;
+
+  @include vendor(box-shadow, 0 0.222222em 0 ($brand-color / 2));
+  @include vendor(transition, all 0.15s ease-in-out);
+  @include vendor(border-radius, 3px);
+  &:focus, &:hover {
+    color: #fff;
+    background: $brand-color-brighter;
+    @include vendor(box-shadow, 0 0.222222em 0 ($brand-color-brighter / 2));
+  }
+  &:active {
+    text-decoration: none;
+    @include vendor(box-shadow, 0 0 0 ($brand-color-brighter / 2));
+    @include vendor(transform, translate(0, 0.222222em));
+  }
+}
+
+
+
+  /**
+   * Pretty colours
+   */
+  @each $colour in $colours {
+    .btn--#{nth($colour, 1)} {
+      background: nth($colour, 2);
+      @include vendor(box-shadow, 0 0.222222em 0 (nth($colour, 2) / 2));
+      &:focus, &:hover {
+        background: nth($colour, 3);
+        @include vendor(box-shadow, 0 0.222222em 0 (nth($colour, 3) / 2));
+      }
+      &:active { @include vendor(box-shadow, 0 0 0 (nth($colour, 3) / 2)); }
+    }
+  }
+
+
+
+  /**
+   * Small
+   *
+   * Just turns down the font size and lets the line-height change the verticals
+   */
+  .btn--small { @include font-size(14px); }
+
+
+
+  /**
+   * Large
+   *
+   * Turns up the text size and re-does the surrounding space
+   */
+  .btn--large {
+    @include font-size(22px, false);
+    line-height: 2.75;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+
+
+  /**
+   * Use this when adding an icon inside a `.btn`
+   */
+  .btn__icon {
+    vertical-align: middle;
+    margin-top: -4px;
+    margin-left: 0.75em;
+  }
+
+    .btn--icon--left {
+      margin-left: 0;
+      margin-right: 0.75em;
+    }
+
+
+
+/**
+ * A button with an <img> inside it
+ */
+.btn-img {
+  position: relative;
+  display: block;
+  text-align: center;
+  color: #666;
+
+  img {
+    @extend %fluid-img;
+  }
+
+  span {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 50%;
+    bottom: 0;
+    height: 86px;
+    margin-top: -43px;
+    vertical-align: middle;
+
+    @include font-size(36px, false);
+    line-height: 1.2;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0 $base-spacing-unit;
+  }
+}
+
+
+}//endif

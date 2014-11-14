@@ -1,0 +1,28 @@
+@if $use-matrix == true{
+/*------------------------------------*\
+    $MATRIX
+\*------------------------------------*/
+
+/**
+ * This just sorts the spacing a bit better
+ */
+
+.multi-list--spaced > li {
+  padding-right: $base-spacing-unit;
+  &.end-col { padding-right: 0; }
+}
+
+
+/**
+ * This works a bit like - all-cols except it misses of the first one,
+ * for example if you are in a four-col multi-list and want the last
+ * row to only have one normal sized cell and the rest merged you would
+ * use .last-three-cols on the last li tag.
+ */
+.matrix,
+.multi-list {
+  > .last-two-cols { width:66.666%; }
+  > .last-three-cols { width:75%; }
+  > .last-four-cols { width:80%; }
+}
+}//endif

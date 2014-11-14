@@ -1,0 +1,129 @@
+@charset "UTF-8";
+/*------------------------------------*\
+    LAP_AND_UP.CSS
+\*------------------------------------*/
+
+
+/**
+ * Vars and core
+ */
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/vars";
+@import "vars";
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/lap_and_up";
+
+
+/**
+ * Site header
+ */
+
+.site__header {
+  padding-bottom: 40px;
+
+  @include manual-media-query(890px) {
+    padding-bottom: 60px;
+  }
+
+  .banner-horz {
+    margin-bottom: $base-spacing-unit * 2;
+  }
+
+}
+
+  .site__header__menu-btn {
+    display: none;
+  }
+
+  .site__header__logo {
+    float: left;
+    margin: 0;
+    position: relative;
+    z-index: 3;
+  }
+
+  .site__header__freeukgen-logo {
+    float: right;
+    margin-top: 0;
+    position: relative;
+    z-index: 4;
+  }
+
+
+  /**
+   * Most of this code is to re-position the nav inside the header
+   * to counteract the weird markup we need so that the offcanvas works
+   */
+  .site__header__nav {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 240px;
+    z-index: 3;
+
+    @include manual-media-query(890px) {
+      top: 260px;
+    }
+    @include manual-media-query(660px) {
+      top: 265px;
+    }
+
+    nav {
+      @include container(960px);
+    }
+
+    ul {
+      float: right;
+      margin: 0;
+      z-index: 6;
+    }
+
+    li {
+      margin-left: $base-spacing-unit * 1.5;
+      float: left;
+
+      @include manual-media-query(660px) {
+        margin-left: $base-spacing-unit;
+      }
+
+    }
+
+    a {
+      padding: $half-spacing-unit 0;
+      background: none;
+
+      @include manual-media-query(660px) {
+        @include font-size(17px, false);
+      }
+
+      &:active,
+      &:hover {
+        background: none;
+        color: $magenta-brighter;
+      }
+
+    }
+
+  }
+
+
+
+/**
+ * Site footer
+ */
+.site__footer {
+  .icon__freeukgen__project--light {
+    margin-top: $base-spacing-unit / 3;
+  }
+}
+
+
+
+/**
+ * A list of icons
+ */
+.icon-list {
+  li {
+    @include inline-block;
+    margin-left: $base-spacing-unit * 2;
+    margin-right: $base-spacing-unit * 2;
+  }
+}

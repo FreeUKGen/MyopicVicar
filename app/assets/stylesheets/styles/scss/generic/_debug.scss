@@ -1,0 +1,11 @@
+@if $debug-mode == true{
+/*------------------------------------*\
+    $DEBUG
+\*------------------------------------*/
+    /**
+     * Turn off ID checking globally
+     */
+    [id]{
+        outline:none;
+    }
+}/* endif */

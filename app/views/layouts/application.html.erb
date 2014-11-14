@@ -1,81 +1,165 @@
-<html>
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en">
+	<!--<![endif]-->
+
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title></title>
+		<meta charset="utf-8"/>
+
+		<title>FreeReg</title>
+
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+
+		<!--[if lt IE 9]>
+		<!-- TODO: Transform to asset pipelines -->
+		<%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
+		<![endif]-->
+
+		<meta name="HandheldFriendly" content="True">
+		<meta name="MobileOptimized" content="568">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<%= favicon_link_tag image_path('favicon.ico')%>
+		<!-- TODO: copy icons over -->
+		<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+
+		<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/assets/apple-touch-icon-152x152-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144x144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/assets/apple-touch-icon-120x120-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/apple-touch-icon-114x114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="76x76" href="/assets/apple-touch-icon-76x76-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/apple-touch-icon-72x72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="/assets/apple-touch-icon-precomposed.png">
+
+		<script type="text/javascript">
+			/* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
+			window.grunticon = function(e) {
+				if (e && 3 === e.length) {
+					var t = window, n = !(!t.document.createElementNS || !t.document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect || !document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1") || window.opera && -1 === navigator.userAgent.indexOf("Chrome")), o = function(o) {
+						var r = t.document.createElement("link"), a = t.document.getElementsByTagName("script")[0];
+						r.rel = "stylesheet", r.href = e[o && n ? 0 : o ? 1 : 2], a.parentNode.insertBefore(r, a)
+					}, r = new t.Image;
+					r.onerror = function() {
+						o(!1)
+					}, r.onload = function() {
+						o(1 === r.width && 1 === r.height)
+					}, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+				}
+			};
+			grunticon(["assets/styles/css/icons.data.svg.css", "assets/styles/css/icons.data.png.css", "assets/styles/css/icons.fallback.css"]);
+		</script>
+		<noscript>
+			<link rel="stylesheet" type="text/css" href="styles/css/icons.fallback.css">
+		</noscript>
 
 		<!-- Styles -->
+		<!-- TODO: Change to minified versions once design settles down -->
+		<%= stylesheet_link_tag "styles/css/palm.min" %>
+		<%= stylesheet_link_tag "styles/css/lap_and_up.min" %>
 
-		<link href='http://fonts.googleapis.com/css?family=Corben' rel='stylesheet' type='text/css'>
+		<!--[if (lt IE 9) & (!IEMobile)]>
+		<%= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
+		<![endif]-->
 
-		<%= stylesheet_link_tag "normalize" %>
-		<%= stylesheet_link_tag "layout" %>
-		<%= stylesheet_link_tag "freereg" %>
-    <%= stylesheet_link_tag "manage_resources" %>
-		<%= javascript_include_tag "jquery.min.js" %>
+		<!--[if lte IE 7]>
+		<%= stylesheet_link_tag "styles/css/ie.min" %>
+		<![endif]-->
+
+		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
-    <%= javascript_include_tag "application" %>
+		<%= javascript_include_tag "application" %>
 	</head>
 	<body>
+		<% if false %>
 		<div id="container" >
-			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %></h2>
+			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %> </h2>
 		</div>
-		<div id="navhead">
-			<br>
-			<h4>
-			<div style="float:left;">
-				<%= button_to " Search Our Database", main_app.search_queries_path , method: :get%>
-			</div>
-			<div style="float:left;">
-				<%= button_to 'Advice on Searching', "../tips-for-searching-the-database" , method: :get  %>
-			</div>
-			<div style="float:left;">
-				<%= button_to " County and Parish Content", refinery.county_pages_county_pages_path , method: :get%>
-			</div> <% if current_refinery_user %>
-			<div  style="float:left;">
-				<%= button_to 'Member Functions', main_app.new_manage_resource_path, method: :get %>
-			</div>
-			<div  style="float:left;">
-				<%= button_to 'Logout', refinery.logout_path, method: :get %>
-			</div>
-			<% else %>
-      <div style="float:left;">
-        <%= button_to" Member Login", refinery.login_path, method: :get %>
-      </div>
-      <div style="float:left;">
-        <%= button_to" Registration", main_app.general_userid_detail_path, method: :get %>
-      </div>
-			<% end %>
-			</h4>
-		</div>
-		<%if controller.controller_name == "freereg_contents"  %>
-		<div id="Heading">
-			Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
-		</div>
-		<%end%>
-		<div id="content">
-			<%= yield %>
-		</div>
+		<% end %>
 
-		<div id = "footer">
-			<div style="float:left;">
-				<%= button_to " About Us", "../about"  , method: :get%>
-			</div>
-			<div style="float:left;">
-				<%= button_to 'Contact Us', "../freereg2/contact" , method: :get  %>
-			</div>
+		<%= render "layouts/main_nav" %>
 
-			<% if current_refinery_user %>
-			<div  style="float:left;">
-				<%= form_tag(problem_url, :method=>:get) do %>
-				<% problem_button_options.each_pair do |name, value| %>
-				<%= hidden_field_tag(name, value)%>
-				<% end %>
-				<input type="submit" value="Report a Problem" />
-				<% end %>
-			</div>
-			<% end %>
-			<div style="clear:both;"></div>
-			<br>
-			<small>© 1998-2014 The website, its layout, search engine, and database are copyright by the Trustees of Free UK Genealogy, a charity registered in England and Wales, Number 1096940.We make no warranty whatsoever as to the accuracy or completeness of the FreeREG data. Use of the FreeREG website is conditional upon acceptance of the <%= link_to "Terms and Conditions", "../freereg2/terms-and-conditions" %> </small><div>
+		<div class="offcanvas__primary">
+			<%= render "layouts/header" %>
+
+			<main role="main" class="site__content  icon__honeycomb--top-right">
+				<div class="container">
+					<article>
+						<div class="grid">
+
+							<% if content_for? :sidebar %>
+							<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+								<% else %>
+								<div class="grid__item  one-whole  lap-one-whole  palm-one-whole">
+									<% end %>
+
+									<%if controller.controller_name == "freereg_contents"  %>
+									<div id="Heading">
+										Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
+									</div>
+									<%end%>
+
+									<%unless @first_name.nil?%>
+									<div id="personal">
+										<p style="text-align: center">
+											<b><%= @first_name%> these are your management tools</b>
+										</p>
+									</div>
+
+									<%end%>
+
+									<section>
+										<div id="content">
+											<%= yield %>
+										</div>
+									</section>
+								</div>
+								<% if content_for? :sidebar %>
+								<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+									<aside class="island  island--light">
+										<%= yield :sidebar %>
+									</aside>
+								</div>
+								<% end %>
+
+							</div>
+					</article>
+
+					<% if current_refinery_user %>
+					<div  style="float:left;">
+						<%= form_tag(problem_url, :method=>:get) do %>
+						<% problem_button_options.each_pair do |name, value| %>
+						<%= hidden_field_tag(name, value)%>
+						<% end %>
+						<input type="submit" value="Report a Problem" />
+						<% end %>
+					</div>
+					<% end %>
+
+					<%= render "layouts/footer" %>
+
+				</div>
+				<!-- TODO fix above this -->
+
+				<!-- example offcanvas switching code -->
+				<%= javascript_include_tag "design/scripts/dist/classie.js" %>
+					<script src="scripts/dist/classie.js"></script>
+				<script charset="utf-8">
+					var el = document.getElementById("trigger-offcanvas");
+
+					var switchOffCanvas = function() {
+						classie.toggle(document.body, 'offcanvas--active');
+						classie.toggle(el, 'site__header__menu-btn--active');
+					}
+					if (el.addEventListener) {
+						el.addEventListener('click', switchOffCanvas, false);
+					} else if (el.attachEvent) {
+						el.attachEvent('onclick', switchOffCanvas);
+					}
+				</script>
 	</body>
 </html>

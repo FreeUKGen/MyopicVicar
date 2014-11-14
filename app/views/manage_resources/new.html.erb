@@ -1,11 +1,10 @@
-<p style="text-align: center"><b>This page will become a drop down menu off the Members link</b></p>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
    <% end %> 
 <%= semantic_form_for(@manage_resources) do |f| %>
- <%= f.input :userid, { :as => :select, :include_blank => false, :label => ".",:prompt => "Manage Userids",  :required => false,:size => 5 , :collection => @roles,:prompt => @prompt,:input_html => {'onchange' => @location} }%> </div>
+ <%= f.input :userid, { :as => :select, :include_blank => false, :label => "#{@user.person_forename} what activity would you like to undertake today?",:prompt => "Manage Userids",  :required => false,:size => 5 , :collection => @roles,:prompt => @prompt,:input_html => {'onchange' => @location} }%> </div>
 <%end%>
 
 <div style="clear:both;"> </div>
