@@ -51,7 +51,7 @@ def require_login
    @user = current_refinery_user.userid_detail
    scope = Devise::Mapping.find_scope!(resource_or_scope)
    home_path = "#{scope}_root_path"
-   respond_to?(home_path, true) ? refinery.send(home_path) : main_app.manage_resources_path
+   respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
 end
 def  get_user_info_from_userid
   @user = current_refinery_user.userid_detail
