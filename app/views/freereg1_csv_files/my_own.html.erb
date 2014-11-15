@@ -1,18 +1,14 @@
-<%= semantic_form_for(@freereg1_csv_file) do |f| %>
+<p style="text-align: center"><b> <%= @first_name%> how would you like to display your files? Select one of the following options.</p></b>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
+<div>
+<%@options.each do |option| %>
+    <%= link_to option, UseridRole::FILE_OPTIONS_TRANSLATION[option],  method: :get %> 
+    <br>
+  <%end%>
+</div>
 
-<div id="main"style="color:black">
-
-<%= f.input :action, { :as => :select, :include_blank => false, :collection => ['Upload New Batch','List by number of errors then name', 'List by name', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ], :label => " #{@first_name} what would you like to do? ",  :size => 10  }%>
-
-   <%= f.action :submit, :as => :input, :label => 'Select'   %>
-   <% end %>
-<div style="clear:both;"> </div><br>
-
-<p>
-<div style="float:left;"> <%= button_to 'File options', freereg1_csv_files_path(:anchor => "#{ @freereg1_csv_file.id}"), method: :get %></div>
-<%= render 'nav' %>
+<%= render "resource_sidebar" %>

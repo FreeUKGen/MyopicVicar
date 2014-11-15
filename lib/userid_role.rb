@@ -40,14 +40,35 @@ module UseridRole
         USERID_ACCESS_OPTIONS = ["Select specific email","Select specific userid", "Select specific surname/forename"]
         
         USERID_OPTIONS_TRANSLATION = {
-        "Browse userids" => "selection_userid_details_path(option=mine)",
-        "Create userid"=> "/userid_details/selection",
-        "Select specific email"=>  "/userid_details/selection?option=Select specific email",
+          #todo clean up first 2
+        "Browse userids" => "/userid_details/selection?option=Browse userids",
+        "Create userid"=> "/userid_details/selection?option=Create userid",
+        "Select specific email" =>  "/userid_details/selection?option=Select specific email",
         "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
         "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename" 
         }
-      
-
+        FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by number of errors then name', 'List by name', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
+        FILE_OPTIONS_TRANSLATION ={
+        'Upload New Batch' =>  "/csvfiles/new",
+        'List by number of errors then name' =>  "/freereg1_csv_files/selection?option=List by number of errors then name",
+        'List by name' =>  "/freereg1_csv_files/selection?option=List by name",
+        'List by uploaded date (ascending)' =>  "/freereg1_csv_files/selection?option=List by uploaded date (ascending)",
+        'List by uploaded date (descending)'  =>  "/freereg1_csv_files/selection?option=List by uploaded date (descending)"
+        }
+        COUNTY_MANAGEMENT_OPTIONS = ['Work with All Places', 'Work with Active Places','Review Batches with errors',
+          'Review Batches listed by filename', 'Upload New Batch', 'Review Batches listed by userid then filename',
+          'Review Batches listed by descending date', 'Review Batches listed by ascending date','Review a specific Batch']
+        COUNTY_OPTIONS_TRANSLATION = {
+          'Work with All Places' => "/manage_counties/selection?option=Work with All Places",
+          'Work with Active Places' => "/manage_counties/selection?option=Work with Active Places",
+          'Review Batches with errors' => "/manage_counties/selection?option=Review Batches with errors",
+          'Review Batches listed by filename' => "/manage_counties/selection?option=Review Batches listed by filename",
+          'Upload New Batch'  => "/manage_counties/selection?option=Upload New Batch",
+          'Review Batches listed by userid then filename' => "/manage_counties/selection?option=Review Batches listed by userid then filename",
+          'Review Batches listed by descending date' => "/manage_counties/selection?option=Review Batches listed by descending date",
+          'Review Batches listed by ascending date' => "/manage_counties/selection?option=Review Batches listed by ascending date",
+          'Review a specific Batch'=> "/manage_counties/selection?option=Review a specific Batch"
+        }
 
 
 

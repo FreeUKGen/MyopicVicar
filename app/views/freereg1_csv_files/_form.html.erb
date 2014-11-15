@@ -1,9 +1,9 @@
 <%= semantic_form_for(@freereg1_csv_file) do |f| %>
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-<%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>  
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+</div>
+<% end %>  
 
 <div id="main"style="color:black">
 
@@ -15,48 +15,48 @@
   <%= f.input :first_comment, :label => 'Comments about the batch',:input_html => { :size => 80 }%>  
   <%= f.input :second_comment, :label => 'Additional comments about the batch',:input_html => { :size => 80 }%>
 
-   <%= f.input :lds,{ :as => :select,:label => "Image numbers available with record",:include_blank => false,
-          :required => true, :collection => ['yes','no'], :size => 15 } %> 
+  <%= f.input :lds,{ :as => :select,:label => "Image numbers available with record",:include_blank => false,
+    :required => true, :collection => ['yes','no'], :size => 15 } %> 
     <%= f.input :transcription_date ,:input_html => { :size => 50  }%>  
-     <%= f.input :modification_date ,:input_html => { :size => 50 }%>  
+    <%= f.input :modification_date ,:input_html => { :size => 50 }%>  
 
     <% if session[:role] == 'counties' || session[:role] == 'syndicates'%>
-     <%= f.input :locked_by_transcriber, { :as => :select,:label => "Locked by transcriber :",:include_blank => false,
-          :required => true, :collection => [ 'true', 'false'], :size => 10 } %> 
+    <%= f.input :locked_by_transcriber, { :as => :select,:label => "Locked by transcriber :",:include_blank => false,
+      :required => true, :collection => [ 'true', 'false'], :size => 10 } %> 
       <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,
-          :required => true, :collection => [ 'true', 'false'], :size => 10 } %> 
-   
-     
-    <%else%>    
-    <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
-   <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>       
-   
- 
-  <%end%>
-    
-   <p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>       
- <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
+        :required => true, :collection => [ 'true', 'false'], :size => 10 } %> 
+        
+        
+        <%else%>    
+        <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
+        <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>       
+        
+        
+        <%end%>
+        
+        <p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>       
+        <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
           :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
-   <%= f.input :church_name, :input_html => { :size => 100 }%>
-   <%= f.input :place,{ :as => :select,:label => "Select place name from the list of Approved Names",:include_blank => false,
-          :required => true, :collection => @placenames, :size => 15 } %> 
+          <%= f.input :church_name, :input_html => { :size => 100 }%>
+          <%= f.input :place,{ :as => :select,:label => "Select place name from the list of Approved Names",:include_blank => false,
+            :required => true, :collection => @placenames, :size => 15 } %> 
 
-     <p><b>The following parameters are included for completeness but cannot be changed </b></p> 
-    
-    <%= f.input :transcriber_syndicate, :input_html => {:disabled => true,  :size => 40 } %>        
-   <%= f.input :userid,  :label => "UserID :",:input_html => { :disabled => true,:size => 40 } %>
-  <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
-  
-  <%= f.input :record_type, :input_html => { :disabled => true, :size => 5 } %> 
-  <%= f.input :records , :label => "Number of records :",:input_html => { :disabled => true }%>
-  <%= f.input :datemin , :label => "First year of records :",:input_html => { :disabled => true }%>
-  <%= f.input :datemax ,  :label => "Last year of records :",:input_html => { :disabled => true }%>
-  <%= f.input :daterange,  :label => "Number of records per decade starting in 1530 :",:input_html => { :disabled => true, :size => 130  }%>   
-  
-  <%= f.input :uploaded_date,:input_html => { :disabled => true, :size => 50  }%>
-  
-  <br>
- 
-     <%= f.action :submit, :as => :input, :label => 'Submit'   %>
-<% end %>
-</div>
+            <p><b>The following parameters are included for completeness but cannot be changed </b></p> 
+            
+            <%= f.input :transcriber_syndicate, :input_html => {:disabled => true,  :size => 40 } %>        
+            <%= f.input :userid,  :label => "UserID :",:input_html => { :disabled => true,:size => 40 } %>
+            <%= f.input :file_name, :input_html => { :disabled => true, :size => 60  } %> 
+            
+            <%= f.input :record_type, :input_html => { :disabled => true, :size => 5 } %> 
+            <%= f.input :records , :label => "Number of records :",:input_html => { :disabled => true }%>
+            <%= f.input :datemin , :label => "First year of records :",:input_html => { :disabled => true }%>
+            <%= f.input :datemax ,  :label => "Last year of records :",:input_html => { :disabled => true }%>
+            <%= f.input :daterange,  :label => "Number of records per decade starting in 1530 :",:input_html => { :disabled => true, :size => 130  }%>   
+            
+            <%= f.input :uploaded_date,:input_html => { :disabled => true, :size => 50  }%>
+            
+            <br>
+            
+            <%= f.action :submit, :as => :input, :label => 'Submit'   %>
+            <% end %>
+          </div>

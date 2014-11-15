@@ -1,116 +1,135 @@
 class ManageCountiesController < ApplicationController
 
-  def index
+ def index
+  redirect_to :action => 'new'
+end
+def new
   #get county to be used
-  p "index"
-  p params
-  get_user_info(session[:userid],session[:first_name])
-  session[:role] = 'counties'
-  get_counties_for_selection(params[:option])
   session[:chapman_code] = nil
+  session[:county] = nil
+  get_user_info_from_userid
+  get_counties_for_selection
   if @number_of_counties == 0 
+    flash[:notice] = 'You do not have any counties to manage'
     redirect_to new_manage_resource_path 
     return
   end
-  session[:multiple] = true
   if @number_of_counties == 1 
     session[:chapman_code] = @counties[0]
     @county = ChapmanCode.has_key(@counties[0])
     session[:county] = @county
-    session[:multiple] = false
-    redirect_to :action => 'select_action'
+    redirect_to :action => 'select_action?'
     return
   end
   @options = @counties
-  @prompt = 'County?'
+  @prompt = 'Please select a County'
   @location = 'location.href= "/manage_counties/select_action?county=" + this.value'
   @manage_county = ManageCounty.new
-  render '_form'
 end
 
 def select_action
-  if session[:multiple] == true
+   get_user_info_from_userid
+  if session[:chapman_code].nil?
     session[:chapman_code] = params[:county]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
   end
-   @manage_county = ManageCounty.new
-    @options =['Work with All Places', 'Work with Active Places','Review Batches with errors','Review Batches listed by filename', 'Upload New Batch',
-    'Review Batches listed by userid then filename','Review Batches listed by uploaded date','Review a specific Batch']
-    @location = 'location.href= "/manage_counties/select?option=" + this.value'
-    @prompt = 'Select Action?'
-    render '_form'
-  end
-  def select
-    p "selecting"
-    p params
-    case 
-    when params[:option] == 'Work with All Places'
-      session[:active_place] = 'All'
-      redirect_to places_path
-      return
-    when params[:option] == 'Work with Active Places'
-      session[:active_place] = 'Active'
-      redirect_to places_path
-      return    
-    when params[:option] == 'Upload New Batch'
-      redirect_to new_csvfile_path
-      return
-    when params[:option] == 'Review a specific Batch'
-      redirect_to select_file_manage_counties_path
-      return
-    when params[:option] == 'Review Batches listed by filename'
-      session[:sort] =  sort = "file_name ASC"    
-    when params[:option] == 'Review Batches with errors'
-      session[:sort] =  sort = "error DESC, file_name ASC" 
-    when params[:option] == 'Review Batches listed by userid then filename'
-      session[:sort] =  sort = "userid_lower_case ASC, file_name ASC"
-    when params[:option] == 'Review Batches listed by uploaded date'
-      session[:sort] =  sort = "uploaded_date DESC"
-    else
-      p "failure"
-      flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return 
-    end
-    redirect_to freereg1_csv_files_path
-    return
-  end
+  @manage_county = ManageCounty.new
+  @options= UseridRole::COUNTY_MANAGEMENT_OPTIONS
+  @prompt = 'Select Action?'
+end
 
-  def select_file
-    get_user_info(session[:userid],session[:first_name])
-    @manage_county = ManageCounty.new
-    @county = session[:county]
-     p @county
-    @files = Array.new
-    Freereg1CsvFile.where(:county => ChapmanCode.values_at(@county)).all.order_by(file_name: 1).each do |file|
-      @files << file.file_name
-    end
-    @options = @files
-    @location = 'location.href= "/manage_counties/files?params=" + this.value'
-    @prompt = 'Select file'
-    render '_form'
-  end
+def work_all_places
+   get_user_info_from_userid
+  session[:active_place] = 'All'
+  redirect_to places_path
+end
 
-  def files 
-    p "file selection"
+def work_with_active_places
+   get_user_info_from_userid
+  session[:active_place] = 'Active'
+  redirect_to places_path
+  return    
+end
+def batches_with_errors
+  get_user_info_from_userid
+  @county = session[:county]
+  @who = nil
+  @sorted_by = '(Sorted by descending number of errors and then filename)'
+  @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("error DESC, file_name ASC" ).page(params[:page])
+  render 'freereg1_csv_files/index'
+end
+def display_by_filename
+  get_user_info_from_userid
+  @county = session[:county]
+  @who = nil
+  @sorted_by = '(Sorted alphabetically by file name)'
+  @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("file_name ASC").page(params[:page])
+  render 'freereg1_csv_files/index'
+end
+def upload_batch
+ redirect_to new_csvfile_path
+end
+def display_by_userid_filename
+  get_user_info_from_userid
+  @county = session[:county]
+  @who = nil
+  @sorted_by = '(Sorted by userid then alphabetically by file name)'
+  @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("userid_lower_case ASC, file_name ASC").page(params[:page])
+  render 'freereg1_csv_files/index'
+end
+
+def display_by_descending_uploaded_date
+ get_user_info_from_userid
+ @county = session[:county]
+ @who = nil
+ @sorted_by = '(Sorted by descending date of uploading)'
+ @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date DESC").page(params[:page])
+ render 'freereg1_csv_files/index'
+end
+
+def display_by_ascending_uploaded_date
+  get_user_info_from_userid
+  @county = session[:county]
+  @who = nil
+  @sorted_by = '(Sorted by ascending date of uploading)'
+  @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date ASC").page(params[:page])
+  render 'freereg1_csv_files/index'
+end
+
+def review_a_specific_batch
+  get_user_info_from_userid
+  @manage_county = ManageCounty.new
+  @county = session[:county]
+  p @county
+  @files = Array.new
+  Freereg1CsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
+    @files << file.file_name
+  end
+  @options = @files
+  @location = 'location.href= "/manage_counties/files?params=" + this.value'
+  @prompt = 'Select batch'
+  render '_form'
+end
+def files 
+  p "file selection"
   p params 
-    get_user_info(session[:userid],session[:first_name]) 
-   @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page]) 
-   if @freereg1_csv_files.length == 1
-     file = @freereg1_csv_files.first
-     redirect_to freereg1_csv_file_path(file)
-     return
-   else
-    @county = ChapmanCode.has_key(session[:chapman_code])
-    render 'freereg1_csv_files/index'
-  end
+  get_user_info_from_userid
+  @county = session[:county]
+  @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page]) 
+  if @freereg1_csv_files.length == 1
+   file = @freereg1_csv_files.first
+   redirect_to freereg1_csv_file_path(file)
+   return
+ else
+   render 'freereg1_csv_files/index'
+ end
 end 
 
-def get_counties_for_selection(option)
+def get_counties_for_selection
   @counties = @user.county_groups
   @countries = @user.country_groups
-  if  option == 'all' 
+  if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
    @countries = Array.new
    counties = County.all.order_by(chapman_code: 1)
    counties.each do |county|
@@ -122,7 +141,7 @@ def get_counties_for_selection(option)
     @countries.each do |county|
       @counties << county if @counties.nil?
       @counties << county unless  @counties.include?(county) 
-      end
+    end
   end
 end
 

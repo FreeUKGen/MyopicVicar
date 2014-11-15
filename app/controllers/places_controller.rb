@@ -6,6 +6,7 @@ class PlacesController < ApplicationController
 
   
   def index
+     get_user_info_from_userid
           @chapman_code = session[:chapman_code]
           @county = ChapmanCode.has_key(session[:chapman_code])
           if session[:active_place] == 'Active'

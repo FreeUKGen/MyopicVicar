@@ -90,7 +90,7 @@ def options
  if session[:userid].nil? 
   redirect_to '/', notice: "You are not authorised to use these facilities"
   return
-end
+   end
 
  p    "In options"
  p params

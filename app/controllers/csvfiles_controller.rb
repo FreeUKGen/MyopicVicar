@@ -14,6 +14,7 @@ def new
 @first_name = session[:first_name]	
 @userid = session[:userid]	
 @csvfile  = Csvfile.new(:userid  => session[:userid])
+get_user_info_from_userid
 get_userids_and_transcribers
 @role = session[:role]
 end

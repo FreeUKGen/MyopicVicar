@@ -1,19 +1,11 @@
 <%require 'register_type' %>
-Page Identification Places:index<p>
+
 <p style="text-align: center">The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>.</p> 
 
-
-
- <p> 
 <%if @user.person_role == 'data_manager' %>
 <div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %> </div>
 <%end%>
 
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-
-
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
- 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -24,7 +16,7 @@ Page Identification Places:index<p>
 <div id="main"style="color:black">
 <%= paginate @places %> 
 
-<table style="width: 100%">
+<table  class="table--bordered  table--striped  table--data" >
   <tr>
   
     <th style="width:25%">Place</th>

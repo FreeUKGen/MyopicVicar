@@ -1,5 +1,3 @@
-Page Identification Places:edit<p>
-
 <p style="text-align: center">Editing <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 <%if @user.person_role == 'data_manager' %>
 <div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %> </div>
@@ -7,10 +5,6 @@ Page Identification Places:edit<p>
  <div style="float:left;"><%=button_to 'Show Place', places_path, method: :get%> </div>
 <div  style="float:left;"><%= button_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' } %></div>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
 
 <div style="clear:both;"> </div><br> 
 
