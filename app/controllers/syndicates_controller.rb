@@ -2,11 +2,10 @@ class SyndicatesController < ApplicationController
 
 
     def index
-        if session[:userid].nil? || params[:option] != 'manager'
+        if session[:userid].nil? 
           redirect_to '/', notice: "You are not authorised to use these facilities"
       end
-      @first_name = session[:first_name]
-      @user = UseridDetail.where(:userid => session[:userid]).first
+      get_user_info_from_userid
       @syndicates = Syndicate.all.order_by(syndicate_code: 1)
 
   end

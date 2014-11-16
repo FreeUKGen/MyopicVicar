@@ -5,5 +5,5 @@
     </div>
    <% end %>  
 <%= semantic_form_for @manage_county do |f| %>
-  <%= f.input :action, { :as => :select, :include_blank => false,  :label => @prompt,:required => true, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%></div> 
+  <%= f.input :action, { :as => :select, :include_blank => true,  :label => @prompt,:required => true, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%></div> 
 <% end %> 

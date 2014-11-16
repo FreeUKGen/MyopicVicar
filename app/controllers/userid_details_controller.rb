@@ -21,9 +21,7 @@ def new
 end
 
 def show
-   get_user_info_from_userid
-p "in show"
-  p params
+ get_user_info_from_userid
  load(params[:id])
 end
 
@@ -43,10 +41,8 @@ end
 def edit
   session[:type] = "edit"
   get_user_info_from_userid
-    @userid = @user if  session[:my_own] 
+  @userid = @user if  session[:my_own] 
   load(params[:id])
-  
-
   @syndicates = Syndicate.get_syndicates
 end
 
@@ -73,78 +69,66 @@ def transcriber_registration
  session[:first_name] = 'New Registrant'
  session[:type] = "transcriber_registration"
  @userid = UseridDetail.new
- @first_name = session[:first_name]
  @syndicates = Syndicate.get_syndicates_open_for_transcription
+ @first_name = session[:first_name]
 end 
 
 def technical_registration
+ get_user_info_from_userid
  session[:first_name] = 'New Registrant'
  session[:type] = "technical_registration"
  @userid = UseridDetail.new
- @first_name = session[:first_name]
-end 
+ end 
 
 def options
- #get_user_info(session[:userid],session[:first_name])
   get_user_info_from_userid
- if session[:userid].nil? 
-  redirect_to '/', notice: "You are not authorised to use these facilities"
-  return
-   end
-
- p    "In options"
- p params
- p flash
-session[:option] = params[:option]
-
-if params[:option] == 'manager'
-  @options= UseridRole::USERID_MANAGER_OPTIONS
-else
-  @options= UseridRole::USERID_ACCESS_OPTIONS
-end
-#@location = 'location.href= "/userid_details/selection?userid=" + this.value'
-#@userid = UseridDetail.new
-#@prompt = "Userid Details"
-
+  if session[:userid].nil? 
+    redirect_to '/', notice: "You are not authorised to use these facilities"
+    return
+  end
+  @syndicate = 'all'
+  session[:syndicate] = @syndicate
+  if @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
+    @options= UseridRole::USERID_MANAGER_OPTIONS
+  else
+    @options= UseridRole::USERID_ACCESS_OPTIONS
+  end
 end
 
 
 def selection
-  p 'In selection'
-  p params
   get_user_info_from_userid
   @userid = @user
  # session[:syndicate] = 'all' if @user.person_role == 'system_administrator' || session[:option] == 'access'
- 
-  case 
-  when params[:option] == 'Browse userids'
-    @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
-    render "index"
-    return
-  when params[:option] == "Create userid"
-    redirect_to :action => 'new' 
-    return
-  when params[:option] == "Select specific email"
-    @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
-    @location = 'location.href= "select?email=" + this.value'
-    @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
-  when params[:option] == "Select specific userid"
-    @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
-    @location = 'location.href= "select?userid=" + this.value'
-    @prompt = "Select userid for #{session[:syndicate]}"
-  when params[:option] == "Select specific surname/forename"
-    @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
-    @location = 'location.href= "select?name=" + this.value'
-    @prompt = "Select surname/forename for #{session[:syndicate]}"
-  else
-    flash[:notice] = 'Invalid option'
-    p 'Invalid option'
-     params[:option] = nil
-    redirect_to :back
-    return   
-  end
+ case 
+ when params[:option] == 'Browse userids'
+  @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
+  render "index"
+  return
+when params[:option] == "Create userid"
+  redirect_to :action => 'new' 
+  return
+when params[:option] == "Select specific email"
+  @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+  @location = 'location.href= "select?email=" + this.value'
+  @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
+when params[:option] == "Select specific userid"
+  @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+  @location = 'location.href= "select?userid=" + this.value'
+  @prompt = "Select userid for #{session[:syndicate]}"
+when params[:option] == "Select specific surname/forename"
+  @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
+  @location = 'location.href= "select?name=" + this.value'
+  @prompt = "Select surname/forename for #{session[:syndicate]}"
+else
+  flash[:notice] = 'Invalid option'
+  p 'Invalid option'
   params[:option] = nil
-  @manage_syndicate = session[:syndicate]
+  redirect_to :back
+  return   
+end
+ params[:option] = nil
+ @manage_syndicate = session[:syndicate]
 end
 
 def select

@@ -2,7 +2,7 @@ class CountriesController < InheritedResources::Base
 
 
 def index
-      if session[:userid].nil? || params[:option] != 'manager'
+      if session[:userid].nil?
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
   
