@@ -90,8 +90,8 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to @current_page
   end
   def my_own
-    p 'have entered my_own'
     get_user_info_from_userid
+    session[:my_own] = true
     @freereg1_csv_file = Freereg1CsvFile.new
     @who =  @first_name
     if session[:userid].nil? 
@@ -109,8 +109,6 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_error_files
     get_user_info_from_userid
-    p @user
-    p @userid
     @who = @user.userid
     @sorted_by = '(Sorted by number of errors)'
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC").page(params[:page])
@@ -133,8 +131,6 @@ class Freereg1CsvFilesController < ApplicationController
 
   def error
     #display the errors in a batch
-    p 'arrived in errors'
-    p params
     load(params[:id])
     set_controls
     get_user_info_from_userid
@@ -147,7 +143,7 @@ class Freereg1CsvFilesController < ApplicationController
   def by_userid
     #entry by userid
     session[:page] = request.original_url
-    session[:my_own] = 'no'
+    session[:my_own] = false
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]

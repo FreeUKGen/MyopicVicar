@@ -1,12 +1,13 @@
 class ManageCountiesController < ApplicationController
 
- def index
+def index
   redirect_to :action => 'new'
 end
 def new
   #get county to be used
   session[:chapman_code] = nil
   session[:county] = nil
+  session[:my_own] = false
   get_user_info_from_userid
   get_counties_for_selection
   if @number_of_counties == 0 
@@ -29,7 +30,7 @@ end
 
 def select_action
    get_user_info_from_userid
-  if session[:chapman_code].nil?
+  if session[:chapman_code].nil? || session[:chapman_code] != params[:county]
     session[:chapman_code] = params[:county]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
@@ -40,7 +41,7 @@ def select_action
 end
 
 def work_all_places
-   get_user_info_from_userid
+  get_user_info_from_userid
   session[:active_place] = 'All'
   redirect_to places_path
 end
@@ -115,7 +116,7 @@ def files
   p "file selection"
   p params 
   get_user_info_from_userid
-  @county = session[:county]
+   @county = session[:county]
   @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page]) 
   if @freereg1_csv_files.length == 1
    file = @freereg1_csv_files.first

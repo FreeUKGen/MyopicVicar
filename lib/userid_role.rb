@@ -47,30 +47,47 @@ module UseridRole
         "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
         "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename" 
         }
-        FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by number of errors then name', 'List by name', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
+        FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
         FILE_OPTIONS_TRANSLATION ={
         'Upload New Batch' =>  "/csvfiles/new",
-        'List by number of errors then name' =>  "/freereg1_csv_files/selection?option=List by number of errors then name",
-        'List by name' =>  "/freereg1_csv_files/selection?option=List by name",
+        'List by Number of Errors then Filename' =>  "/freereg1_csv_files/selection?option=List by Number of Errors then Filename",
+        'List by Filename' =>  "/freereg1_csv_files/selection?option=List by Filename",
         'List by uploaded date (ascending)' =>  "/freereg1_csv_files/selection?option=List by uploaded date (ascending)",
         'List by uploaded date (descending)'  =>  "/freereg1_csv_files/selection?option=List by uploaded date (descending)"
         }
-        COUNTY_MANAGEMENT_OPTIONS = ['Work with All Places', 'Work with Active Places','Review Batches with errors',
-          'Review Batches listed by filename', 'Upload New Batch', 'Review Batches listed by userid then filename',
-          'Review Batches listed by descending date', 'Review Batches listed by ascending date','Review a specific Batch']
+        COUNTY_MANAGEMENT_OPTIONS = ['Work with All Places', 'Work with Active Places','Review Batches with Errors',
+          'Review Batches by Filename', 'Upload New Batch', 'Review Batches by Userid then Filename',
+          'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch']
         COUNTY_OPTIONS_TRANSLATION = {
           'Work with All Places' => "/manage_counties/selection?option=Work with All Places",
           'Work with Active Places' => "/manage_counties/selection?option=Work with Active Places",
-          'Review Batches with errors' => "/manage_counties/selection?option=Review Batches with errors",
-          'Review Batches listed by filename' => "/manage_counties/selection?option=Review Batches listed by filename",
+          'Review Batches with Errors' => "/manage_counties/selection?option=Review Batches with Errors",
+          'Review Batches by Filename' => "/manage_counties/selection?option=Review Batches by Filename",
           'Upload New Batch'  => "/manage_counties/selection?option=Upload New Batch",
-          'Review Batches listed by userid then filename' => "/manage_counties/selection?option=Review Batches listed by userid then filename",
-          'Review Batches listed by descending date' => "/manage_counties/selection?option=Review Batches listed by descending date",
-          'Review Batches listed by ascending date' => "/manage_counties/selection?option=Review Batches listed by ascending date",
-          'Review a specific Batch'=> "/manage_counties/selection?option=Review a specific Batch"
+          'Review Batches by Userid then Filename' => "/manage_counties/selection?option=Review Batches by Userid then Filename",
+          'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
+          'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
+          'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch"
         }
-
-
+        SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
+          'Select Specific Member by Email Address','Select Specific Member by Surname/Forename','Review Batches with Errors','Review Batches by Filename', 'Upload New Batch',
+          'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
+          'Review Specific Batch']
+        SYNDICATE_OPTIONS_TRANSLATION = {
+          'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
+          'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
+          'Select Specific Member by Userid'=> "/manage_syndicates/selection?option=Select Specific Member by Userid",
+          'Select Specific Member by Email Address'=> "/manage_syndicates/selection?option=Select Specific Member by Email Address",
+          'Select Specific Member by Surname/Forename' => "/manage_syndicates/selection?option=Select Specific Member by Surname/Forename",
+          'Review Batches with Errors'=> "/manage_syndicates/selection?option=Review Batches with Errors",
+          'Review Batches by Filename' => "/manage_syndicates/selection?option=Review Batches by Filename",
+          'Upload New Batch'=> "/manage_syndicates/selection?option=Upload New Batch",
+          'Review Batches by Userid then Filename' => "/manage_syndicates/selection?option=Review Batches by Userid then Filename",
+          'Review Batches by Most Recent Date of Change' => "/manage_syndicates/selection?option=Review Batches by Most Recent Date of Change",
+          'Review Batches by Oldest Date of Change' => "/manage_syndicates/selection?option=Review Batches by Oldest Date of Change",
+          'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch"
+        }
+     
 
 
 

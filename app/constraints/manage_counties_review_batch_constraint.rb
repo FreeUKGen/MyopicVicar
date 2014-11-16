@@ -1,7 +1,7 @@
 class  ManageCountiesReviewBatchConstraint  
  
      def self.matches?(request)
-      request.query_parameters['option'] ==  'Review a specific Batch'
+      request.query_parameters['option'] ==  'Review Specific Batch'
      end
   end
   

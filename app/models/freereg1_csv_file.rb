@@ -444,19 +444,23 @@ def date_change(transcription_date,modification_date)
  end
 
 def lock(type)
-  if  type == 'my_own'
-     if  self.locked_by_transcriber == 'false'
+  
+if  type
+   if  self.locked_by_transcriber == 'false'
       self.update_attributes(:locked_by_transcriber => 'true')
-     else
+   else
       self.update_attributes(:locked_by_transcriber => 'false')
-     end
-    else 
-     if  self.locked_by_coordinator == 'false'
+   end
+else
+
+   if  self.locked_by_coordinator == 'false'
        self.update_attributes(:locked_by_coordinator => 'true')
-     else
+       self.update_attributes(:locked_by_transcriber => 'false')
+   else
        self.update_attributes(:locked_by_coordinator => 'false')
-     end
-    end
+       self.update_attributes(:locked_by_transcriber => 'false')
+   end
+  end
 end
 
 def are_we_changing_location?(param)
@@ -474,10 +478,11 @@ def old_place
 end
 
 def check_locking_and_set(param,sess)
-    unless ((self.locked_by_transcriber == "true" && param[:locked_by_transcriber] == "false") ||  (self.locked_by_coordinator == "true"  &&  param[:locked_by_coordinator]  == "false"))
-      self.update_attributes(:locked_by_transcriber => "true") if sess[:my_own] == 'my_own' 
-      self.update_attributes(:locked_by_coordinator => "true") unless sess[:my_own] == 'my_own'
-    end 
+  if sess[:my_own]
+     self.update_attributes(:locked_by_transcriber => "true")
+  else
+   self.update_attributes(:locked_by_coordinator => "true")
+  end 
 end
 
 end

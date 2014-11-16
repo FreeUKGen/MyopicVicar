@@ -1,20 +1,4 @@
-<% if @user.person_role == 'system_administrator'%>
-<p style="text-align: center"><b>Userid Profile Management for REGManager</b></p>
-
-<%else%>
-<p style="text-align: center"><b>Syndicate Members Management for <%=session[:syndicate]%></b></p>
- <% end %>
-
-
-<% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<%end%>
-<% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
-<%end%>
-
-<div style="clear:both;"> </div><br>
-
+<p style="text-align: center"><b>Syndicate Members Management for <%=session[:syndicate]%> :<%=@sorted_by%></b></p>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -24,7 +8,7 @@
 <%= paginate @userids %> 
 
 <div id="main"style="color:black">
-<table  CLASS="boldtable" style="width: 100%">
+<table  class="table--bordered  table--striped  table--data">
   <tr>
     
     <th style="width:14%">UserID</th>

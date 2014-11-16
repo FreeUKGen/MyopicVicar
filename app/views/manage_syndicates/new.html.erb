@@ -1,0 +1,12 @@
+  <p><%= @first_name%> you have access to a number of syndicates </p>
+
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+<%= semantic_form_for @manage_syndicate do |f| %>
+  <%= f.input :action, { :as => :select, :include_blank => false,  :label => @prompt,:required => true, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%></div> 
+<% end %> 
+
+

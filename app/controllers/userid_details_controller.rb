@@ -7,7 +7,7 @@ class UseridDetailsController < ApplicationController
  def index
   get_user_info(session[:userid],session[:first_name])
   session[:type] = "manager"
-  session[:my_own] = "no"
+  session[:my_own] = false
   @role = session[:role]
   @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page]) 
 end #end method
@@ -34,7 +34,7 @@ def all
 end
 
 def my_own
-  session[:my_own] = 'my_own'
+  session[:my_own] = true
   get_user_info_from_userid
   @userid = @user
   render :action => 'show'
@@ -43,7 +43,7 @@ end
 def edit
   session[:type] = "edit"
   get_user_info_from_userid
-    @userid = @user if  session[:my_own] == 'my_own'
+    @userid = @user if  session[:my_own] 
   load(params[:id])
   
 
@@ -114,7 +114,7 @@ def selection
   p params
   get_user_info_from_userid
   @userid = @user
-  session[:syndicate] = 'all' if @user.person_role == 'system_administrator' || session[:option] == 'access'
+ # session[:syndicate] = 'all' if @user.person_role == 'system_administrator' || session[:option] == 'access'
  
   case 
   when params[:option] == 'Browse userids'
@@ -127,15 +127,15 @@ def selection
   when params[:option] == "Select specific email"
     @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
     @location = 'location.href= "select?email=" + this.value'
-    @prompt = 'Please select an email address from the following list'
+    @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
   when params[:option] == "Select specific userid"
     @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
     @location = 'location.href= "select?userid=" + this.value'
-    @prompt = 'Select userid'
+    @prompt = "Select userid for #{session[:syndicate]}"
   when params[:option] == "Select specific surname/forename"
     @userids = UseridDetail.get_names_for_selection(session[:syndicate]) 
     @location = 'location.href= "select?name=" + this.value'
-    @prompt = 'Select surname/forename'
+    @prompt = "Select surname/forename for #{session[:syndicate]}"
   else
     flash[:notice] = 'Invalid option'
     p 'Invalid option'
