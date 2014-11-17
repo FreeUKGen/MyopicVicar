@@ -121,12 +121,14 @@ end
 
 def update_refinery
   u = Refinery::User.where(:username => self.userid).first
+  unless u.nil?
   u.email = self.email_address
   u.userid_detail_id = self.id.to_s
   u.add_role('Refinery')
   u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
   u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
   u.save 
+  end
 end
 
 def send_invitation_to_create_password
