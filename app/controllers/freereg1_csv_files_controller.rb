@@ -8,7 +8,6 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'syndicate'
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'counties'
-    session[:page] = request.original_url
    end
 
   def show
@@ -87,7 +86,7 @@ class Freereg1CsvFilesController < ApplicationController
       flash[:notice] = 'The update of the batch was successful' 
       @current_page = session[:page]
       session[:page] = session[:initial_page]    
-      redirect_to @current_page
+      redirect_to :back
   end
   def my_own
     get_user_info_from_userid
@@ -179,9 +178,7 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
         flash[:notice] = 'The deletion of the file was unsuccessful; the file is locked' 
-        @current_page = session[:page]
-        session[:page] = session[:initial_page]    
-        redirect_to @current_page 
+        redirect_to :back
         return
     end
      #there can actually be multiple files that are split into seperate counties/places/churches
