@@ -4,21 +4,23 @@ class Syndicate
   include Mongoid::Timestamps::Updated::Short
 
   field :syndicate_code, type: String
+  field :previous_syndicate_code, type: String
   field :syndicate_coordinator, type: String
-   field :syndicate_coordinator_lower_case, type: String
+  field :syndicate_coordinator_lower_case, type: String
   field :previous_syndicate_coordinator, type: String
   field :syndicate_description, type: String
   field :syndicate_notes, type: String
-  field :accepting_transcribers, type: Boolean, default: true 
+  field :accepting_transcribers, type: Boolean, default: true
+  field :changing_name, type: Boolean, default: false
   before_save :add_lower_case_and_change_userid_fields
-
+  after_save :propagate_change_in_code
+  validate :syndicate_code_does_not_exist_on_change, on: :update
  index ({ syndicate_code: 1, syndicate_coordinator: 1 })
  index ({ syndicate_coordinator: 1 })
-index ({ sprevious_syndicate_coordinator: 1 })
+index ({ previous_syndicate_coordinator: 1 })
 
 def  add_lower_case_and_change_userid_fields
-   self.syndicate_coordinator_lower_case = self.syndicate_coordinator.downcase
-  
+  self.syndicate_coordinator_lower_case = self.syndicate_coordinator.downcase
   @old_userid = UseridDetail.where(:userid => self.previous_syndicate_coordinator).first 
   @new_userid = UseridDetail.where(:userid => self.syndicate_coordinator).first
 
@@ -40,6 +42,25 @@ def  add_lower_case_and_change_userid_fields
    @old_userid.save(:validate => false)  unless @old_userid.nil?
    @new_userid.save(:validate => false)  unless @new_userid.nil?
 
+end
+def update_fields_before_applying(parameters) 
+  unless self.syndicate_code ==  parameters[:syndicate_code]
+     parameters[:changing_name] = true
+     parameters[:previous_syndicate_code] = self.syndicate_code
+    end
+  previous_syndicate_coordinator = self.syndicate_coordinator
+  parameters[:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless self.syndicate_coordinator == parameters[:syndicate_coordinator]
+  parameters  
+end
+def propagate_change_in_code
+  if self.changing_name
+  UseridDetail.where(:syndicate => self.previous_syndicate_code).each do |user|
+    user.update_attributes(:syndicate => self.syndicate_code)
+   end
+  end
+end
+def syndicate_code_does_not_exist_on_change
+  errors.add(:syndicate_code, "Syndicate Already exits") if (Syndicate.where(:syndicate_code => self.syndicate_code).exists? && self.changing_name)
 end
 
 def self.get_syndicates_open_for_transcription

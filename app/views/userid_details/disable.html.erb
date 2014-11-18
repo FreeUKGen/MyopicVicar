@@ -5,10 +5,4 @@
 <%= f.input :disabled_reason,:label => "Reason for making inactive :",:input_html => { :size => 60 }%>
  <%= f.action :submit, :as => :input, :label => 'Update'   %>
  <% end %>
- <% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<%end%>
-<% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Mangement Tools Page', manage_syndicates_path, method: :get %></div>
-<%end%>
-<div style="clear:both;"> </div><br>
+

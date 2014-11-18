@@ -1,32 +1,48 @@
 <% require 'record_type' %>
 
 
-<p style="text-align: center">Registers held in the FreeREG database for <b><%= @church %></b> in
+<p style="text-align: center">Registers held in the FreeREG database for <b><%= @church_name %></b> in
 <b><%= @place_name %>;</b> for <b><%= @county %></b>. Select the register name link to get detailed information on the transcriptions that have been made.
 </p>
 
-<table  class="table--bordered  table--striped  table--data" >
-  <tr>
-     <th>Register Type</th>
-    <th>Source</th>
-    
-    <th>Register notes</th>
-    <th>Record last amended</th>
-    
-    
-   
+    <div id="main"style="color:black">
+<table class="table--bordered  table--striped  table--data">
+  <tr>    
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
   </tr>
 
+  <tr> 
+   <td>Church name :</td><td > <%= @church.church_name %></td>
+  </tr>
+  
+   <% if @names%>
+     <%  @names.each do |name| %>
+         <% unless name == ''%> 
+           <tr><td>Other possible church names :</td><td ><%= name %>  </td>  </tr>
+         <%end%>
+     <%end%>
+   <%end%>
+   
+   <tr>
+   <td>Denomination of the Church :</td><td ><%= @church.denomination %></td>   
+   </tr>
+  
+   <tr>
+   <td>Notes about the Church :</td><td > <%= @church.church_notes %> </td>   
+   </tr>
+    <tr>
+   <td>Record last amended:</td><td > <%= @church.last_amended %></td>   
+   </tr>
+</table>  
+
+<table class="table--bordered  table--striped  table--data">
 <% @registers.each do |register| %>
   <tr> 
    
     <td><%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %> </td> 
     
-    <td><%= register.source %></td>
-    
-    <td><%= register.register_notes %></td>
-    <td><%= register.last_amended %></td>
-    
+        
   </tr>
 <% end %>
 </table>

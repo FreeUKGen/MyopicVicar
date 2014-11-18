@@ -38,17 +38,17 @@ end
 
 def update
     load(params[:id])
-    previous_syndicate_coordinator = @syndicate.syndicate_coordinator
-    params[:syndicate][:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless @syndicate.syndicate_coordinator == params[:syndicate][:syndicate_coordinator]
-    @syndicate.update_attributes(params[:syndicate])
+    my_params = params[:syndicate]
+    my_params = @syndicate.update_fields_before_applying(my_params) 
+    @syndicate.update_attributes(my_params)
     if @syndicate.errors.any?
-
+       get_userids_and_transcribers
        flash[:notice] = "The change to the Syndicate was unsuccessful"
        render :action => 'edit'
        return
    else
+    @syndicate.update_attributes(:changing_name => false) if @syndicate.changing_name
     flash[:notice] = "The change to the Syndicate was successful"
-
     redirect_to syndicates_path
 end
 

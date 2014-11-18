@@ -1,6 +1,10 @@
 
 <p style="text-align: center"><b>Editing a Syndicate</b></p>
-
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+   <% end %>
 
 <%= semantic_form_for @syndicate,  :html => { :class =>  "grid"} do |f| %>
 
