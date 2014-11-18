@@ -99,7 +99,6 @@ end
 def selection
   get_user_info_from_userid
   @userid = @user
- # session[:syndicate] = 'all' if @user.person_role == 'system_administrator' || session[:option] == 'access'
  case 
  when params[:option] == 'Browse userids'
   @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
@@ -197,8 +196,8 @@ def create
   else
    @userid.send_invitation_to_create_password
    @userid.write_userid_file
-   flash[:notice] = 'The addition of the user deatils was successful'
-   next_place_to_go_successful_create(@userid)
+   flash[:notice] = 'The addition of the user details was successful'
+    redirect_to :back
  end
 end
 
@@ -218,7 +217,7 @@ def update
     next_place_to_go_unsuccessful_update
   else
    flash[:notice] = 'The update of the user details was successful'
-   next_place_to_go_successful_update(@userid)
+  next_place_to_go_successful_update(@userid)
  end
 end
 

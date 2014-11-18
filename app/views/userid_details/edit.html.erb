@@ -1,13 +1,4 @@
 <p style="text-align: center"><b>Editing profile for :<%=@userid.userid %></b></p>
-<% if @role =='counties' %>
-<div  style="float:left;"> <%= button_to 'County Management Tools Page', manage_counties_path, method: :get %></div>
-<%end%>
-<% if @role =='syndicate' %>
-<div  style="float:left;"> <%= button_to 'Syndicate Management Tools Page', manage_syndicates_path, method: :get %></div>
-<%end%>
-
-
-<div style="clear:both;"> </div><br>
 
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>

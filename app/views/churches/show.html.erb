@@ -1,5 +1,4 @@
 <%require 'register_type' %>
-Page Identification Churches:show<p>
  <p style="text-align: center"> Place: <b><%= @place_name %></b> in the County of:   <b><%= @county %></b></p>
 
   
@@ -9,9 +8,6 @@ Page Identification Churches:show<p>
 <div  style="float:left;"><%= button_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } %></div>
 <div style="float:left;"><%= button_to 'Create Register', new_register_path , method: :get %></div>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
- 
 <div style="clear:both;"> </div><br> 
 
 

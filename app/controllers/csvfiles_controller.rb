@@ -74,9 +74,7 @@ def edit
   @file = Freereg1CsvFile.find(params[:id])
   if @file.locked_by_transcriber == 'true' ||  @file.locked_by_coordinator == 'true'
         flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock' 
-        @current_page = session[:page]
-        session[:page] = session[:initial_page]    
-        redirect_to @current_page 
+        redirect_to :back 
         return
     end
   @csvfile.file_name = @file.file_name
@@ -131,7 +129,7 @@ def update
       else
         @current_page = session[:page]
         session[:page] = session[:initial_page]
-        redirect_to @current_page
+        redirect_to :back
       end #role
    
   end  #commit
