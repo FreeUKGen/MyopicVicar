@@ -39,13 +39,8 @@ class FreeregContentsController < ApplicationController
      @county = session[:county]
      @place_name = @church.place.place_name
      @place = @church.place
-     @church = @church.church_name
+     @church_name = @church.church_name
      @county_id =  session[:county_id]
-     session[:church] = @church
-     session[:place] = @place_name
-     session[:place_id] = @place.id
-    
-    
      @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
 
@@ -58,9 +53,13 @@ class FreeregContentsController < ApplicationController
       @county_id =  session[:county_id]
      session[:register_id] = params[:id]
      @register = Register.find(params[:id])
+
     @register_name = @register.register_name 
     @register_name = @register.alternate_register_name if @register_name.nil?
      session[:register_name] = @register_name
+     @church = @register.church.church_name
+     @place_name = @register.church.place.place_name
+
     individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
      @files = Freereg1CsvFile.combine_files(individual_files)
     

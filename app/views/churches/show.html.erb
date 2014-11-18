@@ -21,37 +21,7 @@ Page Identification Churches:show<p>
     <%= flash[:notice] %> <br>
     </div>
    <% end %>  
-    <div id="main"style="color:black">
-<table style="width: 100%">
-  <tr>    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-  </tr>
 
-  <tr> 
-   <td>Church name :</td><td > <%= @church.church_name %></td>
-  </tr>
-  
-   <% if @names%>
-     <%  @names.each do |name| %>
-         <% unless name == ''%> 
-           <tr><td>Other possible church names :</td><td ><%= name %>  </td>  </tr>
-         <%end%>
-     <%end%>
-   <%end%>
-   
-   <tr>
-   <td>Denomination of the Church :</td><td ><%= @church.denomination %></td>   
-   </tr>
-  
-   <tr>
-   <td>Notes about the Church :</td><td > <%= @church.church_notes %> </td>   
-   </tr>
-    <tr>
-   <td>Record last amended:</td><td > <%= @church.last_amended %></td>   
-   </tr>
-</table>  
- <table>
 
 <tr>
 <% @church.registers.order_by(register_type: 1).each do |register| %>
