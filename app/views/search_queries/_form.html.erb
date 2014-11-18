@@ -5,7 +5,7 @@
   
 <%= semantic_form_for(@search_query, :html => { :class => "grid"}) do |f| %>
 
-  <%= f.semantic_errors %>
+  <%= f.semantic_errors :class => "validation-list__error" %>
   <%= f.inputs do %>
     <%= f.input :last_name, 
     			:input_html => 
@@ -20,6 +20,7 @@
 						:class => "text-input" }, 
 				:wrapper_html => 
 					{ 	:class => "grid__item  one-whole  palm-one-whole" } %>
+
     <%= f.input :fuzzy, 
     			:as => :boolean, 
     			:input_html => {:class => "checkbox"} , 

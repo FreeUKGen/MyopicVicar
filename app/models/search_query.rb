@@ -148,7 +148,7 @@ class SearchQuery
 
   def name_not_blank
     if first_name.blank? && last_name.blank?
-      errors.add(:last_name, "Both name fields cannot be blank.")
+      errors.add(:first_name, "Both name fields cannot be blank.")
     end
   end
 
