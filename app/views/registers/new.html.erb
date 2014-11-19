@@ -1,10 +1,5 @@
- Page Identification Registers:new<p><p style="text-align: center">Create a new register for <%= @church_name%> of <%= @place%> in <%= @county%></p>
-
-<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
-
-<div style="clear:both;"> </div><br>
+<p style="text-align: center">Create a new Register for <b><%= @church_name %></b> in 
+   <b><%= @place_name %></b> for the County of:  <b><%= @county %></b>
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -13,4 +8,4 @@
    <% end %> 
 
 <%= render 'form' %>
-
+<%= render "resource_sidebar" %>
