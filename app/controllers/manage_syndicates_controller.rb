@@ -19,7 +19,7 @@ def new
   if number_of_syndicates == 1 
     @syndicates = @syndicates[0]
     session[:syndicate] =  @syndicates
-    redirect_to :action => 'select_action?'
+    redirect_to :action => 'select_action'
     return
   end
   @manage_syndicate = ManageSyndicate.new
