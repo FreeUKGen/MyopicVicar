@@ -17,8 +17,8 @@ def new
     return
   end
   if number_of_syndicates == 1 
-    @syndicates = @syndicates[0]
-    session[:syndicate] =  @syndicates
+    @syndicate = @syndicates[0]
+    session[:syndicate] =  @syndicate
     redirect_to :action => 'select_action'
     return
   end
