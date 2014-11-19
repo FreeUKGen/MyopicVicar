@@ -14,6 +14,8 @@ class Register
   field :copyright,  type: String
   field :register_notes,  type: String
   field :last_amended, type: String
+  field :minimum_year_for_register
+  field :maximum_year_for_register
   
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
