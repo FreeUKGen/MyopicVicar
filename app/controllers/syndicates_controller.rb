@@ -11,7 +11,7 @@ class SyndicatesController < ApplicationController
   end
 
   def new
-    @first_name = session[:first_name]
+    get_user_info_from_userid
     @syndicate = Syndicate.new
     get_userids_and_transcribers
 end
@@ -62,7 +62,7 @@ def show
     @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? 
 end
 def selection
-  get_user_info(session[:userid],session[:first_name])
+  get_user_info_from_userid
   session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
   case 
     when params[:synd] == 'Browse syndicates'
@@ -95,7 +95,7 @@ def selection
       @syndicate = session[:syndicate]
 end
 def select
-  get_user_info(session[:userid],session[:first_name])
+  get_user_info_from_userid
   case 
   when !params[:synd].nil? 
     if params[:synd] == ""
@@ -122,6 +122,7 @@ end
 def load(id)
     @first_name = session[:first_name]
     @syndicate = Syndicate.find(id)
+    get_user_info_from_userid
 end
 
 def get_userids_and_transcribers
