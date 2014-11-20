@@ -21,14 +21,26 @@
 <% end %>
 
 
-<h1><%= @search_query.result_count %> Search Results</h1>
+<h2><%= @search_query.result_count %> Search Results</h2>
 
-<div id="query_parameters">
+
+        <section class="island  island--light">
+          <div class="criteria-group">
 	<% search_params_for_display(@search_query).each do |name, value| %>
-		<%= name %>: <strong><%= value %></strong><br />
+            <dl class="criteria">
+              <dt class="criteria__name"><%= name %></dt>
+              <dd class="criteria__value"><%= value %></dd>
+            </dl>
+
 	<% end %>
-	<i><%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number))%></i>
-</div>
+		<span>
+			<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number))%>
+		</span>
+	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+
+          </div>
+        </section>
+
 <% if @search_results.size == 0 %>
     No results found!
 <% else %>
