@@ -21,6 +21,7 @@ end
 def edit
 	load(params[:id])
 	get_userids_and_transcribers
+   redirect_to :back
 end
 def selection
   get_user_info(session[:userid],session[:first_name])

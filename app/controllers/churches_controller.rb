@@ -85,6 +85,7 @@ end
           @user = UseridDetail.where(:userid => session[:userid]).first
           #set default place name
          # @church.update_attributes(:place_name => @place_name)
+          redirect_to :back
   end
 
   def update

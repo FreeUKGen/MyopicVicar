@@ -45,6 +45,7 @@ class PlacesController < ApplicationController
       get_places_counties_and_contries
       @place_name = Place.find(session[:place_id]).place_name
       session[:type] = 'edit'
+       redirect_to :back
   end
 
 def new

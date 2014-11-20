@@ -19,6 +19,7 @@ end
 def edit
     load(params[:id])
     get_userids_and_transcribers
+    redirect_to :back
 end
 
 def create
