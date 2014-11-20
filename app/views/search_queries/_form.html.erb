@@ -12,33 +12,32 @@
     				{ 	:size => 20, 
     					:class => "text-input" }, 
 				:wrapper_html => 
-					{ :class => "grid__item  one-whole  palm-one-whole" } %>
+					{ :class => "grid__item  one-third  palm-one-whole" } %>
     <%= f.input :first_name, 
     			:input_html => 
     				{ 	:length => 10, 
 						:size => 20,  
 						:class => "text-input" }, 
 				:wrapper_html => 
-					{ 	:class => "grid__item  one-whole  palm-one-whole" } %>
+					{ 	:class => "grid__item  one-third  palm-one-whole" } %>
 
     <%= f.input :fuzzy, 
     			:as => :boolean, 
     			:input_html => {:class => "checkbox"} , 
-    			:wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
+    			:wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } %>
   <% end %>
   <%= f.inputs do %>
-    <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-half  palm-one-whole" }%>
-    <%= f.input :end_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
-  <% end %>
-  <%= f.inputs do %>
-
+    <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" }%>
+    <%= f.input :end_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } %>
     <%= f.input :record_type,
 				{ :as => :select,
 				  :required => false,
 				  :include_blank => true,
 				  :collection => RecordType::OPTIONS,
 				  :input_html => { :class => "select" }, 
-				  :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" } } %>
+				  :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } } %>
+  <% end %>
+  <%= f.inputs do %>
     <%= f.input :chapman_codes, 
 				{ :as => :select, 
 				  :include_blank => true,
@@ -46,9 +45,9 @@
          		  :collection => ChapmanCode::select_hash_with_parenthetical_codes,
          		  :label => 'County',
          		  :input_html => { :multiple => true, :class => "select" }, 
-         		  :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" } } %>
+         		  :wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } } %>
 
-    <li class="select input optional grid__item  one-whole  palm-one-whole" id="search_query_places_input">
+    <li class="select input optional grid__item  one-half  palm-one-half" id="search_query_places_input">
 	<label class=" label" for="search_query_place_ids">Place</label>
 	<select id="search_query_place_ids" name="search_query[place_ids][]" class="text-input">
 		<option value="">--</option>
@@ -60,14 +59,15 @@
 				:as => :boolean,
 				:label => "Search nearby places?",
          		:input_html => { :class => "checkbox" }, 
-         		:wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" } %>
+         		:wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
 
 
     <%= f.input :inclusive, 
     			:as => :boolean, 
 				:label => "Search family members?",
      		  	:input_html => { :class => "checkbox" }, 
-     		  	:wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" } %>
+     		  	:wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
+
   <% end %>
 
   <%= f.actions do %>
