@@ -49,12 +49,12 @@
 					}, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
 				}
 			};
-			grunticon(["assets/styles/css/icons.data.svg.css", "assets/styles/css/icons.data.png.css", "assets/styles/css/icons.fallback.css"]);
+			grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
 		</script>
 		<noscript>
 			<link rel="stylesheet" type="text/css" href="styles/css/icons.fallback.css">
 		</noscript>
-
+     
 		<!-- Styles -->
 		<%= stylesheet_link_tag "styles/css/palm.min" %>
 		<%= stylesheet_link_tag "styles/css/lap_and_up.min" %>
@@ -72,14 +72,10 @@
 		<%= javascript_include_tag "application" %>
 	</head>
 	<body>
-		<% if false %>
-		<div id="container" >
-			<h2 id='logo' style="text-align: center"> <%= link_to Refinery::Core.site_name, refinery.root_path %> </h2>
-		</div>
-		<% end %>
-
 		<%= render "layouts/main_nav" %>
 
+
+		
 		<div class="offcanvas__primary">
 			<%= render "layouts/header" %>
 
