@@ -1,6 +1,6 @@
 
 <% content_for :sidebar do %>
-  <b><%=@first_name%> your functions</b>
+  <b><%=@first_name%> these are your functions</b>
   <%@roles.each do |role| %>
     <%= button_to role, UseridRole::OPTIONS_TRANSLATION[role], method: :get %> 
    <%end%>
