@@ -19,7 +19,6 @@ end
 def edit
     load(params[:id])
     get_userids_and_transcribers
-    redirect_to :back
 end
 
 def create
@@ -38,10 +37,10 @@ end
 end
 
 def update
-    load(params[:id])
-    my_params = params[:syndicate]
-    my_params = @syndicate.update_fields_before_applying(my_params) 
-    @syndicate.update_attributes(my_params)
+  load(params[:id])
+  my_params = params[:syndicate]
+  my_params = @syndicate.update_fields_before_applying(my_params) 
+  @syndicate.update_attributes(my_params)
     if @syndicate.errors.any?
        get_userids_and_transcribers
        flash[:notice] = "The change to the Syndicate was unsuccessful"
@@ -132,18 +131,30 @@ def get_userids_and_transcribers
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
         @userids = UseridDetail.all.order_by(userid_lower_case: 1)
     when  @user.person_role == 'country_cordinator'
-    @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
-when  @user.person_role == 'county_coordinator'  
-    @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
-when  @user.person_role == 'sydicate_coordinator'  
-    @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
-else
-    @userids = @user
-end #end case
-@people =Array.new
-@userids.each do |ids|
-    @people << ids.userid
+         @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+     when  @user.person_role == 'county_coordinator'  
+         @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
+     when  @user.person_role == 'sydicate_coordinator'  
+         @userids = UseridDetail.where(:syndicate => @user.syndicate ).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate  
+     else
+          @userids = @user
+     end #end case
+     @people =Array.new
+     @userids.each do |ids|
+        @people << ids.userid
+       end
 end
+
+def destroy
+    load(params[:id])
+     if UseridDetail.where(:syndicate => @syndicate.syndicate_code).exists?
+      flash[:notice] = 'The deletion of the Syndicate cannot proceed as it still has members.'
+      redirect_to syndicate_path(@syndicate)
+     else
+     @syndicate.destroy
+     flash[:notice] = 'The deletion of the Register was successful'
+     redirect_to syndicates_path
+     end
 end
 end
 

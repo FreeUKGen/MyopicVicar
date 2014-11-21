@@ -1,45 +1,125 @@
-<%= semantic_form_for @userid do |f| %>
-<div id="main"style="color:black">
+<section class="island  island--light">
+<%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
 <%if session[:type] == "add"%>
-<%= f.input :userid,:label => "The UserID itself:",:input_html => { :size => 30 }%>
-<%= f.input :syndicate, { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true,
-:collection => @syndicates, :size => 15 } %>
+  
+<%= f.input :userid,:label => "The UserID itself:",
+              :input_html =>
+              { :size => 40 , :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :syndicate,
+               { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true, :collection => @syndicates, :size => 15,
+              :input_html => { :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%>
 <%else%>
 <%if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
-<%= f.input :userid, :label => "The UserId itself:",:input_html => { :disabled => true ,:size => 30 } %>
-<%= f.input :syndicate, { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true,
-:collection => @syndicates, :size => 15 } %>
+<%= f.input :userid, :label => "The UserId itself:",
+              :input_html =>
+              { :size => 40 ,  :disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :syndicate,
+              { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true, :collection => @syndicates, :size => 15,
+              :input_html => { :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%>
 <%else%>
-<%= f.input :userid, :label => "The UserId itself:",:input_html => { :disabled => true ,:size => 30 } %>
-<%= f.input :syndicate,:label => "Syndicate :",:input_html => {:disabled => true , :size => 40 }%>
+<%= f.input :userid, :label => "The UserId itself:",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :syndicate,:label => "Syndicate :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
 <%end%>
 <%end%>
-<%= f.input :person_forename,:label => "Forename :",:input_html => { :size => 40 }%>
-<%= f.input :person_surname,:label => "Surname :",:input_html => { :size => 40 }%>
-<%= f.input :email_address,:label => "Email :",:input_html => { :size => 60 }%>
-<%= f.input :address,:label => "Physical location :",:input_html => { :size => 100 }%>
+<%= f.input :person_forename,:label => "Forename :",
+              :input_html =>
+              { :size => 40 , :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :person_surname,:label => "Surname :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :email_address,:label => "Email :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :address,:label => "Physical location :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
 <%unless @user.person_role == 'researcher' %>
-<%= f.input :telephone_number,:label => "Telephone :",:input_html => { :size => 40 }%>
-<%= f.input :fiche_reader, {:as => :select, :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :", :size => 5}%>
-<%= f.input :transcription_agreement,{:as => :select, :collection => [true,false],:include_blank => false,:label => "Transcription agreement accepted:", :size => 5}%>
-
+<%= f.input :telephone_number,:label => "Telephone :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :fiche_reader,
+              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :", :size => 5,
+              :input_html => {  :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%>
+<%= f.input :transcription_agreement,
+              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Transcription agreement accepted:", :size => 5,
+              :input_html => {  :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%>
 <% if session[:manager] == true %>
-<%= f.input :active,{:as => :select, :collection => [true,false],:include_blank => false,:label => "Active :", :size => 5}%>
-<%= f.input :disabled_date,:label => "Date made inactive :",:input_html => { :size => 30 }%>
-<%= f.input :disabled_reason,:label => "Reason for making inactive :",:input_html => { :size => 60 }%>
-<%= f.input :skill_level, {:as => :select, :collection => UseridRole::SKILLS, :include_blank => false,:label => "Person's transcription level skill :", :size => 8 } %>
-<%= f.input :person_role,:label => "Role in Freereg :",:input_html => { :disabled => true, :size => 30 }%>
+<%= f.input :active,
+              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Active :", :size => 5,
+              :input_html => { :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%>
+<%= f.input :disabled_date,:label => "Date made inactive :",
+              :input_html =>
+              { :size => 40 , :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :disabled_reason,:label => "Reason for making inactive :",
+              :input_html =>
+              { :size => 40 , :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :skill_level,
+              {:as => :select, :collection => UseridRole::SKILLS, :include_blank => false,:label => "Person's transcription level skill :", :size => 8,
+              :input_html => {  :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%> 
+<%unless @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
+<%= f.input :person_role,:label => "Role in Freereg :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<% end %>
 <%end%>
-<%= f.input :last_upload,:label => "Date of last upload :",:input_html => { :disabled => true ,:size => 30 }%>
-<%= f.input :sign_up_date,:label => "Date signed up :",:input_html => { :disabled => true, :size => 30 }%>
+<%= f.input :last_upload,:label => "Date of last upload :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :sign_up_date,:label => "Date signed up :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
 <%if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
-<%= f.input :person_role, {:as => :select, :collection => UseridRole::VALUES, :include_blank => false,:label => "Person's role in FreeREG :", :size => 8 } %>
+<%= f.input :person_role,
+              {:as => :select, :collection => UseridRole::VALUES, :include_blank => false,:label => "Person's role in FreeREG :", :size => 8,
+              :input_html => {:class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%> 
 <% end %>
 <%= f.action :submit, :as => :input, :label => 'Submit' %>
 <% end %>
-</div>
-
-
- <% end %>
-</div>
-
+<% end %>
+</section>

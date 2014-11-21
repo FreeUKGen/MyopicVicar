@@ -45,7 +45,7 @@ class PlacesController < ApplicationController
       get_places_counties_and_contries
       @place_name = Place.find(session[:place_id]).place_name
       session[:type] = 'edit'
-       redirect_to :back
+      
   end
 
 def new
@@ -81,7 +81,6 @@ def create
 def update
     load(params[:id])
     if session[:type] == 'relocate' #place_name_change
-      p "relocating"
       if  ChapmanCode.values_at(params[:place][:county]) == session[:chapman_code]
         #not changing county
         successful = @place.change_name(params[:place][:place_name],params[:place][:county])
@@ -146,7 +145,7 @@ def update
     load(params[:id])
     unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
       unless @place.churches.count == 0
-       flash[:notice] = 'The Place cannot be disabled because there were dependant churches; please remove them first'
+       flash[:notice] = 'The Place cannot be disabled because there were Dependant churches; please remove them first'
        redirect_to places_path
        return
       end

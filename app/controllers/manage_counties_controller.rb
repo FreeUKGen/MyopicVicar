@@ -102,7 +102,6 @@ def review_a_specific_batch
   get_user_info_from_userid
   @manage_county = ManageCounty.new
   @county = session[:county]
-  p @county
   @files = Array.new
   Freereg1CsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
     @files << file.file_name
@@ -113,9 +112,7 @@ def review_a_specific_batch
   render '_form'
 end
 def files 
-  p "file selection"
-  p params 
-  get_user_info_from_userid
+   get_user_info_from_userid
    @county = session[:county]
   @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page]) 
   if @freereg1_csv_files.length == 1

@@ -29,17 +29,11 @@
   end
 
   def selection
-    p "selecting"
-    p params
-    p params[:option]
     if UseridRole::OPTIONS_TRANSLATION.has_key?(params[:option])
-      p "OK"
       value = UseridRole::OPTIONS_TRANSLATION[params[:option]]
-      p value
       redirect_to value
       return
     else
-      p "failure"
       flash[:notice] = 'Invalid option'
       redirect_to :back
       return 

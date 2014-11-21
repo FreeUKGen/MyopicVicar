@@ -100,8 +100,7 @@ class Register
   end
 
   def self.clean_empty_registers(register)
-    p "cleaning"
-    #clean out empty register/church/places 
+   #clean out empty register/church/places 
     unless register.freereg1_csv_files.exists?
       church = register.church
       place = church.place 
@@ -128,7 +127,6 @@ def new_location(param)
   end
   number_of_registers = new_church.registers.count
   new_alternate_register_name = param[:church_name].to_s + ' ' + param[:register_type].to_s
-  p  number_of_registers
   if number_of_registers == 0
     new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type])
     
@@ -146,12 +144,9 @@ def new_location(param)
 end
 
   def relocate_with_no_files(param)
-    p "register has no files"
    old_location = self.old_location
-   p old_location
    param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
    new_location = self.new_location(param)
-    p new_location
    new_location[:church].save(:validate => false) unless old_location[:church] == new_location[:church]
    new_location[:place].save(:validate => false) unless old_location[:place] == new_location[:place] 
    old_location[:church].registers.where(:_id => old_location[:register]._id).delete_all unless old_location[:register] == new_location[:register] 

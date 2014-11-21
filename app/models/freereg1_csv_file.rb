@@ -346,7 +346,6 @@ def old_location
   location = {:register => old_register, :church => old_church, :place => old_place}
 end
 def new_location(param)
-  p self
   new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false').first
   new_church = Church.where(:place_id =>  new_place._id, :church_name => param[:church_name]).first
   if  new_church.nil?
@@ -366,7 +365,6 @@ def new_location(param)
     end
   end
   new_register.save
-  p new_register
   location = {:register => new_register, :church => new_church, :place => new_place}
 end
 

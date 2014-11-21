@@ -7,7 +7,7 @@
 <%= f.input :register_type, 
               { :as => :select,:include_blank => false, :required => true, :collection => RegisterType::OPTIONS, 
               :size => 2 , :class => "text-input",  :label => "Type of Register :",
-              :input_html => { :multiple => true, :class => "select" }, 
+              :input_html => { :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
   

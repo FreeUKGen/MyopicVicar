@@ -44,7 +44,7 @@ def edit
   @userid = @user if  session[:my_own] 
   load(params[:id])
   @syndicates = Syndicate.get_syndicates
-   redirect_to :back
+  
 end
 
 
@@ -122,7 +122,6 @@ when params[:option] == "Select specific surname/forename"
   @prompt = "Select surname/forename for #{session[:syndicate]}"
 else
   flash[:notice] = 'Invalid option'
-  p 'Invalid option'
   params[:option] = nil
   redirect_to :back
   return   

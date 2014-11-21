@@ -3,10 +3,10 @@
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-</div>
 <% end %>
-
-
+</div>
+ <div style="text-align: center"> <%= button_to 'Create new syndicate', new_syndicate_path, method: :get  %></div>
+ 
 <div id="main"style="color:black">
   <table  class="table--bordered  table--striped  table--data">
     <tr>

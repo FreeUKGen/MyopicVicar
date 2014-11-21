@@ -37,7 +37,7 @@ class Country
   end
 
   unless @new_userid.nil?
-     if @new_userid.country_groups.nil? || @new_userid.country_groups.length == 0 then
+     if @new_userid.country_groups.empty? || @new_userid.country_groups.length == 0 then
        @new_userid.person_role = 'country_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher' || @new_userid.person_role == 'conty_coordinator' )
       end 
     

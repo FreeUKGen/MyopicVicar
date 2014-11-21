@@ -109,7 +109,6 @@ def review_a_specific_batch
   get_user_info_from_userid
   @manage_county = ManageSyndicate.new
   @county = session[:syndicate]
-  p @county
   @files = Array.new
   Freereg1CsvFile.syndicate(session[:syndicate]).order_by(file_name: 1).each do |file|
     @files << file.file_name

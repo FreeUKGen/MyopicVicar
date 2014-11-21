@@ -10,7 +10,7 @@
 <%= f.input :syndicate_coordinator, 
               { :as => :select,:include_blank => false, :required => true, :collection => @people, 
               :size => 5 , :class => "text-input",  :label => "Syndicate Coordinator:",
-              :input_html => { :multiple => true, :class => "select" }, 
+              :input_html => { :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
 <%= f.input :syndicate_description,:label => "Syndicate description :",
@@ -21,7 +21,7 @@
 <%= f.input :accepting_transcribers, 
               { :as => :select,:include_blank => false, :required => true, :collection => [true,false], 
               :size => 2 , :class => "text-input",  :label => "Accepting Transcribers?:",
-              :input_html => { :multiple => true, :class => "select" }, 
+              :input_html => {  :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
   
