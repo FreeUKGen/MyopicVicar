@@ -16,7 +16,6 @@
 		<meta name="description" content="">
 
 		<!--[if lt IE 9]>
-		<!-- TODO: Transform to asset pipelines -->
 		<%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
 		<![endif]-->
 
@@ -25,7 +24,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<%= favicon_link_tag image_path('favicon.ico')%>
-		<!-- TODO: copy icons over -->
 		<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 
 		<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/assets/apple-touch-icon-152x152-precomposed.png">
@@ -58,7 +56,6 @@
 		</noscript>
 
 		<!-- Styles -->
-		<!-- TODO: Change to minified versions once design settles down -->
 		<%= stylesheet_link_tag "styles/css/palm.min" %>
 		<%= stylesheet_link_tag "styles/css/lap_and_up.min" %>
 
@@ -130,27 +127,29 @@
 						<% end %>
 					</div>
 					<% end %>
-
-					<%= render "layouts/footer" %>
-
 				</div>
-				<!-- TODO fix above this -->
+			</main>
 
-				<!-- example offcanvas switching code -->
-				<%= javascript_include_tag "design/scripts/dist/classie.js" %>
-					<script src="scripts/dist/classie.js"></script>
-				<script charset="utf-8">
-					var el = document.getElementById("trigger-offcanvas");
+			<%= render "layouts/footer" %>
 
-					var switchOffCanvas = function() {
-						classie.toggle(document.body, 'offcanvas--active');
-						classie.toggle(el, 'site__header__menu-btn--active');
-					}
-					if (el.addEventListener) {
-						el.addEventListener('click', switchOffCanvas, false);
-					} else if (el.attachEvent) {
-						el.attachEvent('onclick', switchOffCanvas);
-					}
-				</script>
+		</div>
+		<!-- TODO fix above this -->
+
+		<!-- example offcanvas switching code -->
+		<%= javascript_include_tag "design/scripts/dist/classie.js" %>
+		<script src="scripts/dist/classie.js"></script>
+		<script charset="utf-8">
+			var el = document.getElementById("trigger-offcanvas");
+
+			var switchOffCanvas = function() {
+				classie.toggle(document.body, 'offcanvas--active');
+				classie.toggle(el, 'site__header__menu-btn--active');
+			}
+			if (el.addEventListener) {
+				el.addEventListener('click', switchOffCanvas, false);
+			} else if (el.attachEvent) {
+				el.attachEvent('onclick', switchOffCanvas);
+			}
+		</script>
 	</body>
 </html>
