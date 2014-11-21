@@ -31,7 +31,7 @@ class Syndicate
      @old_userid.syndicate_groups.delete_if {|code| code == self.syndicate_code}
    end
    unless @new_userid.nil? then
-     if  @new_userid.syndicate_groups.length == 0 then
+     if   @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.length == 0 then
        @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
      end 
      @new_userid.syndicate_groups = Array.new if  @new_userid.syndicate_groups.empty?
