@@ -116,8 +116,7 @@ end
 def edit
  
     load(params[:id])
-     redirect_to :back
-    
+        
 end
 
 def update

@@ -45,7 +45,7 @@ class Freereg1CsvFilesController < ApplicationController
     #session role is used to control return navigation options
      @role = session[:role]
      get_places_for_menu_selection
-      redirect_to :back
+      
   end
 
 
