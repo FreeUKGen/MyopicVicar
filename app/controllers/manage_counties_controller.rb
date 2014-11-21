@@ -116,7 +116,7 @@ def files
    @county = session[:county]
   @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page]) 
   if @freereg1_csv_files.length == 1
-   file = @freereg1_csv_files.first
+   file = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).first
    redirect_to freereg1_csv_file_path(file)
    return
  else
