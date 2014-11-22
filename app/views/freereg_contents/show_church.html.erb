@@ -1,8 +1,6 @@
 <% require 'record_type' %>
 
-
-<p style="text-align: center">Registers held in the FreeREG database for <b><%= @church_name %></b> in
-<b><%= @place_name %>;</b> for <b><%= @county %></b>. Select the register name link to get detailed information on the transcriptions that have been made.
+<p style="text-align: center">When it was updated on <%= Rails.application.config.dataset_date %> the database contained the following church in <b><%= @place_name %>;</b> for <b><%= @county %></b> with the following characteristics. 
 </p>
 
     <div id="main"style="color:black">
@@ -44,7 +42,7 @@
          <td>Last year of records:</td><td > <%= @stats[2] %></td>   
        </tr>
 </table>  
-
+<p style="text-align: center">The church has transcriptions for the following register(s).</p>
 <table class="table--bordered  table--striped  table--data">
 <% @registers.each do |register| %>
   <tr> 

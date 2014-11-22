@@ -10,14 +10,12 @@ class FreeregContentsController < ApplicationController
   def show
 
    @county = params[:id]
-
    @chapman_code = ChapmanCode.values_at( @county)
    @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
    @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
- 
    session[:page] = request.original_url
    session[:county] = @county
-    session[:county_id]  = params[:id]
+   session[:county_id]  = params[:id]
  
   end
   def show_place
