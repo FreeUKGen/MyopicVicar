@@ -259,6 +259,20 @@ def data_present?
   end #self
   false
 end
-  
+def data_contents
+  min = Time.new.year
+     max = 1500
+     records = 0
+     self.churches.each do |church|
+       church.registers.each do |register|
+        register.freereg1_csv_files.each do |file|
+          min = file.datemin.to_i if file.datemin.to_i < min
+          max = file.datemax.to_i if file.datemax.to_i > max 
+          records = records + file.records.to_i unless file.records.nil?
+        end
+       end
+      end
+    stats =[records,min,max]
+end 
   
 end

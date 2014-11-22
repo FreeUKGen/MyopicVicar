@@ -44,7 +44,15 @@
        <tr>
          <td>Last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>   
        </tr>
-
+       <tr>
+         <td>Number of records:</td><td > <%= @stats[0] %></td>   
+       </tr>
+        <tr>
+         <td>First year of records:</td><td > <%= @stats[1] %></td>   
+       </tr>
+       <tr>
+         <td>Last year of records:</td><td > <%= @stats[2] %></td>   
+       </tr>
      </table> 
 
      <table class="table--bordered  table--striped  table--data">

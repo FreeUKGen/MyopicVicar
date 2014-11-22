@@ -25,8 +25,8 @@ class FreeregContentsController < ApplicationController
      @county = session[:county]
      @place_name = @place.place_name
      @names = @place.get_alternate_place_names
-    
-      @county_id =  session[:county_id]
+     @stats = @place.data_contents   
+     @county_id =  session[:county_id]
      session[:place] = @place_name
      session[:place_id] = @place._id
     
@@ -36,6 +36,7 @@ class FreeregContentsController < ApplicationController
 
   def show_church
      @church = Church.find(params[:id])
+     @stats = @church.data_contents 
      @county = session[:county]
      @place_name = @church.place.place_name
      @place = @church.place
