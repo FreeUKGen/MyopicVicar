@@ -22,7 +22,8 @@ class FreeregContentsController < ApplicationController
   end
   def show_place
      @place = Place.find(params[:id])
-     @county = session[:county]
+     @county =  @place.county
+     @country = @place.country
      @place_name = @place.place_name
      @names = @place.get_alternate_place_names
      @stats = @place.data_contents   
@@ -37,9 +38,9 @@ class FreeregContentsController < ApplicationController
   def show_church
      @church = Church.find(params[:id])
      @stats = @church.data_contents 
-     @county = session[:county]
      @place_name = @church.place.place_name
      @place = @church.place
+     @county = @place.county
      @church_name = @church.church_name
      @county_id =  session[:county_id]
      @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
@@ -49,9 +50,9 @@ class FreeregContentsController < ApplicationController
      @register = Register.find(params[:id])
      @church  = @register.church
      @place = @church.place
+     @county = @place.county
      @files_id = Array.new
      @place_name = @place.place_name
-     @county = session[:county]
      @county_id =  session[:county_id]
      session[:register_id] = params[:id]
      @register_name = @register.register_name 
