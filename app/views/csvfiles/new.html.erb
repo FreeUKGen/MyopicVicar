@@ -14,7 +14,7 @@
 
      <%= f.input :csvfile, :label => "Please select file to upload  :" %><br>
 
-      <%= f.input :userid, {:as => :select,  :collection => @people,:include_blank => false,:label => "Please select userid for whom file is to be loaded  :", :size => 5} unless session[:my_own] == 'my_own' %><br>
+      <%= f.input :userid, {:as => :select,  :collection => @people,:include_blank => false,:label => "Please select userid for whom file is to be loaded  :", :size => 5} unless session[:my_own] %><br>
     
     
      <%= f.submit "Upload" %>

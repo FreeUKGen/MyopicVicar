@@ -15,6 +15,9 @@
   end
 
   def new
+      
+      @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
+      
       @user = current_refinery_user.userid_detail
       @manage_resources = ManageResource.new 
       session[:userid] = @user.userid
@@ -23,9 +26,7 @@
       session[:manager] = manager?(@user)  
       session[:role] = @user.person_role
       @roles = UseridRole::OPTIONS.fetch(session[:role])
-      #@location = 'location.href= "/manage_resources/selection?option=" + this.value'
-      #@prompt = 'Select Function'
-      #redirect_to manage_resource_path(@user) 
+      
   end
 
   def selection
