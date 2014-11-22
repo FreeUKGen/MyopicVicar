@@ -46,22 +46,19 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_register
-     @files_id = Array.new
-     @church  = session[:church]
-     @place_name = session[:place]
-     @county = session[:county]
-     @place = Place.find(session[:place_id])
-      @county_id =  session[:county_id]
-     session[:register_id] = params[:id]
      @register = Register.find(params[:id])
-
-    @register_name = @register.register_name 
-    @register_name = @register.alternate_register_name if @register_name.nil?
+     @church  = @register.church
+     @place = @church.place
+     @files_id = Array.new
+     @place_name = @place.place_name
+     @county = session[:county]
+     @county_id =  session[:county_id]
+     session[:register_id] = params[:id]
+     @register_name = @register.register_name 
+     @register_name = @register.alternate_register_name if @register_name.nil?
      session[:register_name] = @register_name
-     @church = @register.church.church_name
-     @place_name = @register.church.place.place_name
-
-    individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
+     @church = @church.church_name
+     individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
      @files = Freereg1CsvFile.combine_files(individual_files)
     
 
