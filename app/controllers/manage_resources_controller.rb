@@ -15,9 +15,6 @@
   end
 
   def new
-      
-      @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
-      
       @user = current_refinery_user.userid_detail
       @manage_resources = ManageResource.new 
       session[:userid] = @user.userid
