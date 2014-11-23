@@ -50,12 +50,18 @@ def create
 
   if @csvfile.errors.any?
    flash[:notice] = 'The upload of the file was unsuccessful'
+     file_for_warning_messages = "log/freereg_messages.log"
+     @@message_file = File.new(file_for_warning_messages, "a")
+     @@message_file.puts " File #{@csvfile.file_name} uploaded unsuccessfully at #{Time.new} for #{@csvfile[:userid]}"
    render 'edit'
    return 
     end #errors
 
     @user = UseridDetail.where(:userid => session[:userid]).first
     flash[:notice] = 'The upload of the file was successful'
+    file_for_warning_messages = "log/freereg_messages.log"
+    @message_file = File.new(file_for_warning_messages, "a")
+    @message_file.puts " File #{@csvfile.file_name} uploaded successfully at #{Time.new} for #{@csvfile[:userid]}"
     place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
     size = (File.size("#{place}"))
     unit = 0.0002

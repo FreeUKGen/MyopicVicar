@@ -1071,7 +1071,7 @@ end
      file_for_warning_messages = "log/freereg_messages.log"
      @@message_file = File.new(file_for_warning_messages, "a")
      p "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
-     @@message_file.puts "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
+     @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
      @@create_search_records = false
      @@create_search_records = true if create_search_records == 'create_search_records'
      #set up to determine files to be processed
@@ -1096,7 +1096,7 @@ end
 
      time = (((Time.now  - time_start )/(nn-1))*1000)
      p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
-     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record\n" 
+     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
       @@message_file.close 
       at_exit do
         p "goodbye"
