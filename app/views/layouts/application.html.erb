@@ -66,10 +66,10 @@
 		<!--[if lte IE 7]>
 		<%= stylesheet_link_tag "styles/css/ie.min" %>
 		<![endif]-->
-
+	
 		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
-		<%= javascript_include_tag "application" %>
+	<%= javascript_include_tag "application" %>
 	</head>
 	<body>
 		<%= render "layouts/main_nav" %>
@@ -92,7 +92,7 @@
 
 									<%if controller.controller_name == "freereg_contents"  %>
 									<div id="Heading">
-										Please use these pages to review information on the data held in the FreeREG database on the various Places, Churches and Registers in England, Scotland and Wales. They do NOT display the data itself; just information about the data, including the years for which data exists in the database and when it was last updated on <%= Rails.application.config.dataset_date %>.
+									 
 									</div>
 									<%end%>
 

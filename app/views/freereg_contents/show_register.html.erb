@@ -1,9 +1,8 @@
 <% require 'record_type' %>
 
-<p style="text-align: center">Transcription details of the 
- <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b>   
-   of 
-   <b><%= @county %></b>. <br>You may see the decades for which data has been transcribed by following the "Link".
+<p style="text-align: center">Details of the 
+ <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
+   of <b><%= @county %></b> when the database was updated on <%= Rails.application.config.dataset_date %>.  <br>You may see the decades for which data has been transcribed by following the "Link".
 <table  class="table--bordered  table--striped  table--data" >
   <tr>
    <th style="width:10%">Record Type</th>

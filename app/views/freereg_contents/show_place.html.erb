@@ -1,6 +1,5 @@
 <% require 'record_type' %>
-<p style="text-align: center">Information about
-  <b><%= @place_name %> </b> for <b><%= @county %></b>. <br> You may see the location of the Place by clicking on the location link. This will take you to a Genuki webpage.
+<p style="text-align: center">When it was updated on <%= Rails.application.config.dataset_date %> the database contained a Place with the following characteristics. 
 </p>
 <table  class="table--bordered  table--striped  table--data" >
   <tr>    
@@ -22,7 +21,7 @@
      <%end%>
      <%end%>
      <tr>
-       <td>Genuki page :</td><td ><%= link_to('Location', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
+       <td>Genuki location page :</td><td ><%= link_to('Location', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
 
 
        <tr>
@@ -44,9 +43,17 @@
        <tr>
          <td>Last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>   
        </tr>
-
+       <tr>
+         <td>Number of records:</td><td > <%= @stats[0] %></td>   
+       </tr>
+        <tr>
+         <td>First year of records:</td><td > <%= @stats[1] %></td>   
+       </tr>
+       <tr>
+         <td>Last year of records:</td><td > <%= @stats[2] %></td>   
+       </tr>
      </table> 
-
+<p style="text-align: center">The Place has the following church(es)</p>
      <table class="table--bordered  table--striped  table--data">
 <% @place.churches.order_by(church_name: 1).each do |church| %>
   <tr> 

@@ -23,9 +23,7 @@
       session[:manager] = manager?(@user)  
       session[:role] = @user.person_role
       @roles = UseridRole::OPTIONS.fetch(session[:role])
-      #@location = 'location.href= "/manage_resources/selection?option=" + this.value'
-      #@prompt = 'Select Function'
-      #redirect_to manage_resource_path(@user) 
+      
   end
 
   def selection

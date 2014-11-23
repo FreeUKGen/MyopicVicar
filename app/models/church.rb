@@ -87,4 +87,17 @@ def change_name(church_name,place_name)
   value = false if self.denomination.present? || self.church_notes.present? || self.location.present? 
   value 
  end
+ def data_contents
+  min = Time.new.year
+     max = 1500
+     records = 0
+       self.registers.each do |register|
+        register.freereg1_csv_files.each do |file|
+          min = file.datemin.to_i if file.datemin.to_i < min
+          max = file.datemax.to_i if file.datemax.to_i > max 
+          records = records + file.records.to_i unless file.records.nil?
+        end
+       end
+    stats =[records,min,max]
+end 
 end

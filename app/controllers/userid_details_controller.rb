@@ -269,7 +269,7 @@ end
 
 def next_place_to_go_unsuccessful_update
  case 
- when session[:my_own] == 'my_own'
+ when session[:my_own]
   render :action => 'edit'
   return
 when session[:type] == "edit"
@@ -313,7 +313,7 @@ end
 
 def next_place_to_go_successful_update(userid)
  case 
- when session[:my_own] == 'my_own'
+ when session[:my_own]
   redirect_to :action => 'my_own'
   return
 when session[:type] == "edit"
