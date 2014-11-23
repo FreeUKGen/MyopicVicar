@@ -13,18 +13,7 @@
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
 <%else%>
-<%if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
-<%= f.input :userid, :label => "The UserId itself:",
-              :input_html =>
-              { :size => 40 ,  :disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :syndicate,
-              { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true, :collection => @syndicates, :size => 15,
-              :input_html => { :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%>
-<%else%>
+<%if session[:my_own]%>
 <%= f.input :userid, :label => "The UserId itself:",
               :input_html =>
               { :size => 40 ,:disabled => true, :class => "text-input"},
@@ -35,6 +24,17 @@
               { :size => 40 ,:disabled => true, :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
+<%else%>
+<%= f.input :userid, :label => "The UserId itself:",
+              :input_html =>
+              { :size => 40 ,  :disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.input :syndicate,
+              { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true, :collection => @syndicates, :size => 15,
+              :input_html => { :class => "select" }, 
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+              }%>
 <%end%>
 <%end%>
 <%= f.input :person_forename,:label => "Forename :",
@@ -44,23 +44,23 @@
               }%>
 <%= f.input :person_surname,:label => "Surname :",
               :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
+              { :size => 40,  :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
 <%= f.input :email_address,:label => "Email :",
               :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
+              { :size => 40 , :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
 <%= f.input :address,:label => "Physical location :",
               :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
+              { :size => 40 , :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
 <%unless @user.person_role == 'researcher' %>
 <%= f.input :telephone_number,:label => "Telephone :",
               :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
+              { :size => 40 , :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
 <%= f.input :fiche_reader,
@@ -73,7 +73,7 @@
               :input_html => {  :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
-<% if session[:manager] == true %>
+<% unless session[:my_own] %>
 <%= f.input :active,
               {:as => :select, :collection => [true,false],:include_blank => false,:label => "Active :", :size => 5,
               :input_html => { :class => "select" }, 
@@ -94,13 +94,6 @@
               :input_html => {  :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%> 
-<%unless @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
-<%= f.input :person_role,:label => "Role in Freereg :",
-              :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<% end %>
 <%end%>
 <%= f.input :last_upload,:label => "Date of last upload :",
               :input_html =>
@@ -112,12 +105,18 @@
               { :size => 40 ,:disabled => true, :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-<%if @user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)%>
+<%if (@user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)) && !session[:my_own]%>
 <%= f.input :person_role,
               {:as => :select, :collection => UseridRole::VALUES, :include_blank => false,:label => "Person's role in FreeREG :", :size => 8,
               :input_html => {:class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%> 
+<%else%>
+<%= f.input :person_role,:label => "Role in Freereg :",
+              :input_html =>
+              { :size => 40 ,:disabled => true, :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
 <% end %>
 <%= f.action :submit, :as => :input, :label => 'Submit' %>
 <% end %>
