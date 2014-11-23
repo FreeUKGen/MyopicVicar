@@ -5,7 +5,7 @@ class UseridDetailsController < ApplicationController
  rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
 
  def index
-  get_user_info(session[:userid],session[:first_name])
+  get_user_info_from_userid
   session[:type] = "manager"
   session[:my_own] = false
   @role = session[:role]
@@ -14,7 +14,7 @@ end #end method
 
 def new
   session[:type] = "add"
-  get_user_info(session[:userid],session[:first_name])
+  get_user_info_from_userid
   @role = session[:role]
   @syndicates = Syndicate.get_syndicates_open_for_transcription 
   @userid = UseridDetail.new  
@@ -26,7 +26,7 @@ def show
 end
 
 def all
- get_user_info(session[:userid],session[:first_name])
+ get_user_info_from_userid
  @userids = UseridDetail.get_userids_for_display('all',params[:page]) 
  render "index"
 end
@@ -184,8 +184,7 @@ end
 end 
 
 def create
-  @first_name = session[:first_name]
-  @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+  get_user_info_from_userid
   @userid = UseridDetail.new(params[:userid_detail])
   @userid.add_fields(params[:commit])
   @userid.save
@@ -202,6 +201,7 @@ def create
 end
 
 def update
+   get_user_info_from_userid
   load(params[:id])
   if session[:type] == "disable" 
     params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil? 
