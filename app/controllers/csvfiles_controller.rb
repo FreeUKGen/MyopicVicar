@@ -36,15 +36,11 @@ def create
   when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Upload'
    if Freereg1CsvFile.where(userid: @csvfile[:userid], file_name: @csvfile.file_name).first.nil?
     FileUtils.rm("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
-  else
+    else
     flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
-    if session[:my_own]
-      redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}")
-      return
-        end #session
-        redirect_to freereg1_csv_files_path(:anchor =>"#{session[:freereg1_csv_file_id]}") 
-        return 
-   end #if
+    redirect_to new_manage_resource_path
+    return
+    end #if
   end #case
   @csvfile.save
 
@@ -128,7 +124,12 @@ def update
            end #if success
       end #if waiting
       @csvfile.delete
-      redirect_to places_path
+     if session[:my_own]
+      redirect_to my_own_freereg1_csv_file_path
+      return
+        end #session
+        redirect_to freereg1_csv_files_path
+        return 
   end  #commit
 end
 
