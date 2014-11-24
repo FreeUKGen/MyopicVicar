@@ -7,6 +7,7 @@ class SearchQueriesController < ApplicationController
 
 
   def new
+    @page = Refinery::Page.where(:slug => 'search-sidebar-text').first.parts.first.body.html_safe
     if params[:search_id]
       old_query = SearchQuery.find(params[:search_id])
       @search_query = SearchQuery.new(old_query.attributes)
