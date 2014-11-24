@@ -59,7 +59,7 @@ def show
     person = UseridDetail.where(:userid => @syndicate.syndicate_coordinator).first
     @person = person.person_forename + ' ' + person.person_surname unless person.nil? 
     person = UseridDetail.where(:userid => @syndicate.previous_syndicate_coordinator).first
-    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? 
+    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil? || person.person_surname.nil?
 end
 def selection
   get_user_info_from_userid
