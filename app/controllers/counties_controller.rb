@@ -94,15 +94,15 @@ def create
  else
  	flash[:notice] = "The addition of the County was successful"
  	 #Syndicate.change_userid_fields(params)
-    redirect_to counties_path
-  end
+   redirect_to counties_path
+ end
 end
 
 def update
 	load(params[:id])
-  previous_county_coordinator = @county.county_coordinator
-  params[:county][:previous_county_coordinator] = previous_county_coordinator  unless @county.county_coordinator == params[:county][:county_coordinator]
-  @county.update_attributes(params[:county])
+  my_params = params[:county]
+  my_params = @county.update_fields_before_applying(my_params) 
+  @county.update_attributes(my_params)
   if @county.errors.any?
     
    flash[:notice] = "The change to the county was unsuccessful"

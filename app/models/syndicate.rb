@@ -21,34 +21,38 @@ class Syndicate
 
   def  add_lower_case_and_change_userid_fields
     self.syndicate_coordinator_lower_case = self.syndicate_coordinator.downcase
-    @old_userid = UseridDetail.where(:userid => self.previous_syndicate_coordinator).first 
-    @new_userid = UseridDetail.where(:userid => self.syndicate_coordinator).first
-    unless @old_userid.nil? then
-     if @old_userid.syndicate_groups.length == 1 then
-       @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'county_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || 
+
+  end
+  def update_fields_before_applying(parameters)
+    unless self.syndicate_code ==  parameters[:syndicate_code]
+     parameters[:changing_name] = true
+     parameters[:previous_syndicate_code] = self.syndicate_code
+     end
+    previous_syndicate_coordinator = self.syndicate_coordinator
+    parameters[:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless self.syndicate_coordinator == parameters[:syndicate_coordinator]
+    unless self.syndicate_coordinator == parameters[:syndicate_coordinator] #no change in coordinator
+      #change coordinators and roles
+       if UseridDetail.where(:userid => previous_syndicate_coordinator).exists? then #make sure that there is a previous coordinator to downgrade
+         @old_userid = UseridDetail.where(:userid => previous_syndicate_coordinator).first 
+         if @old_userid.syndicate_groups.length == 1 then
+           @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'county_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || 
                                                         @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
-     end 
-     @old_userid.syndicate_groups.delete_if {|code| code == self.syndicate_code}
-   end
-   unless @new_userid.nil? then
-     if   @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.length == 0 then
-       @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
-     end 
-     @new_userid.syndicate_groups = Array.new if  @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.empty?
-     @new_userid.syndicate_groups << self.syndicate_code
-   end
-   @old_userid.save(:validate => false)  unless @old_userid.nil?
-   @new_userid.save(:validate => false)  unless @new_userid.nil?
- end
- def update_fields_before_applying(parameters)
-  unless self.syndicate_code ==  parameters[:syndicate_code]
-   parameters[:changing_name] = true
-   parameters[:previous_syndicate_code] = self.syndicate_code
- end
- previous_syndicate_coordinator = self.syndicate_coordinator
- parameters[:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless self.syndicate_coordinator == parameters[:syndicate_coordinator]
- 
- parameters  
+          end #length
+         @old_userid.syndicate_groups.delete_if {|code| code == self.syndicate_code}
+         @old_userid.save(:validate => false)  unless @old_userid.nil?
+       end #exists
+       if UseridDetail.where(:userid => parameters[:syndicate_coordinator]).exists? then # make sure there is a new coordinator to upgrade
+         @new_userid = UseridDetail.where(:userid => parameters[:syndicate_coordinator]).first 
+         if   @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.length == 0 then
+            @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
+            end #new role
+         @new_userid.syndicate_groups = Array.new if  @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.empty?
+         @new_userid.syndicate_groups << self.syndicate_code
+          @new_userid.syndicate_groups =  @new_userid.syndicate_groups.compact
+          @new_userid.save(:validate => false)  unless @new_userid.nil?
+        end #new exists
+   end#change of coordinator
+   parameters  
 end
 def propagate_change_in_code
   if self.changing_name

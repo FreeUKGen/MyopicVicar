@@ -21,32 +21,39 @@ class County
   index ({ chapman_code: 1, previous_county_coordinator: 1 })
 
   
-  protected 
 
-  def  add_lower_case_and_change_userid_fields
-    self.county_coordinator_lower_case = self.county_coordinator.downcase
-    @old_userid = UseridDetail.where(:userid => self.previous_county_coordinator).first 
-    @new_userid = UseridDetail.where(:userid => self.county_coordinator).first
-    unless @old_userid.nil?
-      unless  @old_userid.person_role.nil?
-        if @old_userid.county_groups.length == 1
-          unless  (@old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
+def update_fields_before_applying(parameters)
+  previous_county_coordinator = self.county_coordinator
+  parameters[:previous_county_coordinator] = previous_county_coordinator  unless self.county_coordinator == parameters[:county_coordinator]
+  unless self.county_coordinator == parameters[:county_coordinator] #no change in coordinator
+     if UseridDetail.where(:userid => previous_county_coordinator).exists? then #make sure that 
+       @old_userid = UseridDetail.where(:userid => previous_county_coordinator).first 
+       if @old_userid.county_groups.length == 1
+           unless  (@old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
             @old_userid.person_role = 'transcriber'  if @old_userid.syndicate_groups.length == 0
             @old_userid.person_role = 'syndicate_coordinator' if @old_userid.syndicate_groups.length >= 1
-          end
-         end 
-      end
-      @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
-    end
-    unless @new_userid.nil?
-      if @new_userid.county_groups.nil? || @new_userid.county_groups.length == 0 then
+           end # role
+          end #length
+       @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
+       @old_userid.save(:validate => false)  unless @old_userid.nil?
+      end ## old exists
+    if UseridDetail.where(:userid => parameters[:county_coordinator]).exists? then # make sure there is a new coordinator to upgrade
+     @new_userid = UseridDetail.where(:userid => parameters[:county_coordinator]).first
+     if @new_userid.county_groups.nil? || @new_userid.county_groups.length == 0 then
          @new_userid.person_role = 'county_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher')
-      end 
+       end #groups
      @new_userid.county_groups = Array.new if  @new_userid.county_groups.nil? || @new_userid.county_groups.empty?
      @new_userid.county_groups << self.chapman_code
-    end
-    @old_userid.save(:validate => false)  unless @old_userid.nil?
-    @new_userid.save(:validate => false)  unless @new_userid.nil?
+     @new_userid.county_groups = @new_userid.county_groups.compact
+     @new_userid.save(:validate => false)  unless @new_userid.nil?
+    end #exists
+  end #no change in coordinator 
+  parameters
 end
+  protected 
 
+def  add_lower_case_and_change_userid_fields
+    self.county_coordinator_lower_case = self.county_coordinator.downcase
+
+end
 end
