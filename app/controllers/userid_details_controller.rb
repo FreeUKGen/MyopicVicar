@@ -184,7 +184,6 @@ end
 end 
 
 def create
-  get_user_info_from_userid
   @userid = UseridDetail.new(params[:userid_detail])
   @userid.add_fields(params[:commit])
   @userid.save

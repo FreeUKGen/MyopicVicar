@@ -197,21 +197,21 @@ end
 def add_fields(type)
  self.sign_up_date =  DateTime.now 
  self.active = true
- case 
- when type == 'Register Researcher'
-  self.person_role = 'researcher'
-  self.syndicate = 'Researcher'
-when type == 'Register Transcriber'
-  self.person_role = 'transcriber'
-when type == 'Technical Registration'
-  self.active  = false
-  self.person_role = 'technical'
-  self.syndicate = 'Technical'
-end
-password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
-self.password = password
-self.password_confirmation = password
-self.userid = self.userid.downcase
+  case 
+    when type == 'Register Researcher'
+      self.person_role = 'researcher'
+      self.syndicate = 'Researcher'
+    when type == 'Register Transcriber'
+      self.person_role = 'transcriber'
+    when type == 'Technical Registration'
+        self.active  = false
+        self.person_role = 'technical'
+        self.syndicate = 'Technical'
+    end
+    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    self.password = password
+    self.password_confirmation = password
+    self.userid = self.userid.downcase
 end
 
 def self.get_userids_for_display(syndicate,page)
