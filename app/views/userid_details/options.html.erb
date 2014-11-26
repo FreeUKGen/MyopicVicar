@@ -1,13 +1,13 @@
+   
 <div id="notice" style="color:red"><br>
 <% if flash[:notice] %>
  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 <% end %>  
 </div>
-<div>
+<div >
 <%@options.each do |option| %>
-    <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get %> 
-    <br>
-  <%end%>
+    <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class =>  "text-input"%> 
+ <%end%>
 </div>
 
 <%= render "resource_sidebar" %>
