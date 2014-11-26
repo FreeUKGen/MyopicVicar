@@ -1,11 +1,13 @@
-<%= semantic_form_for @search_query do |f| %>
+<%= semantic_form_for @freereg_contents, :html => { :class => "grid"} do |f| %>
   
     <%= f.input :county, 
-        { :as => :select, 
-          :include_blank => false,
-          :required => true,
-          :collection => ChapmanCode::select_hash_with_parenthetical_codes } %>
+        { :as => :select, :include_blank => false, :required => true, :collection => ChapmanCode::select_hash_with_parenthetical_codes,
+        :size => 2 , :class => "text-input",  :label => "Type of Register :",
+        :input_html => { :class => "select" }, 
+        :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
+        }%>
 
     <%= f.action :submit, :as => :input, :label => 'Search'  %>
   
 <% end %>
+              

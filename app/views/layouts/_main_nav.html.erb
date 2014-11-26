@@ -9,7 +9,9 @@
 			<li>
 				<%= link_to "Search", main_app.search_queries_path %>
 			</li>
-			
+			<li>
+				<%= link_to "Donate", "../about" %>
+			</li>
 			<% if current_refinery_user %>
 
 			<li>
@@ -27,18 +29,7 @@
 				<%= link_to "Register", main_app.general_userid_detail_path%>
 			</li>
 			<% end %>
-			<% if false %>
-
-			<li>
-				<a href="#">Become a volunteer</a>
-			</li>
-			<li>
-				<a href="#">Donate</a>
-			</li>
-			<li>
-				<a href="#">Transcribers</a>
-			</li>
-			<% end %>
+			
 		</ul>
 	</nav>
 </div>

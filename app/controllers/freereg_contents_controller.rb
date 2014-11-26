@@ -1,9 +1,19 @@
 class FreeregContentsController < ApplicationController
+   require 'chapman_code'
   skip_before_filter :require_login
   
   def index
-    
     redirect_to :action => :new
+  end
+
+  def new
+     @freereg_contents = FreeregContent.new
+  end
+
+  def create
+    @county = ChapmanCode.has_key(params[:freereg_content][:county])
+    session[:county] = @county
+    redirect_to freereg_content_path(@county)
   end
   
 
@@ -14,7 +24,6 @@ class FreeregContentsController < ApplicationController
    @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
    @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
    session[:page] = request.original_url
-   session[:county] = @county
    session[:county_id]  = params[:id]
  
   end
@@ -28,9 +37,6 @@ class FreeregContentsController < ApplicationController
      @county_id =  session[:county_id]
      session[:place] = @place_name
      session[:place_id] = @place._id
-    
-    
-   
   end
 
   def show_church
@@ -49,11 +55,8 @@ class FreeregContentsController < ApplicationController
      @church  = @register.church
      @place = @church.place
      @county = @place.county
-     session[:county] = @county
      @files_id = Array.new
      @place_name = @place.place_name
-     session[:place] = @place_name
-     session[:place_id] = @place._id
      @county_id =  session[:county_id]
      session[:register_id] = params[:id]
      @register_name = @register.register_name 
@@ -73,17 +76,21 @@ class FreeregContentsController < ApplicationController
        @county_id =  session[:county_id]
        individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
        @files = Freereg1CsvFile.combine_files(individual_files)
-       @files.each do |my_file|
-         @record_type = RecordType.display_name(my_file.record_type)
-         if @record_type == params[:id] then
-            @decade = my_file.daterange
-          end
-       end
+       puts  @files.inspect
+        @files.each do |my_file|
+          @record_type = RecordType.display_name(my_file.record_type)
+            if @record_type == params[:id] then
+              @decade = my_file.daterange
+             end
+         end
+     
      @record_type = params[:id]  
      @place = Place.find(session[:place_id])
      @church  = session[:church]
      @place_name = session[:place]
      @county = session[:county]
-   end
+    
+   
+  end
 
 end
