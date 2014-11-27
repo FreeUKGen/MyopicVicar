@@ -17,7 +17,8 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     l_dis = 0
 
     number_of_places = Place.count
-    p "Prcoessing #{number_of_places} places"
+    p "Processing #{number_of_places} places"
+    @@message_file.puts "Processing #{number_of_places} places"
 
     Place.all.no_timeout.each do |place|
       place.churches.each do |church|
@@ -29,6 +30,7 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
          place.data_present = true 
            l_dis = l_dis + 1
            p "#{place.place_name},#{place.chapman_code}"
+            @@message_file.puts "#{place},#{place.chapman_code}"
         place.save
       
        if place.errors.any?
@@ -46,5 +48,7 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     end #do
     Place.create_indexes()
      p "#{l} names processed with #{l_errors} errors and #{l_dis} updated"
- end #method
+     @@message_file.puts "#{l} names processed with #{l_errors} errors and #{l_dis} updated"
+
+     end #method
 
