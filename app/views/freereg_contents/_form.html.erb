@@ -2,7 +2,7 @@
   
     <%= f.input :county, 
         { :as => :select, :include_blank => false, :required => true, :collection => @options,
-        :size => 2 , :class => "text-input",  :label => "Type of Register :",
+        :size => 2 , :class => "text-input",  :label => "Please select the county :",
         :input_html => { :class => "select" }, 
         :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
         }%>

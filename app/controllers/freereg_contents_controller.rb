@@ -9,11 +9,8 @@ class FreeregContentsController < ApplicationController
 
   def new
      @freereg_contents = FreeregContent.new 
-     @options = ChapmanCode::select_hash_with_parenthetical_codes
-     FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
-       @options.delete_if {|key, value| key == "#{country} (#{value})" }
-     end  
-   end
+     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+  end
 
   def create
     @county = ChapmanCode.has_key(params[:freereg_content][:county])
