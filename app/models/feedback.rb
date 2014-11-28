@@ -20,8 +20,8 @@ class Feedback
 
   def url_check
 
-    feedback.problem_page_url = "unknown" if feedback.problem_page_url.nil?
-    feedback.previous_page_url = "unknown" if feedback.previous_page_url.nil?
+    self.problem_page_url = "unknown" if self.problem_page_url.nil?
+    self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end
   
   module FeedbackType
