@@ -42,9 +42,8 @@ class Feedback
         c.login = Rails.application.config.github_login
         c.password = Rails.application.config.github_password
       end
-      p Rails.application.config.github_repo
-      p issue_title
-      response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body)
+      response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
+      logger.info(response)
       p response
       self.github_issue_url=response[:html_url]
       self.save!
