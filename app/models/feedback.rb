@@ -62,7 +62,6 @@ class Feedback
   
   def issue_body
     issue_body = ApplicationController.new.render_to_string(:partial => 'feedbacks/github_issue_body.txt', :locals => {:feedback => self})
-    p issue_body
     issue_body
   end
   
