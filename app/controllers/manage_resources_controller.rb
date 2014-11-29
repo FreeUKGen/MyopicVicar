@@ -16,7 +16,11 @@
 
   def new
       @user = current_refinery_user.userid_detail
-      @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
+     if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
+       @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
+      else
+       @page = ""
+      end
       @manage_resources = ManageResource.new 
       session[:userid] = @user.userid
       @first_name = @user.person_forename

@@ -104,6 +104,16 @@ MyopicVicar::Application.configure do
     config.website = "http://localhost:3000"
     #directory to put backups in
     config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
+  elsif File.exist? "C:/MongoDB/bin/"
+    # we are on Mike's system
+    #location of the mongo binary folder
+    config.mongodb_bin_location = "C:/MongoDB/bin/"
+    #where do we store the Mongodb database
+    config.datafiles = 'J:/GitRepository/freereg2'
+    #static website to be used for emails and github issue URLs
+    config.website = "http://localhost:3000"
+    #directory to put backups in
+    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
   else
     #who knows where we are!!!!!we don't
   end
