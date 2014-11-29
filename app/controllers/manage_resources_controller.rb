@@ -16,7 +16,7 @@
 
   def new
       @user = current_refinery_user.userid_detail
-     if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
+      if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
       else
        @page = ""

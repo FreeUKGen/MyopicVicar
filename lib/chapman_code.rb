@@ -17,11 +17,22 @@ module ChapmanCode
   def self.name_from_code(code)
     CODES.invert[code]
   end
-
   
+  def self.remove_codes(hash)
+   FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
+     hash.delete_if {|key, value| key == country }
+   end 
+  hash 
+  end
+
+  def self.add_parenthetical_codes(hash)
+    Hash[hash.map { |k,v| ["#{k} (#{v})", v] }]
+  end
+   
   def self.values
     CODES::values
-  end
+  end 
+
   def self.has_key?(code)
     CODES.has_key?(code)
   end

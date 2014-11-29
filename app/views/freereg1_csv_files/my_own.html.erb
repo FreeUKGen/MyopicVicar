@@ -6,8 +6,8 @@
    <% end %>  
 <div>
 <%@options.each do |option| %>
-    <%= link_to option, UseridRole::FILE_OPTIONS_TRANSLATION[option],  method: :get %> 
-    <br>
+    <%= link_to option, UseridRole::FILE_OPTIONS_TRANSLATION[option],  method: :get, :class =>  "text-input" %> 
+
   <%end%>
 </div>
 
