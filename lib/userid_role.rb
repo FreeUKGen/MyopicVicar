@@ -9,11 +9,11 @@ module UseridRole
       'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage County", "Access Userids",  "Help"],
       'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage country", "Manage County","Access Userids", "Help"],
       'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids",  "Help"],
-      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties",  "Help"],
+      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties",  "System Documentation" , "Help"],
       'technical' => ["Saved Searches", "Profile", "Files", "RefineryCMS", "Access Attic","Search Performance", "Feedback",
-        "Help", "Logout"],
+        "Help",  "System Documentation" ,"Logout"],
         'system_administrator' =>["Saved Searches", "Profile", "Files","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
-          "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback",  "Help"]
+          "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback",  "System Documentation" , "Help"]
         }
         
         OPTIONS_TRANSLATION = {"Saved Searches" => "/my_saved_searches",
@@ -34,6 +34,7 @@ module UseridRole
           "Search Performance" => "/search_queries/report" ,
           "Feedback" => "/feedbacks",
           "Help" => "/information-for-transcribers" ,
+          "System Documentation" => "/system-documents",
           "Logout" => "/refinery/logout"
         }
         USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
