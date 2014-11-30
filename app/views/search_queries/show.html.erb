@@ -59,6 +59,7 @@
 			<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
 		</th>
 		<th>Details</th>
+		 <%= paginate @search_results %> 
 	</thead>
 	<% @search_results.each do |search_record| %>
 	    <tbody>
@@ -86,7 +87,7 @@
 			<%= RecordType::display_name(search_record.record_type) %>
 		    </td>
 		    <td>
-			<%= raw(search_record.transcript_date.gsub(' ', '&nbsp;')) %>
+			<%= raw(search_record.transcript_date.gsub(' ', '&nbsp;')) unless search_record.transcript_date.nil?%>
 		    </td>
 		    <td>
 			<%= ChapmanCode::name_from_code(search_record.chapman_code) %>
@@ -107,17 +108,5 @@
 	<% end %>
     </table>
 <% end %>
+ <%= paginate @search_results %> 
 
-
-<div id="nav">
-	<ul>
-	    <li>
-	    	<%= link_to "Next", search_query_path(@search_query, :page_number => @page_number+1) %>
-    	</li>
-    	<% if @page_number > 0 %>		    	
-		    <li>
-		    	<%= link_to "Previous", search_query_path(@search_query, :page_number => @page_number-1) %>
-	    	</li>
-    	<% end %>
-	</ul>
-</div>
