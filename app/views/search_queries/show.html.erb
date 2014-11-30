@@ -43,7 +43,7 @@
     <table class="table--bordered  table--striped  table--data">			
 	<thead>
 		<th>
-			<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+			<%= link_to(' Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
 		</th>
 		<th>Family Members</th>
 		<th>
@@ -58,7 +58,7 @@
 		<th>
 			<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
 		</th>
-		<th></th>
+		<th>Details</th>
 	</thead>
 	<% @search_results.each do |search_record| %>
 	    <tbody>

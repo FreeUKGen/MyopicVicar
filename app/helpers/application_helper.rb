@@ -71,6 +71,8 @@ module ApplicationHelper
     display_map["First Name"] = search_query.first_name.upcase if search_query.first_name
     display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
     display_map["Exact Match?"] = "Yes" unless search_query.fuzzy
+     display_map["Exact Match?"] = "No" if search_query.fuzzy
+    
     display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
 
     display_map["Start Year"] = search_query.start_year if search_query.start_year 
