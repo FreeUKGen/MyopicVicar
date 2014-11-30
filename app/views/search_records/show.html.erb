@@ -1,23 +1,20 @@
 <div id="nav">
-	<ul>
-	    <li><%= link_to "New Search", new_search_query_path %></li>
-	    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
-	    <li><%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}") %></li>
-	</ul>
-</div>
+	
+<p style="text-align: center"><%= link_to "New Search", new_search_query_path %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}") %></p>
 
+</div>
 
 <% if @search_record.freereg1_csv_entry %>
 
-    <table>
-	<thead>
+    <table class="table--bordered  table--striped  table--data">
+	<thead >
 	    <tr>
 		<td colspan="2">
-		    <h1>Transcription</h1>
 		    <% if @search_record.freereg1_csv_entry && @annotations && @annotations.length %>
 		    <h2>Offline Transcriptions</h2>
 		    <% end %>
-		    <h3>Entry</h3>
+		    <h3><%= RecordType::display_name(@search_record.freereg1_csv_entry.freereg1_csv_file.record_type)   %> entry</h3>
+        <h4> For information about this place <%= link_to(@search_record.place.place_name, show_place_path(@search_record.place)) %>
 		</td>
 	    </tr>
 	</thead>
@@ -33,34 +30,13 @@
 	</tbody>
     </table>
 
-    <% file = @search_record.freereg1_csv_entry.freereg1_csv_file %>
-    <% if file %>
-
-	    <table>
-			<thead>
-			    <tr>
-				<td colspan="2">
-				    <h3>File</h3>
-				</td>
-			    </tr>
-			</thead>
-			<tbody>
-				<% freereg1_csv_file_for_display(file).each do |name, value| %>
-					<tr>
-						<td><%= name %></td>
-						<td><%= value %></td>
-					</tr>
-				<% end %>
-		
-			</tbody>
-	    </table>
-	<% end%>
+   
 <% end%>
 
 
 <% if @annotations && @annotations.length > 0 %>
 
-    <table>
+    <table class="table--bordered  table--striped  table--data">
 	<thead>
 	    <tr>
 		<td colspan="2">
@@ -105,7 +81,7 @@
 <% end%>
 
 <% unless params[:debug].blank? %>
-	<table>
+	<table class="table--bordered  table--striped  table--data">
 	    <thead>
 		<tr>
 		    <td colspan="2">

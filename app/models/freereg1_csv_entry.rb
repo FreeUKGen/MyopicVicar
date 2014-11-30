@@ -167,7 +167,6 @@ class Freereg1CsvEntry
         order << "#{prefix}#{suffix}"
       end
     end
-    order << 'file_line_number'
     order << 'line_id'
     order << 'notes'
 
