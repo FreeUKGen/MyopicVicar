@@ -2,7 +2,9 @@
 
 <h4 style="text-align: center">Details of the 
  <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
-   of <b><%= @county %></b> when the database was updated on <%= Rails.application.config.dataset_date %>.  </h4> 
+   of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
+   <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> <br></div>
+ 
 <table  class="table--bordered  table--striped  table--data" >
   <tr>
    <th style="width:10%">Record Type</th>

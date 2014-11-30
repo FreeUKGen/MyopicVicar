@@ -1,9 +1,10 @@
 <% require 'record_type' %>
 
-<h4 style="text-align: center">When it was updated on <%= Rails.application.config.dataset_date %> the database contained the following church in <b><%= @place_name %>;</b> for <b><%= @county %></b> with the following characteristics. 
-</h4>
+<h4 style="text-align: center">The database contained the following church in <%= @place_name %> of <b><%= @county %> on <%= Rails.application.config.dataset_date %>. </h4>
+ <div ><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get %>  <br></div>
 
-    <div id="main"style="color:black">
+
+    <div id="main">
 <table class="table--bordered  table--striped  table--data">
   <tr>    
     <th style="width:25%">Field</th>
@@ -42,7 +43,7 @@
          <td>Last year of records:</td><td > <%= @stats[2] %></td>   
        </tr>
 </table>  
-<p style="text-align: center">The church has transcriptions for the following register(s).</p>
+<h4 style="text-align: center">The church has transcriptions for the following register(s).</h4>
 <table class="table--bordered  table--striped  table--data">
 <% @registers.each do |register| %>
   <tr> 
