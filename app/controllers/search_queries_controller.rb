@@ -125,8 +125,6 @@ class SearchQueriesController < ApplicationController
     @search_results = @search_query.search.page(params[:page])  
   end
 
-
-
   def about
     if params[:page_number]
       @page_number = params[:page_number].to_i

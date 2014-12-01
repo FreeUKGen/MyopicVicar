@@ -51,7 +51,9 @@ class SearchQuery
   field :order_asc, type: Boolean, default: true
 
   belongs_to :userid_detail
-  
+
+  embeds_one :search_result
+
   validate :name_not_blank
   validate :date_range_is_valid
   validate :radius_is_valid
@@ -65,8 +67,12 @@ class SearchQuery
     end
     self.result_count = records.count
     self.runtime = (Time.now.utc - self.created_at) * 1000
+    search_record_array = Array.new
+    records.each do |rec|
+      search_record_array << rec._id.to_s
+    end 
+    self.search_result =  SearchResult.new(records: search_record_array)
     self.save
-
     records
   end
   
@@ -122,7 +128,12 @@ class SearchQuery
     end
     params
   end
-  
+  def previous_record(current)
+    record = self.search_result.records[self.search_result.records.index(current.to_s) - 1 ]
+  end
+  def next_record(current)
+     record = self.search_result.records[self.search_result.records.index(current.to_s) + 1 ]
+  end
 
   def name_search_params
     params = Hash.new

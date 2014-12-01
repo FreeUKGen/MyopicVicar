@@ -14,11 +14,12 @@
 	   <%= flash[:notice] %>  <% flash[:green] = nil%> <br>
     </div>
 <% end %>
-
-
+<div>
 <h2><%= @search_query.result_count %> Search Results</h2>
-
-
+  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+		<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
+		<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%><br>
+</div>
         <section class="island  island--light">
           <div class="criteria-group">
 	<% search_params_for_display(@search_query).each do |name, value| %>
@@ -26,14 +27,8 @@
               <dt class="criteria__name"><%= name %></dt>
               <dd class="criteria__value"><%= value %></dd>
             </dl>
-
 	<% end %>
-		<span>
-			<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number))%>
-		</span>
-	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
-		<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
-          </div>
+	       </div>
         </section>
 
 <% if @search_results.size == 0 %>
