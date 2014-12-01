@@ -6,7 +6,7 @@
 </div>
 <div >
 <%@options.each do |option| %>
-    <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class =>  "text-input"%> 
+    <%= button_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%> 
  <%end%>
 </div>
 
