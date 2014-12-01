@@ -1,7 +1,7 @@
 <p style="text-align: center">This Table shows the number of records in each decade held in the FreeREG database from 1530 to 2019<br> for the <b><%= @record_type %></b> Registers for <b><%= @church %></b> in <b><%= @place_name %></b>  in the County of: <b><%= @county %>. </b>
 </p>
 
-
+ <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> </div>
 <table  class="table--bordered  table--striped  table--data" >
   <tr>
     <th>Period: Those periods with zero data may span many decades</th>
@@ -62,5 +62,5 @@
 
 
 </table><br>
-  <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> </div>
+  <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> </div>
 

@@ -3,7 +3,7 @@
 <h4 style="text-align: center">Details of the 
  <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
    of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
-   <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> <br></div>
+   <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
  
 <table  class="table--bordered  table--striped  table--data" >
   <tr>
@@ -34,7 +34,7 @@
     <%end%>
     <td style="width:12%"><%= file.transcription_date %></td>
     <td style="width:12%"><%= file.modification_date %></td>
-    <td style="width:12%"><%= link_to "Link", show_decade_path(value) %></td>
+    <td style="width:12%"><%= link_to "Link", show_decade_path(value), :class => "btn  btn--small"  %></td>
    
      <%end%>
     
@@ -42,5 +42,5 @@
   </tr>
 <% end %>
 </table>You may see the decades for which data has been transcribed by following the "Link".<br>
- <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get %> </div>
+ <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small"  %> </div>
  

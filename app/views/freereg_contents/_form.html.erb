@@ -7,7 +7,9 @@
         :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
         }%>
 
-    <%= f.action :submit, :as => :input, :label => 'Select'  %>
+    <%= f.action :submit, :as => :button,  :label => 'Select' , 
+    :button_html => { :class => "btn", :type => 'submit' }, 
+    :wrapper_html => { :class => "grid__item  one-whole  text--left" }  %>
   
 <% end %>
-              
+           
