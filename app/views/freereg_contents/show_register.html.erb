@@ -1,4 +1,6 @@
 <% require 'record_type' %>
+<div class="grid">
+  <section class="island ">
 
 <h4 style="text-align: center">Details of the 
  <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
@@ -6,35 +8,49 @@
    <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
  
 <table  class="table--bordered  table--striped  table--data" >
+ <colgroup >
+     <col >
+     <col >
+     <col >
+      <col >
+     <col class=t30>
+      <col >
+     <col >
+      <col >
+ </colgroup>
+   <thead  >
+
   <tr>
-   <th style="width:10%">Record Type</th>
-    <th style="width:10%">Number of records</th>
-    <th style="width:7%">First year</th>
-    <th style="width:7%">Last year</th>
-    <th style="width:30%">Credit</th>
-    <th style="width:12%">Transcription date</th>
-    <th style="width:12%">Record last amended</th>
-    <th style="width:12%">Link to decadal data</th>
+   <th >Record Type</th>
+    <th >Number of records</th>
+    <th >First year</th>
+    <th >Last year</th>
+    <th >Credit</th>
+    <th >Transcription date</th>
+    <th >Record last amended</th>
+    <th >Link to decadal data</th>
    
   </tr>
+   </thead>
+  <tbody>
 
 <% @files.each do |file| %>
-  <tr> 
+  <tr > 
     <% unless file.records.nil? %>
    <% value = RecordType.display_name(file.record_type) %>
-    <td style="width:10%"><%= value %></td>
-    <td style="width:10%"><%= file.records %></td>
-    <td style="width:7%"><%= file.datemin %></td>
-    <td style="width:7%"><%= file.datemax %></td>
+    <td ><%= value %></td>
+    <td ><%= file.records %></td>
+    <td ><%= file.datemin %></td>
+    <td ><%= file.datemax %></td>
     <% if file.credit_name.nil? %> 
-    <td style="width:30%"><%= file.transcriber_name%></td>
+    <td ><%= file.transcriber_name%></td>
     <%end%>
      <% unless file.credit_name.nil? %> 
-    <td style="width:34%"><%= file.credit_name %></td>
+    <td ><%= file.credit_name %></td>
     <%end%>
-    <td style="width:12%"><%= file.transcription_date %></td>
-    <td style="width:12%"><%= file.modification_date %></td>
-    <td style="width:12%"><%= link_to "Link", show_decade_path(value), :class => "btn  btn--small"  %></td>
+    <td ><%= file.transcription_date %></td>
+    <td ><%= file.modification_date %></td>
+    <td ><%= link_to "Link", show_decade_path(value), :class => "btn  btn--exsmall"  %></td>
    
      <%end%>
     
@@ -42,5 +58,7 @@
   </tr>
 <% end %>
 </table>You may see the decades for which data has been transcribed by following the "Link".<br>
- <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small"  %> </div>
- 
+</tbody>
+</section>
+
+ </div>

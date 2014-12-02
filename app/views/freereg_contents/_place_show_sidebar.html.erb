@@ -1,0 +1,12 @@
+
+<% content_for :sidebar do %>
+<h4 style="text-align: center">The Place has the following church(es)</h4>
+     <table class="table--bordered  table--striped  table--data">
+<% @place.churches.order_by(church_name: 1).each do |church| %>
+  <tr> 
+    <td><%= link_to church.church_name, show_church_path(church), :class => "btn  btn--exsmall"  %> </td> 
+      
+  </tr>
+<% end %>
+</table>
+<% end %>

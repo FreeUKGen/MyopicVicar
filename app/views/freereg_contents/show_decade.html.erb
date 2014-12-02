@@ -1,13 +1,22 @@
-<p style="text-align: center">This Table shows the number of records in each decade held in the FreeREG database from 1530 to 2019<br> for the <b><%= @record_type %></b> Registers for <b><%= @church %></b> in <b><%= @place_name %></b>  in the County of: <b><%= @county %>. </b>
-</p>
+<div class="grid">
+ <section class="island ">
+<h4 style="text-align: center">The FreeREG database has records in each decade from 1530 to 2019<br> for the <b><%= @record_type %></b> Registers for <b><%= @church %></b> in <b><%= @place_name %></b>  in the County of <b><%= @county %>. </b>
+</h4>
 
  <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> </div>
 <table  class="table--bordered  table--striped  table--data" >
+<colgroup >
+     <col class=t30>
+     <col >
+ </colgroup>
+   <thead  >
   <tr>
     <th>Period: Those periods with zero data may span many decades</th>
     <th>Number of records</th>
     
   </tr>
+    </thead>
+  <tbody>
 <% i = 1530%>
 <% ilast = 1530%>
 <% ii = 1539%>
@@ -60,7 +69,8 @@
     </tr>
   <% end %>
 
-
-</table><br>
-  <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> </div>
-
+</tbody>
+</table>
+</section>
+ 
+</div>

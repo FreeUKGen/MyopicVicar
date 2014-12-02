@@ -1,0 +1,12 @@
+
+<% content_for :sidebar do %>
+<h4 style="text-align: center">The church has transcriptions for the following register(s).</h4>
+<table class="table--bordered  table--striped  table--data">
+<% @registers.each do |register| %>
+  <tr> 
+    <td><%= link_to(RegisterType.display_name(register.register_type), show_register_path(register), :class => "btn  btn--small") %> </td> 
+  </tr>
+<% end %>
+</table>
+ <%= @page %>
+<% end %>

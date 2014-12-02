@@ -20,6 +20,11 @@ class FreeregContentsController < ApplicationController
   
 
   def show
+    if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
+        @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
+    else
+       @page = ""
+    end
 
    @county = params[:id]
    @chapman_code = ChapmanCode.values_at( @county)
@@ -42,6 +47,12 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_church
+     if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
+        @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
+    else
+       @page = ""
+    end
+
      @church = Church.find(params[:id])
      @stats = @church.data_contents 
      @place_name = @church.place.place_name
@@ -53,6 +64,11 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_register
+    if @page = Refinery::Page.where(:slug => 'register-sidebar-text').exists?
+        @page = Refinery::Page.where(:slug => 'register-sidebar-text').first.parts.first.body.html_safe
+    else
+       @page = ""
+    end
      @register = Register.find(params[:id])
      @church  = @register.church
      @place = @church.place

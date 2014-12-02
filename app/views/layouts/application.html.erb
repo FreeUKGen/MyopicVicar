@@ -66,7 +66,7 @@
 		<!--[if lte IE 7]>
 		<%= stylesheet_link_tag "styles/css/ie.min" %>
 		<![endif]-->
-	
+	  	<%= stylesheet_link_tag "styles/css/freereg_content" %>
 		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
 	<%= javascript_include_tag "application" %>
@@ -111,7 +111,7 @@
 								<% end %>
 
 							</div>
-					</article>
+					
 
 					<% if current_refinery_user %>
 					<div  style="float:left;">
@@ -123,6 +123,7 @@
 						<% end %>
 					</div>
 					<% end %>
+					</article>
 				</div>
 			</main>
 

@@ -1,15 +1,18 @@
-<%= semantic_form_for @freereg_contents, :html => { :class => "grid"} do |f| %>
+
+<div class="island  island--light">
+<%= semantic_form_for @freereg_contents, :html => { :class => "grid__item  one-half lap-two-fifths palm-one-whole " } do |f| %>
   
     <%= f.input :county, 
-        { :as => :select, :include_blank => false, :required => true, :collection => @options,
-        :size => 2 , :class => "text-input",  :label => "Please select the county :",
-        :input_html => { :class => "select" }, 
+        { :as => :select, :include_blank => true, :required => false, :collection => @options,
+        :size => 2 ,  :label => "Select the county you wish to review:",
+        :input_html => { :class => "text--input" }, 
         :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
         }%>
 
     <%= f.action :submit, :as => :button,  :label => 'Select' , 
-    :button_html => { :class => "btn", :type => 'submit' }, 
+    :button_html => { :class => "btn btn--small", :type => 'submit' }, 
     :wrapper_html => { :class => "grid__item  one-whole  text--left" }  %>
   
 <% end %>
+</div>
            
