@@ -24,7 +24,7 @@ def new
   end
   @manage_syndicate = ManageSyndicate.new
   @options = @syndicates
-  @prompt = 'Please select a Syndicate'
+  @prompt = 'Please select a syndicates:'
   @location = 'location.href= "/manage_syndicates/select_action?syndicate=" + this.value'
 end
 def select_action

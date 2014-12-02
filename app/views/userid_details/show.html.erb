@@ -1,11 +1,11 @@
 <p style="text-align: center"><b>Profile Details :<%= @userid.userid %></p></b>
- <div style="float:left;"> <%= button_to 'Edit', edit_userid_detail_path(@userid), method: :get %></div>
+ <div style="float:left;"> <%= button_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small" %></div>
 <%if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role == 
   'volunteer_coordinator'%>
  
-  <div style="float:left;"><%= button_to "Send password change request", change_password_userid_detail_path(@userid), method: :get %></div>
+  <div style="float:left;"><%= button_to "Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small" %></div>
   <%if @user.person_role == 'system_administrator'%>
-  <div style="float:left;"><%= button_to 'Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  %></div>
+  <div style="float:left;"><%= button_to 'Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small"  %></div>
   <%end%>
   <%end%>
 
