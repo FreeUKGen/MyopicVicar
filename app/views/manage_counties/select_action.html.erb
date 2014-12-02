@@ -1,10 +1,10 @@
-<p style="text-align: center"><b> <%= @first_name%> how would you like to display the <%= @county%> files? Select one of the following options.</p></b>
+<div class="island  island--light">
+<h3 style="text-align: center"><%= @first_name%> how would you like to display the <%= @county%> files? Select one of the following options.</h3>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
-<div>
 <%@options.each do |option| %>
     <%= link_to option, UseridRole::COUNTY_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%> 
     <br>

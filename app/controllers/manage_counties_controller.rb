@@ -23,7 +23,7 @@ def new
     return
   end
   @options = @counties
-  @prompt = 'Please select a County'
+  @prompt = 'You have access to multiple counties, please select one'
   @location = 'location.href= "/manage_counties/select_action?county=" + this.value'
   @manage_county = ManageCounty.new
 end
