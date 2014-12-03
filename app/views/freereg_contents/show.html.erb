@@ -1,6 +1,6 @@
 
 <div class="grid">
- <section class="island  island--light grid__item " >
+ <section class="island   " >
 
    <h4 class="beta  text--teal"> <%= @county  %> general information</h4>
    <%= county_content(@chapman_code) %>
@@ -9,15 +9,16 @@
 
    These Places, Churches and Registers have data records. Click on the name for more information (including quantity and period covered).
 
-   <%= paginate @places %> 
+  
 
    <div class="table-wrapper">
-    <table  class="table--bordered table--striped  table--data" >
+  <%= paginate @places %> 
+   <table  class="table--bordered table--striped  table--data" >
      <colgroup >
-     <col >
-     <col >
-     <col >
-     <col >
+     <col class=t15>
+     <col class=t15>
+     <col class=t15 >
+     <col class=t15 >
    </colgroup>
    <thead  >
     <tr>  
