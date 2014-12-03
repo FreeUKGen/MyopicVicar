@@ -2,42 +2,94 @@
 <div class="grid">
   <section class="island ">
 
-<h4 style="text-align: center">Details of the 
- <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
-   of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
-   <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
- 
-<table  class="table--bordered  table--striped  table--data" >
- <colgroup >
-     <col >
-     <col >
-     <col >
-      <col >
-     <col class=t30>
-      <col >
-     <col >
-      <col >
+    <h4 style="text-align: center">Details of the 
+     <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
+     of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
+     <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
+
+     <table class="table--bordered table--striped table--data" >
+      <colgroup >
+       <col class=t30>
+       <col >
+     </colgroup>
+     <thead  >
+
+      <tr>    
+        <th >Field</th>
+        <th >Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Register name</td> <td><%= @register_name %></td>
+      </tr>
+      <tr>
+        <td>Register type</td> <td><%= @register.register_type %></td>
+      </tr>
+      <tr>
+        <td>Status</td>        <td><%= @register.status %></td>
+      </tr>
+      <tr>
+        <td>Quality</td>       <td><%= @register.quality %></td>
+      </tr>
+      <tr>
+        <td>Source</td>        <td><%= @register.source %></td>
+      </tr>
+      <tr>
+        <td>Copyright</td>     <td><%= @register.copyright %></td>
+      </tr>
+      <tr>
+        <td>Notes</td>         <td><%= @register.register_notes %></td>
+      </tr>
+      <tr>
+        <td>Last amended</td>  <td><%= @register.last_amended %></td>
+      </tr>
+      <tr>
+        <td>First year</td>    <td><%= @register.minimum_year_for_register %></td>
+      </tr>
+      <tr>
+        <td>Last year</td>     <td><%= @register.maximum_year_for_register %></td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <h4 style="text-align: center">Summary of transcribed records</h4>
+
+
+
+
+  <table  class="table--bordered  table--striped  table--data" >
+   <colgroup >
+   <col >
+   <col >
+   <col >
+   <col >
+   <col class=t30>
+   <col >
+   <col >
+   <col >
  </colgroup>
-   <thead  >
+ <thead  >
 
   <tr>
    <th >Record Type</th>
-    <th >Number of records</th>
-    <th >First year</th>
-    <th >Last year</th>
-    <th >Credit</th>
-    <th >Transcription date</th>
-    <th >Record last amended</th>
-    <th >Link to decadal data</th>
+   <th >Number of records</th>
+   <th >First year</th>
+   <th >Last year</th>
+   <th >Credit</th>
+   <th >Transcription date</th>
+   <th >Record last amended</th>
+   <th >Link to decadal data</th>
    
-  </tr>
-   </thead>
-  <tbody>
+ </tr>
+</thead>
+<tbody>
 
-<% @files.each do |file| %>
+  <% @files.each do |file| %>
   <tr > 
     <% unless file.records.nil? %>
-   <% value = RecordType.display_name(file.record_type) %>
+    <% value = RecordType.display_name(file.record_type) %>
     <td ><%= value %></td>
     <td ><%= file.records %></td>
     <td ><%= file.datemin %></td>
@@ -45,20 +97,21 @@
     <% if file.credit_name.nil? %> 
     <td ><%= file.transcriber_name%></td>
     <%end%>
-     <% unless file.credit_name.nil? %> 
+    <% unless file.credit_name.nil? %> 
     <td ><%= file.credit_name %></td>
     <%end%>
     <td ><%= file.transcription_date %></td>
     <td ><%= file.modification_date %></td>
     <td ><%= link_to "Link", show_decade_path(value), :class => "btn  btn--exsmall"  %></td>
-   
-     <%end%>
+
+    <%end%>
     
     
   </tr>
-<% end %>
-</table>You may see the decades for which data has been transcribed by following the "Link".<br>
+  <% end %>
 </tbody>
+</table>You may see the decades for which data has been transcribed by following the "Link".<br>
+
 </section>
 
- </div>
+</div>
