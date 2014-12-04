@@ -6,7 +6,7 @@
    <% end %>  
 <div>
 <%@options.each do |option| %>
-    <%= button_to option, UseridRole::FILE_OPTIONS_TRANSLATION[option],  method: :get, :class => "btn  btn--small" %> 
+    <%= link_to option, UseridRole::FILE_OPTIONS_TRANSLATION[option],  method: :get, :class => "btn  btn--small" %> <br>
 
   <%end%>
 </div>
