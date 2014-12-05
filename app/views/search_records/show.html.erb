@@ -1,12 +1,11 @@
 <div id="nav">
 	
-<p style="text-align: center"><%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small" %><%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> </p>
-
+<p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small" %><%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> </p>
 </div>
 
 <% if @search_record.freereg1_csv_entry %>
 
-    <table class="table--bordered  table--striped  table--data">
+    <table class="table--bordered ">
 	<thead >
 	    <tr>
 		<td colspan="2">
@@ -17,13 +16,17 @@
         <h4> For information about this place <%= link_to(@search_record.place.place_name, show_place_path(@search_record.place)) %>
 		</td>
 	    </tr>
+	    <tr>    
+    <th >Field</th>
+    <th class="caps">Value</th>
+  </tr>
 	</thead>
 	<tbody>
 	    <% @search_record.freereg1_csv_entry.ordered_display_fields.each do |field| %>
 			<% if @search_record.freereg1_csv_entry[field] %>
 			    <tr>
-				<td><%= field.gsub('_',' ').capitalize %></td>
-				<td><%= @search_record.freereg1_csv_entry.display_field(field) %></td>
+				<td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
+				<td class="weight--semibold"><%= @search_record.freereg1_csv_entry.display_field(field) %></td>
 			    </tr>
 			<% end %>
 	    <% end %>
@@ -36,7 +39,7 @@
 
 <% if @annotations && @annotations.length > 0 %>
 
-    <table class="table--bordered  table--striped  table--data">
+    <table class="table--bordered ">
 	<thead>
 	    <tr>
 		<td colspan="2">
@@ -81,7 +84,7 @@
 <% end%>
 
 <% unless params[:debug].blank? %>
-	<table class="table--bordered  table--striped  table--data">
+	<table class="table--bordered ">
 	    <thead>
 		<tr>
 		    <td colspan="2">

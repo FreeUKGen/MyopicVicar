@@ -1,24 +1,20 @@
-<div id="nav">
-	<ul>
-	    <% if @search_query.can_be_broadened? %>
-		    <li><%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) %></li>
-	    <% end %>
-	    <% if @search_query.can_be_narrowed? %>
-		    <li><%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query) %></li>
-	    <% end %>
-	</ul>
-</div>
 
  <% if flash[:green] %>
     <div id="success" style="color:green"><br>
 	   <%= flash[:notice] %>  <% flash[:green] = nil%> <br>
     </div>
 <% end %>
-<div>
-<h2><%= @search_query.result_count %> Search Results</h2>
+<div id="nav">
+<h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
   <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
 		<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
-		<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%><br>
+		<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%>
+		<% if @search_query.can_be_broadened? %>
+		   <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small  float--right"%>
+	    <% end %>
+	    <% if @search_query.can_be_narrowed? %>
+		   <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+	    <% end %><br>
 </div>
         <section class="island  island--light">
           <div class="criteria-group">
@@ -35,7 +31,7 @@
     No results found!
 <% else %>
 
-    <table class="table--bordered  table--striped  table--data">			
+    <table class="table--bordered ">			
 	<thead>
 		<th>
 			<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
@@ -54,7 +50,9 @@
 			<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
 		</th>
 		<th>Details</th>
-		 <%= paginate @search_results %> 
+		<div class="pagination">
+		 <%= paginate @search_results %>
+		 </div> 
 	</thead>
 	<% @search_results.each do |search_record| %>
 	    <tbody>

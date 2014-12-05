@@ -1,19 +1,22 @@
+<section class="island  ">
+  <div class="grid">
+
+
+<h2>About This Query</h2>
 <div id="nav">
 	<ul>
-	    <li><%= link_to "New Search",  new_search_query_path%></li>
-	    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
+	  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+		<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
+		<%= link_to "Back", search_query_path(@search_query ), :class => "btn  btn--small  float--right"%>
 	</ul>
 </div>
 
-
-<h1>About This Query</h1>
-
 <p>How did your query match against the FreeREG database?</p>
 
-<h2>Name</h2>
+<h3>Name</h3>
 
 <p>
-	Search Criteria: 
+	Search Criteria: <br>
 	<b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>, 
 	<b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
 	<b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
@@ -40,7 +43,7 @@
 </p>
 
 
-<h2>Date</h2>
+<h3>Date</h3>
 <p>
 	<% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
 		Search Criteria: 
@@ -57,7 +60,7 @@
 </p>
 <% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
 	<p>
-		Search Logic:
+		Search Logic:<br>
 			Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style) and dates  <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
 			
 	
@@ -65,40 +68,56 @@
 	</p>
 <% end %>
 
-<h2>Records</h2>
-<i>to do</i>
+<h3>Records</h3>
+
+<% if @search_query.record_type %>
+<%= RecordType::display_name(@search_query.record_type) %> records were specified.
+<%else%>
+ All three record types, Baptisms, Burials and Marriages were included.
+ <%end%>
+</p>
 
 
-<h2>Location</h2>
+
+<h3>Location</h3>
 
 
 <% if @search_query.radius_search? %>
 	<p>
-		Search Critera: 
+		Search Criteria: 
 			<b>Search additional places</b> 
 			near 
 			<b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b> 
 	</p>
 	<p>
 		Search Logic:
-			Records within these places:
+			We have records within these places:
 			<ul>
 				<% @search_query.all_radius_places.each do |near_place| %>
 					<li>
-						<%= near_place.place_name%> (<%= near_place.geo_near_distance %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
+						<%= near_place.place_name%> (<%= near_place.geo_near_distance.to_i %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
 					</li>
 				<% end %>
 			</ul>
 	</p>
+	<%else%>
+	Your search was not extended beyond the places and counties you selected.
 <% end %>
+</p>
 	
-<i>to do: counties, specific places</i>
+<h3>Counties</h3>
+<p>The following counties were included in the search:<br>
+ <%= @search_query.chapman_codes %>
+</p>
 
+<h3>Places</h3>
+<p>The following counties were included in the search:<br>
+<% if @search_query.places %>
+ No place specified so all places with data in the specified counties were included.
+<%else%>
+ <%= @search_query.places.each {|pl| pl.place_name} %> were included.
+<%end%>
+</p>
 
-<div id="nav">
-	<ul>
-	    <li>
-	    	<%= link_to "back", search_query_path(@search_query, :page_number => @page_number) %>
-    	</li>
-	</ul>
-</div>
+ </div>
+</section>
