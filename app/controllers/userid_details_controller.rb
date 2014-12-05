@@ -184,6 +184,7 @@ end
 end 
 
 def create
+
   @userid = UseridDetail.new(params[:userid_detail])
   @userid.add_fields(params[:commit])
   @userid.save
@@ -249,6 +250,7 @@ end
 def next_place_to_go_unsuccessful_create
  case 
  when session[:type] == "add"
+  get_user_info_from_userid
   render :action => 'new' 
   return
 when session[:type] == 'researcher_registration'
@@ -261,6 +263,7 @@ when session[:type] == 'technical_registration'
   render :action => 'technical_registration'
   return
 else
+  get_user_info_from_userid
   render :action => 'new' 
   return
 end
