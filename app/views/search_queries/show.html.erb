@@ -16,6 +16,7 @@
 		   <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
 	    <% end %><br>
 </div>
+
         <section class="island  island--light">
           <div class="criteria-group">
 	<% search_params_for_display(@search_query).each do |name, value| %>
@@ -31,7 +32,17 @@
     No results found!
 <% else %>
 
-    <table class="table--bordered ">			
+    <table class="table--bordered ">	
+   <colgroup >
+     <col class=t15>
+     <col class=t20>
+     <col class=t10 >
+     <col class=t10 >
+     <col class=t15>
+     <col class=t20>
+     <col class=t10>
+    </colgroup>
+
 	<thead>
 		<th>
 			<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
@@ -102,4 +113,4 @@
     </table>
 <% end %>
  <%= paginate @search_results %> 
-
+</div>
