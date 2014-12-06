@@ -31,6 +31,7 @@
 <% if @search_results.size == 0 %>
     No results found!
 <% else %>
+<div class="table-wrapper">
 <section class="grid">
    <div class="grid__item  one-whole">
     <table class="table--bordered  "style="width: 95%">	
@@ -116,3 +117,4 @@
  <%= paginate @search_results %> 
 </div>
 </section>
+</div>
