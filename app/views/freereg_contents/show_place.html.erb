@@ -3,7 +3,7 @@
   <section class="island ">
 
 <h4 style="text-align: center">The database contained the following Place on <%= Rails.application.config.dataset_date %>. </h4>
-<div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small"  %> </div>
+<div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" unless @county_id.nil? %> </div>
 <table  class="table--bordered  table--striped  table--data" >
  <colgroup >
      <col class=t30>
