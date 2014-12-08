@@ -1,43 +1,42 @@
 
         <section class="island  island--light">
-  
-  
-  
-<%= semantic_form_for(@search_query, :html => { :class => "grid"}) do |f| %>
+
+<%= semantic_form_for(@search_query,:html => {:class =>  "grid "}) do |f| %>
 
   <%= f.semantic_errors :class => "validation-list__error" %>
-  <%= f.inputs do %>
+
     <%= f.input :last_name, 
     			:input_html => 
     				{ 	:size => 20, 
     					:class => "text-input" }, 
 				:wrapper_html => 
-					{ :class => "grid__item  one-third  palm-one-whole" } %>
+					{ :class => "grid__item  one-third  palm-one-whole float--left" } %>
+  
     <%= f.input :first_name, 
     			:input_html => 
     				{ 	:length => 10, 
 						:size => 20,  
 						:class => "text-input" }, 
 				:wrapper_html => 
-					{ 	:class => "grid__item  one-third  palm-one-whole" } %>
+					{ 	:class => "grid__item  one-third  palm-one-whole float--left" } %>
 
     <%= f.input :fuzzy, 
     			:as => :boolean, 
     			:input_html => {:class => "checkbox"} , 
     			:wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } %>
-  <% end %>
-  <%= f.inputs do %>
-    <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" }%>
+       
+  
+
+    <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole float--left" }%>
     <%= f.input :end_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } %>
     <%= f.input :record_type,
 				{ :as => :select,
 				  :required => false,
 				  :include_blank => true,
 				  :collection => RecordType::OPTIONS,
-				  :input_html => { :class => "select" }, 
-				  :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } } %>
-  <% end %>
-  <%= f.inputs do %>
+				
+				  :wrapper_html => { :class => "grid__item  one-third  "} } %>
+  
     <%= f.input :chapman_codes, 
 				{ :as => :select, 
 				  :include_blank => true,
@@ -45,9 +44,9 @@
          		  :collection => ChapmanCode::select_hash_with_parenthetical_codes,
          		  :label => 'County',
          		  :input_html => { :multiple => true, :class => "select" }, 
-         		  :wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } } %>
+         		  :wrapper_html => { :class => "grid__item  one-half  palm-one-whole float--left" } } %>
 
-    <li class="select input optional grid__item  one-half  palm-one-half" id="search_query_places_input">
+    <li class="select input optional grid__item  one-half  palm-one-half float--left" id="search_query_places_input">
 	<label class=" label" for="search_query_place_ids">Place</label>
 	<select id="search_query_place_ids" name="search_query[place_ids][]" class="text-input">
 		<option value="">--</option>
@@ -68,16 +67,13 @@
      		  	:input_html => { :class => "checkbox" }, 
      		  	:wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
 
-  <% end %>
-
-  <%= f.actions do %>
-    
+ 
     <%= f.action :submit, 
     			:as => :button, 
     			:label => 'Search',
     			:button_html => { :class => "btn", :type => 'submit' }, 
      		  	:wrapper_html => { :class => "grid__item  one-whole  text--right" }  %>
-  <% end %>
+
 <% end %>
 
 
@@ -85,7 +81,7 @@
 </section>
 
 
-<script type="text/javascript" charset="utf-8">
+<script type="text/javascript" charset="utf-8" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
 	    var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
      	<% if @search_query.places.size > 0 %>
@@ -94,14 +90,14 @@
 	<% end %>
 
 	
-	$("#search_query_place_ids").remoteChained({
+	(function($) {$("#search_query_place_ids").remoteChained({
 	  parents : "#search_query_chapman_codes",
 	  url : "/places/for_search_form.json",
 	  loading : "Loading..."
 	  <% if @search_query && @search_query.chapman_codes.size > 0 %>
 	  , bootstrap: selection
 	  <% end %>
-	});
+	});})(jQuery);
 	
 </script>
 

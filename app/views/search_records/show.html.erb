@@ -1,11 +1,12 @@
-<div id="nav">
+<section  >
 	
 <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small" %><%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> </p>
-</div>
 
+</section>
+<section>
 <% if @search_record.freereg1_csv_entry %>
 
-    <table class="table--bordered ">
+   <table class="table--bordered ">
      <colgroup >
      <col class=t40>
      <col class=t60>
@@ -18,7 +19,7 @@
 		    <h2>Offline Transcriptions</h2>
 		    <% end %>
 		    <h3><%= RecordType::display_name(@search_record.freereg1_csv_entry.freereg1_csv_file.record_type)   %> entry</h3>
-        <h4> For information about this place <%= link_to(@search_record.place.place_name, show_place_path(@search_record.place)) %>
+        <h4> For information about this place <%= link_to(@search_record.place.place_name, show_place_path(@search_record.place)) %></h4>
 		</td>
 	    </tr>
 	    <tr>    
@@ -129,3 +130,4 @@
 	    </tbody>
 	</table>
 <% end %>
+</section>

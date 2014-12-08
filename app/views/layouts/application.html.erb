@@ -69,8 +69,8 @@
 	  	<%= stylesheet_link_tag "styles/css/freereg_content" %>
 
 	  	
-		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
-		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
+		<%= javascript_include_tag "jquery.min.js" %>
+		<%= javascript_include_tag "jquery.chained.remote.js" %>
 	<%= javascript_include_tag "application" %>
 	</head>
 	<body>
@@ -83,30 +83,18 @@
 
 			<main role="main" class="site__content  icon__honeycomb--top-right">
 				<div class="container">
-					<article>
-						<div class="grid">
-
-							<% if content_for? :sidebar %>
+						<% if content_for? :sidebar %>
+							<div class="grid">
 							<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
-								<% else %>
-								<div class="grid__item  one-whole  lap-one-whole  palm-one-whole">
-									<% end %>
-									<section>
-										<div id="content">
-											<%= yield %>
-										</div>
-									</section>
-								</div>
-								<% if content_for? :sidebar %>
-								<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
-									<aside class="island  island--light">
-										<%= yield :sidebar %>
-									</aside>
-								</div>
-								<% end %>
-
+							<%= yield %>
 							</div>
-					
+							<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+							<%= yield :sidebar %>
+							</div>
+							</div>
+								<% else %>
+								<%= yield %>
+								<% end %>				
 
 					<% if current_refinery_user %>
 					<div  style="float:left;">
@@ -118,7 +106,7 @@
 						<% end %>
 					</div>
 					<% end %>
-					</article>
+
 				</div>
 			</main>
 
