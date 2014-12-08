@@ -67,6 +67,8 @@
 		<%= stylesheet_link_tag "styles/css/ie.min" %>
 		<![endif]-->
 	  	<%= stylesheet_link_tag "styles/css/freereg_content" %>
+
+	  	
 		<%= javascript_include_tag "jquery.min.js" if controller.controller_name == "search_queries"%>
 		<%= javascript_include_tag "jquery.chained.remote.js" if controller.controller_name == "search_queries"%>
 	<%= javascript_include_tag "application" %>
@@ -126,9 +128,8 @@
 		<!-- TODO fix above this -->
 
 		<!-- example offcanvas switching code -->
-		<%= javascript_include_tag "design/scripts/dist/classie.js" %>
-		<script src="scripts/dist/classie.js"></script>
-		<script charset="utf-8">
+		
+	  <script charset="utf-8">
 			var el = document.getElementById("trigger-offcanvas");
 
 			var switchOffCanvas = function() {

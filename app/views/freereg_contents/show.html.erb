@@ -1,6 +1,6 @@
 
 <div class="grid">
- <section class="island   " >
+ <section class="grid__item two-thirds  palm-one-whole   " >
 
    <h4 class="beta  text--teal"> <%= @county  %> general information</h4>
    <%= county_content(@chapman_code) %>
@@ -13,7 +13,7 @@
 
    <div class="table-wrapper">
   <%= paginate @places %> 
-   <table  class="table--bordered table--striped  table--data" >
+   <table  class="table--bordered " >
      <colgroup >
      <col class=t15>
      <col class=t15>
@@ -50,4 +50,6 @@
 </div>
 </section>
 </div>
+ <section class="grid__item one-third  palm-one-whole   " >
 <%= render "place_index_sidebar" %>
+</section>

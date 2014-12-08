@@ -17,6 +17,7 @@
 		   <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
 	    <% end %><br>
 </div>
+<div style="clear:both;"> </div>
 </section>
 
         <section class="island  island--light grid__item one-whole" >
@@ -34,20 +35,20 @@
 <% if @search_results.size == 0 %>
     No results found!
 <% else %>
+ <div class="float--left">
 
-
-    <table class="table--bordered ">	
+    <table class="table--bordered t95">	
    <colgroup >
      <col class=t20>
      <col class=t20>
      <col class=t10 >
      <col class=t10 >
      <col class=t10>
-     <col class=t15>
+     <col class=t20>
      <col class=t10>
     </colgroup>
 
-	<thead>
+	<thead  >
 		<th>
 			<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
 		</th>
@@ -68,9 +69,9 @@
 		
 		 <%= paginate @search_results %>
 	
-	</thead>
+	</thead >
 	<% @search_results.each do |search_record| %>
-	    <tbody>
+	    <tbody >
 		<tr id="<%=search_record.id%>">
 		    <td>
 			<% search_record.transcript_names.uniq.each_with_index do |name, i| %>
@@ -115,6 +116,7 @@
 	    </tbody>
 	<% end %>
     </table>
+</div>
 <% end %>
  <%= paginate @search_results %> 
 </div>
