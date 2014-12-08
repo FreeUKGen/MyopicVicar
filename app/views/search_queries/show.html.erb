@@ -31,6 +31,7 @@
 	</div>
   </section>
   <section >
+  	<%= paginate @search_results %>
 	<div class="table-wrapper">  
 		<% if @search_results.size == 0 %>
 		No results found!
@@ -63,9 +64,6 @@
 					<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
 				</th>
 				<th>Details</th>
-
-				<%= paginate @search_results %>
-
 			</thead >
 			<% @search_results.each do |search_record| %>
 			<tbody >
