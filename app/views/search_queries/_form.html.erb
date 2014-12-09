@@ -1,73 +1,72 @@
-
+<p class="text--center"><%= link_to 'Detailed Advice on Searching', "../tips-for-searching-the-database", method: :get, :class => "btn  btn--small"  %><%= link_to "Data on the Database Contents", main_app.freereg_contents_path , method: :get, :class => "btn  btn--small" %></p>
+  
+  <div style="clear:both;"> </div>
         <section class="island  island--light">
 
-<%= semantic_form_for(@search_query,:html => {:class =>  "grid "}) do |f| %>
+<%= semantic_form_for(@search_query) do |f| %>
 
   <%= f.semantic_errors :class => "validation-list__error" %>
 
     <%= f.input :last_name, 
     			:input_html => 
     				{ 	:size => 20, 
-    					:class => "text-input" }, 
-				:wrapper_html => 
-					{ :class => "grid__item  one-third  palm-one-whole float--left" } %>
+    					:class => "text-input" }, :wrapper_html => {  :class => "grid__item  one-quarter  palm-one-whole"} 
+				 %>
   
     <%= f.input :first_name, 
     			:input_html => 
     				{ 	:length => 10, 
 						:size => 20,  
-						:class => "text-input" }, 
-				:wrapper_html => 
-					{ 	:class => "grid__item  one-third  palm-one-whole float--left" } %>
+						:class => "text-input" }, :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } 
+				   
+           %>
 
-    <%= f.input :fuzzy, 
-    			:as => :boolean, 
-    			:input_html => {:class => "checkbox"} , 
-    			:wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } %>
-       
-  
-
-    <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole float--left" }%>
-    <%= f.input :end_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-third  palm-one-whole" } %>
-    <%= f.input :record_type,
-				{ :as => :select,
-				  :required => false,
-				  :include_blank => true,
-				  :collection => RecordType::OPTIONS,
-				
-				  :wrapper_html => { :class => "grid__item  one-third  "} } %>
-  
+   
+    <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input"} , :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" }%>
+    <%= f.input :end_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
+   
     <%= f.input :chapman_codes, 
-				{ :as => :select, 
-				  :include_blank => true,
-				  :required => false,
-         		  :collection => ChapmanCode::select_hash_with_parenthetical_codes,
-         		  :label => 'County',
-         		  :input_html => { :multiple => true, :class => "select" }, 
-         		  :wrapper_html => { :class => "grid__item  one-half  palm-one-whole float--left" } } %>
+        { :as => :select, :include_blank => true,
+          :required => false,
+          :collection => ChapmanCode::select_hash_with_parenthetical_codes,
+          :label => 'County',
+          :input_html => { :multiple => true, :class => "select"},
+          :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } 
+              } %>
 
-    <li class="select input optional grid__item  one-half  palm-one-half float--left" id="search_query_places_input">
+    <li class="select grid__item  one-quarter  palm-one-whole"  id="search_query_places_input">
 	<label class=" label" for="search_query_place_ids">Place</label>
-	<select id="search_query_place_ids" name="search_query[place_ids][]" class="text-input">
+	<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" >
 		<option value="">--</option>
 	</select>	
 	</li>
 
+ <%= f.input :fuzzy, 
+          :as => :boolean, :label => "Soundex Search on Surnames?",
+          :input_html => {:class => "checkbox"} , 
+          :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
+       
+  
 	
 	<%= f.input :search_nearby_places, 
 				:as => :boolean,
 				:label => "Search nearby places?",
          		:input_html => { :class => "checkbox" }, 
-         		:wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
+         		:wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
 
 
     <%= f.input :inclusive, 
     			:as => :boolean, 
 				:label => "Search family members?",
      		  	:input_html => { :class => "checkbox" }, 
-     		  	:wrapper_html => { :class => "grid__item  one-half  palm-one-whole" } %>
+     		  	:wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
 
- 
+  <%= f.input :record_type,
+        { :as => :select,
+          :required => false,
+          :include_blank => true,          
+          :collection => RecordType::OPTIONS } %>
+  
     <%= f.action :submit, 
     			:as => :button, 
     			:label => 'Search',
