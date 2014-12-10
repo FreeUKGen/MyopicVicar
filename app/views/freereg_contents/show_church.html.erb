@@ -2,13 +2,13 @@
 <div class="grid">
   <section class="island ">
 
-<h4 style="text-align: center">The database contained the following church in <%= @place_name %> of <b><%= @county %> on <%= Rails.application.config.dataset_date %>. </h4>
- <div ><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" %>  <br></div>
+<h4 style="text-align: center">The database contained the following church in <%= @place_name %> of <%= @county %> on <%= Rails.application.config.dataset_date %>. </h4>
+ <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" %>  <br></div>
 
-<table class="table--bordered  table--striped  table--data">
+ <table  class="grid__item two-thirds table--bordered t50">
 <colgroup >
-     <col class=t30>
-     <col >
+     <col class="t20">
+   <col class="t30 weight--semibold">
  </colgroup>
    <thead  >
   <tr>    
@@ -48,9 +48,19 @@
        <tr>
          <td>Last year of records:</td><td > <%= @stats[2] %></td>   
        </tr>
+ </tbody>      
 </table>  
-</tbody>
-</section>
 
-<%= render "church_show_sidebar" %>
- 
+
+<div  class="grid__item one-quarter float_right">
+<h4 style="text-align: center">The Church has transcriptions for the following register(s).</h4>
+<table class="table--bordered ">
+<% @registers.each do |register| %>
+  <tr> 
+    <td><%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %> </td> 
+  </tr>
+<% end %>
+</table>
+ <%= @page %>
+</section>
+</div>
