@@ -1,17 +1,17 @@
 <% require 'record_type' %>
-<div class="grid">
-  <section class="island ">
 
     <h4 style="text-align: center">Details of the 
      <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
      of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
-     <div ><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
+     <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
 
-     <table class="table--bordered table--striped table--data" >
+  <section class="island ">
+
+     <table  class="table--bordered t100">
       <colgroup >
-       <col class=t30>
-       <col >
-     </colgroup>
+     <col class="t20">
+   <col class="t30 weight--semibold">
+ </colgroup>
      <thead  >
 
       <tr>    
@@ -52,20 +52,24 @@
       </tr>
     </tbody>
   </table>
+  </section>
 
 
   <h4 style="text-align: center">Summary of transcribed records</h4>
+  <p style="text-align: center">You may see the decades for which data has been transcribed by following the "Link".</p>
+
+  <section class="island ">
 
 
 
 
-  <table  class="table--bordered  table--striped  table--data" >
+  <table  class="table--bordered t100">
    <colgroup >
    <col >
    <col >
    <col >
    <col >
-   <col class=t30>
+   <col class="t30">
    <col >
    <col >
    <col >
@@ -102,7 +106,7 @@
     <%end%>
     <td ><%= file.transcription_date %></td>
     <td ><%= file.modification_date %></td>
-    <td ><%= link_to "Link", show_decade_path(value), :class => "btn  btn--exsmall"  %></td>
+    <td ><%= link_to "Link", show_decade_path(value)  %></td>
 
     <%end%>
     
@@ -110,8 +114,7 @@
   </tr>
   <% end %>
 </tbody>
-</table>You may see the decades for which data has been transcribed by following the "Link".<br>
+</table>
 
 </section>
 
-</div>
