@@ -1,12 +1,12 @@
-<div class="grid">
+
  <section class="island ">
 <h4 style="text-align: center">The FreeREG database has records in each decade from 1530 to 2019<br> for the <b><%= @record_type %></b> Registers for <b><%= @church %></b> in <b><%= @place_name %></b>  in the County of <b><%= @county %>. </b>
 </h4>
 
- <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> </div>
-<table  class="table--bordered  table--striped  table--data" >
+ <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> </div>
+<table  class="table--bordered" >
 <colgroup >
-     <col class=t30>
+     <col class="t30">
      <col >
  </colgroup>
    <thead  >
@@ -73,4 +73,4 @@
 </table>
 </section>
  
-</div>
+
