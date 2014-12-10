@@ -1,55 +1,52 @@
+<h4 class="beta  text--teal"> <%= @county  %> general information</h4>
+<%= county_content(@chapman_code) %>
+<h4 class="beta  text--teal">Data Base Contents: <%= Rails.application.config.dataset_date%></h4>
 
-<div class="grid">
- <section class="grid__item two-thirds  palm-one-whole   " >
+<div class="table-wrapper">
+ These Places, Churches and Registers have data records. Click on the name for more information (including quantity and period covered).
+ <div class="grid">
+  <%= paginate @places  %>
+  <table  class="grid__item two-thirds table--bordered t50">
+   <colgroup >
+   <col class="t15">
+   <col class="t15">
+   <col class="t15">
+   <col class="t15">
+ </colgroup>
+ <thead >
+  <tr>  
+    <th>Place</th>
+    <th>Churches </th>
+    <th>Registers</th>
+    <th>Record last amended</th>  
+  </tr>
+</thead>
 
-   <h4 class="beta  text--teal"> <%= @county  %> general information</h4>
-   <%= county_content(@chapman_code) %>
-   <h4 class="beta  text--teal">Data Base Contents: <%= Rails.application.config.dataset_date%></h4>
-   <%= button_to 'Back to County Selection',  main_app.freereg_contents_path , method: :get, :class => "btn  btn--small" %>  <br>
+<tbody>
+  <% @places.order_by(place_name: 1).each do |place| %>
+  <% place.churches.order_by(church: 1).each do |church| %>
+  <% church.registers.order_by(register_type: 1).each do |register| %>
+  <% session[:placeid] = place.id%>
+  <tr style= "color:black" id="<%=place.id%>"> 
+    <td > <%= link_to(place.place_name, show_place_path(place)) %> </td>
 
-   These Places, Churches and Registers have data records. Click on the name for more information (including quantity and period covered).
-
-  
-
-   <div class="table-wrapper">
-  <%= paginate @places %> 
-   <table  class="table--bordered " >
-     <colgroup >
-     <col class=t15>
-     <col class=t15>
-     <col class=t15 >
-     <col class=t15 >
-   </colgroup>
-   <thead  >
-    <tr>  
-      <th>Place</th>
-      <th>Churches </th>
-      <th>Registers</th>
-      <th>Record last amended</th>  
+    <td > <%= link_to(church.church_name, show_church_path(church)) %> </td>
+    <td > <% registertype = RegisterType.display_name(register.register_type)%>
+      <%= link_to(registertype, show_register_path(register)) %></td>
+      <td > <%= register.last_amended %> </td>
     </tr>
-  </thead>
-  <tbody>
-    <% @places.order_by(place_name: 1).each do |place| %>
-    <% place.churches.order_by(church: 1).each do |church| %>
-    <% church.registers.order_by(register_type: 1).each do |register| %>
-    <% session[:placeid] = place.id%>
-    <tr style= "color:black" id="<%=place.id%>"> 
-      <td > <%= link_to(place.place_name, show_place_path(place), :class => "btn  btn--exsmall") %> </td>
+    <% end%>
+    <% end%>
+    <% end %>
+  </tbody>
+</table>
 
-      <td > <%= link_to(church.church_name, show_church_path(church), :class => "btn  btn--exsmall") %> </td>
-      <td > <% registertype = RegisterType.display_name(register.register_type)%>
-        <%= link_to(registertype, show_register_path(register), :class => "btn  btn--exsmall") %></td>
-        <td > <%= register.last_amended %> </td>
-      </tr>
-      <% end%>
-      <% end%>
-      <% end %>
-    </tbody>
-  </table>
-  <%= paginate @places %> 
+
+<div  class="grid__item one-quarter float_right">
+  <h5 class="beta  text--teal">What is a Register</h5>
+  <%= @page %>
 </div>
-</section>
 </div>
- <section class="grid__item one-third  palm-one-whole   " >
-<%= render "place_index_sidebar" %>
-</section>
+
+
+
