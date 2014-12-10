@@ -1,9 +1,9 @@
 <% require 'record_type' %>
-<div class="grid">
-  <section class="island ">
 
 <h4 style="text-align: center">The database contained the following church in <%= @place_name %> of <%= @county %> on <%= Rails.application.config.dataset_date %>. </h4>
  <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" %>  <br></div>
+<div class="grid">
+  <section class="island ">
 
  <table  class="grid__item two-thirds table--bordered t50">
 <colgroup >
