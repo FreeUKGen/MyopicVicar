@@ -25,20 +25,26 @@
     <%= f.input :start_year, :input_html => {:length => 4, :size => 4,  :class => "text-input"} , :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" }%>
     <%= f.input :end_year, :input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
    
-    <%= f.input :chapman_codes, 
-        { :as => :select, :include_blank => true,
-          :required => false,
-          :collection => ChapmanCode::select_hash_with_parenthetical_codes,
-          :label => 'County',
-          :input_html => { :multiple => true, :class => "select"},
-          :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } 
-              } %>
+
+    <li class="grid__item  one-quarter  palm-one-whole " id="search_query_chapman_codes_input">
+    	<input name="search_query[chapman_codes][]" type="hidden" value="" />
+    	<label class=" label" for="search_query_chapman_codes">
+    		County
+		</label>
+		<input name="search_query[chapman_codes][]" type="hidden" value="" />
+		<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
+			<option value=""></option>
+			<% ChapmanCode::select_hash_with_parenthetical_codes.each_pair do |label, value| %>
+				<option value="<%=value%>"><%=label%></option>
+			<% end %>
+		</select>
+	</li>
 
     <li class="select grid__item  one-quarter  palm-one-whole"  id="search_query_places_input">
-	<label class=" label" for="search_query_place_ids">Place</label>
-	<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" >
-		<option value="">--</option>
-	</select>	
+		<label class=" label" for="search_query_place_ids">Place</label>
+		<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" >
+			<option value="">--</option>
+		</select>	
 	</li>
 
  <%= f.input :fuzzy, 
@@ -60,12 +66,20 @@
 				:label => "Search family members?",
      		  	:input_html => { :class => "checkbox" }, 
      		  	:wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
+  
+  
+	  <li class="grid__item  one-quarter  palm-one-whole optional" id="search_query_record_type_input">
+	  	<label class=" label" for="search_query_record_type">
+	  		Record type
+  		</label>
+  		<select id="search_query_record_type" name="search_query[record_type]" class="select">
+  			<option value=""></option>
+  			<% RecordType::OPTIONS.each_pair do |name, value| %>
+  				<option value="<%=value%>"><%=name%></option>
+			<% end %>
+		</select>
+	</li>
 
-  <%= f.input :record_type,
-        { :as => :select,
-          :required => false,
-          :include_blank => true,          
-          :collection => RecordType::OPTIONS } %>
   
     <%= f.action :submit, 
     			:as => :button, 
