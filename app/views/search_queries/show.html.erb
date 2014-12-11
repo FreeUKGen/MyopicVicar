@@ -30,15 +30,16 @@
 		<% end %>
 	</div>
   </section>
-  <section >
-  	<%= paginate @search_results %>
-	<div class="table-wrapper">  
+  
+  <%= paginate @search_results %>
+	<div class="table-wrapper"> 
+	<div class="grid"> 
 		<% if @search_results.size == 0 %>
 		No results found!
 		<% else %>
-		<table class="table--bordered " >	
+		<table class="grid__item one-whole table--bordered t95" >	
 		<colgroup >
-      <col class=t20>
+      <col class=t15>
       <col class=t20>
       <col class=t10 >
       <col class=t10 >
@@ -111,8 +112,10 @@
 			</tbody>
 			<% end %>
 		</table>
+		<%= paginate @search_results %> 
+	</div>
 	</div>
 	<% end %>
-	<%= paginate @search_results %> 
+	
 </section>
 
