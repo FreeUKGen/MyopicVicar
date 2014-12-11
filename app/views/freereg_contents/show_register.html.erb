@@ -21,34 +21,28 @@
     </thead>
     <tbody>
       <tr>
-        <td>Register name</td> <td><%= @register_name %></td>
+        <td>Status</td>        <td class="weight--semibold"><%= @register.status %></td>
       </tr>
       <tr>
-        <td>Register type</td> <td><%= @register.register_type %></td>
+        <td>Quality</td>       <td class="weight--semibold"><%= @register.quality %></td>
       </tr>
       <tr>
-        <td>Status</td>        <td><%= @register.status %></td>
+        <td>Source</td>        <td class="weight--semibold"><%= @register.source %></td>
       </tr>
       <tr>
-        <td>Quality</td>       <td><%= @register.quality %></td>
+        <td>Copyright</td>     <td class="weight--semibold"><%= @register.copyright %></td>
       </tr>
       <tr>
-        <td>Source</td>        <td><%= @register.source %></td>
+        <td>Notes</td>         <td class="weight--semibold"><%= @register.register_notes %></td>
       </tr>
       <tr>
-        <td>Copyright</td>     <td><%= @register.copyright %></td>
+        <td>Last amended</td>  <td class="weight--semibold"><%= @register.last_amended %></td>
       </tr>
       <tr>
-        <td>Notes</td>         <td><%= @register.register_notes %></td>
+        <td>First year</td>    <td class="weight--semibold"><%= @register.minimum_year_for_register %></td>
       </tr>
       <tr>
-        <td>Last amended</td>  <td><%= @register.last_amended %></td>
-      </tr>
-      <tr>
-        <td>First year</td>    <td><%= @register.minimum_year_for_register %></td>
-      </tr>
-      <tr>
-        <td>Last year</td>     <td><%= @register.maximum_year_for_register %></td>
+        <td>Last year</td>     <td class="weight--semibold"><%= @register.maximum_year_for_register %></td>
       </tr>
     </tbody>
   </table>

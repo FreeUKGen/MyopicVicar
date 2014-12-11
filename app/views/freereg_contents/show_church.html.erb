@@ -18,35 +18,35 @@
 </thead>
   <tbody>
   <tr> 
-   <td>Church name :</td><td > <%= @church.church_name %></td>
+   <td>Church name :</td><td class="weight--semibold" > <%= @church.church_name %></td>
   </tr>
   
    <% if @names%>
      <%  @names.each do |name| %>
          <% unless name == ''%> 
-           <tr><td>Other possible church names :</td><td ><%= name %>  </td>  </tr>
+           <tr><td>Other possible church names :</td><td class="weight--semibold" ><%= name %>  </td>  </tr>
          <%end%>
      <%end%>
    <%end%>
    
    <tr>
-   <td>Denomination of the Church :</td><td ><%= @church.denomination %></td>   
+   <td>Denomination of the Church :</td><td class="weight--semibold" ><%= @church.denomination %></td>   
    </tr>
   
    <tr>
-   <td>Notes about the Church :</td><td > <%= @church.church_notes %> </td>   
+   <td>Notes about the Church :</td><td class="weight--semibold" > <%= @church.church_notes %> </td>   
    </tr>
     <tr>
-   <td>Record last amended:</td><td > <%= @church.last_amended %></td>   
+   <td>Record last amended:</td><td class="weight--semibold" > <%= @church.last_amended %></td>   
    </tr>
    <tr>
-         <td>Number of records:</td><td > <%= @stats[0] %></td>   
+         <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   
        </tr>
         <tr>
-         <td>First year of records:</td><td > <%= @stats[1] %></td>   
+         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] %></td>   
        </tr>
        <tr>
-         <td>Last year of records:</td><td > <%= @stats[2] %></td>   
+         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] %></td>   
        </tr>
  </tbody>      
 </table>  
@@ -57,7 +57,7 @@
 <table class="table--bordered ">
 <% @registers.each do |register| %>
   <tr> 
-    <td><%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %> </td> 
+    <td class="weight--semibold"><%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %> </td> 
   </tr>
 <% end %>
 </table>
