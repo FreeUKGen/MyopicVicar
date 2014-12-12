@@ -1,4 +1,4 @@
-<p class="text--center"><%= link_to 'Detailed Advice on Searching', "../tips-for-searching-the-database", method: :get, :class => "btn  btn--small"  %><%= link_to "Data on the Database Contents", main_app.freereg_contents_path , method: :get, :class => "btn  btn--small" %></p>
+<p class="text--center"><%= link_to 'Detailed Advice on Searching', "../tips-for-searching-the-database", method: :get, :class => "btn"   %>   <%= link_to "Data on the Database Contents", main_app.freereg_contents_path , method: :get, :class => "btn " %></p>
 
   <div style="clear:both;"> </div>
         <section class="island  island--light">
@@ -43,7 +43,8 @@
    
    <li class="grid__item  one-third  palm-one-whole " id="search_query_chapman_codes_input">
     	<input name="search_query[chapman_codes][]" type="hidden" value="" />
-    	<label class=" label" for="search_query_chapman_codes"> <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one (or more using Ctrl)</small> 
+    	<label class=" label" for="search_query_chapman_codes">
+       <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one (or more using Ctrl)</small> 
 		</label>
 		<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" }>
 			<option value="" label="Select one or more counties"></option>
@@ -54,7 +55,8 @@
 	</li>
 
     <li class="grid__item  one-third  palm-one-whole"  id="search_query_places_input">
-		<label class=" label" for="search_query_place_ids">Place<small class="additional">Select one (or more using Ctrl)</small></label>
+		<label class=" label" for="search_query_place_ids">
+    <a href="#" class="tip2">Place<span>Do NOT select a place name if you wish to search ALL the places in a county.</span></a><small class="additional">Select one (or more using Ctrl)</small> 
 		<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" multiple="multiple">
 			<option value="">--</option>
 		</select>	
@@ -62,8 +64,8 @@
   
 	  <li class="grid__item  one-quarter  palm-one-whole optional" id="search_query_record_type_input">
 	  	<label class=" label" for="search_query_record_type">
-	  		Record type<small class="additional">Select type or leave blank for all types</small>
-  		</label>
+      <a href="#" class="tip2">Record type<span>The records can be Baptisms, Burials or Marriages. Leave blank to select all.</span></a><small class="additional">Select one or none</small> 
+	    </label>
   		<select id="search_query_record_type" name="search_query[record_type]" class="select">
   			<option value=""></option>
   			<% RecordType::OPTIONS.each_pair do |name, value| %>
@@ -79,7 +81,7 @@
  </li>
  <li class="grid__item  one-quarter  palm-one-whole">
      <input type="hidden" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="false">
-    <label> <input type="checkbox" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="true"><a href="#" class="tip2"> Search nearby places?<span>Check if you wish to search additional places to the vacinity of your starting place</span></a></label>
+    <label> <input type="checkbox" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="true"><a href="#" class="tip2"> Search nearby places?<span>Check if you wish to search additional places to the vicinity of the one selected starting place</span></a></label>
  </li>    
  <li class="grid__item  one-quarter  palm-one-whole">
      <input type="hidden" name="search_query[fuzzy]" id="search_query_record_fuzzy" value="false">
