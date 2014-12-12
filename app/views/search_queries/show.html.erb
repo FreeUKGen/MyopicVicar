@@ -52,21 +52,33 @@
 			<thead  >
 				<th>
 					<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the name</span></a> 
+      
 				</th>
-				<th>Family Members</th>
+				<th>Family Members
+				  <a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>These are the names of other people in the record</span></a> 
+                </th>
 				<th>
 					<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the type of record</span></a>
 				</th>
 				<th>
 					<%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
+					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the date of the event</span></a> 
+      
 				</th>
 				<th>
 					<%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
+					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the county</span></a> 
+      
 				</th>
 				<th>
 					<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the location</span></a> 
 				</th>
-				<th>Details</th>
+				<th>Details
+                 <a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to get transcription details</span></a> 
+         		</th>
 			</thead >
 			<% @search_results.each do |search_record| %>
 			<tbody >
