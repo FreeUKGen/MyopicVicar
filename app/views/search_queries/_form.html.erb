@@ -1,5 +1,5 @@
 <p class="text--center"><%= link_to 'Detailed Advice on Searching', "../tips-for-searching-the-database", method: :get, :class => "btn  btn--small"  %><%= link_to "Data on the Database Contents", main_app.freereg_contents_path , method: :get, :class => "btn  btn--small" %></p>
-  
+
   <div style="clear:both;"> </div>
         <section class="island  island--light">
 
@@ -7,32 +7,44 @@
 
   <%= f.semantic_errors :class => "validation-list__error" %>
 <%= f.inputs do %>
-    <%= f.input :last_name, :label=>"Surname", :placeholder=>"Mandatory",
-    			:input_html => 
-    				{ 	:size => 20, 
-    					:class => "text-input" }, :wrapper_html => {  :class => "grid__item  one-quarter  palm-one-whole"} 
-				 %>
-  
-    <%= f.input :first_name, :label => "Forename(s)", :placeholder=>"Optional",
-    			:input_html => 
-    				{ 	:length => 10, 
-						:size => 20,  
-						:class => "text-input" }, :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } 
-				   
-           %>
+   <li class="grid__item  one-quarter  palm-one-whole">
+     <label><a href="#" class="tip2">Surname<span>The surname can be entered as upper or lower case</span></a></label>
+     <% if @search_query.last_name.nil? %>
+      <input name="search_query[last_name]" type="text" class="text-input" placeholder="Manditory" />
+    <%else%>
+      <input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" />
+    <%end%>
+   </li>
+   <li class="grid__item  one-quarter  palm-one-whole">
+    <label><a href="#" class="tip2">Forename(s)<span>The forename can be entered as upper or lower case, abbreviations and latin versions will be included</span></a></label>
+    <% if @search_query.first_name.nil? %>
+      <input name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" />
+    <%else%>
+      <input name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>" />
+    <%end%>
+   </li>
+   <li class="grid__item  one-quarter  palm-one-whole">
+    <label><a href="#" class="tip2">First year<span>The first year for which records are required</span></a></label>
+     <% if @search_query.start_year.nil? %>
+      <input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" />
+    <%else%>
+      <input name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" />
+    <%end%>
+   </li>
+    <li class="grid__item  one-quarter  palm-one-whole">
+      <label><a href="#" class="tip2">First year<span>The last year for which records are required</span></a></label>
+      <% if @search_query.end_year.nil? %>
+        <input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" />
+      <%else%>
+        <input name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>" />
+      <%end%>
+   </li>
 
    
-    <%= f.input :start_year, :placeholder=>"YYYY Optional",:input_html => {:length => 4, :size => 4,  :class => "text-input"} , :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" }%>
-    <%= f.input :end_year, :placeholder=>"YYYY Optional",:input_html => {:length => 4, :size => 4,  :class => "text-input" }, :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
-   
-
-    <li class="grid__item  one-third  palm-one-whole " id="search_query_chapman_codes_input">
+   <li class="grid__item  one-third  palm-one-whole " id="search_query_chapman_codes_input">
     	<input name="search_query[chapman_codes][]" type="hidden" value="" />
-
-    	<label class=" label" for="search_query_chapman_codes">County<small class="additional">Select one (or more using Ctrl)</small>
+    	<label class=" label" for="search_query_chapman_codes"> <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one (or more using Ctrl)</small> 
 		</label>
-
-	 
 		<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" }>
 			<option value="" label="Select one or more counties"></option>
 			<% ChapmanCode::select_hash_with_parenthetical_codes.each_pair do |label, value| %>
@@ -47,8 +59,6 @@
 			<option value="">--</option>
 		</select>	
 	</li>
-
-
   
 	  <li class="grid__item  one-quarter  palm-one-whole optional" id="search_query_record_type_input">
 	  	<label class=" label" for="search_query_record_type">
@@ -63,27 +73,20 @@
 	</li>
 <% end %>
 <%= f.inputs do %>
- <%= f.input :fuzzy, 
-          :as => :boolean, :label => " Soundex Search on Surnames?",
-          :input_html => {:class => "checkbox"} , 
-          :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
-       
-  
-  
-  <%= f.input :search_nearby_places, 
-        :as => :boolean,
-        :label => " Search nearby places?",
-            :input_html => { :class => "checkbox" }, 
-            :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
+<li class="grid__item  one-quarter  palm-one-whole">
+     <input type="hidden" name="search_query[inclusive]" id="search_query_record_inclusive" value="false">
+    <label> <input type="checkbox" name="search_query[inclusive]" id="search_query_record_inclusive" value="true"><a href="#" class="tip2"> Search family members?<span>Check if you wish to include family members with the same name as you entered for the specific event</span></a></label>
+ </li>
+ <li class="grid__item  one-quarter  palm-one-whole">
+     <input type="hidden" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="false">
+    <label> <input type="checkbox" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="true"><a href="#" class="tip2"> Search nearby places?<span>Check if you wish to search additional places to the vacinity of your starting place</span></a></label>
+ </li>    
+ <li class="grid__item  one-quarter  palm-one-whole">
+     <input type="hidden" name="search_query[fuzzy]" id="search_query_record_fuzzy" value="false">
+    <label> <input type="checkbox" name="search_query[fuzzy]" id="search_query_record_fuzzy" value="true"><a href="#" class="tip2"> Soundex Search on Surnames?<span>Check if you wish to include Soundex equivalents of the names</span></a></label>
+ </li>
 
-
-    <%= f.input :inclusive, 
-          :as => :boolean, 
-        :label => " Search family members?",
-            :input_html => { :class => "checkbox" }, 
-            :wrapper_html => { :class => "grid__item  one-quarter  palm-one-whole" } %>
-  
-  
+ 
     <%= f.action :submit, 
     			:as => :button, 
     			:label => 'Search',
