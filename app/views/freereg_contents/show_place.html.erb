@@ -1,7 +1,7 @@
 <% require 'record_type' %>
 
 
-<h4 style="text-align: center">The database contained the following Place on <%= Rails.application.config.dataset_date %>. </h4>
+<h4 style="text-align: center">The database contained the following information on <%= Rails.application.config.dataset_date %>. </h4>
 <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" unless @county_id.nil? %> </div>
 <div class="grid">
   <section class="island ">
@@ -59,10 +59,10 @@
          <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   
        </tr>
         <tr>
-         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] %></td>   
+         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td>   
        </tr>
        <tr>
-         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] %></td>   
+         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td>   
        </tr>
        </tbody>
      </table> 

@@ -5,6 +5,7 @@ class FreeregContent
 
   require 'chapman_code'
   field :county, type: String#, :required => false
+  field :chapman_codes,  type: Array, default: []
   validates_inclusion_of :county, :in => ChapmanCode::values+[nil]
   field :place, type: String
   field :church, type: String

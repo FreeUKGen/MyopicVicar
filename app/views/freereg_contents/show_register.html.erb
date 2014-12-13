@@ -1,58 +1,58 @@
 <% require 'record_type' %>
 
-    <h4 style="text-align: center">Details of the 
-     <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
-     of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
-     <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
+<h4 style="text-align: center">Details of the 
+ <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
+ of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
+ <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
 
-  <section class="island ">
+ <section class="island ">
 
-     <table  class="table--bordered t100">
-      <colgroup >
-     <col class="t20">
-   <col class="t30 weight--semibold">
- </colgroup>
-     <thead  >
+   <table  class="table--bordered t100">
+    <colgroup >
+    <col class="t20">
+    <col class="t30 weight--semibold">
+  </colgroup>
+  <thead  >
 
-      <tr>    
-        <th >Field</th>
-        <th >Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Status</td>        <td class="weight--semibold"><%= @register.status %></td>
-      </tr>
-      <tr>
-        <td>Quality</td>       <td class="weight--semibold"><%= @register.quality %></td>
-      </tr>
-      <tr>
-        <td>Source</td>        <td class="weight--semibold"><%= @register.source %></td>
-      </tr>
-      <tr>
-        <td>Copyright</td>     <td class="weight--semibold"><%= @register.copyright %></td>
-      </tr>
-      <tr>
-        <td>Notes</td>         <td class="weight--semibold"><%= @register.register_notes %></td>
-      </tr>
-      <tr>
-        <td>Last amended</td>  <td class="weight--semibold"><%= @register.last_amended %></td>
-      </tr>
-      <tr>
-        <td>First year</td>    <td class="weight--semibold"><%= @register.minimum_year_for_register %></td>
-      </tr>
-      <tr>
-        <td>Last year</td>     <td class="weight--semibold"><%= @register.maximum_year_for_register %></td>
-      </tr>
-    </tbody>
-  </table>
-  </section>
+    <tr>    
+      <th >Field</th>
+      <th >Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Status</td>        <td class="weight--semibold"><%= @register.status %></td>
+    </tr>
+    <tr>
+      <td>Quality</td>       <td class="weight--semibold"><%= @register.quality %></td>
+    </tr>
+    <tr>
+      <td>Source</td>        <td class="weight--semibold"><%= @register.source %></td>
+    </tr>
+    <tr>
+      <td>Copyright</td>     <td class="weight--semibold"><%= @register.copyright %></td>
+    </tr>
+    <tr>
+      <td>Notes</td>         <td class="weight--semibold"><%= @register.register_notes %></td>
+    </tr>
+    <tr>
+      <td>Last amended</td>  <td class="weight--semibold"><%= @register.last_amended %></td>
+    </tr>
+    <tr>
+      <td>First year</td>    <td class="weight--semibold"><%= @register.minimum_year_for_register %></td>
+    </tr>
+    <tr>
+      <td>Last year</td>     <td class="weight--semibold"><%= @register.maximum_year_for_register %></td>
+    </tr>
+  </tbody>
+</table>
+</section>
 
 
-  <h4 style="text-align: center">Summary of transcribed records</h4>
-  <p style="text-align: center">You may see the decades for which data has been transcribed by following the "Link".</p>
+<h4 style="text-align: center">Summary of transcribed records</h4>
+<p style="text-align: center">You may see the decades for which data has been transcribed by following the "Link".</p>
 
-  <section class="island ">
+<section class="island ">
 
 
 

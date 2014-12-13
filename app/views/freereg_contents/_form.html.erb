@@ -1,18 +1,53 @@
 
 <div class="island  island--light">
-<%= semantic_form_for @freereg_contents, :html => { :class => "grid__item  one-half lap-two-fifths palm-one-whole " } do |f| %>
-  
-    <%= f.input :county, 
-        { :as => :select, :include_blank => true, :required => false, :collection => @options,
-        :size => 2 ,  :label => "Select the county you wish to review:",
-        :input_html => { :class => "text--input" }, 
-        :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-        }%>
 
-    <%= f.action :submit, :as => :button,  :label => 'Select' , 
+<%= semantic_form_for @freereg_content do |f| %>
+ 
+ <li class="grid__item  one-third  palm-one-whole " id="freereg_content_chapman_codes_input">
+    	<input name="freereg_content[chapman_codes][]" type="hidden" value="" />
+    	<label class=" label" for="freereg_content_chapman_codes">
+       <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one</small> 
+		</label>
+		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="3" } >
+			<option value="" label="Select one county"></option>
+			<% @options.each_pair do |label, value| %>
+				<option value="<%=value%>"><%=label%></option>
+			<% end %>
+		</select>
+	</li>
+
+    <li class="grid__item  one-third  palm-one-whole"  id="freereg_content_place_input">
+		<label class=" label" for="freereg_content_place_ids">
+    <a href="#" class="tip2">Place<span>Select a place name from that county</span></a><small class="additional">Select one</small> 
+    </label>
+		<select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select" size="3">
+			<option value="">--</option>
+		</select>	
+	</li>
+
+       <%= f.action :submit, :as => :button,  :label => 'Select' , 
     :button_html => { :class => "btn btn--small", :type => 'submit' }, 
-    :wrapper_html => { :class => "grid__item  one-whole  text--left" }  %>
+    :wrapper_html => { :class => "grid__item  one-third" }  %>
   
 <% end %>
 </div>
-           
+         
+   <script type="text/javascript" charset="utf-8" >
+	<% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
+	    var selection=<%= raw(PlaceCache.where(:chapman_code => @freereg_content.chapman_codes.first).first.places_json) %>;
+     	<% if @freereg_content.place.size > 0 %>
+			selection["selected"]="<%= @freereg_content.place.first.id %>";	 
+		<% end %>
+	<% end %>
+
+	
+	(function($) {$("#freereg_content_place_ids").remoteChained({
+	  parents : "#freereg_content_chapman_codes",
+	  url : "/places/for_freereg_content_form.json",
+	  loading : "Loading..."
+	  <% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
+	  , bootstrap: selection
+	  <% end %>
+	});})(jQuery);
+	
+</script>

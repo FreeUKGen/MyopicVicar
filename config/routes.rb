@@ -115,6 +115,7 @@ MyopicVicar::Application.routes.draw do
 
   get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place
   get 'places/for_search_form(.:format)', :to => 'places#for_search_form', :as => :places_for_search_form
+  get 'places/for_freereg_content_form(.:format)', :to => 'places#for_freereg_content_form', :as => :places_for_freereg_content_form
   resources :places
   
   resources :church_names

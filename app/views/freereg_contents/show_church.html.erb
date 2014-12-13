@@ -43,10 +43,10 @@
          <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   
        </tr>
         <tr>
-         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] %></td>   
+         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td>   
        </tr>
        <tr>
-         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] %></td>   
+         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td>   
        </tr>
  </tbody>      
 </table>  

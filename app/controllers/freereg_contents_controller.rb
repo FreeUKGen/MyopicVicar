@@ -8,14 +8,18 @@ class FreeregContentsController < ApplicationController
   end
 
   def new
-     @freereg_contents = FreeregContent.new 
+     @freereg_content = FreeregContent.new 
      @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
 
   def create
-    @county = ChapmanCode.has_key(params[:freereg_content][:county])
+    @county = params[:freereg_content][:chapman_codes].delete_if { |x| x.blank? }
+    place = params[:freereg_content][:place_ids]
+    p @county[0]
+    @county = ChapmanCode.name_from_code(@county[0])
+    p @county
     session[:county] = @county
-    redirect_to freereg_content_path(@county)
+    redirect_to show_place_path(place)
   end
   
 
@@ -26,7 +30,7 @@ class FreeregContentsController < ApplicationController
        @page = ""
     end
 
-   @county = params[:id]
+   @county = session[:county]
    @chapman_code = ChapmanCode.values_at( @county)
    @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
    @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
