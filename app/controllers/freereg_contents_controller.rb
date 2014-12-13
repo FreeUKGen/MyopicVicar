@@ -17,6 +17,7 @@ class FreeregContentsController < ApplicationController
     place = params[:freereg_content][:place_ids]
     @county = ChapmanCode.name_from_code(@county[0])
     session[:county] = @county
+    session[:county_id] = nil
     redirect_to show_place_path(place)
   end
   
