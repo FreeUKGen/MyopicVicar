@@ -1,7 +1,7 @@
 <% require 'record_type' %>
 
 <h4 style="text-align: center">The database contained the following church in <%= @place_name %> of <%= @county %> on <%= Rails.application.config.dataset_date %>. </h4>
- <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" %>  <br></div>
+ <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small"unless @county_id.nil? %>    <br></div>
 <div class="grid">
   <section class="island ">
 

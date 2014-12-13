@@ -15,9 +15,7 @@ class FreeregContentsController < ApplicationController
   def create
     @county = params[:freereg_content][:chapman_codes].delete_if { |x| x.blank? }
     place = params[:freereg_content][:place_ids]
-    p @county[0]
     @county = ChapmanCode.name_from_code(@county[0])
-    p @county
     session[:county] = @county
     redirect_to show_place_path(place)
   end
@@ -29,7 +27,6 @@ class FreeregContentsController < ApplicationController
     else
        @page = ""
     end
-
    @county = session[:county]
    @chapman_code = ChapmanCode.values_at( @county)
    @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'

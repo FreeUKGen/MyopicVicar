@@ -3,7 +3,7 @@
 <h4 style="text-align: center">Details of the 
  <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
  of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
- <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" %> <br></div>
+ <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" unless @county_id.nil? %> <br></div>
 
  <section class="island ">
 
