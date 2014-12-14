@@ -1,4 +1,22 @@
 
+ 
+  <% if flash[:notice] %>
+<div class="weight--semibold text--center" style="color:red"><br>
+ <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+ </div>
+   <% end %>
+
+  <% if @freereg_content.errors.any? %>
+   <h4 class="text--center"><%= pluralize(@freereg_content.errors.count, "error") %> prohibited this search from being processed:</h4>
+ 
+    <ul class="validation-list" >
+    <% @freereg_content.errors.messages.each do |key, msg| %>
+          <li class="validation-list__error text--center" ><%= msg[0] %></li>
+     <% end %>
+    </ul>
+      <%@freereg_content.errors.clear%>
+<% end %>
+
 <div class="island  island--light">
 
 <%= semantic_form_for @freereg_content do |f| %>
@@ -11,7 +29,12 @@
 		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="3" } >
 			<option value="" label="Select one county"></option>
 			<% @options.each_pair do |label, value| %>
-				<option value="<%=value%>"><%=label%></option>
+ <%if value == @freereg_content.chapman_codes[0]%>
+         <option value="<%=value%>" selected="selected"> <%=label%></option>
+       <%else%>
+       <option value="<%=value%>"><%=label%></option>
+            <% end %>
+
 			<% end %>
 		</select>
 	</li>

@@ -12,13 +12,23 @@ class FreeregContentsController < ApplicationController
      @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
 
-  def create
-    @county = params[:freereg_content][:chapman_codes].delete_if { |x| x.blank? }
+  def create 
+    @freereg_content = FreeregContent.new(params[:freereg_content].delete_if{|k,v| v.blank? })
+    @county = params[:freereg_content][:chapman_codes]
     place = params[:freereg_content][:place_ids]
-    @county = ChapmanCode.name_from_code(@county[0])
-    session[:county] = @county
-    session[:county_id] = nil
-    redirect_to show_place_path(place)
+    if  @freereg_content.save
+      @county = ChapmanCode.name_from_code(@county[0])
+      session[:county] = @county
+      session[:county_id] = nil
+      redirect_to show_place_path(place)
+      return
+    else
+      p  @county
+     @freereg_content.chapman_codes = []
+     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+     render :new
+    end
+    
   end
   
 
