@@ -1,48 +1,65 @@
 <p class="text--center"><%= link_to 'Detailed Advice on Searching', "../tips-for-searching-the-database", method: :get, :class => "btn"   %>   <%= link_to "Data on the Database Contents", main_app.freereg_contents_path , method: :get, :class => "btn " %></p>
 
   <div style="clear:both;"> </div>
-        <section class="island  island--light">
+  <% if flash[:notice] %>
+<div class="weight--semibold text--center" style="color:red"><br>
+ <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+ </div>
+   <% end %>
+
+  <% if @search_query.errors.any? %>
+   <h4 class="text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h4>
+ 
+    <ul class="validation-list" >
+    <% @search_query.errors.messages.each do |key, msg| %>
+          <li class="validation-list__error text--center" ><%= msg[0] %></li>
+     <% end %>
+    </ul>
+      <%@search_query.errors.clear%>
+<% end %>
+
+        <section class="island  island--light ">
 
 <%= semantic_form_for(@search_query) do |f| %>
 
-  <%= f.semantic_errors :class => "validation-list__error" %>
+  
 <%= f.inputs do %>
    <li class="grid__item  one-quarter  palm-one-whole">
      <label><a href="#" class="tip2">Surname<span>The surname can be entered as upper or lower case</span></a></label>
      <% if @search_query.last_name.nil? %>
-      <input name="search_query[last_name]" type="text" class="text-input" placeholder="Manditory" />
+      <input name="search_query[last_name]" type="text" class="text-input" placeholder="Manditory" >
     <%else%>
-      <input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" />
+      <input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" >
     <%end%>
    </li>
    <li class="grid__item  one-quarter  palm-one-whole">
     <label><a href="#" class="tip2">Forename(s)<span>The forename can be entered as upper or lower case, abbreviations and latin versions will be included</span></a></label>
     <% if @search_query.first_name.nil? %>
-      <input name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" />
+      <input name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" >
     <%else%>
-      <input name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>" />
+      <input name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>" >
     <%end%>
    </li>
    <li class="grid__item  one-quarter  palm-one-whole">
     <label><a href="#" class="tip2">First year<span>The first year for which records are required</span></a></label>
      <% if @search_query.start_year.nil? %>
-      <input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" />
+      <input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
     <%else%>
-      <input name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" />
+      <input name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" >
     <%end%>
    </li>
     <li class="grid__item  one-quarter  palm-one-whole">
       <label><a href="#" class="tip2">Last year<span>The last year for which records are required</span></a></label>
       <% if @search_query.end_year.nil? %>
-        <input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" />
+        <input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
       <%else%>
-        <input name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>" />
+        <input name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>" >
       <%end%>
    </li>
 
    
    <li class="grid__item  one-third  palm-one-whole " id="search_query_chapman_codes_input">
-    	<input name="search_query[chapman_codes][]" type="hidden" value="" />
+    	<input name="search_query[chapman_codes][]" type="hidden" value="" >
     	<label class=" label" for="search_query_chapman_codes">
        <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one (or more using Ctrl)</small> 
 		</label>
@@ -56,7 +73,7 @@
 
     <li class="grid__item  one-third  palm-one-whole"  id="search_query_places_input">
 		<label class=" label" for="search_query_place_ids">
-    <a href="#" class="tip2">Place<span>Do NOT select a place name if you wish to search ALL the places in a county.</span></a><small class="additional">Select one (or more using Ctrl)</small> 
+    <a href="#" class="tip2">Place<span>Do NOT select a place name if you wish to search ALL the places in a county.</span></a><small class="additional">Select one (or more using Ctrl)</small> </label>
 		<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" multiple="multiple">
 			<option value="">--</option>
 		</select>	
@@ -66,7 +83,7 @@
 	  	<label class=" label" for="search_query_record_type">
       <a href="#" class="tip2">Record type<span>The records can be Baptisms, Burials or Marriages. Leave blank to select all.</span></a><small class="additional">Select one or none</small> 
 	    </label>
-  		<select id="search_query_record_type" name="search_query[record_type]" class="select">
+  		<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]">
   			<option value=""></option>
   			<% RecordType::OPTIONS.each_pair do |name, value| %>
   				<option value="<%=value%>"><%=name%></option>
@@ -119,6 +136,10 @@
 	  , bootstrap: selection
 	  <% end %>
 	});})(jQuery);
+
+  var theValue=<%=@search_query.chapman_codes%>
+  $(".search_query_chapman_codes option[value=theValue").prop('selected', true);     
+});
 	
 </script>
 

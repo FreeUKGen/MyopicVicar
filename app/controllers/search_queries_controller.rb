@@ -53,10 +53,13 @@ class SearchQueriesController < ApplicationController
     if  @search_query.save
       redirect_to search_query_path(@search_query)
     else
-      render :new
+     render :new
     end
+    p "output"
+    p @search_query
+   
   end
-  
+
   # default criteria:
   # today
   def report
@@ -122,7 +125,32 @@ class SearchQueriesController < ApplicationController
 
   def show
     @search_query = SearchQuery.find(params[:id])
-    @search_results = @search_query.search.page(params[:page])  
+    @search_results = @search_query.search
+    if @search_results.kind_of? Integer 
+      if @search_results < 0
+      flash[:notice] = "There are too many results (#{-@search_results}) for this search please refine your criteria."
+     redirect_to :action => :edit
+     return
+     end
+    end
+     @search_results =   @search_results.page(params[:page]) 
+     
+  end
+
+  def edit
+    @search_query = SearchQuery.find(params[:id]) 
+    
+  end
+  def update
+     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+    @search_query.session_id = request.session_options[:id]
+
+    if  @search_query.save
+      redirect_to search_query_path(@search_query)
+    else
+     render :edit
+    end
+    
   end
 
   def about

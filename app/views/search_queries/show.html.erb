@@ -1,9 +1,9 @@
 
-<% if flash[:green] %>
-<div id="success" style="color:green"><br>
-	<%= flash[:notice] %>  <% flash[:green] = nil%> <br>
+<% if flash[:notice] %>
+<div id="notice" style="color:red"><br>
+ <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
-<% end %>
+<% end %>  
 
 	<section  >
 		<h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>

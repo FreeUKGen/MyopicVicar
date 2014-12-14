@@ -4,6 +4,7 @@ class SearchQuery
   include Mongoid::Timestamps::Updated::Short
 
   require 'chapman_code'
+  require 'freereg_options_constants'
   require 'name_role'
   require 'date_parser'
   # consider extracting this from entities
@@ -57,14 +58,20 @@ class SearchQuery
   validate :name_not_blank
   validate :date_range_is_valid
   validate :radius_is_valid
+  validate :county_is_valid
   before_validation :clean_blanks
 
-  def search    
-    if order_asc
+  def search 
+    result_count = SearchRecord.where(search_params).asc(self.order_field).count
+    if result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+      records = -result_count
+    else 
+
+     if order_asc
       records = SearchRecord.where(search_params).asc(self.order_field).all
-    else
+     else
       records = SearchRecord.where(search_params).desc(self.order_field).all
-    end
+     end
     self.result_count = records.count
     self.runtime = (Time.now.utc - self.created_at) * 1000
     search_record_array = Array.new
@@ -73,6 +80,7 @@ class SearchQuery
     end 
     self.search_result =  SearchResult.new(records: search_record_array)
     self.save
+    end
     records
   end
   
@@ -158,23 +166,27 @@ class SearchQuery
 
 
   def name_not_blank
-    if first_name.blank? && last_name.blank?
-      errors.add(:first_name, "Both name fields cannot be blank.")
+    if last_name.blank?
+      errors.add(:first_name, "A surname must be entered.")
     end
   end
-
+  def county_is_valid
+    if chapman_codes[0].nil?
+       errors.add(:chapman_codes, "At least one county must be selected.")
+    end  
+  end
 
   def date_range_is_valid
     if !start_year.blank? && !end_year.blank?
       if start_year.to_i > end_year.to_i
-        errors.add(:end_year, "Start year must precede end year.")
+        errors.add(:end_year, "First year must precede last year.")
       end
     end
   end
 
   def radius_is_valid
     if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "Please select a place.")
+      errors.add(:search_nearby_places, "A Place must have been selected as a starting point if selecting the nearby option.")
     end
   end
 
