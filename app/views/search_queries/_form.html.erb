@@ -67,7 +67,7 @@
 			<option value="" label="Select one or more counties"></option>
 			<% ChapmanCode::select_hash_with_parenthetical_codes.each_pair do |label, value| %>
       
-	    <%if value == @search_query.chapman_codes[0]%>
+	    <%if @search_query.chapman_codes.include?(value)%>
          <option value="<%=value%>" selected="selected"> <%=label%></option>
        <%else%>
        <option value="<%=value%>"><%=label%></option>
