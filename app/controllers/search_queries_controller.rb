@@ -19,7 +19,9 @@ class SearchQueriesController < ApplicationController
     else
       @search_query = SearchQuery.new    
     end
+    
   end
+
 
   def remember
     @search_query = SearchQuery.find(params[:id])
@@ -55,9 +57,6 @@ class SearchQueriesController < ApplicationController
     else
      render :new
     end
-    p "output"
-    p @search_query
-   
   end
 
   # default criteria:
