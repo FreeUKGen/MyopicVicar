@@ -79,15 +79,19 @@
 
 
 
+
 <h3>Location</h3>
 
-
 <% if @search_query.radius_search? %>
+
 	<p>
 		Search Criteria: 
 			<b>Search additional places</b> 
 			near 
 			<b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b> 
+			in
+			<b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[0])%></b>
+
 	</p>
 	<p>
 		Search Logic:
@@ -95,27 +99,26 @@
 			<ul>
 				<% @search_query.all_radius_places.each do |near_place| %>
 					<li>
-						<%= near_place.place_name%> (<%= near_place.geo_near_distance.to_i %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
+						<%= near_place.place_name %> (<%= near_place.county%>)   (<%= near_place.geo_near_distance.to_i %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
 					</li>
 				<% end %>
 			</ul>
 	</p>
 	<%else%>
-	Your search was not extended beyond the places and counties you selected.
-<% end %>
-</p>
 	
-<h3>Counties</h3>
-<p>The following counties were included in the search:<br>
- <%= @search_query.chapman_codes %>
-</p>
+<p>The following counties were included in the search:
+ <% @search_query.chapman_codes.each do |chapman| %>
+ <b><%=ChapmanCode.name_from_code(chapman)%></b>
+ <%end%>
 
-<h3>Places</h3>
-<p>The following counties were included in the search:<br>
-<% if @search_query.places %>
- No place specified so all places with data in the specified counties were included.
+<%  place= @search_query.places.map {|pl| pl.place_name} %>
+<% unless place.nil? %>
+and <b>all places</b> with data in the selected counties were included.
 <%else%>
- <%= @search_query.places.each {|pl| pl.place_name} %> were included.
+and the place with the name <b><%= place[0]%></b> was selected. 
+<%end%>
+
+
 <%end%>
 </p>
 
