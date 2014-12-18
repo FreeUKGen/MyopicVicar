@@ -42,7 +42,6 @@
 		<table class="table--bordered " >	
 		<colgroup >
       <col class=t20>
-      <col class=t20>
       <col class=t10 >
       <col class=t10 >
       <col class=t10>
@@ -55,9 +54,6 @@
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the name</span></a> 
       
 				</th>
-				<th>Family Members<br>
-				  <a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>These are the names of other people in the record</span></a> 
-                </th>
 				<th>
 					<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the type of record</span></a>
@@ -93,15 +89,7 @@
 						<% end %>
 						<% end%>
 					</td>
-					<td>
-						<% search_record.transcript_names.reject{|n| n['type'] == 'primary' }.each_with_index do |name, i| %>
-						<% if i > 0 %>
-						<br/>
-						<% end%>
-						<%= raw("#{name['first_name']}&nbsp;#{name['last_name']}") %>
-						<%= raw("(#{NameRole::OPTIONS.invert[name['role']].gsub(' ', '&nbsp;')})") %>
-						<% end%>
-					</td>
+					
 					<td>
 						<%= RecordType::display_name(search_record.record_type) %>
 					</td>
