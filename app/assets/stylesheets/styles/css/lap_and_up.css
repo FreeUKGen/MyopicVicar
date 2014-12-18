@@ -308,6 +308,7 @@
   margin-right: auto;
   padding-left: 0;
   padding-right: 0;
+  float:left;
 }
 @media only screen and (max-width: 1023px) {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/joshangell\/Development\/soup\/styles\/scss\/soup\/objects\/_container_lau\.scss}line{font-family:\000039}}

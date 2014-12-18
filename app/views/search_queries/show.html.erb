@@ -39,44 +39,44 @@
 		No results found!
 		<% else %>
 		<div class="table-wrapper"> 
-		<table class="table--bordered" >	
+		<table class="table--bordered " >	
 		<colgroup >
-      <col class=t15>
+      <col class=t20>
       <col class=t20>
       <col class=t10 >
       <col class=t10 >
       <col class=t10>
       <col class=t20>
-      <col class=t10>
+      <col class=t5>
      </colgroup>
 			<thead  >
 				<th>
-					<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+					<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the name</span></a> 
       
 				</th>
-				<th>Family Members
+				<th>Family Members<br>
 				  <a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>These are the names of other people in the record</span></a> 
                 </th>
 				<th>
-					<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+					<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the type of record</span></a>
 				</th>
 				<th>
-					<%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
+					<%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the date of the event</span></a> 
       
 				</th>
 				<th>
-					<%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
+					<%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the county</span></a> 
       
 				</th>
 				<th>
-					<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+					<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
 					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the location</span></a> 
 				</th>
-				<th>Details
+				<th>Detail<br>
                  <a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to get transcription details</span></a> 
          		</th>
 			</thead >
@@ -115,12 +115,12 @@
 						<%= format_location(search_record) %>
 					</td>
 					<td>
-						<%= link_to("Details", search_record_path(search_record, :search_id => @search_query, :page_number => @page_number)) %>
+						<%= link_to("Detail", search_record_path(search_record, :search_id => @search_query, :page_number => @page_number)) %>
 						<% if session[:viewed] %>
-						<i>
-							<%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
-						</i>
-						<% end %>
+                        <i>
+                        <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
+                           </i>
+                         <% end %>
 					</td>
 				</tr>	
 			</tbody>
