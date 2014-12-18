@@ -25,15 +25,15 @@
   
 <%= f.inputs do %>
    <li class="grid__item  one-quarter  palm-one-whole">
-     <label><a href="#" class="tip2">Surname<span>The surname can be entered as upper or lower case</span></a></label>
+     <label><a href="#" class="tip2">Surname<span>The surname can be upper or lower case; see Soundex option below for variations of the name</span></a></label>
      <% if @search_query.last_name.nil? %>
-      <input name="search_query[last_name]" type="text" class="text-input" placeholder="Manditory" >
+      <input name="search_query[last_name]" type="text" class="text-input" placeholder="Mandatory" >
     <%else%>
       <input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" >
     <%end%>
    </li>
    <li class="grid__item  one-quarter  palm-one-whole">
-    <label><a href="#" class="tip2">Forename(s)<span>The forename can be entered as upper or lower case, abbreviations and latin versions will be included</span></a></label>
+    <label><a href="#" class="tip2">Forename(s)<span>The forename can be upper or lower case, abbreviations and latin versions of name will be included automatically</span></a></label>
     <% if @search_query.first_name.nil? %>
       <input name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" >
     <%else%>
@@ -41,7 +41,7 @@
     <%end%>
    </li>
    <li class="grid__item  one-quarter  palm-one-whole">
-    <label><a href="#" class="tip2">First year<span>The first year for which records are required</span></a></label>
+    <label><a href="#" class="tip2">First year<span>The first year for which records are included</span></a></label>
      <% if @search_query.start_year.nil? %>
       <input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
     <%else%>
@@ -49,7 +49,7 @@
     <%end%>
    </li>
     <li class="grid__item  one-quarter  palm-one-whole">
-      <label><a href="#" class="tip2">Last year<span>The last year for which records are required</span></a></label>
+      <label><a href="#" class="tip2">Last year<span>The last year for which records are included</span></a></label>
       <% if @search_query.end_year.nil? %>
         <input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
       <%else%>
@@ -61,7 +61,7 @@
    <li class="grid__item  one-third  palm-one-whole " id="search_query_chapman_codes_input">
     	<input name="search_query[chapman_codes][]" type="hidden" value="" >
     	<label class=" label" for="search_query_chapman_codes">
-       <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one (or more using Ctrl)</small> 
+       <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one (hold Ctrl for multiple)</small> 
 		</label>
 		<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" }>
 			<option value="" label="Select one or more counties"></option>
@@ -81,7 +81,7 @@
   
     <li class="grid__item  one-third  palm-one-whole"  id="search_query_places_input">
 		<label class=" label" for="search_query_place_ids">
-    <a href="#" class="tip2">Place<span>Do NOT select a place name if you wish to search ALL the places in a county.</span></a><small class="additional">Select one (or more using Ctrl)</small> </label>
+    <a href="#" class="tip2">Place<span>Leaving the selection untouched will select ALL the places in a county. Search Nearby Places  below adds additional places</span></a><small class="additional">Select nothing or one place</small> </label>
 		<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" multiple="multiple">
 			<option value="">--</option>
 		</select>	
@@ -89,7 +89,7 @@
   
 	  <li class="grid__item  one-quarter  palm-one-whole optional" id="search_query_record_type_input">
 	  	<label class=" label" for="search_query_record_type">
-      <a href="#" class="tip2">Record type<span>The records can be Baptisms, Burials or Marriages. Leave blank to select all.</span></a><small class="additional">Select one or none</small> 
+      <a href="#" class="tip2">Record type<span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small> 
 	    </label>
   		<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]">
   			<option value=""></option>
@@ -102,15 +102,15 @@
 <%= f.inputs do %>
 <li class="grid__item  one-quarter  palm-one-whole">
      <input type="hidden" name="search_query[inclusive]" id="search_query_record_inclusive" value="false">
-    <label> <input type="checkbox" name="search_query[inclusive]" id="search_query_record_inclusive" value="true"><a href="#" class="tip2"> Search family members?<span>Check if you wish to include family members with the same name as you entered for the specific event</span></a></label>
+    <label> <input type="checkbox" name="search_query[inclusive]" id="search_query_record_inclusive" value="true"><a href="#" class="tip2"> Search family members?<span>Check to include family members with that same name in the search</span></a></label>
  </li>
  <li class="grid__item  one-quarter  palm-one-whole">
      <input type="hidden" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="false">
-    <label> <input type="checkbox" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="true"><a href="#" class="tip2"> Search nearby places?<span>Check if you wish to search additional places to the vicinity of the one selected starting place</span></a></label>
+    <label> <input type="checkbox" name="search_query[search_nearby_places]" id="search_query_record_search_nearby_places" value="true"><a href="#" class="tip2"> Search nearby places?<span>Check to search places to the vicinity of the selected starting place, up to 40 additional places will be included</span></a></label>
  </li>    
  <li class="grid__item  one-quarter  palm-one-whole">
      <input type="hidden" name="search_query[fuzzy]" id="search_query_record_fuzzy" value="false">
-    <label> <input type="checkbox" name="search_query[fuzzy]" id="search_query_record_fuzzy" value="true"><a href="#" class="tip2"> Soundex Search on Surnames?<span>Check if you wish to include Soundex equivalents of the names</span></a></label>
+    <label> <input type="checkbox" name="search_query[fuzzy]" id="search_query_record_fuzzy" value="true"><a href="#" class="tip2"> Soundex Search on Surnames?<span>Check to include Soundex equivalent of the name</span></a></label>
  </li>
 
  
