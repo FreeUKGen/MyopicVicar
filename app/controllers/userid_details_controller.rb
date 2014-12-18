@@ -75,7 +75,6 @@ def transcriber_registration
 end 
 
 def technical_registration
- get_user_info_from_userid
  session[:first_name] = 'New Registrant'
  session[:type] = "technical_registration"
  @userid = UseridDetail.new
