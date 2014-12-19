@@ -86,15 +86,11 @@ class SearchRecord
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
-      p "register type"
-      p register_type
     end
     
     location_array = []
     location_array << "#{place_name} (#{church_name})"
-    #location_array << "(#{church_name})" if church_name
     location_array << "[#{register_type}]" 
-        
     location_array
   end
 
