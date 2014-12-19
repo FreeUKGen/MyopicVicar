@@ -10,9 +10,9 @@ class FreeregContent
   field :place, type: String
   field :church, type: String
   field :record_type, type: String#, :required => false
-
+   field :place_ids, type: String
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
-  validate :place_is_valid
+  validate :place_ids_is_valid
   validate :county_is_valid
 
   before_validation :clean_blanks
@@ -42,9 +42,9 @@ def search_params
     end  
   end
   
-   def place_is_valid
+   def place_ids_is_valid
     if self.place_ids.nil?
-       errors.add(:place, "At least one place must be selected.")
+       errors.add(:place_ids, "At least one place must be selected.")
     end  
   end
   def clean_blanks
