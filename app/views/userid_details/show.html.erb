@@ -1,28 +1,27 @@
-<p style="text-align: center"><b>Profile Details :<%= @userid.userid %></p></b>
- <div style="float:left;"> <%= button_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small" %></div>
+ <section class="island  island--light">
+<div class="grid">
+ <p style="text-align: center"><b>Profile Details :<%= @userid.userid %></p></b>
+ <div > <%= button_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small" %></div>
 <%if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role == 
   'volunteer_coordinator'%>
  
-  <div style="float:left;"><%= button_to "Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small" %></div>
+  <div ><%= button_to "Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small" %></div>
   <%if @user.person_role == 'system_administrator'%>
-  <div style="float:left;"><%= button_to 'Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small"  %></div>
+  <div ><%= button_to 'Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small"  %></div>
   <%end%>
   <%end%>
-
-  <div style="clear:both;"> </div><br>
 
   <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
  </div>
  <% end %>
- <div id="main"style="color:black">
-  <div id="main"style="color:black">
-    <table  class="table--bordered  table--striped  table--data" >
+
+    <table  class="table--bordered grid__item  two-third  palm-one-whole " >
       <tr>
 
-        <th style="width:30%">Field</th>
-        <th style="width:50">Value</th>
+        <th >Field</th>
+        <th class="caps">Value</th>
 
       </tr>
 
@@ -107,7 +106,9 @@
  <%end%> 
  <%end%>
 
-</table>
+</table><br>
+
 </div>
+<div class="grid__item  one-third  palm-one-whole ">
 <%= render "resource_sidebar" %>
-<br>
+</div>
