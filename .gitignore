@@ -56,11 +56,13 @@ coverage
 # Public Uploads
 public/system/*
 public/themes/*
+public/uploads/*
 
 # Public Cache
 public/javascripts/cache
 public/stylesheets/cache
 public/refinery/*
+
 
 # Vendor Cache
 vendor/cache
@@ -118,3 +120,6 @@ capybara-*html
 # vendor/extensions dummy applications.
 vendor/extensions/**/spec/dummy
 
+
+# Ignore application configuration
+/config/application.yml

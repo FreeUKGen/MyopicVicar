@@ -121,7 +121,7 @@ MyopicVicar::Application.configure do
   
     
   config.github_login = 'FreeUKGenIssues'
-  config.github_password = nil
+  config.github_password = ENV["GITHUB_WORD"]
   config.github_repo = 'FreeUKGen/FreeUKGenProductIssues'
 
 end
