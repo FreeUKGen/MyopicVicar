@@ -15,7 +15,12 @@
   end
 
   def new
-      @user = current_refinery_user.userid_detail
+      unless current_refinery_user
+        redirect_to refinery.login_path
+        return
+      end
+
+      @user = current_refinery_user.userid_detail 
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
       else
