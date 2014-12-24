@@ -17,7 +17,9 @@ MyopicVicar::Application.routes.draw do
 
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   resources :feedbacks
-
+  
+post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  resources :contacts
 
   resources :place_caches
 
@@ -167,7 +169,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :image_lists
   
-  #root :to => 'search_queries#index'
+  root :to => 'search_queries#new'
   
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
@@ -180,6 +182,7 @@ MyopicVicar::Application.routes.draw do
   ActiveAdmin.routes(self)
 
   devise_for :admin_users, ActiveAdmin::Devise.config
+
 
 
   # The priority is based upon order of creation:
@@ -231,7 +234,7 @@ MyopicVicar::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => "welcome#index"
+
   # See how all your routes lay out with "rake routes"
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
