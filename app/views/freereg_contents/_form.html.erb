@@ -24,7 +24,7 @@
  <li class="grid__item  one-third  palm-one-whole " id="freereg_content_chapman_codes_input">
     	<input name="freereg_content[chapman_codes][]" type="hidden" value="" />
     	<label class=" label" for="freereg_content_chapman_codes">
-       <a href="#" class="tip2">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one</small> 
+       <a href="#" class="left_tooltip">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one</small> 
 		</label>
 		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="3" } >
 			<option value="" label="Select one county"></option>
@@ -41,7 +41,7 @@
 
     <li class="grid__item  one-third  palm-one-whole"  id="freereg_content_place_input">
 		<label class=" label" for="freereg_content_place_ids">
-    <a href="#" class="tip2">Place<span>Select a place name from that county</span></a><small class="additional">Select one</small> 
+    <a href="#" class="right_tooltip">Place<span>The places will fill once you have selected a county. Then select one place.</span></a><small class="additional">Select one</small> 
     </label>
 		<select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select" size="3">
 			<option value="">--</option>
@@ -49,7 +49,7 @@
 	</li>
 
        <%= f.action :submit, :as => :button,  :label => 'Select' , 
-    :button_html => { :class => "btn btn--small", :type => 'submit' }, 
+    :button_html => { :class => "btn ", :type => 'submit' }, 
     :wrapper_html => { :class => "grid__item  one-third" }  %>
   
 <% end %>

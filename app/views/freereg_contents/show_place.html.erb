@@ -1,8 +1,5 @@
-<% require 'record_type' %>
-
-
-<h4 style="text-align: center">The database contained the following information on <%= Rails.application.config.dataset_date %>. </h4>
-<div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" unless @county_id.nil? %> </div>
+<h2 class="text--center">The database contained the following information on <%= Rails.application.config.dataset_date %>. </h2>
+<div class="text--center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" unless @county_id.nil? %> </div>
 <div class="grid">
   <section class="island ">
 <table class="grid__item two-thirds table--bordered t50" >
