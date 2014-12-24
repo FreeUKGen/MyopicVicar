@@ -1,20 +1,21 @@
 module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
     'volunteer_coordinator','data_manager', 'technical','system_administrator']
-    OPTIONS = {'researcher' => ["Saved Searches", "Profile", "Help"], 
-      'trainee' => ["Saved Searches", "Profile", "Files","Help"],
-      'pending' => ["Saved Searches", "Profile", "Help"],
-      'transcriber' => ["Saved Searches", "Profile", "Files", "Help"],
-      'syndicate_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate",  "Help"],
-      'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage County", "Access Userids",  "Help"],
-      'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage country", "Manage County","Access Userids", "Help"],
-      'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids",  "Help"],
-      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties",  "System Documentation" , "Help"],
-      'technical' => ["Saved Searches", "Profile", "Files", "RefineryCMS", "Access Attic","Search Performance", "Feedback",
-        "Help",  "System Documentation" ,"Logout"],
-        'system_administrator' =>["Saved Searches", "Profile", "Files","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
-          "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback",  "System Documentation" , "Help"]
-        }
+    OPTIONS = {
+      'researcher' => ["Saved Searches", "Profile"], 
+      'trainee' => ["Saved Searches", "Profile", "Files"],
+      'pending' => ["Saved Searches", "Profile"],
+      'transcriber' => ["Saved Searches", "Profile", "Files"],
+      'syndicate_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate"],
+      'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage County", "Access Userids"],
+      'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage country", "Manage County","Access Userids"],
+      'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids"],
+      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties",  "System Documentation" ],
+      'technical' => ["Saved Searches", "Profile", "Files", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
+        "System Documentation" ,"Logout"],
+      'system_administrator' =>["Saved Searches", "Profile", "Files","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
+          "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
+      }
         
         OPTIONS_TRANSLATION = {"Saved Searches" => "/my_saved_searches",
           "Profile" => "/userid_details/my_own" ,
@@ -33,7 +34,7 @@ module UseridRole
           "Access Attic" => "/attic/select" ,
           "Search Performance" => "/search_queries/report" ,
           "Feedback" => "/feedbacks",
-          "Help" => "/information-for-transcribers" ,
+          "Contacts" => "/contacts",
           "System Documentation" => "/system-documents",
           "Logout" => "/refinery/logout"
         }

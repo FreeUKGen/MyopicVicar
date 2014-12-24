@@ -1,6 +1,6 @@
 
 
-<h1>Listing Feedback</h1>
+<h1 class="title text--center">List of all feedback reports</h1>
 
   <% unless Feedback.github_enabled %>
     <div id="error_explanation">
@@ -15,7 +15,12 @@
 <% end %>  
 
 <%= paginate @feedbacks %> 
-<table class="table--bordered  table--striped  table--data" >
+ <section class="island  island--light " >
+ <div class="table-wrapper"> 
+ <div class="grid"> 
+  <div class="grid__item one-whole" >
+
+<table class="table--bordered " >
   <tr>
     <th>Title</th>
     <th>Date</th>
@@ -28,7 +33,7 @@
 <% @feedbacks.each do |feedback| %>
   <tr>
     <td><%= feedback.title %></td>
-    <td><%= feedback.feedback_time %></td>
+    <td><%= feedback.feedback_time.strftime("%H:%M on %F") unless feedback.feedback_time.nil? %></td>
     <td><%= feedback.user_id %></td>
     <td><%= feedback.feedback_type %></td>
     <td><%= button_to 'Show', feedback_path(feedback),  method: :get%></td>
@@ -36,6 +41,9 @@
  </tr>
 <% end %>
 </table>
-
+</div>
+</div>
+</div>
+</section>
 <br />
 

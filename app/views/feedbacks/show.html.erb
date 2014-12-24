@@ -12,7 +12,7 @@
 
 <p>
   <b>Time:</b>
-  <%= @feedback.feedback_time %>
+  <%= @feedback.feedback_time.strftime("%H:%M on %F") unless @feedback.feedback_time.nil? %>
 </p>
 
 <p>
