@@ -1,0 +1,80 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @contact.title %>
+</p>
+
+<p>
+  <b>Body:</b>
+  <%= @contact.body %>
+</p>
+
+<p>
+  <b>Time:</b>
+  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
+</p>
+
+<p>
+  <b>User:</b>
+  <%= @contact.name %>
+</p>
+<p>
+  <b>Email:</b>
+  <%= @contact.email_address %>
+</p>
+
+<p>
+  <b>Session ID:</b>
+  <%= @contact.session_id %> 
+  (View <%= link_to("search queries for this session", search_query_report_path(:contact_id => @contact, :session_id => @contact.session_id)) %>.)
+</p>
+
+<p>
+  <b>Problem page url:</b>
+  <%= link_to @contact.problem_page_url, @contact.problem_page_url %>
+</p>
+
+<p>
+  <b>Previous page url:</b>
+  <%= link_to @contact.previous_page_url, @contact.previous_page_url %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @contact.contact_type %>
+</p>
+
+<p>
+  <b>Github Issue:</b>
+  <% if @contact.github_issue_url %>
+	  <%= link_to @contact.github_issue_url, @contact.github_issue_url  %>
+  <% else %>
+    <i>none</i>
+  	<% if Contact.github_enabled %>
+		<span  style="float:left;">
+		  <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>		
+		</span>
+	<% else %>
+		Github integration is not set up on this site yet.
+	<% end %>
+  <% end %>
+</p>
+
+<p>
+  <b>Screenshot:</b>
+  <% if @contact.screenshot_url %>
+	<%= image_tag @contact.screenshot_url %>
+  <% else %>
+	No screenshot attached.
+  <% end %>
+</p>
+
+<p>
+  <b>Session Data:</b>
+  <%= debug @contact.session_data %>
+</p>
+
+
+
+<%= link_to 'Back', contacts_path %>

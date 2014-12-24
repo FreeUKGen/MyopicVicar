@@ -197,3 +197,13 @@ a:hover.left_tooltip span {
     margin-right: 10px;
     z-index: 999;
 }
+a.left_tooltip_fading span {
+    transition: opacity 1s ease-in-out;
+    -moz-transition: opacity 1s ease-in-out;
+    -webkit-transition: opacity 1s ease-in-out;
+    opacity: 0;
+}
+ 
+a:hover.left_tooltip_fading span {
+    opacity: 1;
+}
