@@ -1,26 +1,26 @@
 
 <% if flash[:notice] %>
 <div id="notice" style="color:red"><br>
- <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>  
 
-	<section  >
-		<h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
-		<%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
-		<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
-		<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%>
-		<% if @search_query.can_be_broadened? %>
-		<%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small  float--right"%>
-		<% end %>
-		<% if @search_query.can_be_narrowed? %>
-		<%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
-		<% end %><br>
+<section  >
+	<h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
+	<%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+	<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
+	<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%>
+	<% if @search_query.can_be_broadened? %>
+	<%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small  float--right"%>
+	<% end %>
+	<% if @search_query.can_be_narrowed? %>
+	<%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+	<% end %><br>
 	
 	<div style="clear:both;"> </div>
-  </section>
+</section>
 
-  <section class="island  island--light " >
+<section class="island  island--light " >
 	<div class="criteria-group">
 		<% search_params_for_display(@search_query).each do |name, value| %>
 		<dl class="criteria">
@@ -29,52 +29,53 @@
 		</dl>
 		<% end %>
 	</div>
-  </section>
-  
-  <%= paginate @search_results %>
-	
-	<div class="grid"> 
-	<div class="grid__item one-whole" >
-		<% if @search_results.size == 0 %>
-		No results found!
-		<% else %>
-		<div class="table-wrapper"> 
-		<table class="table--bordered " >	
-		<colgroup >
-      <col class=t20>
-      <col class=t10 >
-      <col class=t10 >
-      <col class=t10>
-      <col class=t20>
-      <col class=t5>
-     </colgroup>
+</section>
+
+<%= paginate @search_results %>
+<section class="island  " >
+	<div class="table-wrapper"> 
+		<div class="grid"> 
+
+			<% if @search_results.size == 0 %>
+			No results found!
+			<% else %>
+
+			<table class="table--bordered grid__item one-whole" >	
+				<colgroup >
+				<col class=t20>
+				<col class=t10 >
+				<col class=t10 >
+				<col class=t10>
+				<col class=t20>
+				<col class=t5>
+			</colgroup>
 			<thead  >
 				<th>
 					<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
-					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the name</span></a> 
-      
+					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Name of person. Click heading to sort by the name</span></a> 
+
 				</th>
 				<th>
 					<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
-					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the type of record</span></a>
+					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Type of record. Click heading to sort by type</span></a>
 				</th>
 				<th>
 					<%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
-					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the date of the event</span></a> 
-      
+					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Date entered in record. Click heading to sort by the date</span></a> 
+
 				</th>
 				<th>
 					<%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
-					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the county</span></a> 
-      
+					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>County in which event was recorded. Click heading to sort by the county</span></a> 
+
 				</th>
 				<th>
 					<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
-					<a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to sort by the location</span></a> 
+					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a> 
 				</th>
 				<th>Detail<br>
-                 <a href="#" class="tip2"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click to get transcription details</span></a> 
-         		</th>
+					<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click on the detail link in the record below to get transcription details</span></a> 
+				</th>
 			</thead >
 			<% @search_results.each do |search_record| %>
 			<tbody >
@@ -103,22 +104,21 @@
 						<%= format_location(search_record) %>
 					</td>
 					<td>
-						<%= link_to("Detail", search_record_path(search_record, :search_id => @search_query, :page_number => @page_number)) %>
+						<%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
 						<% if session[:viewed] %>
-                        <i>
-                        <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
-                           </i>
-                         <% end %>
+						<i>
+							<%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
+						</i>
+						<% end %>
 					</td>
 				</tr>	
 			</tbody>
 			<% end %>
 		</table>
-
-	</div>
-	</div>
-	<% end %>
-	</div>
-			<%= paginate @search_results %> 
+		</div>
+		<% end %>
+	
+</div>
+<%= paginate @search_results %> 
 </section>
 
