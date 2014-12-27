@@ -18,7 +18,7 @@ class SearchRecord
     SEPARATION='sep'
     USER_ADDITION='u'
   end
-  
+
   module PersonType
     PRIMARY='p'
     FAMILY='f'
@@ -31,19 +31,19 @@ class SearchRecord
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
-  
+
   #denormalized fields
   field :asset_id, type: String
   field :chapman_code, type: String
-  
+
   #many :annotations, :in => :annotation_ids
 
   field :record_type, type: String
-  
-  # transcript fields  
+
+  # transcript fields
   # field :first_name, type: String#, :required => false
   # field :last_name, type: String#, :required => false
-  
+
   #
   # It contains hashes with keys :first_name, :last_name, :role
   field :transcript_names, type: Array#, :required => true
@@ -60,24 +60,24 @@ class SearchRecord
   field :search_soundex, type: Array, default: []
 
 
-   #index creation for permutations of names, dates, and other metadata
-     ["search_names", "search_soundex"].each do |searchable|
-       [{"chapman_code"=>1, "record_type"=>1},
-       {"record_type" => 1},
-       {"place_id" => 1},
-       {"chapman_code" => 1}].each do |prelude|
-          index(prelude.merge({"#{searchable}.last_name" => 1, "#{searchable}.first_name" => 1, "search_date" => 1}), 
-             {:name => (prelude.keys.join("_")+"_#{searchable}_ln_fn_sd")})
-          index(prelude.merge({"#{searchable}.first_name" => 1, "search_date" => 1}), 
-             {:name => prelude.keys.join("_")+"_#{searchable}_ln_sd"})
-       end
+  #index creation for permutations of names, dates, and other metadata
+  ["search_names", "search_soundex"].each do |searchable|
+    [{"chapman_code"=>1, "record_type"=>1},
+     {"record_type" => 1},
+     {"place_id" => 1},
+    {"chapman_code" => 1}].each do |prelude|
+      index(prelude.merge({"#{searchable}.last_name" => 1, "#{searchable}.first_name" => 1, "search_date" => 1}),
+            {:name => (prelude.keys.join("_")+"_#{searchable}_ln_fn_sd")})
+      index(prelude.merge({"#{searchable}.first_name" => 1, "search_date" => 1}),
+            {:name => prelude.keys.join("_")+"_#{searchable}_ln_sd"})
     end
-  
+  end
+
 
 
   def location_names
     return self[:location_names] if self[:location_names] && self[:location_names].size > 0
-    
+
     self[:location_names] = format_location
   end
 
@@ -87,10 +87,10 @@ class SearchRecord
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
     end
-    
+
     location_array = []
     location_array << "#{place_name} (#{church_name})"
-    location_array << "[#{register_type}]" 
+    location_array << "[#{register_type}]"
     location_array
   end
 
@@ -120,19 +120,19 @@ class SearchRecord
 
   def transform
     populate_search_from_transcript
-   
+
     downcase_all
-     
+
     separate_all
-      
+
     emend_all
-     
-    create_soundex   
-      
+
+    create_soundex
+
     transform_date
-    
+
     populate_location
-      
+
   end
 
   def populate_search_from_transcript
@@ -146,21 +146,21 @@ class SearchRecord
   def populate_location
     self.location_names = format_location
   end
-  
+
   def create_soundex
     search_names.each do |name|
       search_soundex << soundex_name_type_triple(name)
     end
   end
-  
+
   def soundex_name_type_triple(name)
-    return { 
-        :first_name => Text::Soundex.soundex(name[:first_name]), 
-        :last_name => Text::Soundex.soundex(name[:last_name]), 
-        :type => name[:type]
+    return {
+      :first_name => Text::Soundex.soundex(name[:first_name]),
+      :last_name => Text::Soundex.soundex(name[:last_name]),
+      :type => name[:type]
     }
   end
-  
+
   def downcase_all
     search_names.each do |name|
       name[:first_name].downcase! if name[:first_name]
@@ -187,7 +187,7 @@ class SearchRecord
       end
     end
     names_array << separated_names
-  end    
+  end
 
 
   def populate_search_names
@@ -198,7 +198,7 @@ class SearchRecord
           person_type=PersonType::PRIMARY
         end
         name = search_name(name_hash[:first_name], name_hash[:last_name], person_type)
-        search_names << name if name          
+        search_names << name if name
       end
     end
   end
@@ -207,8 +207,8 @@ class SearchRecord
 
   def search_name(first_name, last_name, person_type, source = 'transcript')
     name = nil
-    unless last_name.blank? 
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type })       
+    unless last_name.blank?
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type })
     end
     name
   end
@@ -226,8 +226,8 @@ class SearchRecord
 
     # find an existing search record
     record = SearchRecord.find_by_annotation_ids(annotation.id)
-    
-    unless record 
+
+    unless record
       record = SearchRecord.new(annotation[:data])
       record.record_type = annotation.entity.search_record_type
 
@@ -236,26 +236,26 @@ class SearchRecord
       record.chapman_code = annotation.transcription.asset.asset_collection.chapman_code
 
       record.annotation_ids << annotation.id
-      record.save!    
+      record.save!
 
     end
     # TODO: Deal with existing search records, given duplicate save calls
   end
-  
+
   def self.from_freereg1_csv_entry(entry)
-#   # assumes no existing entries for this line
+    #   # assumes no existing entries for this line
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-   
+
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
     places = Place.where(:chapman_code => entry.county, :place_name => entry.place).first
-    
+
     #record.place = entry.freereg1_csv_file.register.church.place
     record.place = places
-    record.save!  
-    
+    record.save!
+
   end
-  
+
   def self.delete_freereg1_csv_entries
     SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
 

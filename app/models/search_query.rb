@@ -14,7 +14,7 @@ class SearchQuery
     COUNTY='chapman_code'
     LOCATION='location_names.0'
     NAME='transcript_names.0.last_name'
-    
+
     ALL_ORDERS = [
       TYPE,
       DATE,
@@ -23,7 +23,7 @@ class SearchQuery
       NAME
     ]
   end
-  
+
   field :first_name, type: String#, :required => false
   field :last_name, type: String#, :required => false
   field :fuzzy, type: Boolean
@@ -32,7 +32,7 @@ class SearchQuery
   field :record_type, type: String#, :required => false
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
   field :chapman_codes, type: Array, default: []#, :required => false
-#  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
+  #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
   field :start_year, type: Integer
@@ -40,15 +40,15 @@ class SearchQuery
   has_and_belongs_to_many :places, inverse_of: nil
 
   field :radius_factor, type: Integer, default: 41
-  field :search_nearby_places, type: Boolean  
- 
+  field :search_nearby_places, type: Boolean
+
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::SI
 
   field :session_id, type: String
   field :runtime, type: Integer
   field :order_field, type: String, default: SearchOrder::DATE
-  validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS 
+  validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
 
   belongs_to :userid_detail
@@ -61,37 +61,37 @@ class SearchQuery
   validate :county_is_valid
   before_validation :clean_blanks
 
-  def search 
+  def search
     result_count = SearchRecord.where(search_params).asc(self.order_field).count
     if result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
       records = -result_count
-    else 
+    else
 
-     if order_asc
-      records = SearchRecord.where(search_params).asc(self.order_field).all
-     else
-      records = SearchRecord.where(search_params).desc(self.order_field).all
-     end
-    self.result_count = records.count
-    self.runtime = (Time.now.utc - self.created_at) * 1000
-    search_record_array = Array.new
-    records.each do |rec|
-      search_record_array << rec._id.to_s
-    end 
-    self.search_result =  SearchResult.new(records: search_record_array)
-    self.save
+      if order_asc
+        records = SearchRecord.where(search_params).asc(self.order_field).all
+      else
+        records = SearchRecord.where(search_params).desc(self.order_field).all
+      end
+      self.result_count = records.count
+      self.runtime = (Time.now.utc - self.created_at) * 1000
+      search_record_array = Array.new
+      records.each do |rec|
+        search_record_array << rec._id.to_s
+      end
+      self.search_result =  SearchResult.new(records: search_record_array)
+      self.save
     end
     records
   end
-  
+
   def explain_plan
     SearchRecord.where(search_params).asc(:search_date).all.explain
   end
-  
+
   def explain_plan_no_sort
     SearchRecord.where(search_params).all.explain
   end
-  
+
   def search_params
     params = Hash.new
     params[:record_type] = record_type if record_type
@@ -110,14 +110,14 @@ class SearchQuery
     else
       params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     end
-        
+
     params
   end
 
   def place_search?
     place_ids && place_ids.size > 0
   end
-  
+
   def radius_place_ids
     radius_ids = []
     all_radius_places.map { |place| radius_ids << place.id }
@@ -138,9 +138,11 @@ class SearchQuery
   end
   def previous_record(current)
     record = self.search_result.records[self.search_result.records.index(current.to_s) - 1 ]
+    record
   end
   def next_record(current)
-     record = self.search_result.records[self.search_result.records.index(current.to_s) + 1 ]
+    record = self.search_result.records[self.search_result.records.index(current.to_s) + 1 ]
+    record
   end
 
   def name_search_params
@@ -150,14 +152,14 @@ class SearchQuery
     name_params["type"] = search_type
 
     if fuzzy
-    
-      name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name     
-      name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name     
+
+      name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
+      name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
 
       params["search_soundex"] =  { "$elemMatch" => name_params}
     else
       name_params["first_name"] = first_name.downcase if first_name
-      name_params["last_name"] = last_name.downcase if last_name           
+      name_params["last_name"] = last_name.downcase if last_name
 
       params["search_names"] =  { "$elemMatch" => name_params}
     end
@@ -172,8 +174,8 @@ class SearchQuery
   end
   def county_is_valid
     if chapman_codes[0].nil?
-       errors.add(:chapman_codes, "At least one county must be selected.")
-    end  
+      errors.add(:chapman_codes, "At least one county must be selected.")
+    end
   end
 
   def date_range_is_valid
@@ -193,7 +195,7 @@ class SearchQuery
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
-  end  
+  end
 
   def radius_search?
     search_nearby_places
@@ -222,7 +224,7 @@ class SearchQuery
 
   def radius_places(place_id)
     place = Place.find(place_id)
-    place.places_near(radius_factor, place_system)    
+    place.places_near(radius_factor, place_system)
   end
-  
+
 end

@@ -5,131 +5,111 @@
 <!--[if IE 9]>    <html class="ie9" lang="en"> <![endif]-->
 <!--[if gt IE 9]><!-->
 <html lang="en">
-	<!--<![endif]-->
-
-	<head>
-		<meta charset="utf-8"/>
-
-		<title>FreeReg</title>
-
-		<meta name="keywords" content="">
-		<meta name="description" content="">
-
-		<!--[if lt IE 9]>
-		<%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
-		<![endif]-->
-
-		<meta name="HandheldFriendly" content="True">
-		<meta name="MobileOptimized" content="568">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-		<%= favicon_link_tag image_path('favicon.ico')%>
-		<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
-
-		<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/assets/apple-touch-icon-152x152-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144x144-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/assets/apple-touch-icon-120x120-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/apple-touch-icon-114x114-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="76x76" href="/assets/apple-touch-icon-76x76-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/apple-touch-icon-72x72-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" href="/assets/apple-touch-icon-precomposed.png">
-
-		<script type="text/javascript">
-			/* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
-			window.grunticon = function(e) {
-				if (e && 3 === e.length) {
-					var t = window, n = !(!t.document.createElementNS || !t.document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect || !document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1") || window.opera && -1 === navigator.userAgent.indexOf("Chrome")), o = function(o) {
-						var r = t.document.createElement("link"), a = t.document.getElementsByTagName("script")[0];
-						r.rel = "stylesheet", r.href = e[o && n ? 0 : o ? 1 : 2], a.parentNode.insertBefore(r, a)
-					}, r = new t.Image;
-					r.onerror = function() {
-						o(!1)
-					}, r.onload = function() {
-						o(1 === r.width && 1 === r.height)
-					}, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-				}
-			};
-			grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
-		</script>
-		<noscript>
-			<link rel="stylesheet" type="text/css" href="styles/css/icons.fallback.css">
-		</noscript>
-     
-		<!-- Styles -->
-		<%= stylesheet_link_tag "styles/css/palm.min" %>
-		<%= stylesheet_link_tag "styles/css/lap_and_up.min", media:"(min-width:571px)" %>
-
-		<!--[if (lt IE 9) & (!IEMobile)]>
-		<%= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
-		<![endif]-->
-
-		<!--[if lte IE 7]>
-		<%= stylesheet_link_tag "styles/css/ie.min" %>
-		<![endif]-->
-	  	<%= stylesheet_link_tag "styles/css/freereg_content" %>
-        <%= javascript_include_tag "application" %>
-	  	<%= javascript_include_tag "jquery.min.js" %>
-		<%= javascript_include_tag "jquery.chained.remote.js" %>
-	
-	</head>
-	<body ontouchstart class="offcanvas  offcanvas--rev">
-	  
-		<%= render "layouts/main_nav" %>
-
-
-		
-		<div class="offcanvas__primary">
-			<%= render "layouts/header" %>
-
-			<main role="main" class="site__content  icon__honeycomb--top-right">
-				<div class="container">
-						<% if content_for? :sidebar %>
-							<div class="grid">
-							<div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
-							<%= yield %>
-							</div>
-							<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
-							<%= yield :sidebar %>
-							</div>
-							</div>
-								<% else %>
-								<%= yield %>
-								<% end %>				
-
-					<% if current_refinery_user %>
-					<div  style="float:left;">
-						<%= form_tag(problem_url, :method=>:get) do %>
-						<% problem_button_options.each_pair do |name, value| %>
-						<%= hidden_field_tag(name, value)%>
-						<% end %>
-						<input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
-						<% end %>
-					</div>
-					<% end %>
-
-				</div>
-			</main>
-
-			<%= render "layouts/footer" %>
-
-		</div>
-		<!-- TODO fix above this -->
-
-		<!-- example offcanvas switching code -->
-		
-	  <script charset="utf-8">
-
-	        var el = document.getElementById("trigger-offcanvas");
-
-			var switchOffCanvas = function() {
-				classie.toggle(document.body, 'offcanvas--active');
-				classie.toggle(el, 'site__header__menu-btn--active');
-			}
-			if (el.addEventListener) {
-				el.addEventListener('click', switchOffCanvas, false);
-			} else if (el.attachEvent) {
-				el.attachEvent('onclick', switchOffCanvas);
-			}
-		</script>
-	</body>
+  <!--<![endif]-->
+  <head>
+    <meta charset="utf-8"/>
+    <title>FreeReg</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <!--[if lt IE 9]>
+    <%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
+    <![endif]-->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="568">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= favicon_link_tag image_path('favicon.ico')%>
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/assets/apple-touch-icon-152x152-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/assets/apple-touch-icon-120x120-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/assets/apple-touch-icon-76x76-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/assets/apple-touch-icon-precomposed.png">
+    <script type="text/javascript">
+      /* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
+      window.grunticon = function(e) {
+        if (e && 3 === e.length) {
+          var t = window, n = !(!t.document.createElementNS || !t.document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect || !document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1") || window.opera && -1 === navigator.userAgent.indexOf("Chrome")), o = function(o) {
+            var r = t.document.createElement("link"), a = t.document.getElementsByTagName("script")[0];
+            r.rel = "stylesheet", r.href = e[o && n ? 0 : o ? 1 : 2], a.parentNode.insertBefore(r, a)
+          }, r = new t.Image;
+          r.onerror = function() {
+            o(!1)
+          }, r.onload = function() {
+            o(1 === r.width && 1 === r.height)
+          }, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+        }
+      };
+      grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
+    </script>
+    <noscript>
+    <link rel="stylesheet" type="text/css" href="styles/css/icons.fallback.css">
+    </noscript>
+    
+    <!-- Styles -->
+    <%= stylesheet_link_tag "styles/css/palm.min" %>
+    <%= stylesheet_link_tag "styles/css/lap_and_up.min", media:"(min-width:571px)" %>
+    <!--[if (lt IE 9) & (!IEMobile)]>
+    <%= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <%= stylesheet_link_tag "styles/css/ie.min" %>
+    <![endif]-->
+    <%= stylesheet_link_tag "styles/css/freereg_content" %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "jquery.min.js" %>
+    <%= javascript_include_tag "jquery.chained.remote.js" %>
+    
+  </head>
+  <body ontouchstart class="offcanvas  offcanvas--rev">
+    
+    <%= render "layouts/main_nav" %>
+    
+    <div class="offcanvas__primary">
+      <%= render "layouts/header" %>
+      <main role="main" class="site__content  icon__honeycomb--top-right">
+      <div class="container">
+        <% if content_for? :sidebar %>
+        <div class="grid">
+          <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+            <%= yield %>
+          </div>
+          <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+            <%= yield :sidebar %>
+          </div>
+        </div>
+        <% else %>
+        <%= yield %>
+        <% end %>
+        <% if current_refinery_user %>
+        <div  style="float:left;">
+          <%= form_tag(problem_url, :method=>:get) do %>
+          <% problem_button_options.each_pair do |name, value| %>
+          <%= hidden_field_tag(name, value)%>
+          <% end %>
+          <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
+          <% end %>
+        </div>
+        <% end %>
+      </div>
+      </main>
+      <%= render "layouts/footer" %>
+    </div>
+    <!-- TODO fix above this -->
+    <!-- example offcanvas switching code -->
+    
+    <script charset="utf-8">
+    var el = document.getElementById("trigger-offcanvas");
+        var switchOffCanvas = function() {
+          classie.toggle(document.body, 'offcanvas--active');
+          classie.toggle(el, 'site__header__menu-btn--active');
+        }
+        if (el.addEventListener) {
+          el.addEventListener('click', switchOffCanvas, false);
+        } else if (el.attachEvent) {
+          el.attachEvent('onclick', switchOffCanvas);
+        }
+    </script>
+  </body>
 </html>
