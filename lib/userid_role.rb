@@ -10,7 +10,7 @@ module UseridRole
       'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage County", "Access Userids"],
       'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage country", "Manage County","Access Userids"],
       'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids"],
-      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties",  "System Documentation" ],
+      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties",  "Feedback", "Contacts", "System Documentation" ],
       'technical' => ["Saved Searches", "Profile", "Files", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
       'system_administrator' =>["Saved Searches", "Profile", "Files","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 

@@ -1,14 +1,15 @@
 <p id="notice"><%= notice %></p>
+<p>
+  <b>Type:</b>
+  <%= @contact.contact_type %>
+</p>
+
 
 <p>
   <b>Title:</b>
   <%= @contact.title %>
 </p>
 
-<p>
-  <b>Body:</b>
-  <%= @contact.body %>
-</p>
 
 <p>
   <b>Time:</b>
@@ -22,6 +23,23 @@
 <p>
   <b>Email:</b>
   <%= @contact.email_address %>
+</p>
+<p>
+  <b>Management:</b>
+  <%= @contact.contact_management %>
+</p>
+<p>
+  <b>County:</b>
+  <%= @contact.contact_county %>
+</p>
+<p>
+  <b>Syndicate:</b>
+  <%= @contact.contact_syndicate %>
+</p>
+
+<p>
+  <b>Body:</b>
+  <%= @contact.body %>
 </p>
 
 <p>
@@ -40,10 +58,6 @@
   <%= link_to @contact.previous_page_url, @contact.previous_page_url %>
 </p>
 
-<p>
-  <b>Type:</b>
-  <%= @contact.contact_type %>
-</p>
 
 <p>
   <b>Github Issue:</b>

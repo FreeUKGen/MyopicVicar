@@ -1,0 +1,49 @@
+
+
+<p> Dear RegManager %>;</p>
+<p>We have received correspondence that was directed to you from <%@contact.name%>. 
+You may review on line in the Contacts collection</p>
+<p>
+  <b>Type:</b>
+  <%= @contact.contact_type %>
+</p>
+
+
+<p>
+  <b>Title:</b>
+  <%= @contact.title %>
+</p>
+
+
+<p>
+  <b>Time:</b>
+  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
+</p>
+<p>
+  <b>Management:</b>
+  <%= @contact.contact_management %>
+</p>
+<p>
+  <b>County:</b>
+  <%= @contact.contact_county %>
+</p>
+<p>
+  <b>Syndicate:</b>
+  <%= @contact.contact_syndicate %>
+</p>
+
+<p>
+  <b>Body:</b>
+  <%= @contact.body %>
+</p>
+
+<p>
+  <b>Screenshot:</b>
+  <% if @contact.screenshot_url %>
+  <%= image_tag @contact.screenshot_url %>
+  <% else %>
+  No screenshot attached.
+  <% end %>
+</p>
+
+<p> The FreeREG Team</p>

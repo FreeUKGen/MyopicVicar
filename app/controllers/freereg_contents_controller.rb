@@ -23,7 +23,6 @@ def create
     redirect_to show_place_path(place)
     return
   else
-    p  @county
     @freereg_content.chapman_codes = []
     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
     render :new

@@ -8,6 +8,8 @@ class SearchRecordsController < ApplicationController
     @previous_record = @search_query.previous_record(params[:id])
     @next_record = @search_query.next_record(params[:id])
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
+    p @search_record
+    p @entry = @search_record.freereg1_csv_entry
     session[:viewed] << params[:id]
   end
 
