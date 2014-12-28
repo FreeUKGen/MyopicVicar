@@ -15,10 +15,10 @@
 	<thead >
 	    <tr>
 		<td colspan="2">
-		    <% if @search_record.freereg1_csv_entry && @annotations && @annotations.length %>
+		    <% if @entry && @annotations && @annotations.length %>
 		    <h2>Offline Transcriptions</h2>
 		    <% end %>
-		    <h3><%= RecordType::display_name(@search_record.freereg1_csv_entry.freereg1_csv_file.record_type)   %> entry</h3>
+		    <h3><%= RecordType::display_name(@entry.freereg1_csv_file.record_type)   %> entry</h3>
         <h4> For information about this place <%= link_to(@search_record.place.place_name, show_place_path(@search_record.place)) %></h4>
 		</td>
 	    </tr>
@@ -28,11 +28,11 @@
   </tr>
 	</thead>
 	<tbody>
-	    <% @search_record.freereg1_csv_entry.ordered_display_fields.each do |field| %>
-			<% if @search_record.freereg1_csv_entry[field] %>
+	    <% @entry.ordered_display_fields.each do |field| %>
+			<% if @entry[field] %>
 			    <tr>
 				<td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
-				<td class="weight--semibold"><%= @search_record.freereg1_csv_entry.display_field(field) %></td>
+				<td class="weight--semibold"><%= @entry.display_field(field) %></td>
 			    </tr>
 			<% end %>
 	    <% end %>

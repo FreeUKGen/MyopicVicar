@@ -1,124 +1,114 @@
-
 <% if flash[:notice] %>
 <div id="notice" style="color:red"><br>
-	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
-<% end %>  
-
+<% end %>
 <section  >
-	<h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
-	<%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
-	<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
-	<%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%>
-	<% if @search_query.can_be_broadened? %>
-	<%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small  float--right"%>
-	<% end %>
-	<% if @search_query.can_be_narrowed? %>
-	<%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
-	<% end %><br>
-	
-	<div style="clear:both;"> </div>
+  <h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
+  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+  <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
+  <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%>
+  <% if @search_query.can_be_broadened? %>
+  <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small  float--right"%>
+  <% end %>
+  <% if @search_query.can_be_narrowed? %>
+  <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+  <% end %><br>
+  
+  <div style="clear:both;"> </div>
 </section>
-
 <section class="island  island--light " >
-	<div class="criteria-group">
-		<% search_params_for_display(@search_query).each do |name, value| %>
-		<dl class="criteria">
-			<dt class="criteria__name"><%= name %></dt>
-			<dd class="criteria__value"><%= value %></dd>
-		</dl>
-		<% end %>
-	</div>
+  <div class="criteria-group">
+    <% search_params_for_display(@search_query).each do |name, value| %>
+    <dl class="criteria">
+      <dt class="criteria__name"><%= name %></dt>
+      <dd class="criteria__value"><%= value %></dd>
+    </dl>
+    <% end %>
+  </div>
 </section>
-
 <%= paginate @search_results %>
 <section class="island  " >
-	<div class="table-wrapper"> 
-		<div class="grid"> 
-
-			<% if @search_results.size == 0 %>
-			No results found!
-			<% else %>
-
-			<table class="table--bordered grid__item one-whole" >	
-				<colgroup >
-				<col class=t20>
-				<col class=t10 >
-				<col class=t10 >
-				<col class=t10>
-				<col class=t20>
-				<col class=t5>
-			</colgroup>
-			<thead  >
-				<th>
-					<%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
-					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Name of person. Click heading to sort by the name</span></a> 
-
-				</th>
-				<th>
-					<%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
-					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Type of record. Click heading to sort by type</span></a>
-				</th>
-				<th>
-					<%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
-					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Date entered in record. Click heading to sort by the date</span></a> 
-
-				</th>
-				<th>
-					<%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
-					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>County in which event was recorded. Click heading to sort by the county</span></a> 
-
-				</th>
-				<th>
-					<%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
-					<a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a> 
-				</th>
-				<th>Detail<br>
-					<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click on the detail link in the record below to get transcription details</span></a> 
-				</th>
-			</thead >
-			<% @search_results.each do |search_record| %>
-			<tbody >
-				<tr id="<%=search_record.id%>">
-					<td>
-						<% search_record.transcript_names.uniq.each_with_index do |name, i| %>
-						<% if  name['type'] == 'primary' %>
-						<% if i > 0 %>
-						<br/>
-						<% end%>
-						<%= "#{name['first_name']} #{name['last_name']} " %>
-						<% end %>
-						<% end%>
-					</td>
-					
-					<td>
-						<%= RecordType::display_name(search_record.record_type) %>
-					</td>
-					<td>
-						<%= raw(search_record.transcript_date.gsub(' ', '&nbsp;')) unless search_record.transcript_date.nil?%>
-					</td>
-					<td>
-						<%= ChapmanCode::name_from_code(search_record.chapman_code) %>
-					</td>
-					<td>
-						<%= format_location(search_record) %>
-					</td>
-					<td>
-						<%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
-						<% if session[:viewed] %>
-						<i>
-							<%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
-						</i>
-						<% end %>
-					</td>
-				</tr>	
-			</tbody>
-			<% end %>
-		</table>
-		</div>
-		<% end %>
-	
-</div>
-<%= paginate @search_results %> 
+  <div class="table-wrapper">
+    <div class="grid">
+      <% if @search_results.size == 0 %>
+        No results found!
+      <% else %>
+        <table class="table--bordered grid__item one-whole" >
+        <colgroup >
+        <col class=t20>
+        <col class=t10 >
+        <col class=t10 >
+        <col class=t10>
+        <col class=t20>
+        <col class=t5>
+        </colgroup>
+        <thead  >
+          <th>
+            <%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
+            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Name of person. Click heading to sort by the name</span></a>
+          </th>
+          <th>
+            <%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
+            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Type of record. Click heading to sort by type</span></a>
+          </th>
+          <th>
+            <%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
+            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Date entered in record. Click heading to sort by the date</span></a>
+          </th>
+          <th>
+            <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
+            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>County in which event was recorded. Click heading to sort by the county</span></a>
+          </th>
+          <th>
+            <%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
+            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a>
+          </th>
+          <th>Detail<br>
+            <a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Click on the detail link in the record below to get transcription details</span></a>
+          </th>
+        </thead >
+        <% @search_results.each do |search_record| %>
+        <tbody >
+          <tr id="<%=search_record.id%>">
+            <td>
+              <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
+              <% if  name['type'] == 'primary' %>
+              <% if i > 0 %>
+              <br/>
+              <% end%>
+              <%= "#{name['first_name']} #{name['last_name']} " %>
+              <% end %>
+              <% end%>
+            </td>
+            
+            <td>
+              <%= RecordType::display_name(search_record.record_type) %>
+            </td>
+            <td>
+              <%= raw(search_record.transcript_date.gsub(' ', '&nbsp;')) unless search_record.transcript_date.nil?%>
+            </td>
+            <td>
+              <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
+            </td>
+            <td>
+              <%= format_location(search_record) %>
+            </td>
+            <td>
+              <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
+              <% if session[:viewed] %>
+                <i>
+                <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
+                </i>
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+        <% end %>
+      </table>
+    </div>
+    <% end %>
+    
+  </div>
+  <%= paginate @search_results %>
 </section>
-

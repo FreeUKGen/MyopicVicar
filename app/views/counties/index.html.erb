@@ -1,33 +1,24 @@
-  
-  <p style="text-align: center"><b>Listing of all counties</b></p>
-  <% if flash[:notice] %>
+<p style="text-align: center"><b>Listing of all counties</b></p>
+<% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
   </div>
-  <% end %>  
-  <p>
-    <div id="main" style="color:black">
-      <table  class="table--bordered  table--striped  table--data">
-        <tr>
-
-          <th style="width:25%">County</th>
-          <th style="width:25">County Coordinator</th>
-          <th style="width:25%">Show</th>
-          <th style="width:25%">Edit</th>
-        </tr>
-
-        <% @counties.each do |county| %>
-        <tr id="<%=county.id%>">
-         <td > <%= county.chapman_code %>  </td>
-         <td > <%= county.county_coordinator %>  </td>   
-
-
-
-         <td><%= button_to 'Show', county_path(county), method: :get  %></td><td><%= button_to 'Edit details', edit_county_path(county), method: :get  %>
-       </tr>
-       <% end %>
-
-     </table>
-   </div>
-
-
+<% end %>
+<p>
+<div id="main" style="color:black">
+  <table  class="table--bordered  table--striped  table--data">
+    <tr>
+      <th style="width:25%">County</th>
+      <th style="width:25">County Coordinator</th>
+      <th style="width:25%">Show</th>
+      <th style="width:25%">Edit</th>
+    </tr>
+    <% @counties.each do |county| %>
+      <tr id="<%=county.id%>">
+        <td > <%= county.chapman_code %>  </td>
+        <td > <%= county.county_coordinator %>  </td>
+        <td><%= button_to 'Show', county_path(county), method: :get  %></td><td><%= button_to 'Edit details', edit_county_path(county), method: :get  %>
+      </tr>
+    <% end %>
+  </table>
+</div>
