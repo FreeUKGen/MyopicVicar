@@ -43,17 +43,17 @@ class ReviewUseridFiles
       pattern = File.join(base_directory,userids[0])
       p pattern
       files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-      p files
+     
       files.each do |filename|
         userid = filename.split("/")
         
-        filenames << userid[3] unless userid[3].nil?
+        filenames << userid[4] unless userid[4].nil?
       end
     else
       @@message_file.puts "unknown range style"
     end
     p "There are #{filenames.length} user files"
-    p filenames
+    
     missing_userid = Array.new
     number = 0
     number_processed = 0
