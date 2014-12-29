@@ -17,7 +17,7 @@
 	
 	<%= f.inputs do %>
 	<li class="grid__item  one-quarter  palm-one-whole">
-		<label><a href="#" class="left_tooltip">Surname<span>The surname can be upper or lower case; see Soundex option below for variations of the name</span></a></label>
+		<label><a href="#" class="left_tooltip">Surname<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name</span></a></label>
 		<% if @search_query.last_name.nil? %>
 		<input name="search_query[last_name]" type="text" class="text-input" placeholder="Mandatory" >
 		<%else%>
