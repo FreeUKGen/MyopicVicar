@@ -270,5 +270,10 @@ class UseridDetail
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
+  def has_files?
+    value = false
+    value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
+    value
+  end
 
 end #end class
