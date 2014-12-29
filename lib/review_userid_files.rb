@@ -47,7 +47,7 @@ class ReviewUseridFiles
       files.each do |filename|
         userid = filename.split("/")
         
-        filenames << userid[2] unless userid[2].nil?
+        filenames << userid[3] unless userid[3].nil?
       end
     else
       @@message_file.puts "unknown range style"
