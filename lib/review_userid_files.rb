@@ -43,17 +43,24 @@ class ReviewUseridFiles
       pattern = File.join(base_directory,userids[0])
       p pattern
       files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-     
+
       files.each do |filename|
         userid = filename.split("/")
-        
+
         filenames << userid[4] unless userid[4].nil?
       end
     else
       @@message_file.puts "unknown range style"
     end
     p "There are #{filenames.length} user files"
-    
+    number_missed = 0
+    filenames.each do |name|
+      unless UseridDetail.where(:userid => name).exists?
+        number_missed = number_missed + 1
+        @@message_file.puts "#{name} missing from userids "
+      end
+    end
+
     missing_userid = Array.new
     number = 0
     number_processed = 0
@@ -61,20 +68,18 @@ class ReviewUseridFiles
     UseridDetail.each do |userid|
 
       number_processed = number_processed + 1
-      
+
       if filenames.include?(userid.userid)
         number = number + 1
       else
         number_missing = number_missing + 1
         missing_userid << userid.userid
-         p userid.userid
-         p userid
-         p userid.inspect
         @@message_file.puts "Dropped #{userid.userid} missing in the files }"
         @@message_file.puts "#{userid.inspect}"
       end
     end
-   p "We found #{number} and missed #{number_missing}"
+
+    p "Out of #{filenames.length} we found #{number} and #{number_missed} userids and had #{number_missing} userids without files "
     @@message_file.puts missing_userid
 
 
