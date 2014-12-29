@@ -69,9 +69,11 @@ class ReviewUseridFiles
         missing_userid << userid.userid
          p userid.userid
         @@message_file.puts "Dropped #{missing_userid} missing in the file }"
+        @@message_file.puts userid
       end
     end
    p "We found #{number} and missed #{number_missing}"
+    @@message_file.puts missing_userid
 
 
   end #end process
