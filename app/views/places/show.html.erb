@@ -1,156 +1,136 @@
-<%require 'register_type' %>
+<% require 'register_type' %>
+<p style="text-align: center"> The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. </p>
+<p>
 
-
- <p style="text-align: center"> The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>. </p>
-
-
-
- <p> 
- 
-<%if @user.person_role == 'data_manager' %>
+<% if @user.person_role == 'data_manager' %>
 <div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %> </div>
 <div style="float:left;">  <%= button_to 'Relocate Place', relocate_place_path, method: :get %> </div>
-<%end%>
- <div style="float:left;"><%= button_to 'Edit Place', edit_place_path(@place) , method: :get %></div>
+<% end%>
+<div style="float:left;"><%= button_to 'Edit Place Details', edit_place_path(@place) , method: :get %></div>
 <div  style="float:left;"><%= button_to 'Discard Place', place_path(@place), method: :delete, data: { confirm: 'Are you really sure?' } %></div>
 <div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
- <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %> 
-
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
 <div id="main"style="color:black">
-
-<table   class="table--bordered  table--striped  table--data" >
-  <tr>    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-  </tr>
-  <tr> 
-   <td>Place : </td> <td> <%= @place.place_name %>  </td>
-  </tr>
-<tr>
-   <td>County:</td> <td><%= @place.county %></td>
- <tr>
-   <td>Country:</td> <td><%= @place.country %></td>
- 
-  
-  
-   <% if @names%>
-   <%  @names.each do |name| %>
-   <tr>
-   <td>Other possible place names :</td><td ><%= name %>  </td> 
-   </tr> 
-   <%end%>
-   <%end%>
-   
-
-   <tr>
-   <td>Genuki page :</td><td ><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
-  
-   
-   <tr>
-   <td>Notes about the place :</td><td > <%= @place.place_notes %> </td>   
-   </tr>
+  <table   class="table--bordered  table--striped  table--data" >
     <tr>
-   <td>Grid Reference:</td><td > <%= @place.grid_reference %></td>   
-   </tr>
- <tr>
-   <td>Latitude:</td><td > <%= @place.latitude%></td>   
-   </tr>
- <tr>
-   <td>Longitude:</td><td > <%= @place.longitude%></td>   
-   </tr>
- <tr>
-   <td>Source:</td><td > <%= @place.source %></td>   
-   </tr>
- <tr>
-   <td>Original place name:</td><td > <%= @place.original_place_name %></td>   
-   </tr>
- <tr>
-   <td>Original county:</td><td > <%= @place.original_county %></td>   
-   </tr>
- <tr>
-   <td>Original country:</td><td > <%= @place.original_country %></td>   
-   </tr>
- <tr>
-   <td>Original Grid Reference:</td><td > <%= @place.original_grid_reference %></td>   
-   </tr>
- <tr>
-   <td>Original latitude:</td><td > <%= @place.original_latitude %></td>   
-   </tr>
- <tr>
-   <td>Original longitude:</td><td > <%= @place.original_longitude %></td>   
-   </tr>
- <tr>
-   <td>Original source:</td><td > <%= @place.original_source %></td>   
-   </tr>
- <tr>
-   <td>Reason for changes:</td><td > <%= @place.reason_for_change %></td>   
-   </tr>
- <tr>
-   <td>Another reason for changes:</td><td > <%= @place.other_reason_for_change %></td>   
-   </tr>
- <tr>
-   <td>Date place information last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>   
+      <th style="width:25%">Field</th>
+      <th style="width:50">Value</th>
     </tr>
     <tr>
-   <td>Date when record last amended:</td><td > <%= @place.last_amended %></td>   
+      <td>Place : </td> <td> <%= @place.place_name %>  </td>
     </tr>
-   <% unless @place.error_flag.nil? %>
-     <tr style= "color:red">
-   <td >Error in place</td><td >  <%= @place.error_flag %> </td>   
-     <%else%>
-      <tr style= "color:black">
-      <%end%>
-   </tr>
-  <tr>
-  <td>Data present for this place:</td><td > <%= @place.data_present %></td>   
-   </tr>
-</table>  
-
-
- 
- 
-<tr>
-<td><table style="width:100%"> 
-
-<% @place.churches.order_by(church: 1).each do |church| %>
-
-<tr ><td><b>Church <br></b><%= link_to(church.church_name, church_path(church)) %></td>
-
- <td><table style="width:100%"> <% church.registers.order_by(register_type: 1).each do |register| %>
-<tr><th colspan="6">Registers : <%= link_to(RegisterType.display_name(register.register_type), register_path(register)) %></th></tr>
-   <tr >
-  <td><table style="width:100%"> 
-<tr><th colspan="6">Batches</th></tr>
-   <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
-   
-  <% if freeregfile.error == 0 %>
-  <tr id="<%=freeregfile.id%>"  style="color:green" >
- <% else %> 
-<tr id="<%=freeregfile.id%>"  style="color:red" >
- <% end %>
-
- <td ><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></td> 
-<td><%=freeregfile.userid%></td><td> <%=freeregfile.modification_date%> <td><%=freeregfile.records%></td>  <td><%=freeregfile.datemin%></td>
-<td><%=freeregfile.datemax%></td>
-<% if freeregfile.error != 0 %>
-<td>Errors <%= link_to(freeregfile.error , error_freereg1_csv_file_path(freeregfile))%></td></td></td></tr>
-<%else%>
-<td>Errors <%= freeregfile.error %></td></td></td></tr>
-<% end %>
-<% end %>
-</table>
-<% end%>
-</table>
-<% end%>
-</table>
-</div>  
-
-
-
+    <tr>
+      <td>County:</td> <td><%= @place.county %></td>
+      <tr>
+        <td>Country:</td> <td><%= @place.country %></td>
+         
+        <% if @names%>
+          <%  @names.each do |name| %>
+            <tr>
+              <td>Other possible place names :</td><td ><%= name %>  </td>
+            </tr>
+          <% end%>
+        <% end%>
+        
+        <tr>
+          <td>Genuki page :</td><td ><%= link_to('Genuki', @place.genuki_url) unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
+          
+          
+          <tr>
+            <td>Notes about the place :</td><td > <%= @place.place_notes %> </td>
+          </tr>
+          <tr>
+            <td>Grid Reference:</td><td > <%= @place.grid_reference %></td>
+          </tr>
+          <tr>
+            <td>Latitude:</td><td > <%= @place.latitude%></td>
+          </tr>
+          <tr>
+            <td>Longitude:</td><td > <%= @place.longitude%></td>
+          </tr>
+          <tr>
+            <td>Source:</td><td > <%= @place.source %></td>
+          </tr>
+          <tr>
+            <td>Original place name:</td><td > <%= @place.original_place_name %></td>
+          </tr>
+          <tr>
+            <td>Original county:</td><td > <%= @place.original_county %></td>
+          </tr>
+          <tr>
+            <td>Original country:</td><td > <%= @place.original_country %></td>
+          </tr>
+          <tr>
+            <td>Original Grid Reference:</td><td > <%= @place.original_grid_reference %></td>
+          </tr>
+          <tr>
+            <td>Original latitude:</td><td > <%= @place.original_latitude %></td>
+          </tr>
+          <tr>
+            <td>Original longitude:</td><td > <%= @place.original_longitude %></td>
+          </tr>
+          <tr>
+            <td>Original source:</td><td > <%= @place.original_source %></td>
+          </tr>
+          <tr>
+            <td>Reason for changes:</td><td > <%= @place.reason_for_change %></td>
+          </tr>
+          <tr>
+            <td>Another reason for changes:</td><td > <%= @place.other_reason_for_change %></td>
+          </tr>
+          <tr>
+            <td>Date place information last amended:</td><td > <%= @place.u_at.strftime("%d %b %Y") %></td>
+          </tr>
+          <tr>
+            <td>Date when record last amended:</td><td > <%= @place.last_amended %></td>
+          </tr>
+          <% unless @place.error_flag.nil? %>
+          <tr style= "color:red">
+            <td >Error in place</td><td >  <%= @place.error_flag %> </td>
+            <%else%>
+            <tr style= "color:black">
+              <% end%>
+            </tr>
+            <tr>
+              <td>Data present for this place:</td><td > <%= @place.data_present %></td>
+            </tr>
+          </table>
+          
+          
+          <tr>
+            <td><table style="width:100%">
+              <% @place.churches.order_by(church: 1).each do |church| %>
+              <tr ><td><b>Church <br></b><%= link_to(church.church_name, church_path(church)) %></td>
+              <td><table style="width:100%"> <% church.registers.order_by(register_type: 1).each do |register| %>
+                <tr><th colspan="6">Registers : <%= link_to(RegisterType.display_name(register.register_type), register_path(register)) %></th></tr>
+                <tr >
+                  <td><table style="width:100%">
+                    <tr><th colspan="6">Batches</th></tr>
+                    <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
+                    
+                    <% if freeregfile.error == 0 %>
+                    <tr id="<%=freeregfile.id%>"  style="color:green" >
+                      <% else %>
+                      <tr id="<%=freeregfile.id%>"  style="color:red" >
+                        <% end %>
+                        <td ><%= link_to(freeregfile.file_name, freereg1_csv_file_path(freeregfile)) %></td>
+                        <td><%=freeregfile.userid%></td><td> <%=freeregfile.modification_date%> <td><%=freeregfile.records%></td>  <td><%=freeregfile.datemin%></td>
+                        <td><%=freeregfile.datemax%></td>
+                        <% if freeregfile.error != 0 %>
+                        <td>Errors <%= link_to(freeregfile.error , error_freereg1_csv_file_path(freeregfile))%></td></td></td></tr>
+                        <%else%>
+                        <td>Errors <%= freeregfile.error %></td></td></td></tr>
+                        <% end %>
+                        <% end %>
+                      </table>
+                      <% end%>
+                    </table>
+                    <% end%>
+                  </table>
+                </div>
