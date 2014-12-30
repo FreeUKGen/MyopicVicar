@@ -111,4 +111,17 @@
     
   </div>
   <%= paginate @search_results %>
+  <% if @search_query.result_count > 5 %>
+  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+  <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
+  <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small  float--right")%>
+  <% if @search_query.can_be_broadened? %>
+  <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small  float--right"%>
+  <% end %>
+  <% if @search_query.can_be_narrowed? %>
+  <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
+  <% end %>
+  
+  <a href="#"  class="btn  btn--small  float--right">Go to top</a>
+  <% end %>
 </section>
