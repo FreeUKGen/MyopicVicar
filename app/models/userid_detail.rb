@@ -211,7 +211,6 @@ class UseridDetail
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     self.password = password
     self.password_confirmation = password
-    self.userid = self.userid.downcase
   end
 
   def self.get_userids_for_display(syndicate,page)
