@@ -1,4 +1,4 @@
-<p style="text-align: center"><b>Userid details creation for <%=session[:syndicate]%></b></p>
+<h3 style="text-align: center"><b>Userid details creation for <%=session[:syndicate]%></b></h3>
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -6,6 +6,6 @@
     </div>
    <% end %>
   
-
+<section class="island  island--light">
 <%= render 'form' %>
 <%= render "resource_sidebar" %>

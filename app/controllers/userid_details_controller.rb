@@ -315,7 +315,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_update(userid)
     case
     when session[:my_own]
-      redirect_to :action => 'my_own'
+      redirect_to refinery.login_path
       return
     when session[:type] == "edit"
       if @user.person_role == 'system_administrator'
