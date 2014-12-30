@@ -26,7 +26,7 @@
         <%= f.input :country,{ :as => :select,:label => "Select the Country",:include_blank => false,
         :required => true, :collection => @countries,:size => 15 } %>
       <% end %>
-      <% if session[:type] = 'edit' && @user.person_role == 'data_manager'%>
+      <% if session[:type] == 'edit' && @user.person_role == 'data_manager'%>
         <p>Please take extreme care when entering the Place Name</p>
         <%= f.input :place_name, :label => 'Edit Place Name', :input_html => { :size => 30 }%>
         <br>

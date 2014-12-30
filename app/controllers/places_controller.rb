@@ -62,9 +62,8 @@ class PlacesController < ApplicationController
     @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     #use the lat/lon if present if not calculate from the grid reference
     @place.add_location_if_not_present
-
     @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
-    @place.update_attributes(params[:place])
+    @place.save
     if @place.errors.any?
       #we have errors on the creation
       flash[:notice] = 'The addition to Place Name was unsuccessful'
