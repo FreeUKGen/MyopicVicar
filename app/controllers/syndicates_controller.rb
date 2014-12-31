@@ -23,6 +23,8 @@ class SyndicatesController < ApplicationController
 
   def create
     @syndicate = Syndicate.new(params[:syndicate])
+    @syndicate.add_syndicate_to_coordinator(params[:syndicate][:syndicate_code],params[:syndicate][:syndicate_coordinator])
+    @syndicate.upgrade_syndicate_coordinator_person_role(params[:syndicate][:syndicate_coordinator])
     @syndicate.save
     if @syndicate.errors.any?
 
@@ -151,6 +153,8 @@ class SyndicatesController < ApplicationController
       flash[:notice] = 'The deletion of the Syndicate cannot proceed as it still has members.'
       redirect_to syndicate_path(@syndicate)
     else
+      @syndicate.remove_syndicate_from_coordinator
+      @syndicate.downgrade_syndicate_coordinator_person_role
       @syndicate.destroy
       flash[:notice] = 'The deletion of the Register was successful'
       redirect_to syndicates_path

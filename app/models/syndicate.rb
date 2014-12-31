@@ -15,7 +15,7 @@ class Syndicate
   before_save :add_lower_case_and_change_userid_fields
   after_save :propagate_change_in_code
   validate :syndicate_code_does_not_exist_on_change, on: :update
-  
+
   index ({ syndicate_code: 1, syndicate_coordinator: 1 })
   index ({ syndicate_coordinator: 1 })
   index ({ previous_syndicate_coordinator: 1 })
@@ -31,27 +31,18 @@ class Syndicate
     end
     previous_syndicate_coordinator = self.syndicate_coordinator
     parameters[:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless self.syndicate_coordinator == parameters[:syndicate_coordinator]
-    unless self.syndicate_coordinator == parameters[:syndicate_coordinator] #no change in coordinator
-      #change coordinators and roles
-      if UseridDetail.where(:userid => previous_syndicate_coordinator).exists? then #make sure that there is a previous coordinator to downgrade
-        @old_userid = UseridDetail.where(:userid => previous_syndicate_coordinator).first
-        if @old_userid.syndicate_groups.length == 1 then
-          @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'county_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' ||
-                                                           @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
-        end #length
-        @old_userid.syndicate_groups.delete_if {|code| code == self.syndicate_code}
-        @old_userid.save(:validate => false)  unless @old_userid.nil?
-      end #exists
-      if UseridDetail.where(:userid => parameters[:syndicate_coordinator]).exists? then # make sure there is a new coordinator to upgrade
-        @new_userid = UseridDetail.where(:userid => parameters[:syndicate_coordinator]).first
-        if   @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.length == 0 then
-          @new_userid.person_role = 'syndicate_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'researcher')
-        end #new role
-        @new_userid.syndicate_groups = Array.new if  @new_userid.syndicate_groups.nil? || @new_userid.syndicate_groups.empty?
-        @new_userid.syndicate_groups << self.syndicate_code
-        @new_userid.syndicate_groups =  @new_userid.syndicate_groups.compact
-        @new_userid.save(:validate => false)  unless @new_userid.nil?
-      end #new exists
+    unless self.syndicate_coordinator == parameters[:syndicate_coordinator] 
+      #change coordinators
+      self.remove_syndicate_from_coordinator
+      self.downgrade_syndicate_coordinator_person_role
+      self.add_syndicate_to_coordinator(parameters[:syndicate_code],parameters[:syndicate_coordinator])
+      self.upgrade_syndicate_coordinator_person_role(parameters[:syndicate_coordinator]) 
+    else
+      #name change for an existing coordinator
+      if  parameters[:changing_name]
+        self.remove_syndicate_from_coordinator
+        self.add_syndicate_to_coordinator(parameters[:syndicate_code],parameters[:syndicate_coordinator])
+      end
     end#change of coordinator
     parameters
   end
@@ -81,6 +72,29 @@ class Syndicate
       @syndicates << syn.syndicate_code
     end
     return @syndicates
+  end
+  def remove_syndicate_from_coordinator
+    coordinator = UseridDetail.where(:userid => self.syndicate_coordinator).first
+    coordinator.syndicate_groups.delete_if {|code| code == self.syndicate_code}
+    coordinator.save(:validate => false)
+  end
+  def add_syndicate_to_coordinator(code,person)
+    coordinator = UseridDetail.where(:userid => person).first
+    coordinator.syndicate_groups = Array.new if coordinator.syndicate_groups.nil?
+    coordinator.syndicate_groups << code
+    coordinator.save(:validate => false)
+  end
+
+  def downgrade_syndicate_coordinator_person_role
+    coordinator = UseridDetail.where(:userid => self.syndicate_coordinator).first
+    coordinator.person_role = 'transcriber' if coordinator.syndicate_groups.length == 0 && coordinator.person_role == 'syndicate_coordinator'
+    coordinator.save(:validate => false)
+  end
+
+  def upgrade_syndicate_coordinator_person_role(person)
+    coordinator = UseridDetail.where(:userid => person).first
+    coordinator.person_role = 'syndicate_coordinator' if  coordinator.person_role == 'transcriber' || coordinator.person_role == 'researcher'
+    coordinator.save(:validate => false)
   end
 
 end
