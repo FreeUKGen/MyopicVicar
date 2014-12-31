@@ -16,17 +16,17 @@ task :correct_syndicate_coordinators => :environment do
     coordinator = syndicate.syndicate_coordinator
     coordinator_details = UseridDetail.where(:userid => coordinator).first
     unless coordinator_details.nil? || coordinator_details.syndicate_groups.nil?
-    coordinator_details.syndicate_groups << code 
-    coordinator_details.person_role = 'syndicate_coordinator' if  coordinator_details.person_role == 'transcriber' || coordinator_details.person_role == 'researcher'
-    coordinator_details.save(:validate => false)
-    @@message_file.puts "added #{code} to #{coordinator_details.userid}"
-  else
-    @@message_file.puts "#{coordinator} has no document"
-  end
+      coordinator_details.syndicate_groups << code
+      coordinator_details.person_role = 'syndicate_coordinator' if  coordinator_details.person_role == 'transcriber' || coordinator_details.person_role == 'researcher'
+      coordinator_details.save(:validate => false)
+      @@message_file.puts "added #{code} to #{coordinator_details.userid}"
+    else
+      @@message_file.puts "#{coordinator} has no document"
+    end
   end
   Syndicate.each do |syndicate|
     coordinator = syndicate.syndicate_coordinator
     coordinator_details = UseridDetail.where(:userid => coordinator).first
-   @@message_file.puts coordinator_details
+    @@message_file.puts "#{coordinator_details}"
   end
 end
