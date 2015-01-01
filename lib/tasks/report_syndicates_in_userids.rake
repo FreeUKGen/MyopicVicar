@@ -6,12 +6,15 @@ task :report_syndicates_in_userids => :environment do
   @@message_file = File.new(file_for_warning_messages, "w")
   Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 
+
   UseridDetail.each do |user|
-   @@message_file.puts "#{user.userid},#{user.syndicate},#{user.previous_syndicate}" 
+    user.previous_syndicate = "" if user.syndicate.nil?
+    user.syndicate = 'Unknown'  if user.syndicate.nil?
   end
+  
   UseridDetail.each do |user|
-   
-   @@message_file.puts "#{user.inspect}"  if user.syndicate.nil?
+    @@message_file.puts "#{user.userid},#{user.syndicate},#{user.previous_syndicate}"
   end
+
   p 'finished'
 end
