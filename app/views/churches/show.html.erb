@@ -1,52 +1,62 @@
 <%require 'register_type' %>
- <p style="text-align: center"> Place: <b><%= @place_name %></b> in the County of:   <b><%= @county %></b></p>
-
-  
+<p style="text-align: center"> Place: <b><%= @place_name %></b> in the County of:   <b><%= @county %></b></p>
 
 <div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
- <div style="float:left;"><%= button_to 'Edit Church', edit_church_path(@church) , method: :get %></div>
+<div style="float:left;"><%= button_to 'Edit Church', edit_church_path(@church) , method: :get %></div>
 <div  style="float:left;"><%= button_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } %></div>
 <div style="float:left;"><%= button_to 'Create Register', new_register_path , method: :get %></div>
 <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-<div style="clear:both;"> </div><br> 
-
-
-
-    <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>  
-
-
-<tr>
-<% @church.registers.order_by(register_type: 1).each do |register| %>
-
-<tr><td><b>Register </b><br><%= link_to(RegisterType.display_name(register.register_type), register_path(register)) %></td>
-
-  <td><table> 
-  <tr><th colspan="6">Batches</th></tr>
-  <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
-  <% if freeregfile.error == 0 %>
-  <tr id="<%=freeregfile.id%>"  style="color:green">
- <% else %> 
-<tr id="<%=freeregfile.id%>"  style="color:red">
- <% end %>
-
- <td ><%= link_to(freeregfile.file_name,freereg1_csv_file_path(freeregfile)) %></td> 
-<td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>  <td><%=freeregfile.records%></td>  <td><%=freeregfile.datemin%></td>
-<td><%=freeregfile.datemax%></td>
-
-<% if freeregfile.error != 0 %>
-<td>Errors <%= link_to(freeregfile.error , error_freereg1_csv_file_path(freeregfile))%></td></tr>
-<%else%>
-<td>Errors <%= freeregfile.error %></td></tr>
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <br>
+</div>
 <% end %>
-<% end %></table></td>
-<% end%>
-</table></tr>
-
-</div>  
-
-
-
+<table  class="table--bordered  table--data">
+  <tr>
+    <th style="width:25%">Field</th>
+    <th style="width:50">Value</th>
+    <tr>
+      <tr>
+        <td>Church name :</td><td > <%= @church.church_name %></td>
+      </tr>
+      <% if @names%>
+      <% @names.each do |name| %>
+      <% unless name == ''%>
+      <tr><td>Other possible church names :</td><td ><%= name %> </td> </tr>
+      <% end%>
+      <% end%>
+      <% end%>
+      <tr>
+        <td>Denomination of the Church :</td><td ><%= @church.denomination %></td>
+      </tr>
+      <tr>
+        <td>Notes about the Church :</td><td > <%= @church.church_notes %> </td>
+      </tr>
+      <tr>
+        <td>Record last amended:</td><td > <%= @church.last_amended %></td>
+      </tr>
+    </table>
+    <tr>
+      <% @church.registers.order_by(register_type: 1).each do |register| %>
+      <tr><td><b>Register </b><br><%= link_to(RegisterType.display_name(register.register_type), register_path(register)) %></td>
+      <td><table  class="table--bordered   table--data">
+        <tr><th colspan="7">Batches</th></tr>
+        <% register.freereg1_csv_files.order_by(filename: 1).each do |freeregfile| %>
+        <% if freeregfile.error == 0 %>
+        <tr id="<%=freeregfile.id%>"  style="color:green">
+          <% else %>
+          <tr id="<%=freeregfile.id%>"  style="color:red">
+            <% end %>
+            <td ><%= link_to(freeregfile.file_name,freereg1_csv_file_path(freeregfile)) %></td>
+            <td><%=freeregfile.userid%></td><td> <%=freeregfile.uploaded_date.strftime("%d %b %Y")%>  <td><%=freeregfile.records%></td>  <td><%=freeregfile.datemin%></td>
+            <td><%=freeregfile.datemax%></td>
+            <% if freeregfile.error != 0 %>
+            <td>Errors <%= link_to(freeregfile.error , error_freereg1_csv_file_path(freeregfile))%></td></tr>
+            <%else%>
+            <td>Errors <%= freeregfile.error %></td></tr>
+            <% end %>
+          <% end %></table></td>
+          <% end%>
+        </table></tr>
+      </div>
