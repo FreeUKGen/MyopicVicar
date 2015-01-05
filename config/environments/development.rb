@@ -60,7 +60,11 @@ MyopicVicar::Application.configure do
   # Date of dataset used
   config.dataset_date = "3 September 2014"
 
-
+  config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
+  config.datafiles = MyopicVicar::MongoConfig['datafiles']
+  config.website = MyopicVicar::MongoConfig['website']
+  config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
+  
   # Machine-specific options
   if File.exist? "/raid/freereg2/backups"
     # we are on vervet

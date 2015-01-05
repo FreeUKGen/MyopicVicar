@@ -1,0 +1,17 @@
+development:
+  mongodb_bin_location: 
+  datafiles: 
+  website: 
+  backup_directory: 
+  
+test:
+  mongodb_bin_location: 
+  datafiles: 
+  website: 
+  backup_directory: 
+
+production:
+  mongodb_bin_location: 
+  datafiles: 
+  website: 
+  backup_directory: 
