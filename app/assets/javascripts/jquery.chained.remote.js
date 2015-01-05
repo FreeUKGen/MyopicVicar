@@ -42,9 +42,12 @@
                     var data = {};
                     $(settings.parents).each(function() {
                         var id = $(this).attr(settings.attribute);
+                        var countSelected = $(":selected", this).length;
                         var value = $(":selected", this).val();
                         data[id] = value;
 
+                        /* disable on mult-select */
+                        
                         /* Optionally also depend on values from these inputs. */
                         if (settings.depends) {
                             $(settings.depends).each(function() {
@@ -55,6 +58,10 @@
                                     data[id] = value;
                                 }
                             });
+                        }
+                        if(countSelected > 1) {
+                        	// obliterate selection
+                        	data[id] = "MULTIPLECOUNTYSELECTION";                        
                         }
                     });
 
@@ -89,7 +96,7 @@
                 if (settings.bootstrap) {
                      build.call(self, settings.bootstrap);
                      settings.bootstrap = null;
-                 }
+                 }               
             });
 
             /* Build the select from given data. */
