@@ -206,3 +206,8 @@ a:hover.left_tooltip_fading span {
 opacity: 1;
 }
 li#name_input_optional { display: none; visibility: hidden; }
+
+form.formtastic fieldset.inputs ol {
+  margin-right: 20px;
+  margin-left: 0px;
+}
