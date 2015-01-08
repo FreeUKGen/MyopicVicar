@@ -16,7 +16,7 @@ class ManageSyndicatesController < ApplicationController
       redirect_to new_manage_resource_path
       return
     end
-    if number_of_syndicates == 1 
+    if number_of_syndicates == 1
       @syndicate = @syndicates[0]
       session[:syndicate] =  @syndicate
       redirect_to :action => 'select_action'
