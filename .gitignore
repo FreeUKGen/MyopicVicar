@@ -129,3 +129,5 @@ vendor/extensions/**/spec/dummy
 /config/application.yml
 config/database.yml
 config/mongo_config.yml
+config/mongoid.yml
+config/secrets.yml
