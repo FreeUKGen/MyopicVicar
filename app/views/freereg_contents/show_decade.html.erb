@@ -31,51 +31,52 @@
       <% next_index = 0 %>
       <% decade_total = 0 %>
       <% next_total = 0 %>
+
       <% while current_index < @decade["ba"].count %>
-      <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
-      <% if decade_total > 0 then %>
-      <tr>
-        <td><%= decade_start %>-<%= decade_end %></td>
-        <td><%= @decade["ba"][current_index] %></td>
-        <td><%= @decade["ma"][current_index] %></td>
-        <td><%= @decade["bu"][current_index] %></td>
-        <td><%= decade_total %></td>
-      </tr>
-      <% decade_start += 10 %>
-      <% decade_end += 10 %>
-      <% current_index += 1 %>
-      <% else %>
-      <% next_index = current_index + 1 %>
-      <% if next_index < @decade["ba"].count then %>
-      <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
-      <% if next_total > 0 then %>
-      <tr>
-        <td><%= decade_start %>-<%= decade_end %></td>
-        <td><%= @decade["ba"][current_index] %></td>
-        <td><%= @decade["ma"][current_index] %></td>
-        <td><%= @decade["bu"][current_index] %></td>
-        <td><%= decade_total %></td>
-      </tr>
-      <% current_index += 1 %>
-      <% decade_start = decade_end + 1 %>
-      <% decade_end += 10 %>
-      <% else %>
-      <% decade_end += 10 %>
-      <% current_index = next_index %>
-      <% end %>
-      <% else %>
-      <tr>
-        <td><%= decade_start %>-<%= decade_end %></td>
-        <td><%= @decade["ba"][current_index] %></td>
-        <td><%= @decade["ma"][current_index] %></td>
-        <td><%= @decade["bu"][current_index] %></td>
-        <td><%= decade_total %></td>
-      </tr>
-      <% current_index += 1 %>
-      <% decade_start = decade_end + 1 %>
-      <% decade_end += 10 %>
-      <% end %>
-      <% end %>
+        <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
+        <% if decade_total > 0 then %>
+          <tr>
+            <td><%= decade_start %>-<%= decade_end %></td>
+            <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
+            <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
+            <td><%= @decade["bu"][current_index].to_s.sub(/^0$/, " ") %></td>
+            <td><%= decade_total %></td>
+          </tr>
+          <% decade_start += 10 %>
+          <% decade_end += 10 %>
+          <% current_index += 1 %>
+        <% else %>
+          <% next_index = current_index + 1 %>
+          <% if next_index < @decade["ba"].count then %>
+            <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
+            <% if next_total > 0 then %>
+              <tr>
+                <td><%= decade_start %>-<%= decade_end %></td>
+                <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
+                <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
+                <td><%= @decade["bu"][current_index].to_s.sub(/^0$/, " ") %></td>
+                <td><%= decade_total %></td>
+              </tr>
+              <% current_index += 1 %>
+              <% decade_start = decade_end + 1 %>
+              <% decade_end += 10 %>
+            <% else %>
+              <% decade_end += 10 %>
+              <% current_index = next_index %>
+            <% end %>
+          <% else %>
+            <tr>
+              <td><%= decade_start %>-<%= decade_end %></td>
+              <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
+              <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
+              <td><%= @decade["bu"][current_index].to_s.sub(/^0$/, " ") %></td>
+              <td><%= decade_total %></td>
+            </tr>
+            <% current_index += 1 %>
+            <% decade_start = decade_end + 1 %>
+            <% decade_end += 10 %>
+          <% end %>
+        <% end %>
       <% end %>
     </tbody>
   </table>
