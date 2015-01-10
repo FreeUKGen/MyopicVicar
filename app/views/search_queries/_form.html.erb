@@ -120,7 +120,7 @@
 	parents : "#search_query_chapman_codes",
 	url : "/places/for_search_form.json",
 	loading : "Loading..."
-	<% if @search_query && @search_query.chapman_codes.size > 0 %>
+	<% if @search_query && @search_query.chapman_codes.size == 1 %>
 	, bootstrap: selection
 	<% end %>
 	});})(jQuery);
