@@ -1,9 +1,10 @@
 <p style="text-align: center">Showing the fields for <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 <div style="float:left;"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%> <%= link_to 'Edit Place Fields', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>
   <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_admistrator'%>
-<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Relocate Place to another County', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Places with same name into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %></div>
+<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Relocate Place to another County', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Places with same name into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>
 <% end%>
-<div style="clear:both;"> </div><br>
+</div>
+<div style="clear:both;"> </div>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
@@ -12,7 +13,7 @@
 <div class="grid">
   <section class="island ">
     <h4 >The Place has the following Church(es)</h4>
-    <div class="grid__item two-thirds ">
+    <div class="grid__item  ">
       <% @place.churches.order_by(church_name: 1).each do |church| %>
       <%= link_to church.church_name, church_path(church), :class => "btn  btn--small"  %>
       <% end %>
