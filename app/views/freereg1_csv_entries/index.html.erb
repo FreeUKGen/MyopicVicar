@@ -1,11 +1,14 @@
-<p style="text-align: center">Listing entries for file: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
-<div style="float:left;"> <%= button_to 'Create new record entry', new_freereg1_csv_entry_path, method: :get %></div>
+<p style="text-align: center">Listing entries for <b><%= @freereg1_csv_file_name %></b> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<div style="float:left;"> <%= link_to 'Create new record entry', new_freereg1_csv_entry_path, method: :get , :class => "btn  btn--small"  %></div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 </div>
 <% end %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item  ">
 <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %>
 <%= paginate @freereg1_csv_entries %>
@@ -52,7 +55,7 @@
       <td><%= freereg1_csv_entry.mother_forename %></td>
       <td><%= freereg1_csv_entry.mother_surname %></td>
       
-      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) , :class => "btn  btn--small"  %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete , :class => "btn  btn--small"  %></td>
     </tr>
   </tr>
   <% end %>
@@ -97,7 +100,7 @@
       <td><%= freereg1_csv_entry.female_relative_forename %></td>
       <td><%= freereg1_csv_entry.relative_surname %></td>
       
-      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) , :class => "btn  btn--small"  %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete , :class => "btn  btn--small"  %></td>
     </tr>
   </tr>
   <% end %>
@@ -142,10 +145,13 @@
       <td><%= freereg1_csv_entry.groom_forename %></td>
       
       <td><%= freereg1_csv_entry.groom_surname %></td>
-      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) , :class => "btn  btn--small"  %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete  , :class => "btn  btn--small" %></td>
     </tr>
     <% end %>
   </table>
   <%= paginate @freereg1_csv_entries %>
   <% end %>
-  <br />
+   </div>
+</section>
+</div>
+<br>

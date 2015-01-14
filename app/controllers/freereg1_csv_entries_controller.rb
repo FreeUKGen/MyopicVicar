@@ -45,19 +45,26 @@ class Freereg1CsvEntriesController < ApplicationController
     else
       file_line_number = @freereg1_csv_file.records.to_i + 1
       line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
+      @freereg1_csv_file.update_attributes(:record => file_line_number)
     end
     @freereg1_csv_entry.update_attributes(:line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
     #need to deal with change in place
     unless @freereg1_csv_file.place == params[:freereg1_csv_entry][:place]
       #need to think about how to do this
     end
+
+    @freereg1_csv_entry.church_name = @freereg1_csv_file.church_name
+    @freereg1_csv_entry.place = @freereg1_csv_file.place
+    @freereg1_csv_entry.county = @freereg1_csv_file.county
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
+
     if @freereg1_csv_entry.errors.any?
       flash[:notice] = 'The creation of the record was unsuccessful'
       display_info
       render :action => 'error'
     else
+      @freereg1_csv_entry.transform_search_record
       @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
       @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own]

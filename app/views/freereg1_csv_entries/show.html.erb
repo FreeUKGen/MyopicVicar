@@ -1,21 +1,25 @@
-<p style="text-align: center">Showing entry <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> in Register: <b><%= @register_name %></b> of Church:<b> <%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
-<div style="float:left;"> <%= button_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get %>  </div>
-<div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path, method: :get %>  </div>
-<div style="float:left;"> <%= button_to 'Listing of Error Records', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
+<p style="text-align: center">Showing <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<div style="float:left;"> <%= link_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get, :class => "btn  btn--small"  %> <%= link_to 'Listing of Records',  freereg1_csv_entries_path, method: :get, :class => "btn  btn--small"  %>  <%= link_to 'Listing of Error Records', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %></div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<div id="main"style="color:black">
-  <% case %>
-  <% when @freereg1_csv_file.record_type == "ba" %>
-  <table  class="table--bordered  table--data">
-    <tr>
-      <th style="width:25%">Field</th>
-      <th style="width:50">Value</th>
-    </tr>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item two-thirds ">
+    <% case %>
+    <% when @freereg1_csv_file.record_type == "ba" %>
+      <table   class="table--bordered  table--data">
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
     <tr>
       <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
     </tr><tr>
@@ -69,11 +73,15 @@
     </tr>
   </table>
   <% when @freereg1_csv_file.record_type == "ma" %>
-  <table  class="table--bordered  table--data">
-    <tr>
-      <th style="width:25%">Field</th>
-      <th style="width:50">Value</th>
-    </tr>
+  <table   class="table--bordered  table--data">
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
     <tr>
       <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
     </tr>
@@ -173,11 +181,15 @@
   </table>
   
   <% when @freereg1_csv_file.record_type == "bu"%>
-  <table  class="table--bordered  table--data">
-    <tr>
-      <th style="width:25%">Field</th>
-      <th style="width:50">Value</th>
-    </tr>
+   <table   class="table--bordered  table--data">
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
     <tr>
       <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
     </tr><tr>
@@ -227,3 +239,7 @@
     </tr>
   </table>
   <% end%>
+  </div>
+</section>
+</div>
+<br>
