@@ -1,14 +1,8 @@
-Page Identification Churches:edit<p>
-<p style="text-align: center">Editing Church: <b><%= @church_name %></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
-<div  style="float:left;"> <%= button_to 'Create New Church', new_church_path, method: :get %></div>
- <div style="float:left;"><%button_to 'Show Church', @church, method: :get%></div>
-<div  style="float:left;"><%= button_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } %></div>
-<div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-<div  style="float:left;"> <%= button_to 'County Mangement Tools Page', manage_counties_path, method: :get %></div>
-<div  style="float:left;"> <%= button_to 'Resource Management options', manage_resource_path(@user), method: :get %> </div>
 
- 
-<div style="clear:both;"> </div><br> 
+<p style="text-align: center"> Editing <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
+
+<div  style="float:left;"> <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%>  <%= link_to 'Show Church Fields', church_path(@church) , method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Church Name', rename_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Relocate Church to another Place', relocate_church_path(@church), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Churches with same name into this one', merge_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } , :class => "btn  btn--small"%> <%= link_to 'Create Register', new_register_path , method: :get, :class => "btn  btn--small" %> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%></div>
+<div style="clear:both;"> </div>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>

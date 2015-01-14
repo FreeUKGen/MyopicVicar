@@ -1,0 +1,18 @@
+<p style="text-align: center">Renaming the current <%= @church_name %> within <b><%= @place_name %></b> of  <b><%= @county %></b></p>
+<div  style="float:left;"> <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%> <%= link_to 'Edit Church Fields', edit_church_path(@church) , method: :get, :class => "btn  btn--small" %>  <%= link_to 'Show Church Fields', church_path(@church) , method: :get, :class => "btn  btn--small" %>  <%= link_to 'Relocate Church to another Place', relocate_church_path(@church), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Churches with same name into this one', merge_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } , :class => "btn  btn--small"%> <%= link_to 'Create Register', new_register_path , method: :get, :class => "btn  btn--small" %> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%></div>
+<div style="clear:both;"> </div>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+<section class="island  island--light">
+<%= semantic_form_for  @church, :html => { :class => "grid"}  do |f| %>
+<%= f.input :church_name, :label => "Church Name :",:input_html => { :size => 60 }%>
+ 
+ 
+ <%= f.action :submit, :as => :input, :label => 'Rename' %>
+ <% end %>
+ <p style="color:red">Please note if you are changing the name in a large numer of records the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
+ </section>
+  

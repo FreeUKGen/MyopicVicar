@@ -1,0 +1,24 @@
+<p style="text-align: center">Relocating <b><%= @church_name %></b>  from : <b><%= @place_name %></b> in <b><%= @county %></b></p>
+
+<div  style="float:left;"> <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%> <%= link_to 'Edit Church Fields', edit_church_path(@church) , method: :get, :class => "btn  btn--small" %>  <%= link_to 'Show Church Fields', church_path(@church) , method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Church Name', rename_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Merge Churches with same name into this one', merge_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } , :class => "btn  btn--small"%> <%= link_to 'Create Register', new_register_path , method: :get, :class => "btn  btn--small" %> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%></div>
+<div style="clear:both;"> </div>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
+<section class="island  island--light">
+<%= semantic_form_for  @church do |f| %>
+
+<% if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' %>
+ <b> Please be sure to select the correct Place from the following list. Check with the name above and select if you are NOT changing the Place</b>
+<p>
+   <%= f.input :place_name, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place that Church is located in :", :required => true, :size => 15}%>
+ <% end %>
+
+ 
+ <%= f.action :submit, :as => :input, :label => 'Relocate' %>
+ <% end %>
+  <p style="color:red">Please note if you are changing the name in a large numer of records the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
+ </section>
+  

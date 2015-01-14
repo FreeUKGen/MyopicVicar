@@ -1,11 +1,21 @@
-
 <p style="text-align: center">Adding a New Church in <b><%=@place%></b> for the County of <b><%= @county %></b></p>
-
+<div  style="float:left;"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%></div>
+<div style="clear:both;"> </div>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>
-<%= render 'form' %>
-
-
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+</div>
+<% end %>
+<div class="island  island--light">
+  <%= semantic_form_for  @church, :html => { :class => "grid"}  do |f| %>
+  <%= f.input :church_name, :label => "Church Name :",:input_html => { :size => 60 }%>
+  <%= f.inputs :alternate_name, :for => :alternatechurchname, :name => 'Add Alternate Church Name',  :size => 60 %>
+  <%= f.input :denomination, :label => "Denomination of the Church :",:input_html => { :size => 60 }%>
+  <%= f.input :location, :label => "The Church Location :",     :input_html => { :size => 60 } %>
+  
+  <%= f.input :website, :label => "The Church Website :",     :input_html => { :size => 60 } %>
+  <br>
+  <%= f.input :last_amended, :label => "The last date when a register in the church was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
+  <%= f.action :submit, :as => :input, :label => 'Submit'   %>
+  <% end %>
+</div>
