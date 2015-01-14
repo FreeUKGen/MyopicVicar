@@ -104,8 +104,8 @@ class Register
     unless register.freereg1_csv_files.exists?
       church = register.church
       place = church.place
-      church.registers.where(:alternate_register_name => register.alternate_register_name).delete_all if place.error_flag == "Place name is not approved" || register.has_no_input?
-      place.churches.where(:church_name => church.church_name).delete_all if !church.registers.exists? && church.has_no_input?
+      church.registers.where(:alternate_register_name => register.alternate_register_name).delete_all if place.error_flag == "Place name is not approved" || !register.has_input?
+      place.churches.where(:church_name => church.church_name).delete_all if !church.registers.exists? && !church.has_input?
       place.update_attributes(:data_present => false) unless place.search_records.exists?
       place.destroy if !place.search_records.exists? && place.error_flag == "Place name is not approved"
     end
