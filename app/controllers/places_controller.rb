@@ -27,9 +27,6 @@ class PlacesController < ApplicationController
   def relocate
     load(params[:id])
     get_places_counties_and_contries
-    session[:type] = 'relocate'
-    render :edit
-
   end
 
   def show
@@ -44,14 +41,46 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_contries
     @place_name = Place.find(session[:place_id]).place_name
+     @county = session[:county]
     session[:type] = 'edit'
 
   end
+  def rename
+    get_user_info_from_userid
+    load(params[:id])
+    get_places_counties_and_contries
+    @county = session[:county]
+
+  end
+
+  def relocate
+    get_user_info_from_userid
+    load(params[:id])
+    @county = session[:county]
+    get_places_counties_and_contries
+  end
+
+  def merge
+    load(params[:id])
+    p 'merging into'
+    p @place
+    errors = @place.merge_places
+    p @place
+    p errors
+    if errors[0]  then
+      flash[:notice] = "Place Merge unsuccessful; #{errors[1]}"
+      render :action => 'show'
+      return
+    end
+    flash[:notice] = 'The merge of the Places was successful'
+    redirect_to place_path(@place)
+  end
+
 
   def new
     get_places_counties_and_contries
     @place = Place.new
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    get_user_info_from_userid
     session[:type] = 'new'
   end
 
@@ -79,51 +108,59 @@ class PlacesController < ApplicationController
 
   def update
     load(params[:id])
-    if session[:type] == 'relocate' #place_name_change
-      if  ChapmanCode.values_at(params[:place][:county]) == session[:chapman_code]
-        #not changing county
-        successful = @place.change_name(params[:place][:place_name],params[:place][:county])
-      else
-        #changing county
-        @county = params[:place][:county]
-        flash[:notice] = 'Relocating to a place in the new county'
-        session[:chapman_code] = ChapmanCode.values_at(params[:place][:county])
-        get_places_counties_and_contries
-        render :action => 'edit'
-        return
-      end # county change
-      unless successful
-        flash[:notice] = 'The update of the Place was unsuccessful'
-        get_places_counties_and_contries
-        @place_name = Place.find(session[:place_id]).place_name
-        render :action => 'edit'
-        return
-      end # successfull
-    else
-      #not relocating
-      old_place_name = @place.place_name
-      new_place_name = params[:place][:place_name]
-      #just changing fields for place
-      #save the orginal data
+    case
+    when params[:commit] == 'Submit'
+      p 'editing place'
+      p params
+      p @place
       @place.save_to_original
-      #adjust lat and lon and other fields
-      @place.adjust_params_before_applying(params,session)
+      p @place
+      @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name].blank?
+      @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
       @place.update_attributes(params[:place])
-      @place.update_attributes(:modified_place_name => @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)
-      @place.change_name(new_place_name,ChapmanCode.name_from_code(@place.chapman_code)) unless new_place_name.nil? || old_place_name == new_place_name
-      if @place.errors.any? then
+      p @place
+      if @place.errors.any?  then
         flash[:notice] = 'The update of the Place was unsuccessful'
-        #need to prepare for the edit
-        get_places_counties_and_contries
         render :action => 'edit'
         return
-      end #errors
-    end # relocate
-    session[:type] = nil
-    @current_page = session[:page]
-    session[:page] = session[:initial_page]
-    flash[:notice] = 'The update of the Place was successful'
-    redirect_to @current_page
+      end
+      flash[:notice] = 'The update the Place was successful'
+      redirect_to place_path(@place)
+      return
+    when params[:commit] == 'Rename'
+      p 'renaming place'
+      p @place
+      errors = @place.change_name(params[:place])
+      p @place
+      p errors
+      if errors[0]  then
+        flash[:notice] = "Place rename unsuccessful; #{errors[1]}"
+        render :action => 'rename'
+        return
+      end
+      flash[:notice] = 'The rename the Place was successful'
+      redirect_to place_path(@place)
+      return
+    when params[:commit] == 'Relocate'
+      p 'relocating place'
+      p @place
+      errors = @place.relocate_place(params[:place])
+      p @place
+      p errors
+      if errors[0]  then
+        flash[:notice] = "Place relocation unsuccessful; #{errors[1]}"
+        render :action => 'show'
+        return
+      end
+      flash[:notice] = "The relocation of the Place was successful. \n PLEASE CHECK YOU STILL HAVE THE CORRECT LOCATION INFORMATION"
+      redirect_to place_path(@place)
+      return
+    else
+      #we should never get here but just in case
+      flash[:notice] = 'The change to the Church was unsuccessful'
+      redirect_to place_path(@place)
+
+    end
 
   end
 

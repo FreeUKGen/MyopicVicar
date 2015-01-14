@@ -80,6 +80,8 @@ post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issu
 
   get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint 
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint 
+  get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint 
+  get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint 
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_filename', constraints: ManageCountiesDisplayByFilenameConstraint 
   get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint 
@@ -91,6 +93,7 @@ post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issu
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get 'manage_counties/select', :to =>'manage_counties#select', :as => :select_manage_counties
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
+   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   resources :manage_counties
 
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
@@ -109,12 +112,20 @@ post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issu
   
   resources :freereg_contents
 
+
+  get 'churches/:id/rename', :to => 'churches#rename', :as => :rename_church
+  get 'churches/:id/merge(.:format)', :to => 'churches#merge', :as => :merge_church
+  get 'churches/:id/relocate(.:format)', :to => 'churches#relocate', :as => :relocate_church
   resources :churches
 
+  get 'registers/:id/rename', :to => 'registers#rename', :as => :rename_register
+  get 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
   resources :registers
 
   resources :master_place_names
 
+  get 'places/:id/rename', :to => 'places#rename', :as => :rename_place
+  get 'places/:id/merge(.:format)', :to => 'places#merge', :as => :merge_place
   get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place
   get 'places/for_search_form(.:format)', :to => 'places#for_search_form', :as => :places_for_search_form
   get 'places/for_freereg_content_form(.:format)', :to => 'places#for_freereg_content_form', :as => :places_for_freereg_content_form
@@ -128,6 +139,7 @@ post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issu
   post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
+ get 'freereg1_csv_files/:id/relocate(.:format)', :to => 'freereg1_csv_files#relocate', :as => :relocate_freereg1_csv_file
   get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
   get 'freereg1_csv_files/my_own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
