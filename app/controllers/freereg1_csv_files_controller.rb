@@ -19,6 +19,15 @@ class Freereg1CsvFilesController < ApplicationController
     set_controls
     @role = session[:role]
   end
+  def relocate
+   
+    load(params[:id])
+    set_controls
+    get_user_info_from_userid
+    @county =  session[:county]
+    @role = session[:role]
+    get_places_for_menu_selection
+  end
 
   def edit
     #edit the headers for a batch
@@ -56,12 +65,9 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
+   if params[:commit] == 'Submit' 
     #lets see if we are moving the file
     @freereg1_csv_file.date_change(params[:freereg1_csv_file][:transcription_date],params[:freereg1_csv_file][:modification_date])
-    if @freereg1_csv_file.are_we_changing_location?(params[:freereg1_csv_file])
-      #update the file attributes
-      @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file])
-    end
     @freereg1_csv_file.check_locking_and_set(params[:freereg1_csv_file],session)
     @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
@@ -87,7 +93,13 @@ class Freereg1CsvFilesController < ApplicationController
     flash[:notice] = 'The update of the batch was successful'
     @current_page = session[:page]
     session[:page] = session[:initial_page]
-    redirect_to :back
+    redirect_to :action => 'show'
+   end
+   if params[:commit] == 'Relocate'
+     @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file])
+     flash[:notice] = 'The relocation of the batch was successful'
+     redirect_to :action => 'show'
+   end 
   end
   def my_own
     get_user_info_from_userid

@@ -1,123 +1,118 @@
 <p style="text-align: center"><b>Showing  batch :<%= @freereg1_csv_file_name %> </b> </p>
-<div style="float:left;"> <%= button_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get %></div>
-<div style="float:left;"> <%= button_to 'Download batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get %></div>
-<div style="float:left;"><%= button_to 'Replace batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?'%></div>
-<div  style="float:left;"><%= button_to 'Destroy batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' } %></div>
-<div style="float:left;"> <%= button_to 'Browse records in batch', freereg1_csv_entries_path, method: :get %></div>
-<div style="float:left;"> <%= button_to 'Select page of records in batch', select_page_freereg1_csv_entry_path, method: :get %></div>
-
+<div style="float:left;"> <%= link_to 'Edit batch headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %> <%= link_to 'Relocate batch', relocate_freereg1_csv_file_path(@freereg1_csv_file), confirm: 'Are you sure you want to relocate this batch?', method: :get, :class => "btn  btn--small"  %> <%= link_to 'Download batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get, :class => "btn  btn--small"  %> <%= link_to 'Replace batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?', :class => "btn  btn--small" %> <%= link_to 'Destroy batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' }, :class => "btn  btn--small"  %> <%= link_to 'Browse records in batch', freereg1_csv_entries_path, method: :get, :class => "btn  btn--small"  %> <%= link_to 'Select page of records in batch', select_page_freereg1_csv_entry_path, method: :get, :class => "btn  btn--small"  %></div>
+<div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
- <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
-<% end %>  
-
-<table  class="table--bordered  table--striped  table--data" >
-  <tr>    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-  </tr>
-
-  <tr> 
-   <td>County </td> <td> <%=  @freereg1_csv_file.county%>  </td>
- </tr><tr>
- <td> Place name </td><td > <%= @freereg1_csv_file.place %>  </td>   
-</tr>
-<tr>
- <td>Church name </td><td ><%= @freereg1_csv_file.church_name %></td>   
-</tr>
-<tr>
- <td>Register type</td><td ><%= @freereg1_csv_file.register_type %></td>   
-</tr>
-<tr>
- <td>Record type </td><td >  <%= @freereg1_csv_file.record_type %> </td>   
-</tr>
-<tr> 
- <td>Number of records </td> <td> <%= @freereg1_csv_file.records %> </td>
-</tr><tr>
-<td>Minimum year in dataset </td><td >  <%= @freereg1_csv_file.datemin %> </td>   
-</tr>
-<tr>
- <td>Maximum year in dataset </td><td > <%= @freereg1_csv_file.datemax %></td>   
-</tr>
-<tr>
- <td>Number of years in each decade starting in 1530</td><td > <%= @freereg1_csv_file.daterange %></td>   
-</tr>
-<tr>
- <td>Uploaded by userid </td><td >   <%= @freereg1_csv_file.userid %> </td>   
-</tr>
-<tr>
- <td>Batch name</td><td ><%= @freereg1_csv_file.file_name %></td>   
-</tr>
-<tr>
- <td>Transcribed by </td><td >  <%= @freereg1_csv_file.transcriber_name %></td>   
-</tr>
-<tr> 
- <td>Transcribers email address </td> <td> <%= @freereg1_csv_file.transcriber_email %></td>
-</tr>
-<tr>
- <td>Syndicate transcribed for </td><td >   <%= @freereg1_csv_file.transcriber_syndicate %></td>   
-</tr>
-<tr>
- <td>Date of upload </td><td > <%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %></td>   
-</tr>
-<%case%>
-<%when @freereg1_csv_file.error == 0%>
-<tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
-  <% when  @freereg1_csv_file.error > 0 %>
-  <tr id="<%= @freereg1_csv_file.id%>"  style="color:red" >
-   <% end %>
-
-   <td>Number of errors</td><td > <%= link_to(@freereg1_csv_file.error , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>   
- </tr>
-
- 
- <%if @freereg1_csv_file.locked_by_transcriber == 'true'  %> 
- <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
-  <%else%>
-  <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
-   <% end %>
-   <td>Batch is locked from overriding by Transcriber</td><td > <%= @freereg1_csv_file.locked_by_transcriber %></td>   
- </tr>
-
- <%if @freereg1_csv_file.locked_by_coordinator == 'true'  %> 
- <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
-  <%else%>
-  <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
-   <% end %>
-   
-   <td>Batch is locked from overriding by Coordinator</td><td > <%= @freereg1_csv_file.locked_by_coordinator %></td>   
- </tr>
-
- <tr>
-   <td>Credit the following for the transcription</td><td ><%= @freereg1_csv_file.credit_name %></td>   
- </tr>
- <tr>
-   <td>Email address for the person who has been credited </td><td > <%= @freereg1_csv_file.credit_email %></td>   
- </tr>
- <tr> 
-   <td>First set of comments about the batch </td> <td> <%= @freereg1_csv_file.first_comment %></td>
- </tr>
- <tr>
-   <td>Second set of comments about the batch </td><td >    <%= @freereg1_csv_file.second_comment %></td>   
- </tr>
- <tr>
-   <td>Date transcribed </td><td >  <%= @freereg1_csv_file.transcription_date %></td>   
- </tr>
- <tr>
-   <td>Date modified</td><td ><%= @freereg1_csv_file.modification_date %></td>   
- </tr>
- <tr>
-   <td>Image numbers available with record</td><td >   <%= @freereg1_csv_file.lds %> </td>   
- </tr>
- 
- <tr>
-   <td>Character set of original file</td><td > <%= @freereg1_csv_file.characterset %></td>   
- </tr>
-</table>  
-<%= render "resource_sidebar" %>
+<% end %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item two-thirds ">
+      <table   class="table--bordered  table--data">
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>County </td> <td class="weight--semibold"> <%=  @freereg1_csv_file.county%>  </td>
+        </tr>
+        <tr>
+        <td> Place name </td><td class="weight--semibold"> <%= @freereg1_csv_file.place %>  </td>
+      </tr>
+      <tr>
+        <td>Church name </td><td class="weight--semibold"><%= @freereg1_csv_file.church_name %></td>
+      </tr>
+      <tr>
+        <td>Register type</td><td class="weight--semibold"><%= @freereg1_csv_file.register_type %></td>
+      </tr>
+      <tr>
+        <td>Record type </td><td class="weight--semibold">  <%= @freereg1_csv_file.record_type %> </td>
+      </tr>
+      <tr>
+        <td>Number of records </td> <td class="weight--semibold"> <%= @freereg1_csv_file.records %> </td>
+      </tr><tr>
+      <td>Minimum year in dataset </td><td class="weight--semibold"><%= @freereg1_csv_file.datemin %> </td>
+    </tr>
+    <tr>
+      <td>Maximum year in dataset </td><td class="weight--semibold"> <%= @freereg1_csv_file.datemax %></td>
+    </tr>
+    <tr>
+      <td>Number of years in each decade starting in 1530</td><td class="weight--semibold"> <%= @freereg1_csv_file.daterange %></td>
+    </tr>
+    <tr>
+      <td>Uploaded by userid </td><td class="weight--semibold"> <%= @freereg1_csv_file.userid %> </td>
+    </tr>
+    <tr>
+      <td>Batch name</td><td class="weight--semibold"><%= @freereg1_csv_file.file_name %></td>
+    </tr>
+    <tr>
+      <td>Transcribed by </td><td class="weight--semibold">  <%= @freereg1_csv_file.transcriber_name %></td>
+    </tr>
+    <tr>
+      <td>Transcribers email address </td> <td class="weight--semibold"> <%= @freereg1_csv_file.transcriber_email %></td>
+    </tr>
+    <tr>
+      <td>Syndicate transcribed for </td><td class="weight--semibold">  <%= @freereg1_csv_file.transcriber_syndicate %></td>
+    </tr>
+    <tr>
+      <td>Date of upload </td><td class="weight--semibold"> <%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %></td>
+    </tr>
+    <%case%>
+    <%when @freereg1_csv_file.error == 0%>
+    <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
+      <% when  @freereg1_csv_file.error > 0 %>
+      <tr id="<%= @freereg1_csv_file.id%>"  style="color:red" >
+        <% end %>
+        <td>Number of errors</td><td class="weight--semibold"> <%= link_to(@freereg1_csv_file.error , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>
+      </tr>
+      
+      <%if @freereg1_csv_file.locked_by_transcriber == 'true'  %>
+      <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
+        <%else%>
+        <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
+          <% end %>
+          <td>Batch is locked from overriding by Transcriber</td><td class="weight--semibold"> <%= @freereg1_csv_file.locked_by_transcriber %></td>
+        </tr>
+        <%if @freereg1_csv_file.locked_by_coordinator == 'true'  %>
+        <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
+          <%else%>
+          <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
+            <% end %>
+            
+            <td>Batch is locked from overriding by Coordinator</td><td class="weight--semibold"> <%= @freereg1_csv_file.locked_by_coordinator %></td>
+          </tr>
+          <tr>
+            <td>Credit the following for the transcription</td><td class="weight--semibold"><%= @freereg1_csv_file.credit_name %></td>
+          </tr>
+          <tr>
+            <td>Email address for the person who has been credited </td><td class="weight--semibold"><%= @freereg1_csv_file.credit_email %></td>
+          </tr>
+          <tr>
+            <td>First set of comments about the batch </td> <td class="weight--semibold"><%= @freereg1_csv_file.first_comment %></td>
+          </tr>
+          <tr>
+            <td>Second set of comments about the batch </td><td class="weight--semibold">    <%= @freereg1_csv_file.second_comment %></td>
+          </tr>
+          <tr>
+            <td>Date transcribed </td><td class="weight--semibold">  <%= @freereg1_csv_file.transcription_date %></td>
+          </tr>
+          <tr>
+            <td>Date modified</td><td class="weight--semibold"><%= @freereg1_csv_file.modification_date %></td>
+          </tr>
+          <tr>
+            <td>Image numbers available with record</td><td class="weight--semibold">  <%= @freereg1_csv_file.lds %> </td>
+          </tr>
+          
+          <tr>
+            <td>Character set of original file</td><td class="weight--semibold"><%= @freereg1_csv_file.characterset %></td>
+          </tr>
+        </table>
+</div>
+</section>
+</div>
 <br>
-
-
-
-

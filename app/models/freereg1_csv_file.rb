@@ -280,7 +280,6 @@ class Freereg1CsvFile
       #eg +LDS,,,,
       csv << ['+LDS'] if file.lds =='yes'
       file_parts.each do |fil|
-        type = fil.record_type
         records = fil.freereg1_csv_entries
         records.each do |rec|
           church_name = fil.church_name.to_s + " " + fil.register_type.to_s
@@ -334,17 +333,15 @@ class Freereg1CsvFile
       file.backup_file
       Register.clean_empty_registers(old_location[:register]) unless old_location[:register] == new_location[:register]
       file
-    end
+  end
 
     def old_location
-      old_file_id = self._id
       old_register = self.register
-      old_church_id = old_register.church_id
       old_church = old_register.church
-      old_place_id = Church.find(old_church_id).place_id
       old_place = old_church.place
       location = {:register => old_register, :church => old_church, :place => old_place}
     end
+
     def new_location(param)
       new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false').first
       new_church = Church.where(:place_id =>  new_place._id, :church_name => param[:church_name]).first
@@ -370,11 +367,48 @@ class Freereg1CsvFile
 
     def update_entries_and_search_records(param)
       self.freereg1_csv_entries.each do |entry|
+        p 'entries and search records'
         entry.update_attributes(:county => param[:county],:place =>param[:place],:register_type => param[:register_type])
-        entry.search_record.update_attributes(:place_id => param[:place_id],:chapman_code => param[:county], :location_name =>"#{param[:place]} (#{param[:church_name]})")
+        entry.search_record.update_attributes(:place_id => param[:place_id],:chapman_code => param[:county], :location_name =>"#{param[:place]} (#{param[:church_name]})") unless entry.search_record.nil?
+      end
+    end
+    def update_entries_and_search_records_for_type(param)
+      p 'entry'
+      p self.freereg1_csv_entries.count
+      self.freereg1_csv_entries.each do |entry|
+
+        entry.update_attributes(:register_type => param)
       end
     end
 
+    def update_entries_and_search_records_for_church(place_name,church_name)
+      p 'entry for church'
+      p self.freereg1_csv_entries.count
+      self.freereg1_csv_entries.each do |entry|
+
+        entry.update_attributes(:church_name => church_name)
+        entry.search_record.update_attributes(:location_name =>"#{place_name} (#{church_name})") unless entry.search_record.nil?
+      end
+    end
+    def update_entries_and_search_records_for_place(place,church_name)
+      p 'entry for place'
+      p place
+      p self.freereg1_csv_entries.count
+      self.freereg1_csv_entries.each do |entry|
+
+        entry.update_attributes(:place => place.place_name)
+        entry.search_record.update_attributes(:place_id => place._id,:location_name =>"#{place.place_name} (#{church_name})") unless entry.search_record.nil?
+      end
+    end
+    def update_entries_and_search_records_for_county(county,chapman_code)
+      p 'entry for place'
+      p self.freereg1_csv_entries.count
+      self.freereg1_csv_entries.each do |entry|
+
+        entry.update_attributes(:county => chapman_code)
+        entry.search_record.update_attributes(:chapman_code => chapman_code) unless entry.search_record.nil?
+      end
+    end
     def date_change(transcription_date,modification_date)
       error = self.error
       if error > 0
@@ -421,6 +455,7 @@ class Freereg1CsvFile
     def update_number_of_files
       #need to think about doing an update
       userid = UseridDetail.where(:userid_lower_case => self.userid.downcase).first
+      return if userid.nil?
       files = Freereg1CsvFile.where(:userid_lower_case => self.userid.downcase).all
       if files.nil?
         userid.number_of_files = 0
@@ -482,5 +517,4 @@ class Freereg1CsvFile
         self.update_attributes(:locked_by_coordinator => "true")
       end
     end
-
-  end
+ end
