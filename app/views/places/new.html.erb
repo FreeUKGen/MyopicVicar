@@ -1,8 +1,5 @@
 <p style="text-align: center">Adding a place </p>
-  <div style="float:left;"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%> </div>
-  <div style="clear:both;"> </div>
-
-
+ 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>

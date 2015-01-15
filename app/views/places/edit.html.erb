@@ -1,9 +1,9 @@
 <p style="text-align: center">Editing <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 
-<div style="float:left;"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%>   <%= link_to 'Show Place Fields', place_path(@place), method: :get, :class => "btn  btn--small" %>
+<div style="text-align: center"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%>   <%= link_to 'Show Place Fields', place_path(@place), method: :get, :class => "btn  btn--small" %>
 
 <% if @user.person_role == 'data_manager' %>
- <%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Relocate Place to another County', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%>  <%= link_to 'Merge Places with same name into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>
+ <%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= link_to 'Relocate Place to another County', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%>  <%= link_to 'Merge Places with same name into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= button_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>
 <% end%>
 </div>
 <div style="clear:both;"> </div><br> 
