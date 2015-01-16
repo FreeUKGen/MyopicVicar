@@ -151,6 +151,14 @@ class Freereg1CsvEntriesController < ApplicationController
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     display_info
   end
+  def destroy
+   load(params[:id])
+   return_location = @freereg1_csv_entry.freereg1_csv_file
+     @freereg1_csv_entry.destroy
+    flash[:notice] = 'The deletion of the record was successful'
+    redirect_to freereg1_csv_file_path(return_location)
+
+  end
   
   def display_info
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
