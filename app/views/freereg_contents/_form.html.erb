@@ -55,22 +55,19 @@
 <% end %>
 </div>
          
-   <script type="text/javascript" charset="utf-8" >
-	<% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
-	    var selection=<%= raw(PlaceCache.where(:chapman_code => @freereg_content.chapman_codes.first).first.places_json) %>;
-     	<% if @freereg_content.place.size > 0 %>
-			selection["selected"]="<%= @freereg_content.place.first.id %>";	 
-		<% end %>
-	<% end %>
-
-	
-	(function($) {$("#freereg_content_place_ids").remoteChained({
-	  parents : "#freereg_content_chapman_codes",
-	  url : "/places/for_freereg_content_form.json",
-	  loading : "Loading..."
-	  <% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
-	  , bootstrap: selection
-	  <% end %>
-	});})(jQuery);
-	
+  <script type="text/javascript" charset="utf-8" >
+<% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
+var selection=<%= raw(PlaceCache.where(:chapman_code => @freereg_content.chapman_codes.first).first.places_json) %>;
+<% if @freereg_content.place.size > 0 %>
+selection["selected"]="<%= @freereg_content.place.first.id %>";
+<% end %>
+<% end %>
+(function($) {$("#freereg_content_place_ids").remoteChained({
+parents : "#freereg_content_chapman_codes",
+url : "/places/for_freereg_content_form.json",
+loading : "Loading..."
+<% if @freereg_content && @freereg_content.chapman_codes.size ==1 %>
+, bootstrap: selection
+<% end %>
+});})(jQuery);
 </script>
