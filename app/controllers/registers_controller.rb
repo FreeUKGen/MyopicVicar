@@ -25,20 +25,20 @@ class RegistersController < ApplicationController
   end
 
   def merge
-    
+
     load(params[:id])
-      p 'merging into'
-      p @register
-      errors = @register.merge_registers
-      p @register
-      p errors
-      if errors[0]  then
-        flash[:notice] = "Merge unsuccessful; #{errors[1]}"
-        render :action => 'show'
-        return
-      end
-      flash[:notice] = 'The merge of the Register was successful'
-      redirect_to register_path(@register)
+    p 'merging into'
+    p @register
+    errors = @register.merge_registers
+    p @register
+    p errors
+    if errors[0]  then
+      flash[:notice] = "Merge unsuccessful; #{errors[1]}"
+      render :action => 'show'
+      return
+    end
+    flash[:notice] = 'The merge of the Register was successful'
+    redirect_to register_path(@register)
   end
 
   def create
@@ -66,7 +66,7 @@ class RegistersController < ApplicationController
       flash[:notice] = 'The addition of the Register was successful'
       @place_name = session[:place_name]
       # redirect_to register_path
-      render :action => 'show'
+      redirect_to register_path(@register)
     end
   end
 
@@ -74,7 +74,7 @@ class RegistersController < ApplicationController
   def update
     load(params[:id])
     case
-    when params[:commit] == 'Submit' 
+    when params[:commit] == 'Submit'
       p 'editing'
       p @register
       @register.update_attributes(params[:register])
@@ -104,7 +104,7 @@ class RegistersController < ApplicationController
     else
       flash[:notice] = 'The change to the Register was unsuccessful'
       redirect_to register_path(@register)
-       @register.change_type(params[:register])
+      @register.change_type(params[:register])
     end
   end
 
