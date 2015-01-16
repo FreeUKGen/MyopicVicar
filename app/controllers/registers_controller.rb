@@ -126,9 +126,10 @@ class RegistersController < ApplicationController
 
   def destroy
     load(params[:id])
+    return_location = @register.church
     @register.destroy
     flash[:notice] = 'The deletion of the Register was successful'
-    redirect_to church_path(@church)
+    redirect_to church_path(return_location)
   end
 
   def record_cannot_be_deleted

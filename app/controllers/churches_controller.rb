@@ -190,9 +190,10 @@ class ChurchesController < InheritedResources::Base
 
   def destroy
     load(params[:id])
+    return_location = @church.place
     @church.destroy
     flash[:notice] = 'The deletion of the Church was successful'
-    redirect_to places_path
+    redirect_to place_path(return_location)
   end
 
   def record_cannot_be_deleted
