@@ -17,16 +17,20 @@ class Freereg1CsvFilesController < ApplicationController
     #TODO check on need for these
     @county =  session[:county]
     set_controls
+      display_info
     @role = session[:role]
+  
   end
   def relocate
    
     load(params[:id])
     set_controls
+    display_info
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
     get_places_for_menu_selection
+
   end
 
   def edit
@@ -34,6 +38,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     set_controls
     get_user_info_from_userid
+      display_info
     @county =  session[:county]
     unless session[:error_line].nil?
       #we are dealing with the edit of errors
@@ -102,6 +107,7 @@ class Freereg1CsvFilesController < ApplicationController
    end 
   end
   def my_own
+
     get_user_info_from_userid
     session[:my_own] = true
     @freereg1_csv_file = Freereg1CsvFile.new
@@ -188,6 +194,7 @@ class Freereg1CsvFilesController < ApplicationController
     set_controls
     get_user_info_from_userid
     @county =  session[:county]
+    return_location  = @freereg1_csv_file.register
     @role = session[:role]
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
       flash[:notice] = 'The deletion of the file was unsuccessful; the file is locked'
@@ -199,14 +206,33 @@ class Freereg1CsvFilesController < ApplicationController
       file.destroy
     end
     session[:type] = "edit"
+
     flash[:notice] = 'The deletion of the file was successful'
-    redirect_to :back
+    redirect_to register_path(return_location)
 
   end
 
   def load(file_id)
     @freereg1_csv_file = Freereg1CsvFile.find(file_id)
   end
+
+  def display_info
+    
+    @freereg1_csv_file_id =   @freereg1_csv_file._id
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @register = @freereg1_csv_file.register
+    #@register_name = @register.register_name
+    #@register_name = @register.alternate_register_name if @register_name.nil?
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = session[:church_id]
+    @church_name = session[:church_name]
+    @place = session[:place_id]
+    @county =  session[:county]
+    @place_name = session[:place_name]
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+  end
+
 
   def set_controls
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
