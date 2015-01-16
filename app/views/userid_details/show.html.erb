@@ -8,7 +8,7 @@
       
       &nbsp<%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left" %>  
       <% if @user.person_role == 'system_administrator'%>
-      &nbsp<%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small float--left"  %>
+      &nbsp<%= button_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small float--left"  %>
       <% end %>
       <% end %>
     </div>
