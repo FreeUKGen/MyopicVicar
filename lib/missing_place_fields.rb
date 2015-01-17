@@ -26,9 +26,11 @@ class MissingPlaceFields
         record_number = record_number + 1
         message_file.puts "\" #{my_entry.place_name}\", #{my_entry.chapman_code}, #{my_entry.county}, #{my_entry.original_county},  no location"
         county = ChapmanCode.name_from_code(my_entry.chapman_code)
-        #if my_entry.update_attributes(:county => county)
-        #  p "Error updating \" #{my_entry.place_name}\""
-        # end
+        my_entry.update_attributes(:county => county)
+        if my_entry.errors.any?
+          p "Error updating #{my_entry.place_name}"
+          p my_entry.errors.messages
+        end
       end #place
 
     end
