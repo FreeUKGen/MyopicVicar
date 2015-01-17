@@ -12,8 +12,12 @@ class FeedbacksController < InheritedResources::Base
   def create
     @feedback = Feedback.new(params[:feedback])
     @feedback.session_data = session
-    @feedback.save!
-
+    @feedback.save
+    if @feedback.errors.any?
+       flash.notice = "There was a problem with your submission #{@feedback.errors.messages}"
+       render :action => 'new'
+       return
+    end
     flash.notice = "Thank you for your feedback!"
     redirect_to @feedback.problem_page_url    
   end
