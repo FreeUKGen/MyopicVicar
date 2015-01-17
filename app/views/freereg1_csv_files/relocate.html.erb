@@ -1,0 +1,24 @@
+<p style="text-align: center"><b>Relocating  batch :<%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+
+<div  style="text-align: center"><%= link_to "Batch's Register", register_path(@freereg1_csv_file.register), method: :get , :class => "btn  btn--small" %> <%= link_to 'Show Batch Headers', freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %>  <%= link_to 'Edit Batch Headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %>  <%= link_to 'Download Batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get, :class => "btn  btn--small"  %> <%= link_to 'Replace Batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?', :class => "btn  btn--small" %>  <%= link_to 'Browse Records in Batch', freereg1_csv_entries_path, method: :get, :class => "btn  btn--small"  %> <%= link_to 'Select page of Records in Batch', select_page_freereg1_csv_entry_path, method: :get, :class => "btn  btn--small"  %> <%= button_to 'Destroy Batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' }, :class => "btn  btn--small"  %></div>
+<div style="clear:both;"> </div>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+ 
+</div>
+ <% end %>
+<section class="island  island--light">
+<p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>
+  <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
+  
+  <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
+  :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
+  <%= f.input :church_name, :input_html => { :size => 30 }%>
+  <%= f.input :place,{ :as => :select,:label => "Select place name from the list of Approved Names",:include_blank => false,
+  :required => true, :collection => @placenames, :size => 15 } %>
+  <%= f.action :submit, :as => :input, :label => 'Relocate'   %>
+  <% end %>
+<p style="color:red">Please note if you are changing the name in a large numer of records the processing time could be several minutes depending upon the number affected. <b>Please wait for the process to complete.</b></p>
+
+  </section>

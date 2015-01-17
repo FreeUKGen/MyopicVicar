@@ -57,12 +57,14 @@ module UseridRole
         'List by uploaded date (ascending)' =>  "/freereg1_csv_files/selection?option=List by uploaded date (ascending)",
         'List by uploaded date (descending)'  =>  "/freereg1_csv_files/selection?option=List by uploaded date (descending)"
         }
-        COUNTY_MANAGEMENT_OPTIONS = ['Work with All Places', 'Work with Active Places','Review Batches with Errors',
+        COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
           'Review Batches by Filename', 'Upload New Batch', 'Review Batches by Userid then Filename',
           'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch']
         COUNTY_OPTIONS_TRANSLATION = {
-          'Work with All Places' => "/manage_counties/selection?option=Work with All Places",
-          'Work with Active Places' => "/manage_counties/selection?option=Work with Active Places",
+          'All Places' => "/manage_counties/selection?option=Work with All Places",
+          'Active Places' => "/manage_counties/selection?option=Work with Active Places",
+          'Specific Place' => "/manage_counties/selection?option=Work with Specific Place",
+          'Places with Unapproved Names' => "/manage_counties/selection?option=Places with Unapproved Names",
           'Review Batches with Errors' => "/manage_counties/selection?option=Review Batches with Errors",
           'Review Batches by Filename' => "/manage_counties/selection?option=Review Batches by Filename",
           'Upload New Batch'  => "/manage_counties/selection?option=Upload New Batch",

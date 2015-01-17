@@ -176,46 +176,142 @@ class Place
   end
 
   def save_to_original
-    self.original_chapman_code = self.chapman_code unless !self.original_chapman_code.nil?
-    self.original_county = self.county
-    self.original_country = self.country
-    self.original_place_name = self.place_name
-    self.original_grid_reference = self.grid_reference
-    self.original_latitude = self.latitude
-    self.original_longitude = self.longitude
-    self.original_source =  self.source
-  end
-
-  def change_name(place_name,county)
-    chapman_code = ChapmanCode.values_at(county)
-    chapman_code = self.chapman_code if chapman_code.nil? || chapman_code.empty?
-    successful = true
-    new_place = Place.where(:chapman_code => chapman_code, :place_name => place_name, :disabled => 'false').first
-    param = {:place => place_name, :county => chapman_code }
-    self.relocate_with_no_churches(param) unless self.churches.exists
-    self.churches.each do |church|
-      church_name = church.church_name
-      param[:church_name] = church_name
-      church.registers.each do |register|
-        param[:register_type] = register.register_type
-        register.relocate_with_no_files(param) unless register.freereg1_csv_files.exists?
-        register.freereg1_csv_files.each do |file|
-          new_file = Freereg1CsvFile.update_location(file,param)
-          successful = false if new_file.nil?
-        end #file
-      end #register
-    end #church
-    self.churches.each do |church|
-      church_name = church.church_name
-      param[:church_name] = church_name
-      Church.relocate_with_no_registers(church,param) unless church.registers.exists?
+    if self.original_chapman_code.nil?
+      self.original_chapman_code = self.chapman_code 
+      self.original_county = self.county
+      self.original_country = self.country
+      self.original_place_name = self.place_name
+      self.original_grid_reference = self.grid_reference
+      self.original_latitude = self.latitude
+      self.original_longitude = self.longitude
+      self.original_source =  self.source
+      self.save(validate: false)
     end
-    successful
   end
 
-  def relocate_with_no_churches(param)
-    self.update_attributes(:chapman_code => param[:county],:place_name => param[:place])
+  def change_name(param)
+    place_name = param[:place_name]
+    p 'updating place name'
+    p self
+    p place_name
+    unless self.place_name == place_name
+      self.save_to_original
+      self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
+      return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
+
+      self.churches.each do |church|
+        p 'renaming place in church'
+        church_name = church.church_name
+        p church
+        church.update_attributes(:place_name => place_name)
+         p church
+        return [true, "Error in save of church; contact the webmaster"] if church.errors.any?
+        church.registers.each do |register|
+          p 'updating place in register'
+          p register
+          register.freereg1_csv_files.each do |file|
+            p 'updating place name in file '
+            p file
+            file.update_attributes(:place => place_name)
+            return [true, "Error in save of file; contact the webmaster"] if file.errors.any?
+            p file
+            file.update_entries_and_search_records_for_place(self,church_name)
+          end #file
+        end #register
+      end #church
+    end
+    return [false, ""]
   end
+
+  def relocate_place(param)
+      p 'relocating place'
+      p param
+      p param
+      self.save_to_original
+      old_place = self
+      if param[:county].blank?
+        p 'county was blank'
+        county = old_place.county
+        chapman_code = old_place.chapman_code
+      else
+        p 'changing county'
+        county = param[:county]
+        chapman_code = ChapmanCode.values_at(param[:county])
+      end
+      country = old_place.country
+      country = param[:country] if param[:country].present?
+      self.update_attributes(:county => county, :chapman_code => chapman_code, :country => country)
+      return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
+      self.churches.each do |church|
+
+        church.registers.each do |register|
+          p 'updating register'
+          p register
+          register.freereg1_csv_files.each do |file|
+            p 'updating place name in file '
+            p file
+            file.update_attributes(:county => chapman_code) # county in headers is chapman code
+            return [true, "Error in save of file; contact the webmaster"] if file.errors.any?
+            p file
+            file.update_entries_and_search_records_for_county(county,chapman_code)
+          end #file
+        end
+      end
+    return [false, ""]
+  end
+  def merge_places
+    p 'merging places'
+    return [true, "This was the unapproved place name, merge into the other"] if self.error_flag == "Place name is not approved"
+    place_id = self._id
+    all_places = Place.where(:chapman_code => self.chapman_code, :place_name => self.place_name).all
+    all_places.each do |place|
+      p 'looping to check we can merge places'
+      p place
+      if place._id == place_id
+        p 'bypassing'
+        p place._id 
+      else
+        p 'checking merge of this place'
+        p place
+        return [true, "a church being merged has input"] if place.has_input?
+      end
+    end
+    all_places.each do |place|
+      p 'looping to merge places'
+      p place
+      if place._id == place_id
+        p 'bypassing'
+        p place._id 
+      else
+        p 'merge of this place'
+        p place
+        place.churches.each do |church|
+           p 'update this church'
+           p church
+           church.update_attributes(:place_id => place_id)
+           return [true, "Error in save of church; contact the webmaster"] if church.errors.any?
+        end
+        place.search_records.each do |record|
+          p 'update place_id of search records'
+          record.update_attributes(:place_id => place_id)
+          return [true, "Error in save of search record; contact the webmaster"] if record.errors.any?
+        end
+        place.delete
+      end
+    end
+     return [false, ""]
+  end
+
+
+
+  def has_input?
+    value = false
+    value = true if (self.alternate_place_name.present? || self.place_notes.present? )
+    p 'has input'
+    p value
+    value
+  end
+
 
   def adjust_params_before_applying(params,session)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
@@ -246,13 +342,13 @@ class Place
     self.churches.each do |church|
       church.registers.each do |register|
         if register.freereg1_csv_files.count != 0
-          true
-          return
+          return  true
         end #if
       end #church
     end #self
     false
   end
+  
   def data_contents
     min = Time.new.year
     max = 1500
@@ -267,6 +363,7 @@ class Place
       end
     end
     stats =[records,min,max]
+    return stats
   end
 
 end

@@ -20,9 +20,9 @@
     <% unless @csvfiles.nil?%>
   <% @csvfiles.each do |csvfile| %>
   <tr>
-    <td><%= link_to 'Show', csvfile %></td>
-    <td><%= link_to 'Edit', edit_csvfile_path(csvfile) %></td>
-    <td><%= link_to 'Destroy', csvfile, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><%= button_to 'Show', csvfile %></td>
+    <td><%= button_to 'Edit', edit_csvfile_path(csvfile) %></td>
+    <td><%= button_to 'Destroy', csvfile, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>
 <% end %>

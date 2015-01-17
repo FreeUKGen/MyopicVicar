@@ -17,7 +17,20 @@ class Freereg1CsvFilesController < ApplicationController
     #TODO check on need for these
     @county =  session[:county]
     set_controls
+      display_info
     @role = session[:role]
+  
+  end
+  def relocate
+   
+    load(params[:id])
+    set_controls
+    display_info
+    get_user_info_from_userid
+    @county =  session[:county]
+    @role = session[:role]
+    get_places_for_menu_selection
+
   end
 
   def edit
@@ -25,6 +38,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     set_controls
     get_user_info_from_userid
+      display_info
     @county =  session[:county]
     unless session[:error_line].nil?
       #we are dealing with the edit of errors
@@ -56,12 +70,9 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
+   if params[:commit] == 'Submit' 
     #lets see if we are moving the file
     @freereg1_csv_file.date_change(params[:freereg1_csv_file][:transcription_date],params[:freereg1_csv_file][:modification_date])
-    if @freereg1_csv_file.are_we_changing_location?(params[:freereg1_csv_file])
-      #update the file attributes
-      @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file])
-    end
     @freereg1_csv_file.check_locking_and_set(params[:freereg1_csv_file],session)
     @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
     @freereg1_csv_file.update_attributes(params[:freereg1_csv_file])
@@ -87,9 +98,16 @@ class Freereg1CsvFilesController < ApplicationController
     flash[:notice] = 'The update of the batch was successful'
     @current_page = session[:page]
     session[:page] = session[:initial_page]
-    redirect_to :back
+    redirect_to :action => 'show'
+   end
+   if params[:commit] == 'Relocate'
+     @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file])
+     flash[:notice] = 'The relocation of the batch was successful'
+     redirect_to :action => 'show'
+   end 
   end
   def my_own
+
     get_user_info_from_userid
     session[:my_own] = true
     @freereg1_csv_file = Freereg1CsvFile.new
@@ -176,6 +194,7 @@ class Freereg1CsvFilesController < ApplicationController
     set_controls
     get_user_info_from_userid
     @county =  session[:county]
+    return_location  = @freereg1_csv_file.register
     @role = session[:role]
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
       flash[:notice] = 'The deletion of the file was unsuccessful; the file is locked'
@@ -187,14 +206,33 @@ class Freereg1CsvFilesController < ApplicationController
       file.destroy
     end
     session[:type] = "edit"
+
     flash[:notice] = 'The deletion of the file was successful'
-    redirect_to :back
+    redirect_to register_path(return_location)
 
   end
 
   def load(file_id)
     @freereg1_csv_file = Freereg1CsvFile.find(file_id)
   end
+
+  def display_info
+    
+    @freereg1_csv_file_id =   @freereg1_csv_file._id
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @register = @freereg1_csv_file.register
+    #@register_name = @register.register_name
+    #@register_name = @register.alternate_register_name if @register_name.nil?
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = session[:church_id]
+    @church_name = session[:church_name]
+    @place = session[:place_id]
+    @county =  session[:county]
+    @place_name = session[:place_name]
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+  end
+
 
   def set_controls
     @freereg1_csv_file_name = @freereg1_csv_file.file_name

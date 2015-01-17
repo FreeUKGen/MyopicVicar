@@ -7,6 +7,10 @@
 # Ignore bundler config
 /.bundle
 /.project
+vendor/bundle/*
+
+# Ignore MD5
+lib/devise/encryptors/md5.rb
 
 # Ignore the default SQLite database.
 /db/*.sqlite3

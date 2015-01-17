@@ -1,74 +1,64 @@
- <%require 'register_type' %>
- <p style="text-align: center">Details of the <b><%= @register_name %></b> for <b><%= @church_name %></b> in 
-   <b><%= @place_name %></b> for the County of:  <b><%= @county %></b>
- </p>
- <div style="float:left;">  <%= button_to 'Create New Register', new_register_path, method: :get %></div>   
- <div style="float:left;">  <%= button_to 'Edit Register', edit_register_path(@register), method: :get %></div>    
- <div style="float:left;">  <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' } %></div> 
- <div style="float:left;"> <%= button_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get%></div>
-
- <div style="clear:both;"> </div><br>
-
- <% if flash[:notice] %>
- <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
- </div>
- <% end %>
- <div id="main"style="color:black">
-  <table   class="table--bordered  table--striped  table--data">
-    <tr>    
-      <th style="width:25%">Field</th>
-      <th style="width:50">Value</th>
-    </tr>
-
-
-    <tr>
-     <td>Register Type :</td><td ><%= @register.register_type %></td>   
-   </tr>
-   <tr>
-     <td>Quality :</td><td > <%= @register.quality%></td>   
-   </tr>
-   <tr>
-     <td>Source :</td><td > <%= @register.source %> </td>   
-   </tr>
-   <tr>
-     <td>Copyright :</td><td > <%= @register.copyright %>  </td>   
-   </tr>
-   <tr>
-     <td>Register notes :</td><td > <%= @register.register_notes %>  </td>   
-   </tr>
-   <tr>
-     <td>Status of the transcriptions :</td><td ><%= @register.status %> </td>   
-   </tr>  
-   <tr>
-     <td>Record last amended :</td><td ><%= @register.last_amended %> </td>   
-   </tr>  
-   <tr>
-     <td>First permitted year :</td><td ><%= @register.minimum_year_for_register%> </td>   
-   </tr> 
-   <tr>
-     <td>Last permitted year :</td><td ><%= @register.maximum_year_for_register %> </td>   
-   </tr> 
-   <tr><td>Batches :</td><td> <table>
-     <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
-     <% if file_name.error == 0 %>
-     <tr id="<%=file_name.id%>"  style="color:green">
-       <% else %> 
-       <tr id="<%=file_name.id%>"  style="color:red">
-         <% end %>
-
-         <td ><%= link_to(file_name.file_name,freereg1_csv_file_path(file_name)) %></td> 
-         <td><%=file_name.userid%></td><td> <%=file_name.uploaded_date.strftime("%d %b %Y")%> <td><%=file_name.records%></td>   <td><%=file_name.datemin%></td>
-         <td><%=file_name.datemax%></td>
-         <% if file_name.error != 0 %>
-         <td>Errors <%= link_to(file_name.error , error_freereg1_csv_file_path(file_name))%></td>
-         <%else%>
-         <td>Errors <%= file_name.error %></td>
-         <% end %> 
-       </tr></tr>
-       <% end %>
-     </table></td>
-   </tr>
- </table>
+<p style="text-align: center">Details of the <b><%= @register_name %></b> for <b><%= @church_name %></b> in
+<b><%= @place_name %></b> of <b><%= @county %></b>
+</p>
+<div style="text-align: center"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%>  <%= link_to "Register's Church", church_path( @register.church), method: :get, :class => "btn  btn--small"%>  <%= link_to 'Create New Register', new_register_path, method: :get, :class => "btn  btn--small" %>  <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Merge Similar Register Types', merge_register_path(@register), method: :get, :class => "btn  btn--small "  %> <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small "%>  </div>
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
-<%= render "resource_sidebar" %>
+<% end %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item two-thirds ">
+      <table   class="table--bordered  table--data">
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Register Type :</td><td class="weight--semibold"><%= @register.register_type %></td>
+        </tr>
+        <tr>
+          <td>Quality :</td><td class="weight--semibold"> <%= @register.quality%></td>
+        </tr>
+        <tr>
+          <td>Source :</td><td class="weight--semibold"> <%= @register.source %> </td>
+        </tr>
+        <tr>
+          <td>Copyright :</td><td class="weight--semibold"> <%= @register.copyright %>  </td>
+        </tr>
+        <tr>
+          <td>Register notes :</td><td class="weight--semibold"> <%= @register.register_notes %>  </td>
+        </tr>
+        <tr>
+          <td>Status of the transcriptions :</td><td class="weight--semibold"><%= @register.status %> </td>
+        </tr>
+        <tr>
+          <td>Record last amended :</td><td class="weight--semibold"><%= @register.last_amended %> </td>
+        </tr>
+        <tr>
+          <td>First permitted year :</td><td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
+        </tr>
+        <tr>
+          <td>Last permitted year :</td><td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
+        </tr>
+      </table>
+      Batches :
+      <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
+      <% if file_name.error == 0 %>
+        <p id="<%=file_name.id%>"  style="color:green">
+      <% else %>
+        <p id="<%=file_name.id%>"  style="color:red">
+      <% end %>
+        <%= link_to(file_name.file_name,freereg1_csv_file_path(file_name), :class => "btn  btn--small") %>  </p>
+      <% end %>
+      
+    
+    </div>
+  </section>
+</div>

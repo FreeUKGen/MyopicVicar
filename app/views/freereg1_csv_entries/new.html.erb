@@ -2,8 +2,7 @@
 
 
 
-<div style="float:left;"> <%= button_to 'Listing of Records',  freereg1_csv_entries_path( :anchor => "#{@freereg1_csv_entry.id}"), method: :get %>  </div>
-<div style="clear:both;"> </div><br>
+
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>

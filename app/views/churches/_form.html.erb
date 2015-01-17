@@ -1,20 +1,14 @@
-<%= semantic_form_for  @church do |f| %>
-<% if @user.person_role == 'data_manager'%>
- <b> Please be sure to select the correct Place from the following list. Check with the name above and select if you are NOT changing the Place</b>
-<p>
-   <%= f.input :place_name, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place that Church is located in :", :required => true, :size => 15}%>
- <% end %>
-  <%= f.input :church_name, :label => "The most common Church Name :",:input_html => { :size => 60 }%>
- 
+<%= semantic_form_for  @church, :html => { :class => "grid"}   do |f| %>
+
  <%= f.inputs :alternate_name, :for => :alternatechurchnames, :name => 'Edit Existing Alternate Church Name #%i', :input_html => { :size => 60 }%>
        
   <%= f.inputs :alternate_name, :for => :alternatechurchname, :name => 'Add Alternate Church Name',  :size => 60 %>
 
-
- 
   <%= f.input :denomination, :label => "Denomination of the Church :",:input_html => { :size => 60 }%>
+
+  <%= f.input :location, :label => "The Church Location :",     :input_html => { :size => 60 } %>
  
-  <%= f.input :church_notes, :label => "Any comments about the Church :",     :input_html => { :size => 100 } %>
+  <%= f.input :website, :label => "The Church Website :",     :input_html => { :size => 60 } %>
  <br>
   <%= f.input :last_amended, :label => "The last date when a register in the church was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
 

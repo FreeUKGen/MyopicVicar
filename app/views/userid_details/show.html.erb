@@ -2,13 +2,13 @@
   <div class="grid">
     <p style="text-align: center"><b>Profile Details :<%= @userid.userid %></p></b>
     <div>
-      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left"  %>  
+      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left"  %>     
       <% if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role ==
       'volunteer_coordinator'%>
       
-      &nbsp<%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left" %>  
+         <%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left" %>
       <% if @user.person_role == 'system_administrator'%>
-      &nbsp<%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small float--left"  %>
+       <%= button_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small float--left"  %>
       <% end %>
       <% end %>
     </div>

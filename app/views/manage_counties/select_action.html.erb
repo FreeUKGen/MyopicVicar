@@ -1,14 +1,18 @@
-<div class="island  island--light">
-<h3 style="text-align: center"><%= @first_name%> how would you like to display the <%= @county%> files? Select one of the following options.</h3>
+<div class="grid">
+  <section class="island ">
+<h3 style="text-align: center"><%= @first_name%> how would you like to process <%= @county%>? Select one of the following options.</h3>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
+
 <%@options.each do |option| %>
     <%= link_to option, UseridRole::COUNTY_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%> 
     <br>
   <%end%>
-</div>
+
 
 <%= render "resource_sidebar" %> 
+</section>
+</div>

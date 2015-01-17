@@ -1,69 +1,97 @@
-<%require 'register_type' %>
-
-<p style="text-align: center">The data displayed in this table for  <b><%= @county  %></b> is based on the files when they were last updated on <%= Rails.application.config.dataset_date %>.</p> 
-
-<%if @user.person_role == 'data_manager' %>
-<div style="float:left;">  <%= button_to 'Create New Place', new_place_path, method: :get %> </div>
-<%end%>
-
+<p style="text-align: center">The data displayed for  <b><%= @county  %></b> is based on the batches when they were last updated on <%= Rails.application.config.dataset_date %>.</p>
+<%  if @user.person_role == 'data_manager' %>
+<div style="float:left;">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  btn--small  float--left"%> </div>
+<% end%>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %> 
-
-<div id="main"style="color:black">
-<%= paginate @places %> 
-
-<table  class="table--bordered  table--striped  table--data" >
-  <tr>
-  
-    <th style="width:25%">Place</th>
-    <th style="width:12%">Record last amended</th>
-    <th style="width:63%">Churches  and  their  Registers</th>
-       
-  </tr>
-
-<% @places.each do |place| %>
-   <% session[:placeid] = place.id%>
- 
-
-    <% unless place.error_flag.nil? %>
-     <tr style= "color:red" id="<%=place.id%>">
-   
-     <%else%>
-    <tr style= "color:black" id="<%=place.id%>"> 
-      <%end%>
-   
-    <td > <%= link_to(place.place_name, place_path(place)) %> </td>
-    <% unless place.error_flag.nil? %>
-    <td> <%= place.error_flag %> </td>
-     <%else%>
-    <td > <%= place.last_amended %> </td>
-  <%end%>
-   
-    <td ><table style="width:650px"> 
-     
-<% place.churches.order_by(church: 1).each do |church| %>
-
-
-<tr ><td style="width:300px"> <%= link_to(church.church_name, church_path(church)) %> </td>
-<td ><table style="width:250px"><% church.registers.order_by(register_type: 1).each do |register| %>
-
-<% registertype = RegisterType.display_name(register.register_type)%>
-
-<%= link_to(registertype, register_path(register)) %></td><br /></tr>
-
-
-<% end%>
-</table>
-<% end%>
-</table>
-  </td>
-  </tr>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+</div>
 <% end %>
-</table>
-<%= paginate @places %> 
-<br />
+<%= paginate @places %>
+<table  class="table--bordered table--data">
+  <colgroup >
+  <col class="t15">
+  <col class="t15">
+  <col class="t15">
+  <col class="t15">
+  </colgroup>
+  <thead >
+    <tr class='caps'>
+      <th style='font-weight: bold'>Place</th>
+      <th>Churches </th>
+      <th>Registers</th>
+      <th>Record last amended</th>
+    </tr>
+  </thead>
+  <tbody>
 
+    <% old_place_id = nil %>
+    <% @places.each do |place| %>
+    <% session[:placeid] = place.id%>
+    <tr style= "color:black" id="<%=place.id%>">
+    <% if place.error_flag.present? %>
+    <tr style= "color:red" id="<%=place.id%>">
+    <% end%>
+    <% old_church_id = nil %>
+    <% if place.churches.count == 0 %>
+              <% if place._id != old_place_id %>
+              <td > <%= link_to(place.place_name, place_path(place) , :class => "btn  btn--small")%>  </td>
+              <% else %>
+              <td> </td> 
+              <% end%>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+               </tr>
+                <% old_place_id = place._id %>
+      <% else %>
+          <% place.churches.each do |church| %>
+          <% if church.registers.count == 0%>
+              <% if place._id != old_place_id %>
+              <td > <%= link_to(place.place_name, place_path(place) , :class => "btn  btn--small")%>  </td>
+              <% else %>
+              <td> </td> 
+              <% end%>
+              <% if church._id != old_church_id %>
+              <td > <%= link_to(church.church_name, church_path(church) , :class => "btn  btn--small") %>  </td>
+              <% else %>
+              <td> </td>
+              <% end%>   
+              <td> </td>
+             <td> </td>
+              </tr>
+                 <% old_place_id = place._id %>
+                <% old_church_id = church._id %>
+          <% else %>
+              <% church.registers.each do |register| %>
+              <% if place._id != old_place_id %>
+              <td > <%= link_to(place.place_name, place_path(place) , :class => "btn  btn--small")%>  </td>
+              <% else %>
+              <td> </td> 
+              <% end%>
+              <% if church._id != old_church_id %>
+              <td > <%= link_to(church.church_name, church_path(church) , :class => "btn  btn--small") %>  </td>
+              <% else %>
+              <td> </td>
+              <% end%>      
+              <td > <% registertype = RegisterType.display_name(register.register_type)%>
+              <%= link_to(registertype, register_path(register) , :class => "btn  btn--small") %></td>
+              <td class="weight--semibold"> <%= register.last_amended %> </td>
+              </tr>
+              <% old_church_id = church._id %>
+               <% old_place_id = place._id %>
+              <% end%>
+
+          <% end%>
+            
+          <% end%>
+          
+     <% end %>
+    
+    
+     <% end %>
+  </tbody>
+</table>
+<%= paginate @places %>
+  <a href="#"  class="btn  btn--small  float--right">Go to top</a>

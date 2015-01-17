@@ -42,6 +42,37 @@ desc "Create a report of files loaded by people"
     puts "Task complete."
    end
   end
+   desc "Create a report of Unapproved Places with no data"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :unapproved_and_no_data, [:limit] => [:environment] do |t, args|
+ require 'unapproved_and_no_data' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          UnapprovedAndNoData.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
+
+  desc "Create a report of Places with missing county and country"
+ # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
+ #valid options for type are rebuild, replace, add
+ task :missing_place_fields, [:limit] => [:environment] do |t, args|
+ require 'missing_place_fields' 
+ 
+  Mongoid.unit_of_work(disable: :all) do
+   
+     
+          MissingPlaceFields.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
 
 desc "Create a report of Master files"
  # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
