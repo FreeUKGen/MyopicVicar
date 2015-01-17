@@ -109,10 +109,15 @@ class FreeregContentsController < ApplicationController
     individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
     @files = Freereg1CsvFile.combine_files(individual_files)
     @decade = { }
+    max = 1
     @files.each do |my_file|
       @decade[my_file.record_type] = my_file.daterange
+      if @decade[my_file.record_type]
+        if my_file.daterange.length > max
+          max = my_file.daterange.length
+        end
+      end
     end
-    max = @decade.first[1].length
     @decade["ba"] = Array.new(max, 0) unless @decade["ba"]
     @decade["bu"] = Array.new(max, 0) unless @decade["bu"]
     @decade["ma"] = Array.new(max, 0) unless @decade["ma"]
