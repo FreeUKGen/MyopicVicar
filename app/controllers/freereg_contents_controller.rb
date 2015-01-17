@@ -113,9 +113,9 @@ class FreeregContentsController < ApplicationController
       @decade[my_file.record_type] = my_file.daterange
     end
     max = @decade.first[1].length
-    @decade["ba"] = Array.new(max, 0) unless @decade.has_key?("ba")
-    @decade["bu"] = Array.new(max, 0) unless @decade.has_key?("bu")
-    @decade["ma"] = Array.new(max, 0) unless @decade.has_key?("ma")
+    @decade["ba"] = Array.new(max, 0) unless @decade["ba"]
+    @decade["bu"] = Array.new(max, 0) unless @decade["bu"]
+    @decade["ma"] = Array.new(max, 0) unless @decade["ma"]
 
     @record_type = params[:id]
     @place = Place.find(session[:place_id])
@@ -123,6 +123,7 @@ class FreeregContentsController < ApplicationController
     @place_name = session[:place_name]
     @county = session[:county]
     @RType = RegisterType.display_name(@register.register_type)
+    puts @decade
   end
 
   def remove_countries_from_parenthetical_codes
