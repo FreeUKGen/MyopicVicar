@@ -249,7 +249,10 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_create
     case
     when session[:type] == "add"
-      get_user_info_from_userid
+      @user = current_refinery_user.userid_detail
+      @first_name = @user.person_forename
+      @manager = manager?(@user)
+      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
       render :action => 'new'
       return
     when session[:type] == 'researcher_registration'
