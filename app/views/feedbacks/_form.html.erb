@@ -9,6 +9,7 @@
       <% end %>
       </ul>
     </div>
+    @feedback.errors.clear
   <% end %>
 
   <div class="field">
@@ -20,7 +21,7 @@
     <%= f.text_area :body, :cols => 80, :rows => 10 %>
   </div>
   <div class="field">
-    <%= f.label :screenshot, "Screenshot" %><br />
+    <%= f.label :screenshot, "Screenshot: Only jpg,jpeg or gif file formats are currently accepted" %><br />
     <%= f.file_field :screenshot %>
   </div>
   <%= f.hidden_field :feedback_time %>
