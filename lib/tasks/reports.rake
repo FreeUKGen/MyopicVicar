@@ -48,14 +48,12 @@ desc "Create a report of files loaded by people"
  task :unapproved_and_no_data, [:limit] => [:environment] do |t, args|
  require 'unapproved_and_no_data' 
  
-  Mongoid.unit_of_work(disable: :all) do
-   
      
           UnapprovedAndNoData.process(args.limit) 
           
      
     puts "Task complete."
-   end
+
   end
 
   desc "Create a report of Places with missing county and country"

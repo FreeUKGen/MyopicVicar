@@ -186,14 +186,16 @@ class PlacesController < ApplicationController
         return
       end
     end
-    @place.disabled = "true"
-    @place.data_present = false
-    @place.save
-    flash[:notice] = 'The disabling of the place was successful'
+    p 'disabling'
+    p @place
+    @place.update_attributes(:disabled => "true", :data_present => false )
+   
     if @place.errors.any? then
       @place.errors
-      flash[:notice] = 'The disabling of the place was unsuccessful'
+      flash[:notice] = "The disabling of the place was unsuccessful #{@place.errors.messages}"
     end
+        p @place
+     flash[:notice] = 'The disabling of the place was successful'
     redirect_to places_path
   end
 
