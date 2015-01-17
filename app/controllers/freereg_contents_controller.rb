@@ -123,7 +123,6 @@ class FreeregContentsController < ApplicationController
     @place_name = session[:place_name]
     @county = session[:county]
     @RType = RegisterType.display_name(@register.register_type)
-    puts @decade
   end
 
   def remove_countries_from_parenthetical_codes
