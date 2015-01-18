@@ -153,7 +153,7 @@ COMMON_WORD_EXPANSIONS = {
             "/" => /\\/}
   CAPITALIZATION_WORD_EXCEPTIONS = [
             "a", "an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so", 
-            "the", "to", "von", "with", "yet", "y"]
+            "the", "to", "under","von", "with", "yet", "y"]
   
 
   attr_accessor :freereg1_csv_file
