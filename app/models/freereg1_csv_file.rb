@@ -331,7 +331,6 @@ class Freereg1CsvFile
       param[:place_id] = new_location[:place]._id
       file.update_entries_and_search_records(param)
       file.backup_file
-      Register.clean_empty_registers(old_location[:register]) unless old_location[:register] == new_location[:register]
       file
   end
 
@@ -436,10 +435,6 @@ class Freereg1CsvFile
 
     def clean_up
       self.update_number_of_files
-      register = self.register
-      church = register.church
-      place = church.place
-      Register.clean_empty_registers(register)
       Place.recalculate_last_amended_date(place)
     end
 

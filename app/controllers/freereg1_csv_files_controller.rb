@@ -206,7 +206,6 @@ class Freereg1CsvFilesController < ApplicationController
       file.destroy
     end
     session[:type] = "edit"
-
     flash[:notice] = 'The deletion of the file was successful'
     redirect_to register_path(return_location)
 
