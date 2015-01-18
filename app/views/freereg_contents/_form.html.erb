@@ -26,7 +26,7 @@
     	<label class=" label" for="freereg_content_chapman_codes">
        <a href="#" class="left_tooltip">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one</small> 
 		</label>
-		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="3" } >
+		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="8"  >
 			<option value="" label="Select one county"></option>
 			<% @options.each_pair do |label, value| %>
  <%if value == @freereg_content.chapman_codes[0]%>
@@ -43,7 +43,7 @@
 		<label class=" label" for="freereg_content_place_ids">
     <a href="#" class="right_tooltip">Place<span>The places will fill once you have selected a county. Then select one place.</span></a><small class="additional">Select one</small> 
     </label>
-		<select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select" size="3">
+		<select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select" size="8">
 			<option value="">--</option>
 		</select>	
 	</li>
