@@ -62,17 +62,12 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
-    result_count = SearchRecord.where(search_params).asc(self.order_field).count
-    if result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-      records = -result_count
-    else
-
       if order_asc
-        records = SearchRecord.where(search_params).asc(self.order_field).all
+        records = SearchRecord.where(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).asc(self.order_field)
       else
-        records = SearchRecord.where(search_params).desc(self.order_field).all
+        records = SearchRecord.where(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).desc(self.order_field)
       end
-      self.result_count = records.count
+      self.result_count = records.count(true)
       self.runtime = (Time.now.utc - self.created_at) * 1000
       search_record_array = Array.new
       records.each do |rec|
@@ -80,8 +75,7 @@ class SearchQuery
       end
       self.search_result =  SearchResult.new(records: search_record_array)
       self.save
-    end
-    records
+      records
   end
 
   def explain_plan
