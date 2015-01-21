@@ -36,14 +36,8 @@ class UseridDetail
   field :research_agreement, type: Boolean
 
   index({ email_address: 1 })
-  index({ userid: 1, system_administrator: 1 })
-  index({ userid: 1, data_manager: 1 })
-  index({ userid: 1, syndicate_coordinator: 1 })
-  index({ userid: 1, county_coordinator: 1 })
-  index({ userid: 1, country_coordinator: 1 })
-  index({ userid: 1, syndicate: 1 })
-  index({ userid: 1, chapman_code: 1 })
-  index({ userid: 1, volunteer_coordinator: 1 })
+  index({ userid: 1, person_role: 1 })
+  index({ person_surname: 1, person_forename: 1 })
   scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
   attr_protected
   #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date

@@ -5,6 +5,10 @@
 <% end %>
 <section  >
   <h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
+  <% if @search_query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+  <h4 class="text--center" style="color:red">Your results were limited to the maximum number of results. We suggest you may wish to refine your search to ensure a complete set of results</h4>
+
+  <% end%>
   <div class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small " %> 
    <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small " %>
    <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small ")%> 
@@ -32,7 +36,7 @@
 
         <p>No results found! This could either be because there are no transcriptions for the Places you were searching, review our  <%=link_to("Database Contents",main_app.freereg_contents_path, :class => "btn  btn--small")%> for what has been transcribed. Alternatively you may need to recast your search options, see our <%= link_to "Tips for Searching", "/tips-for-searching-the-database", :class => "btn  btn--small" %> for advise on how to get the most out of your searches</p>
       <% else %>
-      <%= paginate @search_results %>
+     
 <section class="island  " >
   <div class="table-wrapper">
     <div class="grid">
@@ -112,7 +116,7 @@
     <% end %>
     
   </div>
-  <%= paginate @search_results %>
+ 
   <br>
   <% if @search_query.result_count > 5 %>
   <div class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small " %> 
