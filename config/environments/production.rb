@@ -80,4 +80,19 @@ MyopicVicar::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
+  config.mongodb_collection_temp = File.join(Rails.root,'tmp')
+  #Where the collections are stored
+  config.mongodb_collection_location = File.join(Rails.root,'db','collections')
+  # Date of dataset used
+  config.dataset_date = "9 November 2014"
+
+  config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
+  config.datafiles = MyopicVicar::MongoConfig['datafiles']
+  config.website = MyopicVicar::MongoConfig['website']
+  config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
+  config.github_login = 'FreeUKGenIssues'
+  config.github_password = ENV["GITHUB_WORD"]
+  config.github_repo = 'FreeUKGen/FreeUKGenProductIssues'
+
+
 end
