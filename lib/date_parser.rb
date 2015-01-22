@@ -17,7 +17,7 @@ module DateParser
   
   def self.searchable(verbatim)
     return verbatim unless verbatim
-    unless verbatim.match(/\d\d\d/) #at least most of a year
+    unless verbatim.match(/\d\d/)  #at least most of a year
       return verbatim
     end
     if verbatim.match(/(\S+)\s(\S+)\s(\S+)/)  
@@ -36,13 +36,20 @@ module DateParser
       d = '*'
       vm = '*'
       vy = $1
+    elsif verbatim.match(/(\d\d__)/)
+      d = '*'
+      vm = '*'
+      vy = $1
     else
       return verbatim
     end  
   
-    # handle split years
+    # handle unclear years
     if vy.match(/(\d\d\d)_/)
       vy = $1 + '5'
+    end
+    if vy.match(/(\d\d)__/)
+      vy = $1 + '50'
     end
     
     # handle split years
