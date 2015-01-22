@@ -13,7 +13,7 @@ class SearchQuery
     DATE='search_date'
     COUNTY='chapman_code'
     LOCATION='location_names.0'
-    NAME='transcript_names.0.last_name'
+    NAME='transcript_names.0.last_name, transcript_names.0.first_name'
 
     ALL_ORDERS = [
       TYPE,
