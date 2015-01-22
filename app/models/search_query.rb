@@ -13,7 +13,7 @@ class SearchQuery
     DATE='search_date'
     COUNTY='chapman_code'
     LOCATION='location_names.0'
-    NAME='transcript_names.0.last_name'
+    NAME='transcript_names.0.last_name, transcript_names.0.first_name'
 
     ALL_ORDERS = [
       TYPE,
@@ -162,13 +162,17 @@ class SearchQuery
 
 
   def name_not_blank
-    if last_name.blank?
-      errors.add(:first_name, "A surname must be entered.")
+    if last_name.blank? && !adequate_first_name_criteria? 
+      errors.add(:first_name, "If you do not enter a surname, a forename and county must be part of your search.")
     end
   end
+  
+  def adequate_first_name_criteria?
+    !first_name.blank? && chapman_codes.length > 0
+  end
   def county_is_valid
-    if chapman_codes[0].nil?
-      errors.add(:chapman_codes, "At least one county must be selected.")
+    if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
+      errors.add(:chapman_codes, "If you not search a county, a date range and record type must be part of your search.")
     end
   end
 

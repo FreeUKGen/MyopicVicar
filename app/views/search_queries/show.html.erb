@@ -52,7 +52,7 @@
         <thead  >
           <th>
             <%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
-            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Name of person. Click heading to sort by the name</span></a>
+            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Name of main person in the record. Click heading to sort by the name. </span></a>
           </th>
           <th>
             <%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
