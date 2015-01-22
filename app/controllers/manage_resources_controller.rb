@@ -19,8 +19,15 @@
         redirect_to refinery.login_path
         return
       end
-
       @user = current_refinery_user.userid_detail 
+      #temp patch to avoid login by all except 
+      unless @user.person_role == 'data_manager' ||  @user.person_role ==  'technical'|| @user.person_role == 'system_administrator'
+      p "not"
+      flash[:error] = "You are not currently permitted to use these functions"
+      redirect_to refinery.logout_path
+      return
+      end
+
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
       else
