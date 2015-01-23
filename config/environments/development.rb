@@ -63,67 +63,7 @@ MyopicVicar::Application.configure do
   config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
   config.datafiles = MyopicVicar::MongoConfig['datafiles']
   config.website = MyopicVicar::MongoConfig['website']
-  config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
-  
-  # Machine-specific options
-  if File.exist? "/raid/freereg2/backups"
-    # we are on vervet
-    #location of the mongo binary folder
-    config.mongodb_bin_location = "/usr/local/bin/" 
-    #where do we store the Mongodb database 
-    config.datafiles = "/raid-test/freereg2/users"
-    #static website to be used for emails and github issue URLs
-    config.website = "http://test2.freereg.org.uk"
-    #directory to put backups in
-    config.backup_directory = "/raid/freereg2/backups"
-    
-  elsif File.exist? '/home/benwbrum/dev/clients/freeukgen'
-    # we are on Ben's development laptop
-    #location of the mongo binary folder
-    config.mongodb_bin_location = "/usr/bin/" 
-    #where do we store the Mongodb database 
-    config.datafiles = "/home/benwbrum/dev/clients/freeukgen/freereg1_data/full/tar6"
-    #static website to be used for emails and github issue URLs
-    config.website = "http://localhost:3000"
-    #directory to put backups in
-    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
-
-  elsif File.exist? '/home/benwbrum/dev/freereg'
-    # we are on Ben's server
-    #location of the mongo binary folder
-    config.mongodb_bin_location = "/usr/bin/" 
-    #where do we store the Mongodb database 
-    config.datafiles = "/media/data/slow/dev/freeukgen/old_data/freereg/tarC"
-    #static website to be used for emails and github issue URLs
-    config.website = "http://mv.aspengrovefarm.com"
-    #directory to put backups in
-    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
-
-  elsif File.exist? "d:/mongodb/bin/"
-    # we are on Kirk's system
-    #location of the mongo binary folder
-    config.mongodb_bin_location = "d:/mongodb/bin/"
-    #where do we store the Mongodb database
-    config.datafiles = 'c:/freereg12/'
-    #static website to be used for emails and github issue URLs
-    config.website = "http://localhost:3000"
-    #directory to put backups in
-    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
-  elsif File.exist? "C:/MongoDB/bin/"
-    # we are on Mike's system
-    #location of the mongo binary folder
-    config.mongodb_bin_location = "C:/MongoDB/bin/"
-    #where do we store the Mongodb database
-    config.datafiles = 'J:/GitRepository/freereg2'
-    #static website to be used for emails and github issue URLs
-    config.website = "http://localhost:3000"
-    #directory to put backups in
-    config.backup_directory = File.join(Rails.root, 'tmp', 'backups')
-  else
-    #who knows where we are!!!!!we don't
-  end
-  
-    
+  config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
   config.github_login = 'FreeUKGenIssues'
   config.github_password = ENV["GITHUB_WORD"]
   config.github_repo = 'FreeUKGen/FreeUKGenProductIssues'
