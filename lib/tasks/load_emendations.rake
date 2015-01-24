@@ -271,6 +271,7 @@ task :load_emendations => :environment do
   EmendationRule.create!(:original => 'jesaias', :replacement => 'isaiah', :emendation_type => et)
   EmendationRule.create!(:original => 'johanna', :replacement => 'joan', :emendation_type => et)
   EmendationRule.create!(:original => 'johannes', :replacement => 'john', :emendation_type => et)
+  EmendationRule.create!(:original => 'johannis', :replacement => 'john', :emendation_type => et)
   EmendationRule.create!(:original => 'jonas', :replacement => 'jonah', :emendation_type => et)
   EmendationRule.create!(:original => 'jordanus', :replacement => 'jordan', :emendation_type => et)
   EmendationRule.create!(:original => 'josephina', :replacement => 'josephine', :emendation_type => et)
