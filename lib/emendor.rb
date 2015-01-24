@@ -13,23 +13,54 @@
 # limitations under the License.
 # 
 module Emendor
+  
+  @@emendations = nil
 
   def self.emend(name_array)
-    # fetch all the emendation types
+    load_emendations unless @@emendations
+    
     emended_names = []
-    EmendationType.all.each do |emendation_type|
-      target_field = emendation_type.target_field
-      name_array.each do |name|
-        rules = emendation_type.emendation_rules.where(:original => name[target_field]).all
+    name_array.each do |name|
+      rules = @@emendations[name[:first_name]] # currently hard-wired
+      
+      if rules
         rules.each do |rule|
           emended_name = SearchName.new(name.attributes)
-          emended_name[target_field] = rule.replacement
-          emended_name.origin = emendation_type.name
+          emended_name[:first_name] = rule.replacement
+          emended_name.origin = rule.emendation_type.name
           emended_names << emended_name
-        end
+        end        
       end
     end
+
     name_array + emended_names
   end
+  
+  def self.load_emendations
+    @@emendations = {}
+    
+    EmendationRule.all.each do |rule|
+      @@emendations[rule.original] = [] unless @@emendations[rule.original]
+      @@emendations[rule.original] << rule
+    end
+  end
+
+  # def self.emend(name_array)
+    # # fetch all the emendation types
+    # emended_names = []
+    # EmendationType.all.each do |emendation_type|
+      # target_field = emendation_type.target_field
+      # name_array.each do |name|
+        # rules = emendation_type.emendation_rules.where(:original => name[target_field]).all
+        # rules.each do |rule|
+          # emended_name = SearchName.new(name.attributes)
+          # emended_name[target_field] = rule.replacement
+          # emended_name.origin = emendation_type.name
+          # emended_names << emended_name
+        # end
+      # end
+    # end
+    # name_array + emended_names
+  # end
 
 end
