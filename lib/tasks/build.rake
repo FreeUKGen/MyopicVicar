@@ -15,6 +15,7 @@ namespace :build do
 	$collections[11] = "countries"
 	$collections[12] = "feedbacks"
 	$collections[13] = "search_queries"
+  $collections[14] = "contacts"
 
 	COLLECTIONS = {
 		'master_place_names' => 'MasterPlaceName',
@@ -30,7 +31,8 @@ namespace :build do
 		'counties' => 'County',
 		'countries' => 'Country',
 		'search_queries' => 'SearchQuery',
-		'feedbacks' => 'Feedback'
+		'feedbacks' => 'Feedback',
+    'contacts' => 'Contacts'
 	}
 	EXPORT_COMMAND =  "mongoexport --db "
 	EXPORT_OUT = " --out  "
@@ -55,7 +57,7 @@ namespace :build do
 	#       as well as the date of the dataset being used
 	# config.dataset_date = "13 Dec 2013"
 
-	task :freereg,[:type,:search_records,:range1,:range2,:range3] => [:setup,:create_freereg_csv_indexes] do |t, args|
+	task :freereg,[:type,:search_records,:range1,:range2,:range3,:port] => [:setup,:create_freereg_csv_indexes] do |t, args|
 		p "completed build"
 	end
 
@@ -76,7 +78,7 @@ namespace :build do
 
 	end
 
-	task :setup_save,[:type] => [:setup, :environment] do |t, args|
+	task :setup_save,[:type,:search_records,:range1,:range2,:range3,:port] => [:setup, :environment] do |t, args|
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
 		Mongoid.load!("#{Rails.root}/config/mongoid.yml")
@@ -85,10 +87,10 @@ namespace :build do
 		#save master_place_names and alias
 		p "Save started"
 		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13"]
-
+    p "using database #{@db} on port #{args.port}"
 		collections_to_save.each  do |col|
 			coll  = col.to_i
-			collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --collection " + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
+			collection = @mongodb_bin + EXPORT_COMMAND + "#{@db} --port #{args.port}  --collection " + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
 			puts "#{$collections[coll]} being saved in #{@tmp_location}"
 			output =  `#{collection}`
 			p output
