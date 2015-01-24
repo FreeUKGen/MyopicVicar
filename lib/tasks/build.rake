@@ -277,16 +277,17 @@ namespace :build do
 	# @tmp_location = Rails.application.config.mongodb_collection_temp to store the temp files
 	#@file_location =  Rails.application.config.mongodb_collection_location the location of the github collections
 	#from the development application.config
-	task :freereg_from_files,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:recreate_freereg_csv_indexes,:environment] do |t,args|
+	task :freereg_from_files,[:save, :drop, :reload_from_temp, :load_from_file, :index, :port] => [:recreate_freereg_csv_indexes,:environment] do |t,args|
 		puts "Completed rebuild of FreeREG"
 	end
 
-	task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:environment] do |t,args|
+	task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file, :index, :port] => [:environment] do |t,args|
 		puts "Saving collections"
 		Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 		@db = Mongoid.sessions[:default][:database]
-		EXPORT_COMMAND =  "mongoexport --db #{@db} --collection  "
+		EXPORT_COMMAND =  "mongoexport --db #{@db} --port #{args.port} --collection  "
 		EXPORT_OUT = " --out  "
+    p "using database #{@db} on port #{args.port}"
 		collections_to_save = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
@@ -319,12 +320,13 @@ namespace :build do
 		puts "Collections drop task completed"
 	end
 
-	task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:drop_freereg_collections, :environment] do |t,args|
+	task :reload_freereg_collections_from_temp,[:save, :drop, :reload_from_temp, :load_from_file, :index, :port] => [:drop_freereg_collections, :environment] do |t,args|
 		puts "Reloading collections"
 		Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 		@db = Mongoid.sessions[:default][:database]
-		IMPORT_COMMAND =  "mongoimport --db #{@db} --collection  "
+		IMPORT_COMMAND =  "mongoimport --db #{@db} --port #{args.port} --collection  "
 		IMPORT_IN = " --file  "
+      p "using database #{@db} on port #{args.port}"
 		collections_to_reload = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
@@ -342,12 +344,13 @@ namespace :build do
 		puts "Reload task complete "
 	end
 
-	task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load_from_file, :index] => [:reload_freereg_collections_from_temp, :environment] do |t,args|
+	task :load_freereg_collections_from_file,[:save, :drop, :reload_from_temp, :load_from_file, :index, :port] => [:reload_freereg_collections_from_temp, :environment] do |t,args|
 		puts "Loading collections"
 		Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 		@db = Mongoid.sessions[:default][:database]
-		IMPORT_COMMAND =  "mongoimport --db #{@db} --collection  "
+		IMPORT_COMMAND =  "mongoimport --db #{@db} --port #{args.port} --collection  "
 		IMPORT_IN = " --file  "
+      p "using database #{@db} on port #{args.port}"
 		collections_to_load = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
@@ -391,12 +394,13 @@ namespace :build do
 		end
 		puts " Index task complete."
 	end
-	task :backup_freereg_collections,[:save] => [:environment] do |t,args|
+	task :backup_freereg_collections,[:save, :port] => [:environment] do |t,args|
 		puts "Backing collections"
 		Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 		@db = Mongoid.sessions[:default][:database]
-		EXPORT_COMMAND =  "mongoexport --db #{@db} --collection  "
+		EXPORT_COMMAND =  "mongoexport --db #{@db} --port #{args.port} --collection  "
 		EXPORT_OUT = " --out  "
+      p "using database #{@db} on port #{args.port}"
 		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13"] if args.save == 'partial'
 		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13"] if args.save == 'full'
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
