@@ -4,6 +4,7 @@ padding-left: 0.5em;
 line-height:1.5;
 }
 th{text-align: center;}
+td{text-align: center;}
 a.tip2 {
 position: relative;
 color: gray;
@@ -211,3 +212,4 @@ form.formtastic fieldset.inputs ol {
   margin-right: 20px;
   margin-left: 0px;
 }
+
