@@ -2,6 +2,7 @@ require 'chapman_code'
 
 task :load_refinery_users => :environment do
 # 
+  Mongoid.load!("#{Rails.root}/config/mongoid.yml")
   load_users_from_mongo
 end
 
