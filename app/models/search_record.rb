@@ -248,7 +248,7 @@ class SearchRecord
 
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
-    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").first
+    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").only("_id").first
 
     #record.place = entry.freereg1_csv_file.register.church.place
     record.place = places
