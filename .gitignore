@@ -124,6 +124,8 @@ capybara-*html
 # vendor/extensions dummy applications.
 vendor/extensions/**/spec/dummy
 
+# Ignore Bower Assets
+/vendor/assets/components
 
 # Ignore application configuration
 /config/application.yml

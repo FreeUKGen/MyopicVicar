@@ -1,17 +1,17 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -71,12 +71,19 @@ module MyopicVicar
     config.assets.version = '1.0'
 
     # make the designer's fonts available for the stylesheets
-    config.assets.paths << Rails.root.join('app', 'assets')    
-    
+    # config.assets.paths << Rails.root.join('app', 'assets')
+    config.assets.paths << Rails.root.join("vendor","assets","components")
+
+    config.assets.precompile << Proc.new { |path|
+      if path =~ /\.(eot|svg|ttf|woff|otf)\z/
+        true
+      end
+    }
+
     config.generators do |g|
       g.orm :active_record
     end
-    
+
     config.before_configuration do
       env_file = Rails.root.join("config", 'application.yml').to_s
 
@@ -85,7 +92,7 @@ module MyopicVicar
           ENV[key.to_s] = value
         end # end YAML.load_file
       end # end if File.exists?
-      
+
       mongo_config = "#{Rails.root}/config/mongo_config.yml"
       if File.exists?(mongo_config)
         MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env]

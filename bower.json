@@ -1,0 +1,19 @@
+{
+  "name": "FreeUKGenealogy-Free-Reg",
+  "version": "1.0.0",
+  "authors": "Josh Angell <josh@supercooldesign.co.uk>",
+  "description": "Frontend resources for the Free UK Genealogy Free Reg project",
+  "license": "MIT",
+  "homepage": "http://supercooldesign.co.uk/",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Free-Reg-Frontend": "git@github.com:FreeUKGen/Free-Reg-Frontend.git"
+  }
+}

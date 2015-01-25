@@ -1,0 +1,213 @@
+.btn--exsmall{
+  padding-right:0.5em;
+  padding-left: 0.5em;
+  line-height:1.5;
+}
+th{text-align: center;}
+a.tip2 {
+  position: relative;
+  color: gray;
+  text-decoration: none;
+}
+a.tip2 span {display: none;}
+a.tip2:hover span {
+  display: block;
+  position: absolute;
+  padding: .5em;
+  content: attr(title);
+  min-width: 120px;
+  text-align: center;
+  width: auto;
+  height: auto;
+  white-space: nowrap;
+  top: -32px;
+  background: rgba(0,0,0,.8);
+  -moz-border-radius:10px;
+  -webkit-border-radius:10px;
+  border-radius:10px;
+  color: #fff;
+  font-size: .86em;
+}
+a.tip2:hover span:after {
+  position: absolute;
+  display: block;
+  content: "";
+  border-color: rgba(0,0,0,.8) transparent transparent transparent;
+  border-style: solid;
+  border-width: 10px;
+  height:0;
+  width:0;
+  bottom: -16px;
+  left:1em;
+}
+a.top_tooltip,a.left_tooltip,a.right_tooltip,a.bottom_tooltip {
+  display: inline;
+  position: relative;
+  color: gray;
+}
+/* RIGHT TOOLTIP
+-------------------------------------------------*/
+a.right_tooltip span {
+  width: 140px;
+  height: auto;
+  color: #fff;
+  background: #2b2b2b;
+  position: absolute;
+  font-size: 1.00em;
+  text-align: center;
+  padding: 10px;
+  line-height: 20px;
+  visibility: hidden;
+  border-radius: 10px;
+}
+
+a.right_tooltip span:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -8px;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #2b2b2b;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+a:hover.right_tooltip span {
+  visibility: visible;
+  opacity: 0.8;
+  left: 100%;
+  top: 50%;
+  margin-top: -30px;
+  margin-left: 10px;
+  z-index: 999;
+}
+/* BOTTOM TOOLTIP
+-------------------------------------------------*/
+a.bottom_tooltip span {
+  width: 140px;
+  height: auto;
+  color: #fff;
+  background: #2b2b2b;
+  position: absolute;
+  font-size: 1.00em;
+  text-align: center;
+  padding: 10px;
+  line-height: 20px;
+  visibility: hidden;
+  border-radius: 10px;
+}
+
+a.bottom_tooltip span:after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -8px;
+  width: 0;
+  height: 0;
+  border-bottom: 8px solid #2b2b2b;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+
+a:hover.bottom_tooltip span {
+  visibility: visible;
+  opacity: 0.8;
+  top: 30px;
+  left: 50%;
+  margin-left: -76px;
+  z-index: 999;
+}
+/* TOP TOOLTIP
+-------------------------------------------------*/
+a.top_tooltip span {
+  width: 140px;
+  height: auto;
+  color: #fff;
+  background: #2b2b2b;
+  position: absolute;
+  font-size: 1.00em;
+  text-align: center;
+  padding: 10px;
+  line-height: 20px;
+  visibility: hidden;
+  border-radius: 10px;
+}
+
+a.top_tooltip span:after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid #2b2b2b;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+
+a:hover.top_tooltip span {
+  visibility: visible;
+  opacity: 0.8;
+  bottom: 30px;
+  left: 50%;
+  margin-left: -76px;
+  z-index: 999;
+}
+/* LEFT TOOLTIP
+-------------------------------------------------*/
+a.left_tooltip span {
+  width: 140px;
+  height: auto;
+  color: #fff;
+  background: #2b2b2b;
+  position: absolute;
+  font-size: 1.00em;
+  text-align: center;
+  padding: 10px;
+  line-height: 20px;
+  visibility: hidden;
+  border-radius: 10px;
+}
+
+a.left_tooltip span:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid #2b2b2b;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+a:hover.left_tooltip span {
+  visibility: visible;
+  opacity: 0.8;
+  right: 100%;
+  top: 50%;
+  margin-top: -30px;
+  margin-right: 10px;
+  z-index: 999;
+}
+a.left_tooltip_fading span {
+  transition: opacity 1s ease-in-out;
+  -moz-transition: opacity 1s ease-in-out;
+  -webkit-transition: opacity 1s ease-in-out;
+  opacity: 0;
+}
+
+a:hover.left_tooltip_fading span {
+  opacity: 1;
+}
+li#name_input_optional { display: none; visibility: hidden; }
+
+form.formtastic fieldset.inputs ol {
+  margin-right: 20px;
+  margin-left: 0px;
+}
