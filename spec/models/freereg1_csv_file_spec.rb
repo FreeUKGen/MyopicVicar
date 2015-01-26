@@ -2,7 +2,10 @@ require 'spec_helper'
 require 'freereg_csv_processor'
 
 describe Freereg1CsvFile do
-
+  before(:all) do
+    Place.create_indexes
+    SearchRecord.create_indexes
+  end
 
   before(:each) do
     FreeregCsvProcessor::delete_all

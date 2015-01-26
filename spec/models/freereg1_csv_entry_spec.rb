@@ -15,6 +15,11 @@ end
 
 
 describe Freereg1CsvEntry do
+  before(:all) do
+    Place.create_indexes
+    SearchRecord.create_indexes
+  end
+
 
 
 
@@ -190,7 +195,8 @@ describe Freereg1CsvEntry do
       query_params = { :first_name => part,
                        :last_name => entry[:bride_surname],
                        :inclusive => false }
-      q = SearchQuery.create!(query_params)
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
       result = q.search.to_a
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
@@ -242,7 +248,8 @@ describe Freereg1CsvEntry do
                        :last_name => name["last_name"],
                        :inclusive => true,
                        :place_ids => [place.id] }
-      q = SearchQuery.create!(query_params)
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
       result = q.search.to_a
 
       result.count.should have_at_least(1).items
@@ -252,7 +259,8 @@ describe Freereg1CsvEntry do
                        :last_name => name["last_name"],
                        :inclusive => true,
                        :place_ids => [place.id, different_place.id] }
-      q = SearchQuery.create!(query_params)
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
       result = q.search.to_a
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
@@ -261,7 +269,8 @@ describe Freereg1CsvEntry do
                        :last_name => name["last_name"],
                        :inclusive => true,
                        :place_ids => [different_place.id] }
-      q = SearchQuery.create!(query_params)
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
       result = q.search.to_a
 
       result.count.should eq(0)
@@ -278,7 +287,8 @@ describe Freereg1CsvEntry do
       query_params = additional.merge({:first_name => entry[first_name_key],
                                  :last_name => entry[last_name_key],
                                  :inclusive => !required})
-      q = SearchQuery.create!(query_params)
+      q = SearchQuery.new(query_params)
+      q.save(:validate => false)
       result = q.search.to_a
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
