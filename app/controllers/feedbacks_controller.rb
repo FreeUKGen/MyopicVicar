@@ -16,7 +16,6 @@ class FeedbacksController < InheritedResources::Base
     @feedback.session_data = session
     @feedback.save
     if @feedback.errors.any?
-      flash.notice = "There was a problem with your submission #{@feedback.errors.messages}"
       render :action => 'new'
       return
     end
