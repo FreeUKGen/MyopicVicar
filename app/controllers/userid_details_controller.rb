@@ -71,6 +71,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "transcriber_registration"
     @userid = UseridDetail.new
     @syndicates = Syndicate.get_syndicates_open_for_transcription
+    @transcription_agreement = [true,false]
     @first_name = session[:first_name]
   end
 
@@ -183,14 +184,15 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-
+     p params
     @userid = UseridDetail.new(params[:userid_detail])
     @userid.add_fields(params[:commit])
+    p  @userid
     @userid.save
     if @userid.errors.any?
       flash[:notice] = 'The registration was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_create
+      next_place_to_go_unsuccessful_create      
     else
       @userid.send_invitation_to_create_password
       @userid.write_userid_file
@@ -259,6 +261,9 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration'
       return
     when session[:type] == 'transcriber_registration'
+      p @userid
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+      @transcription_agreement = [true,false]
       render :action => 'transcriber_registration'
       return
     when session[:type] == 'technical_registration'
