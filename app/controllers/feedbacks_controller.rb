@@ -12,7 +12,7 @@ class FeedbacksController < InheritedResources::Base
   def create
     @feedback = Feedback.new(params[:feedback])
     #eliminate any flash message as the conversion to bson fails
-    session[:flash] = ""
+    session.delete(:flash)
     @feedback.session_data = session
     @feedback.save
     if @feedback.errors.any?
