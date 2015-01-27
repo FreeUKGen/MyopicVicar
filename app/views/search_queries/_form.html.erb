@@ -14,106 +14,143 @@
 <% end %>
 <section class="island  island--light ">
 	<%= semantic_form_for(@search_query) do |f| %>
-
 	<%= f.inputs do %>
-	<li class="grid__item  one-quarter  palm-one-whole">
-		<label><a href="#" class="left_tooltip">Surname <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name</span></a></label>
-    <% if @search_query.last_name.nil? %>
-			<input name="search_query[last_name]" type="text" class="text-input" placeholder="Mandatory" >
-		<%else%>
-			<input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" >
-		<%end%>
-	</li>
-	<li class="grid__item  one-quarter  palm-one-whole">
-		<label><a href="#" class="right_tooltip">Forename(s) <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>The forename can be upper or lower case, abbreviations and latin versions of name will be included automatically</span></a></label>
-		<% if @search_query.first_name.nil? %>
-			<input name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" >
-		<%else%>
-			<input name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>" >
-		<%end%>
-	</li>
-	<li class="grid__item  one-quarter  palm-one-whole">
-		<label><a href="#" class="left_tooltip">First year <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>The first year for which records are to be included</span></a></label>
-		<% if @search_query.start_year.nil? %>
-			<input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
-		<%else%>
-			<input name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" >
-		<%end%>
-	</li>
-	<li class="grid__item  one-quarter  palm-one-whole">
-		<label><a href="#" class="right_tooltip">Last year <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>The last year for which records are to be included</span></a></label>
-		<% if @search_query.end_year.nil? %>
-			<input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
-		<%else%>
-			<input name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>" >
-		<%end%>
-	</li>
-	<li class="grid__item  two-fifths  palm-one-whole " id="search_query_chapman_codes_input">
-		<input name="search_query[chapman_codes][]" type="hidden" value="" >
-		<label class=" label" for="search_query_chapman_codes">
-			<a href="#" class="left_tooltip">County <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>These are the county boundaries as specified in 1831. Note if multiple Counties are selected a Place CANNOT be selected. All Places will be considered.</span></a><small class="additional">Select one (hold Ctrl for multiple)</small>
-		</label>
-		<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" }>
-			<option value="" label="Select one or more counties"></option>
-			<% ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)).each_pair do |label, value| %>
-				<%if @search_query.chapman_codes.include?(value)%>
-					<option value="<%=value%>" selected="selected"> <%=label%></option>
-				<%else%>
-					<option value="<%=value%>"><%=label%></option>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<label>
+				Surname
+				<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name</span>
+				</a>
+			</label>
+	    <% if @search_query.last_name.nil? %>
+				<input name="search_query[last_name]" type="text" class="text-input" placeholder="Mandatory" >
+			<%else%>
+				<input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" >
+			<%end%>
+		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<label>
+				Forename(s)
+				<a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>The forename can be upper or lower case, abbreviations and latin versions of name will be included automatically</span>
+				</a>
+			</label>
+			<% if @search_query.first_name.nil? %>
+				<input name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" >
+			<%else%>
+				<input name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>" >
+			<%end%>
+		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<label>
+				First year
+				<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>The first year for which records are to be included</span>
+				</a>
+			</label>
+			<% if @search_query.start_year.nil? %>
+				<input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
+			<%else%>
+				<input name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" >
+			<%end%>
+		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<label>
+				Last year
+				<a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>The last year for which records are to be included</span>
+				</a>
+			</label>
+			<% if @search_query.end_year.nil? %>
+				<input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" >
+			<%else%>
+				<input name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>" >
+			<%end%>
+		</li>
+		<li class="grid__item  two-fifths  palm-one-whole " id="search_query_chapman_codes_input">
+			<input name="search_query[chapman_codes][]" type="hidden" value="" >
+			<label class=" label" for="search_query_chapman_codes">
+				County
+				<a href="#" class="left_tooltip">
+					<img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>These are the county boundaries as specified in 1831. Note if multiple Counties are selected a Place CANNOT be selected. All Places will be considered.</span>
+				</a><small class="additional">Select one (hold Ctrl for multiple)</small>
+			</label>
+			<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" }>
+				<option value="" label="Select one or more counties"></option>
+				<% ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)).each_pair do |label, value| %>
+					<%if @search_query.chapman_codes.include?(value)%>
+						<option value="<%=value%>" selected="selected"> <%=label%></option>
+					<%else%>
+						<option value="<%=value%>"><%=label%></option>
+					<% end %>
 				<% end %>
-			<% end %>
-		</select>
-	</li>
-	<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
-		<label class=" label" for="search_query_place_ids">
-			<a href="#" class="left_tooltip">Place <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>This form fills when a SINGLE county is selected. Select a single Place or leave blank for ALL the places in a county. Search Nearby Places below adds additional places nearby your selection</span></a><small class="additional">Select nothing or one place</small> </label>
+			</select>
+		</li>
+		<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
+			<label class=" label" for="search_query_place_ids">
+				Place
+				<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>This form fills when a SINGLE county is selected. Select a single Place or leave blank for ALL the places in a county. Search Nearby Places below adds additional places nearby your selection</span>
+				</a><small class="additional">Select nothing or one place</small>
+			</label>
 			<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" multiple="multiple">
 				<option value="">--</option>
 			</select>
 		</li>
 		<li class="grid__item  one-fifth  palm-one-whole optional" id="search_query_record_type_input">
 			<label class=" label" for="search_query_record_type">
-				<a href="#" class="top_tooltip">Record type <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small>
+				Record type
+				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small>
 			</label>
 			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]">
 				<option value=""></option>
 				<% RecordType::OPTIONS.each_pair do |name, value| %>
-        <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
-      <option value="<%=value%>" selected="selected"> <%=name%></option>
-      <%else%>
+	      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
+	    <option value="<%=value%>" selected="selected"> <%=name%></option>
+	    <%else%>
 				<option value="<%=value%>"><%=name%></option>
 				<% end %>
-        <% end %>
+	      <% end %>
 			</select>
 		</li>
-		<% end %>
-		<%= f.inputs do %>
-			<li class="grid__item  one-quarter  palm-one-whole">
-				<%= f.label :inclusive do %>
-					<%= f.check_box :inclusive, {}, "true", "false" %>
-					<a href="#" class="top_tooltip"> Search family members <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Check to include family members with that same name in the search</span></a></label>
-				<% end %>
-			</li>
-			<li class="grid__item  one-quarter  palm-one-whole">
-				<%= f.label :search_nearby_places do %>
-					<%= f.check_box :search_nearby_places, {}, "true", "false" %>
-					<a href="#" class="top_tooltip"> Search nearby places <img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Check to search places to the vicinity of the selected starting place, up to 40 additional places will be included</span></a></label>
-				<% end %>
-			</li>
-			<li class="grid__item  one-quarter  palm-one-whole">
-				<%= f.label :fuzzy do %>
-					<%= f.check_box :fuzzy, {}, "true", "false" %>
-					<a href="#" class="top_tooltip">Soundex Search on Surnames<img alt="Information" height="16" src="/assets/refinery/icons/information.png"><span>Check to include Soundex equivalent of the name</span></a>
-				<% end %>
-			</li>
-			<%= f.action :submit,
-				:as => :button,
-				:label => 'Search',
-				:button_html => { :class => "btn", :type => 'submit' },
-				:wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+	<% end %>
+	<%= f.inputs do %>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<%= f.label :inclusive do %>
+				<%= f.check_box :inclusive, {}, "true", "false" %>
+				Search family members
+				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>Check to include family members with that same name in the search</span>
+				</a>
 			<% end %>
-		<% end %>
-	</section>
+		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<%= f.label :search_nearby_places do %>
+				<%= f.check_box :search_nearby_places, {}, "true", "false" %>
+				Search nearby places
+				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>Check to search places to the vicinity of the selected starting place, up to 40 additional places will be included</span>
+				</a>
+			<% end %>
+		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<%= f.label :fuzzy do %>
+				<%= f.check_box :fuzzy, {}, "true", "false" %>
+				Soundex Search on Surnames
+				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+					<span>Check to include Soundex equivalent of the name</span>
+				</a>
+			<% end %>
+		</li>
+		<%= f.action :submit,
+			:as => :button,
+			:label => 'Search',
+			:button_html => { :class => "btn", :type => 'submit' },
+			:wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+	  <% end %>
+	<% end %>
+</section>
 
 	<script type="text/javascript" charset="utf-8" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
