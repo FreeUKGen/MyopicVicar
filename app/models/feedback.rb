@@ -15,8 +15,14 @@ class Feedback
 
   mount_uploader :screenshot, ScreenshotUploader
 
+  validate :title_or_body_exist
+
   before_save :url_check
   after_create :communicate
+
+  def title_or_body_exist
+     errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
+  end
 
   def url_check
 
@@ -44,8 +50,9 @@ class Feedback
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
+      p 'response from git hub'
       p response
-      self.github_issue_url=response[:html_url]
+      self.github_issue_url = response[:html_url]
       self.save!
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
