@@ -202,7 +202,7 @@ namespace :freereg do
         files[:json].each do |collection|
           json_file = Dir.glob(File.join(json_dir, "*#{collection}.bson")).first
           #          binding.pry
-          run_mongo("mongorestore", "--collection #{collection} #{json_file}")
+          run_mongo("mongorestore", "--drop --collection #{collection} #{json_file}")
         end
       end
       if files[:sql]
