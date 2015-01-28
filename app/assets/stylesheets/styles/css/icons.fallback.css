@@ -297,6 +297,29 @@
   zoom: 1;
 }
 
+.icon__twitter:hover,.icon__twitter:active,
+.icon__twitter--dark {
+  background-image: url('../../images/png/twitter--dark.png');
+  background-repeat: no-repeat;
+  width: 46px;
+  height: 46px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
+
+
+.icon__twitter {
+  background-image: url('../../images/png/twitter.png');
+  background-repeat: no-repeat;
+  width: 46px;
+  height: 46px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+}
+
 
 .icon__github:hover,.icon__github:active,
 .icon__github--dark {
@@ -548,5 +571,3 @@
  *display: inline;
   zoom: 1;
 }
-
-
