@@ -6,7 +6,7 @@
 <b>Type:</b>
 <%= @contact.contact_type %>
 </p>
-<% if @contact.contact_type = 'Data Problem' %>
+<% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
 <p> <%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%>
 <% end%>
 <p>

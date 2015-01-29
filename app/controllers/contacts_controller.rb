@@ -2,7 +2,6 @@ class ContactsController < InheritedResources::Base
   require 'freereg_options_constants'
   skip_before_filter :require_login, only: [:new, :report_error, :create]
   def index
-    p session
     @contacts = Contact.all.order_by(contact_time: -1).page(params[:page])
   end
   def show
@@ -11,14 +10,15 @@ class ContactsController < InheritedResources::Base
   end
 
   def new
-    @contact = Contact.new(params)
-    @options = FreeregOptionsConstants::ISSUES
+    @contact = Contact.new
+    @options = FreeregOptionsConstants::ISSUES 
+    @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
   end
 
   def create
     @contact = Contact.new(params[:contact])
-    if @contact.contact_name.nil? #spam trap
+    if @contact.contact_name.blank? #spam trap
       session.delete(:flash)
       @contact.session_data = session
       @contact.previous_page_url= request.env['HTTP_REFERER']
@@ -43,7 +43,7 @@ class ContactsController < InheritedResources::Base
     end
   end
   def report_error
-    @contact = Contact.new(params)
+    @contact = Contact.new
     @contact.contact_time = Time.now
     @contact.contact_type = 'Data Problem'
     @contact.query = params[:query]

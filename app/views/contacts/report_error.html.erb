@@ -1,4 +1,9 @@
 <h4 class="title text--center">You are reporting an error on a data record</h4>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+   <% end %>  
 <% if @contact.errors.any? %>
 <div id="error_explanation">
   <h2><%= pluralize(@contact.errors.count, "error") %> prohibited your contact from being submitted:</h2>
@@ -52,7 +57,7 @@
     <input name="contact[screenshot]" type="file" >
   </li>
   <div id="betterstyling">
-    <p>Please add your name again: </p><input type="text" name="contact_name">
+    <p>Please add your name again: </p><input type="text" name="contact[contact_name]">
   </div>
   <%= f.action :submit, :as  => :input, :label => 'Report Error' ,
   :button_html => { :class => "btn btn--small" },

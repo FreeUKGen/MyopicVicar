@@ -32,10 +32,10 @@ class Contact
 
   def communicate
     UserMailer.copy_to_contact_person(self).deliver
-    case contact_type
-    when 'Website Problem'
+    case 
+    when  self.contact_type == 'Website Problem'
       github_issue
-    when 'Data Problem'
+    when self.contact_type == 'Data Problem'
       data_manager_issue
     else
       general_issue
@@ -73,8 +73,8 @@ class Contact
   end
 
   def data_manager_issue
-    coordinator = self.get_coordinator
-    UserMailer.contact_to_recipient(self,coordinator).deliver
+    coordinator = self.get_coordinator if self.record_id.present?
+    UserMailer.contact_to_recipient(self,coordinator).deliver if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
       UserMailer.contact_to_recipient(self,data_manager).deliver
     end

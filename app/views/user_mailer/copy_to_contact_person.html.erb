@@ -1,42 +1,28 @@
-
-
 <p> Dear <%= @contact.name %>;</p>
 <p>Thank you for your correspondence. </p>
-
-
 <p>The following is the information you submitted.
 </p>
 <p>
-  <b>Type:</b>
-  <%= @contact.contact_type %>
+<b>Type:</b>
+<%= @contact.contact_type %>
 </p>
-<% if @contact.contact_type = 'Data Problem' %>
-
+<% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
 <p> Record in question <%= @contact.record_id %>
-
-
-
 <% end%>
-
-
-
 <p>
-  <b>Time:</b>
-  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
+<b>Time:</b>
+<%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
 </p>
-
 <p>
-  <b>Body:</b>
-  <%= @contact.body %>
+<b>Body:</b>
+<%= @contact.body %>
 </p>
-
 <p>
-  <b>Screenshot:</b>
-  <% if @contact.screenshot_url %>
-  <%= image_tag @contact.screenshot_url %>
-  <% else %>
-  No screenshot attached.
-  <% end %>
+<b>Screenshot:</b>
+<% if @contact.screenshot_url %>
+<%= image_tag @contact.screenshot_url %>
+<% else %>
+No screenshot attached.
+<% end %>
 </p>
-
 <p> The FreeREG Team</p>

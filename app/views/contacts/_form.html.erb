@@ -8,6 +8,11 @@
   </ul>
 </div>
 <% end %>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+   <% end %>  
 <section class="island  island--light ">
 <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
 <%= f.hidden_field :contact_time %>
@@ -62,7 +67,7 @@
 </li>
 
 <div id="betterstyling">
-<p>Please add your name again: </p><input type="text" name="contact_name">
+<p>Please add your name again: </p><input type="text" name="contact[contact_name]">
 </div>
 
 <%= f.action :submit, :as => :input,  :label => 'Submit' ,
