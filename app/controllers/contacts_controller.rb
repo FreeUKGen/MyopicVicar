@@ -6,7 +6,7 @@ class ContactsController < InheritedResources::Base
   end
   def show
     @contact = Contact.find(params[:id])
-    set_session_parameters_for_record(@contact)
+    set_session_parameters_for_record(@contact) if @contact.entry_id.present?
   end
 
   def new
