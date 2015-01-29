@@ -113,16 +113,11 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_freereg_manager(contact)
+  def contact_to_freereg_manager(contact,person)
     @contact = contact
-    @user = UseridDetail.where(:userid => 'REGManager')
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Contact")
-  end
-
-  def contact_to_freeukgen_manager(contact)
-    @contact = contact
-    @user = UseridDetail.where(:userid => 'REGManager')
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Contact")
+    @name = person.person_forename
+    @email_address = person.email_address
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
 
   def contact_to_recipient(contact,person)
@@ -131,5 +126,4 @@ class UserMailer < ActionMailer::Base
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
-
 end

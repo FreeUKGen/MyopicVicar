@@ -61,7 +61,6 @@ line-height: 20px;
 visibility: hidden;
 border-radius: 10px;
 }
-
 a.right_tooltip span:after {
 content: '';
 position: absolute;
@@ -74,7 +73,6 @@ border-right: 8px solid #2b2b2b;
 border-top: 8px solid transparent;
 border-bottom: 8px solid transparent;
 }
-
 a:hover.right_tooltip span {
 visibility: visible;
 opacity: 0.8;
@@ -99,7 +97,6 @@ line-height: 20px;
 visibility: hidden;
 border-radius: 10px;
 }
-
 a.bottom_tooltip span:after {
 content: '';
 position: absolute;
@@ -112,7 +109,6 @@ border-bottom: 8px solid #2b2b2b;
 border-right: 8px solid transparent;
 border-left: 8px solid transparent;
 }
-
 a:hover.bottom_tooltip span {
 visibility: visible;
 opacity: 0.8;
@@ -136,7 +132,6 @@ line-height: 20px;
 visibility: hidden;
 border-radius: 10px;
 }
-
 a.top_tooltip span:after {
 content: '';
 position: absolute;
@@ -149,7 +144,6 @@ border-top: 8px solid #2b2b2b;
 border-right: 8px solid transparent;
 border-left: 8px solid transparent;
 }
-
 a:hover.top_tooltip span {
 visibility: visible;
 opacity: 0.8;
@@ -173,7 +167,6 @@ line-height: 20px;
 visibility: hidden;
 border-radius: 10px;
 }
-
 a.left_tooltip span:after {
 content: '';
 position: absolute;
@@ -186,7 +179,6 @@ border-left: 8px solid #2b2b2b;
 border-top: 8px solid transparent;
 border-bottom: 8px solid transparent;
 }
-
 a:hover.left_tooltip span {
 visibility: visible;
 opacity: 0.8;
@@ -202,14 +194,15 @@ transition: opacity 1s ease-in-out;
 -webkit-transition: opacity 1s ease-in-out;
 opacity: 0;
 }
-
 a:hover.left_tooltip_fading span {
 opacity: 1;
 }
 li#name_input_optional { display: none; visibility: hidden; }
-
 form.formtastic fieldset.inputs ol {
-  margin-right: 20px;
-  margin-left: 0px;
+margin-right: 20px;
+margin-left: 0px;
 }
-
+/* Used for spam trap
+-------------------------------------------------*/
+div#badstyling { display: inline; }
+div#betterstyling { display: none; visibility: hidden; }

@@ -24,17 +24,17 @@ class ApplicationController < ActionController::Base
   require 'userid_role'
   require 'register_type'
   def clean_session
-    session[:freereg1_csv_file_id] = nil
-    session[:freereg1_csv_file_name] = nil
-    session[:county] = nil
-    session[:place_name] = nil
-    session[:church_name] = nil
-    session[:sort] = nil
-    session[:csvfile] = nil
-    session[:my_own] = nil
-    session[:role] = nil
-    session[:freereg] = nil
-    session[:edit] = nil
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:county) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session.delete(:my_own)
+    session.delete(:role) 
+    session.delete(:freereg) 
+    session.delete(:edit) 
 
   end
 

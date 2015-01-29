@@ -10,29 +10,19 @@
   <b>Type:</b>
   <%= @contact.contact_type %>
 </p>
+<% if @contact.contact_type = 'Data Problem' %>
+
+<p> Record in question <%= @contact.record_id %>
 
 
-<p>
-  <b>Title:</b>
-  <%= @contact.title %>
-</p>
+
+<% end%>
+
 
 
 <p>
   <b>Time:</b>
   <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
-</p>
-<p>
-  <b>Management:</b>
-  <%= @contact.contact_management %>
-</p>
-<p>
-  <b>County:</b>
-  <%= @contact.contact_county %>
-</p>
-<p>
-  <b>Syndicate:</b>
-  <%= @contact.contact_syndicate %>
 </p>
 
 <p>

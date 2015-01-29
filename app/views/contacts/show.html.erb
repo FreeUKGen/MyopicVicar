@@ -1,94 +1,73 @@
-<p id="notice"><%= notice %></p>
-<p>
-  <b>Type:</b>
-  <%= @contact.contact_type %>
-</p>
-
-
-<p>
-  <b>Title:</b>
-  <%= @contact.title %>
-</p>
-
-
-<p>
-  <b>Time:</b>
-  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
-</p>
-
-<p>
-  <b>User:</b>
-  <%= @contact.name %>
-</p>
-<p>
-  <b>Email:</b>
-  <%= @contact.email_address %>
-</p>
-<p>
-  <b>Management:</b>
-  <%= @contact.contact_management %>
-</p>
-<p>
-  <b>County:</b>
-  <%= @contact.contact_county %>
-</p>
-<p>
-  <b>Syndicate:</b>
-  <%= @contact.contact_syndicate %>
-</p>
-
-<p>
-  <b>Body:</b>
-  <%= @contact.body %>
-</p>
-
-<p>
-  <b>Session ID:</b>
-  <%= @contact.session_id %> 
-  (View <%= link_to("search queries for this session", search_query_report_path(:contact_id => @contact, :session_id => @contact.session_id)) %>.)
-</p>
-
-<p>
-  <b>Problem page url:</b>
-  <%= link_to @contact.problem_page_url, @contact.problem_page_url %>
-</p>
-
-<p>
-  <b>Previous page url:</b>
-  <%= link_to @contact.previous_page_url, @contact.previous_page_url %>
-</p>
-
-
-<p>
-  <b>Github Issue:</b>
-  <% if @contact.github_issue_url %>
-	  <%= link_to @contact.github_issue_url, @contact.github_issue_url  %>
-  <% else %>
-    <i>none</i>
-  	<% if Contact.github_enabled %>
-		<span  style="float:left;">
-		  <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>		
-		</span>
-	<% else %>
-		Github integration is not set up on this site yet.
-	<% end %>
-  <% end %>
-</p>
-
-<p>
-  <b>Screenshot:</b>
-  <% if @contact.screenshot_url %>
-	<%= image_tag @contact.screenshot_url %>
-  <% else %>
-	No screenshot attached.
-  <% end %>
-</p>
-
-<p>
-  <b>Session Data:</b>
-  <%= debug @contact.session_data %>
-</p>
-
-
-
-<%= link_to 'Back', contacts_path %>
+<div style="clear:both;"> </div>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<div class="grid">
+  <section class="island ">
+    <h4 >Contact Details</h4>
+    <div class="grid__item  ">
+      
+      <table class="table--bordered table--data " >
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
+        </tr>
+        <tr>
+          <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
+        </tr>
+        <tr>
+          <td>Name of Contactor:</td> <td class="weight--semibold"><%= @contact.name %></td>
+        </tr>
+        <tr>
+          <td>Email address of Contactor :</td><td class="weight--semibold"><%= @contact.email_address %> </td>
+        </tr>
+        <% if @contact.contact_type = 'Data Problem' %>
+        <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
+        <% end%>
+        <tr>
+          <td>Explanation:</td><td class="weight--semibold"><%= @contact.body %></td>
+        </tr>
+        <tr>
+          <td>Session ID:</td><td class="weight--semibold"> <%= @contact.session_id %> </td>
+        </tr>
+        <tr>
+          <td>View: </td><td class="weight--semibold"><%= link_to("search queries for this session", search_query_report_path(:contact_id => @contact, :session_id => @contact.session_id)) %></td>
+        </tr>
+        <tr>
+          <td>Problem page url:</td><td class="weight--semibold">   <%= link_to @contact.problem_page_url, @contact.problem_page_url %></td>
+        </tr>
+        <tr>
+          <td>Previous page url:</td><td class="weight--semibold"><%= link_to @contact.previous_page_url, @contact.previous_page_url %></td>
+        </tr>
+        <tr>
+          <td>Github Issue:</td><td class="weight--semibold">
+          <% if @contact.github_issue_url %>
+          <%= link_to @contact.github_issue_url, @contact.github_issue_url  %>
+          <% else %>
+          <% if Contact.github_enabled %>
+          <span  style="float:left;">
+          <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>
+          </span>
+          <% else %>
+          Github integration is not set up on this site yet.
+          <% end %>
+        <% end %></td></tr>
+      </table>
+      <b>Screenshot:</b>
+      <% if @contact.screenshot_url %>
+      <%= image_tag @contact.screenshot_url %>
+      <% else %>
+      No screenshot attached.
+      <% end %>
+    </div>
+  </section>
+</div>
