@@ -8,12 +8,12 @@
   </ul>
 </div>
 <% end %>
+<section class="island  island--light ">
 <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
 <%= f.hidden_field :contact_time %>
 <%= f.hidden_field :session_id %>
 <%= f.hidden_field :problem_page_url %>
 <%= f.hidden_field :previous_page_url %>
-<section class="island  island--light ">
   <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
     <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please provide a name for when we contact you; it will not be made public</span></a>
   </label>
@@ -60,19 +60,11 @@
 <label>Screenshot or image (Optional)<a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please select the image you wish to upload (jpg, jpeg or gif only)</span></a></label>
 <input name="contact[screenshot]" type="file" >
 </li>
-<li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-<label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please provide a name for when we contact you; it will not be made public</span></a>
-</label>
-<% if @contact.name.nil? %>
-<input name="contact[name]" type="text" class="text-input" placeholder="Mandatory" required="required" >
-<% else %>
-<input name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
-<% end %>
-</li>
+
 <div id="betterstyling">
 <p>Please add your name again: </p><input type="text" name="contact_name">
 </div>
-<br>
+
 <%= f.action :submit, :as => :input,  :label => 'Submit' ,
 :button_html => { :class => "btn btn--small" },
 :wrapper_html => { :class => "grid__item  one-third text--left" }  %>
