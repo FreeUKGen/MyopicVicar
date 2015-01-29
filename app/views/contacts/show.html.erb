@@ -30,7 +30,7 @@
         <tr>
           <td>Email address of Contactor :</td><td class="weight--semibold"><%= @contact.email_address %> </td>
         </tr>
-        <% if @contact.contact_type = 'Data Problem' %>
+        <% if @contact.contact_type = 'Data Problem' &&  @contact.entry_id.present?%>
         <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
         <% end%>
         <tr>
