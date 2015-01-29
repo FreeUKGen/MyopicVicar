@@ -1,41 +1,55 @@
 class ContactsController < InheritedResources::Base
   require 'freereg_options_constants'
-  skip_before_filter :require_login
+  skip_before_filter :require_login, only: [:new, :report_error, :create]
   def index
+    p session
     @contacts = Contact.all.order_by(contact_time: -1).page(params[:page])
+  end
+  def show
+    @contact = Contact.find(params[:id])
+    set_session_parameters_for_record(@contact)
   end
 
   def new
     @contact = Contact.new(params)
     @options = FreeregOptionsConstants::ISSUES
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-    @options_syndicates =  Syndicate.all.order_by(syndicate_code: 1)
-    @options_counties = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
 
   def create
     @contact = Contact.new(params[:contact])
-    @contact.session_id = request.session["session_id"]
-    @contact.problem_page_url= request.env['REQUEST_URI']
-    @contact.previous_page_url= request.env['HTTP_REFERER']
-    @contact.contact_time = Time.now
-    if  @contact.contact_name.nil? || @contact.contact_name.empty?
+    if @contact.contact_name.nil? #spam trap
+      session.delete(:flash)
+      @contact.session_data = session
+      @contact.previous_page_url= request.env['HTTP_REFERER']
       if @contact.save
         flash[:notice] = "Thank you for contacting us!"
-        redirect_to new_search_query_path
-        return
+        if @contact.query
+          redirect_to search_query_path(@contact.query, :anchor => "#{@contact.record_id}")
+          return
+        else
+          redirect_to @contact.previous_page_url
+          return
+        end
       else
         @options = FreeregOptionsConstants::ISSUES
         @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-        @options_syndicates =  Syndicate.all.order_by(syndicate_code: 1)
-        @options_counties = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
         render :new
         return
       end
     else
-      redirect_to new_search_query_path
-      return  
+      redirect_to @contact.previous_page_url
+      return
     end
+  end
+  def report_error
+    @contact = Contact.new(params)
+    @contact.contact_time = Time.now
+    @contact.contact_type = 'Data Problem'
+    @contact.query = params[:query]
+    @contact.record_id = params[:id]
+    @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
+    @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
   end
 
   def delete
@@ -49,5 +63,15 @@ class ContactsController < InheritedResources::Base
     @contact.github_issue
     flash.notice = "Issue created on Github."
     show
+  end
+
+  def set_session_parameters_for_record(contact)
+    file_id = Freereg1CsvEntry.find(contact.entry_id).freereg1_csv_file
+    file = Freereg1CsvFile.find(file_id)
+    session[:freereg1_csv_file_id] = file._id
+    session[:freereg1_csv_file_name] = file.file_name
+    session[:place_name] = file.place
+    session[:church_name] = file.church_name
+    session[:county] = file.county
   end
 end

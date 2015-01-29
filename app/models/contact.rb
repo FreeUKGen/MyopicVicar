@@ -1,12 +1,8 @@
 class Contact
   include Mongoid::Document
   include Mongoid::Timestamps
-  field :title, type: String
   field :body, type: String
   field :contact_time, type: DateTime
-  field :contact_syndicate, type: String
-  field :contact_county, type: String
-  field :contact_management, type: String
   field :name, type: String
   field :email_address, type: String
   field :session_id, type: String
@@ -16,8 +12,11 @@ class Contact
   field :github_issue_url, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
+  field :record_id, type: String
+  field :entry_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
-  validates_presence_of :name, :email_address, :title, :contact_type
+  field :query, type: String
+  validates_presence_of :name, :email_address
   validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
 
   mount_uploader :screenshot, ScreenshotUploader
@@ -64,45 +63,37 @@ class Contact
   end
 
   def issue_title
-    "#{title} (#{name})"
+    "#{contact_type} (#{name})"
   end
-  
+
   def general_issue
-    p 'general_issue'
-    p self
-    UserMailer.contact_to_freereg_manager(self).deliver if self.contact_management == 'FreeREG'
-    UserMailer.contact_to_freeukgen_manager(self).deliver if self.contact_management == 'FreeUKGen'
-    @options_syndicates =  Array.new
-    Syndicate.all.order_by(syndicate_code: 1).each do |syndicate|
-     @options_syndicates <<   syndicate.syndicate_code
-    end
-    @options_counties =  Array.new
-    County.all.order_by(chapman_code: 1).each do |county|
-        @options_counties << county.chapman_code
-    end
-    if @options_syndicates.include? self.contact_syndicate
-      coordinator = Syndicate.where(:syndicate_code => self.contact_syndicate).first.syndicate_coordinator
-      coordinator = UseridDetail.where(:userid => coordinator).first
-      UserMailer.contact_to_recipient(self,coordinator).deliver
-    end
-    if @options_counties.include? self.contact_county
-      coordinator = County.where(:chapman_code => self.contact_county).first.county_coordinator
-      coordinator = UseridDetail.where(:userid => coordinator).first
-      UserMailer.contact_to_recipient(self,coordinator).deliver
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UserMailer.contact_to_freereg_manager(self,person).deliver
     end
   end
 
   def data_manager_issue
-    p "data manager"
-    p self
+    coordinator = self.get_coordinator
+    UserMailer.contact_to_recipient(self,coordinator).deliver
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
-    UserMailer.contact_to_recipient(self,data_manager).deliver 
+      UserMailer.contact_to_recipient(self,data_manager).deliver
     end
+
   end
+  def get_coordinator
+    entry = SearchRecord.find(self.record_id).freereg1_csv_entry
+    record = Freereg1CsvEntry.find(entry)
+    file = record.freereg1_csv_file
+    county = file.county #this is chapman code
+    coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+  end
+
 
   def issue_body
     issue_body = ApplicationController.new.render_to_string(:partial => 'contacts/github_issue_body.txt', :locals => {:feedback => self})
     issue_body
   end
+
+
 
 end

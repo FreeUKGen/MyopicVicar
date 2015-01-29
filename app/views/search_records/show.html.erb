@@ -18,7 +18,7 @@
           <% end %>
           <h3><%= RecordType::display_name(@entry.freereg1_csv_file.record_type)   %> entry</h3>
           <h4> For information about this place follow the link to <%= link_to(@search_record.place.place_name, show_place_path(@search_record.place)) %></h4>
-          <h5> If you believe there to be an error in this transcription then please <%= link_to "report", new_contact_path %> it to our data manager.</h5>
+          <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query) %> it to our data manager.</h5>
         </td>
       </tr>
       <tr>
