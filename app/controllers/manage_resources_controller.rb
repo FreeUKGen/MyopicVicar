@@ -19,6 +19,7 @@
         redirect_to refinery.login_path
         return
       end
+      cookies.signed[:Administrator] = Rails.application.config.github_password
       @user = current_refinery_user.userid_detail 
       #temp patch to avoid login by all except 
       unless @user.person_role == 'data_manager' ||  @user.person_role ==  'technical'|| @user.person_role == 'system_administrator'
