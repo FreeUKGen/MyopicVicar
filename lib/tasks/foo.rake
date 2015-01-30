@@ -165,4 +165,17 @@ desc "report on user details"
     end
   end
 
+  task :freereg_update,[:range] => [:environment] do |t,args|
+    require 'review_changed_files'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.sessions[:default][:database]
+    p db
+    host = Mongoid.sessions[:default][:hosts].first
+    p host
+    
+      ReviewChangedFiles.process(args.range)
+   
+  end
+
 end

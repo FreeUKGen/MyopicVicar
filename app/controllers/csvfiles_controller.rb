@@ -1,6 +1,6 @@
 class CsvfilesController < InheritedResources::Base
   require 'freereg_csv_processor'
-  def index
+def index
    if session[:userid].nil?
     redirect_to '/', notice: "You are not authorised to use these facilities"
   end
@@ -40,7 +40,7 @@ def create
     flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
     redirect_to new_manage_resource_path
     return
-    end #if
+   end #if
   end #case
   @csvfile.save
 
