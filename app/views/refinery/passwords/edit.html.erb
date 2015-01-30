@@ -1,4 +1,4 @@
-<% content_for :header, t('pick_new_password_for', :scope => 'refinery.users.reset', :email => @refinery_user.email) %>
+<%= t('pick_new_password_for', :scope => 'refinery.users.reset', :email => @refinery_user.email) %>
 
 <%= form_for resource, :as => resource_name,
              :url => refinery.refinery_user_password_path,

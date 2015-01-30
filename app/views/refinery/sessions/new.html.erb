@@ -1,5 +1,6 @@
-<% content_for :header, t('.hello_please_sign_in') %>
-
+<div id="flash_container">
+  <%= render 'refinery/message' %>
+</div>
 <%= form_for resource, :as => resource_name,
                        :url => refinery.refinery_user_session_path do |f| %>
   <div class='field session_username clearfix'>

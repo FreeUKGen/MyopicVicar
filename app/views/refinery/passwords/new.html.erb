@@ -1,5 +1,4 @@
-<% content_for :header, t('enter_email_address', :scope => 'refinery.users.forgot') %>
-
+<%= t('enter_email_address', :scope => 'refinery.users.forgot') %>
 <%= form_for resource, :as => resource_name,
                        :url => refinery.refinery_user_password_path,
                        :html => { :method => :post } do |f| %>
