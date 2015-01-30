@@ -1083,20 +1083,14 @@ class FreeregCsvUpdateProcessor
                   nloop = 0
                   #now we cycle through the files
                   filenames.each do |filename|
-                    p filename
-                   
                     time_file_start = Time.now
                     setup_for_new_file(filename)
-
                     process = true
                     process = check_for_replace(filename) unless recreate == "recreate"
-                    p process
                     @success = slurp_the_csv_file(filename) if process == true
-                    nloop = nloop + 1 if @success == true  && process == true
                     n = process_the_data if @success == true  && process == true
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     nn = nn + n unless n.nil?
-                    break if nloop == 15
                   end #filename loop end
 
                   time = (((Time.now  - time_start )/(nn-1))*1000)
