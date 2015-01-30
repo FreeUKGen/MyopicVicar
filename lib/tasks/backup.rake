@@ -32,7 +32,8 @@ namespace :freereg do
   def run_mongo(program, command_line)
     fq_program =  File.join(Rails.application.config.mongodb_bin_location, program)
     db = Mongoid.sessions[:default][:database]
-    cmd = "#{fq_program} --db #{db} #{command_line}"
+    host = Mongoid.sessions[:default][:hosts].first
+    cmd = "#{fq_program} --host #{host} --db #{db} #{command_line}"
     print "#{cmd}\n"
     system cmd
 
