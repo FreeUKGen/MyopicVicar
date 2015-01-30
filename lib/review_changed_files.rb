@@ -25,6 +25,7 @@ class ReviewChangedFiles
     end #filename loop end
 
     p "#{nn} files of which #{n} need to be processed"
+     @@message_file.puts "#{nn} files of which #{n} need to be processed"
   end
 
   def self.check_for_replace(filename)
@@ -49,7 +50,7 @@ class ReviewChangedFiles
       end
         if Digest::MD5.file(filename).hexdigest == check_for_file.digest then
           #file in database is same or more recent than we we are attempting to reload so do not process
-          @@message_file.puts "System_Error,#{user_dirname}\t#{standalone_filename} has not changed in size since last build"
+         
           return false
         end
 
@@ -62,8 +63,6 @@ class ReviewChangedFiles
           return true
         else
           #file in database is same or more recent than we we are attempting to reload so do not process
-          @@message_file.puts "#{user_dirname}\t#{standalone_filename} has not changed since last build"
-
           return false
         end #date check end
 
