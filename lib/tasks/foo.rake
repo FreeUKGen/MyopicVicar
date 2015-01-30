@@ -166,7 +166,7 @@ desc "report on user details"
   end
 
   task :freereg_update,[:range] => [:environment] do |t,args|
-    require 'review_changed_files'
+    require 'freereg_csv_update_processor'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
@@ -174,7 +174,7 @@ desc "report on user details"
     host = Mongoid.sessions[:default][:hosts].first
     p host
     
-      ReviewChangedFiles.process(args.range)
+      FreeregCsvUpdateProcessor.process(args.range)
    
   end
 
