@@ -189,6 +189,7 @@ class UseridDetail
   end
 
   def add_fields(type)
+    self.userid = self.userid.strip
     self.sign_up_date =  DateTime.now
     self.active = true
     case
