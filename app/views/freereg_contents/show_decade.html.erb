@@ -1,5 +1,5 @@
 
-    <h4 class="text--center">The FreeREG database has records in each decade from <%= @register.minimum_year_for_register %> to <%= @register.maximum_year_for_register %><br> for the <%= @RType %> Registers for <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b>
+    <h4 class="text--center">The FreeREG database has records for the <%= @RType %> Registers for <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b>
       <p>(Those periods with zero data may span several decades)</p>
     </h4>
     <div style="float:left;"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn btn--small" unless @county_id.nil?%> </div>
@@ -35,7 +35,7 @@
       <% while current_index < @decade["ba"].count %>
         <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
         <% if decade_total > 0 then %>
-          <tr>
+          <tr >
             <td><%= decade_start %>-<%= decade_end %></td>
             <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
             <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
