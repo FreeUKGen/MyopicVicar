@@ -45,7 +45,9 @@ class CsvfileUploader < CarrierWave::Uploader::Base
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   # def extension_white_list
-     %w(csv)
+  def extension_white_list
+   %w(csv)
+  end
   # end
 
   # Override the filename of the uploaded files:
