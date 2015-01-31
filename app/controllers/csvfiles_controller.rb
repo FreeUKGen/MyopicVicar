@@ -3,7 +3,7 @@ class CsvfilesController < InheritedResources::Base
 def index
    if session[:userid].nil?
     redirect_to '/', notice: "You are not authorised to use these facilities"
-  end
+   end
 end
 
 def new
@@ -29,41 +29,38 @@ def create
   @csvfile[:userid] = session[:userid]
   @csvfile[:userid] = params[:csvfile][:userid] unless params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
-
   case
-  when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Replace'
-    Freereg1CsvFile.destroy_all(:userid => @csvfile[:userid], :file_name =>@csvfile.file_name)
-  when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Upload'
-   if Freereg1CsvFile.where(userid: @csvfile[:userid], file_name: @csvfile.file_name).first.nil?
-    FileUtils.rm("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
-    else
-    flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
-    redirect_to new_manage_resource_path
-    return
-   end #if
+    when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Replace'
+      Freereg1CsvFile.destroy_all(:userid => @csvfile[:userid], :file_name =>@csvfile.file_name)
+    when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Upload'
+      if Freereg1CsvFile.where(userid: @csvfile[:userid], file_name: @csvfile.file_name).first.nil?
+        FileUtils.rm("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
+      else
+        flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
+        redirect_to new_manage_resource_path
+        return
+      end #if
   end #case
   @csvfile.save
 
   if @csvfile.errors.any?
-   flash[:notice] = 'The upload of the file was unsuccessful'
-     file_for_warning_messages = "log/freereg_messages.log"
-     @@message_file = File.new(file_for_warning_messages, "a")
-     @@message_file.puts " File #{@csvfile.file_name} uploaded unsuccessfully at #{Time.new} for #{@csvfile[:userid]}"
-   render 'edit'
-   return 
-    end #errors
-
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    flash[:notice] = 'The upload of the file was successful'
+    flash[:notice] = 'The upload of the file was unsuccessful'
     file_for_warning_messages = "log/freereg_messages.log"
-    @message_file = File.new(file_for_warning_messages, "a")
-    @message_file.puts " File #{@csvfile.file_name} uploaded successfully at #{Time.new} for #{@csvfile[:userid]}"
-    place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
-    size = (File.size("#{place}"))
-    unit = 0.0002
-    @processing_time = (size.to_i*unit).to_i 
-    render 'process' 
-    
+    @@message_file = File.new(file_for_warning_messages, "a")
+    @@message_file.puts " File #{@csvfile.file_name} uploaded unsuccessfully at #{Time.new} for #{@csvfile[:userid]}"
+    render 'edit'
+    return 
+  end #errors
+  @user = UseridDetail.where(:userid => session[:userid]).first
+  flash[:notice] = 'The upload of the file was successful'
+  file_for_warning_messages = "log/freereg_messages.log"
+  @message_file = File.new(file_for_warning_messages, "a")
+  @message_file.puts " File #{@csvfile.file_name} uploaded successfully at #{Time.new} for #{@csvfile[:userid]}"
+  place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
+  size = (File.size("#{place}"))
+  unit = 0.0002
+  @processing_time = (size.to_i*unit).to_i 
+  render 'process' 
 end #method
 
 def edit
@@ -90,7 +87,6 @@ end
 
 def update
   @user = UseridDetail.where(:userid => session[:userid]).first
-
   if params[:commit] == 'Process'
     @csvfile = Csvfile.find(session[:csvfile])
     @place  = @csvfile.file_name
@@ -100,7 +96,6 @@ def update
     unit = 0.0002
     processing_time = (size.to_i*unit).to_i       
     start = Time.now
-
     if params[:csvfile][:process]  == "Not waiting" || processing_time > 15
       pid1 = Kernel.spawn("rake build:process_freereg1_individual_csv[#{@csvfile[:userid]},#{@csvfile.file_name}]") 
       processing_time = 3*processing_time
@@ -110,26 +105,24 @@ def update
            # endtime = Time.now - start
     else
            success = FreeregCsvProcessor.process("recreate",'create_search_records',range)
-
            process_time = Time.now - start
            if success
             flash[:notice] =  "The csv file #{@place} has been processed into the database."
            else
             flash[:notice] =  "The csv file #{@place} was not processed into the database."
-
             file = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
             if File.exists?(file)
-             File.delete(file)
-                end #exists
+              File.delete(file)
+            end #exists
            end #if success
-      end #if waiting
-      @csvfile.delete
-     if session[:my_own]
+    end #if waiting
+    @csvfile.delete
+    if session[:my_own]
       redirect_to my_own_freereg1_csv_file_path
       return
-        end #session
-        redirect_to freereg1_csv_files_path
-        return 
+    end #session
+    redirect_to freereg1_csv_files_path
+    return 
   end  #commit
 end
 
