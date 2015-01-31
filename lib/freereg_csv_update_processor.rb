@@ -1089,7 +1089,13 @@ class FreeregCsvUpdateProcessor
                     process = check_for_replace(filename) unless recreate == "recreate"
                     @success = slurp_the_csv_file(filename) if process == true
                     n = process_the_data if @success == true  && process == true
-                    FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true
+                    if Dir.exists?(File.join(base_directory, @@header[:userid]))
+                      FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true 
+                    elsif Dir.exists?(File.join(base_directory, @@header[:userid].downcase))
+                      FileUtils.cp(filename,File.join(base_directory, @@header[:userid].downcase, @@header[:file_name] ),:verbose => true) if @success == true  && process == true 
+                    else
+                      @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}" 
+                    end
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     nn = nn + n unless n.nil?
                   end #filename loop end
