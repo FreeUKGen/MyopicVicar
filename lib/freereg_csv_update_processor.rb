@@ -1097,6 +1097,7 @@ class FreeregCsvUpdateProcessor
                       @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}" 
                     end
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
+                    @success = true
                     nn = nn + n unless n.nil?
                   end #filename loop end
 
