@@ -55,7 +55,7 @@
       <% else %>
         <p id="<%=file_name.id%>"  style="color:red">
       <% end %>
-        <%= link_to(file_name.file_name,freereg1_csv_file_path(file_name), :class => "btn  btn--small") %>  </p>
+       <%= link_to("#{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn  btn--small") %>  </p>
       <% end %>
       
     
