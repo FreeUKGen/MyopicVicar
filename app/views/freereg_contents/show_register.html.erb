@@ -1,9 +1,11 @@
-<% require 'record_type' %>
+
 
 <h4 style="text-align: center">Details of the 
  <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b> 
- of <b><%= @county %></b> on <%= Rails.application.config.dataset_date %>.  </h4> 
- <div style="text-align: center"><%= button_to 'Back to Places Index', show_freereg_content_path(@county_id, :anchor => "#{@place}"), method: :get , :class => "btn  btn--small" unless @county_id.nil? %> <br></div>
+ of <b><%= @county %></b>.  </h4> 
+  <div style="text-align: center"><%= link_to 'Back to County/Place Selection', freereg_contents_path, :class => "btn  btn--small"%> 
+<%= link_to 'Back to Place for this Church', show_place_path( @register.church.place), :class => "btn  btn--small" %> <%= link_to 'Back to Church for this Register', show_church_path( @register.church), :class => "btn  btn--small" %>
+    <br></div>
 
  <section class="island ">
 

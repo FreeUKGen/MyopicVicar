@@ -1,5 +1,7 @@
-<h2 class="text--center">The database contained the following information on <%= Rails.application.config.dataset_date %>. </h2>
-<div class="text--center"><%= button_to 'Back to Places Index', show_freereg_content_path( @county_id, :anchor => "#{@place}"), method: :get, :class => "btn  btn--small" unless @county_id.nil? %> </div>
+<h4 class="beta  text--teal"> <%= @county  %> general information</h4>
+<%= county_content(@chapman_code) %>
+<h2 class="text--center">The database contained the following information on <%= @place.place_name %> . </h2>
+<div class="text--center"><%= link_to 'Back to County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  </div>
 <div class="grid">
   <section class="island ">
 <table class="grid__item two-thirds table--bordered t50" >
@@ -64,7 +66,7 @@
        </tbody>
      </table> 
 <div  class="grid__item one-quarter float_right">
-<h4 style="text-align: center">The Place has the following Church(es)</h4>
+<h4 style="text-align: center">The Place has the following Churches</h4>
    <table class="table--bordered ">
 <% @place.churches.order_by(church_name: 1).each do |church| %>
   <tr> 

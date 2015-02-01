@@ -47,6 +47,7 @@ class FreeregContentsController < ApplicationController
   def show_place
     @place = Place.find(params[:id])
     @county =  @place.county
+    @chapman_code = ChapmanCode.values_at( @county)
     @country = @place.country
     @place_name = @place.place_name
     @names = @place.get_alternate_place_names
