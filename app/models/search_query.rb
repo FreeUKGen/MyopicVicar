@@ -1,5 +1,6 @@
 class SearchQuery
   include Mongoid::Document
+  store_in session: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
 
