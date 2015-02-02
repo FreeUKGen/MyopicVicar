@@ -57,6 +57,8 @@ class Place
 
   before_save :add_location_if_not_present
 
+  after_save :update_places_cache
+
   index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
   index({ chapman_code: 1, disabled: 1 })
@@ -109,6 +111,10 @@ class Place
       end
       self.location = [self[:longitude].to_f,self[:latitude].to_f]
     end
+  end
+
+  def update_places_cache
+    PlaceCache.refresh_all
   end
 
   def change_grid_reference(grid)
@@ -177,7 +183,7 @@ class Place
 
   def save_to_original
     if self.original_chapman_code.nil?
-      self.original_chapman_code = self.chapman_code 
+      self.original_chapman_code = self.chapman_code
       self.original_county = self.county
       self.original_country = self.country
       self.original_place_name = self.place_name
@@ -269,7 +275,7 @@ class Place
       p place
       if place._id == place_id
         p 'bypassing'
-        p place._id 
+        p place._id
       else
         p 'checking merge of this place'
         p place
@@ -281,7 +287,7 @@ class Place
       p place
       if place._id == place_id
         p 'bypassing'
-        p place._id 
+        p place._id
       else
         p 'merge of this place'
         p place
@@ -348,7 +354,7 @@ class Place
     end #self
     false
   end
-  
+
   def data_contents
     min = Time.new.year
     max = 1500
