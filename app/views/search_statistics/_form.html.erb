@@ -1,0 +1,125 @@
+<%= form_for(@search_statistic) do |f| %>
+  <% if @search_statistic.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@search_statistic.errors.count, "error") %> prohibited this search_statistic from being saved:</h2>
+
+      <ul>
+      <% @search_statistic.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :year %><br />
+    <%= f.number_field :year %>
+  </div>
+  <div class="field">
+    <%= f.label :month %><br />
+    <%= f.number_field :month %>
+  </div>
+  <div class="field">
+    <%= f.label :day %><br />
+    <%= f.number_field :day %>
+  </div>
+  <div class="field">
+    <%= f.label :hour %><br />
+    <%= f.number_field :hour %>
+  </div>
+  <div class="field">
+    <%= f.label :db %><br />
+    <%= f.text_field :db %>
+  </div>
+  <div class="field">
+    <%= f.label :n %><br />
+    <%= f.number_field :n %>
+  </div>
+  <div class="field">
+    <%= f.label :n_zero_result %><br />
+    <%= f.number_field :n_zero_result %>
+  </div>
+  <div class="field">
+    <%= f.label :n_limit_result %><br />
+    <%= f.number_field :n_limit_result %>
+  </div>
+  <div class="field">
+    <%= f.label :total_results %><br />
+    <%= f.number_field :total_results %>
+  </div>
+  <div class="field">
+    <%= f.label :median_results %><br />
+    <%= f.number_field :median_results %>
+  </div>
+  <div class="field">
+    <%= f.label :total_time %><br />
+    <%= f.number_field :total_time %>
+  </div>
+  <div class="field">
+    <%= f.label :max_time %><br />
+    <%= f.number_field :max_time %>
+  </div>
+  <div class="field">
+    <%= f.label :median_time %><br />
+    <%= f.number_field :median_time %>
+  </div>
+  <div class="field">
+    <%= f.label :n_time_gt_1s %><br />
+    <%= f.number_field :n_time_gt_1s %>
+  </div>
+  <div class="field">
+    <%= f.label :n_time_gt_10s %><br />
+    <%= f.number_field :n_time_gt_10s %>
+  </div>
+  <div class="field">
+    <%= f.label :n_time_gt_60s %><br />
+    <%= f.number_field :n_time_gt_60s %>
+  </div>
+  <div class="field">
+    <%= f.label :n_ln %><br />
+    <%= f.number_field :n_ln %>
+  </div>
+  <div class="field">
+    <%= f.label :n_fn %><br />
+    <%= f.number_field :n_fn %>
+  </div>
+  <div class="field">
+    <%= f.label :n_place %><br />
+    <%= f.number_field :n_place %>
+  </div>
+  <div class="field">
+    <%= f.label :n_nearby %><br />
+    <%= f.number_field :n_nearby %>
+  </div>
+  <div class="field">
+    <%= f.label :n_fuzzy %><br />
+    <%= f.number_field :n_fuzzy %>
+  </div>
+  <div class="field">
+    <%= f.label :n_inclusive %><br />
+    <%= f.number_field :n_inclusive %>
+  </div>
+  <div class="field">
+    <%= f.label :n_0_county %><br />
+    <%= f.number_field :n_0_county %>
+  </div>
+  <div class="field">
+    <%= f.label :n_1_county %><br />
+    <%= f.number_field :n_1_county %>
+  </div>
+  <div class="field">
+    <%= f.label :n_multi_county %><br />
+    <%= f.number_field :n_multi_county %>
+  </div>
+  <div class="field">
+    <%= f.label :n_date_integer %><br />
+    <%= f.text_field :n_date_integer %>
+  </div>
+  <div class="field">
+    <%= f.label :n_r_type %><br />
+    <%= f.number_field :n_r_type %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

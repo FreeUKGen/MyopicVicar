@@ -1,0 +1,75 @@
+<h1>Listing search_statistics</h1>
+
+<table>
+  <tr>
+    <th>Year</th>
+    <th>Month</th>
+    <th>Day</th>
+    <th>Hour</th>
+    <th>Db</th>
+    <th>N</th>
+    <th>N zero result</th>
+    <th>N limit result</th>
+    <th>Total results</th>
+    <th>Median results</th>
+    <th>Total time</th>
+    <th>Max time</th>
+    <th>Median time</th>
+    <th>N time gt 1s</th>
+    <th>N time gt 10s</th>
+    <th>N time gt 60s</th>
+    <th>N ln</th>
+    <th>N fn</th>
+    <th>N place</th>
+    <th>N nearby</th>
+    <th>N fuzzy</th>
+    <th>N inclusive</th>
+    <th>N 0 county</th>
+    <th>N 1 county</th>
+    <th>N multi county</th>
+    <th>N date integer</th>
+    <th>N r type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @search_statistics.each do |search_statistic| %>
+  <tr>
+    <td><%= search_statistic.year %></td>
+    <td><%= search_statistic.month %></td>
+    <td><%= search_statistic.day %></td>
+    <td><%= search_statistic.hour %></td>
+    <td><%= search_statistic.db %></td>
+    <td><%= search_statistic.n %></td>
+    <td><%= search_statistic.n_zero_result %></td>
+    <td><%= search_statistic.n_limit_result %></td>
+    <td><%= search_statistic.total_results %></td>
+    <td><%= search_statistic.median_results %></td>
+    <td><%= search_statistic.total_time %></td>
+    <td><%= search_statistic.max_time %></td>
+    <td><%= search_statistic.median_time %></td>
+    <td><%= search_statistic.n_time_gt_1s %></td>
+    <td><%= search_statistic.n_time_gt_10s %></td>
+    <td><%= search_statistic.n_time_gt_60s %></td>
+    <td><%= search_statistic.n_ln %></td>
+    <td><%= search_statistic.n_fn %></td>
+    <td><%= search_statistic.n_place %></td>
+    <td><%= search_statistic.n_nearby %></td>
+    <td><%= search_statistic.n_fuzzy %></td>
+    <td><%= search_statistic.n_inclusive %></td>
+    <td><%= search_statistic.n_0_county %></td>
+    <td><%= search_statistic.n_1_county %></td>
+    <td><%= search_statistic.n_multi_county %></td>
+    <td><%= search_statistic.n_date_integer %></td>
+    <td><%= search_statistic.n_r_type %></td>
+    <td><%= link_to 'Show', search_statistic %></td>
+    <td><%= link_to 'Edit', edit_search_statistic_path(search_statistic) %></td>
+    <td><%= link_to 'Destroy', search_statistic, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Search statistic', new_search_statistic_path %>
