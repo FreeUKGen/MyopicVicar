@@ -1,0 +1,2 @@
+module AtticFilesHelper
+end

@@ -1,0 +1,12 @@
+<h1>Select the userid for whom you wish to review attic files</h1>
+
+<% if flash[:notice] %>
+<div id="notice" style="color:red"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+</div>
+<% end %>
+<%= semantic_form_for @attic_file do |f| %>
+<%= f.input :userid, { :as => :select, :include_blank => false,  :label => "Select a Userid", :prompt => @prompt,:required => false, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%></div>
+<% end %>
+
+<%= link_to 'Back', attic_files_path %>

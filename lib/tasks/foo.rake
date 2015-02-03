@@ -157,12 +157,11 @@ namespace :foo do
   end
 
 desc "report on user details"
-  task :review_userid_files, [:len,:range] => [:environment] do |t, args|
-    require 'review_userid_files'
-    Mongoid.unit_of_work(disable: :all) do
-      ReviewUseridFiles.process(args.len,args.range)
+  task :load_files_into_userid_details, [:len,:range] => [:environment] do |t, args|
+    require 'load_files_into_userid_details'
+      LoadFilesIntoUseridDetails.process(args.len,args.range)
       puts "Task complete."
-    end
+  
   end
 
   task :freereg_update,[:range] => [:environment] do |t,args|

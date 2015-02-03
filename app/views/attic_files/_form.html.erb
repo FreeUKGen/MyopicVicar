@@ -1,0 +1,17 @@
+<%= form_for(@attic_file) do |f| %>
+  <% if @attic_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@attic_file.errors.count, "error") %> prohibited this attic_file from being saved:</h2>
+
+      <ul>
+      <% @attic_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

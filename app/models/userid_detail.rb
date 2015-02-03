@@ -43,7 +43,8 @@ class UseridDetail
   #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
 
   has_many :search_queries
-
+  has_many :freereg1_csv_files
+  has_many :attic_files
   validates_presence_of :userid, :email_address, :person_role
   validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
   validate :userid_and_email_address_does_not_exist, on: :create

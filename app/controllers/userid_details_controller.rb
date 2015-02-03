@@ -184,10 +184,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-     p params
     @userid = UseridDetail.new(params[:userid_detail])
     @userid.add_fields(params[:commit])
-    p  @userid
     @userid.save
     if @userid.errors.any?
       flash[:notice] = 'The registration was unsuccessful'

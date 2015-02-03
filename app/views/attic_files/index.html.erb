@@ -1,0 +1,21 @@
+<h1>Listing attic_files</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @attic_files.each do |attic_file| %>
+  <tr>
+    <td><%= link_to 'Show', attic_file %></td>
+    <td><%= link_to 'Edit', edit_attic_file_path(attic_file) %></td>
+    <td><%= link_to 'Destroy', attic_file, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Attic file', new_attic_file_path %>

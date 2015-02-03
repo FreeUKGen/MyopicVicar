@@ -1,0 +1,35 @@
+class AtticFilesController < InheritedResources::Base
+  def select
+    get_user_info_from_userid
+    @attic_file = AtticFile.new
+    @options = UseridDetail.get_userids_for_selection('all')
+    @prompt = 'Please select a userid:'
+    @location = 'location.href= "/attic_files/select_userid?userid=" + this.value'
+  end
+  def select_userid
+    @files_for = params[:userid]
+    redirect_to attic_file_path(@files_for)
+  end
+  def show
+    user = UseridDetail.where(:userid => params[:id]).first
+    @files = user.attic_files
+    @user = user.userid
+  end
+  def download
+    file = AtticFile.find(params[:id])
+    my_file =  File.join(Rails.application.config.datafiles, file.userid_detail.userid,".attic",file.name)
+    send_file( my_file, :filename => file.name)
+  end
+  def destroy
+     file = AtticFile.find(params[:id])
+     user = file.userid_detail.userid
+     p user
+     file.destroy
+     flash[:notice] = 'The destruction of the file was successful'
+     redirect_to attic_file_path(user)
+  end
+
+
+
+
+end

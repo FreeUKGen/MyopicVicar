@@ -79,6 +79,8 @@ class Freereg1CsvFile
 
   has_many :freereg1_csv_entries, validate: false
   belongs_to :register, index: true
+  belongs_to :userid_detail, index: true
+  
   #register belongs to church which belongs to place
   has_one :csvfile
   has_many :batch_errors

@@ -14,6 +14,11 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+   get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
+   get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
+   get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
+  resources :attic_files
+
 
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   resources :feedbacks
