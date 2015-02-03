@@ -49,12 +49,13 @@ class LoadFilesIntoUseridDetails
       files.each do |filename|
         userid = filename.split("/")
         p userid
-        files_for = Dir.glob(File.join(base_directory,userid[offset],userids[1]), File::FNM_CASEFOLD).sort
-        p files_for
+        dir = File.join(base_directory,userid[offset],userids[1])
+        p dir
+        files_for = Dir.glob(dir, File::FNM_CASEFOLD).sort
         filenames[userid[offset]] = files_for unless userid[offset].nil?
         attic_dir = File.join(base_directory,userid[offset],".attic","#{userids[1]}.*")
-        attic_files_for = Dir.glob(attic_dir, File::FNM_CASEFOLD).sort
-        p attic_files_for
+        p attic_dir
+        attic_files_for = Dir.glob(attic_dir, File::FNM_CASEFOLD | File::FNM_DOTMATCH).sort
         attic_filenames[userid[offset]] = attic_files_for unless userid[offset].nil?
       end
     else
