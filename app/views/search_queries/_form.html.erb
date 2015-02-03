@@ -80,9 +80,9 @@
 				<option value="" label="Select one or more counties"></option>
 				<% ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)).each_pair do |label, value| %>
 					<%if @search_query.chapman_codes.include?(value)%>
-						<option value="<%=value%>" selected="selected"> <%=label%></option>
+						<option value="<%= value %>" selected="selected"> <%= label %></option>
 					<%else%>
-						<option value="<%=value%>"><%=label%></option>
+						<option value="<%= value %>"><%= label %></option>
 					<% end %>
 				<% end %>
 			</select>
@@ -106,11 +106,11 @@
 			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]">
 				<option value=""></option>
 				<% RecordType::OPTIONS.each_pair do |name, value| %>
-	      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
-	    <option value="<%=value%>" selected="selected"> <%=name%></option>
-	    <%else%>
-				<option value="<%=value%>"><%=name%></option>
-				<% end %>
+		      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
+		    		<option value="<%= value %>" selected="selected"> <%= name %></option>
+		    	<%else%>
+						<option value="<%= value %>"><%= name %></option>
+					<% end %>
 	      <% end %>
 			</select>
 		</li>
@@ -153,18 +153,18 @@
 </section>
 
 	<script type="text/javascript" charset="utf-8" >
-	<% if @search_query && @search_query.chapman_codes.size > 0 %>
-	var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
-	<% if @search_query.places.size > 0 %>
-	selection["selected"]="<%= @search_query.places.first.id %>";
-	<% end %>
-	<% end %>
-	(function($) {$("#search_query_place_ids").remoteChained({
-	parents : "#search_query_chapman_codes",
-	url : "/places/for_search_form.json",
-	loading : "Loading..."
-	<% if @search_query && @search_query.chapman_codes.size == 1 %>
-	, bootstrap: selection
-	<% end %>
-	});})(jQuery);
+		<% if @search_query && @search_query.chapman_codes.size > 0 %>
+			var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+			<% if @search_query.places.size > 0 %>
+				selection["selected"]="<%= @search_query.places.first.id %>";
+			<% end %>
+		<% end %>
+		(function($) {$("#search_query_place_ids").remoteChained({
+			parents : "#search_query_chapman_codes",
+			url : "/places/for_search_form.json",
+			loading : "Loading..."
+			<% if @search_query && @search_query.chapman_codes.size == 1 %>
+				, bootstrap: selection
+			<% end %>
+		});})(jQuery);
 	</script>
