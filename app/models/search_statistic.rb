@@ -8,7 +8,7 @@ class SearchStatistic
   # a database dimension, a date dimension, and
   # a fact table populated by search_queries
 
-#  field :interval_end, type: DateTime
+  field :interval_end, type: DateTime
 
   ###################################
   # Date Dimension Attributes
@@ -63,7 +63,6 @@ class SearchStatistic
     until self.up_to_date? do
       stat = SearchStatistic.new
       stat.populate
-      binding.pry
       stat.save!      
     end
   end  
@@ -76,7 +75,7 @@ class SearchStatistic
   end
   
   def process_query(query)
-    self.n_searches = self.n_searches
+    self.n_searches += 1
     self.n_zero_result += 1   if query.result_count == 0
     self.n_limit_result += 1  if query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     
@@ -91,10 +90,10 @@ class SearchStatistic
     
     self.n_ln += 1            unless query.last_name.blank?
     self.n_fn += 1            unless query.first_name.blank?
-    self.place += 1           unless query.places.empty?
-    self.nearby += 1          if query.search_nearby_places
-    self.fuzzy += 1           if query.fuzzy
-    self.inclusive += 1       if query.inclusive
+    self.n_place += 1         unless query.places.empty?
+    self.n_nearby += 1        if query.search_nearby_places
+    self.n_fuzzy += 1         if query.fuzzy
+    self.n_inclusive += 1     if query.inclusive
     self.n_0_county += 1      if query.chapman_codes.empty?
     self.n_1_county += 1      if query.chapman_codes.size == 1
     self.n_multi_county += 1  if query.chapman_codes.size > 1
@@ -104,7 +103,7 @@ class SearchStatistic
 
   def populate
     populate_dimension
-#    populate_facts
+    populate_facts
   end
   
   def populate_dimension
@@ -117,11 +116,11 @@ class SearchStatistic
     self.weekday  = terminus_ad_quem.wday    
 
     self.interval_end = terminus_ad_quem    
+
   end
 
   def populate_facts
     matching_queries.each do |q| 
-      p q
       process_query(q)
     end
   end
@@ -141,11 +140,13 @@ class SearchStatistic
     @terminus_a_quo ||= most_recent_statistic_date || earliest_search_query_date
   end
 
-  def next_hour(prev_time)
-    raw_next = prev_time + 1*60*60 #add one hour of seconds to previous time
+  def next_hour(prev_datetime)
+    # convert to a time before doing math
+    prev_time = prev_datetime.to_time
 
+    raw_next = prev_time + 1*60*60 #add one hour of seconds to previous time
     # create new time in next hour with 0 secs and 0 mins
-    Time.new(raw_next.year, raw_next.month, raw_next.day, raw_next.hour)        
+    Time.new(raw_next.year, raw_next.month, raw_next.day, raw_next.hour, 0, 0, 0)  
   end
 
   
@@ -154,13 +155,14 @@ class SearchStatistic
   end
   
   def most_recent_statistic_date
-    stat = SearchStatistic.where(:db => this_db).asc(:year, :month, :day).last
+    stat = SearchStatistic.where(:db => this_db).asc(:interval_end).last
+
     stat ? stat.interval_end : nil
   end
   
   def this_db
-    db = Mongoid.sessions[:local_writable][:database]
-    host = Mongoid.sessions[:local_writable][:hosts].first
+    db = Mongoid.sessions[:default][:database]
+    host = Mongoid.sessions[:default][:hosts].first
     "#{host}/#{db}"
   end
   
