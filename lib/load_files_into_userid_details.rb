@@ -48,13 +48,10 @@ class LoadFilesIntoUseridDetails
       files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
       files.each do |filename|
         userid = filename.split("/")
-        p userid
         dir = File.join(base_directory,userid[offset],userids[1])
-        p dir
         files_for = Dir.glob(dir, File::FNM_CASEFOLD).sort
         filenames[userid[offset]] = files_for unless userid[offset].nil?
         attic_dir = File.join(base_directory,userid[offset],".attic","#{userids[1]}.*")
-        p attic_dir
         attic_files_for = Dir.glob(attic_dir, File::FNM_CASEFOLD | File::FNM_DOTMATCH).sort
         attic_filenames[userid[offset]] = attic_files_for unless userid[offset].nil?
       end
@@ -62,7 +59,6 @@ class LoadFilesIntoUseridDetails
       @@message_file.puts "unknown range style"
     end
     p "There are #{filenames.length} userid files"
-    p filenames
     number_missed = 0
     number_files_missed = 0
     missing_files = Hash.new
@@ -82,7 +78,7 @@ class LoadFilesIntoUseridDetails
             my_files = Freereg1CsvFile.where(:userid => name,:file_name => file_parts[-1]).all
             my_files.each do |my_file|
               my_file.userid_detail = my_user
-             # my_file.save
+              my_file.save
             end
             # 
          end 
@@ -94,12 +90,12 @@ class LoadFilesIntoUseridDetails
         my_user = UseridDetail.where(:userid => name).first
         value.each do |file|
           file_parts = file.split("/")
-          p file_parts
           date = file_parts[-1].split(".")
-          date_file = DateTime.strptime(date[2],'%s') 
+          date[2] = date[2].gsub(/\D/,"")
+          date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
           attic = AtticFile.new(:name => file_parts[-1],:date_created => date_file)
           attic.userid_detail = my_user
-         # attic.save 
+          attic.save 
         end
       end
   end
@@ -124,9 +120,9 @@ class LoadFilesIntoUseridDetails
 
     p "Out of #{filenames.length} user files we found #{number} loaded and #{number_missed} missing userids and had #{number_missing} userids without user files "
     @@message_file.puts missing_userid
-    p "Missing files"
+ 
     @@message_file.puts missing_files
-    p missing_files
+    
 
 
   end #end process
