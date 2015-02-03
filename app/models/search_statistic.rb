@@ -1,4 +1,4 @@
-class SearchStatistic < ActiveRecord::Base 
+class SearchStatistic
   include Mongoid::Document
 
   # Search Statistics aggregate a single hour's
