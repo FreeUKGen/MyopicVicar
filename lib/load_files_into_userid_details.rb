@@ -43,11 +43,11 @@ class LoadFilesIntoUseridDetails
       files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
       files.each do |filename|
         userid = filename.split("/")
-        files_for = Dir.glob(File.join(base_directory,userid[4],userids[1]), File::FNM_CASEFOLD).sort
-        filenames[userid[4]] = files_for unless userid[4].nil?
-        attic_dir = File.join(base_directory,userid[4],".attic","#{userids[1]}.*")
+        files_for = Dir.glob(File.join(base_directory,userids[3],userids[1]), File::FNM_CASEFOLD).sort
+        filenames[userid[3]] = files_for unless userid[3].nil?
+        attic_dir = File.join(base_directory,userid[3],".attic","#{userids[1]}.*")
         attic_files_for = Dir.glob(attic_dir, File::FNM_CASEFOLD).sort
-        attic_filenames[userid[4]] = attic_files_for unless userid[4].nil?
+        attic_filenames[userid[3]] = attic_files_for unless userid[3].nil?
       end
     else
       @@message_file.puts "unknown range style"
