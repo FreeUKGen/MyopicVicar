@@ -215,9 +215,13 @@ class Freereg1CsvFile
     if File.file?(file_location)
       newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
       Dir.mkdir(newdir) unless Dir.exists?(newdir)
-      renamed_file = (file_location + "." + (Time.now.to_i).to_s).to_s
+      time = Time.now.to_i.to_s
+      renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
       FileUtils.mv(renamed_file,newdir,:verbose => true)
+      user =UseridDetail.where(:userid_lower_case => self.userid.downcase).first
+      user.attic_files << AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'))
+      user.save(validate: false)
     else
       p "file does not exist"
     end
@@ -368,14 +372,13 @@ class Freereg1CsvFile
 
     def update_entries_and_search_records(param)
       self.freereg1_csv_entries.each do |entry|
-        p 'entries and search records'
+       
         entry.update_attributes(:county => param[:county],:place =>param[:place],:register_type => param[:register_type])
         entry.search_record.update_attributes(:place_id => param[:place_id],:chapman_code => param[:county], :location_name =>"#{param[:place]} (#{param[:church_name]})") unless entry.search_record.nil?
       end
     end
     def update_entries_and_search_records_for_type(param)
-      p 'entry'
-      p self.freereg1_csv_entries.count
+     
       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:register_type => param)
@@ -383,8 +386,7 @@ class Freereg1CsvFile
     end
 
     def update_entries_and_search_records_for_church(place_name,church_name)
-      p 'entry for church'
-      p self.freereg1_csv_entries.count
+      
       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:church_name => church_name)
@@ -392,9 +394,7 @@ class Freereg1CsvFile
       end
     end
     def update_entries_and_search_records_for_place(place,church_name)
-      p 'entry for place'
-      p place
-      p self.freereg1_csv_entries.count
+     
       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:place => place.place_name)
@@ -402,9 +402,7 @@ class Freereg1CsvFile
       end
     end
     def update_entries_and_search_records_for_county(county,chapman_code)
-      p 'entry for place'
-      p self.freereg1_csv_entries.count
-      self.freereg1_csv_entries.each do |entry|
+       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:county => chapman_code)
         entry.search_record.update_attributes(:chapman_code => chapman_code) unless entry.search_record.nil?
@@ -437,6 +435,7 @@ class Freereg1CsvFile
 
     def clean_up
       self.update_number_of_files
+      place = self.register.church.place
       Place.recalculate_last_amended_date(place)
     end
 
@@ -514,4 +513,5 @@ class Freereg1CsvFile
         self.update_attributes(:locked_by_coordinator => "true")
       end
     end
+
  end

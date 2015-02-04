@@ -30,6 +30,7 @@ class Register
 
 
   def self.update_or_create_register(freereg1_csv_file)
+
     # find if register exists
     register = find_register(freereg1_csv_file.to_register)
     if register
@@ -40,6 +41,9 @@ class Register
       # create the register
       register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)
     end
+    user =UseridDetail.where(:userid_lower_case => freereg1_csv_file.userid.downcase).first
+    user.freereg1_csv_files << freereg1_csv_file
+    user.save(validate: false)
   end
 
   def self.create_register_for_church(args,freereg1_csv_file)
@@ -64,6 +68,8 @@ class Register
     #now create the register
     register = Register.new(args)
     register.freereg1_csv_files << freereg1_csv_file
+
+
 
     @@my_church.registers << register
     @@my_church.save
@@ -99,16 +105,13 @@ class Register
     register
   end
 
- 
+
   def change_type(type)
-    p 'updating register type'
-    p self
-    p type
+
     unless self.register_type == type
       self.update_attributes(:register_type => type, :alternate_register_name =>  self.church.church_name.to_s + " " + type.to_s )
       self.freereg1_csv_files.each do |file|
-        p 'updating file '
-        p file
+
         file.update_attributes(:register_type => type)
         file.update_entries_and_search_records_for_type(type)
       end #file
@@ -120,32 +123,25 @@ class Register
   end
 
   def merge_registers
-    p 'merging'
-    p self
+
     register_id = self._id
-    p register_id
-    p self.register_type
+
     church = self.church
-    p church
+
     church.registers.each do |register|
-      p 'loop registers'
-      p register
-      p register._id
+
       register.register_type
       if (register._id == register_id || register.register_type != self.register_type)
 
-        p 'bypassed'
+
       else
-        p 'merging this register'
-        p register
+
         return [true, "a register being merged has input"] if register.has_input?
         register.freereg1_csv_files.each do |file|
-          p 'updating file '
-          p file
+
           file.update_attributes(:register_id => register_id)
         end
-        p ' removing register'
-        p register
+
         church.registers.delete(register)
       end
     end
@@ -156,8 +152,7 @@ class Register
     value = false
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
                      self.minimum_year_for_register.present? || self.maximum_year_for_register.present? )
-    p 'has input'
-    p value
+
     value
   end
 end

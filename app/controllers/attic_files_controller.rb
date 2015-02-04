@@ -12,7 +12,7 @@ class AtticFilesController < InheritedResources::Base
   end
   def show
     user = UseridDetail.where(:userid => params[:id]).first
-    @files = user.attic_files
+    @files = user.attic_files.order_by("name ASC", "date_created DESC")
     @user = user.userid
   end
   def download
