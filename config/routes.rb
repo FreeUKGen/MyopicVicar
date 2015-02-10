@@ -20,6 +20,9 @@ MyopicVicar::Application.routes.draw do
   resources :attic_files
 
 
+  resources :search_statistics
+
+
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   resources :feedbacks
 
