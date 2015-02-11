@@ -153,6 +153,30 @@ FREEREG1_CSV_FILES = [
     }
    },
   { 
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/Devonian/DEVLANBU.CSV",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :type => RecordType::BURIAL,
+    :user => 'Devonian',
+    :chapman_code => 'DEV',
+    :entry_count => 128,
+    :entries => {
+      :first => {
+        :line_id => "Devonian.DEVLANBU.CSV.1",
+        :burial_person_forename => 'John',
+        :relative_surname => 'NORTHWAY',
+        :burial_date => '7 Dec 1802',
+        :modern_year => 1802
+      }, # add problem entry here
+      :last => {
+        :line_id => "Devonian.DEVLANBU.CSV.128",
+        :burial_person_forename => 'Richardus',
+        :burial_person_surname => 'OXENHAM',
+        :burial_date => '13 Mar 1693/4',
+        :modern_year => 1694
+      }
+    }
+   },
+  { 
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTWILMA.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,

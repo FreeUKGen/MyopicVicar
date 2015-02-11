@@ -52,6 +52,18 @@ module Freereg1Translator
     :file_line_number => :file_line_number,
   }
 
+  def self.translate(file, entry)
+    entry_attrs = entry_attributes(entry) # straightforward remapping of csv entry fields to corresponding search record fields
+    file_attrs = file_attributes(file)    # populating search record fields from file header
+    file_attrs.merge!(entry_attrs)        # join the two
+    names = transform_names(entry)        # populate names from csv entry based on mapping file
+    file_attrs[:transcript_names] = names
+    
+    file_attrs
+  end
+
+
+
   def self.entry_attributes(entry)
     new_attrs = {}
     KEY_MAP.keys.each do |key|
@@ -69,23 +81,27 @@ module Freereg1Translator
 
     new_attrs
   end
-  
-  def self.expanded_attrs(entry)
-    extras = []
+
+  # create transcript names from the entry and mapping configuration  
+  def self.transform_names(entry)
+    names = []
     role_fields_map = begin
       YAML.load(File.open("#{Rails.root}/config/csv_layout.yml"))
     rescue ArgumentError => e
       puts "Could not parse YAML: #{e.message}"
     end
-      # consider duplicate field keys for different formats (see relative surnames above)
-    roles=role_fields_map
-    roles.each do |role|
+    # consider duplicate field keys for different formats (see relative surnames above)
+    role_fields_map.each do |role|
       role_name = role['role']
       type_name = role['type']
       fields_map = role['fields']
 
       first_name_keys = fields_map['first_name'].is_a?(Array) ? fields_map['first_name'] : [fields_map['first_name']]
-      if first_name_keys.detect { |key| entry[key.to_sym] }
+      last_name_keys = fields_map['last_name'].is_a?(Array) ? fields_map['last_name'] : [fields_map['last_name']]
+      
+      first_name_key = first_name_keys.detect { |key| entry[key.to_sym] }
+      last_name_key = last_name_keys.detect { |key| entry[key.to_sym] }
+      if first_name_key && last_name_key # does it have both first and last names?
         extra_name = { :role => role_name, :type => type_name }
         fields_map.each_pair do |standard, original|
           if original.is_a? Array
@@ -94,20 +110,12 @@ module Freereg1Translator
             extra_name[standard.to_sym] = entry[original.to_sym]
           end
         end
-
-        extras << extra_name
-      end  
+        names << extra_name
+      end    
     end
-    extras
+  
+    names
 
   end
   
-  def self.translate(file, entry)
-    entry_attrs = entry_attributes(entry)
-    file_attrs = file_attributes(file)
-    file_attrs.merge!(entry_attrs)
-    file_attrs[:transcript_names] = expanded_attrs(entry)
-    file_attrs
-  end
-
 end

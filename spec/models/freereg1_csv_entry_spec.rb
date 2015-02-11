@@ -49,7 +49,7 @@ describe Freereg1CsvEntry do
   end
 
   it "should parse each entry correctly" do
-    FREEREG1_CSV_FILES.each_with_index do |file, index|
+    FREEREG1_CSV_FILES[3..4].each_with_index do |file, index|
 #      puts "Testing #{file[:filename]}"
       process_test_file(file)
       file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
@@ -161,7 +161,11 @@ describe Freereg1CsvEntry do
             last_name = :groom_surname
           elsif file[:type] == RecordType::BURIAL
             first_name = :burial_person_forename
-            last_name = :burial_person_surname
+            if entry[:burial_person_surname]
+              last_name = :burial_person_surname
+            else
+              last_name = :relative_surname
+            end
           else
             first_name = :person_forename
             last_name = :father_surname
@@ -170,6 +174,7 @@ describe Freereg1CsvEntry do
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 2 }, true)
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] - 2 }, false)
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 2 }, false)
+#        binding.pry
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] + 2 }, true)
 
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 12,:end_year => entry[:modern_year] - 10 }, false)
