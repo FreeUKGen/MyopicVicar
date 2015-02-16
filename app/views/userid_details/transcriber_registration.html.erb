@@ -1,105 +1,140 @@
 <h4 class="title text--center">Transcriber Registration</h4>
 <% if flash[:notice] %>
-<div class="weight--semibold text--center" style="color:red"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
+  <div class="weight--semibold text--center" style="color:red"><br/>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br/>
+  </div>
 <% end %>
 <% if @userid.errors.any? %>
-<h4 class="text--center"><%= pluralize(@userid.errors.count, "error") %> prohibited this search from being processed:</h4>
-<ul class="validation-list" >
-  <% @userid.errors.messages.each do |key, msg| %>
-  <li class="validation-list__error text--center" ><%= msg[0] %></li>
-  <% end %>
-</ul>
-<%@userid.errors.clear%>
+  <h4 class="text--center"><%= pluralize(@userid.errors.count, "error") %> prohibited this search from being processed:</h4>
+  <ul class="validation-list" >
+    <% @userid.errors.messages.each do |key, msg| %>
+      <li class="validation-list__error text--center" ><%= msg[0] %></li>
+    <% end %>
+  </ul>
+  <%@userid.errors.clear%>
 <% end %>
 
 <%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
-
-  <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Your Forename  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Provide your forename for when we contact you</span></a>
+  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+    <label class="label" for="name">Your Forename
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>Provide your forename for when we contact you</span>
+      </a>
     </label>
     <% if @userid.person_forename.nil? %>
-    <input name="userid_detail[person_forename]" type="text" class="text-input" placeholder="Mandatory" >
+      <input name="userid_detail[person_forename]" type="text" class="text-input" placeholder="Mandatory" >
     <% else %>
-    <input name="userid_detail[person_forename]" type="text" class="text-input" value="<%=@userid.person_forename%>">
+      <input name="userid_detail[person_forename]" type="text" class="text-input" value="<%=@userid.person_forename%>">
     <% end %>
   </li>
-    <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Your Surname  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Provide your surname for when we contact you</span></a>
+  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+    <label class="label" for="name">Your Surname
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>Provide your surname for when we contact you</span>
+      </a>
     </label>
     <% if @userid.person_surname.nil? %>
-    <input name="userid_detail[person_surname]" type="text" class="text-input" placeholder="Mandatory" >
+      <input name="userid_detail[person_surname]" type="text" class="text-input" placeholder="Mandatory" >
     <% else %>
-    <input name="userid_detail[person_surname]" type="text" class="text-input" value="<%=@userid.person_surname%>">
+      <input name="userid_detail[person_surname]" type="text" class="text-input" value="<%=@userid.person_surname%>">
     <% end %>
   </li>
-  <li  class="grid__item  one-third  palm-one-whole" id="email_address_input">
-    <label class="label" for="email_address">Your email address <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Enter your email address so we can contact you; it will not be made public</span>
+  <li class="grid__item  one-third  palm-one-whole" id="email_address_input">
+    <label class="label" for="email_address">Your email address
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>Enter your email address so we can contact you; it will not be made public</span>
       </a>
     </label>
     <% if @userid.email_address.nil? %>
-    <input name="userid_detail[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+      <input name="userid_detail[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
     <% else%>
-    <input name="userid_detail[email_address]" type="text" class="text-input" value="<%=@userid.email_address%>">
+      <input name="userid_detail[email_address]" type="text" class="text-input" value="<%=@userid.email_address%>">
     <% end%>
   </li>
-
-  <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Identifier  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span> Provide us with a unique identification. This will be used by the system to identify you at all times. It must only contain alphabetic characters and numbers; it must NOT contain any special characters or spaces. It can be of any length. Avoid using your forename as it likely to have already been taken.</span></a>
+  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+    <label class="label" for="name">Identifier
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>
+          Provide us with a unique identification.
+          This will be used by the system to identify you at all times.
+          It must only contain alphabetic characters and numbers; it must NOT
+          contain any special characters or spaces. It can be of any length.
+          Avoid using your forename as it likely to have already been taken.
+        </span>
+      </a>
     </label>
     <% if @userid.userid.nil? %>
-    <input name="userid_detail[userid]" type="text" class="text-input" placeholder="Mandatory" >
+      <input name="userid_detail[userid]" type="text" class="text-input" placeholder="Mandatory" >
     <% else %>
-    <input name="userid_detail[userid]" type="text" class="text-input" value="<%=@userid.userid%>">
+      <input name="userid_detail[userid]" type="text" class="text-input" value="<%=@userid.userid%>">
     <% end %>
   </li>
-<li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Location  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Indicate the country you live in</span></a>
+  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+    <label class="label" for="name">Location
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>Indicate the country you live in</span>
+      </a>
     </label>
     <% if @userid.address.nil? %>
-    <input name="userid_detail[address]" type="text" class="text-input" placeholder="Optional" >
+      <input name="userid_detail[address]" type="text" class="text-input" placeholder="Optional" >
     <% else %>
-    <input name="userid_detail[address]" type="text" class="text-input" value="<%=@userid.address%>">
+      <input name="userid_detail[address]" type="text" class="text-input" value="<%= @userid.address %>">
     <% end %>
   </li>
-    <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Your Telephone Number  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Provide your telephone number in case our coordinator wishes to call you.</span></a>
+    <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+    <label class="label" for="name">Your Telephone Number
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>Provide your telephone number in case our coordinator wishes to call you.</span>
+      </a>
     </label>
     <% if @userid.telephone_number.nil? %>
-    <input name="userid_detail[telephone_number]" type="text" class="text-input" placeholder="Optional" >
+      <input name="userid_detail[telephone_number]" type="text" class="text-input" placeholder="Optional" >
     <% else %>
-    <input name="userid_detail[telephone_number]" type="text" class="text-input" value="<%=@userid.telephone_number%>">
+      <input name="userid_detail[telephone_number]" type="text" class="text-input" value="<%= @userid.telephone_number %>">
     <% end %>
   </li>
-
-
-  <li  class="grid__item  one-half  palm-one-whole" id="syndicate_input">
-    <label class="label" for="syndicate">
-      Syndicate <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Select the syndicate you would like to work with. If you are in doubt select the general group and they will reassign you depending upon your interests.</span></a>
-    </label>  
+  <li class="grid__item  one-half  palm-one-whole" id="syndicate_input">
+    <label class="label" for="syndicate">Syndicate
+      <a href="#" class="right_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>
+          Select the syndicate you would like to work with.
+          If you are in doubt select the general group and they will reassign
+          you depending upon your interests.
+        </span>
+      </a>
+    </label>
     <select id="syndicate" name="userid_detail[syndicate]" class="select" required="required" size="5">
       <% @syndicates.each do |value| %>
-      <% if value == @userid.syndicate %>
-      <option value="<%=value%>" selected="selected" ><%=value%></option>
-      <% else %>
-      <option value="<%=value%>" ><%=value%></option>
-      <% end %>
+        <% if value == @userid.syndicate %>
+          <option value="<%=value%>" selected="selected" ><%=value%></option>
+        <% else %>
+          <option value="<%=value%>" ><%=value%></option>
+        <% end %>
       <% end %>
     </select>
   </li>
-
-  <li  class="grid__item  one-half palm-one-whole" id="transcriber_input">
+  <li class="grid__item  one-half palm-one-whole" id="transcriber_input">
     <label class="label" for="transcription_agreement">
-      Review our <%= link_to 'participation agreement', "../contributing-to-the-freereg-project/free-uk-genealogy-transcriber-agreement"%> and confirm your acceptance.<a href="#" class="left_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please indicate that you are willing to accept the transcriber agreement.</span></a>
-    </label>  
+      Review our <%= link_to 'participation agreement', "../contributing-to-the-freereg-project/free-uk-genealogy-transcriber-agreement"%> and confirm your acceptance.
+      <a href="#" class="left_tooltip">
+        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+        <span>Please indicate that you are willing to accept the transcriber agreement.</span>
+      </a>
+    </label>
     <select id="transcription_agreement" name="userid_detail[transcription_agreement]" class="select" required="required" size="5">
       <% @transcription_agreement.each do |value| %>
-      <% if value == @userid.transcription_agreement %>
-      <option value="<%=value%>" selected="selected" ><%=value%></option>
-      <% else %>
-      <option value="<%=value%>" ><%=value%></option>
-      <% end %>
+        <% if value == @userid.transcription_agreement %>
+          <option value="<%= value %>" selected="selected"><%= value %></option>
+        <% else %>
+          <option value="<%= value %>" ><%= value %></option>
+        <% end %>
       <% end %>
     </select>
   </li>
@@ -110,6 +145,12 @@
         :button_html => { :class => "btn", :value => 'Register Transcriber' },
         :wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
 
-<% end%>
-<br>
-<p><b>After submitting this form you will be redirected to the home page and will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window) WITHIN 24HRS. </b></p>
+<% end %>
+<p>
+  <b>
+    After submitting this form you will be redirected to the home page and will
+    receive an email that contains a link to complete the registration process.
+    Click on that link (or copy and paste it into you browser address window)
+    WITHIN 24HRS.
+  </b>
+</p>
