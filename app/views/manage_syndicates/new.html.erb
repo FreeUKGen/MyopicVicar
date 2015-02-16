@@ -5,10 +5,10 @@
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
-   <% end %>  
+   <% end %>
 <%= semantic_form_for @manage_syndicate, :html => { :class => "grid" } do |f| %>
-  <%= f.input :action, { :as => :select, :include_blank => true,  :label => @prompt, :collection => @options, :width => 10 ,:input_html => {'onchange' => @location , :class => "text--input" } , :wrapper_html => { :class => "grid__item  one-half lap-two-fifths palm-one-whole " }}%></div> 
-<% end %> 
+  <%= f.input :action, { :as => :select, :prompt => "Select",  :label => @prompt, :collection => @options, :width => 10 ,:input_html => {'onchange' => @location , :class => "text--input" } , :wrapper_html => { :class => "grid__item  one-half lap-two-fifths palm-one-whole " }}%>
+<% end %>
 </div>
 </div>
 </div>

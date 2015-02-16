@@ -1,13 +1,13 @@
 <div id="notice" style="color:red">
 <% if flash[:notice] %>
  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-<% end %> 
-</div> 
+<% end %>
+</div>
 <%= semantic_form_for @userid do |f| %>
-
-<%= f.input :userid, { :as => :select, :include_blank => false, :label => @prompt,  :required => false,:size => 5 , :collection => @userids,:input_html => {'onchange' => @location} }%> </div>
-<% end %> 
-
-
-
-
+  <%= f.input :userid, { :as => :select, :prompt => "Select",
+                        :label => @prompt,
+                        :include_blank => true,
+                        :required => false,:size => 5,
+                        :collection => @userids,
+                        :input_html => {'onchange' => @location} }%>
+<% end %>

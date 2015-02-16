@@ -6,7 +6,5 @@
 </div>
 <% end %>
 <%= semantic_form_for @attic_file do |f| %>
-<%= f.input :userid, { :as => :select, :include_blank => false,  :label => "Select a Userid", :prompt => @prompt,:required => false, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%></div>
+  <%= f.input :userid, { :as => :select, :label => "Select a Userid", :prompt => @prompt,:required => false, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%>
 <% end %>
-
-<%= link_to 'Back', attic_files_path %>
