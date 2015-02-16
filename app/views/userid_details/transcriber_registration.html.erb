@@ -128,15 +128,10 @@
         <span>Please indicate that you are willing to accept the transcriber agreement.</span>
       </a>
     </label>
-    <select id="transcription_agreement" name="userid_detail[transcription_agreement]" class="select" required="required" size="5">
-      <% @transcription_agreement.each do |value| %>
-        <% if value == @userid.transcription_agreement %>
-          <option value="<%= value %>" selected="selected"><%= value %></option>
-        <% else %>
-          <option value="<%= value %>" ><%= value %></option>
-        <% end %>
-      <% end %>
-    </select>
+    <%= f.label :transcription_agreement do %>
+      <%= f.check_box :transcription_agreement, {}, "true", "false" %>
+      Agree
+    <% end %>
   </li>
 
 <%= f.action :submit,
