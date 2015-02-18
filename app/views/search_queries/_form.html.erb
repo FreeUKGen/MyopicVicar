@@ -73,8 +73,8 @@
 				County
 				<a href="#" class="left_tooltip">
 					<img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-					<span>These are the county boundaries as specified in 1831. Note if multiple Counties are selected a Place CANNOT be selected. All Places will be considered.</span>
-				</a><small class="additional">Select one (hold Ctrl for multiple)</small>
+					<span>These are the county boundaries as specified in 1831. Note if multiple counties are selected, all places within those counties will be searched.</span>
+				</a><small class="additional">Select one to three (hold Ctrl for multiple)</small>
 			</label>
 			<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" }>
 				<option value="" label="Select one or more counties"></option>
@@ -91,7 +91,7 @@
 			<label class=" label" for="search_query_place_ids">
 				Place
 				<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-					<span>This form fills when a SINGLE county is selected. Select a single Place or leave blank for ALL the places in a county. Search Nearby Places below adds additional places nearby your selection</span>
+					<span>This form fills when a SINGLE county is selected. Select a single place or leave blank for ALL the places in a county. Search Nearby Places below adds additional places nearby your selection</span>
 				</a><small class="additional">Select nothing or one place</small>
 			</label>
 			<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" multiple="multiple">
@@ -121,7 +121,7 @@
 				<%= f.check_box :inclusive, {}, "true", "false" %>
 				Search family members
 				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-					<span>Check to include family members with that same name in the search</span>
+					<span>Check to search names of family members mentioned within records in addition to the names of the main participants.</span>
 				</a>
 			<% end %>
 		</li>
@@ -130,7 +130,7 @@
 				<%= f.check_box :search_nearby_places, {}, "true", "false" %>
 				Search nearby places
 				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-					<span>Check to search places to the vicinity of the selected starting place, up to 40 additional places will be included</span>
+					<span>Check to search places to the vicinity of the selected starting place. (Up to 40 additional places will be included.)</span>
 				</a>
 			<% end %>
 		</li>
@@ -139,7 +139,7 @@
 				<%= f.check_box :fuzzy, {}, "true", "false" %>
 				Soundex Search on Surnames
 				<a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-					<span>Check to include Soundex equivalent of the name</span>
+					<span>Check to include Soundex equivalent of the name.</span>
 				</a>
 			<% end %>
 		</li>
