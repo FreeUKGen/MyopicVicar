@@ -45,8 +45,8 @@ class UseridDetail
   has_many :search_queries
   has_many :freereg1_csv_files
   has_many :attic_files
-  validates_presence_of :userid, :email_address, :person_role
-  validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
+  validates_presence_of :email_address, :person_role
+  validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
 
@@ -159,7 +159,6 @@ class UseridDetail
 
     errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
-
   end
 
   def email_address_does_not_exist

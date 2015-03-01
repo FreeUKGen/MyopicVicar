@@ -7,8 +7,8 @@
 <% if @userid.errors.any? %>
   <h4 class="text--center"><%= pluralize(@userid.errors.count, "error") %> prohibited this search from being processed:</h4>
   <ul class="validation-list" >
-    <% @userid.errors.messages.each do |key, msg| %>
-      <li class="validation-list__error text--center" ><%= msg[0] %></li>
+    <% @userid.errors.full_messages.each do |msg| %>
+      <li class="validation-list__error text--center" ><%= msg %></li>
     <% end %>
   </ul>
   <%@userid.errors.clear%>

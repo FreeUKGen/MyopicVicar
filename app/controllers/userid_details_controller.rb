@@ -47,7 +47,6 @@ class UseridDetailsController < ApplicationController
 
   end
 
-
   def change_password
     load(params[:id])
     @userid.send_invitation_to_reset_password
@@ -190,7 +189,7 @@ class UseridDetailsController < ApplicationController
     if @userid.errors.any?
       flash[:notice] = 'The registration was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_create      
+      next_place_to_go_unsuccessful_create
     else
       @userid.send_invitation_to_create_password
       @userid.write_userid_file
@@ -259,7 +258,6 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration'
       return
     when session[:type] == 'transcriber_registration'
-      p @userid
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       render :action => 'transcriber_registration'
