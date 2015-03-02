@@ -17,6 +17,8 @@ gem 'execjs'
 
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
+gem 'airbrake'
+
 gem 'text'
 gem 'json'
 gem 'pry'
