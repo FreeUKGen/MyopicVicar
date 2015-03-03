@@ -56,12 +56,18 @@
 		<i>No date criteria specified.</i>
 	<% end %>
 </p>
-<% unless @search_query.start_year.blank? %>
+<% if @search_query.start_year.present? || @search_query.end_year.present? %>
 	<p>
 		Search Logic:<br>
-		Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
+		Records with dates
+    <% if @search_query.start_year.present? %>
+      <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
+      <% if @search_query.end_year.present? %>
+        and dates
+      <% end %>
+    <% end %>
     <% if @search_query.end_year.present? %>
-      and dates <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
+      <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
     <% end %>
 	</p>
 <% end %>
