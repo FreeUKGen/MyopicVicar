@@ -1,7 +1,6 @@
 <section class="island  ">
   <div class="grid">
 
-
 <h2>About This Query</h2>
 <div id="nav">
 	<ul>
@@ -17,7 +16,7 @@
 
 <p>
 	Search Criteria: <br>
-	<b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>, 
+	<b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>,
 	<b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
 	<b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
 </p>
@@ -35,22 +34,21 @@
 		<% end %>
 	<% end %>
 	<% if @search_query.last_name %>
-		<br />Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)	
+		<br />Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)
 		<% if @search_query.fuzzy %>
 			and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
 		<% end %>
 	<% end %>
 </p>
 
-
 <h3>Date</h3>
 <p>
 	<% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
-		Search Criteria: 
+		Search Criteria:
 		<% if @search_query.start_year %>
 			<b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
 		<% end %>
-		
+
 		<% if @search_query.end_year %>
 			<b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>.
 		<% end %>
@@ -58,13 +56,13 @@
 		<i>No date criteria specified.</i>
 	<% end %>
 </p>
-<% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
+<% unless @search_query.start_year.blank? %>
 	<p>
 		Search Logic:<br>
-			Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style) and dates  <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
-			
-	
-	
+		Records with dates <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
+    <% if @search_query.end_year.present? %>
+      and dates <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
+    <% end %>
 	</p>
 <% end %>
 
@@ -77,21 +75,16 @@
  <%end%>
 </p>
 
-
-
-
 <h3>Location</h3>
 
 <% if @search_query.radius_search? %>
-
 	<p>
-		Search Criteria: 
-			<b>Search additional places</b> 
-			near 
-			<b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b> 
+		Search Criteria:
+			<b>Search additional places</b>
+			near
+			<b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b>
 			in
 			<b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[0])%></b>
-
 	</p>
 	<p>
 		Search Logic:
@@ -104,23 +97,19 @@
 				<% end %>
 			</ul>
 	</p>
-	<%else%>
-	
-<p>The following counties were included in the search:
- <% @search_query.chapman_codes.each do |chapman| %>
- <b><%=ChapmanCode.name_from_code(chapman)%></b>
- <%end%>
-
-<%  place= @search_query.places.map {|pl| pl.place_name} %>
-<% unless place.nil? %>
-and <b>all places</b> with data in the selected counties were included.
 <%else%>
-and the place with the name <b><%= place[0]%></b> was selected. 
-<%end%>
+  <p>The following counties were included in the search:
+   <% @search_query.chapman_codes.each do |chapman| %>
+    <b><%=ChapmanCode.name_from_code(chapman)%></b>
+   <%end%>
 
-
+  <% place = @search_query.places.map {|pl| pl.place_name} %>
+  <% unless place.nil? %>
+    and <b>all places</b> with data in the selected counties were included.
+  <%else%>
+    and the place with the name <b><%= place[0]%></b> was selected.
+  <%end%>
 <%end%>
 </p>
-
  </div>
 </section>

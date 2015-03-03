@@ -1,17 +1,17 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
@@ -33,6 +33,7 @@ RSpec.configure do |config|
   # config.mock_with :mocha
   # config.mock_with :flexmock
   # config.mock_with :rr
+  config.color = true
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -71,7 +72,7 @@ def setup_userids
 end
 
 FREEREG1_CSV_FILES = [
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/kirknorfolk/NFKALEBU.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::BURIAL,
@@ -95,7 +96,7 @@ FREEREG1_CSV_FILES = [
       }
     }
    },
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/kirkbedfordshire/BDFYIEBA.CSV",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::BAPTISM,
@@ -124,7 +125,7 @@ FREEREG1_CSV_FILES = [
       }
     }
    },
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,
@@ -152,7 +153,7 @@ FREEREG1_CSV_FILES = [
       }
     }
    },
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Devonian/DEVLANBU.CSV",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::BURIAL,
@@ -176,7 +177,7 @@ FREEREG1_CSV_FILES = [
       }
     }
    },
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTWILMA.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,
@@ -211,12 +212,12 @@ FREEREG1_CSV_FILES = [
 
 
 ARTIFICIAL_FILES = [
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :user => 'artificial'
   },
-  { 
+  {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :user => 'artificial'
