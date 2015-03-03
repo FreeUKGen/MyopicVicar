@@ -4,6 +4,12 @@ development:
   port:
   secure:
 
+test:
+  api_key:
+  host:
+  port:
+  secure:
+
 production:
   api_key:
   host:
