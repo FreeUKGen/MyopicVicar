@@ -105,9 +105,9 @@ desc "Create a report of Userid Details"
   end
 
 desc "Review Userid Files for completeness"
-  task :review_userid_files, [:len,:range] => [:environment] do |t, args|
+  task :review_userid_files, [:len,:range,:fr] => [:environment] do |t, args|
     require 'review_userid_files'
-      ReviewUseridFiles.process(args.len,args.range)
+      ReviewUseridFiles.process(args.len,args.range,args.fr)
       puts "Task complete."
   
   end

@@ -27,16 +27,17 @@ class ReviewUseridFiles
 
 
 
-  def self.process(len,range)
+  def self.process(len,range,fr)
     file_for_warning_messages = "log/review_userid_detail_file_message.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @@message_file.puts "This is a comparison of userids and the user fileset"
     userids = range.split("/")
-    base_directory = Rails.application.config.datafiles
+    base_directory = Rails.application.config.datafiles if fr == 2
+    base_directory = '/raid/freereg2/freereg1/users' if fr == 1
     filenames = Array.new
-    p "starting"
+    p "starting comparison of userid with #{base_directory}"
     p range
     p userids
     if userids.length == 2
