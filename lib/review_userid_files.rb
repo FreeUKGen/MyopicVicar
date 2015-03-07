@@ -34,12 +34,19 @@ class ReviewUseridFiles
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @@message_file.puts "This is a comparison of userids and the user fileset"
     userids = range.split("/")
-    base_directory = Rails.application.config.datafiles if fr == 2
-    base_directory = '/raid/freereg2/freereg1/users' if fr == 1
+    base_directory = Rails.application.config.datafiles if fr.to_i == 2
+    base_directory = '/raid/freereg2/freereg1/users' if fr.to_i == 1
     filenames = Array.new
     p "starting comparison of userid with #{base_directory}"
     p range
+    p fr
     p userids
+    if Rails.application.config.mongodb_bin_location == 'd:/mongodb/bin/'
+      offset = 2
+    else
+      offset = 4 if fr.to_i == 2
+      offset = 5 if fr.to_i == 1 
+    end
     if userids.length == 2
       pattern = File.join(base_directory,userids[0])
       p pattern
@@ -48,7 +55,7 @@ class ReviewUseridFiles
       files.each do |filename|
         userid = filename.split("/")
 
-        filenames << userid[4] unless userid[4].nil?
+        filenames << userid[offset] unless userid[offset].nil?
       end
     else
       @@message_file.puts "unknown range style"

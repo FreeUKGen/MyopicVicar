@@ -27,7 +27,7 @@ class LoadFilesIntoUseridDetails
 
 
 
-  def self.process(len,range)
+  def self.process(len,range,fr)
     file_for_warning_messages = "log/load_files_into_userid_details.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
@@ -35,11 +35,13 @@ class LoadFilesIntoUseridDetails
     puts "Loading files into useris_details and into attic files collection"
     #extract range of userids
     userids = range.split("/")
-    base_directory = Rails.application.config.datafiles
+    base_directory = Rails.application.config.datafiles if fr.to_i == 2
+    base_directory = '/raid/freereg2/freereg1/users' if fr.to_i == 1
     if Rails.application.config.mongodb_bin_location == 'd:/mongodb/bin/'
       offset = 2
     else
-      offset = 4
+     offset = 4 if fr.to_i == 2
+      offset = 5 if fr.to_i == 1 
     end
     filenames = Hash.new
     attic_filenames = Hash.new
