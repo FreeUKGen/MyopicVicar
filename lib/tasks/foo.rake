@@ -156,7 +156,7 @@ namespace :foo do
     end
   end
 
-desc "report on user details"
+desc "Load attic files"
   task :load_files_into_userid_details, [:len,:range] => [:environment] do |t, args|
     require 'load_files_into_userid_details'
       LoadFilesIntoUseridDetails.process(args.len,args.range)

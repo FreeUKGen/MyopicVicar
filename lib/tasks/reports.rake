@@ -104,6 +104,14 @@ desc "Create a report of Userid Details"
    end
   end
 
+desc "Review Userid Files for completeness"
+  task :review_userid_files, [:len,:range] => [:environment] do |t, args|
+    require 'review_userid_files'
+      ReviewUseridFiles.process(args.len,args.range)
+      puts "Task complete."
+  
+  end
+
 desc "Create a report of Case Sensitive Userid Details"
  # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
  #valid options for type are rebuild, replace, add
