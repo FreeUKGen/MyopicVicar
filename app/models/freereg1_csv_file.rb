@@ -449,26 +449,23 @@ class Freereg1CsvFile
 
 
     def update_number_of_files
-      #need to think about doing an update
+      
       userid = UseridDetail.where(:userid_lower_case => self.userid.downcase).first
       return if userid.nil?
-      files = Freereg1CsvFile.where(:userid_lower_case => self.userid.downcase).all
-      if files.nil?
-        userid.number_of_files = 0
-        userid.number_of_records = 0
-        userid.last_upload = nil
-      else
+      files = userid.freereg1_csv_files 
+      if files.length.nil?
         number = 0
         records = 0
-        files.each do |my_file|
-          number  = number  + 1
-          records = records + my_file.records.to_i
-          userid.last_upload  = my_file.uploaded_date if number == 1
-          unless my_file.uploaded_date.nil? || userid.last_upload .nil?
-            userid.last_upload  = my_file.uploaded_date if my_file.uploaded_date.strftime("%s").to_i > userid.last_upload.strftime("%s").to_i
-          end
+        last_uploaded = DateTime.new(1998,1,1)
+      else
+        number = files.length
+        last_uploaded = DateTime.new(1998,1,1)
+        records = 0
+        files.each do |file|
+          records = records + file.records.to_i
+          last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded 
         end
-        userid.update_attributes(:number_of_files  => number, :number_of_records => records)
+        userid.update_attributes(:number_of_files  => number, :number_of_records => records, :last_upload => last_uploaded)
       end
     end
 

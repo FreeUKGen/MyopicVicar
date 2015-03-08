@@ -55,9 +55,9 @@
       <td>Transcription agreement accepted:</td><td > <%= @userid.transcription_agreement%>  </td>
     </tr>
     <tr>
-      <%unless @userid.last_upload.nil?%>
+     <% unless @userid.last_upload.nil?%>
       <td>Last upload:</td><td > <%= @userid.last_upload.strftime("%d %b %Y") %>  </td>
-      <%end%>
+    <% end %>
     </tr>
     <tr>
       <td>Number of files loaded:</td><td > <%= @userid.number_of_files  %>  </td>
@@ -72,35 +72,35 @@
     <tr>
       <td>Active:</td><td > <%= @userid.active  %>  </td>
     </tr>
-    <%unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0   %>
+    <% unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0   %>
     <td>Syndicates managed:</td><td > <%= @userid.syndicate_groups  %>  </td>
   </tr>
-  <%end%>
+  <% end%>
   <tr>
     <%unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
     <td>Counties coordinated:</td><td > <%=@userid.county_groups %>   </td>
   </tr>
-  <%end%>
+  <% end%>
   <tr>
     <%unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
     <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
   </tr>
-  <%end%>
+  <% end%>
   <tr>
     <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>
   </tr>
-  <%unless  @userid.active %>
+  <% unless  @userid.active %>
   <tr>
     <%unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
-    <%end%>
+    <% end%>
   </tr>
   <tr>
     <td>Reason for making inactive:</td><td > <%=@userid.disabled_reason %>  </td>
   </tr>
-  <%end%>
-  <%end%>
-  <%end%>
+  <% end%>
+  <% end%>
+  <% end%>
 </table><br>
 </div>
 <div class="grid__item  one-third  palm-one-whole ">
