@@ -17,79 +17,88 @@ class LoadFilesIntoUseridDetails
     base_directory = Rails.application.config.datafiles_changeset if fr.to_i == 1
     
     len =len.to_i
+    #process files
     if type == "files" || type == "both"
       count = 0
       UseridDetail.each do |user|
         count = count + 1
         break if count == len
          userid = user.userid
-         pattern = File.join(base_directory,userid,"*.csv")
-         files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-         if files.nil?
-          @@message_file.puts "#{userid}, has,0, files "
-         else
-          @@message_file.puts "#{userid}, has ,#{files.length}, files "
-          files.each do |file|
-             file_parts = file.split("/")
-             file_name = file_parts[-1]
-             if Freereg1CsvFile.where(:userid => userid,:file_name => file_name).exists?
-              my_file = Freereg1CsvFile.where(:userid => name,:file_name => file_name).first
-              my_file.userid_detail = user 
-              my_file.save
-               @@message_file.puts "#{userid}, has file,#{file_name}, added " 
-             else
-              @@message_file.puts "#{userid}, has file,#{file_name}, not processed "
-             end 
+         unless userid.nil?
+           pattern = File.join(base_directory,userid,"*.csv")
+           files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
+           if files.nil?
+            @@message_file.puts "#{userid}, has,0, files "
+           else
+            @@message_file.puts "#{userid}, has ,#{files.length}, files "
+            files.each do |file|
+               file_parts = file.split("/")
+               file_name = file_parts[-1]
+               if Freereg1CsvFile.where(:userid => userid,:file_name => file_name).exists?
+                my_file = Freereg1CsvFile.where(:userid => name,:file_name => file_name).first
+                my_file.userid_detail = user 
+                my_file.save
+                 @@message_file.puts "#{userid}, has file,#{file_name}, added " 
+               else
+                @@message_file.puts "#{userid}, has file,#{file_name}, not processed "
+               end 
+             end
            end
          end
       end
     end
+    #process csv in attic
     if type == "attic" || type == "both"
       count = 0
       UseridDetail.each do |user|
         count = count + 1
         break if count == len
          userid = user.userid
-         pattern = File.join(base_directory,userid,".attic/*.csv.*")
-         files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-         if files.nil?
-          @@message_file.puts "#{userid}, has ,0, attic files "
-         else
-          @@message_file.puts "#{userid}, has ,#{files.length}, attic files "
-          files.each do |file|
-            file_parts = file.split("/")
-            date = file_parts[-1].split(".")
-            date[2] = date[2].gsub(/\D/,"")
-            date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
-            attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
-            attic_file.userid_detail = user
-            attic_file.save
-            @@message_file.puts "#{userid}, has attic file ,#{file_parts[-1]}, added " 
+         unless userid.nil?
+           pattern = File.join(base_directory,userid,".attic/*.csv.*")
+           files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
+           if files.nil?
+            @@message_file.puts "#{userid}, has ,0, attic files "
+           else
+            @@message_file.puts "#{userid}, has ,#{files.length}, attic files "
+            files.each do |file|
+              file_parts = file.split("/")
+              date = file_parts[-1].split(".")
+              date[2] = date[2].gsub(/\D/,"")
+              date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
+              attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
+              attic_file.userid_detail = user
+              attic_file.save
+              @@message_file.puts "#{userid}, has attic file ,#{file_parts[-1]}, added " 
+             end
            end
          end
       end
-    end 
+    end
+    #process udetails in attic 
     if type == "attic" || type == "both"
       count = 0
       UseridDetail.each do |user|
         count = count + 1
         break if count == len
          userid = user.userid
-         pattern = File.join(base_directory,userid,".attic/.uDetails.*")
-         files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-         if files.nil?
-          @@message_file.puts "#{userid}, has ,0, attic uDetails "
-         else
-          @@message_file.puts "#{userid}, has ,#{files.length}, attic uDetails "
-          files.each do |file|
-            file_parts = file.split("/")
-            date = file_parts[-1].split(".")
-            date[2] = date[2].gsub(/\D/,"")
-            date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
-            attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
-            attic_file.userid_detail = user
-            attic_file.save
-            @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, added " 
+         unless userid.nil?
+           pattern = File.join(base_directory,userid,".attic/.uDetails.*")
+           files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
+           if files.nil?
+            @@message_file.puts "#{userid}, has ,0, attic uDetails "
+           else
+            @@message_file.puts "#{userid}, has ,#{files.length}, attic uDetails "
+            files.each do |file|
+              file_parts = file.split("/")
+              date = file_parts[-1].split(".")
+              date[2] = date[2].gsub(/\D/,"")
+              date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
+              attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
+              attic_file.userid_detail = user
+              attic_file.save
+              @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, added " 
+             end
            end
          end
       end
