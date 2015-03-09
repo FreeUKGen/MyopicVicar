@@ -24,9 +24,7 @@ class LoadFilesIntoUseridDetails
         break if count == len
          userid = user.userid
          pattern = File.join(base_directory,userid,"*.csv")
-         p pattern
          files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-         p files
          if files.nil?
           @@message_file.puts "#{userid}, has,0, files "
          else
@@ -53,9 +51,7 @@ class LoadFilesIntoUseridDetails
         break if count == len
          userid = user.userid
          pattern = File.join(base_directory,userid,".attic/*.csv.*")
-         p pattern
          files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-         p files
          if files.nil?
           @@message_file.puts "#{userid}, has ,0, attic files "
          else
@@ -80,9 +76,7 @@ class LoadFilesIntoUseridDetails
         break if count == len
          userid = user.userid
          pattern = File.join(base_directory,userid,".attic/.uDetails.*")
-         p pattern
          files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-         p files
          if files.nil?
           @@message_file.puts "#{userid}, has ,0, attic uDetails "
          else
