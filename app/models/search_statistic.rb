@@ -79,14 +79,14 @@ class SearchStatistic
     self.n_zero_result += 1   if query.result_count == 0
     self.n_limit_result += 1  if query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     
-    self.total_results += query.result_count
+    self.total_results += (query.result_count || 0)
     
-    self.total_time += query.runtime
-    self.max_time = query.runtime if query.runtime > self.max_time
+    self.total_time += (query.runtime||0)
+    self.max_time = query.runtime if (query.runtime||0) > self.max_time
     
-    self.n_time_gt_1s += 1    if query.runtime > 1000
-    self.n_time_gt_10s += 1   if query.runtime > 10000
-    self.n_time_gt_60s += 1   if query.runtime > 60000
+    self.n_time_gt_1s += 1    if (query.runtime||0) > 1000
+    self.n_time_gt_10s += 1   if (query.runtime||0) > 10000
+    self.n_time_gt_60s += 1   if (query.runtime||0) > 60000
     
     self.n_ln += 1            unless query.last_name.blank?
     self.n_fn += 1            unless query.first_name.blank?
