@@ -35,7 +35,7 @@ class LoadFilesIntoUseridDetails
                file_parts = file.split("/")
                file_name = file_parts[-1]
                if Freereg1CsvFile.where(:userid => userid,:file_name => file_name).exists?
-                my_file = Freereg1CsvFile.where(:userid => name,:file_name => file_name).first
+                my_file = Freereg1CsvFile.where(:userid => userid,:file_name => file_name).first
                 my_file.userid_detail = user 
                 my_file.save
                  @@message_file.puts "#{userid}, has file,#{file_name}, added " 
@@ -66,10 +66,14 @@ class LoadFilesIntoUseridDetails
               date = file_parts[-1].split(".")
               date[2] = date[2].gsub(/\D/,"")
               date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
-              attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
-              attic_file.userid_detail = user
-              attic_file.save
-              @@message_file.puts "#{userid}, has attic file ,#{file_parts[-1]}, added " 
+              if AtticFile.where(:name => file_parts[-1],:date_created => date_file,:userid => userid).exists?
+               @@message_file.puts "#{userid}, has attic cdv file ,#{file_parts[-1]}, existing "  
+              else
+                attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
+                attic_file.userid_detail = user
+                attic_file.save
+                @@message_file.puts "#{userid}, has attic file ,#{file_parts[-1]}, added "
+              end 
              end
            end
          end
@@ -94,10 +98,14 @@ class LoadFilesIntoUseridDetails
               date = file_parts[-1].split(".")
               date[2] = date[2].gsub(/\D/,"")
               date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
-              attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
-              attic_file.userid_detail = user
-              attic_file.save
-              @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, added " 
+              if AtticFile.where(:name => file_parts[-1],:date_created => date_file,:userid => userid).exists?
+               @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, existing "  
+              else
+                attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
+                attic_file.userid_detail = user
+                attic_file.save
+                @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, added " 
+              end
              end
            end
          end
