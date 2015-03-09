@@ -90,8 +90,8 @@ class LoadFilesIntoUseridDetails
           files.each do |file|
             file_parts = file.split("/")
             date = file_parts[-1].split(".")
-            date[1] = date[1].gsub(/\D/,"")
-            date_file = DateTime.strptime(date[1],'%s') unless date[1].nil?
+            date[2] = date[2].gsub(/\D/,"")
+            date_file = DateTime.strptime(date[2],'%s') unless date[2].nil?
             attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
             attic_file.userid_detail = user
             attic_file.save
