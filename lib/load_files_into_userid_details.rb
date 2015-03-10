@@ -20,7 +20,8 @@ class LoadFilesIntoUseridDetails
     #process files
     if type == "files" || type == "both"
       count = 0
-      UseridDetail.each do |user|
+      users = UseridDetail.all.order_by(userid_lower_case: 1)
+      users.each do |user|
         count = count + 1
         break if count == len
          userid = user.userid
@@ -34,15 +35,15 @@ class LoadFilesIntoUseridDetails
             files.each do |file|
                file_parts = file.split("/")
                file_name = file_parts[-1]
-               if Freereg1CsvFile.where(:userid => userid,:file_name => file_name).exists?
-                my_file = Freereg1CsvFile.where(:userid => userid,:file_name => file_name).first
-                my_file.userid_detail = user 
-                my_file.save
-                 @@message_file.puts "#{userid}, has file,#{file_name}, added " 
+               if Freereg1CsvFile.where(:file_name => file_name, :userid => userid,).exists?
+                my_file = Freereg1CsvFile.where(:file_name => file_name, :userid => userid).first
+                user.freereg1_csv_files << my_file 
+                @@message_file.puts "#{userid}, has file,#{file_name}, added " 
                else
                 @@message_file.puts "#{userid}, has file,#{file_name}, not processed "
                end 
              end
+             user.save
            end
          end
       end
@@ -50,7 +51,8 @@ class LoadFilesIntoUseridDetails
     #process csv in attic
     if type == "attic" || type == "both"
       count = 0
-      UseridDetail.each do |user|
+      users = UseridDetail.all.order_by(userid_lower_case: 1)
+      users.each do |user|
         count = count + 1
         break if count == len
          userid = user.userid
@@ -70,11 +72,11 @@ class LoadFilesIntoUseridDetails
                @@message_file.puts "#{userid}, has attic cdv file ,#{file_parts[-1]}, existing "  
               else
                 attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
-                attic_file.userid_detail = user
-                attic_file.save
+                user.attic_files << attic_file
                 @@message_file.puts "#{userid}, has attic file ,#{file_parts[-1]}, added "
               end 
              end
+             user.save
            end
          end
       end
@@ -82,7 +84,8 @@ class LoadFilesIntoUseridDetails
     #process udetails in attic 
     if type == "attic" || type == "both"
       count = 0
-      UseridDetail.each do |user|
+      users = UseridDetail.all.order_by(userid_lower_case: 1)
+      users.each do |user|
         count = count + 1
         break if count == len
          userid = user.userid
@@ -102,11 +105,11 @@ class LoadFilesIntoUseridDetails
                @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, existing "  
               else
                 attic_file =  AtticFile.new(:name => file_parts[-1],:date_created => date_file,:userid => userid)
-                attic_file.userid_detail = user
-                attic_file.save
+                 user.attic_files << attic_file
                 @@message_file.puts "#{userid}, has attic uDetails ,#{file_parts[-1]}, added " 
               end
              end
+             user.save
            end
          end
       end
