@@ -37,8 +37,13 @@ class LoadFilesIntoUseridDetails
                file_name = file_parts[-1]
                if Freereg1CsvFile.where(:file_name => file_name, :userid => userid,).exists?
                 my_file = Freereg1CsvFile.where(:file_name => file_name, :userid => userid).first
-                user.freereg1_csv_files << my_file 
-                @@message_file.puts "#{userid}, has file,#{file_name}, added " 
+                existing_files = user.freereg1_csv_files
+                  if existing_files.include?(my_file)
+                    @@message_file.puts "#{userid}, has file,#{file_name}, already there "
+                  else
+                    user.freereg1_csv_files << my_file 
+                    @@message_file.puts "#{userid}, has file,#{file_name}, added " 
+                  end
                else
                 @@message_file.puts "#{userid}, has file,#{file_name}, not processed "
                end 
