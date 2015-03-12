@@ -63,9 +63,9 @@ class SearchQuery
 
   def search
       if order_asc
-        records = SearchRecord.where(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).asc(self.order_field)
+        records = SearchRecord.where(search_params).max_scan(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).asc(self.order_field)
       else
-        records = SearchRecord.where(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).desc(self.order_field)
+        records = SearchRecord.where(search_params).max_scan(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).desc(self.order_field)
       end
       self.result_count = records.count(true)
       self.runtime = (Time.now.utc - self.created_at) * 1000
