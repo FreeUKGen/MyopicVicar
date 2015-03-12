@@ -1060,10 +1060,11 @@ class FreeregCsvUpdateProcessor
                   @@header[:uploaded_date] = @@uploaded_date
                 end
 
-                def self.process(range)
+                def self.process(range,type)
                   #this is the basic processing
                   recreate = 'add'
-                  create_search_records = 'create_search_records'
+                  create_search_records = "no" unless type == "search_records"
+                  create_search_records = 'create_search_records' if type == "search_records"
                   #set up message files
                   EmailVeracity::Config[:skip_lookup]=true
                   base_directory = Rails.application.config.datafiles
@@ -1091,8 +1092,6 @@ class FreeregCsvUpdateProcessor
                     n = process_the_data if @success == true  && process == true
                     if Dir.exists?(File.join(base_directory, @@header[:userid]))
                       FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true 
-                    elsif Dir.exists?(File.join(base_directory, @@header[:userid].downcase))
-                      FileUtils.cp(filename,File.join(base_directory, @@header[:userid].downcase, @@header[:file_name] ),:verbose => true) if @success == true  && process == true 
                     else
                       @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}" 
                     end

@@ -32,7 +32,7 @@ namespace :build do
 		'countries' => 'Country',
 		'search_queries' => 'SearchQuery',
 		'feedbacks' => 'Feedback',
-    'contacts' => 'Contacts'
+    'contacts' => 'Contact'
 	}
 	EXPORT_COMMAND =  "mongoexport --db "
 	EXPORT_OUT = " --out  "
@@ -86,7 +86,7 @@ namespace :build do
 		#@datafile_location =  Rails.application.config.mongodb_datafile
 		#save master_place_names and alias
 		p "Save started"
-		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13"]
+		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13","14"]
     p "using database #{@db} on port #{args.port}"
 		collections_to_save.each  do |col|
 			coll  = col.to_i
@@ -251,6 +251,11 @@ namespace :build do
 		require "syndicate"
 		require "county"
 		require "country"
+    require "contact"
+    require "feedback"
+    require "search_query"
+
+
 		puts "Freereg build indexes."
 		Country.create_indexes()
 		County.create_indexes()
@@ -263,6 +268,10 @@ namespace :build do
 		Church.create_indexes()
 		Place.create_indexes()
 		BatchError.create_indexes()
+    Contact.create_indexes()
+    Feedback.create_indexes()
+    SearchQuery.create_indexes()
+
 		puts "Indexes complete."
 	end
 
@@ -383,6 +392,10 @@ namespace :build do
 		require 'register'
 		require 'church'
 		require 'place'
+    require "contact"
+    require "feedback"
+    require "search_query"
+
 		collections_to_index = Array.new
 		unless args[:index].nil?
 			collections_to_index = args[:index].split("/")
@@ -403,8 +416,8 @@ namespace :build do
 		EXPORT_COMMAND =  "mongoexport --db #{@db} --port #{args.port} --collection  "
 		EXPORT_OUT = " --out  "
       p "using database #{@db} on port #{args.port}"
-		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13"] if args.save == 'partial'
-		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13"] if args.save == 'full'
+		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14"] if args.save == 'partial'
+		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"] if args.save == 'full'
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_location
 		@tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
