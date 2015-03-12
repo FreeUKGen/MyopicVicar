@@ -1071,8 +1071,8 @@ class FreeregCsvUpdateProcessor
                   change_directory = Rails.application.config.datafiles_changeset
                   file_for_warning_messages = "log/update_freereg_messages.log"
                   @@message_file = File.new(file_for_warning_messages, "a")
-                  p "Started a build with options of #{recreate} with #{create_search_records} a change directory at #{change_directory} and a file #{range}"
-                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} a change directory at #{change_directory} and a file #{range}"
+                  p "Started a build with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range}"
+                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range}"
                   @@create_search_records = false
                   @@create_search_records = true if create_search_records == 'create_search_records'
                   #set up to determine files to be processed
