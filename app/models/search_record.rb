@@ -60,19 +60,14 @@ class SearchRecord
   field :search_soundex, type: Array, default: []
 
 
-  #index creation for permutations of names, dates, and other metadata
-  ["search_names", "search_soundex"].each do |searchable|
-    [{"chapman_code"=>1, "record_type"=>1},
-     {"record_type" => 1},
-     {"place_id" => 1},
-    {"chapman_code" => 1}].each do |prelude|
-      index(prelude.merge({"#{searchable}.last_name" => 1, "#{searchable}.first_name" => 1, "search_date" => 1}),
-            {:name => (prelude.keys.join("_")+"_#{searchable}_ln_fn_sd")})
-      index(prelude.merge({"#{searchable}.first_name" => 1, "search_date" => 1}),
-            {:name => prelude.keys.join("_")+"_#{searchable}_ln_sd"})
-    end
-  end
+  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1, "search_date" => 1 },
+        {:name => "county_fn_ln_sd"})
 
+  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
+        {:name => "ln_rt_fn_sd"})
+
+  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
+        {:name => "lnsdx_rt_fn_sd"})
 
 
   def location_names
@@ -83,6 +78,7 @@ class SearchRecord
 
   def format_location
     place_name = self.place.place_name
+
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
@@ -248,7 +244,7 @@ class SearchRecord
 
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
-    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").only("_id").first
+    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").first
 
     #record.place = entry.freereg1_csv_file.register.church.place
     record.place = places
