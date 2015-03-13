@@ -77,8 +77,7 @@ class SearchRecord
   end
 
   def format_location
-    @@message_file.puts "Diagnostic from format location"
-    @@message_file.puts   "#{self}   #{self.freereg1.csv_entry}  #{self.freereg1.csv_entry.freereg1_csv_file} #{self.place}"
+   
     p "Diagnostic from format location"
     p "#{self}   #{self.freereg1.csv_entry}  #{self.freereg1.csv_entry.freereg1_csv_file} #{self.place}"
     place_name = self.place.place_name
