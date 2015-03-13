@@ -81,8 +81,13 @@ include Mongoid::Document
            
            
             SearchRecord.where({:freereg1_csv_entry_id => my_entry}).delete if recreate == "recreate"
+            if recreate == "augment"
+             my_entry.transform_search_record unless SearchRecord.where({:freereg1_csv_entry_id => my_entry}).exists
+            else
+              my_entry.transform_search_record
+            end
 
-            my_entry.transform_search_record unless recreate == "augment"
+
           n = n + 1
           nn = nn + 1
                        
