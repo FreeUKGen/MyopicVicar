@@ -83,7 +83,9 @@ class SearchRecord
     p self.freereg1_csv_entry
     p self.freereg1_csv_entry.freereg1_csv_file
     p self.place
-    place_name = self.place.place_name
+
+    place_name = self.place.place_name unless self.place.nil? # should not be nil but!
+    place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place if self.place.nil?
 
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
