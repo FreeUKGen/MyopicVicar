@@ -82,7 +82,7 @@ include Mongoid::Document
            
             SearchRecord.where({:freereg1_csv_entry_id => my_entry}).delete if recreate == "recreate"
 
-            my_entry.transform_search_record
+            my_entry.transform_search_record unless recreate == "augment"
           n = n + 1
           nn = nn + 1
                        
