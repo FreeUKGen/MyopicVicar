@@ -86,7 +86,7 @@ class SearchRecord
 
     place_name = self.place.place_name unless self.place.nil? # should not be nil but!
     place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place if self.place.nil?
-
+    p place_name
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
@@ -253,8 +253,13 @@ class SearchRecord
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
     places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").first
-
-    #record.place = entry.freereg1_csv_file.register.church.place
+    p "nil place "
+    p self
+    p entry
+    p entry.county
+    p entry.place
+    places = entry.freereg1_csv_file.register.church.place if places.nil?
+    p places
     record.place = places
     record.save!
 
