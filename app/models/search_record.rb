@@ -79,10 +79,10 @@ class SearchRecord
   def format_location
    
     p "Diagnostic from format location"
-    p "#{self}  "
-    p " #{self.freereg1_csv_entry}"
-    p "  #{self.freereg1_csv_entry.freereg1_csv_file}"
-    p " #{self.place}"
+    p self
+    p self.freereg1_csv_entry
+    p self.freereg1_csv_entry.freereg1_csv_file
+    p self.place
     place_name = self.place.place_name
 
     if self.freereg1_csv_entry
