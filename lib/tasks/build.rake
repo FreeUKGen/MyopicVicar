@@ -437,5 +437,32 @@ namespace :build do
 		puts "Save task complete"
 	end
 
+  task :freereg_update,[:range,:type] => [:environment] do |t,args|
+    require 'freereg_csv_update_processor'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.sessions[:default][:database]
+    p db
+    host = Mongoid.sessions[:default][:hosts].first
+    p host
+    
+      FreeregCsvUpdateProcessor.process(args.range,args.type)
+   
+  end
+
+    task :delete_entries_records_for_removed_batches,[:len] => [:environment] do |t,args|
+    require 'delete_entries_records_for_removed_batches'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.sessions[:default][:database]
+    p db
+    host = Mongoid.sessions[:default][:hosts].first
+    p host
+    
+      DeleteEntriesRecordsForRemovedBatches.process(args.len)
+   
+  end
+
+
 end
 
