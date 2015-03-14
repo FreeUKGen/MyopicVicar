@@ -14,7 +14,7 @@ class DeleteEntriesRecordsForRemovedBatches
     userids= UseridDetail.all.order_by(userid: 1)
     userids.each do |user|
       userid = user.userid
- 
+      unless userid.nil?
       count = count + 1
       break if count == len
       process_files = Array.new
@@ -33,6 +33,7 @@ class DeleteEntriesRecordsForRemovedBatches
       end
       p "remove files for #{userid}" 
       p process_files
+     end
     end
     
   end #end process
