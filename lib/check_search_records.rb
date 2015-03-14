@@ -18,7 +18,7 @@ include Mongoid::Document
   end
 
   def self.process(limit)
-  	file_for_warning_messages = "logs/check_search_records_messages.log"
+  	file_for_warning_messages = "log/check_search_records_messages.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
   	limit = limit.to_i
@@ -32,9 +32,9 @@ include Mongoid::Document
   	Freereg1CsvEntry.each do |my_entry|
   	  record_number = record_number + 1
   	  my_id = my_entry._id      
-      if my_entry.search_record then
+      unless my_entry.search_record then
       	missing_records = missing_records + 1
-      	message_file.puts " #{my_entry.line_id},#{my_entry.place},#{my_entry.church_name},#{my_entry.register_type},#{my_entry.freereg1_csv_file}"
+      	message_file.puts " #{my_entry.line_id},#{my_entry.place},#{my_entry.church_name},#{my_entry.register_type},#{my_entry.freereg1_csv_file.file_name}"
       end
       break if record_number == limit
       process_records = process_records + 1
