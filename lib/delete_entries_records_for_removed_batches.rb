@@ -16,25 +16,32 @@ class DeleteEntriesRecordsForRemovedBatches
     userids.each do |user|
       userid = user.userid
       unless userid.nil?
-      count = count + 1
-      break if count == len
-      process_files = Array.new
-      Freereg1CsvFile.where(userid: userid).order_by(file_name: 1).each do |name| 
-        process_files << name.file_name
-      end
-    
-      pattern = File.join(base_directory,userid,"*.csv")
-      files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
-   
-      files.each do |file|
-       file_parts = file.split("/")
-       file_name = file_parts[-1]
+        count = count + 1
+        break if count == len
+        process_files = Array.new
+        Freereg1CsvFile.where(userid: userid).order_by(file_name: 1).each do |name| 
+          process_files << name.file_name
+        end
+      
+        pattern = File.join(base_directory,userid,"*.csv")
+        files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
      
-       process_files.delete_if {|name| name = file_name}
+        files.each do |file|
+         file_parts = file.split("/")
+         file_name = file_parts[-1]
+       
+         process_files.delete_if {|name| name = file_name}
+        end
+        unless process_files.empty?
+        p "remove files for #{userid}" 
+        p process_files  
+         process_files.each do |my_file|
+          Freereg1CsvFile.where(userid: userid,file_name: my_file).all.each do |del_file|
+            del_file.destroy
+          end
+         end
+        end
       end
-      p "remove files for #{userid}"  unless process_files.empty?
-      p process_files  unless process_files.empty?
-     end
     end
     
   end #end process
