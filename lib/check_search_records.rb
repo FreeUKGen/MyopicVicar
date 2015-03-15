@@ -34,7 +34,8 @@ include Mongoid::Document
   	  my_id = my_entry._id      
       unless my_entry.search_record then
       	missing_records = missing_records + 1
-      	message_file.puts " #{my_entry.line_id},#{my_entry.place},#{my_entry.church_name},#{my_entry.register_type},#{my_entry.freereg1_csv_file.file_name}"
+      	message_file.puts " #{my_entry.line_id},#{my_entry.place},#{my_entry.church_name},#{my_entry.register_type}"
+        message_file.puts my_entry
       end
       break if record_number == limit
       process_records = process_records + 1
