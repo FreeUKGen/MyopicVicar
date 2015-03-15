@@ -1,13 +1,14 @@
 class DeleteEntriesRecordsForRemovedBatches
-  def self.process(len)
+  def self.process(len,fr)
     file_for_warning_messages = "log/delete_entries_records_for_removed_batches.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    puts "Deleting entries and records for removed batches from the files collection"
+   
     #extract range of userids
-    base_directory = Rails.application.config.datafiles 
-    
+    base_directory = Rails.application.config.datafiles if fr.to_i == 2
+    base_directory = Rails.application.config.datafiles_changeset if fr.to_i == 1
+     puts "Deleting entries and records for removed batches from the files collection at #{base_directory}"
     len =len.to_i
     
     count = 0
@@ -31,8 +32,8 @@ class DeleteEntriesRecordsForRemovedBatches
      
        process_files.delete_if {|name| name = file_name}
       end
-      p "remove files for #{userid}" 
-      p process_files
+      p "remove files for #{userid}"  unless process_files.empty?
+      p process_files  unless process_files.empty?
      end
     end
     
