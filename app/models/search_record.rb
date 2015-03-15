@@ -61,13 +61,13 @@ class SearchRecord
 
 
   index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1, "search_date" => 1 },
-        {:name => "county_fn_ln_sd"})
+        {:name => "county_fn_ln_sd", background: true})
 
   index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
-        {:name => "ln_rt_fn_sd"})
+        {:name => "ln_rt_fn_sd", background: true})
 
   index({"search_soundex.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
-        {:name => "lnsdx_rt_fn_sd"})
+        {:name => "lnsdx_rt_fn_sd", background: true})
 
 
   def location_names
@@ -249,10 +249,11 @@ class SearchRecord
     places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").first
     if places.nil?
       p "nil place "
-      p self
+      p record
       p entry
       p entry.county
       p entry.place
+      p places
       places = entry.freereg1_csv_file.register.church.place 
       p places
     end
