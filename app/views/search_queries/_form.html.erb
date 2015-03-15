@@ -19,11 +19,11 @@
 			<label>
 				Surname
 				<a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-					<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name</span>
+					<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name. If no surname is entered you MUST enter a County, Forename and a Record Type</span>
 				</a>
 			</label>
 	    <% if @search_query.last_name.nil? %>
-				<input name="search_query[last_name]" type="text" class="text-input" placeholder="Mandatory" >
+				<input name="search_query[last_name]" type="text" class="text-input" placeholder="Optional" >
 			<%else%>
 				<input name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>" >
 			<%end%>
