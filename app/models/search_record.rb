@@ -62,6 +62,8 @@ class SearchRecord
 
   index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1, "search_date" => 1 },
         {:name => "county_fn_ln_sd", background: true})
+  index({"chapman_code" => 1, "search_names.last_name" => 1, "search_date" => 1 },
+        {:name => "county_ln_sd", background: true})
 
   index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
         {:name => "ln_rt_fn_sd", background: true})
