@@ -451,6 +451,7 @@ namespace :build do
   end
 
     task :delete_entries_records_for_removed_batches,[:len,:base] => [:environment] do |t,args|
+      # base = 1 uses the change files directory and base = 2 uses the actual files directory
     require 'delete_entries_records_for_removed_batches'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
