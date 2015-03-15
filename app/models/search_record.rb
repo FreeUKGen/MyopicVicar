@@ -66,8 +66,8 @@ class SearchRecord
   index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
         {:name => "ln_rt_fn_sd", background: true})
 
-  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
-        {:name => "lnsdx_rt_fn_sd", background: true})
+  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1, "search_date" => 1 },
+        {:name => "lnsdx_rt_fnsdx_sd", background: true})
 
 
   def location_names
