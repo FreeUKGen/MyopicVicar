@@ -5,7 +5,7 @@
 <% end %>
 <section  >
   <h2 class="text--center"><%= @search_query.result_count %> Search Results</h2>
-  <% if @search_query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+  <% if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
   <h4 class="text--center" style="color:red">Your results were limited to the maximum number of results. We suggest you may wish to refine your search to ensure a complete set of results</h4>
 
   <% end%>

@@ -63,9 +63,9 @@ class SearchQuery
 
   def search
       if order_asc
-        records = SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(self.order_field)
+        records = SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RECORDS).asc(self.order_field)
       else
-        records = SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).desc(self.order_field)
+        records = SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RECORDS).desc(self.order_field)
       end
       self.runtime = (Time.now.utc - self.created_at) * 1000
       search_record_array = Array.new
@@ -79,7 +79,7 @@ class SearchQuery
   end
 
   def explain_plan
-    SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).asc(:search_date).all.explain
+    SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(:search_date).all.explain
   end
 
   def explain_plan_no_sort
