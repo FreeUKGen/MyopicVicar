@@ -450,7 +450,7 @@ namespace :build do
    
   end
 
-    task :delete_entries_records_for_removed_batches,[:len] => [:environment] do |t,args|
+    task :delete_entries_records_for_removed_batches,[:len,:base] => [:environment] do |t,args|
     require 'delete_entries_records_for_removed_batches'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
@@ -459,7 +459,7 @@ namespace :build do
     host = Mongoid.sessions[:default][:hosts].first
     p host
     
-      DeleteEntriesRecordsForRemovedBatches.process(args.len)
+      DeleteEntriesRecordsForRemovedBatches.process(args.len,args.base)
    
   end
 
