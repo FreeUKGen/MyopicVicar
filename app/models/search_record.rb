@@ -71,7 +71,8 @@ class SearchRecord
   index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1, "search_date" => 1 },
         {:name => "lnsdx_rt_fnsdx_sd", background: true})
 
-
+   index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1, "search_date" => 1 },
+        {:name => "county_lnsdx_fnsdx_sd", background: true})
   def location_names
     return self[:location_names] if self[:location_names] && self[:location_names].size > 0
 
