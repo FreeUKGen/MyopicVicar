@@ -124,11 +124,11 @@ class SearchQueriesController < ApplicationController
   def show
     @search_query = SearchQuery.find(params[:id])
     results =   @search_query.search_result.records
-    @search_results = Array.new 
-    results.each do |result|
-      @search_results << SearchRecord.find(result)
-    end
+    
+    @search_results =  SearchRecord.find(results).to_a
   end
+  
+  
 
   def edit
     @search_query = SearchQuery.find(params[:id]) 
