@@ -12,8 +12,8 @@ class SearchQuery
     TYPE='record_type'
     DATE='search_date'
     COUNTY='chapman_code'
-    LOCATION='location_names.0'
-    NAME='transcript_names.0.last_name, transcript_names.0.first_name'
+    LOCATION='location'
+    NAME="transcript_names"
 
     ALL_ORDERS = [
       TYPE,
@@ -62,20 +62,62 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
-      if order_asc
-        records = SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).asc(self.order_field)
-      else
-        records = SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).desc(self.order_field)
-      end
-      self.runtime = (Time.now.utc - self.created_at) * 1000
-      search_record_array = Array.new
-      records.each do |rec|
-        search_record_array << rec._id.to_s
+   records = SearchRecord.collection.find(search_params)
+   self.runtime = (Time.now.utc - self.created_at) * 1000
+   search_record_array = Array.new
+   n = 0
+   records.each do |rec|
+      n = n + 1
+      search_record_array << rec["_id"].to_s
+        break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
       end
       self.search_result =  SearchResult.new(records: search_record_array)
-      self.result_count = search_record_array.size
+      self.result_count = search_record_array.length
       self.save
-      records
+  end
+
+  def new_order(old_query)
+
+    p "ordering"
+    p self
+    records = old_query.search_result.records
+    search_results = Array.new 
+    records.each do |result|
+      search_results << SearchRecord.find(result)
+    end
+    case self.order_field
+    when 'chapman_code'
+      if self.order_asc
+        search_results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
+      else
+        search_results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
+      end
+    when 'search_date'
+    when 'record_type'
+      if self.order_asc
+        search_results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
+      else
+        search_results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
+      end
+    when 'location'
+      if self.order_asc
+        search_results.sort! { |x, y| x['location_names[0]'] <=> y['location_names[0]'] }
+      else
+        search_results.sort! { |x, y| y['location_names[0]'] <=> x['location_names[0]'] }
+      end
+    when "transcript_names"
+      
+
+      
+    end
+    records = Array.new
+    search_results.each do |rec|
+      records << rec["_id"].to_s
+    end
+    self.search_result =  SearchResult.new(records: records)
+    self.result_count = records.length
+    self.save
+    
   end
 
   def explain_plan
