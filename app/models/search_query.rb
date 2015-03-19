@@ -62,24 +62,23 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
+   time_start = Time.now.utc
    records = SearchRecord.collection.find(search_params)
-   self.runtime = (Time.now.utc - self.created_at) * 1000
    search_record_array = Array.new
    n = 0
    records.each do |rec|
       n = n + 1
       search_record_array << rec["_id"].to_s
         break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-      end
-      self.search_result =  SearchResult.new(records: search_record_array)
-      self.result_count = search_record_array.length
-      self.save
+   end
+    self.search_result =  SearchResult.new(records: search_record_array)
+    self.result_count = search_record_array.length
+    self.runtime = (Time.now.utc -  time_start) * 1000
+    self.save
   end
 
   def new_order(old_query)
 
-    p "ordering"
-    p self
     records = old_query.search_result.records
     search_results = Array.new 
     records.each do |result|
@@ -106,9 +105,7 @@ class SearchQuery
         search_results.sort! { |x, y| y['location_names[0]'] <=> x['location_names[0]'] }
       end
     when "transcript_names"
-      
-
-      
+          
     end
     records = Array.new
     search_results.each do |rec|
