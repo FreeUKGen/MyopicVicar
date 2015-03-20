@@ -132,9 +132,9 @@ class SearchQuery
       end
     when SearchOrder::DATE 
       if self.order_asc
-        results.sort! { |x,y| x.search_date <=> y.search_date }
+        results.sort! { |x,y| (x.search_date||'') <=> (y.search_date||'') }
       else
-        results.sort! { |x,y| y.search_date <=> x.search_date }        
+        results.sort! { |x,y| (y.search_date||'') <=> (x.search_date||'') }        
       end
     when SearchOrder::TYPE
       if self.order_asc
