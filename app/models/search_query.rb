@@ -1,5 +1,6 @@
 class SearchQuery
   include Mongoid::Document
+  store_in session: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
 
@@ -62,24 +63,17 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
-    # this is now run one time for each search form submission.  It persists the results
-    # of the query in an ordered list of IDS which will be used for navigation from one 
-    # record to another in the search record detail view (and possibly also in the pagination),
-    # but needs to be re-ordered whenever a batch of results is displayed
     records = SearchRecord.collection.find(search_params)
-    self.runtime = (Time.now.utc - self.created_at) * 1000
     search_record_array = Array.new
-
-    # is this still necessary after the max_scan was added to the database?
     n = 0
     records.each do |rec|
       n = n + 1
       search_record_array << rec["_id"].to_s
       break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     end
-
     self.search_result =  SearchResult.new(records: search_record_array)
     self.result_count = search_record_array.length
+    self.runtime = (Time.now.utc - self.created_at) * 1000
     self.save
   end
 

@@ -162,7 +162,7 @@ GEM
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    libv8 (3.16.14.3)
+    libv8 (3.16.14.7)
     listen (2.7.5)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
@@ -366,6 +366,7 @@ DEPENDENCIES
   jquery-rails
   json
   kaminari
+  libv8 (~> 3.16.14.7)
   listen
   meta_search (>= 1.1.0.pre)
   mongoid (~> 3.1)
