@@ -5,6 +5,10 @@ class SearchRecordsController < ApplicationController
     @page_number = params[:page_number].to_i
     @search_record = SearchRecord.find(params[:id])
     @entry = @search_record.freereg1_csv_entry
+    if params[:search_id].nil?
+      redirect_to new_search_query_path
+      return
+    end
     @search_query = SearchQuery.find(params[:search_id])
     @previous_record = @search_query.previous_record(params[:id])
     @next_record = @search_query.next_record(params[:id])
