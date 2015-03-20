@@ -32,7 +32,7 @@ sudo chown -R webserv:webserv ${DATA_ROOT}
 
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo rsync -e ssh -avz  --delete   colobus.freebmd.org.uk::regusers/ ${FREEREG1}/
+sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/
 trace "update of the database2"
 bundle exec rake build:freereg_update[a-9,search_records] --trace
 trace "delete of entries and records for removed batches"
