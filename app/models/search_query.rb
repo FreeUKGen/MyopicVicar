@@ -267,16 +267,20 @@ class SearchQuery
 
   def name_not_blank
     if last_name.blank? && !adequate_first_name_criteria? 
-      errors.add(:first_name, "If you do not enter a surname, a forename and county must be part of your search.")
+      errors.add(:first_name, "A forename and county must be part of your search if you have not entered a surname.")
     end
   end
   
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0
   end
+
   def county_is_valid
     if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
-      errors.add(:chapman_codes, "If you not search a county, a date range and record type must be part of your search.")
+      errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+    end
+    if chapman_codes.length > 3
+     errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
     end
   end
 
@@ -290,7 +294,7 @@ class SearchQuery
 
   def radius_is_valid
     if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "A Place must have been selected as a starting point if selecting the nearby option.")
+      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end
 
