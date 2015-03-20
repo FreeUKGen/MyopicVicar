@@ -12,7 +12,7 @@ class SearchRecord
   before_save :transform
 
   module Source
-    TRANSCRIPT='t'
+    TRANSCRIPT='transcript'
     EMENDOR='e'
     SUPPLEMENT='s'
     SEPARATION='sep'
@@ -73,6 +73,14 @@ class SearchRecord
 
    index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1, "search_date" => 1 },
         {:name => "county_lnsdx_fnsdx_sd", background: true})
+
+
+  def comparable_name
+    self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
+      name['type'] == 'primary'
+    end
+  end
+  
   def location_names
     return self[:location_names] if self[:location_names] && self[:location_names].size > 0
 
@@ -206,7 +214,7 @@ class SearchRecord
 
 
 
-  def search_name(first_name, last_name, person_type, source = 'transcript')
+  def search_name(first_name, last_name, person_type, source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type })

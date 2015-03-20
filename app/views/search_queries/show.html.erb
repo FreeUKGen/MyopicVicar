@@ -79,12 +79,12 @@
           <tr id="<%=search_record.id%>">
             <td>
               <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
-              <% if  name['type'] == 'primary' %>
-              <% if i > 0 %>
-              <br/>
-              <% end%>
-              <%= "#{name['first_name']} #{name['last_name']} " %>
-              <% end %>
+	              <% if  name['type'] == 'primary' %>
+		              <% if i > 0 %>
+		              <br/>
+		              <% end%>
+	              <%= "#{name['first_name']} #{name['last_name']} " %>
+	              <% end %>
               <% end%>
             </td>
             

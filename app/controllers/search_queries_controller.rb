@@ -123,9 +123,10 @@ class SearchQueriesController < ApplicationController
 
   def show
     @search_query = SearchQuery.find(params[:id])
-    results =   @search_query.search_result.records
+
+    @search_results =   @search_query.results
     
-    @search_results =  SearchRecord.find(results).to_a
+    # @search_results =  SearchRecord.find(results).to_a
   end
   
   

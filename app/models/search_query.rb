@@ -62,62 +62,130 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
-   records = SearchRecord.collection.find(search_params)
-   self.runtime = (Time.now.utc - self.created_at) * 1000
-   search_record_array = Array.new
-   n = 0
-   records.each do |rec|
+    # this is now run one time for each search form submission.  It persists the results
+    # of the query in an ordered list of IDS which will be used for navigation from one 
+    # record to another in the search record detail view (and possibly also in the pagination),
+    # but needs to be re-ordered whenever a batch of results is displayed
+    records = SearchRecord.collection.find(search_params)
+    self.runtime = (Time.now.utc - self.created_at) * 1000
+    search_record_array = Array.new
+
+    # is this still necessary after the max_scan was added to the database?
+    n = 0
+    records.each do |rec|
       n = n + 1
       search_record_array << rec["_id"].to_s
-        break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-      end
-      self.search_result =  SearchResult.new(records: search_record_array)
-      self.result_count = search_record_array.length
-      self.save
+      break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    end
+
+    self.search_result =  SearchResult.new(records: search_record_array)
+    self.result_count = search_record_array.length
+    self.save
   end
 
-  def new_order(old_query)
+  def fetch_records
+    return @search_results if @search_results
+    
+    records = self.search_result.records
+    @search_results = SearchRecord.find(records)
+    
+    @search_results    
+  end
 
-    p "ordering"
-    p self
-    records = old_query.search_result.records
-    search_results = Array.new 
-    records.each do |result|
-      search_results << SearchRecord.find(result)
-    end
-    case self.order_field
-    when 'chapman_code'
-      if self.order_asc
-        search_results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
-      else
-        search_results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
-      end
-    when 'search_date'
-    when 'record_type'
-      if self.order_asc
-        search_results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
-      else
-        search_results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
-      end
-    when 'location'
-      if self.order_asc
-        search_results.sort! { |x, y| x['location_names[0]'] <=> y['location_names[0]'] }
-      else
-        search_results.sort! { |x, y| y['location_names[0]'] <=> x['location_names[0]'] }
-      end
-    when "transcript_names"
-      
-
-      
-    end
+  def persist_results(results)
+    # finally extract the records IDs and persist them
     records = Array.new
-    search_results.each do |rec|
+    results.each do |rec|
       records << rec["_id"].to_s
     end
     self.search_result =  SearchResult.new(records: records)
     self.result_count = records.length
     self.save
+        
+  end
+
+  def compare_name(x,y)
+    x_name = x.comparable_name
+    y_name = y.comparable_name
     
+    if x_name['last_name'] == y_name['last_name']
+      x_name['first_name'] <=> y_name['first_name']
+    else
+      x_name['last_name'] <=> y_name['last_name']
+    end
+  end
+
+  def compare_location(x,y)
+    if x.location_names[0] == y.location_names[0]
+      if x.location_names[1] == y.location_names[1]
+        x.location_names[2] <=> y.location_names[2]
+      else
+        x.location_names[1] <=> y.location_names[1]
+      end
+    else
+      x.location_names[0] <=> y.location_names[0]
+    end
+  end
+
+  def sort_results(results)
+    # next reorder in memory
+    case self.order_field
+    when SearchOrder::COUNTY
+      if self.order_asc
+        results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
+      else
+        results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
+      end
+    when SearchOrder::DATE 
+      if self.order_asc
+        results.sort! { |x,y| x.search_date <=> y.search_date }
+      else
+        results.sort! { |x,y| y.search_date <=> x.search_date }        
+      end
+    when SearchOrder::TYPE
+      if self.order_asc
+        results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
+      else
+        results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
+      end
+    when SearchOrder::LOCATION
+      if self.order_asc
+        results.sort! do |x, y|
+          compare_location(x,y)
+        end
+      else
+        results.sort! do |x, y|
+          compare_location(y,x)  # note the reverse order
+        end
+      end
+    when SearchOrder::NAME
+      if self.order_asc
+        results.sort! do |x, y|
+          compare_name(x,y)
+        end
+      else
+        results.sort! do |x, y|
+          compare_name(y,x)  # note the reverse order
+        end
+      end
+    end    
+  end
+
+  def results
+    records = fetch_records
+    sort_results(records)
+    persist_results(records)
+    
+    records
+  end
+
+  # all this now does is copy the result IDs and persist the new order
+  def new_order(old_query)
+    # first fetch the actual records
+    records = old_query.search_result.records
+    self.search_result =  SearchResult.new(records: records)
+    self.result_count = records.length
+    self.save    
   end
 
   def explain_plan
