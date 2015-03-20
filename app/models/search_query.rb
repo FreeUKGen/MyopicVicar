@@ -173,14 +173,14 @@ class SearchQuery
     records
   end
 
-  # all this now does is copy the result IDs and persist the new order
-  def new_order(old_query)
-    # first fetch the actual records
-    records = old_query.search_result.records
-    self.search_result =  SearchResult.new(records: records)
-    self.result_count = records.length
-    self.save    
-  end
+  # # all this now does is copy the result IDs and persist the new order
+  # def new_order(old_query)
+    # # first fetch the actual records
+    # records = old_query.search_result.records
+    # self.search_result =  SearchResult.new(records: records)
+    # self.result_count = records.length
+    # self.save    
+  # end
 
   def explain_plan
     SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(:search_date).all.explain

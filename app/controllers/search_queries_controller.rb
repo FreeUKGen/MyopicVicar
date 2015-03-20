@@ -108,17 +108,17 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
-    @search_query = SearchQuery.new(old_query.attributes)
     order_field=params[:order_field]
     if order_field==old_query.order_field
       # reverse the directions
-      @search_query.order_asc = !old_query.order_asc
+      old_query.order_asc = !old_query.order_asc
     else
-      @search_query.order_field = order_field
-      @search_query.order_asc = true
+      old_query.order_field = order_field
+      old_query.order_asc = true
     end
-    @search_query.new_order(old_query)
-    redirect_to search_query_path(@search_query)
+    old_query.save!
+#    old_query.new_order(old_query)
+    redirect_to search_query_path(old_query)
   end
 
   def show
