@@ -4,11 +4,27 @@ require 'freereg_csv_processor'
 
 
 SAME_REGISTER_FILES = [
-    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA5.CSV",
-    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNMA2.csv",
-    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA2.csv",
-    "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA3.csv"
-  ]
+    { 
+      :filename => "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA5.CSV",
+      :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+      :user => 'place_creation',
+     },
+    { 
+      :filename => "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNMA2.csv",
+      :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+      :user => 'place_creation',
+     },
+    { 
+      :filename => "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA2.csv",
+      :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+      :user => 'place_creation',
+     },
+    { 
+      :filename => "#{Rails.root}/test_data/freereg1_csvs/place_creation/SOMMSNBA3.csv",
+      :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+      :user => 'place_creation',
+     }
+   ]
 
 
 describe Place do
@@ -20,9 +36,9 @@ describe Place do
   end
 
   it "should create four files with three registers, one church and one place" do
-    SAME_REGISTER_FILES.each_with_index do |file, index|
+    SAME_REGISTER_FILES.each do |file|
       # first, load the file
-      FreeregCsvProcessor.process('recreate', 'create_search_records', File.dirname(file), File.basename(file))
+      process_test_file(file)
       # then process the place
       #CreatePlacesDocs.process(40000,"rebuild")
 
