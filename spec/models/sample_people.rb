@@ -182,6 +182,7 @@ module SamplePeople
     :father_first_name=>"John",
     :file_line_number=>1,
     :line_id=>"kirknorfolk.NFKALEBU.CSV.1",
+    :place => "Aldeby",
     :transcript_names=>
       [{:role=>"bu",
         :type=>"primary",
