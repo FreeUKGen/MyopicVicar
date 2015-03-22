@@ -229,6 +229,22 @@ describe Freereg1CsvEntry do
     end    
   end
 
+
+  it "should not create search records for embargoed dates" do
+    EMBARGO_FILES.each do |file|
+      process_test_file(file)
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first       
+
+      file_record.freereg1_csv_entries.count.should eq 2
+
+      entry = file_record.freereg1_csv_entries.first
+      entry.search_record.should_not be nil
+      
+      entry = file_record.freereg1_csv_entries.last
+      entry.search_record.should be nil
+    end    
+  end
+
   it "should filter by place" do
     # first create something to test against
     different_filespec = FREEREG1_CSV_FILES[2]

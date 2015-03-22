@@ -223,3 +223,22 @@ ARTIFICIAL_FILES = [
     :user => 'artificial'
   }
 ]
+
+
+EMBARGO_FILES = [
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/embargoed_baptism.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/embargoed_marriage.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/embargoed_burial.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  }
+]
