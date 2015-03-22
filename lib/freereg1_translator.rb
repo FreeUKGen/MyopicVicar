@@ -69,6 +69,13 @@ module Freereg1Translator
     KEY_MAP.keys.each do |key|
       new_attrs[KEY_MAP[key]] = entry[key] if entry[key] 
     end    
+    
+    # get the dates transformed
+    new_attrs[:transcript_date] = []
+    [:baptism_date, :burial_date, :marriage_date, :birth_date].each do |date_key|
+      new_attrs[:transcript_date] << entry[date_key] if entry[date_key]
+    end
+    
     new_attrs[:line_id] = entry.line_id
     
     new_attrs
