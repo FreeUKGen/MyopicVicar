@@ -202,7 +202,8 @@ describe Freereg1CsvEntry do
                        :inclusive => false }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
     end    
@@ -255,7 +256,8 @@ describe Freereg1CsvEntry do
                        :place_ids => [place.id] }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
 
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
@@ -266,7 +268,8 @@ describe Freereg1CsvEntry do
                        :place_ids => [place.id, different_place.id] }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
       
@@ -276,7 +279,8 @@ describe Freereg1CsvEntry do
                        :place_ids => [different_place.id] }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
 
       result.count.should eq(0)
       result.should_not be_in_result(entry)
@@ -294,7 +298,8 @@ describe Freereg1CsvEntry do
                                  :inclusive => !required})
       q = SearchQuery.new(query_params)
       q.save(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
       # pp q.attributes
