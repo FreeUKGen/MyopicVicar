@@ -92,7 +92,7 @@
               <%= RecordType::display_name(search_record.record_type) %>
             </td>
             <td>
-              <%= raw(search_record.transcript_date.gsub(' ', '&nbsp;')) unless search_record.transcript_date.nil?%>
+              <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%>
             </td>
             <td>
               <%= ChapmanCode::name_from_code(search_record.chapman_code) %>

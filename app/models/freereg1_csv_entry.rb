@@ -104,7 +104,7 @@ class Freereg1CsvEntry
   validate :errors_in_fields
 
   def extract_year(date_string)
-    if md = date_string.match(/(\d\d\d\d)/)
+    if date_string && md = date_string.match(/(\d\d\d\d)/)
       md.captures.first.to_i
     else
       1 # assume illegible dates are old -- start with year 1
