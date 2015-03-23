@@ -64,6 +64,7 @@ class SearchQuery
 
   def search
     records = SearchRecord.collection.find(search_params)
+
     search_record_array = Array.new
     n = 0
     records.each do |rec|
@@ -132,9 +133,9 @@ class SearchQuery
       end
     when SearchOrder::DATE 
       if self.order_asc
-        results.sort! { |x,y| (x.search_date||'') <=> (y.search_date||'') }
+        results.sort! { |x,y| (x.search_dates.first||'') <=> (y.search_dates.first||'') }
       else
-        results.sort! { |x,y| (y.search_date||'') <=> (x.search_date||'') }        
+        results.sort! { |x,y| (y.search_dates.first||'') <=> (x.search_dates.first||'') }        
       end
     when SearchOrder::TYPE
       if self.order_asc
@@ -230,7 +231,7 @@ class SearchQuery
       date_params = Hash.new
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lt"] = DateParser::end_search_date(end_year) if end_year
-      params[:search_date] = date_params
+      params[:search_dates] = { "$elemMatch" => date_params }
     end
     params
   end

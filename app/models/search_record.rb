@@ -49,8 +49,9 @@ class SearchRecord
   field :transcript_names, type: Array#, :required => true
 
   # Date of the entry, whatever kind it is
-  field :transcript_date, type: String#, :required => false
-  field :search_date, type: String#, :required => false
+  field :transcript_dates, type: Array, default: [] #, :required => false
+
+  field :search_dates, type: Array, default: [] #, :required => false
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
@@ -60,18 +61,18 @@ class SearchRecord
   field :search_soundex, type: Array, default: []
 
 
-  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1, "search_date" => 1 },
+  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1 },
         {:name => "county_fn_ln_sd", background: true})
-  index({"chapman_code" => 1, "search_names.last_name" => 1, "search_date" => 1 },
+  index({"chapman_code" => 1, "search_names.last_name" => 1 },
         {:name => "county_ln_sd", background: true})
 
-  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
+  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1 },
         {:name => "ln_rt_fn_sd", background: true})
 
-  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1, "search_date" => 1 },
+  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1 },
         {:name => "lnsdx_rt_fnsdx_sd", background: true})
 
-   index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1, "search_date" => 1 },
+   index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1 },
         {:name => "county_lnsdx_fnsdx_sd", background: true})
 
 
@@ -149,7 +150,7 @@ class SearchRecord
   end
 
   def transform_date
-    self.search_date = DateParser::searchable(transcript_date)
+    self.search_dates = transcript_dates.map { |t_date| DateParser::searchable(t_date) }
   end
 
   def populate_location

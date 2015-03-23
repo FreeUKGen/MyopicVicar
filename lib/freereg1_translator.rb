@@ -16,14 +16,14 @@ require 'name_role'
 
 module Freereg1Translator
   KEY_MAP = {
-   :baptism_date => :transcript_date, #actual date as written
+#   :baptism_date => :transcript_date, #actual date as written
   #  :birth_date => ,
     # :bride_father_forename => :father_first_name,
     # :bride_father_surname => :father_surname,
 #    :bride_forename => :bride_first_name,
   #  :bride_parish => ,
 #    :bride_surname => :bride_last_name,
-   :burial_date => :transcript_date, #actual date as written
+#   :burial_date => :transcript_date, #actual date as written
 #    :burial_person_forename => :first_name,
 #    :burial_person_surname => :last_name,
     :county => :chapman_code,
@@ -38,7 +38,7 @@ module Freereg1Translator
 #    :groom_surname => :groom_last_name,
     # what should we do about the various relatives?  They should be put into family records.
     :male_relative_forename => :father_first_name,
-   :marriage_date => :transcript_date, #actual date as written
+#   :marriage_date => :transcript_date, #actual date as written
 #    :person_forename => :first_name,
   #  :register => ,
   #  :register_type => ,
@@ -69,6 +69,11 @@ module Freereg1Translator
     KEY_MAP.keys.each do |key|
       new_attrs[KEY_MAP[key]] = entry[key] if entry[key] 
     end    
+
+    new_attrs[:transcript_dates] = []
+    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date'].each do |date_key|
+      new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
+    end
     new_attrs[:line_id] = entry.line_id
     
     new_attrs

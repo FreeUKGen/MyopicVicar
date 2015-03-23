@@ -45,6 +45,8 @@ describe Freereg1CsvEntry do
       record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
   
       record.freereg1_csv_entries.count.should eq(file[:entry_count])     
+      SearchRecord.count.should eq(Freereg1CsvEntry.count)
+
     end
   end
 
