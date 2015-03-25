@@ -27,7 +27,7 @@ class SearchRecord
 
 
   belongs_to :freereg1_csv_entry, index: true
-  belongs_to :place, index:true
+  belongs_to :place
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
@@ -55,6 +55,8 @@ class SearchRecord
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
+  index "search_names.first_name" => 1
+  index "search_names.last_name" => 1
 
   # derived search fields
   field :location_names, type:Array, default: []
@@ -65,17 +67,29 @@ class SearchRecord
         {:name => "county_fn_ln_sd", background: true})
   index({"chapman_code" => 1, "search_names.last_name" => 1 },
         {:name => "county_ln_sd", background: true})
+  index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1 },
+        {:name => "county_lnsdx_fnsdx_sd", background: true})
+  index({"chapman_code" => 1, "search_soundex.first_name" => 1 },
+        {:name => "county_fnsdx", background: true})
 
-  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1 },
+
+  #index({"place_id" => 1, "search_names.last_name" => 1 },
+       # {:name => "place_ln", background: true})
+  index({"place_id" => 1,"search_names.first_name" => 1, "search_names.last_name" => 1},
+        {:name => "place_ln_fn", background: true})
+
+  #index({"place_id" => 1, "search_soundex.last_name" => 1 },
+        #{:name => "place_lnsdx", background: true})
+
+  index({"place_id" => 1, "search_soundex.first_name" => 1, "search_soundex.last_name" => 1 },
+        {:name => "place_fnsdx_lnsdx", background: true})
+
+
+  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1  },
         {:name => "ln_rt_fn_sd", background: true})
 
   index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1 },
         {:name => "lnsdx_rt_fnsdx_sd", background: true})
-
-   index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1 },
-        {:name => "county_lnsdx_fnsdx_sd", background: true})
-
-
   def comparable_name
     self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
       name['type'] == 'primary'
