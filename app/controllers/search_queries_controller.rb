@@ -1,5 +1,6 @@
 class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
+  before_filter :check_for_mobile, :only => :show
   RECORDS_PER_PAGE = 100
   def index
     redirect_to :action => :new
@@ -116,11 +117,10 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-    @search_query = SearchQuery.find(params[:id])
 
+    @search_query = SearchQuery.find(params[:id])
     @search_results =   @search_query.results
     
-    # @search_results =  SearchRecord.find(results).to_a
   end
   
   
