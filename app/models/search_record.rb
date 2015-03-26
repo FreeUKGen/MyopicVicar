@@ -73,13 +73,13 @@ class SearchRecord
         {:name => "county_fnsdx", background: true})
 
 
-  #index({"place_id" => 1, "search_names.last_name" => 1 },
-       # {:name => "place_ln", background: true})
+  index({"place_id" => 1, "search_names.last_name" => 1 },
+        {:name => "place_ln", background: true})
   index({"place_id" => 1,"search_names.first_name" => 1, "search_names.last_name" => 1},
         {:name => "place_ln_fn", background: true})
 
-  #index({"place_id" => 1, "search_soundex.last_name" => 1 },
-        #{:name => "place_lnsdx", background: true})
+  index({"place_id" => 1, "search_soundex.last_name" => 1 },
+        {:name => "place_lnsdx", background: true})
 
   index({"place_id" => 1, "search_soundex.first_name" => 1, "search_soundex.last_name" => 1 },
         {:name => "place_fnsdx_lnsdx", background: true})
