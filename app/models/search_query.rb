@@ -44,7 +44,7 @@ class SearchQuery
   field :search_nearby_places, type: Boolean
 
   field :result_count, type: Integer
-  field :place_system, type: String, default: Place::MeasurementSystem::SI
+  field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
 
   field :session_id, type: String
   field :runtime, type: Integer
