@@ -272,17 +272,9 @@ class SearchRecord
 
     record.freereg1_csv_entry = entry
     # TODO profile this to see if it's especially costly
-    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").first
-    if places.nil?
-      p "nil place "
-      p record
-      p entry
-      p entry.county
-      p entry.place
-      p places
-      places = entry.freereg1_csv_file.register.church.place 
-      p places
-    end
+    
+    places = entry.freereg1_csv_file.register.church.place 
+    
     record.place = places
     record.save!
 
