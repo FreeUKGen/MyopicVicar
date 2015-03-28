@@ -1,7 +1,7 @@
 # robots.txt for http://freereg2.freereg.org.uk/
 
 User-agent: *
-Allow: /freereg-stands-for-free-registers
+Allow: /about
 Allow: /donate
-Allow: /tips-for-searching-the-database
+Allow: /help
 Disallow: /
