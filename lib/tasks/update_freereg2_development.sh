@@ -15,7 +15,7 @@ fail() {
 trap fail ERR
 
 DATA_ROOT=/raid-test/freereg2
-FREEREG1=${DATA_ROOT}/freereg1-test/users
+FREEREG1=${DATA_ROOT}/freereg1/users
 FREEREG1_DELTA=${DATA_ROOT}/tmp
 ROOT=/home/apache/hosts/freereg2/MyopicVicar
 
