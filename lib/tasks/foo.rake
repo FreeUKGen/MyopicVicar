@@ -17,16 +17,20 @@ namespace :foo do
   desc "Create the indexes after all FreeREG processes have completed"
   task :create_freereg_csv_indexes => [:environment] do
     #task is there to creat indexes after running of freereg_csv_processor
-    require 'search_record'
+   require "county"
+    require "country"
+    require "userid_detail"
+    require "syndicate"
+    require "search_record"
     require 'freereg1_csv_file'
     require 'freereg1_csv_entry'
     require 'register'
     require 'church'
     require 'place'
-    require "userid_detail"
-    require "syndicate"
-    require "county"
-    require "country"
+    require "contact"
+    require "feedback"
+    require "search_query"
+    require "attic_file"
     puts "Freereg build indexes."
     Country.create_indexes()
     County.create_indexes()
@@ -38,6 +42,12 @@ namespace :foo do
     Register.create_indexes()
     Church.create_indexes()
     Place.create_indexes()
+    BatchError.create_indexes()
+    Contact.create_indexes()
+    Feedback.create_indexes()
+    SearchQuery.create_indexes()
+    AtticFile.create_indexes()
+
     puts "Indexes complete."
   end
 
