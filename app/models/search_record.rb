@@ -268,16 +268,29 @@ class SearchRecord
 
   def self.from_freereg1_csv_entry(entry)
     #   # assumes no existing entries for this line
+    @@file = nil if (defined?(@@file)).nil?
+    @@owner = nil if (defined?(@@owner)).nil?
+    @@places = nil if (defined?(@@places)).nil?
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-
     record.freereg1_csv_entry = entry
-    # TODO profile this to see if it's especially costly
-    
-    places = entry.freereg1_csv_file.register.church.place 
-    
+    file = entry.freereg1_csv_file
+    if @@file.nil? || @@owner.nil?  
+      places = file.register.church.place 
+      @@places = places
+      @@file = file.file_name
+      @@owner = file.userid
+    else
+      if @@file == file.file_name && @@owner == file.userid
+        places = @@places
+      else
+        places = file.register.church.place 
+        @@places = places
+        @@file = file.file_name
+        @@owner = file.userid
+      end
+    end
     record.place = places
     record.save!
-
   end
 
   def self.delete_freereg1_csv_entries
