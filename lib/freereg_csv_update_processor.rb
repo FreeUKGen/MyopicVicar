@@ -306,13 +306,13 @@ class FreeregCsvUpdateProcessor
               idone[i] = 'done'
             end
             i = i + 1
-          end
+        end
 
         end
         @register = register_words.shift(n).join(' ')
 
         return true
-      end
+    end
 
       #get a line of data
       def self.get_line_of_data
@@ -347,7 +347,6 @@ class FreeregCsvUpdateProcessor
         @@header [:transcriber_email] = new_email unless new_email.nil?
         raise FreeREGError,  "Header_Error,Invalid file type #{@csvdata[4]} in first line of header" unless VALID_RECORD_TYPE.include?(@csvdata[4].gsub(/\s+/, ' ').strip.upcase)
         # canonicalize record type
-        raw_record_type = @csvdata[4]
         scrubbed_record_type = Unicode::upcase(@csvdata[4]).gsub(/\s/, '')
         @@header [:record_type] =  RECORD_TYPE_TRANSLATION[scrubbed_record_type]
         #raise FreeREGError, "Header_Error,Invalid characterset #{@csvdata[5]} in the first header line" unless charvalid(@csvdata[5])
@@ -374,7 +373,7 @@ class FreeregCsvUpdateProcessor
           while i < 4  do
               @csvdata[5-i] = @csvdata[3-i]
               i +=1
-            end
+          end
             @csvdata[2] = @csvdata[2].gsub(/#/, '')
             process_header_line_two_block
             when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
@@ -416,15 +415,15 @@ class FreeregCsvUpdateProcessor
             while i < 6  do
                 @csvdata[i] = eric[i]
                 i +=1
-              end
+            end
               process_header_line_two_block
 
               else
                 raise FreeREGError, "Header_Error,I did not know enough about your data format to extract transciber information at header line 2"
 
-              end
+        end
 
-            end
+      end
 
             def self.process_header_line_two_block
               raise FreeREGError, "Header_Error,The transcriber's name #{@csvdata[2]} can only contain alphabetic and space characters in the second header line" unless FreeregValidations.cleantext(@csvdata[2])
@@ -981,9 +980,9 @@ class FreeregCsvUpdateProcessor
                 raise FreeREGError,  "System_Error,Empty file" if @@array_of_data_lines.nil?
                 ensure
                   #we ensure that processing keeps going by dropping outthrough the bottom
-                end #begin end
+              end #begin end
                 return success
-              end #method end
+            end #method end
 
               def self.check_for_replace(filename)
 
@@ -998,11 +997,9 @@ class FreeregCsvUpdateProcessor
                   #file is in the database
                   if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
                     #do not process if coordinator has locked
-                      Freereg1CsvFile.delete_file(check_for_file)
-
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is overwritten"
-                      return true
-                    end
+                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                      return false
+                  end
                     if @@header[:digest] == check_for_file.digest then
                       #file in database is same or more recent than we we are attempting to reload so do not process
                       p  "#{@@userid} #{@@header[:file_name]} has not changed since last build"
@@ -1024,9 +1021,9 @@ class FreeregCsvUpdateProcessor
                       return false
                     end #date check end
 
-                  end #check_for_file loop end
+                end #check_for_file loop end
 
-                end #method end
+              end #method end
 
                 def self.setup_for_new_file(filename)
                   # turn off domain checks -- some of these email accounts may no longer work and that's okay
@@ -1060,7 +1057,7 @@ class FreeregCsvUpdateProcessor
                   @@header[:uploaded_date] = @@uploaded_date
                 end
 
-                def self.process(range,type)
+                def self.process(range,type,delta)
                   #this is the basic processing
                   recreate = 'add'
                   create_search_records = "no" unless type == "search_records"
@@ -1069,33 +1066,32 @@ class FreeregCsvUpdateProcessor
                   EmailVeracity::Config[:skip_lookup]=true
                   base_directory = Rails.application.config.datafiles
                   change_directory = Rails.application.config.datafiles_changeset
+                  delta_directory = Rails.application.config.datafiles_delta
                   file_for_warning_messages = "log/update_freereg_messages"
                   time = Time.new.to_i.to_s
                   file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
                   @@message_file = File.new(file_for_warning_messages, "w")
-                  p "Started a build with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range}"
-                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range}"
+                  p "Started a build with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta}"
+                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta}"
                   @@create_search_records = false
                   @@create_search_records = true if create_search_records == 'create_search_records'
                   #set up to determine files to be processed
-                  filenames = GetFiles.get_all_of_the_filenames(change_directory,range)
-
+                  filenames = GetFiles.get_all_of_the_filenames(change_directory,range) if delta == 'change'
+                  filenames = GetFiles.use_the_delta(change_directory,delta_directory) if delta == 'delta'
                   @@message_file.puts "#{filenames.length}\t files selected for processing\n"
                   time_start = Time.now
                   nn = 2
-                  nloop = 0
                   #now we cycle through the files
                   filenames.each do |filename|
-                    time_file_start = Time.now
                     setup_for_new_file(filename)
                     process = true
-                    process = check_for_replace(filename) unless recreate == "recreate"
+                    process = check_for_replace(filename) unless recreate == "recreate" 
                     @success = slurp_the_csv_file(filename) if process == true
                     n = process_the_data if @success == true  && process == true
                     if Dir.exists?(File.join(base_directory, @@header[:userid]))
-                      FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true 
+                      FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true
                     else
-                      @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}" 
+                      @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}"
                     end
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     @success = true
@@ -1103,14 +1099,14 @@ class FreeregCsvUpdateProcessor
                   end #filename loop end
 
                   time = (((Time.now  - time_start )/(nn-1))*1000)
-     p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
-     @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
-      @@message_file.close 
-      at_exit do
-        p "goodbye"
-      end
-   @success  
-  end #method end
+                  p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
+                  @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
+                  @@message_file.close 
+                  at_exit do
+                  p "goodbye"
+                end
+                @success  
+                end #method end
  
 end #class end
 

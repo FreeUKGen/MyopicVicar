@@ -34,7 +34,7 @@ cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
 sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/
 trace "update of the database2"
-bundle exec rake build:freereg_update[a-9,search_records] --trace
+bundle exec rake build:freereg_update[a-9,search_records,delta] --trace
 trace "delete of entries and records for removed batches"
 bundle exec rake build:delete_entries_records_for_removed_batches[100000,1] --trace
 
