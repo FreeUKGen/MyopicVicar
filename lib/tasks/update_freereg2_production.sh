@@ -38,7 +38,7 @@ sudo chown -R webserv:webserv ${DATA_ROOT}
 
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sent|^total|^cannot|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
+sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
 trace "update of the database2"
 bundle exec rake build:freereg_update[a-9,search_records,delta] --trace
 trace "delete of entries and records for removed batches"
