@@ -1078,7 +1078,7 @@ class FreeregCsvUpdateProcessor
                   #set up to determine files to be processed
                   filenames = GetFiles.get_all_of_the_filenames(change_directory,range) if delta == 'change'
                   filenames = GetFiles.use_the_delta(change_directory,delta_directory) if delta == 'delta'
-                  p "#{filenames.length}\t files selected for processing\n"
+                  p "#{filenames.length} files selected for processing"
                   @@message_file.puts "#{filenames.length}\t files selected for processing\n"
                   time_start = Time.now
                   nn = 2

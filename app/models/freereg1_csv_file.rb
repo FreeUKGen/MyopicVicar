@@ -219,9 +219,9 @@ class Freereg1CsvFile
       renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
       FileUtils.mv(renamed_file,newdir,:verbose => true)
-      user =UseridDetail.where(:userid_lower_case => self.userid.downcase).first
-      user.attic_files << AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'))
-      user.save(validate: false)
+      user =UseridDetail.where(:userid => self.userid).first
+      attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
+      attic_file.save
     else
       p "file does not exist"
     end
