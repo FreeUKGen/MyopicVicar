@@ -16,7 +16,13 @@ class DeleteEntriesRecordsForRemovedBatches
     len =len.to_i
     
     count = 0
-    userids= UseridDetail.all.order_by(userid: 1)
+    all_files = Hash.new
+    userids = UseridDetail.all.order_by(userid: 1)
+    Freereg1CsvFile.each do |all_file|
+      userid = all_file.userid
+      all_files[userid] = Array.new unless all_files.has_key?(userid)
+      all_files[userid] << all_file.file_name
+    end
 
     userids.each do |user|
       userid = user.userid
@@ -38,7 +44,7 @@ class DeleteEntriesRecordsForRemovedBatches
         files.each do |file|
          file_parts = file.split("/")
          file_name = file_parts[-1]
-       
+         all_files[userid].delete_if {|name| name = file_name}
          process_files.delete_if {|name| name = file_name}
         end
         number_deleted = 0
@@ -60,6 +66,15 @@ class DeleteEntriesRecordsForRemovedBatches
         end
       end
     end
+    p "The following userids have processed files but they are not present in the change directory"
+
+    all_files.each_pair do |user,file_array|
+        unless file_array.empty?
+          p user
+          p file_array
+
+        end 
+      end
     
   end #end process
 end
