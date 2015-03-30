@@ -46,9 +46,8 @@ class DeleteEntriesRecordsForRemovedBatches
         change_pattern = File.join(change_directory,userid,"*.csv")
         files = Dir.glob(change_pattern, File::FNM_CASEFOLD).sort
 
-        @@message_file.puts "#{userid},  #{files.length}, #{base_files.length}, files in change and base "
        
-        files.each do |file|
+         files.each do |file|
          file_parts = file.split("/")
          file_name = file_parts[-1]
          all_files[userid].delete_if {|name| name = file_name} unless all_files[userid].nil?
@@ -68,9 +67,9 @@ class DeleteEntriesRecordsForRemovedBatches
             p del_file
           end
         end
-         @@message_file.puts "#{userid}, #{number_of_files},#{number_deleted}"
+         @@message_file.puts "#{userid}, #{number_of_files},#{number_deleted},  #{files.length}, #{base_files.length}"
         else
-         @@message_file.puts "#{userid}, #{number_of_files},0"
+         @@message_file.puts "#{userid}, #{number_of_files},0,  #{files.length}, #{base_files.length}"
         end
         
       end
