@@ -47,6 +47,9 @@ class DeleteEntriesRecordsForRemovedBatches
          all_files[userid].delete_if {|name| name = file_name}
          process_files.delete_if {|name| name = file_name}
         end
+        p userid
+        p process_files
+        p all_files[userid]
         number_deleted = 0
         unless process_files.empty?
           p "remove files for #{userid}" 
@@ -64,6 +67,8 @@ class DeleteEntriesRecordsForRemovedBatches
         else
          @@message_file.puts "#{userid}, #{number_of_files},0"
         end
+        p process_files
+        p all_files[userid]
       end
     end
     p "The following userids have processed files but they are not present in the change directory"
