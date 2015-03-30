@@ -18,11 +18,15 @@ class DeleteEntriesRecordsForRemovedBatches
     count = 0
     all_files = Hash.new
     userids = UseridDetail.all.order_by(userid: 1)
+    p " There are #{UseridDetail.count} userids"
+    number = 0
     Freereg1CsvFile.each do |all_file|
+      number = number + 1
       userid = all_file.userid
       all_files[userid] = Array.new unless all_files.has_key?(userid)
       all_files[userid] << all_file.file_name
     end
+    p "There are #{number} loaded files"
 
     userids.each do |user|
       userid = user.userid
@@ -34,14 +38,15 @@ class DeleteEntriesRecordsForRemovedBatches
         Freereg1CsvFile.where(userid: userid).order_by(file_name: 1).each do |name| 
           process_files << name.file_name
         end
-       p userid
-        p process_files
-        p all_files[userid] 
+       
         number_of_files = 0
         number_of_files = process_files.length unless process_files.nil?
-       
-        pattern = File.join(change_directory,userid,"*.csv")
-        files = Dir.glob(pattern, File::FNM_CASEFOLD).sort
+        base_pattern = File.join(base_directory,userid,"*.csv")
+        base_files = Dir.glob(base_pattern, File::FNM_CASEFOLD).sort
+        change_pattern = File.join(change_directory,userid,"*.csv")
+        files = Dir.glob(change_pattern, File::FNM_CASEFOLD).sort
+
+        @@message_file.puts "#{userid},  #{files.length}, #{base_files.length}, files in change and base "
        
         files.each do |file|
          file_parts = file.split("/")
@@ -49,9 +54,7 @@ class DeleteEntriesRecordsForRemovedBatches
          all_files[userid].delete_if {|name| name = file_name} unless all_files[userid].nil?
          process_files.delete_if {|name| name = file_name}
         end
-        p userid
-        p process_files
-        p all_files[userid]
+        
         number_deleted = 0
         unless process_files.empty?
           p "remove files for #{userid}" 
