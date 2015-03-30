@@ -41,7 +41,7 @@ class Register
       # create the register
       register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)
     end
-    user =UseridDetail.where(:userid_lower_case => freereg1_csv_file.userid.downcase).first
+    user =UseridDetail.where(:userid => freereg1_csv_file.userid).first
     user.freereg1_csv_files << freereg1_csv_file
     user.save(validate: false)
   end

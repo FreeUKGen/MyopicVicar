@@ -450,7 +450,7 @@ class Freereg1CsvFile
 
     def update_number_of_files
       
-      userid = UseridDetail.where(:userid_lower_case => self.userid.downcase).first
+      userid = UseridDetail.where(:userid => self.userid).first
       return if userid.nil?
       files = userid.freereg1_csv_files 
       if files.length.nil?
