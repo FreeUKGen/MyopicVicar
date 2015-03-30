@@ -27,6 +27,67 @@ class DeleteEntriesRecordsForRemovedBatches
       all_files[userid] << all_file.file_name
     end
     p "There are #{number} loaded files"
+    total_base_pattern = File.join(base_directory,"*","*.csv")
+    total_change_pattern = File.join(base_directory,"*","*.csv")
+    total_base_files = Dir.glob(total_base_pattern, File::FNM_CASEFOLD).sort
+    total_change_files = Dir.glob(total_change_pattern, File::FNM_CASEFOLD).sort
+    p "#{total_base_files} base files and #{total_change_files}" 
+    
+    total_base_files_hash = Hash.new
+    total_base_files.each do |total_base_file|
+      file_parts = total_base_file.split("/")
+      file_name = file_parts[-1]
+      user_id = file_parts[-2]
+      total_base_files_hash[user_id] = Array.new unless total_base_files_hash.has_key?(user_id)
+      total_base_files_hash[user_id] << file_name
+    end
+
+    total_change_files_hash = Hash.new
+    total_change_files.each do |total_change_file|
+      file_parts = total_change_file.split("/")
+      file_name = file_parts[-1]
+      user_id = file_parts[-2]
+      total_change_files_hash[user_id] = Array.new unless total_change_files_hash.has_key?(user_id)
+      total_change_files_hash[user_id] << file_name
+    end
+    total_change_files_hash_copy = total_change_files_hash
+    total_base_files_hash_copy = total_base_files_hash
+
+    all_files.each_pair do |user,file_array|
+      file_array.each do |file_name|
+       total_change_files_hash[user].delete_if {|name| name = file_name} unless    total_change_files_hash[user].nil?
+       total_base_files_hash[user].delete_if {|name| name = file_name} unless      total_base_files_hash[user].nil?
+       end
+    end 
+    @@message_file.puts "The following userids have files in the change directory but not in the database"
+
+    total_change_files_hash.each_pair do |user,file_array|
+        unless file_array.empty?
+          @@message_file.puts user
+          @@message_file.puts file_array
+        end 
+      end
+     @@message_file.puts "The following userids have files in the base directory but not in the database"
+     total_base_files_hash.each_pair do |user,file_array|
+        unless file_array.empty?
+          @@message_file.puts user
+          @@message_file.puts file_array
+        end 
+      end
+     total_change_files_hash_copy.each_pair do |user,file_array|
+      file_array.each do |file_name|
+      total_base_files_hash_copy[user].delete_if {|name| name = file_name} unless    total_base_files_hash_copy[user].nil?
+    end
+  end
+    @@message_file.puts "The following userids have files in the base directory but they are not present in the change directory"
+     total_base_files_hash_copy.each_pair do |user,file_array|
+        unless file_array.empty?
+          @@message_file.puts user
+          @@message_file.puts file_array
+        end 
+      end
+
+
 
     userids.each do |user|
       userid = user.userid
@@ -56,15 +117,15 @@ class DeleteEntriesRecordsForRemovedBatches
         
         number_deleted = 0
         unless process_files.empty?
-          p "remove files for #{userid}" 
+          @@message_file.puts "remove files for #{userid}" 
           process_files.each do |my_file|
           number_deleted = number_deleted + 1
           delete_file = File.join(base_directory,userid,my_file)
-          p delete_file
+          @@message_file.puts delete_file
           #File.delete(delete_file) if File.exists?(delete_file)
           Freereg1CsvFile.where(userid: userid,file_name: my_file).all.each do |del_file|
             #del_file.destroy
-            p del_file
+           @@message_file.puts del_file
           end
         end
          @@message_file.puts "#{userid}, #{number_of_files},#{number_deleted},  #{files.length}, #{base_files.length}"
@@ -74,15 +135,14 @@ class DeleteEntriesRecordsForRemovedBatches
         
       end
     end
-    p "The following userids have processed files but they are not present in the change directory"
-    p all_files
-    all_files.each_pair do |user,file_array|
-        unless file_array.empty?
-          p user
-          p file_array
+  @@message_file.puts "The following userids have processed files but they are not present in the change directory"
 
-        end 
-      end
+all_files.each_pair do |user,file_array|
+unless file_array.empty?
+@@message_file.puts user
+@@message_file.puts file_array
+end
+end
     
   end #end process
 end
