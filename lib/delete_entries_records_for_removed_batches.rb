@@ -34,7 +34,9 @@ class DeleteEntriesRecordsForRemovedBatches
         Freereg1CsvFile.where(userid: userid).order_by(file_name: 1).each do |name| 
           process_files << name.file_name
         end
-        
+       p userid
+        p process_files
+        p all_files[userid] 
         number_of_files = 0
         number_of_files = process_files.length unless process_files.nil?
        
@@ -44,7 +46,7 @@ class DeleteEntriesRecordsForRemovedBatches
         files.each do |file|
          file_parts = file.split("/")
          file_name = file_parts[-1]
-         all_files[userid].delete_if {|name| name = file_name}
+         all_files[userid].delete_if {|name| name = file_name} unless all_files[userid].nil?
          process_files.delete_if {|name| name = file_name}
         end
         p userid
@@ -67,12 +69,11 @@ class DeleteEntriesRecordsForRemovedBatches
         else
          @@message_file.puts "#{userid}, #{number_of_files},0"
         end
-        p process_files
-        p all_files[userid]
+        
       end
     end
     p "The following userids have processed files but they are not present in the change directory"
-
+    p all_files
     all_files.each_pair do |user,file_array|
         unless file_array.empty?
           p user
