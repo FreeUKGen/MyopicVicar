@@ -1104,9 +1104,10 @@ class FreeregCsvUpdateProcessor
                   @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
                   @@message_file.close 
                   file = @@message_file
-                  UseridDetail.where(person_role: "system_administrator").all.each do |user|
-                    UserMailer.update_report_to_freereg_manager(file,user).deliver
-                  end
+                  user = UseridDetail.where(userid: "REGManager").first
+                  UserMailer.update_report_to_freereg_manager(file,user).deliver
+                  user = UseridDetail.where(userid: "Captainkirk").first
+                  UserMailer.update_report_to_freereg_manager(file,user).deliver
                   at_exit do
                   p "goodbye"
                 end

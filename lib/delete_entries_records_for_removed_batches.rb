@@ -22,6 +22,7 @@ class DeleteEntriesRecordsForRemovedBatches
     total_userid_files = Dir.glob(total_userid_pattern, File::FNM_CASEFOLD).sort
     
     p "There are #{userids.length} userids and #{total_userid_files.length} userid files" 
+    @@message_file.puts "There are #{userids.length} userids and #{total_userid_files.length} userid files" 
      @@message_file.puts "Checking they all exist"
     total_userid_files.each do |file|
       file_parts = file.split("/")
@@ -43,7 +44,7 @@ class DeleteEntriesRecordsForRemovedBatches
     total_base_files = Dir.glob(total_base_pattern, File::FNM_CASEFOLD).sort
     total_change_files = Dir.glob(total_change_pattern, File::FNM_CASEFOLD).sort
     p "There are #{number} loaded files #{total_base_files.length} base files and #{total_change_files.length} change files" 
-    @@message_file.puts "There are #{number} loaded files #{total_base_files.length} base files and #{total_change_files.length} change files"  
+    @@message_file.puts "There are #{number} loaded batches #{total_base_files.length} base files and #{total_change_files.length} change files"  
     total_base_files_hash = Hash.new
     total_base_files.each do |total_base_file|
       file_parts = total_base_file.split("/")
@@ -109,22 +110,19 @@ class DeleteEntriesRecordsForRemovedBatches
             process_files.each do |my_file|
            
             delete_file = File.join(base_directory,userid,my_file)
-            @@message_file.puts delete_file
-           
             Freereg1CsvFile.where(userid: userid,file_name: my_file).all.each do |del_file|
-              #del_file.destroy
-          
-              #File.delete(delete_file) if File.exists?(delete_file)
-            
-             @@message_file.puts "#{userid}, #{my_file} deleted"
+              del_file.destroy
+              @@message_file.puts "#{userid}, #{my_file} deleted"
             end
+              File.delete(delete_file) if File.exists?(delete_file)
            end
           end
        end 
    end
-   file = @@message_file
-   UseridDetail.where(person_role: "system_administrator").all.each do |user|
+    file = @@message_file
+    user = UseridDetail.where(userid: "REGManager").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver
-   end
-  end #end process
+    user = UseridDetail.where(userid: "Captainkirk").first
+    UserMailer.update_report_to_freereg_manager(file,user).deliver
+   end #end process
 end
