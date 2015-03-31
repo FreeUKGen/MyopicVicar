@@ -455,7 +455,7 @@ namespace :build do
    
   end
 
-    task :delete_entries_records_for_removed_batches,[:len,:base] => [:environment] do |t,args|
+    task :delete_entries_records_for_removed_batches => [:environment] do |t,args|
       # base = 1 uses the change files directory and base = 2 uses the actual files directory
     require 'delete_entries_records_for_removed_batches'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
@@ -465,8 +465,7 @@ namespace :build do
     host = Mongoid.sessions[:default][:hosts].first
     p host
     
-      DeleteEntriesRecordsForRemovedBatches.process(args.len,args.base)
-   
+      DeleteEntriesRecordsForRemovedBatches.process   
   end
 
 
