@@ -15,9 +15,13 @@ class DeleteEntriesRecordsForRemovedBatches
     @@message_file.puts "Deleting entries and records for removed batches from the base files collection at #{base_directory} using the change set at #{change_directory}"
     len =len.to_i
     
-    
+    userids = Array.new
     all_files = Hash.new
-    userids = UseridDetail.all.order_by(userid: 1)
+    users = UseridDetail.all.order_by(userid: 1)
+    users.each do |user|
+      userids << user.userid
+    end
+
     total_userid_pattern = File.join(base_directory,"*",".udetails")
     total_userid_files = Dir.glob(total_userid_pattern, File::FNM_CASEFOLD).sort
     
@@ -87,8 +91,7 @@ class DeleteEntriesRecordsForRemovedBatches
       p "Deleting removed files from the base directory and from the database"
 
      
-     userids.each do |user|
-       userid = user.userid
+     userids.each do |userid|
         
        unless userid.nil?
           
