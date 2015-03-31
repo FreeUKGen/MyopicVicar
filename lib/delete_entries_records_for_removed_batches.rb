@@ -31,7 +31,7 @@ class DeleteEntriesRecordsForRemovedBatches
     total_change_pattern = File.join(base_directory,"*","*.csv")
     total_base_files = Dir.glob(total_base_pattern, File::FNM_CASEFOLD).sort
     total_change_files = Dir.glob(total_change_pattern, File::FNM_CASEFOLD).sort
-    p "#{total_base_files} base files and #{total_change_files}" 
+    p "#{total_base_files.length} base files and #{total_change_files.length}" 
     
     total_base_files_hash = Hash.new
     total_base_files.each do |total_base_file|
@@ -55,8 +55,8 @@ class DeleteEntriesRecordsForRemovedBatches
 
     all_files.each_pair do |user,file_array|
       file_array.each do |file_name|
-       total_change_files_hash[user].delete_if {|name| name = file_name} unless    total_change_files_hash[user].nil?
-       total_base_files_hash[user].delete_if {|name| name = file_name} unless      total_base_files_hash[user].nil?
+       total_change_files_hash[user].delete_if {|name| name == file_name} unless    total_change_files_hash[user].nil?
+       total_base_files_hash[user].delete_if {|name| name == file_name} unless      total_base_files_hash[user].nil?
        end
     end 
     @@message_file.puts "The following userids have files in the change directory but not in the database"
@@ -76,7 +76,7 @@ class DeleteEntriesRecordsForRemovedBatches
       end
      total_change_files_hash_copy.each_pair do |user,file_array|
       file_array.each do |file_name|
-      total_base_files_hash_copy[user].delete_if {|name| name = file_name} unless    total_base_files_hash_copy[user].nil?
+      total_base_files_hash_copy[user].delete_if {|name| name == file_name} unless    total_base_files_hash_copy[user].nil?
     end
   end
     @@message_file.puts "The following userids have files in the base directory but they are not present in the change directory"
@@ -111,8 +111,8 @@ class DeleteEntriesRecordsForRemovedBatches
          files.each do |file|
          file_parts = file.split("/")
          file_name = file_parts[-1]
-         all_files[userid].delete_if {|name| name = file_name} unless all_files[userid].nil?
-         process_files.delete_if {|name| name = file_name}
+         all_files[userid].delete_if {|name| name == file_name} unless all_files[userid].nil?
+         process_files.delete_if {|name| name == file_name}
         end
         
         number_deleted = 0
