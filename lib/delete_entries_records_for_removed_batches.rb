@@ -28,7 +28,7 @@ class DeleteEntriesRecordsForRemovedBatches
     end
     p "There are #{number} loaded files"
     total_base_pattern = File.join(base_directory,"*","*.csv")
-    total_change_pattern = File.join(base_directory,"*","*.csv")
+    total_change_pattern = File.join(change_directory,"*","*.csv")
     total_base_files = Dir.glob(total_base_pattern, File::FNM_CASEFOLD).sort
     total_change_files = Dir.glob(total_change_pattern, File::FNM_CASEFOLD).sort
     p "#{total_base_files.length} base files and #{total_change_files.length}" 
@@ -135,14 +135,5 @@ class DeleteEntriesRecordsForRemovedBatches
         
       end
     end
-  @@message_file.puts "The following userids have processed files but they are not present in the change directory"
-
-all_files.each_pair do |user,file_array|
-unless file_array.empty?
-@@message_file.puts user
-@@message_file.puts file_array
-end
-end
-    
-  end #end process
+   end #end process
 end
