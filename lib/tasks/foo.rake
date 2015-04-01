@@ -36,9 +36,7 @@ namespace :foo do
     County.create_indexes()
     Syndicate.create_indexes()
     UseridDetail.create_indexes()
-    SearchRecord.create_indexes()
     Freereg1CsvFile.create_indexes()
-    Freereg1CsvEntry.create_indexes()
     Register.create_indexes()
     Church.create_indexes()
     Place.create_indexes()
@@ -47,7 +45,8 @@ namespace :foo do
     Feedback.create_indexes()
     SearchQuery.create_indexes()
     AtticFile.create_indexes()
-
+    Freereg1CsvEntry.create_indexes()
+    SearchRecord.create_indexes()
     puts "Indexes complete."
   end
 
