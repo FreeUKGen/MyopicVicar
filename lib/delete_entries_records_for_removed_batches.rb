@@ -11,8 +11,9 @@ class DeleteEntriesRecordsForRemovedBatches
     base_directory = Rails.application.config.datafiles 
     
     change_directory = Rails.application.config.datafiles_changeset 
-    puts "Deleting entries and records for removed batches from the base files collection at #{base_directory} using the change set at #{change_directory}"
-    @@message_file.puts "Deleting entries and records for removed batches from the base files collection at #{base_directory} using the change set at #{change_directory}"
+    report_time = Time.now.strftime("%d/%m/%Y %H:%M")
+    puts "Deleting entries and records for removed batches from the base files collection at #{base_directory} using the change set at #{change_directory} that was run at #{report_time}"
+    @@message_file.puts "Deleting entries and records for removed batches from the base files collection at #{base_directory} using the change set at #{change_directory} that was run at #{report_time}"
     len =len.to_i
     
     userids = Array.new
@@ -109,7 +110,7 @@ class DeleteEntriesRecordsForRemovedBatches
           end
               
           unless process_files.empty?
-            @@message_file.puts "remove files for #{userid}" 
+          
             process_files.each do |my_file|
            
             delete_file = File.join(base_directory,userid,my_file)
@@ -122,6 +123,7 @@ class DeleteEntriesRecordsForRemovedBatches
           end
        end 
    end
+     @@message_file.close
     file = @@message_file
     user = UseridDetail.where(userid: "REGManager").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver
