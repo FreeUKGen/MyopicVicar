@@ -1,4 +1,4 @@
-namespace :build do
+namespace :build_ssl do
 
 	$collections = Array.new
 	$collections[0] = "master_place_names"
