@@ -990,6 +990,11 @@ class FreeregCsvUpdateProcessor
                 #is it aleady there?
                 check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
                                                          :userid => @@header[:userid]}).first
+                if check_for_userid.nil?
+                   #but first we need to check that there is a userid
+                  @@message_file.puts "#{@@header[:userid]} does not exit"
+                  return false
+                end
                 if check_for_file.nil?
                   #if file not there then need to create
                   return true
@@ -1090,6 +1095,7 @@ class FreeregCsvUpdateProcessor
                     process = check_for_replace(filename) unless recreate == "recreate" 
                     @success = slurp_the_csv_file(filename) if process == true
                     if @success == true  && process == true
+                      p "processing the file"
                       n = process_the_data
                       if Dir.exists?(File.join(base_directory, @@header[:userid])) 
                         p "copying file to base"

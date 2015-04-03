@@ -208,6 +208,7 @@ class Freereg1CsvFile
   end
   def self.delete_file(file)
     file.save_to_attic
+    P "Deleting file and entries"
     Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
      entries.each do |entry|
