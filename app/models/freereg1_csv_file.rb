@@ -71,6 +71,7 @@ class Freereg1CsvFile
   before_save :add_lower_case_userid
   after_save :recalculate_last_amended, :update_number_of_files
   before_destroy do |file|
+    binding.pry
     file.save_to_attic
     p "Deleting entries"
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
@@ -214,7 +215,7 @@ class Freereg1CsvFile
         entry.search_record.delete
         entry.delete
       end
-      f.delete
+      f.destroy
     end
   end
 
