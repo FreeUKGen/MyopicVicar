@@ -1082,25 +1082,28 @@ class FreeregCsvUpdateProcessor
                   p "#{filenames.length} files selected for processing"
                   @@message_file.puts "#{filenames.length}\t files selected for processing\n"
                   time_start = Time.now
-                  nn = 2
+                  nn = 0
                   #now we cycle through the files
                   filenames.each do |filename|
                     setup_for_new_file(filename)
                     process = true
                     process = check_for_replace(filename) unless recreate == "recreate" 
                     @success = slurp_the_csv_file(filename) if process == true
-                    n = process_the_data if @success == true  && process == true
-                    if Dir.exists?(File.join(base_directory, @@header[:userid]))
-                      FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true
-                    else
-                      @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}"
+                    if @success == true  && process == true
+                      n = process_the_data
+                      if Dir.exists?(File.join(base_directory, @@header[:userid])) 
+                        p "copying file to base"
+                        FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true
+                      else
+                        @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}"  
+                      end
+                      nn = nn + n unless n.nil?
                     end
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     @success = true
-                    nn = nn + n unless n.nil?
                   end #filename loop end
-
-                  time = (((Time.now  - time_start )/(nn-1))*1000)
+                  time = 0 
+                  time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
                   p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
                   @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
                   @@message_file.close 
