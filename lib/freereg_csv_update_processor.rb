@@ -990,6 +990,7 @@ class FreeregCsvUpdateProcessor
                 #is it aleady there?
                 check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
                                                          :userid => @@header[:userid]}).first
+                check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
                 if check_for_userid.nil?
                    #but first we need to check that there is a userid
                   @@message_file.puts "#{@@header[:userid]} does not exit"
