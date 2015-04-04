@@ -6,6 +6,8 @@ class DeleteEntriesRecordsForRemovedBatches
     @@message_file = File.new(file_for_warning_messages, "w")
     
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    @@message_file.puts " Using #{Rails.application.config.website}"
+
    
     #extract range of userids
     base_directory = Rails.application.config.datafiles 

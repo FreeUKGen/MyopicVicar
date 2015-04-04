@@ -992,7 +992,7 @@ class FreeregCsvUpdateProcessor
                                                          :userid => @@header[:userid]}).first
 
                 check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
-                
+
                 if check_for_userid.nil?
                    #but first we need to check that there is a userid
                   @@message_file.puts "#{@@header[:userid]} does not exit"
@@ -1079,6 +1079,7 @@ class FreeregCsvUpdateProcessor
                   time = Time.new.to_i.to_s
                   file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
                   @@message_file = File.new(file_for_warning_messages, "w")
+                   @@message_file.puts " Using #{Rails.application.config.website}"
                    report_time = Time.now.strftime("%d/%m/%Y %H:%M")
                   p "Started a build with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
                   @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
