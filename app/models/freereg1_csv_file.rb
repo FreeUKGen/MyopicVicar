@@ -211,10 +211,8 @@ class Freereg1CsvFile
     p "Deleting file and entries"
     Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-     entries.each do |entry|
-        entry.search_record.delete unless entry.nil? || entry.search_record.nil?
-        entry.delete unless entry.nil?
-      end
+     p "#{entries.length}" unless entries.nil?
+     entries.destroy_all
       f.delete unless f.nil?
     end
   end
