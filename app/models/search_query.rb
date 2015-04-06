@@ -63,7 +63,7 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
-    records = SearchRecord.collection.find(search_params)
+    records = SearchRecord.collection.find(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
 
     search_record_array = Array.new
     n = 0
