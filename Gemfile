@@ -48,6 +48,8 @@ gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid'
 gem "listen"
 
 
+gem 'newrelic_rpm'
+gem 'newrelic_moped'
 gem 'octokit'
 
 # Gems used only for assets and not required
