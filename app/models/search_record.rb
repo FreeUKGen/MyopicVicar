@@ -55,9 +55,7 @@ class SearchRecord
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
-  index "search_names.first_name" => 1
-  index "search_names.last_name" => 1
-
+  
   # derived search fields
   field :location_names, type:Array, default: []
   field :search_soundex, type: Array, default: []
