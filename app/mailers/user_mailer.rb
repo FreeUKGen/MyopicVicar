@@ -27,6 +27,15 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end
 
+  def update_report_to_freereg_manager(file,user)
+  
+      attachments["report.log"] = File.read(file)
+      @person_forename = user.person_forename
+      @email_address = user.email_address
+      mail(:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeREG2 Update")
+    
+  end
+
   def invitation_to_register_transcriber(user)
     @user = user
     get_coordinator_name

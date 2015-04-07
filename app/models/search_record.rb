@@ -12,7 +12,7 @@ class SearchRecord
   before_save :transform
 
   module Source
-    TRANSCRIPT='t'
+    TRANSCRIPT='transcript'
     EMENDOR='e'
     SUPPLEMENT='s'
     SEPARATION='sep'
@@ -27,7 +27,7 @@ class SearchRecord
 
 
   belongs_to :freereg1_csv_entry, index: true
-  belongs_to :place, index:true
+  belongs_to :place
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
@@ -49,27 +49,53 @@ class SearchRecord
   field :transcript_names, type: Array#, :required => true
 
   # Date of the entry, whatever kind it is
-  field :transcript_date, type: String#, :required => false
-  field :search_date, type: String#, :required => false
+  field :transcript_dates, type: Array, default: [] #, :required => false
+
+  field :search_dates, type: Array, default: [] #, :required => false
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
+  index "search_names.first_name" => 1
+  index "search_names.last_name" => 1
 
   # derived search fields
   field :location_names, type:Array, default: []
   field :search_soundex, type: Array, default: []
 
 
-  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1, "search_date" => 1 },
-        {:name => "county_fn_ln_sd"})
+  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1 },
+        {:name => "county_fn_ln_sd", background: true})
+  index({"chapman_code" => 1, "search_names.last_name" => 1 },
+        {:name => "county_ln_sd", background: true})
+  index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1 },
+        {:name => "county_lnsdx_fnsdx_sd", background: true})
+  index({"chapman_code" => 1, "search_soundex.first_name" => 1 },
+        {:name => "county_fnsdx", background: true})
 
-  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
-        {:name => "ln_rt_fn_sd"})
 
-  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1, "search_date" => 1 },
-        {:name => "lnsdx_rt_fn_sd"})
+  index({"place_id" => 1, "search_names.last_name" => 1 },
+        {:name => "place_ln", background: true})
+  index({"place_id" => 1,"search_names.first_name" => 1, "search_names.last_name" => 1},
+        {:name => "place_ln_fn", background: true})
+
+  index({"place_id" => 1, "search_soundex.last_name" => 1 },
+        {:name => "place_lnsdx", background: true})
+
+  index({"place_id" => 1, "search_soundex.first_name" => 1, "search_soundex.last_name" => 1 },
+        {:name => "place_fnsdx_lnsdx", background: true})
 
 
+  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1  },
+        {:name => "ln_rt_fn_sd", background: true})
+
+  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1 },
+        {:name => "lnsdx_rt_fnsdx_sd", background: true})
+  def comparable_name
+    self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
+      name['type'] == 'primary'
+    end
+  end
+  
   def location_names
     return self[:location_names] if self[:location_names] && self[:location_names].size > 0
 
@@ -77,8 +103,10 @@ class SearchRecord
   end
 
   def format_location
-    place_name = self.place.place_name
-
+   
+    place_name = self.place.place_name unless self.place.nil? # should not be nil but!
+    place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place.place_name if self.place.nil?
+ 
     if self.freereg1_csv_entry
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
@@ -136,7 +164,7 @@ class SearchRecord
   end
 
   def transform_date
-    self.search_date = DateParser::searchable(transcript_date)
+    self.search_dates = transcript_dates.map { |t_date| DateParser::searchable(t_date) }
   end
 
   def populate_location
@@ -201,7 +229,7 @@ class SearchRecord
 
 
 
-  def search_name(first_name, last_name, person_type, source = 'transcript')
+  def search_name(first_name, last_name, person_type, source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type })
@@ -240,16 +268,29 @@ class SearchRecord
 
   def self.from_freereg1_csv_entry(entry)
     #   # assumes no existing entries for this line
+    @@file = nil if (defined?(@@file)).nil?
+    @@owner = nil if (defined?(@@owner)).nil?
+    @@places = nil if (defined?(@@places)).nil?
     record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-
     record.freereg1_csv_entry = entry
-    # TODO profile this to see if it's especially costly
-    places = Place.where(:chapman_code => entry.county, :place_name => entry.place).hint("chapman_code_1_place_name_1_disabled_1").first
-
-    #record.place = entry.freereg1_csv_file.register.church.place
+    file = entry.freereg1_csv_file
+    if @@file.nil? || @@owner.nil?  
+      places = file.register.church.place 
+      @@places = places
+      @@file = file.file_name
+      @@owner = file.userid
+    else
+      if @@file == file.file_name && @@owner == file.userid
+        places = @@places
+      else
+        places = file.register.church.place 
+        @@places = places
+        @@file = file.file_name
+        @@owner = file.userid
+      end
+    end
     record.place = places
     record.save!
-
   end
 
   def self.delete_freereg1_csv_entries

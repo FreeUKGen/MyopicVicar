@@ -20,5 +20,4 @@ if Rails.env.development?
 end
 if Rails.env.production?
     ActionMailer::Base.default_url_options[:host] = "http://freereg2.freereg.org.uk"
-    ActionMailer::Base.register_interceptor(ProductionMailInterceptor)
 end

@@ -40,6 +40,19 @@ class ApplicationController < ActionController::Base
 
   private
 
+   def check_for_mobile
+    session[:mobile_override] = true if mobile_device?
+  end
+
+  
+  def mobile_device?
+   # Season this regexp to taste. I prefer to treat iPad as non-mobile.
+   request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
+  end
+
+  helper_method :mobile_device?
+
+
   def require_login
     if session[:userid].nil?
       flash[:error] = "You must be logged in to access this section"

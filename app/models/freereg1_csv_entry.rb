@@ -17,7 +17,7 @@ class Freereg1CsvEntry
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'freereg_validations'
-
+  require 'record_type'
 
 
 
@@ -97,13 +97,39 @@ class Freereg1CsvEntry
   embeds_many :multiple_witnesses
   accepts_nested_attributes_for :multiple_witnesses
 
-  index({freereg1_csv_file_id: 1,file_line_number:1})
-  index({file_line_number:1})
-  index ({line_id:1})
+  index({freereg1_csv_file_id: 1,file_line_number:1},{ background: true})
+  index({file_line_number:1},{ background: true})
+  index({line_id:1},{ background: true})
 
   validate :errors_in_fields
 
+  def extract_year(date_string)
+    if date_string && md = date_string.match(/(\d\d\d\d)/)
+      md.captures.first.to_i
+    else
+      1 # assume illegible dates are old -- start with year 1
+    end    
+  end
 
+
+  def date_beyond_cutoff?(date_string, cutoff)
+    current_year = Time.now.year
+
+    return (current_year - cutoff) < extract_year(date_string)
+  end
+
+  def embargoed?
+    case self.record_type
+    when RecordType::BAPTISM
+      date_beyond_cutoff?(self.baptism_date, 100)
+    when RecordType::MARRIAGE
+      date_beyond_cutoff?(self.marriage_date, 75)
+    when RecordType::BURIAL
+      date_beyond_cutoff?(self.burial_date, 5)
+    else
+      false
+    end
+  end
 
   def embed_witness
     if self.record_type == 'ma'
@@ -114,7 +140,7 @@ class Freereg1CsvEntry
 
 
   def transform_search_record
-    SearchRecord.from_freereg1_csv_entry(self)
+    SearchRecord.from_freereg1_csv_entry(self) unless self.embargoed?
   end
 
   def display_field(field_name)

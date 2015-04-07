@@ -45,6 +45,8 @@ describe Freereg1CsvEntry do
       record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
   
       record.freereg1_csv_entries.count.should eq(file[:entry_count])     
+      SearchRecord.count.should eq(Freereg1CsvEntry.count)
+
     end
   end
 
@@ -202,7 +204,8 @@ describe Freereg1CsvEntry do
                        :inclusive => false }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
     end    
@@ -225,6 +228,22 @@ describe Freereg1CsvEntry do
         seen[key].should be nil
         seen[key] = key
       end
+    end    
+  end
+
+
+  it "should not create search records for embargoed dates" do
+    EMBARGO_FILES.each do |file|
+      process_test_file(file)
+      file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first       
+
+      file_record.freereg1_csv_entries.count.should eq 2
+
+      entry = file_record.freereg1_csv_entries.first
+      entry.search_record.should_not be nil
+      
+      entry = file_record.freereg1_csv_entries.last
+      entry.search_record.should be nil
     end    
   end
 
@@ -255,7 +274,8 @@ describe Freereg1CsvEntry do
                        :place_ids => [place.id] }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
 
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
@@ -266,7 +286,8 @@ describe Freereg1CsvEntry do
                        :place_ids => [place.id, different_place.id] }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
       result.count.should have_at_least(1).items
       result.should be_in_result(entry)
       
@@ -276,7 +297,8 @@ describe Freereg1CsvEntry do
                        :place_ids => [different_place.id] }
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
 
       result.count.should eq(0)
       result.should_not be_in_result(entry)
@@ -294,7 +316,8 @@ describe Freereg1CsvEntry do
                                  :inclusive => !required})
       q = SearchQuery.new(query_params)
       q.save(:validate => false)
-      result = q.search.to_a
+      q.search
+      result = q.results
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
       # pp q.attributes

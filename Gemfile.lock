@@ -162,7 +162,7 @@ GEM
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    libv8 (3.16.14.3)
+    libv8 (3.16.14.7)
     listen (2.7.5)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
@@ -193,6 +193,10 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
+    newrelic_moped (1.0.0)
+      moped
+      newrelic_rpm (~> 3.11)
+    newrelic_rpm (3.11.1.284)
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
     nokogiri (1.6.2.1-x86-mingw32)
@@ -366,11 +370,14 @@ DEPENDENCIES
   jquery-rails
   json
   kaminari
+  libv8 (~> 3.16.14.7)
   listen
   meta_search (>= 1.1.0.pre)
   mongoid (~> 3.1)
   moped (~> 1)
   mysql2 (= 0.3.12)
+  newrelic_moped
+  newrelic_rpm
   nokogiri
   octokit
   osgb!

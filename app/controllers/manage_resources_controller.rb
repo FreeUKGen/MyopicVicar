@@ -59,8 +59,7 @@
 
   def create
       clean_session
-      session[:userid_lower_case] = params[:manage_resource][:userid] 
-      @user = UseridDetail.where(:userid_lower_case => session[:userid_lower_case]).first
+      @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
       session[:userid] = @user.userid
       session[:first_name] = @user.person_forename
       session[:manager] = manager?(@user)

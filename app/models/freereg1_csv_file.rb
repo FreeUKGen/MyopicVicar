@@ -71,8 +71,14 @@ class Freereg1CsvFile
   before_save :add_lower_case_userid
   after_save :recalculate_last_amended, :update_number_of_files
   before_destroy do |file|
-    file.save_to_attic
-    Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
+   file.save_to_attic
+    p "Deleting entries"
+    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
+    num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
+    p num
+    entries.each do |entry|
+      entry.destroy
+    end
   end
 
   after_destroy :clean_up
@@ -201,14 +207,20 @@ class Freereg1CsvFile
     hold_file
   end
   def self.delete_file(file)
-    Freereg1CsvFile.where(:userid => file.userid, :file_name => file.file_name).all.each do |f|
-      f.save_to_attic
-      Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => file._id)
-      f.delete
+    file.save_to_attic
+    p "Deleting file and entries"
+    Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
+     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
+     entries.each do |entry|
+        entry.search_record.delete unless entry.nil? || entry.search_record.nil?
+        entry.delete unless entry.nil?
+      end
+      f.delete unless f.nil?
     end
   end
 
   def save_to_attic
+    p "Saving to attic"
     #to-do unix permissions
     file = self.file_name
     file_location = File.join(Rails.application.config.datafiles,self.userid,file)
@@ -219,9 +231,9 @@ class Freereg1CsvFile
       renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
       FileUtils.mv(renamed_file,newdir,:verbose => true)
-      user =UseridDetail.where(:userid_lower_case => self.userid.downcase).first
-      user.attic_files << AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'))
-      user.save(validate: false)
+      user =UseridDetail.where(:userid => self.userid).first
+      attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
+      attic_file.save
     else
       p "file does not exist"
     end
@@ -320,7 +332,6 @@ class Freereg1CsvFile
           end #end case
         end #end records
       end #file parts
-
     end #end csv
   end #end method
 
@@ -450,7 +461,7 @@ class Freereg1CsvFile
 
     def update_number_of_files
       
-      userid = UseridDetail.where(:userid_lower_case => self.userid.downcase).first
+      userid = UseridDetail.where(:userid => self.userid).first
       return if userid.nil?
       files = userid.freereg1_csv_files 
       if files.length.nil?

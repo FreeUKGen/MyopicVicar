@@ -1,5 +1,6 @@
 class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
+  before_filter :check_for_mobile, :only => :show
   RECORDS_PER_PAGE = 100
   def index
     redirect_to :action => :new
@@ -7,12 +8,6 @@ class SearchQueriesController < ApplicationController
 
 
   def new
-    if @page = Refinery::Page.where(:slug => 'search-sidebar-text').exists?
-        @page = Refinery::Page.where(:slug => 'search-sidebar-text').first.parts.first.body.html_safe
-    else
-       @page = ""
-    end
-  
     if params[:search_id]
       old_query = SearchQuery.find(params[:search_id])
       @search_query = SearchQuery.new(old_query.attributes)
@@ -53,6 +48,7 @@ class SearchQueriesController < ApplicationController
     @search_query.session_id = request.session_options[:id]
 
     if  @search_query.save
+      @search_results = @search_query.search
       redirect_to search_query_path(@search_query)
     else
      render :new
@@ -107,27 +103,27 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
-    @search_query = SearchQuery.new(old_query.attributes)
-
     order_field=params[:order_field]
     if order_field==old_query.order_field
       # reverse the directions
-      @search_query.order_asc = !old_query.order_asc
+      old_query.order_asc = !old_query.order_asc
     else
-      @search_query.order_field = order_field
-      @search_query.order_asc = true
+      old_query.order_field = order_field
+      old_query.order_asc = true
     end
-    @search_query.save!
-    
-    redirect_to search_query_path(@search_query)
+    old_query.save!
+#    old_query.new_order(old_query)
+    redirect_to search_query_path(old_query)
   end
 
   def show
+
     @search_query = SearchQuery.find(params[:id])
-    @search_results = @search_query.search
-    @search_results =   @search_results
-     
+    @search_results =   @search_query.results
+    
   end
+  
+  
 
   def edit
     @search_query = SearchQuery.find(params[:id]) 

@@ -1068,8 +1068,10 @@ end
      #set up message files 
      EmailVeracity::Config[:skip_lookup]=true
      base_directory = Rails.application.config.datafiles
-     file_for_warning_messages = "log/freereg_messages.log"
-     @@message_file = File.new(file_for_warning_messages, "a")
+     file_for_warning_messages = "log/freereg_messages"
+     time = Time.new.to_i.to_s
+     file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
+     @@message_file = File.new(file_for_warning_messages, "w")
      p "Started a build with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
      @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} a base directory at #{base_directory} and a file #{range}"
      @@create_search_records = false

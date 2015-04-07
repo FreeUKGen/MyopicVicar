@@ -9,7 +9,6 @@ def self.get_all_of_the_filenames(base_directory,range)
     
      filenames = Array.new
      files = Array.new
-     aplha = Array.new
      alpha_start = 1
      alpha_end = 2
      alpha = range.split("-")
@@ -44,8 +43,20 @@ def self.get_all_of_the_filenames(base_directory,range)
            files.each do |fil|
            filenames << fil
          end #end do
-       end #end case
-    end #end if
+      end #end case
+     end #end if
    return filenames
-  end #end method
+end #end method
+
+def self.use_the_delta(change,delta)
+  filenames = Array.new
+  files = File.new(delta)
+  
+  files.readlines.each do |file|
+    file = file.strip
+    filenames << File.join(change,file)
+  end
+  filenames   
+end
+
 end #end module

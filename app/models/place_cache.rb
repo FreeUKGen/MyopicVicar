@@ -9,7 +9,7 @@ class PlaceCache
     county_response = {"" => []}
     places = Place.includes(:churches).where(:chapman_code => county).asc(:place_name)
     places.each do |place|
-      if place.churches.count > 0
+      if place.churches.count > 0 && place.data_present?
         county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
       end
     end

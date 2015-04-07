@@ -17,27 +17,36 @@ namespace :foo do
   desc "Create the indexes after all FreeREG processes have completed"
   task :create_freereg_csv_indexes => [:environment] do
     #task is there to creat indexes after running of freereg_csv_processor
-    require 'search_record'
+   require "county"
+    require "country"
+    require "userid_detail"
+    require "syndicate"
+    require "search_record"
     require 'freereg1_csv_file'
     require 'freereg1_csv_entry'
     require 'register'
     require 'church'
     require 'place'
-    require "userid_detail"
-    require "syndicate"
-    require "county"
-    require "country"
+    require "contact"
+    require "feedback"
+    require "search_query"
+    require "attic_file"
     puts "Freereg build indexes."
     Country.create_indexes()
     County.create_indexes()
     Syndicate.create_indexes()
     UseridDetail.create_indexes()
-    SearchRecord.create_indexes()
     Freereg1CsvFile.create_indexes()
-    Freereg1CsvEntry.create_indexes()
     Register.create_indexes()
     Church.create_indexes()
     Place.create_indexes()
+    BatchError.create_indexes()
+    Contact.create_indexes()
+    Feedback.create_indexes()
+    SearchQuery.create_indexes()
+    AtticFile.create_indexes()
+    Freereg1CsvEntry.create_indexes()
+    SearchRecord.create_indexes()
     puts "Indexes complete."
   end
 
@@ -163,18 +172,4 @@ desc "Load attic files"
       puts "Task complete."
   
   end
-
-  task :freereg_update,[:range] => [:environment] do |t,args|
-    require 'freereg_csv_update_processor'
-    @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
-    p db
-    host = Mongoid.sessions[:default][:hosts].first
-    p host
-    
-      FreeregCsvUpdateProcessor.process(args.range)
-   
-  end
-
 end

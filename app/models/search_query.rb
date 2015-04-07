@@ -1,5 +1,6 @@
 class SearchQuery
   include Mongoid::Document
+  store_in session: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
 
@@ -12,8 +13,8 @@ class SearchQuery
     TYPE='record_type'
     DATE='search_date'
     COUNTY='chapman_code'
-    LOCATION='location_names.0'
-    NAME='transcript_names.0.last_name, transcript_names.0.first_name'
+    LOCATION='location'
+    NAME="transcript_names"
 
     ALL_ORDERS = [
       TYPE,
@@ -43,7 +44,7 @@ class SearchQuery
   field :search_nearby_places, type: Boolean
 
   field :result_count, type: Integer
-  field :place_system, type: String, default: Place::MeasurementSystem::SI
+  field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
 
   field :session_id, type: String
   field :runtime, type: Integer
@@ -62,24 +63,128 @@ class SearchQuery
   before_validation :clean_blanks
 
   def search
-      if order_asc
-        records = SearchRecord.where(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).asc(self.order_field)
-      else
-        records = SearchRecord.where(search_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS).desc(self.order_field)
-      end
-      self.result_count = records.count(true)
-      self.runtime = (Time.now.utc - self.created_at) * 1000
-      search_record_array = Array.new
-      records.each do |rec|
-        search_record_array << rec._id.to_s
-      end
-      self.search_result =  SearchResult.new(records: search_record_array)
-      self.save
-      records
+    records = SearchRecord.collection.find(search_params)
+
+    search_record_array = Array.new
+    n = 0
+    records.each do |rec|
+      n = n + 1
+      search_record_array << rec["_id"].to_s
+      break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    end
+    self.search_result =  SearchResult.new(records: search_record_array)
+    self.result_count = search_record_array.length
+    self.runtime = (Time.now.utc - self.created_at) * 1000
+    self.save
   end
 
+  def fetch_records
+    return @search_results if @search_results
+    
+    records = self.search_result.records
+    @search_results = SearchRecord.find(records)
+    
+    @search_results    
+  end
+
+  def persist_results(results)
+    # finally extract the records IDs and persist them
+    records = Array.new
+    results.each do |rec|
+      records << rec["_id"].to_s
+    end
+    self.search_result =  SearchResult.new(records: records)
+    self.result_count = records.length
+    self.save
+        
+  end
+
+  def compare_name(x,y)
+    x_name = x.comparable_name
+    y_name = y.comparable_name
+    
+    if x_name['last_name'] == y_name['last_name']
+      x_name['first_name'] <=> y_name['first_name']
+    else
+      x_name['last_name'] <=> y_name['last_name']
+    end
+  end
+
+  def compare_location(x,y)
+    if x.location_names[0] == y.location_names[0]
+      if x.location_names[1] == y.location_names[1]
+        x.location_names[2] <=> y.location_names[2]
+      else
+        x.location_names[1] <=> y.location_names[1]
+      end
+    else
+      x.location_names[0] <=> y.location_names[0]
+    end
+  end
+
+  def sort_results(results)
+    # next reorder in memory
+    case self.order_field
+    when SearchOrder::COUNTY
+      if self.order_asc
+        results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
+      else
+        results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
+      end
+    when SearchOrder::DATE 
+      if self.order_asc
+        results.sort! { |x,y| (x.search_dates.first||'') <=> (y.search_dates.first||'') }
+      else
+        results.sort! { |x,y| (y.search_dates.first||'') <=> (x.search_dates.first||'') }        
+      end
+    when SearchOrder::TYPE
+      if self.order_asc
+        results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
+      else
+        results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
+      end
+    when SearchOrder::LOCATION
+      if self.order_asc
+        results.sort! do |x, y|
+          compare_location(x,y)
+        end
+      else
+        results.sort! do |x, y|
+          compare_location(y,x)  # note the reverse order
+        end
+      end
+    when SearchOrder::NAME
+      if self.order_asc
+        results.sort! do |x, y|
+          compare_name(x,y)
+        end
+      else
+        results.sort! do |x, y|
+          compare_name(y,x)  # note the reverse order
+        end
+      end
+    end    
+  end
+
+  def results
+    records = fetch_records
+    sort_results(records)
+    persist_results(records)
+    
+    records
+  end
+
+  # # all this now does is copy the result IDs and persist the new order
+  # def new_order(old_query)
+    # # first fetch the actual records
+    # records = old_query.search_result.records
+    # self.search_result =  SearchResult.new(records: records)
+    # self.result_count = records.length
+    # self.save    
+  # end
+
   def explain_plan
-    SearchRecord.where(search_params).asc(:search_date).all.explain
+    SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(:search_date).all.explain
   end
 
   def explain_plan_no_sort
@@ -126,7 +231,7 @@ class SearchQuery
       date_params = Hash.new
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lt"] = DateParser::end_search_date(end_year) if end_year
-      params[:search_date] = date_params
+      params[:search_dates] = { "$elemMatch" => date_params }
     end
     params
   end
@@ -163,16 +268,20 @@ class SearchQuery
 
   def name_not_blank
     if last_name.blank? && !adequate_first_name_criteria? 
-      errors.add(:first_name, "If you do not enter a surname, a forename and county must be part of your search.")
+      errors.add(:first_name, "A forename and county must be part of your search if you have not entered a surname.")
     end
   end
   
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0
   end
+
   def county_is_valid
     if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
-      errors.add(:chapman_codes, "If you not search a county, a date range and record type must be part of your search.")
+      errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+    end
+    if chapman_codes.length > 3
+     errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
     end
   end
 
@@ -186,7 +295,7 @@ class SearchQuery
 
   def radius_is_valid
     if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "A Place must have been selected as a starting point if selecting the nearby option.")
+      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end
 

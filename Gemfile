@@ -14,6 +14,7 @@ gem 'refinerycms-authentication',  '~> 2.1.1'
 gem "mongoid", "~> 3.1"
 gem "moped", "~> 1"
 gem 'execjs'
+gem 'libv8', '~>3.16.14.7'
 
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
@@ -47,6 +48,8 @@ gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid'
 gem "listen"
 
 
+gem 'newrelic_rpm'
+gem 'newrelic_moped'
 gem 'octokit'
 
 # Gems used only for assets and not required
