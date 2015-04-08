@@ -33,9 +33,6 @@ if [[ ! -d ${FREEREG1_DELTA} ]] ; then
 fi
 trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
-trace "enforcing ownership on ${DATA_ROOT}"
-sudo chmod g+ws ${DATA_ROOT}
-sudo chown -R webserv:webserv ${DATA_ROOT}
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
 sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
