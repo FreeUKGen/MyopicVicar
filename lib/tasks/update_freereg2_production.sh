@@ -31,17 +31,20 @@ if [[ ! -d ${FREEREG1_DELTA} ]] ; then
   trace "${FREEREG1_DELTA} doesn't exist, creating"
   mkdir -p ${FREEREG1_DELTA}
 fi
-
-
-
+trace "disable of searches"
+sudo /root/bin/searchctl.sh disable
+trace "enforcing ownership on ${DATA_ROOT}"
+sudo chmod g+ws ${DATA_ROOT}
+sudo chown -R webserv:webserv ${DATA_ROOT}
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
+sudo -u webserv rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
 trace "update of the database2"
-sudo bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 trace "delete of entries and records for removed batches"
-sudo bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
-
+sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
+trace "re enable searches"
+sudo /root/bin/searchctl.sh enable
 trace "finished"
 exit
 
