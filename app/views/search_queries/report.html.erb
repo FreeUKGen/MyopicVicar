@@ -18,7 +18,7 @@
 		<% end %>
 	</ul>
 </div>
-<%= paginate @feedback %>
+
 <% if @session_id %>
 	<p>
 		Listing queries from session <%= @session_id %>.
@@ -40,7 +40,7 @@
 
 <h2>Queries</h2>
 
-
+<%= paginate @search_queries %>
 
 <table>
 	<thead>
