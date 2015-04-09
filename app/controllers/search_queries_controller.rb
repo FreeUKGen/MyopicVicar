@@ -77,7 +77,7 @@ class SearchQueriesController < ApplicationController
     @end_day = @start_day
     @start_time = @start_day.beginning_of_day.utc
     @end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param)    
+    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param).page(params[:page])    
   end
 
   def report_for_session
@@ -86,7 +86,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end 
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)    
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page])    
   end
 
 
