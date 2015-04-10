@@ -1,191 +1,219 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 module ChapmanCode
 
   def self.name_from_code(code)
-    CODES.invert[code]
+    codes = merge_countries
+    codes.invert[code]
   end
-  
+
   def self.remove_codes(hash)
-   FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
-     hash.delete_if {|key, value| key == country }
-   end 
-  hash 
+    hash = ChapmanCode::CODES.each_pair do |key, value|
+      FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
+        value.delete_if {|key, value| key == country }
+      end
+    end
+    hash
   end
 
   def self.add_parenthetical_codes(hash)
-    Hash[hash.map { |k,v| ["#{k} (#{v})", v] }]
+    hash = ChapmanCode::CODES.each_pair do |key, value|
+      ChapmanCode::CODES[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+    end
+    hash
   end
-   
+
   def self.values
     CODES::values
-  end 
+  end
 
   def self.has_key?(code)
     CODES.has_key?(code)
   end
 
   def self.values_at(value)
-    array = CODES.values_at(value)
+    codes = merge_countries
+    array = codes.values_at(value)
     array[0]
   end
-  
+
   def self.select_hash
-    CODES
+    codes = merge_countries
+    codes
   end
 
   def self.keys
-  mine = Array.new
-  CODES.each_key do |k| 
-    mine << k
-   end   
-   mine
+    codes = merge_countries
+    mine = Array.new
+    codes.each_key do |k|
+      mine << k
+     end
+    mine
   end
 
   def self.select_hash_with_parenthetical_codes
-    Hash[ChapmanCode::CODES.map { |k,v| ["#{k} (#{v})", v] }]
+    hash = ChapmanCode::CODES.each_pair do |key, value|
+      ChapmanCode::CODES[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+    end
+    hash
   end
 
   def self.has_key(value)
-    CODES.key(value)
+    codes = merge_countries
+    codes.key(value)
   end
 
   def self.value?(value)
-    CODES.value?(value)  
+    codes = merge_countries
+    codes.value?(value)
   end
 
   CODES = {
-    'Aberdeenshire' => 'ABD',
-    'Alderney' => 'ALD',
-    'Anglesey' => 'AGY',
-    'Angus (Forfarshire)' => 'ANS',
-    'Argyllshire' => 'ARL',
-    'Ayrshire' => 'AYR',
-    'Banffshire' => 'BAN',
-    'Bedfordshire' => 'BDF',
-    'Berkshire' => 'BRK',
-    'Berwickshire' => 'BEW',
-    'Brecknockshire' => 'BRE',
-    'Buckinghamshire' => 'BKM',
-    'Bute' => 'BUT',
-    'Caernarfonshire' => 'CAE',
-    'Caithness' => 'CAI',
-    'Cambridgeshire' => 'CAM',
-    'Cardiganshire' => 'CGN',
-    'Carmarthenshire' => 'CMN',
-    'Channel Islands' => 'CHI',
-    'Cheshire' => 'CHS',
-    'Clackmannanshire' => 'CLK',
-    'Cornwall' => 'CON',
-    'Cumberland' => 'CUL',
-    'Denbighshire' => 'DEN',
-    'Derbyshire' => 'DBY',
-    'Devon' => 'DEV',
-    'Dorset' => 'DOR',
-    'Dumfriesshire' => 'DFS',
-    'Dunbartonshire' => 'DNB',
-    'Durham' => 'DUR',
-    'East Lothian' => 'ELN',
-    'Essex' => 'ESS',
-    'Fife' => 'FIF', 
-    'Flintshire' => 'FLN',
-    'Glamorgan' => 'GLA',
-    'Gloucestershire' => 'GLS',
-    'Guernsey' => 'GSY',
-    'Hampshire' => 'HAM',
-    'Herefordshire' => 'HEF',
-    'Hertfordshire' => 'HRT',
-    'Huntingdonshire' => 'HUN',
-    'Inverness-shire' => 'INV',
-    'Isle of Man' => 'IOM',
-    'Isle of Wight' => 'IOW',
-    'Jersey' => 'JSY',
-    'Kent' => 'KEN',
-    'Kincardineshire' => 'KCD',
-    'Kinross-shire' => 'KRS',
-    'Kirkcudbrightshire' => 'KKD',
-    'Lanarkshire' => 'LKS',
-    'Lancashire' => 'LAN',
-    'Leicestershire' => 'LEI',
-    'Lincolnshire' => 'LIN',
-    'London (City)' => 'LND',
-    'Merionethshire' => 'MER',
-    'Middlesex' => 'MDX',
-    'Midlothian' => 'MLN',
-    'Monmouthshire' => 'MON',
-    'Montgomeryshire' => 'MGY',
-    'Morayshire' => 'MOR',
-    'Nairnshire' => 'NAI',
-    'Norfolk' => 'NFK',
-    'Northamptonshire' => 'NTH',
-    'Northumberland' => 'NBL',
-    'Nottinghamshire' => 'NTT',
-    'Orkney' => 'OKI',
-    'Oxfordshire' => 'OXF',
-    'Peeblesshire' => 'PEE',
-    'Pembrokeshire' => 'PEM',
-    'Perthshire' => 'PER',
-    'Renfrewshire' => 'RFW',
-    'Radnorshire' => 'RAD',
-    'Ross and Cromarty' => 'ROC',
-    'Roxburghshire' => 'ROX',
-    'Rutland' => 'RUT',
-    'Sark' => 'SRK',
-    'Selkirkshire' => 'SEL',
-    'Shetland' => 'SHI',
-    'Shropshire' => 'SAL',
-    'Somerset' => 'SOM',
-    'Staffordshire' => 'STS',
-    'Stirlingshire' => 'STI',
-    'Suffolk' => 'SFK',
-    'Surrey' => 'SRY',
-    'Sussex' => 'SSX',
-    'Sutherland' => 'SUT',
-    'Warwickshire' => 'WAR',
-    'Westmorland' => 'WES',
-    'West Lothian' => 'WLN',
-    'Wigtownshire' => 'WIG',
-    'Wiltshire' => 'WIL',
-    'Worcestershire' => 'WOR',
-    'Yorkshire, East Riding' => 'ERY',
-    'Yorkshire, North Riding' => 'NRY',
-    'Yorkshire, West Riding' => 'WRY',
-   
-    'England' => 'ENG',
-    'Clwyd' => 'CWD',
-    'Dyfed' => 'DFD',
-    'Gwent' => 'GNT',
-    'Gwynedd' => 'GWN',
-    'Powys' => 'POW',
-    'Mid Glamorgan' => 'MGM',
-    'South Glamorgan' => 'SGM',
-    'West Glamorgan' => 'WGM',
-    'Wales' => 'WLS',
-    'Borders' => 'BOR',
-    'Central' => 'CEN',
-    'Dumfries and Galloway' => 'DGY',
-    'Grampian' => 'GMP',
-    'Highland' => 'HLD',
-    'Lothian' => 'LTN',
-    'Orkney Isles' => 'OKI',
-    'Shetland Isles' => 'SHI',
-    'Strathclyde' => 'STD',
-    'Tayside' => 'TAY',
-    'Western Isles' => 'WIS',
-    'Scotland' => 'SCT',
-    'Unknown' => 'UNK'
+    "England" =>
+      {'England' => 'ENG',
+       'Alderney' => 'ALD',
+       'Bedfordshire' => 'BDF',
+       'Berkshire' => 'BRK',
+       'Berwickshire' => 'BEW',
+       'Buckinghamshire' => 'BKM',
+       'Cambridgeshire' => 'CAM',
+       'Channel Islands' => 'CHI',
+       'Cheshire' => 'CHS',
+       'Cornwall' => 'CON',
+       'Cumberland' => 'CUL',
+       'Denbighshire' => 'DEN',
+       'Derbyshire' => 'DBY',
+       'Devon' => 'DEV',
+       'Dorset' => 'DOR',
+       'Durham' => 'DUR',
+       'Essex' => 'ESS',
+       'Gloucestershire' => 'GLS',
+       'Guernsey' => 'GSY',
+       'Hampshire' => 'HAM',
+       'Herefordshire' => 'HEF',
+       'Hertfordshire' => 'HRT',
+       'Huntingdonshire' => 'HUN',
+       'Isle of Man' => 'IOM',
+       'Isle of Wight' => 'IOW',
+       'Jersey' => 'JSY',
+       'Kent' => 'KEN',
+       'Lancashire' => 'LAN',
+       'Leicestershire' => 'LEI',
+       'Lincolnshire' => 'LIN',
+       'London (City)' => 'LND',
+       'Middlesex' => 'MDX',
+       'Norfolk' => 'NFK',
+       'Northamptonshire' => 'NTH',
+       'Northumberland' => 'NBL',
+       'Nottinghamshire' => 'NTT',
+       'Oxfordshire' => 'OXF',
+       'Rutland' => 'RUT',
+       'Sark' => 'SRK',
+       'Shropshire' => 'SAL',
+       'Somerset' => 'SOM',
+       'Staffordshire' => 'STS',
+       'Suffolk' => 'SFK',
+       'Surrey' => 'SRY',
+       'Sussex' => 'SSX',
+       'Sutherland' => 'SUT',
+       'Warwickshire' => 'WAR',
+       'Westmorland' => 'WES',
+       'Wiltshire' => 'WIL',
+       'Worcestershire' => 'WOR',
+       'Yorkshire, East Riding' => 'ERY',
+       'Yorkshire, North Riding' => 'NRY',
+       'Yorkshire, West Riding' => 'WRY'},
+    "Scotland" =>
+      {'Scotland' => 'SCT',
+       'Aberdeenshire' => 'ABD',
+       'Angus (Forfarshire)' => 'ANS',
+       'Argyllshire' => 'ARL',
+       'Ayrshire' => 'AYR',
+       'Banffshire' => 'BAN',
+       'Borders' => 'BOR',
+       'Bute' => 'BUT',
+       'Caithness' => 'CAI',
+       'Central' => 'CEN',
+       'Clackmannanshire' => 'CLK',
+       'Dumfries and Galloway' => 'DGY',
+       'Dumfriesshire' => 'DFS',
+       'Dunbartonshire' => 'DNB',
+       'East Lothian' => 'ELN',
+       'Fife' => 'FIF',
+       'Grampian' => 'GMP',
+       'Highland' => 'HLD',
+       'Inverness-shire' => 'INV',
+       'Kincardineshire' => 'KCD',
+       'Kinross-shire' => 'KRS',
+       'Kirkcudbrightshire' => 'KKD',
+       'Lanarkshire' => 'LKS',
+       'Lothian' => 'LTN',
+       'Midlothian' => 'MLN',
+       'Morayshire' => 'MOR',
+       'Nairnshire' => 'NAI',
+       'Orkney' => 'OKI',
+       'Orkney Isles' => 'OKI',
+       'Peeblesshire' => 'PEE',
+       'Perthshire' => 'PER',
+       'Renfrewshire' => 'RFW',
+       'Ross and Cromarty' => 'ROC',
+       'Roxburghshire' => 'ROX',
+       'Selkirkshire' => 'SEL',
+       'Shetland' => 'SHI',
+       'Shetland Isles' => 'SHI',
+       'Stirlingshire' => 'STI',
+       'Strathclyde' => 'STD',
+       'Tayside' => 'TAY',
+       'West Lothian' => 'WLN',
+       'Western Isles' => 'WIS',
+       'Wigtownshire' => 'WIG'},
+    "Wales" =>
+      {'Wales' => 'WLS',
+       'Anglesey' => 'AGY',
+       'Brecknockshire' => 'BRE',
+       'Caernarfonshire' => 'CAE',
+       'Cardiganshire' => 'CGN',
+       'Carmarthenshire' => 'CMN',
+       'Clwyd' => 'CWD',
+       'Dyfed' => 'DFD',
+       'Flintshire' => 'FLN',
+       'Glamorgan' => 'GLA',
+       'Mid Glamorgan' => 'MGM',
+       'South Glamorgan' => 'SGM',
+       'West Glamorgan' => 'WGM',
+       'Gwent' => 'GNT',
+       'Gwynedd' => 'GWN',
+       'Merionethshire' => 'MER',
+       'Monmouthshire' => 'MON',
+       'Montgomeryshire' => 'MGY',
+       'Pembrokeshire' => 'PEM',
+       'Powys' => 'POW',
+       'Radnorshire' => 'RAD',
+       'Unknown' => 'UNK'}
   }
-    
+
+  private
+
+  def self.merge_countries
+    all_countries = {}
+    ChapmanCode::CODES.each_pair do |key, value|
+      value.each do |k|
+        all_countries.merge!(k)
+      end
+    end
+    all_countries
+  end
+
 end

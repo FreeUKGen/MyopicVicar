@@ -76,16 +76,11 @@
 					<span>These are the county boundaries as specified in 1831. Note if multiple counties are selected, all places within those counties will be searched.</span>
 				</a><small class="additional">Select one to three (hold Ctrl for multiple)</small>
 			</label>
-			<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" } tabindex="5">
-				<option value="" label="Select one or more counties"></option>
-				<% ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)).each_pair do |label, value| %>
-					<%if @search_query.chapman_codes.include?(value)%>
-						<option value="<%= value %>" selected="selected"> <%= label %></option>
-					<%else%>
-						<option value="<%= value %>"><%= label %></option>
-					<% end %>
-				<% end %>
-			</select>
+			<% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+ %>
+<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" } tabindex="5">
+			<%= grouped_options_for_select(grouped_options) %>
+		</select>
 		</li>
 		<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
 			<label class=" label" for="search_query_place_ids">
