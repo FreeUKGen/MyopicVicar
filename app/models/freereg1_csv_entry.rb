@@ -140,7 +140,7 @@ class Freereg1CsvEntry
 
 
   def transform_search_record
-    SearchRecord.from_freereg1_csv_entry(self) unless self.embargoed?
+    SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
   end
 
   def display_field(field_name)
