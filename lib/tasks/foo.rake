@@ -4,7 +4,7 @@ namespace :foo do
   desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
-  task :check_search_records, [:num] do |t, args|
+  task :check_search_records, [:num] => [:environment]do |t, args|
     require 'check_search_records'
     Mongoid.unit_of_work(disable: :all) do
       limit = args.num
