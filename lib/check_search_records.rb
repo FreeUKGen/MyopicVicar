@@ -22,7 +22,7 @@ class CheckSearchRecords
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
     limit = limit.to_i
-    #freereg1_csv_file = CheckSearchRecords.new
+    freereg1_csv_file = CheckSearchRecords.new
     #missing_search_record = Array.new
 
     puts "checking #{limit} documents for missing entries in the search records collection"
