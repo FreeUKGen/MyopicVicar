@@ -35,7 +35,13 @@ class CheckSearchRecords
         missing_records = missing_records + 1
         #message_file.puts " #{my_entry.line_id},#{my_entry.place},#{my_entry.church_name},#{my_entry.register_type}"
         #message_file.puts my_entry
-        my_entry.transform_search_record
+        file = my_entry.freereg1_csv_file
+        if file.nil?
+          message_file.puts " Missing file on entry"
+          message_file.puts my_entry
+        else
+          my_entry.transform_search_record
+        end
       end
 
       break if record_number == limit
