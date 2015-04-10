@@ -947,7 +947,7 @@ class FreeregCsvUpdateProcessor
                 #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
 
                 first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
-                code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
+                code_set =  first_data_line[5].strip if first_data_line[0] == "+INFO"
                 #set Characterset default
 
                 code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
