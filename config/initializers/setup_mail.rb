@@ -1,4 +1,4 @@
-if ENV['gmail_username'].present? && Rails.env.development? && Rails.application.mongodb_bin_location == 'd:/mongodb/bin/'
+if ENV['gmail_username'].present? && Rails.env.development? && Rails.application.config.mongodb_bin_location == 'd:/mongodb/bin/'
   ActionMailer::Base.delivery_method = :smtp
   # SMTP settings for gmail
   ActionMailer::Base.smtp_settings = {
