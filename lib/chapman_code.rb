@@ -132,6 +132,7 @@ module ChapmanCode
        'Westmorland' => 'WES',
        'Wiltshire' => 'WIL',
        'Worcestershire' => 'WOR',
+       'Yorkshire' => 'YKS',
        'Yorkshire, East Riding' => 'ERY',
        'Yorkshire, North Riding' => 'NRY',
        'Yorkshire, West Riding' => 'WRY'},
@@ -208,10 +209,8 @@ module ChapmanCode
 
   def self.merge_countries
     all_countries = {}
-    ChapmanCode::CODES.each_pair do |key, value|
-      value.each do |k|
-        all_countries.merge!(k)
-      end
+    ChapmanCode::CODES.each_pair do |key,value|
+      all_countries.merge!(CODES[key])
     end
     all_countries
   end
