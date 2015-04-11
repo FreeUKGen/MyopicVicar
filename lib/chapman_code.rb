@@ -29,10 +29,11 @@ module ChapmanCode
   end
 
   def self.add_parenthetical_codes(hash)
-    hash = ChapmanCode::CODES.each_pair do |key, value|
-      ChapmanCode::CODES[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+    hsh = {}
+    hash.each_pair do |key, value|
+      hsh[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
     end
-    hash
+    hsh
   end
 
   def self.values
