@@ -79,6 +79,28 @@ class SearchRecord
     fields.each { |field| field_spec[field] = 1 }
     index(field_spec, :name => name, :background => true)
   end
+  
+  def self.index_hint(search_params) 
+    candidates = INDEXES.keys
+    scores = {}
+    candidates.each { |name| scores[name] = index_score(name,search_params)}
+    pp scores
+    best = scores.max_by { |k,v| v}
+    best[0]
+  end
+  
+  def self.index_score(index_name, search_params)
+    fields = INDEXES[index_name]
+    best_score = -1
+    fields.each_with_index do |field, i|
+      if search_params.keys.any? { |param| print "#{i}: #{param.to_s} == #{field} => #{param.to_s == field}\n";param.to_s == field }
+        best_score = i
+      else
+        break #bail since leading terms haven't been found
+      end
+    end
+    best_score
+  end
 
   def comparable_name
     self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
