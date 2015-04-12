@@ -61,33 +61,25 @@ class SearchRecord
   field :search_soundex, type: Array, default: []
 
 
-  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1 },
-        {:name => "county_fn_ln_sd", background: true})
-  index({"chapman_code" => 1, "search_names.last_name" => 1 },
-        {:name => "county_ln_sd", background: true})
-  index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1 },
-        {:name => "county_lnsdx_fnsdx_sd", background: true})
-  index({"chapman_code" => 1, "search_soundex.first_name" => 1 },
-        {:name => "county_fnsdx", background: true})
+  INDEXES = {
+    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name"],
+    "county_ln_sd" => ["chapman_code", "search_names.last_name"],
+    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name"],
+    "county_fnsdx" => ["chapman_code", "search_soundex.first_name"],
+    "place_ln" => ["place_id", "search_names.last_name"],
+    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name"],
+    "place_lnsdx" => ["place_id", "search_soundex.last_name"],
+    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name"],
+    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name"],
+    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name"]
+  }
 
+  INDEXES.each_pair do |name,fields|
+    field_spec = {}
+    fields.each { |field| field_spec[field] = 1 }
+    index(field_spec, :name => name, :background => true)
+  end
 
-  index({"place_id" => 1, "search_names.last_name" => 1 },
-        {:name => "place_ln", background: true})
-  index({"place_id" => 1,"search_names.first_name" => 1, "search_names.last_name" => 1},
-        {:name => "place_ln_fn", background: true})
-
-  index({"place_id" => 1, "search_soundex.last_name" => 1 },
-        {:name => "place_lnsdx", background: true})
-
-  index({"place_id" => 1, "search_soundex.first_name" => 1, "search_soundex.last_name" => 1 },
-        {:name => "place_fnsdx_lnsdx", background: true})
-
-
-  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1  },
-        {:name => "ln_rt_fn_sd", background: true})
-
-  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1 },
-        {:name => "lnsdx_rt_fnsdx_sd", background: true})
   def comparable_name
     self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
       name['type'] == 'primary'
