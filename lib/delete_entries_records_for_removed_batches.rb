@@ -1,6 +1,7 @@
 class DeleteEntriesRecordsForRemovedBatches
   def self.process
-    file_for_warning_messages = "log/delete_entries_records_for_removed_batches"
+
+    file_for_warning_messages = File.join(Rails.root,"log/delete_entries_records_for_removed_batches")
     time = Time.new.to_i.to_s
     file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
     @@message_file = File.new(file_for_warning_messages, "w")
