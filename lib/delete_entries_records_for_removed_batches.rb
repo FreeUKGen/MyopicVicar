@@ -26,7 +26,7 @@ class DeleteEntriesRecordsForRemovedBatches
       userids << user.userid
     end
 
-    total_userid_pattern = File.join(base_directory,"*",".udetails")
+    total_userid_pattern = File.join(change_directory,"*",".udetails")
     total_userid_files = Dir.glob(total_userid_pattern, File::FNM_CASEFOLD).sort
     
     p "There are #{userids.length} userids and #{total_userid_files.length} userid files" 
