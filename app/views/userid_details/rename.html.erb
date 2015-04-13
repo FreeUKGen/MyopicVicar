@@ -1,0 +1,20 @@
+<h3 style="text-align: center"><b>Rename profile for :<%=@userid.userid %></b></h3>
+
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>
+<section>
+<% if session[:my_own]%>
+ <h4>You will need to login again after a successful change in your profile</h4>
+<% end %>
+<%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
+<%= f.input :userid,:label => "The new UserID",
+              :input_html =>
+              { :size => 40 , :class => "text-input"},
+              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
+              }%>
+<%= f.action :submit, :as => :input, :label => 'Rename' %>
+<% end %>
+<%= render "resource_sidebar" %>

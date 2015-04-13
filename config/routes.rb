@@ -82,6 +82,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/select', :to =>'userid_details#select', :as => :select_userid_details
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
+   get 'userid_details/:id/rename(.:format)', :to =>'userid_details#rename', :as => :rename_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
 

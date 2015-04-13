@@ -46,6 +46,13 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates
 
   end
+  def rename
+    session[:type] = "edit"
+    get_user_info_from_userid
+    load(params[:id])
+    @syndicates = Syndicate.get_syndicates
+
+  end
 
   def change_password
     load(params[:id])
@@ -199,16 +206,32 @@ class UseridDetailsController < ApplicationController
   end
 
   def update
-    get_user_info_from_userid
-    load(params[:id])
-    if session[:type] == "disable"
-      params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
-      params[:userid_detail][:active]  = false
+    if params[:commit] == "Rename"
+      get_user_info_from_userid
+      load(params[:id])
+      success = true
+      success = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
+      success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success
+      if !success
+        flash[:notice] = 'The update of the user details was unsuccessful please contact program support'
+        @syndicates = Syndicate.get_syndicates_open_for_transcription
+        next_place_to_go_unsuccessful_update
+      end
+
+    else
+      get_user_info_from_userid
+      load(params[:id])
+      if session[:type] == "disable"
+        params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
+        params[:userid_detail][:active]  = false
+      end
+      params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
+      
     end
-    params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
-    @userid.save_to_refinery
+    @userid.save_to_refinery 
+    
     if @userid.errors.any?
       flash[:notice] = 'The update of the user details was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
@@ -277,7 +300,7 @@ class UseridDetailsController < ApplicationController
     when session[:my_own]
       render :action => 'edit'
       return
-    when session[:type] == "edit"
+    when session[:type] == "edit" || session[:type] == "add"
       if @user.person_role == 'system_administrator'
         redirect_to :action => 'all'
         return
@@ -319,19 +342,16 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_update(userid)
     case
     when session[:my_own]
-      redirect_to refinery.login_path
-      return
-    when session[:type] == "edit"
+      redirect_to refinery.login_path and return
+      
+    when (session[:type] == "edit" || session[:type] == "add")
       if @user.person_role == 'system_administrator'
-        redirect_to :action => 'all'
-        return
+        redirect_to :action => 'all' and return    
       else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}")
-        return
+        redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
       end
     else
-      redirect_to refinery.login_path
-      return
+      redirect_to refinery.login_path and return
     end
   end
 
