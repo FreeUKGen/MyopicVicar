@@ -83,23 +83,51 @@ class SearchRecord
   def self.index_hint(search_params) 
     candidates = INDEXES.keys
     scores = {}
-    candidates.each { |name| scores[name] = index_score(name,search_params)}
-    pp scores
+    search_fields = fields_from_params(search_params)
+    candidates.each { |name| scores[name] = index_score(name,search_fields)}
+#    pp scores
     best = scores.max_by { |k,v| v}
     best[0]
   end
   
-  def self.index_score(index_name, search_params)
+  def self.index_score(index_name, search_fields)
     fields = INDEXES[index_name]
     best_score = -1
     fields.each_with_index do |field, i|
-      if search_params.keys.any? { |param| print "#{i}: #{param.to_s} == #{field} => #{param.to_s == field}\n";param.to_s == field }
+      if search_fields.any? { |param| param == field }
         best_score = i
       else
         break #bail since leading terms haven't been found
       end
     end
     best_score
+  end
+
+  def self.fields_from_params(search_params)
+    fields = []
+    
+    search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
+    
+    fields.uniq
+  end
+  
+  def self.extract_fields(fields, params, current_field)    
+    if params.is_a?(Hash)
+      # walk down the syntax tree
+      params.each_pair do |key,value|
+        #ignore operators
+        if key.to_s =~ /\$/
+          new_field = String.new(current_field)
+        else
+          new_field = String.new(current_field + "." + key.to_s)             
+        end
+        extract_fields(fields, value, new_field)
+      end
+    else
+      # terminate
+      fields << current_field
+    end
+    
   end
 
   def comparable_name
