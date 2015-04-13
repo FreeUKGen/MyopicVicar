@@ -529,7 +529,7 @@ class Freereg1CsvFile
       old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
       if !Dir.exist?(new_folder_location)
         if Dir.exist?(old_folder_location) 
-          FileUtils.chmod_R 0664, old_folder_location     
+           
           FileUtils.mv(old_folder_location, new_folder_location, :force => true)
         else
           Dir.mkdir(new_folder_location)
