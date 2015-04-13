@@ -1,6 +1,7 @@
 class DeleteEntriesRecordsForRemovedBatches
   def self.process
-    file_for_warning_messages = "log/delete_entries_records_for_removed_batches"
+
+    file_for_warning_messages = File.join(Rails.root,"log/delete_entries_records_for_removed_batches")
     time = Time.new.to_i.to_s
     file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
     @@message_file = File.new(file_for_warning_messages, "w")
@@ -25,7 +26,7 @@ class DeleteEntriesRecordsForRemovedBatches
       userids << user.userid
     end
 
-    total_userid_pattern = File.join(base_directory,"*",".udetails")
+    total_userid_pattern = File.join(change_directory,"*",".udetails")
     total_userid_files = Dir.glob(total_userid_pattern, File::FNM_CASEFOLD).sort
     
     p "There are #{userids.length} userids and #{total_userid_files.length} userid files" 
