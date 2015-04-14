@@ -55,41 +55,81 @@ class SearchRecord
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
-  index "search_names.first_name" => 1
-  index "search_names.last_name" => 1
-
+  
   # derived search fields
   field :location_names, type:Array, default: []
   field :search_soundex, type: Array, default: []
 
 
-  index({"chapman_code" => 1, "search_names.first_name" => 1, "search_names.last_name" => 1 },
-        {:name => "county_fn_ln_sd", background: true})
-  index({"chapman_code" => 1, "search_names.last_name" => 1 },
-        {:name => "county_ln_sd", background: true})
-  index({"chapman_code" => 1, "search_soundex.last_name" => 1, "search_soundex.first_name" => 1 },
-        {:name => "county_lnsdx_fnsdx_sd", background: true})
-  index({"chapman_code" => 1, "search_soundex.first_name" => 1 },
-        {:name => "county_fnsdx", background: true})
+  INDEXES = {
+    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name"],
+    "county_ln_sd" => ["chapman_code", "search_names.last_name"],
+    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name"],
+    "county_fnsdx" => ["chapman_code", "search_soundex.first_name"],
+    "place_ln" => ["place_id", "search_names.last_name"],
+    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name"],
+    "place_lnsdx" => ["place_id", "search_soundex.last_name"],
+    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name"],
+    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name"],
+    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name"]
+  }
 
+  INDEXES.each_pair do |name,fields|
+    field_spec = {}
+    fields.each { |field| field_spec[field] = 1 }
+    index(field_spec, :name => name, :background => true)
+  end
+  
+  def self.index_hint(search_params) 
+    candidates = INDEXES.keys
+    scores = {}
+    search_fields = fields_from_params(search_params)
+    candidates.each { |name| scores[name] = index_score(name,search_fields)}
+#    pp scores
+    best = scores.max_by { |k,v| v}
+    best[0]
+  end
+  
+  def self.index_score(index_name, search_fields)
+    fields = INDEXES[index_name]
+    best_score = -1
+    fields.each_with_index do |field, i|
+      if search_fields.any? { |param| param == field }
+        best_score = i
+      else
+        break #bail since leading terms haven't been found
+      end
+    end
+    best_score
+  end
 
-  index({"place_id" => 1, "search_names.last_name" => 1 },
-        {:name => "place_ln", background: true})
-  index({"place_id" => 1,"search_names.first_name" => 1, "search_names.last_name" => 1},
-        {:name => "place_ln_fn", background: true})
+  def self.fields_from_params(search_params)
+    fields = []
+    
+    search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
+    
+    fields.uniq
+  end
+  
+  def self.extract_fields(fields, params, current_field)    
+    if params.is_a?(Hash)
+      # walk down the syntax tree
+      params.each_pair do |key,value|
+        #ignore operators
+        if key.to_s =~ /\$/
+          new_field = String.new(current_field)
+        else
+          new_field = String.new(current_field + "." + key.to_s)             
+        end
+        extract_fields(fields, value, new_field)
+      end
+    else
+      # terminate
+      fields << current_field
+    end
+    
+  end
 
-  index({"place_id" => 1, "search_soundex.last_name" => 1 },
-        {:name => "place_lnsdx", background: true})
-
-  index({"place_id" => 1, "search_soundex.first_name" => 1, "search_soundex.last_name" => 1 },
-        {:name => "place_fnsdx_lnsdx", background: true})
-
-
-  index({"search_names.last_name" => 1, "record_type" => 1, "search_names.first_name" => 1  },
-        {:name => "ln_rt_fn_sd", background: true})
-
-  index({"search_soundex.last_name" => 1, "record_type" => 1, "search_soundex.first_name" => 1 },
-        {:name => "lnsdx_rt_fnsdx_sd", background: true})
   def comparable_name
     self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
       name['type'] == 'primary'

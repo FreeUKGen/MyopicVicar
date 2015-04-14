@@ -9,9 +9,14 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     end
-    @search_query = SearchQuery.find(params[:search_id])
-    @previous_record = @search_query.previous_record(params[:id])
-    @next_record = @search_query.next_record(params[:id])
+    begin
+      @search_query = SearchQuery.find(params[:search_id])
+      @previous_record = @search_query.previous_record(params[:id])
+      @next_record = @search_query.next_record(params[:id])
+    rescue Mongoid::Errors::DocumentNotFound
+      redirect_to new_search_query_path
+      return
+    end
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
     session[:viewed] << params[:id]
   end

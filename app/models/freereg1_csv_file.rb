@@ -71,7 +71,7 @@ class Freereg1CsvFile
   before_save :add_lower_case_userid
   after_save :recalculate_last_amended, :update_number_of_files
   before_destroy do |file|
-   file.save_to_attic
+    file.save_to_attic
     p "Deleting entries"
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
     num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
@@ -86,7 +86,7 @@ class Freereg1CsvFile
   has_many :freereg1_csv_entries, validate: false
   belongs_to :register, index: true
   belongs_to :userid_detail, index: true
-  
+
   #register belongs to church which belongs to place
   has_one :csvfile
   has_many :batch_errors
@@ -210,11 +210,9 @@ class Freereg1CsvFile
     file.save_to_attic
     p "Deleting file and entries"
     Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
-     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-     entries.each do |entry|
-        entry.search_record.delete unless entry.nil? || entry.search_record.nil?
-        entry.delete unless entry.nil?
-      end
+      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
+      p "#{entries.length}" unless entries.nil?
+      entries.destroy_all
       f.delete unless f.nil?
     end
   end
@@ -349,7 +347,7 @@ class Freereg1CsvFile
       file.update_entries_and_search_records(param)
       file.backup_file
       file
-  end
+    end
 
     def old_location
       old_register = self.register
@@ -383,13 +381,13 @@ class Freereg1CsvFile
 
     def update_entries_and_search_records(param)
       self.freereg1_csv_entries.each do |entry|
-       
+
         entry.update_attributes(:county => param[:county],:place =>param[:place],:register_type => param[:register_type])
         entry.search_record.update_attributes(:place_id => param[:place_id],:chapman_code => param[:county], :location_name =>"#{param[:place]} (#{param[:church_name]})") unless entry.search_record.nil?
       end
     end
     def update_entries_and_search_records_for_type(param)
-     
+
       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:register_type => param)
@@ -397,7 +395,7 @@ class Freereg1CsvFile
     end
 
     def update_entries_and_search_records_for_church(place_name,church_name)
-      
+
       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:church_name => church_name)
@@ -405,7 +403,7 @@ class Freereg1CsvFile
       end
     end
     def update_entries_and_search_records_for_place(place,church_name)
-     
+
       self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:place => place.place_name)
@@ -413,7 +411,7 @@ class Freereg1CsvFile
       end
     end
     def update_entries_and_search_records_for_county(county,chapman_code)
-       self.freereg1_csv_entries.each do |entry|
+      self.freereg1_csv_entries.each do |entry|
 
         entry.update_attributes(:county => chapman_code)
         entry.search_record.update_attributes(:chapman_code => chapman_code) unless entry.search_record.nil?
@@ -460,10 +458,10 @@ class Freereg1CsvFile
 
 
     def update_number_of_files
-      
+
       userid = UseridDetail.where(:userid => self.userid).first
       return if userid.nil?
-      files = userid.freereg1_csv_files 
+      files = userid.freereg1_csv_files
       if files.length.nil?
         number = 0
         records = 0
@@ -474,7 +472,7 @@ class Freereg1CsvFile
         records = 0
         files.each do |file|
           records = records + file.records.to_i
-          last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded 
+          last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded
         end
         userid.update_attributes(:number_of_files  => number, :number_of_records => records, :last_upload => last_uploaded)
       end
@@ -521,5 +519,25 @@ class Freereg1CsvFile
         self.update_attributes(:locked_by_coordinator => "true")
       end
     end
+    def self.change_userid(id,old_userid, new_userid)
+      success = true
+      files = Freereg1CsvFile.where(:userid_detail_id => id)
+      files.each do |file|
+        file.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
+      end
+      new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
+      old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
+      if !Dir.exist?(new_folder_location)
+        if Dir.exist?(old_folder_location) 
+           
+          FileUtils.mv(old_folder_location, new_folder_location, :force => true)
+        else
+          Dir.mkdir(new_folder_location)
+        end
+      else
+        success = false
+      end
+      success
+    end
 
- end
+end

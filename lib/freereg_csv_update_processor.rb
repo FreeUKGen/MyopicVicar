@@ -947,7 +947,7 @@ class FreeregCsvUpdateProcessor
                 #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
 
                 first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
-                code_set =  first_data_line[5] if first_data_line[0] == "+INFO"
+                code_set =  first_data_line[5].strip if first_data_line[0] == "+INFO" && !first_data_line[5].nil?
                 #set Characterset default
 
                 code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
@@ -1075,12 +1075,12 @@ class FreeregCsvUpdateProcessor
                   base_directory = Rails.application.config.datafiles
                   change_directory = Rails.application.config.datafiles_changeset
                   delta_directory = Rails.application.config.datafiles_delta
-                  file_for_warning_messages = "log/update_freereg_messages"
+                  file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
                   time = Time.new.to_i.to_s
                   file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
                   @@message_file = File.new(file_for_warning_messages, "w")
-                   @@message_file.puts " Using #{Rails.application.config.website}"
-                   report_time = Time.now.strftime("%d/%m/%Y %H:%M")
+                  @@message_file.puts " Using #{Rails.application.config.website}"
+                  report_time = Time.now.strftime("%d/%m/%Y %H:%M")
                   p "Started a build with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
                   @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
                   @@create_search_records = false

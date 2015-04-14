@@ -102,6 +102,11 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_decade
+    #trap bots
+    if session[:register_id].nil?
+       redirect_to :action => :new
+       return
+    end
     @register = Register.find(session[:register_id])
     @files_id = session[:files]
     @register_id = session[:register_id]

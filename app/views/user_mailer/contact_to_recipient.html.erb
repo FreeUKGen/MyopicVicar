@@ -1,7 +1,8 @@
 <p> Dear <%= @name %>;</p>
-<p>We have received correspondence that was directed to you from <%=@contact.name%>. </p>
-<p>You may review on line if you are logged into the system.</p>
-<%= button_to ' Access the contact', contact_path(@contact),  method: :get%>
+<p>We have received correspondence that was directed to you from <%=@contact.name%> at <%= @contact.email_address%>. </p>
+<b>Content of report:</b>
+<%= @contact.body %>
+</p>
 <p>
 <b>Type:</b>
 <%= @contact.contact_type %>
@@ -14,10 +15,6 @@
 <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
 </p>
 <p>
-<b>Body:</b>
-<%= @contact.body %>
-</p>
-<p>
 <b>Screenshot:</b>
 <% if @contact.screenshot_url %>
 <%= image_tag @contact.screenshot_url %>
@@ -25,4 +22,6 @@
 No screenshot attached.
 <% end %>
 </p>
+<p>You may review the material on line if you are logged into the system.</p>
+<%= button_to ' Access the contact', contact_path(@contact),  method: :get%>
 <p> The FreeREG Team</p>
