@@ -1,0 +1,137 @@
+<%= form_for(@freecen1_vld_entry) do |f| %>
+  <% if @freecen1_vld_entry.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@freecen1_vld_entry.errors.count, "error") %> prohibited this freecen1_vld_entry from being saved:</h2>
+
+      <ul>
+      <% @freecen1_vld_entry.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :freecen1_vld_file %><br />
+    <%= f.text_field :freecen1_vld_file %>
+  </div>
+  <div class="field">
+    <%= f.label :entry_number %><br />
+    <%= f.number_field :entry_number %>
+  </div>
+  <div class="field">
+    <%= f.label :deleted_flag %><br />
+    <%= f.check_box :deleted_flag %>
+  </div>
+  <div class="field">
+    <%= f.label :household_number %><br />
+    <%= f.number_field :household_number %>
+  </div>
+  <div class="field">
+    <%= f.label :sequence_in_household %><br />
+    <%= f.number_field :sequence_in_household %>
+  </div>
+  <div class="field">
+    <%= f.label :parish %><br />
+    <%= f.text_field :parish %>
+  </div>
+  <div class="field">
+    <%= f.label :enumeration_district %><br />
+    <%= f.text_field :enumeration_district %>
+  </div>
+  <div class="field">
+    <%= f.label :folio_number %><br />
+    <%= f.text_field :folio_number %>
+  </div>
+  <div class="field">
+    <%= f.label :page_number %><br />
+    <%= f.number_field :page_number %>
+  </div>
+  <div class="field">
+    <%= f.label :schedule_number %><br />
+    <%= f.text_field :schedule_number %>
+  </div>
+  <div class="field">
+    <%= f.label :house_number %><br />
+    <%= f.text_field :house_number %>
+  </div>
+  <div class="field">
+    <%= f.label :house_or_street_name %><br />
+    <%= f.text_field :house_or_street_name %>
+  </div>
+  <div class="field">
+    <%= f.label :uninhabited_flag %><br />
+    <%= f.text_field :uninhabited_flag %>
+  </div>
+  <div class="field">
+    <%= f.label :surname %><br />
+    <%= f.text_field :surname %>
+  </div>
+  <div class="field">
+    <%= f.label :forenames %><br />
+    <%= f.text_field :forenames %>
+  </div>
+  <div class="field">
+    <%= f.label :name_flag %><br />
+    <%= f.text_field :name_flag %>
+  </div>
+  <div class="field">
+    <%= f.label :relationship %><br />
+    <%= f.text_field :relationship %>
+  </div>
+  <div class="field">
+    <%= f.label :condition %><br />
+    <%= f.text_field :condition %>
+  </div>
+  <div class="field">
+    <%= f.label :sex %><br />
+    <%= f.text_field :sex %>
+  </div>
+  <div class="field">
+    <%= f.label :age %><br />
+    <%= f.text_field :age %>
+  </div>
+  <div class="field">
+    <%= f.label :age_unit %><br />
+    <%= f.text_field :age_unit %>
+  </div>
+  <div class="field">
+    <%= f.label :detail_flag %><br />
+    <%= f.text_field :detail_flag %>
+  </div>
+  <div class="field">
+    <%= f.label :occupation %><br />
+    <%= f.text_field :occupation %>
+  </div>
+  <div class="field">
+    <%= f.label :occupation_flag %><br />
+    <%= f.text_field :occupation_flag %>
+  </div>
+  <div class="field">
+    <%= f.label :chapman_code %><br />
+    <%= f.text_field :chapman_code %>
+  </div>
+  <div class="field">
+    <%= f.label :birth_place %><br />
+    <%= f.text_field :birth_place %>
+  </div>
+  <div class="field">
+    <%= f.label :birth_place_flag %><br />
+    <%= f.text_field :birth_place_flag %>
+  </div>
+  <div class="field">
+    <%= f.label :disability %><br />
+    <%= f.text_field :disability %>
+  </div>
+  <div class="field">
+    <%= f.label :language %><br />
+    <%= f.text_field :language %>
+  </div>
+  <div class="field">
+    <%= f.label :notes %><br />
+    <%= f.text_field :notes %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
