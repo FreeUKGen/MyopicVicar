@@ -215,7 +215,7 @@ class UseridDetailsController < ApplicationController
       if !success
         flash[:notice] = 'The update of the user details was unsuccessful please contact program support'
         @syndicates = Syndicate.get_syndicates_open_for_transcription
-        next_place_to_go_unsuccessful_update
+        redirect_to :action => 'all' and return
       end
 
     else
@@ -235,7 +235,7 @@ class UseridDetailsController < ApplicationController
     if @userid.errors.any?
       flash[:notice] = 'The update of the user details was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_update
+      next_place_to_go_unsuccessful_update 
     else
       flash[:notice] = 'The update of the user details was successful'
       next_place_to_go_successful_update(@userid)
