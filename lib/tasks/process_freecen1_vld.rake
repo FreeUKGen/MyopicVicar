@@ -1,5 +1,5 @@
 namespace :freecen do
-
+  # see http://west-penwith.org.uk/fctools/doc/reference.html
   desc "Process legacy FreeCEN1 VLD files"
   task :process_freecen1_vld, [:filename] => [:environment] do |t, args| 
     process_vld_file(args.filename)
@@ -126,6 +126,41 @@ namespace :freecen do
       pp process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH])
     end
   end
+# 
+# 
+# A       0  1 Deletion marker (D or blank)
+# B       1  4 Not used. Was Registration district - this usage is discontinued.
+# C       5  6 A six digit number (leading zeros) which counts the households
+# D      11  4 A four digit number (leading zeros) which counts members in each
+             # household
+# E   A  15 20 Parish name (I don't check this, it is up to you to get it right!)
+# F   B  35  4 Enumeration district (3n+1a, the remaining numeric fields have
+             # trailing spaces)
+# G   C  39  5 Folio number (4n+1a)
+# H   D  44  4 Page number (4n)
+# I   E  48  4 Schedule number (3n+1a)
+# J   F  52  5 House number (4n+1a)
+# K   G  57 30 House/Street name (default -)
+# L   H  87  1 Uninhabited flag (b, u, v, n, x or -)
+# M   I  88 24 Surname (capitals, default -)
+# N   J 112 24 Forenames (default -)
+# O   K 136  1 Flag for name fields (x or -)
+# P   L 137  6 Relationship (default -)
+# Q   M 143  1 Condition (M, S, U, W or -)
+# R   N 144  1 Sex (M, F or -)
+# S   O 145  3 Age (no default but 999=unknown/unreadable)
+      # 148  1 Age unit(y, m, w, d or -)
+# T   P 149  1 Flag for detail fields i.e. rel/cond/sex/age (x or -)
+# U   Q 150 30 Occupation
+    # R        Employed Status (extracted from occupation field)
+# V   S 180  1 Flag for occupation (x or -)
+# W   T 181  3 County code (3a capitals, no default but UNK if not known)
+# X   U 184 20 Birth place (default -)
+# Y   V 204  1 Flag for birth place (x or -)
+# Z   W 205  6 Disability (default blank)
+# AA  X 211  1 Language (W, E, B, G or blank)
+# AB  Y 212 44 Notes (default blank, no case 
+
 
   VLD_POSITION_MAP = 
   {
