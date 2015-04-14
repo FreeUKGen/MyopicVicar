@@ -275,42 +275,33 @@ class UseridDetailsController < ApplicationController
       @first_name = @user.person_forename
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
-      render :action => 'new'
-      return
+      render :action => 'new' and return
     when session[:type] == 'researcher_registration'
-      render :action => 'researcher_registration'
-      return
+      render :action => 'researcher_registration' and return
     when session[:type] == 'transcriber_registration'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
-      render :action => 'transcriber_registration'
-      return
+      render :action => 'transcriber_registration' and return
     when session[:type] == 'technical_registration'
-      render :action => 'technical_registration'
-      return
+      render :action => 'technical_registration' and return
     else
       get_user_info_from_userid
-      render :action => 'new'
-      return
+      render :action => 'new' and return
     end
   end
 
   def next_place_to_go_unsuccessful_update
     case
     when session[:my_own]
-      render :action => 'edit'
-      return
+      render :action => 'edit' and return
     when session[:type] == "edit" || session[:type] == "add"
       if @user.person_role == 'system_administrator'
-        redirect_to :action => 'all'
-        return
+        redirect_to :action => 'all' and return
       else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}")
-        return
+        redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
       end
     else
-      redirect_to refinery.login_path
-      return
+      redirect_to refinery.login_path and return
     end
   end
 
@@ -323,18 +314,14 @@ class UseridDetailsController < ApplicationController
     case
     when session[:type] == "add"
       if @user.person_role == 'system_administrator'
-        redirect_to :back
-        return
+        redirect_to :back and return
       else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}")
-        return
+        redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
       end
     when session[:type] == 'researcher_registration' || session[:type] == 'transcriber_registration' || session[:type] == 'technical_registration'
-      redirect_to refinery.logout_path
-      return
+      redirect_to refinery.logout_path and return
     else
-      redirect_to refinery.login_path
-      return
+      redirect_to refinery.login_path and return
     end
     redirect_to refinery.login_path
   end
