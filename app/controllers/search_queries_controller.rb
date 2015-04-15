@@ -117,9 +117,12 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-
-    @search_query = SearchQuery.find(params[:id])
-    @search_results =   @search_query.results
+    begin
+      @search_query = SearchQuery.find(params[:id])
+      @search_results =   @search_query.results
+    rescue Mongoid::Errors::DocumentNotFound
+      redirect_to new_search_query_path      
+    end
     
   end
   
