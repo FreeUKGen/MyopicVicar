@@ -9,8 +9,13 @@ class SearchQueriesController < ApplicationController
 
   def new
     if params[:search_id]
-      old_query = SearchQuery.find(params[:search_id])
-      @search_query = SearchQuery.new(old_query.attributes)
+      begin
+        old_query = SearchQuery.find(params[:search_id])
+        @search_query = SearchQuery.new(old_query.attributes)
+      rescue Mongoid::Errors::DocumentNotFound
+        log_possible_host_change
+        @search_query = SearchQuery.new    
+      end
     else
       @search_query = SearchQuery.new    
     end
@@ -121,6 +126,7 @@ class SearchQueriesController < ApplicationController
       @search_query = SearchQuery.find(params[:id])
       @search_results =   @search_query.results
     rescue Mongoid::Errors::DocumentNotFound
+      log_possible_host_change
       redirect_to new_search_query_path      
     end
     
@@ -150,7 +156,12 @@ class SearchQueriesController < ApplicationController
     else
       @page_number = 0
     end
-    @search_query = SearchQuery.find(params[:id])
+    begin
+      @search_query = SearchQuery.find(params[:id])
+    rescue Mongoid::Errors::DocumentNotFound
+      log_possible_host_change
+      redirect_to new_search_query_path      
+    end  
   end
 
 

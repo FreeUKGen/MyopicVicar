@@ -14,6 +14,7 @@ class SearchRecordsController < ApplicationController
       @previous_record = @search_query.previous_record(params[:id])
       @next_record = @search_query.next_record(params[:id])
     rescue Mongoid::Errors::DocumentNotFound
+      log_possible_host_change
       redirect_to new_search_query_path
       return
     end
