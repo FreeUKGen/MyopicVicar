@@ -14,7 +14,7 @@ fail() {
 }
 trap fail ERR
 
-DATA_ROOT=/raid-test/freereg2
+DATA_ROOT=/raid/freereg2
 FREEREG1=${DATA_ROOT}/freereg1/users
 FREEREG1_DELTA=${DATA_ROOT}/tmp
 ROOT=/home/apache/hosts/freereg2/MyopicVicar
@@ -34,12 +34,10 @@ fi
 
 
 trace "enforcing ownership on ${DATA_ROOT}"
-sudo chmod g+ws ${DATA_ROOT}
-sudo chown -R webserv:webserv ${DATA_ROOT}
 
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
+sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
 trace "update of the database2"
 bundle exec rake build:freereg_update[a-9,search_records,delta] --trace
 trace "delete of entries and records for removed batches"
