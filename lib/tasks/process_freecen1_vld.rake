@@ -9,10 +9,15 @@ namespace :freecen do
   # TODO move to library
   
   def process_vld_file(filename)
-    process_vld_filename(filename)
-    process_vld_contents(filename)
+    file_record = process_vld_filename(filename)
+    entry_records = process_vld_contents(filename)
+    
+    persist_to_database(file_record, entry_records)
   end
 
+  def persist_to_database(file_hash, entry_hash_array)
+    binding.pry
+  end
 
   def process_vld_filename(filepath)
         # $centype = substr($file,0,2);
@@ -112,7 +117,8 @@ namespace :freecen do
         # $fullyear = $year*10 + 1831;
         
     full_year = year*10 + 1831
-    binding.pry
+    
+    {:full_year => full_year, :raw_year => year, :piece => piece, :series => series, :census_type => centype }
   end
   
   VLD_RECORD_LENGTH = 299
@@ -122,9 +128,12 @@ namespace :freecen do
     raw_file = File.read(filename)
     # loop through each 299-byte substring
     record_count = raw_file.length / VLD_RECORD_LENGTH
+    contents = []
     (0...record_count).to_a.each do |i|
-      pp process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH])
+      contents << process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH])
     end
+    
+    contents
   end
 # 
 # 
@@ -204,9 +213,6 @@ namespace :freecen do
     # :s_name_sx => [88,24], # original has soundex of iu1
     # :born_place_sx => [279,20], #original has soundex of iu19
     :unoccupied_notes => [212,44],
-    :unoccupied_fo_n => [39,4],
-    :unoccupied_fo_a => [43,1],
-    :unoccupied_pg_n => [44,4]
   }
   
 
@@ -214,6 +220,8 @@ namespace :freecen do
   def process_vld_record(line)
     record = parse_vld_record(line)
     record = clean_vld_record(record)
+    
+    record
   end
   
   def parse_vld_record(line)
@@ -245,7 +253,8 @@ namespace :freecen do
     end
 
     record[:notes] = '' if record[:notes] =~ /\[see mynotes.txt\]/
- 
+    
+    record
   end
 end
 
