@@ -30,9 +30,10 @@ describe "freecen1_vld_entries/edit" do
       :detail_flag => "MyString",
       :occupation => "MyString",
       :occupation_flag => "MyString",
-      :chapman_code => "MyString",
       :birth_county => "MyString",
       :birth_place => "MyString",
+      :verbatim_birth_county => "MyString",
+      :verbatim_birth_place => "MyString",
       :birth_place_flag => "MyString",
       :disability => "MyString",
       :language => "MyString",
@@ -72,9 +73,10 @@ describe "freecen1_vld_entries/edit" do
       assert_select "input#freecen1_vld_entry_detail_flag[name=?]", "freecen1_vld_entry[detail_flag]"
       assert_select "input#freecen1_vld_entry_occupation[name=?]", "freecen1_vld_entry[occupation]"
       assert_select "input#freecen1_vld_entry_occupation_flag[name=?]", "freecen1_vld_entry[occupation_flag]"
-      assert_select "input#freecen1_vld_entry_chapman_code[name=?]", "freecen1_vld_entry[chapman_code]"
       assert_select "input#freecen1_vld_entry_birth_county[name=?]", "freecen1_vld_entry[birth_county]"
       assert_select "input#freecen1_vld_entry_birth_place[name=?]", "freecen1_vld_entry[birth_place]"
+      assert_select "input#freecen1_vld_entry_verbatim_birth_county[name=?]", "freecen1_vld_entry[verbatim_birth_county]"
+      assert_select "input#freecen1_vld_entry_verbatim_birth_place[name=?]", "freecen1_vld_entry[verbatim_birth_place]"
       assert_select "input#freecen1_vld_entry_birth_place_flag[name=?]", "freecen1_vld_entry[birth_place_flag]"
       assert_select "input#freecen1_vld_entry_disability[name=?]", "freecen1_vld_entry[disability]"
       assert_select "input#freecen1_vld_entry_language[name=?]", "freecen1_vld_entry[language]"

@@ -31,9 +31,10 @@ describe "freecen1_vld_entries/index" do
         :detail_flag => "Detail Flag",
         :occupation => "Occupation",
         :occupation_flag => "Occupation Flag",
-        :chapman_code => "Chapman Code",
         :birth_county => "Birth County",
         :birth_place => "Birth Place",
+        :verbatim_birth_county => "Verbatim Birth County",
+        :verbatim_birth_place => "Verbatim Birth Place",
         :birth_place_flag => "Birth Place Flag",
         :disability => "Disability",
         :language => "Language",
@@ -67,9 +68,10 @@ describe "freecen1_vld_entries/index" do
         :detail_flag => "Detail Flag",
         :occupation => "Occupation",
         :occupation_flag => "Occupation Flag",
-        :chapman_code => "Chapman Code",
         :birth_county => "Birth County",
         :birth_place => "Birth Place",
+        :verbatim_birth_county => "Verbatim Birth County",
+        :verbatim_birth_place => "Verbatim Birth Place",
         :birth_place_flag => "Birth Place Flag",
         :disability => "Disability",
         :language => "Language",
@@ -108,9 +110,10 @@ describe "freecen1_vld_entries/index" do
     assert_select "tr>td", :text => "Detail Flag".to_s, :count => 2
     assert_select "tr>td", :text => "Occupation".to_s, :count => 2
     assert_select "tr>td", :text => "Occupation Flag".to_s, :count => 2
-    assert_select "tr>td", :text => "Chapman Code".to_s, :count => 2
     assert_select "tr>td", :text => "Birth County".to_s, :count => 2
     assert_select "tr>td", :text => "Birth Place".to_s, :count => 2
+    assert_select "tr>td", :text => "Verbatim Birth County".to_s, :count => 2
+    assert_select "tr>td", :text => "Verbatim Birth Place".to_s, :count => 2
     assert_select "tr>td", :text => "Birth Place Flag".to_s, :count => 2
     assert_select "tr>td", :text => "Disability".to_s, :count => 2
     assert_select "tr>td", :text => "Language".to_s, :count => 2

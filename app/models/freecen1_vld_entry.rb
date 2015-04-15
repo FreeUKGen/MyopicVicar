@@ -26,9 +26,10 @@ class Freecen1VldEntry
   field :detail_flag, type: String
   field :occupation, type: String
   field :occupation_flag, type: String
-  field :chapman_code, type: String
   field :birth_county, type: String
   field :birth_place, type: String
+  field :verbatim_birth_county, type: String
+  field :verbatim_birth_place, type: String
   field :birth_place_flag, type: String
   field :disability, type: String
   field :language, type: String

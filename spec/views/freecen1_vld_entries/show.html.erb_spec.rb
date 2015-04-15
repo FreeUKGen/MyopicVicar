@@ -30,9 +30,10 @@ describe "freecen1_vld_entries/show" do
       :detail_flag => "Detail Flag",
       :occupation => "Occupation",
       :occupation_flag => "Occupation Flag",
-      :chapman_code => "Chapman Code",
       :birth_county => "Birth County",
       :birth_place => "Birth Place",
+      :verbatim_birth_county => "Verbatim Birth County",
+      :verbatim_birth_place => "Verbatim Birth Place",
       :birth_place_flag => "Birth Place Flag",
       :disability => "Disability",
       :language => "Language",
@@ -70,9 +71,10 @@ describe "freecen1_vld_entries/show" do
     rendered.should match(/Detail Flag/)
     rendered.should match(/Occupation/)
     rendered.should match(/Occupation Flag/)
-    rendered.should match(/Chapman Code/)
     rendered.should match(/Birth County/)
     rendered.should match(/Birth Place/)
+    rendered.should match(/Verbatim Birth County/)
+    rendered.should match(/Verbatim Birth Place/)
     rendered.should match(/Birth Place Flag/)
     rendered.should match(/Disability/)
     rendered.should match(/Language/)
