@@ -4,7 +4,8 @@ class Freecen1VldEntry
   field :deleted_flag, type: Boolean
   field :household_number, type: Integer
   field :sequence_in_household, type: Integer
-  field :parish, type: String
+  field :civil_parish, type: String
+  field :ecclesiastical_parish, type: String
   field :enumeration_district, type: String
   field :folio_number, type: String
   field :page_number, type: Integer
@@ -12,11 +13,13 @@ class Freecen1VldEntry
   field :house_number, type: String
   field :house_or_street_name, type: String
   field :uninhabited_flag, type: String
+  field :unnocupied_notes, type: String
+  field :individual_flag, type: String
   field :surname, type: String
   field :forenames, type: String
   field :name_flag, type: String
   field :relationship, type: String
-  field :condition, type: String
+  field :marital_status, type: String
   field :sex, type: String
   field :age, type: String
   field :age_unit, type: String
@@ -24,6 +27,7 @@ class Freecen1VldEntry
   field :occupation, type: String
   field :occupation_flag, type: String
   field :chapman_code, type: String
+  field :birth_county, type: String
   field :birth_place, type: String
   field :birth_place_flag, type: String
   field :disability, type: String

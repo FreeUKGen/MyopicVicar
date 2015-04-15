@@ -8,7 +8,8 @@ describe "freecen1_vld_entries/show" do
       :deleted_flag => false,
       :household_number => 2,
       :sequence_in_household => 3,
-      :parish => "Parish",
+      :civil_parish => "Civil Parish",
+      :ecclesiastical_parish => "Ecclesiastical Parish",
       :enumeration_district => "Enumeration District",
       :folio_number => "Folio Number",
       :page_number => 4,
@@ -16,11 +17,13 @@ describe "freecen1_vld_entries/show" do
       :house_number => "House Number",
       :house_or_street_name => "House Or Street Name",
       :uninhabited_flag => "Uninhabited Flag",
+      :unnocupied_notes => "Unnocupied Notes",
+      :individual_flag => "Individual Flag",
       :surname => "Surname",
       :forenames => "Forenames",
       :name_flag => "Name Flag",
       :relationship => "Relationship",
-      :condition => "Condition",
+      :marital_status => "Marital Status",
       :sex => "Sex",
       :age => "Age",
       :age_unit => "Age Unit",
@@ -28,6 +31,7 @@ describe "freecen1_vld_entries/show" do
       :occupation => "Occupation",
       :occupation_flag => "Occupation Flag",
       :chapman_code => "Chapman Code",
+      :birth_county => "Birth County",
       :birth_place => "Birth Place",
       :birth_place_flag => "Birth Place Flag",
       :disability => "Disability",
@@ -44,7 +48,8 @@ describe "freecen1_vld_entries/show" do
     rendered.should match(/false/)
     rendered.should match(/2/)
     rendered.should match(/3/)
-    rendered.should match(/Parish/)
+    rendered.should match(/Civil Parish/)
+    rendered.should match(/Ecclesiastical Parish/)
     rendered.should match(/Enumeration District/)
     rendered.should match(/Folio Number/)
     rendered.should match(/4/)
@@ -52,11 +57,13 @@ describe "freecen1_vld_entries/show" do
     rendered.should match(/House Number/)
     rendered.should match(/House Or Street Name/)
     rendered.should match(/Uninhabited Flag/)
+    rendered.should match(/Unnocupied Notes/)
+    rendered.should match(/Individual Flag/)
     rendered.should match(/Surname/)
     rendered.should match(/Forenames/)
     rendered.should match(/Name Flag/)
     rendered.should match(/Relationship/)
-    rendered.should match(/Condition/)
+    rendered.should match(/Marital Status/)
     rendered.should match(/Sex/)
     rendered.should match(/Age/)
     rendered.should match(/Age Unit/)
@@ -64,6 +71,7 @@ describe "freecen1_vld_entries/show" do
     rendered.should match(/Occupation/)
     rendered.should match(/Occupation Flag/)
     rendered.should match(/Chapman Code/)
+    rendered.should match(/Birth County/)
     rendered.should match(/Birth Place/)
     rendered.should match(/Birth Place Flag/)
     rendered.should match(/Disability/)

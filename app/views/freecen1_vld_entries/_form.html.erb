@@ -32,8 +32,12 @@
     <%= f.number_field :sequence_in_household %>
   </div>
   <div class="field">
-    <%= f.label :parish %><br />
-    <%= f.text_field :parish %>
+    <%= f.label :civil_parish %><br />
+    <%= f.text_field :civil_parish %>
+  </div>
+  <div class="field">
+    <%= f.label :ecclesiastical_parish %><br />
+    <%= f.text_field :ecclesiastical_parish %>
   </div>
   <div class="field">
     <%= f.label :enumeration_district %><br />
@@ -64,6 +68,14 @@
     <%= f.text_field :uninhabited_flag %>
   </div>
   <div class="field">
+    <%= f.label :unnocupied_notes %><br />
+    <%= f.text_field :unnocupied_notes %>
+  </div>
+  <div class="field">
+    <%= f.label :individual_flag %><br />
+    <%= f.text_field :individual_flag %>
+  </div>
+  <div class="field">
     <%= f.label :surname %><br />
     <%= f.text_field :surname %>
   </div>
@@ -80,8 +92,8 @@
     <%= f.text_field :relationship %>
   </div>
   <div class="field">
-    <%= f.label :condition %><br />
-    <%= f.text_field :condition %>
+    <%= f.label :marital_status %><br />
+    <%= f.text_field :marital_status %>
   </div>
   <div class="field">
     <%= f.label :sex %><br />
@@ -110,6 +122,10 @@
   <div class="field">
     <%= f.label :chapman_code %><br />
     <%= f.text_field :chapman_code %>
+  </div>
+  <div class="field">
+    <%= f.label :birth_county %><br />
+    <%= f.text_field :birth_county %>
   </div>
   <div class="field">
     <%= f.label :birth_place %><br />
