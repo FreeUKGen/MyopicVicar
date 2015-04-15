@@ -6,13 +6,13 @@
 <p>To complete register in FreeREG with a userid of <b><%= @user.userid %>.</b> You need to follow the link below or paste a copy into your browser address window to reset your password to something only you know.
 </p>
 
-<p><%=Rails.application.config.website%>/refinery/users/password/edit?initial=true&reset_password_token=<%= @user_token %></p>
+<p><%= <a href="<%=Rails.application.config.website%>/refinery/users/password/edit?initial=true&reset_password_token=<%= @user_token %>"> Rails.application.config.website%>/refinery/users/password/edit?initial=true&reset_password_token=<%= @user_token %> </a></p>
 
 <p> After setting the password you will be able to log into the server and access transcriber tools for FreeREG for the first time.
 
 <p> <b>Go to the following link to login to the server. </b> We suggest you bookmark (save into favourites) this page</p>
 
-<p><%=Rails.application.config.website%>/refinery/users/login</p>
+<p><%= <a href="<%=Rails.application.config.website%>/refinery/users/login"> Rails.application.config.website%>/refinery/users/login</a></p>
 
 <p> Do not reply to this email but instead contact your coordinator who has been informed of your registration.</p>
 <% unless @coordinator.nil? %>
