@@ -222,7 +222,12 @@ class PlacesController < ApplicationController
   end
 
   def for_search_form
-    chapman_codes = params[:search_query][:chapman_codes]
+    if params[:search_query]
+      chapman_codes = params[:search_query][:chapman_codes]
+    else
+      log_possible_host_change
+      chapman_codes = []
+    end
 
     county_places = PlaceCache.in(:chapman_code => chapman_codes)
     county_response = ""
