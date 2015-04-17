@@ -34,5 +34,5 @@ class Freecen1VldEntry
   field :disability, type: String
   field :language, type: String
   field :notes, type: String
-  embedded_in :freecen1_vld_file
+  belongs_to :freecen1_vld_file, index: true
 end

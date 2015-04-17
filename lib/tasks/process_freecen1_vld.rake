@@ -16,7 +16,14 @@ namespace :freecen do
   end
 
   def persist_to_database(file_hash, entry_hash_array)
-    binding.pry
+    entry_hash_array.each do |hash|
+      entry = Freecen1VldEntry.new
+      entry.surname = hash[:s_name]
+      entry.forenames = hash[:f_name]
+      entry.occupation = hash[:occ]
+      
+      entry.save!
+    end
   end
 
   def process_vld_filename(filepath)
