@@ -19,7 +19,7 @@ class SearchRecordsController < ApplicationController
       return
     end
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
-    session[:viewed] << params[:id]
+    session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end
 
   def viewed
