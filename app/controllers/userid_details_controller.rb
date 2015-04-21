@@ -201,7 +201,7 @@ class UseridDetailsController < ApplicationController
       @userid.send_invitation_to_create_password
       @userid.write_userid_file
       flash[:notice] = 'The addition of the user details was successful'
-      redirect_to :back
+      next_place_to_go_successful_update(@userid)
     end
   end
 
