@@ -1,5 +1,6 @@
 <p> Dear <%= @name %>;</p>
-<p>We have received correspondence that was directed to you from <%=@contact.name%> at <%= @contact.email_address%>. </p>
+<p>We have received correspondence that was directed to you as coordinator from <%=@contact.name%> at <%= @contact.email_address%>. </p>
+<p> A copy has been sent to the Data Manager <p>
 <b>Content of report:</b>
 <%= @contact.body %>
 </p>
@@ -8,7 +9,6 @@
 <%= @contact.contact_type %>
 </p>
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-<p> No coordinator was provided with a copy of this contact</p>
 <p> <%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%>
 <% end%>
 <p>

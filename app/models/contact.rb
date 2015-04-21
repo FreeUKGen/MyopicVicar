@@ -74,9 +74,10 @@ class Contact
 
   def data_manager_issue
     coordinator = self.get_coordinator if self.record_id.present?
-    UserMailer.contact_to_recipient(self,coordinator).deliver if coordinator.present?
+    UserMailer.contact_to_coordinator(self,coordinator).deliver if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
-      UserMailer.contact_to_recipient(self,data_manager).deliver
+    UserMailer.contact_to_recipient(self,data_manager).deliver unless coordinator.present?
+    UserMailer.contact_to_data_manager(self,data_manager,coordinator).deliver if coordinator.present?
     end
 
   end
