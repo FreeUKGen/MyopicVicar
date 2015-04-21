@@ -190,6 +190,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+    get_user_info_from_userid
     @userid = UseridDetail.new(params[:userid_detail])
     @userid.add_fields(params[:commit])
     @userid.save
@@ -201,7 +202,7 @@ class UseridDetailsController < ApplicationController
       @userid.send_invitation_to_create_password
       @userid.write_userid_file
       flash[:notice] = 'The addition of the user details was successful'
-      next_place_to_go_successful_update(@userid)
+      redirect_to :back 
     end
   end
 
