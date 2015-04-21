@@ -6,9 +6,6 @@
 <b>Type:</b>
 <%= @contact.contact_type %>
 </p>
-<% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-<p> Record in question <%= @contact.record_id %>
-<% end%>
 <p>
 <b>Time:</b>
 <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
