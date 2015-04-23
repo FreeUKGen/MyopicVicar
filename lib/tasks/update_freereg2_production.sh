@@ -34,6 +34,7 @@ fi
 trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
 cd ${ROOT}
+sudo chgrp freereg2 ${ROOT}/log/update.log
 trace "doing rsync of freereg1 data into freereg2"
 sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG1}/ 2>${FREEREG1_DELTA}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
 trace "update of the database2"
