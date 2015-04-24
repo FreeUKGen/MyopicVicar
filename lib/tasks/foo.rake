@@ -14,7 +14,7 @@ namespace :foo do
     end
   end
 
-  desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
+ 
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
   task :add_record_digest, [:num] => [:environment]do |t, args|

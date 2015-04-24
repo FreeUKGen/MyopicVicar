@@ -61,7 +61,7 @@ class CheckRecordDigest
               end
             end
           end
-          p "#{actual_duplicates}"
+          p "#{actual_duplicates}" unless actual_duplicates == 0
         end
      end
   end
