@@ -12,7 +12,7 @@ class CheckRecordDigest
     limit = limit.to_i
     puts "Checking #{limit} record_digest for duplicates"
     record_number = 0
-    Freereg1CsvFile.each do |file|
+    Freereg1CsvFile.no_timeout.each do |file|
       actual_duplicates = 0
       record_number = record_number + 1 
       break if record_number == limit
