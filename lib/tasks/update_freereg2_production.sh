@@ -5,10 +5,12 @@ set -uo pipefail
 IFS=$'\n\t'
 
 trace() {
-  echo "[update-freereg2_production_database] $@" >&2
++  NOW=$( date +'%Y-%m-%d %H:%M:%S' )
++  echo "[update-freereg2_production_database] ${NOW} $@" >&2
 }
 
 fail() {
+  sudo /root/bin/searchctl.sh enable
   trace "FATAL $@"
   exit 1
 }
@@ -20,7 +22,6 @@ FREEREG1_DELTA=${DATA_ROOT}/tmp
 ROOT=/home/apache/hosts/freereg2/production
 LOG_DIR=${DATA_ROOT}/log
 umask 0002
-
 if [[ ! -d ${FREEREG1} ]] ; then
   # create target if absent (or we could call fail() to stop here)
   trace "${FREEREG1} doesn't exist, creating"
