@@ -5,8 +5,8 @@ set -uo pipefail
 IFS=$'\n\t'
 
 trace() {
-+  NOW=$( date +'%Y-%m-%d %H:%M:%S' )
-+  echo "[update-freereg2_production_database] ${NOW} $@" >&2
+  NOW=$( date +'%Y-%m-%d %H:%M:%S' )
+  echo "[update-freereg2_production_database] ${NOW} $@" >&2
 }
 
 fail() {
