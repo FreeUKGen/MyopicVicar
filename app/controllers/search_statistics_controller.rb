@@ -22,9 +22,9 @@ class SearchStatisticsController < InheritedResources::Base
     fields = [:n_searches, :n_time_gt_1s, :n_time_gt_10s, :n_time_gt_60s]
     @data = {}
     fields.each { |field| @data[field] = [0]*points }  #initialize data array
-    (points-1).downto(0) do |i_ago|
+    (points-1).downto(0) do |i_ago| 
       date = Time.now - i_ago.day
-      i = points - i_ago
+      i = points - i_ago - 1 #TODO make not horrible
       @label[i] = date.day.to_s
       day_stats = SearchStatistic.where(:year => date.year, :month => date.month, :day => date.day)
       
@@ -46,7 +46,7 @@ class SearchStatisticsController < InheritedResources::Base
     fields.each { |field| @data[field] = [0]*points }  #initialize data array
     (points-1).downto(0) do |i_ago|
       date = Time.now - i_ago.hour
-      i = points - i_ago
+      i = points - i_ago - 1
       @label[i] = date.hour.to_s
       day_stats = SearchStatistic.where(:year => date.year, :month => date.month, :day => date.day, :hour => date.hour)
       
