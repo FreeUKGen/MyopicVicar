@@ -27,7 +27,7 @@ class SearchStatisticsController < InheritedResources::Base
       i = points - i_ago - 1 #TODO make not horrible
       @label[i] = date.day.to_s
       day_stats = SearchStatistic.where(:year => date.year, :month => date.month, :day => date.day)
-      
+ 
       day_stats.each do |stat|
         fields.each do |field|
           @data[field][i] += stat.send(field)
