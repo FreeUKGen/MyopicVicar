@@ -1,0 +1,35 @@
+<h1>Listing site_statistics</h1>
+
+<table>
+  <tr>
+    <th>Interval end</th>
+    <th>Year</th>
+    <th>Month</th>
+    <th>Day</th>
+    <th>N records</th>
+    <th>N searches</th>
+    <th>N records added</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @site_statistics.each do |site_statistic| %>
+  <tr>
+    <td><%= site_statistic.interval_end %></td>
+    <td><%= site_statistic.year %></td>
+    <td><%= site_statistic.month %></td>
+    <td><%= site_statistic.day %></td>
+    <td><%= site_statistic.n_records %></td>
+    <td><%= site_statistic.n_searches %></td>
+    <td><%= site_statistic.n_records_added %></td>
+    <td><%= link_to 'Show', site_statistic %></td>
+    <td><%= link_to 'Edit', edit_site_statistic_path(site_statistic) %></td>
+    <td><%= link_to 'Destroy', site_statistic, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Site statistic', new_site_statistic_path %>

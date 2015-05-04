@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
   before_filter :require_login
+  before_filter :load_last_stat
 
   require 'record_type'
   require 'name_role'
@@ -38,6 +39,10 @@ class ApplicationController < ActionController::Base
 
   end
 
+
+  def load_last_stat
+    @site_stat = SiteStatistic.last
+  end
   private
 
    def check_for_mobile
