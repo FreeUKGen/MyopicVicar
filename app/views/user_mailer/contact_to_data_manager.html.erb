@@ -17,14 +17,6 @@
 <%= @contact.contact_time.strftime("%H:%M on %F") %>
 <% end%>
 </p>
-<p>
-<b>Screenshot:</b>
-<% if @contact.screenshot_url %>
-<%= image_tag @contact.screenshot_url %>
-<% else %>
-No screenshot attached.
-<% end %>
-</p>
-<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the material on line if you are logged into the system. </a></p>
+<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the contact on line if you are logged into the system. </a></p>
 
 <p> The FreeREG Team</p>
