@@ -23,6 +23,6 @@
 No screenshot attached.
 <% end %>
 </p>
-<p>You may review the material on line if you are logged into the system.</p>
-<%= button_to ' Access the contact', contact_path(@contact),  method: :get%>
+<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact%>"> You may review the material on line if you are logged into the system. </a></p>
+
 <p> The FreeREG Team</p>
