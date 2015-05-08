@@ -13,7 +13,9 @@
 <% end%>
 <p>
 <b>Time:</b>
-<%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
+<% unless @contact.contact_time.nil? %>
+<%= @contact.contact_time.strftime("%H:%M on %F") %>
+<% end%>
 </p>
 <p>
 <b>Screenshot:</b>
@@ -23,6 +25,6 @@
 No screenshot attached.
 <% end %>
 </p>
-<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact%>"> You may review the material on line if you are logged into the system. </a></p>
+<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the material on line if you are logged into the system. </a></p>
 
 <p> The FreeREG Team</p>
