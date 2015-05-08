@@ -1,6 +1,6 @@
 <p> Dear <%= @name %>;</p>
 <p>We have received correspondence that was directed to you as coordinator from <%=@contact.name%> at <%= @contact.email_address%>. </p>
-<p> A copy has been sent to the Data Manager <p>
+<p> A copy of the report has been sent to the Data Manager <p>
 <b>Content of report:</b>
 <%= @contact.body %>
 </p>
@@ -9,7 +9,7 @@
 <%= @contact.contact_type %>
 </p>
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-<p> <%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%>
+<p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
 <% end%>
 <p>
 <b>Time:</b>

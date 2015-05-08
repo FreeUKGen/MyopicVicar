@@ -14,6 +14,7 @@ class Contact
   field :screenshot, type: String
   field :record_id, type: String
   field :entry_id, type: String
+  field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
   validates_presence_of :name, :email_address
@@ -68,11 +69,13 @@ class Contact
 
   def general_issue
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      UserMailer.contact_to_freereg_manager(self,person).deliver
+    UserMailer.contact_to_freereg_manager(self,person).deliver
     end
   end
 
   def data_manager_issue
+    p "contact"
+    p self
     coordinator = self.get_coordinator if self.record_id.present?
     UserMailer.contact_to_coordinator(self,coordinator).deliver if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
