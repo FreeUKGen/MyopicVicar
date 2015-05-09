@@ -3,12 +3,17 @@
 	<div class="island  island--magenta  flush--bottom">
 		<div class="container  text--center">
 			<% if @site_stat %>
-				Yesterday, <%= @site_stat.n_searches%> searches were performed on <%= @site_stat.n_records %> records
-				<% if @site_stat.n_records_added %>
-					and <%= @site_stat.n_records_added %> records were added
+				<%= number_with_delimiter(@site_stat.n_searches)%> searches were performed on <%= number_with_delimiter(@site_stat.n_records) %> records
+				<% if @site_stat.n_records_added %> 
+					and <%= number_with_delimiter(@site_stat.n_records_added) %> records were added
 				<% end %>
-				.
+				in the 24 hrs ending at 6am GMT. 
 			<% end %>
+      <p>
+       The FreeREG database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
+    
+       Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
+    </p>
 		</div>
 	</div>
 
