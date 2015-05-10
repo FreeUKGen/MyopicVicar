@@ -24,7 +24,7 @@ class AddRecordDigest
       break if record_number == limit
       process_records = process_records + 1
       if process_records == 100000 then
-        puts "#{record_number}"
+        puts "#{record_number}" 
         process_records = 0
       end
     end

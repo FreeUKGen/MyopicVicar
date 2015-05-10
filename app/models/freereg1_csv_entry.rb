@@ -101,6 +101,7 @@ class Freereg1CsvEntry
   accepts_nested_attributes_for :multiple_witnesses
 
   index({freereg1_csv_file_id: 1,file_line_number:1},{ background: true})
+  index({freereg1_csv_file_id: 1, record_digest:1}), { background: true})
   index({file_line_number:1},{ background: true})
   index({line_id:1},{ background: true})
 
@@ -139,61 +140,61 @@ class Freereg1CsvEntry
 
   def create_baptism_string
     string = ''
-    string = string + self.person_forename.strip unless  self.person_forename.nil?  
-    string = string + self.baptism_date.strip unless self.baptism_date.nil?
-    string = string + self.birth_date.strip unless self.birth_date.nil?
-    string = string + self.father_forename.strip unless self.father_forename.nil?
-    string = string + self.father_surname.strip unless self.father_surname.nil?
-    string = string + self.mother_forename.strip unless self.mother_forename.nil?
-    string = string + self.mother_surname.strip unless self.mother_surname.nil?
+    string = string + self.person_forename.strip + "person" unless  self.person_forename.nil?  
+    string = string + self.baptism_date.strip + "baptism" unless self.baptism_date.nil?
+    string = string + self.birth_date.strip + "birth" unless self.birth_date.nil?
+    string = string + self.father_forename.strip + "male" unless self.father_forename.nil?
+    string = string + self.father_surname.strip + "male" unless self.father_surname.nil?
+    string = string + self.mother_forename.strip + "female" unless self.mother_forename.nil?
+    string = string + self.mother_surname.strip + "female" unless self.mother_surname.nil?
     string = string + self.register_entry_number.strip unless self.register_entry_number.nil?
     string = string + self.person_sex.strip unless self.person_sex.nil?
-    string = string + self.father_occupation.strip unless self.father_occupation.nil?
-    string = string + self.person_abode.strip unless self.person_abode.nil?
-    string = string + self.notes.strip unless self.notes.nil?
+    string = string + self.father_occupation.strip + "occupation" unless self.father_occupation.nil?
+    string = string + self.person_abode.strip + "abode" unless self.person_abode.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
     return string
   end
   def create_marriage_string
     string = ''
-    string = string + self.groom_forename.strip unless  self.groom_forename.nil? 
-    string = string + self.groom_surname.strip unless self.groom_surname.nil? 
+    string = string + self.groom_forename.strip + "groom" unless  self.groom_forename.nil? 
+    string = string + self.groom_surname.strip + "groom" unless self.groom_surname.nil? 
     string = string + self.groom_age.strip unless self.groom_age.nil?
-    string = string + self.groom_occupation.strip unless self.groom_occupation.nil?
-    string = string + self.groom_abode.strip unless self.groom_abode.nil?
+    string = string + self.groom_occupation.strip + "occupation" unless self.groom_occupation.nil?
+    string = string + self.groom_abode.strip + "abode" unless self.groom_abode.nil?
     string = string + self.groom_condition.strip unless self.groom_condition.nil?
-    string = string + self.groom_parish.strip unless self.groom_parish.nil?
-    string = string + self.bride_forename.strip unless  self.bride_forename.nil? 
-    string = string + self.bride_surname.strip unless self.bride_surname.nil? 
+    string = string + self.groom_parish.strip + "parish" unless self.groom_parish.nil?
+    string = string + self.bride_forename.strip + "bride" unless  self.bride_forename.nil? 
+    string = string + self.bride_surname.strip + "bride" unless self.bride_surname.nil? 
     string = string + self.bride_age.strip unless self.bride_age.nil?
-    string = string + self.bride_occupation.strip unless self.bride_occupation.nil?
-    string = string + self.bride_abode.strip unless self.bride_abode.nil?
+    string = string + self.bride_occupation.strip + "occupation" unless self.bride_occupation.nil?
+    string = string + self.bride_abode.strip + "abode" unless self.bride_abode.nil?
     string = string + self.bride_condition.strip unless self.bride_condition.nil?
-    string = string + self.bride_parish.strip unless self.bride_parish.nil?
-    string = string + self.bride_father_forename.strip unless self.bride_father_forename.nil?
-    string = string + self.bride_father_surname.strip unless self.bride_father_surname.nil?
-    string = string + self.bride_father_occupation.strip unless self.bride_father_occupation.nil?
+    string = string + self.bride_parish.strip + "parish" unless self.bride_parish.nil?
+    string = string + self.bride_father_forename.strip + "father" unless self.bride_father_forename.nil?
+    string = string + self.bride_father_surname.strip + "father" unless self.bride_father_surname.nil?
+    string = string + self.bride_father_occupation.strip + "fatheroccupation" unless self.bride_father_occupation.nil?
     string = string + self.marriage_date.strip unless self.marriage_date.nil?
     string = string + self.register_entry_number.strip unless self.register_entry_number.nil?
-    string = string + self.witness1_forename.strip unless self.witness1_forename.nil?
+    string = string + self.witness1_forename.strip + "witness1" unless self.witness1_forename.nil?
     string = string + self.witness1_surname.strip unless self.witness1_surname.nil?
-    string = string + self.witness2_forename.strip unless self.witness2_forename.nil?
+    string = string + self.witness2_forename.strip + "witness2" unless self.witness2_forename.nil?
     string = string + self.witness2_surname.strip unless self.witness2_surname.nil?
-    string = string + self.notes.strip unless self.notes.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
     return string
     
   end
   def create_burial_string
     string = ''
-    string = string + self.burial_person_forename.strip unless  self.burial_person_forename.nil?  
+    string = string + self.burial_person_forename.strip + "person" unless  self.burial_person_forename.nil?  
     string = string + self.burial_date.strip unless self.burial_date.nil?
     string = string + self.burial_person_surname.strip unless self.burial_person_surname.nil?
-    string = string + self.male_relative_forename.strip unless self.male_relative_forename.nil?
-    string = string + self.female_relative_forename.strip unless self.female_relative_forename.nil?
-    string = string + self.relative_surname.strip unless self.relative_surname.nil?
+    string = string + self.male_relative_forename.strip + "male" unless self.male_relative_forename.nil?
+    string = string + self.female_relative_forename.strip + "female" unless self.female_relative_forename.nil?
+    string = string + self.relative_surname.strip + "relative" unless self.relative_surname.nil?
     string = string + self.register_entry_number.strip unless self.register_entry_number.nil?
     string = string + self.person_sex.strip unless self.person_sex.nil?
-    string = string + self.burial_person_abode.strip unless self.burial_person_abode.nil?
-    string = string + self.notes.strip unless self.notes.nil?
+    string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
     return string
   end
   def hex_to_base64_digest(hexdigest)
