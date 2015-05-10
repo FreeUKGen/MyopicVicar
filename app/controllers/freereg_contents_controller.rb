@@ -38,6 +38,7 @@ class FreeregContentsController < ApplicationController
     end
     @county = session[:county]
     @chapman_code = ChapmanCode.values_at( @county)
+    @coordinator = County.coordinator_name(@chapman_code)
     @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
     @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
     session[:page] = request.original_url
@@ -48,6 +49,7 @@ class FreeregContentsController < ApplicationController
     @place = Place.find(params[:id])
     @county =  @place.county
     @chapman_code = ChapmanCode.values_at( @county)
+    @coordinator = County.coordinator_name(@chapman_code)
     @country = @place.country
     @place_name = @place.place_name
     @names = @place.get_alternate_place_names
