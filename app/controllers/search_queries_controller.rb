@@ -50,8 +50,8 @@ class SearchQueriesController < ApplicationController
 
   def create
     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
-    @search_query["first_name"] = @search_query["first_name"].strip
-    @search_query["last_name"] = @search_query["last_name"].strip
+    @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
+    @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
     if @search_query["chapman_codes"][1].eql?("YKS")
       @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
     end
