@@ -10,10 +10,10 @@ module UseridRole
       'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids"],
       'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids"],
       'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids"],
-      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
-      'technical' => ["Saved Searches", "Profile", "Files", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
+      'data_manager' => ["Saved Searches", "Profile", "Files",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
+      'technical' => ["Saved Searches", "Profile", "Files",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
-      'system_administrator' =>["Saved Searches", "Profile", "Files","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
+      'system_administrator' =>["Saved Searches", "Profile", "Files", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
           "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
       }
         
@@ -30,6 +30,7 @@ module UseridRole
           "Syndicate Coordinators" => "/syndicates" ,      
           "County Coordinators" => "/counties" ,
           "Country Coordinators" => "/countries" ,
+          "Upload New Batch"  => "/manage_counties/selection?option=Upload New Batch",
           "RefineryCMS" =>  "/refinery",
           "Access Attic" => "/attic_files/select" ,
           "Search Performance" => "/search_queries/report" ,
@@ -74,7 +75,7 @@ module UseridRole
           'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch"
         }
         SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
-          'Select Specific Member by Email Address','Select Specific Member by Surname/Forename','Review Batches with Errors','Review Batches by Filename', 'Upload New Batch',
+          'Select Specific Member by Email Address','Select Specific Member by Surname/Forename','Review Batches with Errors','Review Batches by Filename', 
           'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
           'Review Specific Batch', 'Change Recruiting Status']
         SYNDICATE_OPTIONS_TRANSLATION = {
