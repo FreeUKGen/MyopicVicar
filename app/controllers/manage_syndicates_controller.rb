@@ -118,6 +118,13 @@ class ManageSyndicatesController < ApplicationController
     @prompt = 'Select batch'
     render '_form'
   end
+  def change_recruiting_status
+    syndicate = Syndicate.where(:syndicate_code => session[:syndicate]).first
+    status = !syndicate.accepting_transcribers
+    syndicate.update_attributes(:accepting_transcribers => status)
+    flash[:notice] = "Accepting volunteers is now #{status}" 
+    redirect_to :action => 'select_action'  
+  end
 
   def get_syndicates_for_selection
     all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager"

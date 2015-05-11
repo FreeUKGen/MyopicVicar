@@ -49,7 +49,7 @@ module UseridRole
         "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
         "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename" 
         }
-        FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
+        FILE_MANAGEMENT_OPTIONS = ['List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
         FILE_OPTIONS_TRANSLATION ={
         'Upload New Batch' =>  "/csvfiles/new",
         'List by Number of Errors then Filename' =>  "/freereg1_csv_files/selection?option=List by Number of Errors then Filename",
@@ -58,7 +58,7 @@ module UseridRole
         'List by uploaded date (descending)'  =>  "/freereg1_csv_files/selection?option=List by uploaded date (descending)"
         }
         COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
-          'Review Batches by Filename', 'Upload New Batch', 'Review Batches by Userid then Filename',
+          'Review Batches by Filename', 'Review Batches by Userid then Filename',
           'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch']
         COUNTY_OPTIONS_TRANSLATION = {
           'All Places' => "/manage_counties/selection?option=Work with All Places",
@@ -76,7 +76,7 @@ module UseridRole
         SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
           'Select Specific Member by Email Address','Select Specific Member by Surname/Forename','Review Batches with Errors','Review Batches by Filename', 'Upload New Batch',
           'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
-          'Review Specific Batch']
+          'Review Specific Batch', 'Change Recruiting Status']
         SYNDICATE_OPTIONS_TRANSLATION = {
           'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
           'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
@@ -89,7 +89,8 @@ module UseridRole
           'Review Batches by Userid then Filename' => "/manage_syndicates/selection?option=Review Batches by Userid then Filename",
           'Review Batches by Most Recent Date of Change' => "/manage_syndicates/selection?option=Review Batches by Most Recent Date of Change",
           'Review Batches by Oldest Date of Change' => "/manage_syndicates/selection?option=Review Batches by Oldest Date of Change",
-          'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch"
+          'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch",
+          'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
      
 
