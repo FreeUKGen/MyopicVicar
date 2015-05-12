@@ -1,6 +1,6 @@
 class Freecen1VldFile
   include Mongoid::Document
-  has_many :freecen1_csv_files
+  has_many :freecen1_vld_entries
   
   field :file_name, type: String
   field :dir_name, type: String

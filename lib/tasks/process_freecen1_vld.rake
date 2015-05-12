@@ -12,15 +12,66 @@ namespace :freecen do
     file_record = process_vld_filename(filename)
     entry_records = process_vld_contents(filename)
     
-    persist_to_database(file_record, entry_records)
+    persist_to_database(filename, file_record, entry_records)
   end
 
-  def persist_to_database(file_hash, entry_hash_array)
+  def persist_to_database(filename, file_hash, entry_hash_array)
+    file = Freecen1VldFile.new(file_hash)
+    file.file_name = File.basename(filename)
+    file.dir_name = File.basename(File.dirname(filename))
+    file.save!
+    
     entry_hash_array.each do |hash|
       entry = Freecen1VldEntry.new
+    
+      entry.deleted_flag = hash[:deleted_flag]
+
       entry.surname = hash[:s_name]
       entry.forenames = hash[:f_name]
+
       entry.occupation = hash[:occ]
+      entry.occupation_flag = hash[:occ_err]
+      
+      entry.name_flag = hash[:name_err]
+      entry.relationship = hash[:rel]
+      entry.marital_status = hash[:m_stat]
+      entry.sex = hash[:sex]
+      entry.age = hash[:age]
+      entry.age_unit = hash[:age_unit]
+      entry.detail_flag = hash[:p_det_err]
+
+
+      entry.civil_parish = hash[:parish]
+      entry.ecclesiastical_parish = hash[:ecc_parish]
+
+      entry.household_number = hash[:hh]
+      entry.sequence_in_household = hash[:seq_in_household]
+
+      entry.enumeration_district = "#{hash[:enum_n]}#{hash[:enum_a]}"
+      entry.schedule_number = "#{hash[:sch_n]}#{hash[:sch_a]}"
+      entry.folio_number = "#{hash[:fo_n]}#{hash[:fo_a]}" 
+      entry.page_number = hash[:pg_n]
+ 
+      entry.house_number = hash[:house_n] || hash[:house_a]
+      entry.house_or_street_name = hash[:street]
+      
+      entry.uninhabited_flag = hash[:prem_flag]
+      entry.unnocupied_notes = hash[:unoccupied_notes]
+      
+      entry.individual_flag = hash[:individual_flag]
+      entry.birth_county = hash[:born_cty]
+      entry.birth_place = hash[:born_place]
+      entry.verbatim_birth_county = hash[:t_born_cty]
+      entry.verbatim_birth_place = hash[:t_born_place]
+      entry.birth_place_flag = hash[:place_err]
+      entry.disability = hash[:dis]
+      entry.language = hash[:language]
+      entry.notes = hash[:notes]
+
+      entry.entry_number = hash[:hh]
+
+      entry.attributes.delete_if { |key,value| value.blank? }
+      entry.freecen1_vld_file = file
       
       entry.save!
     end
@@ -245,7 +296,8 @@ namespace :freecen do
     
     record = {}
     raw_record.each_pair do |key,value|
-       record[key] = value.sub(/\s*$/, '')
+      clean_value = value.sub(/\s*$/, '')
+      record[key] = clean_value unless clean_value.blank?       
     end
     
     # fix schn over 1000
@@ -260,6 +312,8 @@ namespace :freecen do
     end
 
     record[:notes] = '' if record[:notes] =~ /\[see mynotes.txt\]/
+  
+    # nil out blanks
     
     record
   end
