@@ -79,7 +79,9 @@
 			<% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
  %>
 <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" } tabindex="5">
-			<%= grouped_options_for_select(grouped_options) %>
+
+<% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
+			<%= grouped_options_for_select(grouped_options, selected_key = key) %>
 		</select>
 		</li>
 		<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
