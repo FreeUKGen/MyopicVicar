@@ -25,19 +25,14 @@
     	<label class=" label" for="freereg_content_chapman_codes">
        <a href="#" class="left_tooltip">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one</small>
 		</label>
-		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="8"  >
-			<option value="" label="Select one county"></option>
-			<% @options.each_pair do |label, value| %>
- <%if value == @freereg_content.chapman_codes[0]%>
-         <option value="<%=value%>" selected="selected"> <%=label%></option>
-       <%else%>
-       <option value="<%=value%>"><%=label%></option>
-            <% end %>
-
-			<% end %>
-		</select>
-	</li>
-
+    <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+ %>
+		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="8" tabindex="5" >
+      <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
+      <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+    </select>
+    </li>
+  
     <li class="grid__item  two-fifths  palm-one-whole"  id="freereg_content_place_input">
 		<label class=" label" for="freereg_content_place_ids">
     <a href="#" class="right_tooltip">Place<span>The places will fill once you have selected a county. Then select one place.</span></a><small class="additional">Select one</small>
