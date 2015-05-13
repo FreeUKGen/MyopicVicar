@@ -1,16 +1,18 @@
 module Freecen
-  module Unoccupied
+  module Uninhabited
     UNOCCUPIED = 'u'
     BUILDING = 'b'
     MISSING_SCHEDULE = 'n'
     FAMILY_AWAY_VISITING = 'v'
     
-    UNOCCUPIED_FLAGS = {
-      UNNOCCUPIED => 'Unoccupied',
+    UNINHABITED_FLAGS = {
+      UNOCCUPIED => 'Unoccupied',
       BUILDING => 'Building',
       MISSING_SCHEDULE => 'Missing Schedule',
       FAMILY_AWAY_VISITING => 'Family Away Visiting'
     }
+    
+    UNINHABITED_PATTERN = /[ubnv]/
   end
   
   module Languages

@@ -49,7 +49,7 @@ module Freecen
         entry.house_or_street_name = hash[:street]
         
         entry.uninhabited_flag = hash[:prem_flag]
-        entry.unnocupied_notes = hash[:unoccupied_notes]
+        entry.unoccupied_notes = hash[:unoccupied_notes]
         
         entry.individual_flag = hash[:individual_flag]
         entry.birth_county = hash[:born_cty]
@@ -84,7 +84,7 @@ module Freecen
               # $year = 1 if (substr($file,2,1) == 4 ||substr($file,2,1) == 1); 
               # $year = 2 if substr($file,2,1) == 5;
         year_stub = filename[2,1]
-        year = 1 if year_stub == "4" || year_stub = "1"
+        year = 1 if year_stub == "4" || year_stub == "1"
         year = 2 if year_stub == "5"
               # $piece = substr($file,5,3);
               # $piece = substr($file,4,4) if substr($file,4,1) == 1 || substr($file,4,1) == 2;

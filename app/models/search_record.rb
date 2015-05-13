@@ -27,6 +27,7 @@ class SearchRecord
 
 
   belongs_to :freereg1_csv_entry, index: true
+  belongs_to :freecen_individual, index: true
   belongs_to :place
 
 
@@ -243,6 +244,7 @@ class SearchRecord
   def separate_names(names_array)
     separated_names = []
     names_array.each do |name|
+      binding.pry
       tokens = name.first_name.split(/-|\s+/)
       if tokens.size > 1
         tokens.each do |token|
@@ -335,6 +337,5 @@ class SearchRecord
 
   def self.delete_freereg1_csv_entries
     SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
-
   end
 end

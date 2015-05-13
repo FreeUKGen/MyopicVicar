@@ -13,7 +13,7 @@ class Freecen1VldEntry
   field :house_number, type: String
   field :house_or_street_name, type: String
   field :uninhabited_flag, type: String
-  field :unnocupied_notes, type: String
+  field :unoccupied_notes, type: String
   field :individual_flag, type: String
   field :surname, type: String
   field :forenames, type: String

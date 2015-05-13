@@ -17,8 +17,9 @@ module Freecen
           # first record or different record
           household = household_from_entry(entry)
         end
-        
-        household.freecen_individuals << individual_from_entry(entry)
+        unless household.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
+          household.freecen_individuals << individual_from_entry(entry)
+        end
       end
       household.save!
       
