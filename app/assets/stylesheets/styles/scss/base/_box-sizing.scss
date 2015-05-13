@@ -1,4 +1,5 @@
-
+@if defined?($global-border-box)
+@if $global-border-box == true{
 /*------------------------------------*\
     $BOX-SIZING
 \*------------------------------------*/
@@ -15,4 +16,5 @@
     @include vendor(box-sizing, content-box);
   }
 }
-
+}/* endif */ 
+}/* endif */ 
