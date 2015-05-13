@@ -30,8 +30,7 @@ describe Freecen1VldFile do
     household = FreecenHousehold.first
     translator = Freecen::Freecen1VldTranslator.new
     translator.translate_household(household)
-    SearchRecord.count.should eq household.freecen_individuals.count
-     
+    SearchRecord.count.should eq household.freecen_individuals.count     
   end
 
   it "should not transform an uninhabited household" do
@@ -41,6 +40,24 @@ describe Freecen1VldFile do
       translator.translate_household(unoccupied_household)
       SearchRecord.count.should eq 0
     end    
+  end
+
+  it "should find records by name" do
+    household = FreecenHousehold.first
+    translator = Freecen::Freecen1VldTranslator.new
+    translator.translate_household(household)
+
+    household.freecen_individuals.each do |individual|
+      query_params = { :first_name => individual.forenames,
+                       :last_name => individual.surname,
+                       :inclusive => false }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+      result.count.should have_at_least(1).items
+      binding.pry
+    end
   end
 
 
