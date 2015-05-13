@@ -1,0 +1,65 @@
+<h1>Listing freecen_individuals</h1>
+
+<table>
+  <tr>
+    <th>Sequence in household</th>
+    <th>Individual flag</th>
+    <th>Surname</th>
+    <th>Forenames</th>
+    <th>Name flag</th>
+    <th>Relationship</th>
+    <th>Marital status</th>
+    <th>Sex</th>
+    <th>Age</th>
+    <th>Age unit</th>
+    <th>Detail flag</th>
+    <th>Occupation</th>
+    <th>Occupation flag</th>
+    <th>Birth county</th>
+    <th>Birth place</th>
+    <th>Verbatim birth county</th>
+    <th>Verbatim birth place</th>
+    <th>Birth place flag</th>
+    <th>Disability</th>
+    <th>Language</th>
+    <th>Notes</th>
+    <th>Freecen1 vld entry</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freecen_individuals.each do |freecen_individual| %>
+  <tr>
+    <td><%= freecen_individual.sequence_in_household %></td>
+    <td><%= freecen_individual.individual_flag %></td>
+    <td><%= freecen_individual.surname %></td>
+    <td><%= freecen_individual.forenames %></td>
+    <td><%= freecen_individual.name_flag %></td>
+    <td><%= freecen_individual.relationship %></td>
+    <td><%= freecen_individual.marital_status %></td>
+    <td><%= freecen_individual.sex %></td>
+    <td><%= freecen_individual.age %></td>
+    <td><%= freecen_individual.age_unit %></td>
+    <td><%= freecen_individual.detail_flag %></td>
+    <td><%= freecen_individual.occupation %></td>
+    <td><%= freecen_individual.occupation_flag %></td>
+    <td><%= freecen_individual.birth_county %></td>
+    <td><%= freecen_individual.birth_place %></td>
+    <td><%= freecen_individual.verbatim_birth_county %></td>
+    <td><%= freecen_individual.verbatim_birth_place %></td>
+    <td><%= freecen_individual.birth_place_flag %></td>
+    <td><%= freecen_individual.disability %></td>
+    <td><%= freecen_individual.language %></td>
+    <td><%= freecen_individual.notes %></td>
+    <td><%= freecen_individual.freecen1_vld_entry %></td>
+    <td><%= link_to 'Show', freecen_individual %></td>
+    <td><%= link_to 'Edit', edit_freecen_individual_path(freecen_individual) %></td>
+    <td><%= link_to 'Destroy', freecen_individual, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freecen individual', new_freecen_individual_path %>

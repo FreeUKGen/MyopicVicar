@@ -68,6 +68,8 @@ module Freecen
         
         entry.save!
       end
+      
+      file
     end
   
     def process_vld_filename(filepath)

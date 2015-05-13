@@ -1,0 +1,2 @@
+module FreecenHouseholdsHelper
+end
