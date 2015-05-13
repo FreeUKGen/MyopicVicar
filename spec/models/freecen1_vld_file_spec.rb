@@ -43,7 +43,7 @@ describe Freecen1VldFile do
   end
 
   it "should find records by name" do
-    household = FreecenHousehold.first
+    household = FreecenHousehold.last
     translator = Freecen::Freecen1VldTranslator.new
     translator.translate_household(household)
 
@@ -56,7 +56,6 @@ describe Freecen1VldFile do
       q.search
       result = q.results
       result.count.should have_at_least(1).items
-      binding.pry
     end
   end
 

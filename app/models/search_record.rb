@@ -146,16 +146,19 @@ class SearchRecord
   def format_location
    
     place_name = self.place.place_name unless self.place.nil? # should not be nil but!
-    place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place.place_name if self.place.nil?
- 
+    location_array = []
+  
     if self.freereg1_csv_entry
+      place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place.place_name if self.place.nil?
       church_name = self.freereg1_csv_entry.church_name
       register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
+      
+      location_array << "#{place_name} (#{church_name})"
+      location_array << "[#{register_type}]"
+    else
+      location_array << "#{place_name} (#{church_name})"
     end
 
-    location_array = []
-    location_array << "#{place_name} (#{church_name})"
-    location_array << "[#{register_type}]"
     location_array
   end
 
@@ -244,7 +247,6 @@ class SearchRecord
   def separate_names(names_array)
     separated_names = []
     names_array.each do |name|
-      binding.pry
       tokens = name.first_name.split(/-|\s+/)
       if tokens.size > 1
         tokens.each do |token|
