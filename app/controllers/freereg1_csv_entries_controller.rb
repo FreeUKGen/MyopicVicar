@@ -6,9 +6,12 @@ class Freereg1CsvEntriesController < ApplicationController
     if session[:userid].nil?
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
+    display_info
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
-     display_info
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1).page(params[:page])
+   p session[:freereg1_csv_file_id]
+   p "index"
+
   end
   def show
     load(params[:id])
