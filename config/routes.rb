@@ -14,6 +14,21 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+  resources :freecen_households
+
+
+  resources :freecen_individuals
+
+
+  resources :site_statistics
+
+
+  resources :freecen1_vld_entries
+
+
+  resources :freecen1_vld_files
+
+
    get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
    get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
