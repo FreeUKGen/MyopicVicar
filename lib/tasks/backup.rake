@@ -165,11 +165,11 @@ namespace :freereg do
       print "Error: Database appears to be empty.  Run rake db:setup to create tables and seed it.\n"
       exit
     end
-    # check emendations
-    if EmendationRule.count == 0
-      print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
-      exit
-    end
+    # # check emendations
+    # if EmendationRule.count == 0
+      # print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
+      # exit
+    # end
 
   end
 
