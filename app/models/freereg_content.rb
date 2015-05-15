@@ -37,14 +37,14 @@ class FreeregContent
   end
 
   def county_is_valid
-    if chapman_codes[0].nil?
+    if self.chapman_codes[0].nil?
       errors.add(:chapman_codes, "At least one county must be selected.")
     end
   end
 
   def place_ids_is_valid
-    if self.place_ids.nil?
-      errors.add(:place_ids, "At least one place must be selected.")
+    if self.place_ids.nil? 
+      errors.add(:place_ids, "At least one place must be selected. If there are none then there are no places transcribed")
     end
   end
   def clean_blanks

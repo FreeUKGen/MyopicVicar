@@ -59,6 +59,11 @@ class County
   def self.coordinator_name(chapman_code)
     coordinator_userid = County.where(:chapman_code => chapman_code ).first.county_coordinator
     coordinator_id = UseridDetail.where(:userid => coordinator_userid).first
-    coordinator_name = coordinator_id.person_forename + coordinator_id.person_surname
+    if coordinator_id.nil?
+      coordinator_name = nil
+    else
+     coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
+    end
+    coordinator_name
   end
 end
