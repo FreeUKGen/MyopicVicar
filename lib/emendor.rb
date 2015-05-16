@@ -45,22 +45,46 @@ module Emendor
     end
   end
 
-  # def self.emend(name_array)
-    # # fetch all the emendation types
-    # emended_names = []
-    # EmendationType.all.each do |emendation_type|
-      # target_field = emendation_type.target_field
-      # name_array.each do |name|
-        # rules = emendation_type.emendation_rules.where(:original => name[target_field]).all
-        # rules.each do |rule|
-          # emended_name = SearchName.new(name.attributes)
-          # emended_name[target_field] = rule.replacement
-          # emended_name.origin = emendation_type.name
-          # emended_names << emended_name
-        # end
-      # end
-    # end
-    # name_array + emended_names
-  # end
 
+  def self.search_params(code, rule)
+    params = Hash.new
+    params[:chapman_code] = { '$in' => [code] } 
+    
+    name_params = Hash.new
+    name_params["first_name"] = rule.original
+  
+    params["search_names"] =  { "$elemMatch" => name_params}
+    
+    params
+  end
+  
+  def self.matching_records(code, rule, verbose=false)
+    # find the actual records
+    index = "county_fn_ln_sd"
+    records = SearchRecord.where(search_params(code,rule)).hint(index)
+    
+    print "\t\tFound \t#{records.count} matching records\n" if verbose
+    
+    records
+  end
+
+
+  def self.apply_emendation(rule, verbose, pretend)
+    if verbose
+      print "Applying rule emending #{rule.original} to #{rule.replacement}\n"
+    end
+    ChapmanCode.values.each do |code|
+      print "\tApplying #{rule.original}=>#{rule.replacement} over records in #{code}\n" if verbose
+
+      records = matching_records(code, rule, verbose)
+
+      records.each do |record|
+        record.transform
+        unless pretend
+          record.save! 
+        end
+      end
+    end
+
+  end
 end
