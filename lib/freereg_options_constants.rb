@@ -6,5 +6,4 @@ CHAPMAN_CODE_ELIMINATIONS = ['England','Scotland', 'Wales','Unknown', 'Clwyd','D
 MAXIMUM_NUMBER_OF_RESULTS = 250
 MAXIMUM_NUMBER_OF_SCANS = 500
 ISSUES = ['Website Problem','Data Problem', 'Question', 'Thank you' ]
-
 end

@@ -55,6 +55,9 @@ class SearchQueriesController < ApplicationController
     if @search_query["chapman_codes"][1].eql?("YKS")
       @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
     end
+    if @search_query["chapman_codes"][1].eql?("CHI")
+      @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+    end
     @search_query.session_id = request.session_options[:id]
 
     if  @search_query.save
