@@ -38,8 +38,7 @@ class ApplicationController < ActionController::Base
     session.delete(:edit) 
 
   end
-
-
+  
   def load_last_stat
     @site_stat = SiteStatistic.last
   end

@@ -14,12 +14,12 @@ class FreeregContentsController < ApplicationController
 
   def create 
     @freereg_content = FreeregContent.new(params[:freereg_content].delete_if{|k,v| v.blank? })
-    @county = params[:freereg_content][:chapman_codes]
+    @county = params[:freereg_content][:chapman_codes][1]
     place = params[:freereg_content][:place_ids]
+    session[:chapman_code] = @county
     if  @freereg_content.save
-      @county = ChapmanCode.name_from_code(@county[0])
+      @county = ChapmanCode.name_from_code(@county)
       session[:county] = @county
-      session[:county_id] = nil
       redirect_to show_place_path(place)
       return
     else
@@ -37,7 +37,7 @@ class FreeregContentsController < ApplicationController
       @page = ""
     end
     @county = session[:county]
-    @chapman_code = ChapmanCode.values_at( @county)
+    @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
     @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
     @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
@@ -47,14 +47,13 @@ class FreeregContentsController < ApplicationController
 
   def show_place
     @place = Place.find(params[:id])
-    @county =  @place.county
-    @chapman_code = ChapmanCode.values_at( @county)
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
     @country = @place.country
     @place_name = @place.place_name
     @names = @place.get_alternate_place_names
     @stats = @place.data_contents   
-    @county_id =  session[:county_id]
     session[:place] = @place_name
     session[:place_id] = @place._id
   end
@@ -70,9 +69,8 @@ class FreeregContentsController < ApplicationController
     @stats = @church.data_contents 
     @place_name = @church.place.place_name
     @place = @church.place
-    @county = @place.county
+    @county = session[:county]
     @church_name = @church.church_name
-    @county_id =  session[:county_id]
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
 
@@ -86,10 +84,9 @@ class FreeregContentsController < ApplicationController
     @register = Register.find(params[:id])
     @church  = @register.church
     @place = @church.place
-    @county = @place.county
+    @county = session[:county]
     @files_id = Array.new
     @place_name = @place.place_name
-    @county_id =  session[:county_id]
     session[:register_id] = params[:id]
     @register_name = @register.register_name 
     @register_name = @register.alternate_register_name if @register_name.nil?
@@ -104,8 +101,8 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_decade
-    #trap bots
     if session[:register_id].nil?
+    #trap bots
        redirect_to :action => :new
        return
     end
@@ -113,7 +110,6 @@ class FreeregContentsController < ApplicationController
     @files_id = session[:files]
     @register_id = session[:register_id]
     @register_name = session[:register_name]
-    @county_id = session[:county_id]
     individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
     @files = Freereg1CsvFile.combine_files(individual_files)
     @decade = { }
