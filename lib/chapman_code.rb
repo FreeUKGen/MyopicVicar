@@ -37,7 +37,8 @@ module ChapmanCode
   end
 
   def self.values
-    CODES::values
+    code = merge_countries
+    codes = code[0]
   end
 
   def self.has_key?(code)
@@ -102,11 +103,14 @@ module ChapmanCode
        'Herefordshire' => 'HEF',
        'Hertfordshire' => 'HRT',
        'Huntingdonshire' => 'HUN',
+       'Isle of Wight' => 'IOW',
        'Kent' => 'KEN',
        'Lancashire' => 'LAN',
        'Leicestershire' => 'LEI',
        'Lincolnshire' => 'LIN',
        'London (City)' => 'LND',
+        'London' => 'LND',
+
        'Middlesex' => 'MDX',
        'Norfolk' => 'NFK',
        'Northamptonshire' => 'NTH',
@@ -135,7 +139,6 @@ module ChapmanCode
         'Guernsey' => 'GSY',
         'Jersey' => 'JSY',
         'Isle of Man' => 'IOM',
-        'Isle of Wight' => 'IOW',
         'Sark' => 'SRK'
 
       },
