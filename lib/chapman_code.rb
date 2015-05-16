@@ -14,6 +14,10 @@
 #
 module ChapmanCode
 
+###################
+ #Note the actual list of codes is the merge_counties or select_hash
+#######################
+
   def self.name_from_code(code)
     codes = merge_countries
     codes.invert[code]
@@ -37,12 +41,13 @@ module ChapmanCode
   end
 
   def self.values
-    code = merge_countries
-    codes = code[0]
+    codes = merge_countries
+    code = codes.values
   end
 
   def self.has_key?(code)
-    CODES.has_key?(code)
+    codes = merge_countries
+    codes.has_key?(code)
   end
 
   def self.values_at(value)
@@ -109,8 +114,6 @@ module ChapmanCode
        'Leicestershire' => 'LEI',
        'Lincolnshire' => 'LIN',
        'London (City)' => 'LND',
-        'London' => 'LND',
-
        'Middlesex' => 'MDX',
        'Norfolk' => 'NFK',
        'Northamptonshire' => 'NTH',
@@ -221,5 +224,5 @@ module ChapmanCode
     end
     all_countries
   end
-
+ #Note the actual list of codes is the merge_counties or select_hash
 end
