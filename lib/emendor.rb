@@ -79,10 +79,9 @@ module Emendor
       records = matching_records(code, rule, verbose)
 
       records.each do |record|
+        record.transform
         unless pretend
-          record.transform
           record.save! 
-          binding.pry         
         end
       end
     end
