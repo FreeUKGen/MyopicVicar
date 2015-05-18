@@ -15,7 +15,7 @@ task :apply_emendations, [:range, :verbose, :pretend] => :environment do |t,args
   
   print "There are #{rules.count} emendation rules in total\n"
   
-  if args[:range]
+  if args[:range] && args[:range] != "all"
     # prune appropriately
     range_string = args[:range]
     range_array = range_string.split('-')
