@@ -27,7 +27,7 @@ module Emendor
         rules.each do |rule|
           emended_name = SearchName.new(name.attributes)
           emended_name[:first_name] = rule.replacement
-          emended_name.origin = rule.emendation_type.name
+          emended_name.origin = SearchRecord::Source::EMENDOR
           emended_names << emended_name
         end        
       end
@@ -79,9 +79,13 @@ module Emendor
       records = matching_records(code, rule, verbose)
 
       records.each do |record|
-        record.transform
-        unless pretend
-          record.save! 
+        if transformed = record.search_names.to_a.detect { |n| n.origin == SearchRecord::Source::EMENDOR }
+          print "\t\tSkipping record #{transformed.first_name} #{transformed.last_name} (as already emended)\n" if verbose
+        else
+          record.transform
+          unless pretend
+            record.save! 
+          end
         end
       end
     end
