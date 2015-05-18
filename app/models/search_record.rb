@@ -77,7 +77,7 @@ class SearchRecord
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
-    index(field_spec, :name => name, :background => true)
+    index(field_spec, :name => name)
   end
   
   def self.index_hint(search_params) 
