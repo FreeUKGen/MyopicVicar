@@ -801,6 +801,7 @@ class FreeregCsvUpdateProcessor
                   else  
                    @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                   end
+                @freereg1_csv_file.update_register
                 @not_updated = 0
                 @deleted = 0
                 #write the data records for this place/church
@@ -835,7 +836,7 @@ class FreeregCsvUpdateProcessor
                     batch_error.save
                   end #end header errors
                 end # #header error nil
-                @freereg1_csv_file.update_register
+              
                 @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
                 @freereg1_csv_file.save
                 @@number_of_error_messages = 0
