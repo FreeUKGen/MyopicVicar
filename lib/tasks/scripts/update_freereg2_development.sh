@@ -5,7 +5,8 @@ set -uo pipefail
 IFS=$'\n\t'
 
 trace() {
-  echo "[update-freereg2_development_database] $@" >&2
+  NOW=$( date +'%Y-%m-%d %H:%M:%S' )
+  echo "[update-freereg2_production_database] ${NOW} $@" >&2
 }
 
 fail() {
@@ -17,8 +18,8 @@ trap fail ERR
 DATA_ROOT=/raid/freereg2
 FREEREG1=${DATA_ROOT}/freereg1/users
 FREEREG1_DELTA=${DATA_ROOT}/tmp
-ROOT=/home/apache/hosts/freereg2/MyopicVicar
-
+ROOT=/home/apache/hosts/freereg2/production
+LOG_DIR=${DATA_ROOT}/log
 umask 0002
 
 if [[ ! -d ${FREEREG1} ]] ; then
@@ -37,15 +38,11 @@ trace "enforcing ownership on ${DATA_ROOT}"
 
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>/dev/null | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${FREEREG1_DELTA}/freereg1.delta
+sudo -u webserv rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
 trace "update of the database2"
-bundle exec rake build:freereg_update[a-9,search_records,delta] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 trace "delete of entries and records for removed batches"
-bundle exec rake build:delete_entries_records_for_removed_batches --trace
-
-trace "setting permssions and enforcing ownership on ${DATA_ROOT}"
-sudo chmod g+ws ${DATA_ROOT}
-sudo chown -R webserv:webserv ${DATA_ROOT}
+sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
 
 trace "finished"
 exit
