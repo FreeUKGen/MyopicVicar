@@ -7,6 +7,7 @@ class FreeregCsvUpdateProcessor
   require "unicode"
   require 'chapman_code'
   require "#{Rails.root}/app/models/freereg1_csv_file"
+   require "#{Rails.root}/app/models/freereg1_csv_entry"
   require "record_type"
   require 'digest/md5'
   require 'get_files'
@@ -592,29 +593,7 @@ class FreeregCsvUpdateProcessor
               end
             end
 
-            #process the first 4 columns of the data record
-            # County, Place, Church, Reg #
-            def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
-              #this code is needed to permit multiple places and churches in a single batch in any order
-              @@datemax = DATEMIN
-              @@datemin = DATEMAX
-              @@daterange = Array.new(50){|i| i * 0 }
-              @number_of_records = 0
-
-              @@list_of_registers[place_register_key] = Hash.new
-              @@data_hold[place_register_key] = Hash.new
-              @@list_of_registers[place_register_key].store(:county,data_record[:county])
-              @@list_of_registers[place_register_key].store(:place,data_record[:place])
-              @@list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
-              @@list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
-              @@list_of_registers[place_register_key].store(:record_type,data_record[:record_type])
-              @@list_of_registers[place_register_key].store(:alternate_register_name,data_record[:alternate_register_name])
-              @@list_of_registers[place_register_key].store(:records,@number_of_records)
-              @@list_of_registers[place_register_key].store(:datemax,@@datemax)
-              @@list_of_registers[place_register_key].store(:datemin,@@datemin)
-              @@list_of_registers[place_register_key].store(:daterange,@@daterange)
-
-            end
+            
 
             def self.process_register_location(n)
               data_record = Hash.new
@@ -769,73 +748,130 @@ class FreeregCsvUpdateProcessor
               @@data_hold[@@place_register_key].store(number,data_record)
             end
 
-            def self.delete_all
-              Freereg1CsvEntry.delete_all
-              Freereg1CsvFile.delete_all
-              SearchRecord.delete_freereg1_csv_entries
+  #          def self.delete_all
+  #           Freereg1CsvEntry.delete_all
+  #            Freereg1CsvFile.delete_all
+  #            SearchRecord.delete_freereg1_csv_entries
+  #         end
+#process the first 4 columns of the data record
+            # County, Place, Church, Reg #
+            def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
+              #this code is needed to permit multiple places and churches in a single batch in any order
+              @@datemax = DATEMIN
+              @@datemin = DATEMAX
+              @@daterange = Array.new(50){|i| i * 0 }
+              @number_of_records = 0
+
+              @@list_of_registers[place_register_key] = Hash.new
+              @@data_hold[place_register_key] = Hash.new
+              @@list_of_registers[place_register_key].store(:county,data_record[:county])
+              @@list_of_registers[place_register_key].store(:place,data_record[:place])
+              @@list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
+              @@list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
+              @@list_of_registers[place_register_key].store(:record_type,data_record[:record_type])
+              @@list_of_registers[place_register_key].store(:alternate_register_name,data_record[:alternate_register_name])
+              @@list_of_registers[place_register_key].store(:records,@number_of_records)
+              @@list_of_registers[place_register_key].store(:datemax,@@datemax)
+              @@list_of_registers[place_register_key].store(:datemin,@@datemin)
+              @@list_of_registers[place_register_key].store(:daterange,@@daterange)
+
             end
 
             def self.process_register_headers
-
-              @@list_of_registers.each do |place_key,head_value|
+                @@list_of_registers.each do |place_key,head_value|
                 @@header.merge!(head_value)
+                @records = Array.new
                 #puts "header #{head} \n"
-                @freereg1_csv_file = Freereg1CsvFile.new(@@header)
-                @freereg1_csv_file.update_register
+                  if @@update
+                    @freereg1_csv_file = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid],
+                      :county => @@header[:county], :place => @@header[:place], :church_name => @@header[:church_name], :register_type => @@header[:register_type],
+                      :record_type => @@header[:record_type]).first
+                    if @freereg1_csv_file.nil?
+                      @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+                    else
+                      @freereg1_csv_file.update_attributes(@@header)
+                      @freereg1_csv_file.error = 0
+                      BatchError.where(:freereg1_csv_file_id => @freereg1_csv_file._id).all.each do |batch_error|
+                        batch_error.delete
+                      end
+                      @freereg1_csv_file.freereg1_csv_entries.each do |record| 
+                         @records << record.record_digest
+                      end
+                    end
+                  else  
+                   @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+                  end
+                @not_updated = 0
+                @deleted = 0
                 #write the data records for this place/church
                 @@data_hold[place_key].each do |datakey,datarecord|
-
                   datarecord[:county] = head_value[:county]
                   datarecord[:place] = head_value[:place]
                   datarecord[:church_name] = head_value[:church_name]
                   datarecord[:register_type] = head_value[:register_type]
                   datarecord[:record_type] = head_value[:record_type]
                   #puts "Data record #{datakey} \n #{datarecord} \n"
-                  success = create_db_record_for_entry(datarecord)
-                  unless  success.nil?
-                    batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
-                    batch_error.freereg1_csv_file = @freereg1_csv_file
-                    batch_error.save
-
-
-                    @@number_of_error_messages = @@number_of_error_messages + 1
-
-                  end #end success
+                  success = check_and_create_db_record_for_entry(datarecord)
+                  unless  success.nil? 
+                    if success == "nochange"
+                      @not_updated = @not_updated + 1
+                    else
+                      batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
+                      batch_error.freereg1_csv_file = @freereg1_csv_file
+                      batch_error.save
+                      @@number_of_error_messages = @@number_of_error_messages + 1
+                    end #end success  no change            
+                  end #end success nil
                 end #end @@data_hold
+                @records.each do |record|
+                  freereg1_entry = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => record).first
+                  freereg1_entry.destroy
+                  @deleted = @deleted + 1
+                end
                 unless @@header_error.nil?
                   @@header_error.each do |error_key,error_value|
-
                     batch_error = BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data])
                     batch_error.freereg1_csv_file = @freereg1_csv_file
                     batch_error.save
-
-
                   end #end header errors
-
-                end # #header nil
-
+                end # #header error nil
+                @freereg1_csv_file.update_register
                 @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
                 @freereg1_csv_file.save
                 @@number_of_error_messages = 0
                 @@header_error = nil
-
+                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines; #{@not_updated} were not updated and #{@deleted} were deleted"
+                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines; #{@not_updated} were not updated and #{@deleted} were deleted"
               end #end @@list
+            end
 
-
-              puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines "
-              @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines "
-
+            def self.check_and_create_db_record_for_entry(data_record)
+              if @@update 
+                unless @records.empty?
+                   entry = Freereg1CsvEntry.new(data_record)
+                   new_digest = entry.cal_digest
+                   if @records.include?(new_digest)
+                      @records.delete_at(@records.find_index(new_digest))
+                      success = "nochange"
+                   else 
+                      success = create_db_record_for_entry(data_record)
+                   end
+                else
+                  success = create_db_record_for_entry(data_record)
+                end
+              else
+                success = create_db_record_for_entry(data_record)
+              end
+              success 
             end
 
             def self.create_db_record_for_entry(data_record)
               # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
-
               entry = Freereg1CsvEntry.new(data_record)
               entry.freereg1_csv_file = @freereg1_csv_file
               entry.save
               if entry.errors.any?
                 success = entry.errors.messages
-
               else
                 entry.transform_search_record if  @@create_search_records == true
                 success = nil
@@ -1019,8 +1055,8 @@ class FreeregCsvUpdateProcessor
 
                       #file is in the database but we have a more recent copy uploaded
                       #so delete what is there and process the new file
-                      Freereg1CsvFile.delete_file(check_for_file)
-
+                     # Freereg1CsvFile.delete_file(check_for_file)
+                     @@update = true
                       return true
                     else
                       #file in database is same or more recent than we we are attempting to reload so do not process
@@ -1037,7 +1073,7 @@ class FreeregCsvUpdateProcessor
                   # turn off domain checks -- some of these email accounts may no longer work and that's okay
                   #initializes variables
                   #gets information on the file to be processed
-
+                  @@update = false
                   @@header = Hash.new
                   @csvdata = Array.new
                   @@list_of_registers = Hash.new()
