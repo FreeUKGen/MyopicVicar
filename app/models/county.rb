@@ -57,12 +57,17 @@ class County
 
   end
   def self.coordinator_name(chapman_code)
-    coordinator_userid = County.where(:chapman_code => chapman_code ).first.county_coordinator
-    coordinator_id = UseridDetail.where(:userid => coordinator_userid).first
-    if coordinator_id.nil?
-      coordinator_name = nil
+    if chapman_code.nil?
+      #test needed as bots are coming through without a session and hence no chapman code is set
+      coordinator_name = ""
     else
-     coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
+      coordinator_userid = County.where(:chapman_code => chapman_code ).first.county_coordinator
+      coordinator_id = UseridDetail.where(:userid => coordinator_userid).first
+      if coordinator_id.nil?
+        coordinator_name = nil
+      else
+       coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
+      end
     end
     coordinator_name
   end
