@@ -20,7 +20,7 @@ class AddRecordDigest
     process_records = 0
     Freereg1CsvEntry.no_timeout.each do |my_entry|
       record_number = record_number + 1
-      my_entry.save
+      my_entry.save if my_entry.record_digest.nil?
       break if record_number == limit
       process_records = process_records + 1
       if process_records == 100000 then
