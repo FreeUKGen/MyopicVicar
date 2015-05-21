@@ -306,7 +306,6 @@ namespace :build do
 		collections_to_save = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
-		Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 		@db = Mongoid.sessions[:default][:database]
 		unless args[:save].nil?
 			collections_to_save = args[:save].split("/")
@@ -408,7 +407,7 @@ namespace :build do
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
     p db
-    host = Mongoid.sessions[:default][:hosts].first
+    host = "drill.freebmd.org.uk:37017"
     p host
 
 		collections_to_index = Array.new
