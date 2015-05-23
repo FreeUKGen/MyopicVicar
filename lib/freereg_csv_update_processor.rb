@@ -792,12 +792,11 @@ class FreeregCsvUpdateProcessor
                     if @freereg1_csv_file.nil?
                       @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                     else
-                      @freereg1_csv_file.update_attributes(@@header)
+                    @freereg1_csv_file.update_attributes(@@header)
                         Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id).only(:id).each  do |record|
                         @records << record.id
-                      end
-                      p @records
-                      @freereg1_csv_file.error = 0
+                    end
+                     @freereg1_csv_file.error = 0
                       BatchError.where(:freereg1_csv_file_id => @freereg1_csv_file._id).all.each do |batch_error|
                         batch_error.delete
                       end
