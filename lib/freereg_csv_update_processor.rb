@@ -835,7 +835,6 @@ class FreeregCsvUpdateProcessor
                  p "time for records processing #{time_inc}"
                 p "Destroying #{@records.length}" unless @records.nil?
                 @records.each do |record|
-                  p "Destroy #{record}"
                   Freereg1CsvEntry.find(record).destroy
                   @deleted = @deleted + 1
                 end
@@ -863,7 +862,6 @@ class FreeregCsvUpdateProcessor
                 record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).only(:id).first
              
                 if record_exists.nil?
-                  p "no record"
                    success = create_db_record_for_entry(data_record)
                 else
                   success = "nochange"
