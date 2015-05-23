@@ -1139,13 +1139,16 @@ class FreeregCsvUpdateProcessor
                   nn = 0
                   #now we cycle through the files
                   filenames.each do |filename|
+                     p "Started on the file #{filename}"
                     @@file_start = Time.new
                     setup_for_new_file(filename)
                     process = true
                     process = check_for_replace(filename) unless recreate == "recreate" 
+                   p "Checked for replace #{process}"
                     @success = slurp_the_csv_file(filename) if process == true
+                    p "Slurped the file #{@success}"
                     if @success == true  && process == true
-                      p "processing the file"
+                      p "processing the file #{filename}"
                       n = process_the_data
                       if Dir.exists?(File.join(base_directory, @@header[:userid])) 
                         p "copying file to base"
@@ -1160,7 +1163,7 @@ class FreeregCsvUpdateProcessor
                   end #filename loop end
                   time = 0 
                   time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
-                  p "Created  #{nn} entries at an average time of #{time}ms per record\n" 
+                  p "Created  #{nn} entries at an average time of #{time}ms per record" 
                   @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
                   @@message_file.close 
                   file = @@message_file

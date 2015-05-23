@@ -100,10 +100,10 @@ class Freereg1CsvEntry
   embeds_many :multiple_witnesses
   accepts_nested_attributes_for :multiple_witnesses
 
-  index({freereg1_csv_file_id: 1,file_line_number:1},{ background: true})
-  index({freereg1_csv_file_id: 1, record_digest:1}, { background: true})
-  index({file_line_number:1},{ background: true})
-  index({line_id:1},{ background: true})
+  index({freereg1_csv_file_id: 1,file_line_number:1})
+  index({freereg1_csv_file_id: 1, record_digest:1})
+  index({file_line_number:1})
+  index({line_id:1})
 
   validate :errors_in_fields
 
