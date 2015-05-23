@@ -17,12 +17,12 @@ namespace :foo do
  
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
-  task :add_record_digest, [:num] => [:environment]do |t, args|
+  task :add_record_digest, [:num,:range] => [:environment]do |t, args|
     require 'add_record_digest'
     Mongoid.unit_of_work(disable: :all) do
       limit = args.num
       puts "Adding record digest "
-      AddRecordDigest.process(limit)
+      AddRecordDigest.process(limit,args.range)
       puts "Completed adding #{limit} record digests"
     end
   end
