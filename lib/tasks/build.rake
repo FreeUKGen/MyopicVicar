@@ -89,7 +89,14 @@ namespace :build do
 		#save master_place_names and alias
 		p "Save started"
 		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13","14","15"]
-    p "using database #{@db} on port #{args.port}"
+   db = Mongoid.sessions[:default][:database]
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		collections_to_save.each  do |col|
 			coll  = col.to_i
 			collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --port #{args.port}  --collection " + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
@@ -302,7 +309,14 @@ namespace :build do
 		@db = Mongoid.sessions[:default][:database]
 		EXPORT_COMMAND =  "mongoexport --db #{@db}  --port #{args.port} --collection  "
 		EXPORT_OUT = " --out  "
-    p "using database #{@db} on port #{args.port}"
+    db = Mongoid.sessions[:default][:database]
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		collections_to_save = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
@@ -324,9 +338,13 @@ namespace :build do
 		puts "Dropping collections"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
-    p db
-    host = Mongoid.sessions[:default][:hosts].first
-    p host
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		unless args[:drop].nil?
 			collections_to_drop = args[:drop].split("/")
 			collections_to_drop.each  do |col|
@@ -345,7 +363,14 @@ namespace :build do
 		@db = Mongoid.sessions[:default][:database]
 		IMPORT_COMMAND =  "mongoimport --db #{@db}  --port #{args.port} --collection  "
 		IMPORT_IN = " --file  "
-      p "using database #{@db} on port #{args.port}"
+     db = Mongoid.sessions[:default][:database]
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		collections_to_reload = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
@@ -369,7 +394,14 @@ namespace :build do
 		@db = Mongoid.sessions[:default][:database]
 		IMPORT_COMMAND =  "mongoimport --db #{@db}  --port #{args.port} --collection  "
 		IMPORT_IN = " --file  "
-      p "using database #{@db} on port #{args.port}"
+    db = Mongoid.sessions[:default][:database]
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		collections_to_load = Array.new
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_temp
@@ -406,10 +438,13 @@ namespace :build do
     require "attic_file"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
-    p db
-    host = "drill.freebmd.org.uk:37017"
-    p host
-
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		collections_to_index = Array.new
 		unless args[:index].nil?
 			collections_to_index = args[:index].split("/")
@@ -429,7 +464,14 @@ namespace :build do
 		@db = Mongoid.sessions[:default][:database]
 		EXPORT_COMMAND =  "mongoexport --db #{@db}  --port #{args.port} --collection  "
 		EXPORT_OUT = " --out  "
-      p "using database #{@db} on port #{args.port}"
+   db = Mongoid.sessions[:default][:database]
+    hosts = Mongoid.sessions[:default][:hosts]
+    if args[:port] == "37017"
+     host = hosts[4]
+    else
+     host = hosts[0]
+    end
+     p "using database #{db} on host #{host}"
 		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14","15"] if args.save == 'partial'
 		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"] if args.save == 'full'
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
@@ -456,9 +498,9 @@ namespace :build do
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
-    p db
-    host = Mongoid.sessions[:default][:hosts].first
-    p host
+    hosts = Mongoid.sessions[:default][:hosts]
+    host = hosts[0]
+    p "using database #{db} on host #{host}"
     
       FreeregCsvUpdateProcessor.process(args.range,args.type,args.delta)
    
