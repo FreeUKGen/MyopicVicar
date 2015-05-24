@@ -26,6 +26,8 @@ class AddRecordDigest
      file_name = file_parts[-1]
      file_handle = file_name.split(".")
       Freereg1CsvFile.where(:file_name => file_parts[-1], :userid => file_parts[-2]).each do |file|
+        num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
+        p "processing #{file_parts[-2]} #{file_parts[-1]} with #{num} entries"
         Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).no_timeout.each do |my_entry| 
           record_number = record_number + 1
           my_entry.save 
