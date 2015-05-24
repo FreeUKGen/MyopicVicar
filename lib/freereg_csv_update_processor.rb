@@ -1041,6 +1041,7 @@ class FreeregCsvUpdateProcessor
                 if check_for_userid.nil?
                    #but first we need to check that there is a userid
                   @@message_file.puts "#{@@header[:userid]} does not exit"
+                  puts "#{@@header[:userid]} does not exit"
                   return false
                 end
                 if check_for_file.nil?
@@ -1051,6 +1052,7 @@ class FreeregCsvUpdateProcessor
                   if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
                     #do not process if coordinator has locked
                       @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                      puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
                       return false
                   end
                     if @@header[:digest] == check_for_file.digest then
@@ -1070,7 +1072,7 @@ class FreeregCsvUpdateProcessor
                     else
                       #file in database is same or more recent than we we are attempting to reload so do not process
                       @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
-
+                      p "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
                       return false
                     end #date check end
 
