@@ -865,12 +865,7 @@ class FreeregCsvUpdateProcessor
                    success = create_db_record_for_entry(data_record)
                 else
                   success = "nochange"
-                  if @records.find_index(record_exists.id).nil?
-                    p "failed check"
-                    p @records
-                    p record_exists.id
-                  end
-                  @records.delete_at(@records.find_index(record_exists.id))
+                  @records.delete_at(@records.find_index(record_exists._id))
                 end
               else
                 success = create_db_record_for_entry(data_record)
