@@ -865,6 +865,11 @@ class FreeregCsvUpdateProcessor
                    success = create_db_record_for_entry(data_record)
                 else
                   success = "nochange"
+                  if @records.find_index(record_exists.id).nil?
+                    p "failed check"
+                    p @records
+                    p record_exists.id
+                  end
                   @records.delete_at(@records.find_index(record_exists.id))
                 end
               else
@@ -1144,7 +1149,7 @@ class FreeregCsvUpdateProcessor
                      p "Started on the file #{filename}"
                     @@file_start = Time.new
                     setup_for_new_file(filename)
-                    process = true
+                    process = false
                     process = check_for_replace(filename) unless recreate == "recreate" 
                    p "Checked for replace #{process}"
                     @success = slurp_the_csv_file(filename) if process == true
