@@ -782,7 +782,7 @@ class FreeregCsvUpdateProcessor
                 @@header.merge!(head_value)
                 @time_start = Time.new
                 time_inc = @time_start - @@file_start  
-                p "time for file/record ingest setup #{time_inc}"
+                p "Processing #{@@header[:records]} records"
                 @records = Array.new
                 #puts "header #{head} \n"
                   if @@update
@@ -831,7 +831,6 @@ class FreeregCsvUpdateProcessor
                 end #end @@data_hold
                 @time_process_record_end = Time.new
                 time_inc = @time_process_record_end - @time_process_record_start  
-                p "Destroying #{@records.length}" unless @records.nil?
                 @records.each do |record|
                   Freereg1CsvEntry.find(record).destroy
                   @deleted = @deleted + 1

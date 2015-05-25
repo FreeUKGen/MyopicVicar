@@ -39,7 +39,7 @@ class AddRecordDigest
         time_end = Time.new
         time_inc = (time_end - time_start)/record_number
         puts "Added #{record_number} record_digest entries for #{file_parts[-1]} at #{time_inc} "
-        message_file.puts "Added #{record_number} record_digest entries for #{file_parts[-1]} at #{time.inc}"
+        message_file.puts "Added #{record_number} record_digest entries for #{file_parts[-1]} at #{time_inc}"
       end
       p "Finished file"
     end
