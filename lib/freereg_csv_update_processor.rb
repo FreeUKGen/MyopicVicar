@@ -806,7 +806,6 @@ class FreeregCsvUpdateProcessor
                   end
                 @time_process_record_start = Time.new
                 time_inc = @time_process_record_start - @time_start
-                p "time for records setup #{time_inc}"
                 @freereg1_csv_file.update_register
                 @not_updated = 0
                 @deleted = 0
@@ -832,7 +831,6 @@ class FreeregCsvUpdateProcessor
                 end #end @@data_hold
                 @time_process_record_end = Time.new
                 time_inc = @time_process_record_end - @time_process_record_start  
-                 p "time for records processing #{time_inc}"
                 p "Destroying #{@records.length}" unless @records.nil?
                 @records.each do |record|
                   Freereg1CsvEntry.find(record).destroy
@@ -865,7 +863,8 @@ class FreeregCsvUpdateProcessor
                    success = create_db_record_for_entry(data_record)
                 else
                   success = "nochange"
-                  @records.delete_at(@records.find_index(record_exists._id))
+                  ind = @records.find_index(record_exists._id)
+                  @records.delete_at(ind) unless ind.nil? 
                 end
               else
                 success = create_db_record_for_entry(data_record)
@@ -1146,11 +1145,11 @@ class FreeregCsvUpdateProcessor
                     setup_for_new_file(filename)
                     process = false
                     process = check_for_replace(filename) unless recreate == "recreate" 
-                   p "Checked for replace #{process}"
+                  
                     @success = slurp_the_csv_file(filename) if process == true
-                    p "Slurped the file #{@success}"
+                    
                     if @success == true  && process == true
-                      p "processing the file #{filename}"
+                     
                       n = process_the_data
                       if Dir.exists?(File.join(base_directory, @@header[:userid])) 
                         p "copying file to base"
