@@ -27,26 +27,22 @@ class AddRecordDigest
      file_handle = file_name.split(".")
       time_start = Time.new
       Freereg1CsvFile.where(:file_name => file_parts[-1], :userid => file_parts[-2]).each do |file|
-       
+
         num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
         p "processing userid #{file_parts[-2]} and file #{file_parts[-1]} with #{num} entries"
-        records = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-        records.each do |my_entry| 
+        records = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all
+        records.each do |my_entry|
           record_number = record_number + 1
-          my_entry.update_attributes(:record_digest => my_entry.cal_digest)
-          break if process_records == limit
-          process_records = process_records + 1
-          if process_records == 100000 then
-            puts "#{record_number}" 
-            process_records = 0
-          end
+          digest = my_entry.cal_digest
+          my_entry.update_attribute(:record_digest, digest)
         end
         time_end = Time.new
         time_inc = (time_end - time_start)/record_number
         puts "Added #{record_number} record_digest entries for #{file_parts[-1]} at #{time_inc} "
-        message_file.puts "Added #{record_number} record_digest entries for #{file_parts[-1]}"  
+        message_file.puts "Added #{record_number} record_digest entries for #{file_parts[-1]} at #{time.inc}"
       end
       p "Finished file"
     end
+
   end
 end
