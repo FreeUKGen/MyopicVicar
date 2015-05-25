@@ -25,10 +25,13 @@ class AddRecordDigest
      file_parts = file.split("/")
      file_name = file_parts[-1]
      file_handle = file_name.split(".")
+      time_start = Time.new
       Freereg1CsvFile.where(:file_name => file_parts[-1], :userid => file_parts[-2]).each do |file|
+       
         num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
         p "processing #{file_parts[-2]} #{file_parts[-1]} with #{num} entries"
-        Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).no_timeout.each do |my_entry| 
+        records = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
+        records.each do |my_entry| 
           record_number = record_number + 1
           my_entry.save 
           break if process_records == limit
@@ -38,8 +41,11 @@ class AddRecordDigest
             process_records = 0
           end
         end
+
       end
-      puts "Added #{record_number} record_digest entries for #{file_parts[-1]} "
+      time_end = Time.new
+      time_inc = (time_end - time_start)/record_number
+      puts "Added #{record_number} record_digest entries for #{file_parts[-1]} at #{time_inc} "
       message_file.puts "Added #{record_number} record_digest entries for #{file_parts[-1]}"
     end
   end
