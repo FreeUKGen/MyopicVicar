@@ -792,6 +792,7 @@ class FreeregCsvUpdateProcessor
                     if @freereg1_csv_file.nil?
                       @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                     else
+                      P "#{@freereg1_csv_file.records} in the original batch"
                     @freereg1_csv_file.update_attributes(@@header)
                         Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id).only(:id).each  do |record|
                         @records << record.id
@@ -845,10 +846,11 @@ class FreeregCsvUpdateProcessor
               
                 @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
                 @freereg1_csv_file.save
+                
+                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines; #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors "
+                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines;  #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors"
                 @@number_of_error_messages = 0
                 @@header_error = nil
-                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines; #{@not_updated} were not updated and #{@deleted} were deleted"
-                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines; #{@not_updated} were not updated and #{@deleted} were deleted"
               end #end @@list
             end
 
