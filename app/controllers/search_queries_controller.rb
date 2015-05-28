@@ -8,6 +8,11 @@ class SearchQueriesController < ApplicationController
 
 
   def new
+    if @page = Refinery::Page.where(:slug => 'message').exists?
+       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
+    else
+      @page = nil
+    end
     if params[:search_id]
       begin
         old_query = SearchQuery.find(params[:search_id])
