@@ -792,7 +792,7 @@ class FreeregCsvUpdateProcessor
                     if @freereg1_csv_file.nil?
                       @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                     else
-                      P "#{@freereg1_csv_file.records} in the original batch"
+                      p "#{@freereg1_csv_file.records} in the original batch"
                     @freereg1_csv_file.update_attributes(@@header)
                         Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id).only(:id).each  do |record|
                         @records << record.id
@@ -846,9 +846,10 @@ class FreeregCsvUpdateProcessor
               
                 @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
                 @freereg1_csv_file.save
-                
+                header_errors = 0
+                header_errors = @@header_error.length unless  @@header_error.nil?
                 puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines; #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors "
-                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines;  #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors"
+                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines;  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors"
                 @@number_of_error_messages = 0
                 @@header_error = nil
               end #end @@list
@@ -858,7 +859,7 @@ class FreeregCsvUpdateProcessor
               if @@update 
                 entry = Freereg1CsvEntry.new(data_record)
                 new_digest = entry.cal_digest
-                record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).only(:id).first
+                record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first
              
                 if record_exists.nil?
                    success = create_db_record_for_entry(data_record)
