@@ -7,7 +7,7 @@
 <%= semantic_form_for @place, :html => { :class => "grid"}  do |f| %>  
       <% if session[:type] == 'new' %>
         <%# This option is only for data manager%>
-        <p>Please take extreme care when entering the Place Name</p>
+        <p style="color:red">Please take extreme care when entering the Place Name</p>
         <%= f.input :place_name, :label => "Enter the Place Name",:input_html => { :size => 15 } %>
         <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
         :required => true, :collection => @counties,:size => 15 } %>

@@ -1,4 +1,5 @@
-<p style="text-align: center">The data displayed for  <b><%= @county  %></b> is based on the batches when they were last updated on <%= Rails.application.config.dataset_date %>.</p>
+<% breadcrumb :county_places,  @county%>
+<h3 style="text-align: center"><b><%=session[:active_place]%> Places for <%= @county  %></b>.</h3>
 <%  if @user.person_role == 'data_manager' %>
 <div style="float:left;">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  btn--small  float--left"%> </div>
 <% end%>
@@ -28,7 +29,7 @@
 
     <% old_place_id = nil %>
     <% @places.each do |place| %>
-    <% session[:placeid] = place.id%>
+    
     <tr style= "color:black" id="<%=place.id%>">
     <% if place.error_flag.present? %>
     <tr style= "color:red" id="<%=place.id%>">

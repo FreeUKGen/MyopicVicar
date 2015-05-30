@@ -1,7 +1,7 @@
-<p style="text-align: center">Relocating <b><%= @church_name %></b>  from : <b><%= @place_name %></b> in <b><%= @county %></b></p>
+<% breadcrumb :relocate_church,  @county, @place, @church%>
+<p style="text-align: center"><b><%= @church_name %></b>  from  <b><%= @place_name %></b> in <b><%= @county %></b></p>
 
-<div  style="text-align: center"><%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%> <%= link_to "Church's Place", place_path( @church.place), method: :get, :class => "btn  btn--small"%> <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%> <%= link_to 'Create Register', new_register_path , method: :get, :class => "btn  btn--small" %> <%= link_to 'Edit Church Fields', edit_church_path(@church) , method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Church Name', rename_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Show Church fields', church_path(@church), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Churches with same name into this one', merge_church_path(@church), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= button_to 'Destroy Church', church_path(@church), method: :delete, data: { confirm: 'Are you sure?' } , :class => "btn  btn--small"%> </div>
-<div style="clear:both;"> </div>
+
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
@@ -11,9 +11,9 @@
 <%= semantic_form_for  @church do |f| %>
 
 <% if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' %>
- <b> Please be sure to select the correct Place from the following list. Check with the name above and select if you are NOT changing the Place</b>
+ <b> Please be sure to select the correct Place from the following list. </b>
 <p>
-   <%= f.input :place_name, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place that Church is located in :", :required => true, :size => 15}%>
+   <%= f.input :place_name, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place in which Church is to be located :", :required => true, :size => 15}%>
  <% end %>
 
  

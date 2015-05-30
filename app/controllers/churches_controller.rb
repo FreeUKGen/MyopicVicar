@@ -24,6 +24,8 @@ class ChurchesController < InheritedResources::Base
       name = acn.alternate_name
       @names << name
     end
+    @place = Place.find(session[:place_id])
+    @place_name = @place.place_name
   end
 
   def new
@@ -34,7 +36,8 @@ class ChurchesController < InheritedResources::Base
     @place.each do |place|
       @places << place.place_name
     end
-    @place = Place.find(session[:place_id]).place_name
+    @place = Place.find(session[:place_id])
+    @place_name = @place.place_name
     @county = session[:county]
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -74,6 +77,7 @@ class ChurchesController < InheritedResources::Base
     get_user_info_from_userid
     load(params[:id])
     @county = session[:county]
+
   end
 
 
@@ -89,10 +93,10 @@ class ChurchesController < InheritedResources::Base
     get_user_info_from_userid
     load(params[:id])
     @chapman_code = session[:chapman_code]
-    @place = Place.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all.order_by( place_name: 1)
+    place = Place.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all.order_by( place_name: 1)
     @places = Array.new
-    @place.each do |place|
-      @places << place.place_name
+    place.each do |my_place|
+      @places << my_place.place_name
     end
     @county = session[:county]
     @first_name = session[:first_name]

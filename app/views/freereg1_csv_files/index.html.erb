@@ -1,4 +1,5 @@
-<p style="text-align: center"><b>Listing of batches for : <%= @who%></b><b><%= @county%> <%=@sorted_by%></b>
+<% breadcrumb :files%>
+<p style="text-align: center"><b> <%=@sorted_by%></b>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>

@@ -6,8 +6,8 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
-    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'syndicate'
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'counties'
+    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'syndicate_coordinator'
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'county_coordinator'
   end
 
   def show
@@ -150,11 +150,11 @@ class Freereg1CsvFilesController < ApplicationController
   def error
     #display the errors in a batch
     load(params[:id])
+    display_info
     set_controls
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
-    session[:role] = 'errors'
     get_errors_for_error_display
   end
 

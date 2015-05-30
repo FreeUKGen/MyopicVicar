@@ -6,7 +6,7 @@ class ManageSyndicatesController < ApplicationController
   def new
     clean_session
     session[:syndicate] = nil
-    session[:role] = 'syndicate'
+    session[:my_own] = false
     session[:page] = request.original_url
     get_user_info_from_userid
     get_syndicates_for_selection

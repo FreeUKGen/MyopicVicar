@@ -10,7 +10,7 @@
   :required => true, :collection => ['yes','no'], :size => 15 } %>
   <%= f.input :transcription_date ,:input_html => { :size => 25  }%>
   <%= f.input :modification_date ,:input_html => { :size => 25}%>
-<% if session[:role] == 'counties' || session[:role] == 'syndicates'%>
+<% if session[:role] == "county_coordinator" || session[:role] == 'syndicate_coordinator'%>
   <%= f.input :locked_by_transcriber, { :as => :select,:label => "Locked by transcriber :",:include_blank => false,
   :required => true, :collection => [ 'true', 'false'], :size => 10 } %>
   <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,

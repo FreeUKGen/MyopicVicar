@@ -1,6 +1,7 @@
+<% breadcrumb :county_options,  @county%>
 <div class="grid">
   <section class="island ">
-<h3 style="text-align: center"><%= @first_name%> how would you like to process <%= @county%>? Select one of the following options.</h3>
+<h3 style="text-align: center"><%= @first_name%>: How would you like to process <%= @county%>? </h3>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
