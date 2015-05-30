@@ -2,18 +2,18 @@ module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
     'volunteer_coordinator','data_manager', 'technical','system_administrator']
     OPTIONS = {
-      'researcher' => ["Saved Searches", "Profile"], 
-      'trainee' => ["Saved Searches", "Profile", "Files"],
-      'pending' => ["Saved Searches", "Profile"],
-      'transcriber' => ["Saved Searches", "Profile", "Files"],
-      'syndicate_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate"],
-      'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids"],
-      'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids"],
-      'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids"],
-      'data_manager' => ["Saved Searches", "Profile", "Files",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
-      'technical' => ["Saved Searches", "Profile", "Files",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
+      'researcher' => [ "Profile"], 
+      'trainee' => [ "Profile", "Files"],
+      'pending' => [ "Profile"],
+      'transcriber' => [  "Profile", "Files"],
+      'syndicate_coordinator' => [  "Profile", "Files", "Manage Syndicate","Contacts"],
+      'county_coordinator' =>  [  "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
+      'country_coordinator' => [  "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
+      'volunteer_coordinator' => [  "Profile", "Files", "Manage Syndicates", "Manage Userids","Contacts"],
+      'data_manager' => [  "Profile", "Files",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
+      'technical' => [  "Profile", "Files",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
-      'system_administrator' =>["Saved Searches", "Profile", "Files", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
+      'system_administrator' =>[  "Profile", "Files", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
           "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
       }
         
