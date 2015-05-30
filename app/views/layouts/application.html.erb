@@ -60,7 +60,7 @@
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
-    
+     <%= csrf_meta_tags %>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     
@@ -68,8 +68,13 @@
     
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
+      
       <main role="main" class="site__content  icon__honeycomb--top-right">
       <div class="container">
+       <% if current_refinery_user %>
+      <%= breadcrumbs  :class => "beta  text--teal" %>
+       <%end%>
+     
         <% if content_for? :sidebar %>
         <div class="grid">
           <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
