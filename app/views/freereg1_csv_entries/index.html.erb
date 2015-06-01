@@ -15,17 +15,7 @@
 <% when @freereg1_csv_file.record_type == "ba" %>
 <%= paginate @freereg1_csv_entries %>
 <table class="table--bordered  table--data" >
-  <colgroup >
-  <col class=t10>
-  <col class=t10 >
-  <col class=t10 >
-  <col class=t10>
-  <col class=t10>
-  <col class=t15>
-  <col class=t10>
-  <col class=t15>
-  <col class=t10>
-  </colgroup>
+ 
   <tr>
     <th>Record</th>
     
@@ -38,13 +28,13 @@
     
     <th>Mother forename</th>
     <th>Mother surname</th>
-    <th>Action</th>
+    <th colspan = 3>Action<br>SH: Show, ED: Edit, DES: Destroy</th>
   </tr>
   <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
   <% if freereg1_csv_entry.error_flag == 'true' %>
-  <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
+  <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
     <%else%>
-    <tr id="<%= freereg1_csv_entry.id %>" style= "color:black">
+    <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
       <%end%>
       <td><%= freereg1_csv_entry.file_line_number %></td>
       <td><%= freereg1_csv_entry.baptism_date %></td>
@@ -57,7 +47,7 @@
       <td><%= freereg1_csv_entry.mother_forename %></td>
       <td><%= freereg1_csv_entry.mother_surname %></td>
       
-      <td><%= link_to 'Show', freereg1_csv_entry , :class => "btn  btn--small"%><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) , :class => "btn  btn--small"  %><br><%= button_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete , :class => "btn  btn--small"  %></td>
+      <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
     </tr>
   </tr>
   <% end %>
@@ -66,16 +56,7 @@
 <% when @freereg1_csv_file.record_type == "bu" %>
 <%= paginate @freereg1_csv_entries %>
 <table class="table--bordered  table--data">
-  <colgroup >
-  <col class=t10>
-  <col class=t10 >
-  <col class=t10>
-  <col class=t15>
-  <col class=t10>
-  <col class=t10>
-  <col class=t15>
-  <col class=t10>
-  </colgroup>
+ 
   <tr >
     <th>Record number</th>
     <th>Burial date</th>
@@ -84,14 +65,14 @@
     <th>Male relative forename</th>
     <th>Female relative forename</th>
     <th>Relative surname</th>
-    <th>Action</th>
+   <th colspan = 3>Action<br>SH: Show, ED: Edit, DES: Destroy</th>
     
   </tr>
   <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
   <% if freereg1_csv_entry.error_flag == 'true' %>
-  <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
+  <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
     <%else%>
-    <tr id="<%= freereg1_csv_entry.id %>" style= "color:black">
+    <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
       <%end%>
       <td><%= freereg1_csv_entry.file_line_number%></td>
       <td><%= freereg1_csv_entry.burial_date %></td>
@@ -102,7 +83,7 @@
       <td><%= freereg1_csv_entry.female_relative_forename %></td>
       <td><%= freereg1_csv_entry.relative_surname %></td>
       
-      <td><%= link_to 'Show', freereg1_csv_entry, :class => "btn  btn--small" %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) , :class => "btn  btn--small"  %><br><%= button_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete , :class => "btn  btn--small"  %></td>
+      <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
     </tr>
   </tr>
   <% end %>
@@ -111,16 +92,7 @@
 <% when @freereg1_csv_file.record_type == "ma" %>
 <%= paginate @freereg1_csv_entries %>
 <table class="table--bordered  table--data">
-  <colgroup >
-  <col class=t10>
-  <col class=t10 >
-  <col class=t10 >
-  <col class=t15>
-  <col class=t10>
-  <col class=t15>
-  <col class=t10>
   
-  </colgroup>
   <tr>
     <th>Record number</th>
     <th>Marriage date</th>
@@ -128,13 +100,13 @@
     <th>Bride surname</th>
     <th>Groom forename</th>
     <th>Groom surname</th>
-    <th>Action</th>
+  <th colspan = 3>Action<br>SH: Show, ED: Edit, DES: Destroy</th>
   </tr>
   <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
   <% if freereg1_csv_entry.error_flag == 'true' %>
-  <tr id="<%= freereg1_csv_entry.id %>" style= "color:blue">
+  <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
     <%else%>
-    <tr id="<%= freereg1_csv_entry.id %>" style= "color:black">
+    <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
       <%end%>
       <td><%= freereg1_csv_entry.file_line_number %></td>
       
@@ -147,7 +119,7 @@
       <td><%= freereg1_csv_entry.groom_forename %></td>
       
       <td><%= freereg1_csv_entry.groom_surname %></td>
-      <td><%= link_to 'Show', freereg1_csv_entry, :class => "btn  btn--small" %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) , :class => "btn  btn--small"  %><br><%= button_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete  , :class => "btn  btn--small" %></td>
+     <td><%= link_to 'SH', freereg1_csv_entry %>  <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %>  <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
     </tr>
     <% end %>
   </table>

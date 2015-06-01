@@ -24,9 +24,15 @@ class ManageSyndicatesController < ApplicationController
     end
     @manage_syndicate = ManageSyndicate.new
     @options = @syndicates
-    @prompt = 'Please select a syndicates:'
-    @location = 'location.href= "/manage_syndicates/select_action?syndicate=" + this.value'
+    @prompt = 'You have access to multiple syndicates, please select one'
   end
+  def create
+    session[:syndicate] = params[:manage_syndicate][:syndicate]
+    redirect_to :action => 'select_action'
+    return
+  end
+
+
   def select_action
     get_user_info_from_userid
     unless params[:syndicate].nil?
@@ -40,18 +46,17 @@ class ManageSyndicatesController < ApplicationController
 
   def review_all_members
     get_user_info_from_userid
-    @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
-    @sorted_by = 'All Members'
-    render 'userid_details/index'
+    session[:active] =  'All Members'
+    redirect_to userid_details_path
     return
   end
   def review_active_members
     get_user_info_from_userid
-    @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page])
-    @sorted_by = 'Active Members'
-    render 'userid_details/index'
+    session[:active] =  'Active Members'
+    redirect_to userid_details_path
     return
   end
+
   def member_by_email
     redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
     return
@@ -67,7 +72,7 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = nil
     @sorted_by = '(Sorted by descending number of errors and then filename)'
-    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("error DESC, file_name ASC" ).page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).gt(error: 0).order_by("error DESC, file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
   def display_by_filename
@@ -107,16 +112,16 @@ class ManageSyndicatesController < ApplicationController
   end
   def review_a_specific_batch
     get_user_info_from_userid
-    @manage_county = ManageSyndicate.new
+    @manage_syndicate = ManageSyndicate.new
     @county = session[:syndicate]
-    @files = Array.new
+    @files = Hash.new
     Freereg1CsvFile.syndicate(session[:syndicate]).order_by(file_name: 1).each do |file|
-      @files << file.file_name
+     @files[":#{file.file_name}"] = file._id unless file.file_name.nil?
     end
     @options = @files
-    @location = 'location.href= "/manage_counties/files?params=" + this.value'
+    @location = 'location.href= "/freereg1_csv_files/" + this.value'
     @prompt = 'Select batch'
-    render '_form'
+    render '_form_for_selection'
   end
   def change_recruiting_status
     syndicate = Syndicate.where(:syndicate_code => session[:syndicate]).first
