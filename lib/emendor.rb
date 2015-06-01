@@ -85,6 +85,7 @@ module Emendor
           record.transform
           unless pretend
             record.save! 
+            sleep(1)
           end
         end
       end
