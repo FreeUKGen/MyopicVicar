@@ -26,6 +26,7 @@ class ManageSyndicatesController < ApplicationController
     @options = @syndicates
     @prompt = 'You have access to multiple syndicates, please select one'
   end
+  
   def create
     session[:syndicate] = params[:manage_syndicate][:syndicate]
     redirect_to :action => 'select_action'

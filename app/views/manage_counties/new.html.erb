@@ -1,12 +1,1 @@
-<div class="island  island--light">
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>
-<%= semantic_form_for @manage_county, :html => { :class => "grid"}  do |f| %>
-  <%= f.input :chapman_code, 
-  { :as => :select,  :label => @prompt, :collection => @options,:width => 10, :class => "text--input"  , :wrapper_html => { :class => "grid__item  one-half lap-two-fifths palm-one-whole "} }%>
-   <%= f.submit  'Select'   %>
-<% end %>
-</div>
+<%= render 'form' %>
