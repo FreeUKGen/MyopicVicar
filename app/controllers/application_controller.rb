@@ -32,8 +32,7 @@ class ApplicationController < ActionController::Base
     session.delete(:church_name) 
     session.delete(:sort) 
     session.delete(:csvfile) 
-    session.delete(:my_own)
-    session.delete(:role) 
+    session[:my_own] = false
     session.delete(:freereg) 
     session.delete(:edit) 
 

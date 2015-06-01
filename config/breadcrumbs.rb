@@ -4,7 +4,15 @@ end
 # Profile 
 crumb :userid_detail do |userid_detail|
    link "Profile:#{userid_detail.userid}", userid_detail
-   parent :root
+   if session[:my_own]
+    parent :root
+   else
+    if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
+      session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator" || 
+      session[:role] == "system_administrator" 
+     parent :userid_details_listing, session[:syndicate] 
+    end
+   end
 end
 crumb :edit_userid_detail do |userid_detail|
    link "Edit Profile:#{userid_detail.userid}", userid_detail
@@ -20,29 +28,30 @@ crumb :my_options do
    link "File Options", my_own_freereg1_csv_file_path
 end
 
-crumb :files do 
+crumb :files do  
    link "List of Files", freereg1_csv_files_path
    if session[:my_own]
     parent :my_options, my_own_freereg1_csv_file_path
    else
-    if session[:role] == "county_coordinator"
+    if session[:role] == "county_coordinator" || session[:role] == "data_administrator" || session[:role] == "system_administrator" 
      parent :county_options, session[:county]
+    end
+    if session[:role] == "syndicate_coordinator"
+     parent :userid_details_listing, session[:syndicate] 
     end
    end
  end
 crumb :show_file do |file|
    link "Showing File", freereg1_csv_file_path(file)
-   p "decision on parenting"
-   p session[:my_own]
-   p session[:role]
    if session[:my_own]
     parent :my_options, my_own_freereg1_csv_file_path
    else
-    if session[:role] == "county_coordinator"
+    if session[:role] == "county_coordinator" || session[:role] == "data_administrator" || session[:role] == "system_administrator" 
      parent :county_options, session[:county]
     end
-     if session[:role] == "syndicate_coordinator"
-     parent :syndicate_options, session[:syndicate]
+    if session[:role] == "syndicate_coordinator"
+      parent :files
+     
     end
    end
 end
@@ -138,10 +147,26 @@ crumb :rename_register do |county,place,church,register|
    parent :show_register, county, place, church, register
 end
 
+#manage syndicate
+crumb :syndicate_options do |syndicate|
+   link "Syndicate Options", select_action_manage_syndicates_path("?syndicate=#{syndicate}")
+   parent :root
+end
+crumb :userid_details_listing do |syndicate|
+   link "Syndicate Listing", userid_details_path
+   parent :syndicate_options, syndicate
+end
 
-
-
-
+#manage contacts
+crumb :contacts do 
+   link "Contacts", contacts_path
+   parent :root
+end
+#manage contacts
+crumb :show_contact do |contact|
+   link "Show Contact", contact_path(contact)
+   parent :contacts
+end
 
 
 # crumb :projects do

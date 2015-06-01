@@ -1,4 +1,5 @@
-<p style="text-align: center"><b>Syndicate Members Management for <%=session[:syndicate]%> :<%=@sorted_by%></b></p>
+<% breadcrumb :userid_details_listing, @syndicate%>
+<p style="text-align: center"><b>Syndicate Members Management for <%=@syndicate%> :<%=@sorted_by%></b></p>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -8,18 +9,19 @@
 <%= paginate @userids %> 
 
 <div id="main"style="color:black">
-<table  class="table--bordered  table--striped  table--data">
+<table  class="table--bordered  table--data">
   <tr>
     
-    <th style="width:14%">UserID</th>
-    <th style="width:10">Forename</th>
-    <th style="width:12%">Surname</th>
-    <th style="width:33%">Email</th>
-    <th style="width:4%">Active</th>
-    <th style="width:13%">Last Upload</th>
-    <th style="width:7%">Files</th>
-    <th style="width:7%">Records</th>
-   
+    <th >UserID</th>
+    <th >Forename</th>
+    <th >Surname</th>
+    <th >Email</th>
+    <th >Active</th>
+    <th >Last Upload</th>
+    <th >Batches</th>
+    <th >Records</th>
+    <th colspan="7">Action<br>SH: Show, ED: Edit, LB: List Batches<br>
+    IN/ACT: Inactivate/Activate<br>SPR: Send Password Reset</th>
 
 
   </tr>
@@ -35,22 +37,22 @@
     <td > <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td> 
     <td ><%= userid.number_of_files %> </td> 
     <td ><%= userid.number_of_records %> </td>  
-    </tr>
-    <tr>
-     <td><%= button_to 'Show', userid_detail_path(userid), method: :get  %>
-     </td><td><%= button_to 'Edit', edit_userid_detail_path(userid), method: :get  %>
-      </td><td><%= button_to 'List batches', by_userid_freereg1_csv_file_path(userid), method: :get  %>
-       </td><td><%= button_to 'Send password change request', change_password_userid_detail_path(userid), method: :get %>
-  
+    
+     <td><%= button_to 'SH', userid_detail_path(userid), method: :get  %>
+     </td><td><%= button_to 'ED', edit_userid_detail_path(userid), method: :get  %>
+      </td><td><%= button_to 'LB', by_userid_freereg1_csv_file_path(userid), method: :get  %>
+      
       <% if userid.active %>
-     </td> <td><%= button_to 'Inactivate', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
+     </td> <td><%= button_to 'IN', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
        </td> 
       <% else%>
-     </td> <td><%= button_to 'Activate', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
+     </td> <td><%= button_to 'ACT', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
        </td>
-      <% end %>   
+      <% end %>
+       </td><td><%= button_to 'SPR', change_password_userid_detail_path(userid), method: :get %>
+     
       <% if @user.person_role == 'system_administrator' || @user.person_role  == 'technical'%>     
-     </td><td> </td> <td><%= button_to 'Destroy', userid_detail_path(userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  %>
+     </td><td> </td> <td><%= button_to 'DES', userid_detail_path(userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  %>
       <% end %>   
   </tr>
   <% end %>

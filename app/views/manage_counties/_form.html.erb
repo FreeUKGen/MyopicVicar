@@ -7,6 +7,6 @@
 <%= semantic_form_for @manage_county, :html => { :class => "grid"}  do |f| %>
 <%= f.input :chapman_code, 
     { :as => :select, :include_blank => true,  :label => "Make a Selection", :required => true, :collection => @options,:width => 10  }%>
- <%= f.submit  'Update'   %>
+ <%= f.submit  'Select'   %>
 <% end %>
 </div>

@@ -35,7 +35,6 @@
       session[:manager] = manager?(@user)  
       session[:role] = @user.person_role
       @roles = UseridRole::OPTIONS.fetch(session[:role])
-      
   end
 
   def selection

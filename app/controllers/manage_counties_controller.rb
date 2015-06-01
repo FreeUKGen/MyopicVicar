@@ -24,9 +24,9 @@ class ManageCountiesController < ApplicationController
     end
     @options = @counties
     @prompt = 'You have access to multiple counties, please select one'
-   
     @manage_county = ManageCounty.new
   end
+  
   def create
     session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
@@ -86,7 +86,7 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by descending number of errors and then filename)'
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("error DESC, file_name ASC" ).page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by("error DESC, file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
   def display_by_filename
@@ -131,12 +131,12 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     @manage_county = ManageCounty.new
     @county = session[:county]
-    @files = Array.new
+    @files = Hash.new
     Freereg1CsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
-      @files << file.file_name
+    @files[":#{file.file_name}"] = file._id unless file.file_name.nil?
     end
     @options = @files
-    @location = 'location.href= "/manage_counties/files?params=" + this.value'
+     @location = 'location.href= "/freereg1_csv_files/" + this.value'
     @prompt = 'Select batch'
     render '_form_for_selection'
   end

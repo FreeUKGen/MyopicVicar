@@ -202,6 +202,12 @@ form.formtastic fieldset.inputs ol {
 margin-right: 20px;
 margin-left: 0px;
 }
+.table--data {
+  font: 14px/1.0 sans-serif;
+ padding: 5px;
+}
+
+
 /* Used for spam trap
 -------------------------------------------------*/
 div#badstyling { display: inline; }

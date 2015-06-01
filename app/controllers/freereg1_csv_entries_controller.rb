@@ -147,6 +147,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @page_number = @number/50 + 1
     params[:page] = @page_number
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
+    render "index"
   end
 
   def load(file_id)

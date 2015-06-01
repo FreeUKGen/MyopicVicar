@@ -6,10 +6,15 @@ class UseridDetailsController < ApplicationController
 
   def index
     get_user_info_from_userid
-    session[:type] = "manager"
     session[:my_own] = false
     @role = session[:role]
-    @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
+    if session[:active] ==  'All Members'
+     @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
+    else
+     @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
+    end
+    @syndicate = session[:syndicate]
+     @sorted_by = session[:active]
   end #end method
 
   def new
@@ -21,6 +26,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def show
+    @syndicate = session[:syndicate]
     get_user_info_from_userid
     load(params[:id])
   end
