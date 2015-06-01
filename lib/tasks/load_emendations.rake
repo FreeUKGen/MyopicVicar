@@ -8,7 +8,6 @@ task :load_emendations => :environment do
     et.emendation_rules.delete_all
     et.delete
   end
-  
   et = EmendationType.create!(:name => 'expansion', :target_field => :first_name, :origin => THIS_RAKE_TASK)
   EmendationRule.create!(:original => 'abig', :replacement => 'abigail', :emendation_type => et)
   EmendationRule.create!(:original => 'abr', :replacement => 'abraham', :emendation_type => et)

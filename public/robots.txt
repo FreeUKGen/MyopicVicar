@@ -4,4 +4,6 @@ User-agent: *
 Allow: /about
 Allow: /donate
 Allow: /help
+Allow: /search_queries
+Allow: /freereg_contents
 Disallow: /

@@ -12,6 +12,8 @@ class RegistersController < ApplicationController
     @county =  session[:county]
     @place_name = session[:place_name]
     @church_name =  session[:church_name]
+    @place = Place.find(session[:place_id])
+    @church = Church.find(session[:church_id])
     @register = Register.new
   end
 

@@ -1,13 +1,16 @@
 class Freereg1CsvEntriesController < ApplicationController
   require 'chapman_code'
   require 'freereg_validations'
+  skip_before_filter :require_login, only: [:show]
   def index
     if session[:userid].nil?
       redirect_to '/', notice: "You are not authorised to use these facilities"
     end
     display_info
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
+    #@freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1).page(params[:page])
+   
+
   end
   def show
     load(params[:id])
@@ -161,20 +164,24 @@ class Freereg1CsvEntriesController < ApplicationController
   end
   
   def display_info
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @freereg1_csv_file_id =  session[:freereg1_csv_file_id]
-    @freereg1_csv_file_name =  session[:freereg1_csv_file_name]
+    if @freereg1_csv_entry.nil?
+     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    else
+     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    end
+    @freereg1_csv_file_id =  @freereg1_csv_file._id
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
     @register = @freereg1_csv_file.register
     #@register_name = @register.register_name
     #@register_name = @register.alternate_register_name if @register_name.nil?
     @register_name = RegisterType.display_name(@register.register_type)
-    @church = session[:church_id]
-    @church_name = session[:church_name]
-    @place = session[:place_id]
-    @county =  session[:county]
-    @place_name = session[:place_name]
+    @church = @register.church #id?
+    @church_name = @church.church_name
+    @place = @church.place #id?
+    @county =  @place.county
+    @place_name = @place.place_name
     @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
   end
 
 end

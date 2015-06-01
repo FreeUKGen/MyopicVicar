@@ -1,0 +1,45 @@
+<%= form_for(@site_statistic) do |f| %>
+  <% if @site_statistic.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@site_statistic.errors.count, "error") %> prohibited this site_statistic from being saved:</h2>
+
+      <ul>
+      <% @site_statistic.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :interval_end %><br />
+    <%= f.datetime_select :interval_end %>
+  </div>
+  <div class="field">
+    <%= f.label :year %><br />
+    <%= f.number_field :year %>
+  </div>
+  <div class="field">
+    <%= f.label :month %><br />
+    <%= f.number_field :month %>
+  </div>
+  <div class="field">
+    <%= f.label :day %><br />
+    <%= f.number_field :day %>
+  </div>
+  <div class="field">
+    <%= f.label :n_records %><br />
+    <%= f.number_field :n_records %>
+  </div>
+  <div class="field">
+    <%= f.label :n_searches %><br />
+    <%= f.number_field :n_searches %>
+  </div>
+  <div class="field">
+    <%= f.label :n_records_added %><br />
+    <%= f.number_field :n_records_added %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

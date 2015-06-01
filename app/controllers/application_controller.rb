@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
   before_filter :require_login
+  before_filter :load_last_stat
 
   require 'record_type'
   require 'name_role'
@@ -37,7 +38,10 @@ class ApplicationController < ActionController::Base
     session.delete(:edit) 
 
   end
-
+  
+  def load_last_stat
+    @site_stat = SiteStatistic.last
+  end
   private
 
    def check_for_mobile
@@ -93,5 +97,19 @@ class ApplicationController < ActionController::Base
     a = true if (user.person_role == 'technical' || user.person_role == 'system_administrator' || user.person_role == 'country_coordinator'  || user.person_role == 'county_coordinator'  || user.person_role == 'volunteer_coordinator' || user.person_role == 'syndicate_coordinator')
   end
 
+
+  def log_possible_host_change
+    log_message = "PHC WARNING: browser may have jumped across servers mid-session!\n"
+    log_message += "PHC Time.now=\t\t#{Time.now}\n"
+    log_message += "PHC params=\t\t#{params}\n"
+    log_message += "PHC caller=\t\t#{caller.first}\n"
+    log_message += "PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
+    log_message += "PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
+    log_message += "PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
+    log_message += "PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
+    log_message += "PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
+    
+    logger.warn(log_message)    
+  end
 
 end

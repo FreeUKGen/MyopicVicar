@@ -1,5 +1,4 @@
-<h3 style="text-align: center"><b>Editing profile for :<%=@userid.userid %></b></h3>
-
+<% breadcrumb :edit_userid_detail, @userid %>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>

@@ -74,7 +74,7 @@ class SearchQuery
     end
     self.search_result =  SearchResult.new(records: search_record_array)
     self.result_count = search_record_array.length
-    self.runtime = (Time.now.utc - self.created_at) * 1000
+    self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.save
   end
 
@@ -277,11 +277,15 @@ class SearchQuery
   end
 
   def county_is_valid
+    p self
+    p chapman_codes
     if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
       errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
     end
     if chapman_codes.length > 3
-     errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+      if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
+       errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+      end
     end
   end
 

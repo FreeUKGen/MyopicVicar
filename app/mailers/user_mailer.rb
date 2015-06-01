@@ -135,4 +135,18 @@ class UserMailer < ActionMailer::Base
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
+
+  def contact_to_data_manager(contact,person,coordinator)
+    @contact = contact
+    @name = person.person_forename
+    @coordinator = coordinator.person_forename if coordinator.present?
+    @email_address = person.email_address
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+  end
+  def contact_to_coordinator(contact,person)
+    @contact = contact
+    @name = person.person_forename
+    @email_address = person.email_address
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report")
+  end
 end

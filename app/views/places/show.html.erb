@@ -1,7 +1,8 @@
-<p style="text-align: center">Showing the fields for <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
-<div style="text-align: center"><%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%> <%= link_to 'Edit Place Fields', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%>
+<% breadcrumb :show_place,  @county, @place%>
+
+<div style="text-align: center"> <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%>
   <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_admistrator'%>
-<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Relocate Place to another County', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Places with same name into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %> <%= button_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>
+<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>  <%= link_to 'Relocate Place to another County', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%> <%= link_to 'Merge Indentical Places into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you really really sure that this is the Place you want all similar Places to be merged into? The action will be taken on selecting OK and cannot be recovered!!!!' }, :class => "btn  btn--small" %> <%= button_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependants!' }, :class => "btn  btn--small" %>
 <% end%>
 </div>
 <div style="clear:both;"> </div>
@@ -12,11 +13,11 @@
 <% end %>
 <div class="grid">
   <section class="island ">
-    <h4 >The Place has the following Church(es)</h4>
-    <div class="grid__item  ">
-      <% @place.churches.order_by(church_name: 1).each do |church| %>
+    <h4 style="text-align: center">The Place has the following Church(es)
+          <% @place.churches.order_by(church_name: 1).each do |church| %>
       <%= link_to church.church_name, church_path(church), :class => "btn  btn--small"  %>
-      <% end %>
+      <% end %></h4>
+    <div class="grid__item  ">
     <table class="table--bordered table--data " >
       <colgroup >
       <col class=t40>

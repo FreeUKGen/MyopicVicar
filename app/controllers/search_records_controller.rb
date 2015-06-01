@@ -14,11 +14,12 @@ class SearchRecordsController < ApplicationController
       @previous_record = @search_query.previous_record(params[:id])
       @next_record = @search_query.next_record(params[:id])
     rescue Mongoid::Errors::DocumentNotFound
+      log_possible_host_change
       redirect_to new_search_query_path
       return
     end
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
-    session[:viewed] << params[:id]
+    session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end
 
   def viewed

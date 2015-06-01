@@ -1,6 +1,6 @@
 <section class="island  island--light">
+<% breadcrumb :userid_detail, @userid %>
   <div class="grid">
-    <p style="text-align: center"><b>Profile Details :<%= @userid.userid %></p></b>
     <div>
       <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left"  %>     
       <% if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role ==

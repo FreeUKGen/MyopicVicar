@@ -1,9 +1,9 @@
-<div  style="text-align: center"><%= link_to "Batch's Register", register_path(@freereg1_csv_file.register), method: :get , :class => "btn  btn--small" %> <%= link_to 'Edit Batch Headers', edit_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %> <%= link_to 'Show Batch Headers', freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %> <%= link_to 'Relocate Batch', relocate_freereg1_csv_file_path(@freereg1_csv_file), confirm: 'Are you sure you want to relocate this batch?', method: :get, :class => "btn  btn--small"  %> <%= link_to 'Download Batch', download_csvfile_path(@freereg1_csv_file), confirm: 'Are you sure you want to download these records?', method: :get, :class => "btn  btn--small"  %> <%= link_to 'Replace Batch', edit_csvfile_path(@freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?', :class => "btn  btn--small" %>  <%= link_to 'Browse records in Batch', freereg1_csv_entries_path, method: :get, :class => "btn  btn--small"  %> <%= link_to 'Select page of records in Batch', select_page_freereg1_csv_entry_path, method: :get, :class => "btn  btn--small"  %> <%= button_to 'Destroy Batch', freereg1_csv_file_path(@freereg1_csv_file), method: :delete, data: { confirm: 'Are you sur you want to delete this batch' }, :class => "btn  btn--small"  %></div>
-<div style="clear:both;"> </div><br>
+<% breadcrumb :error_records,  @freereg1_csv_file%>
+<p style="text-align: center"><b><%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+
 <% if @errors == 0 %>
-   <p  style="color:darkgreen" %><b>There are no errors in this batch <%= @freereg1_csv_file_name %> for <%= @owner %></b></p>
+   <p  style="text-align: center" %><b>There are no errors in this batch </b></p>
 <%else%>
-   <p style="text-align: center"><b>Display error message for batch  <%= @freereg1_csv_file_name %> for <%= @owner %></b></p>
    <div id="main"style="color:black">
     <% unless @lines.nil? || @lines.empty?%>
       <p style="text-align: center"><b> Data Errors</b></p>

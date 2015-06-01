@@ -18,7 +18,7 @@ class Freereg1CsvEntry
   include Mongoid::Timestamps::Updated::Short
   require 'freereg_validations'
   require 'record_type'
-
+ 
 
 
   # Fields here represent those currently requested by FreeREG1 at
@@ -83,10 +83,12 @@ class Freereg1CsvEntry
   field :film_number, type: String
   field :error_flag, type:String, default: 'false'
   field :record_type, type: String
+  field :record_digest, type: String
 
   belongs_to :freereg1_csv_file, index: true
 
-  before_save :embed_witness
+  before_save :embed_witness, :add_digest
+
 
   before_destroy do |entry|
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
@@ -94,12 +96,14 @@ class Freereg1CsvEntry
 
   has_one :search_record
 
+
   embeds_many :multiple_witnesses
   accepts_nested_attributes_for :multiple_witnesses
 
-  index({freereg1_csv_file_id: 1,file_line_number:1},{ background: true})
-  index({file_line_number:1},{ background: true})
-  index({line_id:1},{ background: true})
+  index({freereg1_csv_file_id: 1,file_line_number:1})
+  index({freereg1_csv_file_id: 1, record_digest:1})
+  index({file_line_number:1})
+  index({line_id:1})
 
   validate :errors_in_fields
 
@@ -110,6 +114,163 @@ class Freereg1CsvEntry
       1 # assume illegible dates are old -- start with year 1
     end    
   end
+
+  def add_digest
+    self.record_digest = self.cal_digest
+  end
+  def cal_digest
+    case self.record_type
+    when RecordType::BAPTISM
+      string = self.create_baptism_string
+    when RecordType::MARRIAGE
+      string = self.create_marriage_string
+    when RecordType::BURIAL
+      string = self.create_burial_string
+    else
+      false
+    end
+    md5 = OpenSSL::Digest::MD5.new
+    if string.nil?
+      p "#{self._id}, nil string"
+    else
+    the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
+    end
+    return the_digest
+  end
+
+  def create_baptism_string
+    string = ''
+    string = string + self.person_forename.strip + "person" unless  self.person_forename.nil?  
+    string = string + self.baptism_date.strip + "baptism" unless self.baptism_date.nil?
+    string = string + self.birth_date.strip + "birth" unless self.birth_date.nil?
+    string = string + self.father_forename.strip + "male" unless self.father_forename.nil?
+    string = string + self.father_surname.strip + "malesurname" unless self.father_surname.nil?
+    string = string + self.mother_forename.strip + "female" unless self.mother_forename.nil?
+    string = string + self.mother_surname.strip + "femalesurname" unless self.mother_surname.nil?
+    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
+    string = string + self.person_sex.strip unless self.person_sex.nil?
+    string = string + self.father_occupation.strip + "occupation" unless self.father_occupation.nil?
+    string = string + self.person_abode.strip + "abode" unless self.person_abode.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
+    return string
+  end
+  def create_marriage_string
+    string = ''
+    string = string + self.groom_forename.strip + "groom" unless  self.groom_forename.nil? 
+    string = string + self.groom_surname.strip + "groomsurname" unless self.groom_surname.nil? 
+    string = string + self.groom_age.strip + "groomage" unless self.groom_age.nil?
+    string = string + self.groom_occupation.strip + "groomoccupation" unless self.groom_occupation.nil?
+    string = string + self.groom_abode.strip + "grromabode" unless self.groom_abode.nil?
+    string = string + self.groom_condition.strip + "groomcondition" unless self.groom_condition.nil?
+    string = string + self.groom_parish.strip + "groomparish" unless self.groom_parish.nil?
+    string = string + self.bride_forename.strip + "bride" unless  self.bride_forename.nil? 
+    string = string + self.bride_surname.strip + "bridesurname" unless self.bride_surname.nil? 
+    string = string + self.bride_age.strip unless self.bride_age.nil?
+    string = string + self.bride_occupation.strip + "brideoccupation" unless self.bride_occupation.nil?
+    string = string + self.bride_abode.strip + "brideabode" unless self.bride_abode.nil?
+    string = string + self.bride_condition.strip unless self.bride_condition.nil?
+    string = string + self.bride_parish.strip + "brideparish" unless self.bride_parish.nil?
+    string = string + self.bride_father_forename.strip + "father" unless self.bride_father_forename.nil?
+    string = string + self.bride_father_surname.strip + "fathersurname" unless self.bride_father_surname.nil?
+    string = string + self.bride_father_occupation.strip + "fatheroccupation" unless self.bride_father_occupation.nil?
+    string = string + self.marriage_date.strip unless self.marriage_date.nil?
+    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
+    string = string + self.witness1_forename.strip + "witness1" unless self.witness1_forename.nil?
+    string = string + self.witness1_surname.strip + "witness1surname" unless self.witness1_surname.nil?
+    string = string + self.witness2_forename.strip + "witness2" unless self.witness2_forename.nil?
+    string = string + self.witness2_surname.strip + "witness2surname" unless self.witness2_surname.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
+    return string
+    
+  end
+  def create_burial_string
+    string = ''
+    string = string + self.burial_person_forename.strip + "person" unless  self.burial_person_forename.nil?  
+    string = string + self.burial_date.strip unless self.burial_date.nil?
+    string = string + self.burial_person_surname.strip + "personsurname" unless self.burial_person_surname.nil?
+    string = string + self.male_relative_forename.strip + "male" unless self.male_relative_forename.nil?
+    string = string + self.female_relative_forename.strip + "female" unless self.female_relative_forename.nil?
+    string = string + self.relative_surname.strip + "relative" unless self.relative_surname.nil?
+    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
+    string = string + self.person_sex.strip unless self.person_sex.nil?
+    string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
+    return string
+  end
+  def hex_to_base64_digest(hexdigest)
+    [[hexdigest].pack("H*")].pack("m").strip
+  end
+
+  def self.compare_baptism_fields?(one, two)
+    if one.person_forename == two.person_forename && 
+      one.baptism_date == two.baptism_date &&
+      one.birth_date == two.birth_date &&
+      one.father_forename == two.father_forename &&
+      one.father_surname == two.father_surname &&
+      one.mother_forename == two.mother_forename &&
+      one.mother_surname == two.mother_surname &&
+      one.register_entry_number  == two.register_entry_number &&
+      one.person_sex == two.person_sex &&
+      one.father_occupation == two.father_occupation &&
+      one.person_abode == two.person_abode &&
+      one.notes == two.notes
+      equal = true
+    else
+      equal = false
+    end
+    equal    
+  end
+  def self.compare_marriage_fields?(one, two)
+    if one.groom_forename  ==  two.groom_forename             &&
+    one.groom_surname  ==  two.groom_surname            &&            
+    one.groom_age  ==            two.groom_age  &&            
+    one.groom_occupation  ==          two.groom_occupation &&            
+    one.groom_abode  ==    two.groom_abode &&            
+    one.groom_condition  ==        two.groom_condition &&            
+    one.groom_parish  ==             two.groom_parish  &&            
+    one.bride_forename  ==   two.bride_forename &&            
+    one.bride_surname  ==  two.bride_surname &&            
+    one.bride_age  ==   two.bride_age  &&            
+    one.bride_occupation  ==  two.bride_occupation &&            
+    one.bride_abode  ==  two.bride_abode  &&            
+    one.bride_condition  ==            two.bride_condition &&            
+    one.bride_parish  ==      two.bride_parish &&            
+    one.bride_father_forename  ==   two.bride_father_forename &&            
+    one.bride_father_surname  ==  two.bride_father_surname &&            
+    one.bride_father_occupation  == two.bride_father_occupation &&            
+    one.marriage_date  ==  two.marriage_date &&            
+    one.register_entry_number  ==         two.register_entry_number &&            
+    one.witness1_forename  ==  two.witness1_forename &&            
+    one.witness1_surname  ==          two.witness1_surname &&            
+    one.witness2_forename  ==              two.witness2_forename &&            
+    one.witness2_surname  ==   two.witness2_surname &&            
+      one.notes == two.notes
+      equal = true
+    else
+      equal = false
+    end
+    equal    
+  end
+  def self.compare_burial_fields?(one, two)
+    if one.burial_person_forename == two.burial_person_forename &&
+    one.burial_date == two.burial_date &&
+    one.burial_person_surname  == two.burial_person_surname &&
+    one.male_relative_forename == two.male_relative_forename &&
+    one.female_relative_forename ==  two.female_relative_forename &&
+    one.relative_surname == two.relative_surname &&
+    one.register_entry_number  == two.register_entry_number &&
+    one.person_sex == two.person_sex &&
+    one.burial_person_abode == one.burial_person_abode &&
+    one.notes == two.notes
+      equal = true
+    else
+      equal = false
+    end
+    equal    
+  end
+
+
+
 
 
   def date_beyond_cutoff?(date_string, cutoff)

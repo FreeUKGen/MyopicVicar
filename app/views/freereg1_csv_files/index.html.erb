@@ -1,4 +1,5 @@
-<p style="text-align: center"><b>Listing of batches for : <%= @who%></b><b><%= @county%> <%=@sorted_by%></b>
+<% breadcrumb :files%>
+<p style="text-align: center"><b> <%=@sorted_by%></b>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -52,7 +53,7 @@
                   <td></td>
                   <td><%= link_to 'Show', freereg1_csv_file, method: :get  %></td>
                   <td><%= link_to 'Edit', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
-                  <td colspan = 2><%= link_to 'Replace', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace this file?' %></td>
+                  <td colspan = 2></td>
                   <td></td><td><%= link_to 'Discard', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete   %></td>
                   <td><%= link_to 'Download', download_csvfile_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get  %></td>
                   <% if freereg1_csv_file.error != 0 %>

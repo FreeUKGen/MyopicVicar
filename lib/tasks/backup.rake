@@ -26,14 +26,21 @@ namespace :freereg do
     "counties",
     "countries",
     "feedbacks",
-    "search_queries"
+    "search_statistics",
+    "site_statistics"
   ]
 
   def run_mongo(program, command_line)
     fq_program =  File.join(Rails.application.config.mongodb_bin_location, program)
     db = Mongoid.sessions[:default][:database]
     host = Mongoid.sessions[:default][:hosts].first
-    cmd = "#{fq_program} --host #{host} --db #{db} #{command_line}"
+    ssl = " --ssl " 
+    if Mongoid.sessions[:default][:options] && Mongoid.sessions[:default][:options][:ssl]
+      ssl = " --ssl " 
+    else
+      ssl = ""
+    end
+    cmd = "#{fq_program} #{ssl} --host #{host} --db #{db} #{command_line}"
     print "#{cmd}\n"
     system cmd
 
@@ -117,8 +124,8 @@ namespace :freereg do
     "feedback" => {
       :json => ['feedbacks']
     },
-    "queries" => {
-      :json => ['search_queries']
+    "statistics" => {
+      :json => ['search_statistics', 'site_statistics']
     },
     "all" => {
       :json => MONGO_COLLECTIONS,
@@ -158,11 +165,11 @@ namespace :freereg do
       print "Error: Database appears to be empty.  Run rake db:setup to create tables and seed it.\n"
       exit
     end
-    # check emendations
-    if EmendationRule.count == 0
-      print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
-      exit
-    end
+    # # check emendations
+    # if EmendationRule.count == 0
+      # print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
+      # exit
+    # end
 
   end
 

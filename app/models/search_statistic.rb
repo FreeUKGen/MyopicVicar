@@ -151,7 +151,7 @@ class SearchStatistic
 
   
   def earliest_search_query_date
-    SearchQuery.asc(:c_at).first.created_at
+    SearchQuery.where(:c_at.ne => nil).asc(:c_at).first.created_at
   end
   
   def most_recent_statistic_date
@@ -161,9 +161,13 @@ class SearchStatistic
   end
   
   def this_db
-    db = Mongoid.sessions[:default][:database]
-    host = Mongoid.sessions[:default][:hosts].first
-    "#{host}/#{db}"
+    db = Mongoid.sessions[SearchQuery.storage_options[:session]][:database]
+    host = Mongoid.sessions[SearchQuery.storage_options[:session]][:hosts].first
+    if host.match(/localhost/)  # most servers use identical mongoid.yml config files
+      "#{Socket.gethostname}/#{db}"
+    else
+      "#{host}/#{db}"    
+    end
   end
   
 end

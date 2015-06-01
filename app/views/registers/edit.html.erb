@@ -1,7 +1,6 @@
-<p style="text-align: center">Editing the <b><%= @register_name %></b> Register  of <b><%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
+<% breadcrumb :edit_register,  @county, @place, @church, @register%>
+<p style="text-align: center"><b><%= @register_name %></b> Register  of <b><%= @church_name%></b> in <b><%= @place_name %></b> of the County of <b><%= @county %></b><br></p>
 
-<div style="text-align: center"><%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%>     <%= link_to "Register's Church", church_path( @register.church), method: :get, :class => "btn  btn--small"%>  <%= link_to 'Create New Register', new_register_path, method: :get, :class => "btn  btn--small" %>  <%= link_to 'Show Register Fields', register_path(@register), method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Merge Similar Register Types into this one', merge_register_path(@register), method: :get, :class => "btn  btn--small" %> <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%>  </div>
-<div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -9,3 +8,4 @@
    <% end %> 
 
 <%= render 'form' %>
+<p style="color:red">Please note if you are changing the Register Type of a register the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>

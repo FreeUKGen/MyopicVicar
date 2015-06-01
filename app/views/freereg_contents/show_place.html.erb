@@ -1,6 +1,6 @@
-<h4 class="beta  text--teal"> <%= @county  %> general information</h4>
+<h2 class="beta  text--teal"> <%= @county  %> General Information: County Coordinator: <%= @coordinator  %></h2>
 <%= county_content(@chapman_code) %>
-<h2 class="text--center">The database contained the following information on <%= @place.place_name %> . </h2>
+<h4 class="text--center">The database contained the following information on <%= @place.place_name %> in <%= @county %>. </h4>
 <div class="text--center"><%= link_to 'Back to County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  </div>
 <div class="grid">
   <section class="island ">

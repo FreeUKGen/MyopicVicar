@@ -230,8 +230,10 @@ class Freereg1CsvFile
       File.rename(file_location,renamed_file)
       FileUtils.mv(renamed_file,newdir,:verbose => true)
       user =UseridDetail.where(:userid => self.userid).first
-      attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
-      attic_file.save
+      unless user.nil?
+        attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
+        attic_file.save
+      end
     else
       p "file does not exist"
     end

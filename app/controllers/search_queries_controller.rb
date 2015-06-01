@@ -8,13 +8,23 @@ class SearchQueriesController < ApplicationController
 
 
   def new
-    if params[:search_id]
-      old_query = SearchQuery.find(params[:search_id])
-      @search_query = SearchQuery.new(old_query.attributes)
+    if @page = Refinery::Page.where(:slug => 'message').exists?
+       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
     else
-      @search_query = SearchQuery.new    
+      @page = nil
     end
-    
+    if params[:search_id]
+      begin
+        old_query = SearchQuery.find(params[:search_id])
+        @search_query = SearchQuery.new(old_query.attributes)
+      rescue Mongoid::Errors::DocumentNotFound
+        log_possible_host_change
+        @search_query = SearchQuery.new
+      end
+    else
+      @search_query = SearchQuery.new
+    end
+
   end
 
 
@@ -30,7 +40,7 @@ class SearchQueriesController < ApplicationController
     @search_query = SearchQuery.new(old_query.attributes)
     @search_query.radius_factor = @search_query.radius_factor * 2
     @search_query.save
-    
+
     redirect_to search_query_path(@search_query)
   end
 
@@ -39,12 +49,20 @@ class SearchQueriesController < ApplicationController
     @search_query = SearchQuery.new(old_query.attributes)
     @search_query.radius_factor = @search_query.radius_factor / 2
     @search_query.save
-    
+
     redirect_to search_query_path(@search_query)
   end
 
   def create
     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+    @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
+    @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
+    if @search_query["chapman_codes"][1].eql?("YKS")
+      @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
+    end
+    if @search_query["chapman_codes"][1].eql?("CHI")
+      @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+    end
     @search_query.session_id = request.session_options[:id]
 
     if  @search_query.save
@@ -77,7 +95,7 @@ class SearchQueriesController < ApplicationController
     @end_day = @start_day
     @start_time = @start_day.beginning_of_day.utc
     @end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param).page(params[:page])    
+    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param).page(params[:page])
   end
 
   def report_for_session
@@ -85,20 +103,20 @@ class SearchQueriesController < ApplicationController
     @feedback = nil
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
-    end 
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page])    
+    end
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page])
   end
 
 
   def analyze
     @search_query = SearchQuery.find(params[:id])
-    begin 
+    begin
       @plan = @search_query.explain_plan
     rescue => ex
       @plan_error = ex.message
       @plan = @search_query.explain_plan_no_sort
     end
-    
+
   end
 
   def reorder
@@ -121,16 +139,17 @@ class SearchQueriesController < ApplicationController
       @search_query = SearchQuery.find(params[:id])
       @search_results =   @search_query.results
     rescue Mongoid::Errors::DocumentNotFound
-      redirect_to new_search_query_path      
+      log_possible_host_change
+      redirect_to new_search_query_path
     end
-    
+
   end
-  
-  
+
+
 
   def edit
-    @search_query = SearchQuery.find(params[:id]) 
-    
+    @search_query = SearchQuery.find(params[:id])
+
   end
   def update
      @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
@@ -141,7 +160,7 @@ class SearchQueriesController < ApplicationController
     else
      render :edit
     end
-    
+
   end
 
   def about
@@ -150,7 +169,12 @@ class SearchQueriesController < ApplicationController
     else
       @page_number = 0
     end
-    @search_query = SearchQuery.find(params[:id])
+    begin
+      @search_query = SearchQuery.find(params[:id])
+    rescue Mongoid::Errors::DocumentNotFound
+      log_possible_host_change
+      redirect_to new_search_query_path
+    end
   end
 
 

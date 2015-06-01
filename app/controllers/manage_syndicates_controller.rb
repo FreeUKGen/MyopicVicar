@@ -6,7 +6,7 @@ class ManageSyndicatesController < ApplicationController
   def new
     clean_session
     session[:syndicate] = nil
-    session[:role] = 'syndicate'
+    session[:my_own] = false
     session[:page] = request.original_url
     get_user_info_from_userid
     get_syndicates_for_selection
@@ -117,6 +117,13 @@ class ManageSyndicatesController < ApplicationController
     @location = 'location.href= "/manage_counties/files?params=" + this.value'
     @prompt = 'Select batch'
     render '_form'
+  end
+  def change_recruiting_status
+    syndicate = Syndicate.where(:syndicate_code => session[:syndicate]).first
+    status = !syndicate.accepting_transcribers
+    syndicate.update_attributes(:accepting_transcribers => status)
+    flash[:notice] = "Accepting volunteers is now #{status}" 
+    redirect_to :action => 'select_action'  
   end
 
   def get_syndicates_for_selection

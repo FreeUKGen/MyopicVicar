@@ -19,22 +19,24 @@ class ManageCountiesController < ApplicationController
       session[:chapman_code] = @counties[0]
       @county = ChapmanCode.has_key(@counties[0])
       session[:county] = @county
-      redirect_to :action => 'select_action?'
+      redirect_to :action => 'select_action'
       return
     end
     @options = @counties
     @prompt = 'You have access to multiple counties, please select one'
-    @location = 'location.href= "/manage_counties/select_action?county=" + this.value'
+   
     @manage_county = ManageCounty.new
+  end
+  def create
+    session[:chapman_code] = params[:manage_county][:chapman_code]
+    @county = ChapmanCode.has_key(session[:chapman_code])
+    session[:county] = @county
+    redirect_to :action => 'select_action'
+      return
   end
 
   def select_action
     get_user_info_from_userid
-    if session[:chapman_code].nil? || session[:chapman_code] != params[:county]
-      session[:chapman_code] = params[:county]
-      @county = ChapmanCode.has_key(session[:chapman_code])
-      session[:county] = @county
-    end
     @county =  session[:county]
     @manage_county = ManageCounty.new
     @options= UseridRole::COUNTY_MANAGEMENT_OPTIONS
@@ -64,7 +66,7 @@ class ManageCountiesController < ApplicationController
     @options = @places
     @location = 'location.href= "/manage_counties/places?params=" + this.value'
     @prompt = 'Select Place'
-    render '_form'
+    render '_form_for_selection'
   end
   def places_with_unapproved_names
     get_user_info_from_userid
@@ -77,7 +79,7 @@ class ManageCountiesController < ApplicationController
     @options = @places
     @location = 'location.href= "/manage_counties/places?params=" + this.value'
     @prompt = 'Select Place'
-    render '_form'
+  render '_form_for_selection'
   end
   def batches_with_errors
     get_user_info_from_userid
@@ -136,7 +138,7 @@ class ManageCountiesController < ApplicationController
     @options = @files
     @location = 'location.href= "/manage_counties/files?params=" + this.value'
     @prompt = 'Select batch'
-    render '_form'
+    render '_form_for_selection'
   end
   def files
     get_user_info_from_userid

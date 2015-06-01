@@ -1,7 +1,8 @@
+<% breadcrumb :show_register,  @county, @place, @church, @register%>
 <p style="text-align: center">Details of the <b><%= @register_name %></b> for <b><%= @church_name %></b> in
 <b><%= @place_name %></b> of <b><%= @county %></b>
 </p>
-<div style="text-align: center"> <%= link_to 'Index of Places', places_path( :anchor => "#{@user.id}"), method: :get, :class => "btn  btn--small"%>  <%= link_to "Register's Church", church_path( @register.church), method: :get, :class => "btn  btn--small"%>  <%= link_to 'Create New Register', new_register_path, method: :get, :class => "btn  btn--small" %>  <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Merge Similar Register Types', merge_register_path(@register), method: :get, :class => "btn  btn--small "  %> <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn  btn--small "%>  </div>
+<div style="text-align: center"> <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn  btn--small "  %> <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn  btn--small "%>  </div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
@@ -10,7 +11,17 @@
 <% end %>
 <div class="grid">
   <section class="island ">
-    <div class="grid__item two-thirds ">
+   <h5 style="text-align: center">The Register has the following Batches
+      
+       <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
+      <% if file_name.error == 0 %>
+        <div id="<%=file_name.id%>" :class "text--green">
+      <% else %>
+        <div id="<%=file_name.id%>" :class "text--red">
+      <% end %>
+       <%= link_to("#{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn  btn--small") %>  
+      <% end %></div></h5>
+    <div class="grid__item ">
       <table   class="table--bordered  table--data">
         <colgroup >
         <col class=t40>
@@ -48,15 +59,8 @@
           <td>Last permitted year :</td><td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
         </tr>
       </table>
-      Batches :
-      <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
-      <% if file_name.error == 0 %>
-        <p id="<%=file_name.id%>"  style="color:green">
-      <% else %>
-        <p id="<%=file_name.id%>"  style="color:red">
-      <% end %>
-       <%= link_to("#{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn  btn--small") %>  </p>
-      <% end %>
+      
+     
       
     
     </div>

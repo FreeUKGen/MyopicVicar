@@ -60,7 +60,7 @@
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
-    
+     <%= csrf_meta_tags %>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     
@@ -68,8 +68,13 @@
     
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
+      
       <main role="main" class="site__content  icon__honeycomb--top-right">
       <div class="container">
+       <% if current_refinery_user %>
+      <%= breadcrumbs  :class => "delta  text--teal" %>
+       <%end%>
+     
         <% if content_for? :sidebar %>
         <div class="grid">
           <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
@@ -112,4 +117,13 @@
         }
     </script>
   </body>
-</html>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62395250-1', 'auto');
+  ga('send', 'pageview');
+
+</script></html>

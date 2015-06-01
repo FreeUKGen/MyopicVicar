@@ -2,18 +2,18 @@ module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
     'volunteer_coordinator','data_manager', 'technical','system_administrator']
     OPTIONS = {
-      'researcher' => ["Saved Searches", "Profile"], 
-      'trainee' => ["Saved Searches", "Profile", "Files"],
-      'pending' => ["Saved Searches", "Profile"],
-      'transcriber' => ["Saved Searches", "Profile", "Files"],
-      'syndicate_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate"],
-      'county_coordinator' =>  ["Saved Searches", "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids"],
-      'country_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids"],
-      'volunteer_coordinator' => ["Saved Searches", "Profile", "Files", "Manage Syndicates", "Manage Userids"],
-      'data_manager' => ["Saved Searches", "Profile", "Files", "Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
-      'technical' => ["Saved Searches", "Profile", "Files", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
+      'researcher' => [ "Profile"], 
+      'trainee' => [ "Profile", "Files"],
+      'pending' => [ "Profile"],
+      'transcriber' => [  "Profile", "Files"],
+      'syndicate_coordinator' => [  "Profile", "Files", "Manage Syndicate","Contacts"],
+      'county_coordinator' =>  [  "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
+      'country_coordinator' => [  "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
+      'volunteer_coordinator' => [  "Profile", "Files", "Manage Syndicates", "Manage Userids","Contacts"],
+      'data_manager' => [  "Profile", "Files",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
+      'technical' => [  "Profile", "Files",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
-      'system_administrator' =>["Saved Searches", "Profile", "Files","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
+      'system_administrator' =>[  "Profile", "Files", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
           "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
       }
         
@@ -30,6 +30,7 @@ module UseridRole
           "Syndicate Coordinators" => "/syndicates" ,      
           "County Coordinators" => "/counties" ,
           "Country Coordinators" => "/countries" ,
+          "Upload New Batch"  => "/manage_counties/selection?option=Upload New Batch",
           "RefineryCMS" =>  "/refinery",
           "Access Attic" => "/attic_files/select" ,
           "Search Performance" => "/search_queries/report" ,
@@ -49,7 +50,7 @@ module UseridRole
         "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
         "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename" 
         }
-        FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
+        FILE_MANAGEMENT_OPTIONS = ['List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)' ]
         FILE_OPTIONS_TRANSLATION ={
         'Upload New Batch' =>  "/csvfiles/new",
         'List by Number of Errors then Filename' =>  "/freereg1_csv_files/selection?option=List by Number of Errors then Filename",
@@ -58,7 +59,7 @@ module UseridRole
         'List by uploaded date (descending)'  =>  "/freereg1_csv_files/selection?option=List by uploaded date (descending)"
         }
         COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
-          'Review Batches by Filename', 'Upload New Batch', 'Review Batches by Userid then Filename',
+          'Review Batches by Filename', 'Review Batches by Userid then Filename',
           'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch']
         COUNTY_OPTIONS_TRANSLATION = {
           'All Places' => "/manage_counties/selection?option=Work with All Places",
@@ -74,9 +75,9 @@ module UseridRole
           'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch"
         }
         SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
-          'Select Specific Member by Email Address','Select Specific Member by Surname/Forename','Review Batches with Errors','Review Batches by Filename', 'Upload New Batch',
+          'Select Specific Member by Email Address','Select Specific Member by Surname/Forename','Review Batches with Errors','Review Batches by Filename', 
           'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
-          'Review Specific Batch']
+          'Review Specific Batch', 'Change Recruiting Status']
         SYNDICATE_OPTIONS_TRANSLATION = {
           'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
           'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
@@ -89,7 +90,8 @@ module UseridRole
           'Review Batches by Userid then Filename' => "/manage_syndicates/selection?option=Review Batches by Userid then Filename",
           'Review Batches by Most Recent Date of Change' => "/manage_syndicates/selection?option=Review Batches by Most Recent Date of Change",
           'Review Batches by Oldest Date of Change' => "/manage_syndicates/selection?option=Review Batches by Oldest Date of Change",
-          'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch"
+          'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch",
+          'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
      
 

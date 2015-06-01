@@ -1,4 +1,5 @@
-<p style="text-align: center">Create a new Register for <b><%= @church_name %></b> in 
+ <% breadcrumb :create_register,  @county, @place, @church, @register%>
+<p style="text-align: center">For <b><%= @church_name %></b> in 
    <b><%= @place_name %></b> for the County of:  <b><%= @county %></b>
 
 <% if flash[:notice] %>

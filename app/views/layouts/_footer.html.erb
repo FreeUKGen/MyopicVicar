@@ -2,12 +2,18 @@
 
 	<div class="island  island--magenta  flush--bottom">
 		<div class="container  text--center">
-			<p>
-				The FreeREG database is just a finding tool. It should not be considered to be *proof*, nor that it is 100% accurate, nor contains all of the information in the actual register.
-			</p>
-			<p>
-				Once you have found a record, always make a point of looking at a copy of the actual register at a County Record Office or the local Family History Society or LDS family History Centre for confirmation.
-			</p>
+			<% if @site_stat %>
+				<%= number_with_delimiter(@site_stat.n_searches)%> searches were performed on <%= number_with_delimiter(@site_stat.n_records) %> records
+				<% if @site_stat.n_records_added %> 
+					and <%= number_with_delimiter(@site_stat.n_records_added) %> records were added
+				<% end %>
+				in the 24 hrs ending at 6am GMT. 
+			<% end %>
+      <p>
+       The FreeREG database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
+    
+       Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
+    </p>
 		</div>
 	</div>
 
