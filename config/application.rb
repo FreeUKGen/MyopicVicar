@@ -24,6 +24,12 @@ if defined?(Bundler)
 end
 
 module MyopicVicar
+  module TemplateSet
+    FREEREG='freereg'
+    FREECEN='freecen'
+    FREEBMD='freebmd'
+  end
+  
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -77,6 +83,9 @@ module MyopicVicar
     config.generators do |g|
       g.orm :active_record
     end
+
+    
+    config.template_set = TemplateSet::FREECEN
     
     config.before_configuration do
       env_file = Rails.root.join("config", 'application.yml').to_s
@@ -91,6 +100,7 @@ module MyopicVicar
       if File.exists?(mongo_config)
         MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env]
       end
+      
     end # end config.before_configuration
   end
 end
