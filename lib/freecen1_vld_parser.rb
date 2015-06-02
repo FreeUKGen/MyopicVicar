@@ -296,7 +296,7 @@ module Freecen
       
       # fix schn over 1000
       if record[:sch_a] == "!"
-        record[:sch_n] = (1000+record[:sch_n]).to_s
+        record[:sch_n] = (1000+record[:sch_n].to_i).to_s
       end
           
       [:t_born_cty, :born_cty].each do |key|
