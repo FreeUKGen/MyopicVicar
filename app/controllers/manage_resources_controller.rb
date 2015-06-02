@@ -20,8 +20,14 @@
         redirect_to refinery.login_path
         return
       end
-      cookies.signed[:Administrator] = Rails.application.config.github_password
       @user = current_refinery_user.userid_detail 
+      if @user.person_role == "researcher" || @user.person_role == "trainee" ||@user.person_role == 'pending' || @user.person_role == 'transcriber'
+       redirect_to refinery.login_path
+       return
+      end
+
+      cookies.signed[:Administrator] = Rails.application.config.github_password
+     
 
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
