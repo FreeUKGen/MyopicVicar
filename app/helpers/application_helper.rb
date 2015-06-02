@@ -14,6 +14,14 @@
 #
 module ApplicationHelper
 
+  def app_specific_partial(partial)
+    template_set = MyopicVicar::Application.config.template_set
+    base_template = File.basename(partial)
+    app_specific_template = base_template.sub(/$/, "_#{template_set}")
+
+    app_specific_template    
+  end
+
   def problem_url
     # construct url parameters for problem reports
     problem_time = Time.now.utc

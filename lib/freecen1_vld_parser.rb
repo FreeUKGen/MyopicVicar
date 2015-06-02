@@ -288,10 +288,9 @@ module Freecen
     
     def clean_vld_record(raw_record)
       # trim trailing whitespace
-      
       record = {}
       raw_record.each_pair do |key,value|
-        clean_value = value.sub(/\s*$/, '')
+        clean_value = value.encode('ISO-8859-15', { :invalid => :replace, :undef => :replace, :replace => ''}).sub(/\s*$/, '')
         record[key] = clean_value unless clean_value.blank?       
       end
       

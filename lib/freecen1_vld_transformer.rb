@@ -1,3 +1,5 @@
+require 'freecen_constants'
+
 module Freecen
   class Freecen1VldTransformer
       
