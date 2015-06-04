@@ -337,8 +337,6 @@ class Freereg1CsvFile
 
   def self.update_location(file,param)
     old_location = file.old_location
-    p "relocating"
-    p "#{param}"
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
     new_location = file.new_location(param)
