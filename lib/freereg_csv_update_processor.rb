@@ -902,7 +902,7 @@ class FreeregCsvUpdateProcessor
               @locations.each do |location|
                 loc = Freereg1CsvFile.find(location)
                 puts "Removing location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-                @@message_file.puts "Removing location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
+                @@message_file.puts "#{loc.userid} #{loc.file_name} removing location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
                 loc.destroy
               end
             end
@@ -1161,7 +1161,6 @@ class FreeregCsvUpdateProcessor
                   parent_dirname = File.dirname(full_dirname)
                   user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
                   @@userid = user_dirname
-                  @@message_file.puts "#{user_dirname}\t#{standalone_filename}\n"
                   @@header[:digest] = Digest::MD5.file(filename).hexdigest
                   #delete any user log file for errors we put it in the same directory as the csv file came from
                   @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
