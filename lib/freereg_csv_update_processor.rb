@@ -863,6 +863,7 @@ class FreeregCsvUpdateProcessor
              
                 if record_exists.nil?
                    success = create_db_record_for_entry(data_record)
+                   sleep(Rails.application.config.sleep.to_f)
                 else
                   success = "nochange"
                   ind = @records.find_index(record_exists._id)
@@ -870,6 +871,7 @@ class FreeregCsvUpdateProcessor
                 end
               else
                 success = create_db_record_for_entry(data_record)
+                sleep(Rails.application.config.sleep.to_f)
               end 
 
               success 
