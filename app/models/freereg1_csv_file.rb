@@ -337,6 +337,8 @@ class Freereg1CsvFile
 
   def self.update_location(file,param)
     old_location = file.old_location
+    p "relocating"
+    p "#{param}"
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
     new_location = file.new_location(param)
@@ -382,41 +384,41 @@ class Freereg1CsvFile
     end
 
     def update_entries_and_search_records(param)
-      self.freereg1_csv_entries.each do |entry|
-
-        entry.update_attributes(:county => param[:county],:place =>param[:place],:register_type => param[:register_type])
+        self.freereg1_csv_entries.no_timeout.each do |entry|
+        entry.update_attributes(:county => param[:county],:place =>param[:place],:church_name =>param[:church_name],:register_type => param[:register_type])
         entry.search_record.update_attributes(:place_id => param[:place_id],:chapman_code => param[:county], :location_name =>"#{param[:place]} (#{param[:church_name]})") unless entry.search_record.nil?
+        sleep(Rails.application.config.sleep.to_f)
       end
     end
     def update_entries_and_search_records_for_type(param)
 
-      self.freereg1_csv_entries.each do |entry|
-
+      self.freereg1_csv_entries.no_timeout.each do |entry|
         entry.update_attributes(:register_type => param)
+        sleep(Rails.application.config.sleep.to_f)
       end
     end
 
     def update_entries_and_search_records_for_church(place_name,church_name)
 
-      self.freereg1_csv_entries.each do |entry|
-
+      self.freereg1_csv_entries.no_timeout.each do |entry|
         entry.update_attributes(:church_name => church_name)
         entry.search_record.update_attributes(:location_name =>"#{place_name} (#{church_name})") unless entry.search_record.nil?
+        sleep(Rails.application.config.sleep.to_f)
       end
     end
     def update_entries_and_search_records_for_place(place,church_name)
 
-      self.freereg1_csv_entries.each do |entry|
-
+      self.freereg1_csv_entries.no_timeout.each do |entry|
         entry.update_attributes(:place => place.place_name)
         entry.search_record.update_attributes(:place_id => place._id,:location_name =>"#{place.place_name} (#{church_name})") unless entry.search_record.nil?
+        sleep(Rails.application.config.sleep.to_f)
       end
     end
     def update_entries_and_search_records_for_county(county,chapman_code)
-      self.freereg1_csv_entries.each do |entry|
-
+      self.freereg1_csv_entries.no_timeout.each do |entry|
         entry.update_attributes(:county => chapman_code)
         entry.search_record.update_attributes(:chapman_code => chapman_code) unless entry.search_record.nil?
+        sleep(Rails.application.config.sleep.to_f)
       end
     end
     def date_change(transcription_date,modification_date)
