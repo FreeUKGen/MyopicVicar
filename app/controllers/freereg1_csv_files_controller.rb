@@ -17,9 +17,9 @@ class Freereg1CsvFilesController < ApplicationController
     #TODO check on need for these
     @county =  session[:county]
     set_controls
-      display_info
+    display_info
     @role = session[:role]
-  
+    p @user.person_role
   end
   def relocate
     load(params[:id])
@@ -190,9 +190,16 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     @role = session[:role]
     @freereg1_csv_file.lock(session[:my_own])
-    flash[:notice] = 'The update of the file was successful'
+    flash[:notice] = 'The update of the batch was successful'
     #determine how to return
     redirect_to :back
+  end
+  def remove
+    load(params[:id])
+    return_location  = @freereg1_csv_file.register
+    @freereg1_csv_file.delete
+    flash[:notice] = 'The removal of the batch entry was successful'
+    redirect_to register_path(return_location)
   end
 
   def destroy
@@ -203,7 +210,7 @@ class Freereg1CsvFilesController < ApplicationController
     return_location  = @freereg1_csv_file.register
     @role = session[:role]
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
-      flash[:notice] = 'The deletion of the file was unsuccessful; the file is locked'
+      flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return
     end
@@ -212,7 +219,7 @@ class Freereg1CsvFilesController < ApplicationController
       file.destroy
     end
     session[:type] = "edit"
-    flash[:notice] = 'The deletion of the file was successful'
+    flash[:notice] = 'The deletion of the batch was successful'
     redirect_to register_path(return_location)
 
   end
