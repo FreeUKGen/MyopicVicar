@@ -29,7 +29,7 @@ describe Freecen1VldFile do
   it "should transform a household with search records" do
     household = FreecenHousehold.first
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_household(household)
+    translator.translate_household(household, 'DUR')
     SearchRecord.count.should eq household.freecen_individuals.count     
   end
 
@@ -37,7 +37,7 @@ describe Freecen1VldFile do
     [Freecen::Uninhabited::BUILDING, Freecen::Uninhabited::FAMILY_AWAY_VISITING, Freecen::Uninhabited::UNOCCUPIED].each do |flag|
       unoccupied_household = FreecenHousehold.where(:uninhabited_flag => flag).first
       translator = Freecen::Freecen1VldTranslator.new
-      translator.translate_household(unoccupied_household)
+      translator.translate_household(unoccupied_household, 'DUR')
       SearchRecord.count.should eq 0
     end    
   end
@@ -45,7 +45,7 @@ describe Freecen1VldFile do
   it "should find records by name" do
     household = FreecenHousehold.last
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_household(household)
+    translator.translate_household(household, 'DUR')
 
     household.freecen_individuals.each do |individual|
       query_params = { :first_name => individual.forenames,
@@ -55,7 +55,26 @@ describe Freecen1VldFile do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.count.should have_at_least(1).items
+      result.should have_at_least(1).items
+    end
+  end
+
+  it "should find records by name and county" do
+    household = FreecenHousehold.last
+    translator = Freecen::Freecen1VldTranslator.new
+    translator.translate_household(household, 'DUR')
+
+    household.freecen_individuals.each do |individual|
+      query_params = { :first_name => individual.forenames,
+                       :last_name => individual.surname,
+                       :chapman_codes => ['DUR'],
+                       :inclusive => false }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+
+      result.should have_at_least(1).items
     end
   end
 
