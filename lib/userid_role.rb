@@ -6,7 +6,7 @@ module UseridRole
       'trainee' => [ "Profile", "Files"],
       'pending' => [ "Profile"],
       'transcriber' => [  "Profile", "Files"],
-      'syndicate_coordinator' => [  "Profile", "Files", "Manage Syndicate","Contacts"],
+      'syndicate_coordinator' => [  "Profile", "Files", "Manage Syndicate"],
       'county_coordinator' =>  [  "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
       'country_coordinator' => [  "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
       'volunteer_coordinator' => [  "Profile", "Files", "Manage Syndicates", "Manage Userids","Contacts"],
