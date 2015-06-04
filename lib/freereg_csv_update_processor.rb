@@ -785,7 +785,6 @@ class FreeregCsvUpdateProcessor
                 # Need to get all the records for this batch regardless of location
                 @freereg1_csv_files = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid]).all
                 @freereg1_csv_files.each do |batch|
-                  p batch
                   @locations << batch._id
                   if batch.error >= 1
                     @batches_with_errors << batch._id
