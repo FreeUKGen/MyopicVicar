@@ -912,7 +912,7 @@ class FreeregCsvUpdateProcessor
                 entry = Freereg1CsvEntry.new(data_record)
                 new_digest = entry.cal_digest
                 record_exists = nil
-                record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @record.empty?
+                record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @records.empty?
 
                 if record_exists.nil?
                   success = create_db_record_for_entry(data_record)
