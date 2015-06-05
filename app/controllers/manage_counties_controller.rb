@@ -136,7 +136,7 @@ class ManageCountiesController < ApplicationController
     @files[":#{file.file_name}"] = file._id unless file.file_name.nil?
     end
     @options = @files
-     @location = 'location.href= "/freereg1_csv_files/" + this.value'
+    @location = 'location.href= "/freereg1_csv_files/" + this.value'
     @prompt = 'Select batch'
     render '_form_for_selection'
   end

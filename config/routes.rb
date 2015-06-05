@@ -150,7 +150,7 @@ MyopicVicar::Application.routes.draw do
   post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
-get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => :remove_freereg1_csv_file
+  get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => :remove_freereg1_csv_file
   get 'freereg1_csv_files/:id/relocate(.:format)', :to => 'freereg1_csv_files#relocate', :as => :relocate_freereg1_csv_file
   get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
@@ -160,7 +160,8 @@ get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files', constraints: MyFilesAlphabeticalConstraint
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_descending_uploaded_date', constraints: MyFilesDescendingUploadConstraint 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint 
-  resources :freereg1_csv_files
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint 
+    resources :freereg1_csv_files
 
   resources :emendation_types
 

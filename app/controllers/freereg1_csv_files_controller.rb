@@ -152,6 +152,20 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").page(params[:page])
     render :index
   end
+  def display_my_own_files_by_selection
+    get_user_info_from_userid
+    @who = @user.userid
+    @freereg1_csv_file = Freereg1CsvFile.new
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").all
+    @files = Hash.new
+    @freereg1_csv_files.each do |file|
+     @files[":#{file.file_name}"] = file._id unless file.file_name.nil?
+    end
+    @options = @files
+    @location = 'location.href= "/freereg1_csv_files/" + this.value'
+    @prompt = 'Select batch'
+    render '_form_for_selection'
+  end
 
   def error
     #display the errors in a batch
