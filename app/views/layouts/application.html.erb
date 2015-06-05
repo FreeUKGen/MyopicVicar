@@ -73,7 +73,8 @@
       <div class="container">
      
       <% if current_refinery_user %>
-         <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery"%>
+         <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+         controller_name == "pages"%>
       <% end%>
      
         <% if content_for? :sidebar %>

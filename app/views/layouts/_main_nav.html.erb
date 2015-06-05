@@ -1,7 +1,7 @@
 <div class="site__header__nav  offcanvas__secondary">
   <div class="site__header__nav__inner">
     <nav class="main-nav" role="navigation">
-      <ul>
+      <ul> 
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
         <li>
           <%=link_to("Database Contents",main_app.freereg_contents_path)%>
