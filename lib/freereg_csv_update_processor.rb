@@ -882,8 +882,8 @@ class FreeregCsvUpdateProcessor
                 @freereg1_csv_file.save
                 header_errors = 0
                 header_errors = @@header_error.length unless  @@header_error.nil?
-                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors "
-                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors"
+                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors "
+                @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors"
                 @@number_of_error_messages = 0
                 @@header_error = nil
               end #end @@list
@@ -901,8 +901,8 @@ class FreeregCsvUpdateProcessor
               end
               @locations.each do |location|
                 loc = Freereg1CsvFile.find(location)
-                puts "Removing location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-                @@message_file.puts "#{loc.userid} #{loc.file_name} removing location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
+                puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
+                @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
                 loc.destroy
               end
             end
