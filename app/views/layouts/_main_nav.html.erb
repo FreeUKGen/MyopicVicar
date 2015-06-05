@@ -36,7 +36,7 @@
         <li>
           <%= link_to "Donate", "/donate" %>
         </li>
-        <%if current_controller[1].nil?%>
+        <%if controller_name.nil?%>
         <li>
           <%= link_to "Members", refinery.login_path%>
         </li>
