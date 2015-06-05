@@ -2,8 +2,7 @@
   <div class="site__header__nav__inner">
     <nav class="main-nav" role="navigation">
       <ul>
-        <%current_controller = request.path.split( "/" )%>
-        <% if current_controller[1].nil? || current_controller[1] == 'search_queries' || current_controller[1] == 'search_records'%>
+        <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
         <li>
           <%=link_to("Database Contents",main_app.freereg_contents_path)%>
         </li>
