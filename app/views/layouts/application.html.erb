@@ -71,9 +71,10 @@
       
       <main role="main" class="site__content  icon__honeycomb--top-right">
       <div class="container">
-       <% if current_refinery_user %>
-      <%= breadcrumbs  :class => "delta  text--teal" %>
-       <%end%>
+     
+      <% if current_refinery_user %>
+         <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery"%>
+      <% end%>
      
         <% if content_for? :sidebar %>
         <div class="grid">
