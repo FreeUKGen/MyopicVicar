@@ -122,28 +122,31 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_freereg_manager(contact,person)
+  def contact_to_freereg_manager(contact,person,ccs)
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_recipient(contact,person)
+  def contact_to_recipient(contact,person,ccs)
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_data_manager(contact,person,coordinator)
+  def contact_to_data_manager(contact,person,ccs)
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
-    @coordinator = coordinator.person_forename if coordinator.present?
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
-  def contact_to_coordinator(contact,person)
+  def contact_to_coordinator(contact,person,ccs)
+     @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address

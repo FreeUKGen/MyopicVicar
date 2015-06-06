@@ -1,12 +1,9 @@
-<p> Dear @name %>;</p>
-<p>We have received correspondence that was directed to you from <%@contact.name%>. </p>
-<p>You may review on line if you are logged into the system.</p>
-<%= button_to ' Access the contact', contact_path(@contact),  method: :get%>
-<p>
-<p>
-<b>Type:</b>
-<%= @contact.contact_type %>
-</p>
+<p> Dear <%=@name %>;</p>
+<p>We have received correspondence on a <%= @contact.contact_type %> that was directed us from <%=@contact.name%> at <%=@contact.email_address%>. </p>
+<p>Copies went to all registered system administrators: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
+<p>It is suggested that the first person in the list takes the lead in responding.
+<p>You may review the contact on line if you are logged into the system.</p>
+<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> Contact </a></p>
 <p>
 <b>Time:</b>
 <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
@@ -23,4 +20,5 @@
 No screenshot attached.
 <% end %>
 </p>
+
 <p> The FreeREG Team</p>

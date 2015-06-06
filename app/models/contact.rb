@@ -35,15 +35,23 @@ class Contact
     UserMailer.copy_to_contact_person(self).deliver
     case 
     when  self.contact_type == 'Website Problem'
-      github_issue
+      github_issue(self)
     when self.contact_type == 'Data Problem'
-      data_manager_issue
+      data_manager_issue(self)
     else
-      general_issue
+      general_issue(self)
     end
   end
 
-  def github_issue
+  def github_issue(contact)
+    ccs = Array.new
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+       ccs << person.person_forename
+      end
+
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UserMailer.contact_to_freereg_manager(contact,person,ccs).deliver
+      end
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_login
@@ -52,8 +60,9 @@ class Contact
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
       p response
-      self.github_issue_url=response[:html_url]
+      self.github_issue_url = response[:html_url]
       self.save!
+      
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
@@ -67,20 +76,27 @@ class Contact
     "#{contact_type} (#{name})"
   end
 
-  def general_issue
+  def general_issue(contact)
+    ccs = Array.new
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+       ccs << person.person_forename
+      end
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-    UserMailer.contact_to_freereg_manager(self,person).deliver
+    UserMailer.contact_to_freereg_manager(contact,person,ccs).deliver
     end
   end
 
-  def data_manager_issue
-    p "contact"
-    p self
-    coordinator = self.get_coordinator if self.record_id.present?
-    UserMailer.contact_to_coordinator(self,coordinator).deliver if coordinator.present?
+  def data_manager_issue(contact)
+    ccs = Array.new
+    coordinator = contact.get_coordinator if contact.record_id.present?
+    ccs << coordinator.person_forename if contact.record_id.present?
+    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
+       ccs << person.person_forename
+    end
+    UserMailer.contact_to_coordinator(contact,coordinator,ccs).deliver if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
-    UserMailer.contact_to_recipient(self,data_manager).deliver unless coordinator.present?
-    UserMailer.contact_to_data_manager(self,data_manager,coordinator).deliver if coordinator.present?
+    UserMailer.contact_to_recipient(contact,data_manager,ccs).deliver unless coordinator.present?
+    UserMailer.contact_to_data_manager(contact,data_manager,ccs).deliver if coordinator.present?
     end
 
   end
