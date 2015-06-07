@@ -4,21 +4,13 @@
 <p>It is suggested that the first person in the list takes the lead in responding.
 <p>You may review the contact on line if you are logged into the system.</p>
 <p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> Contact </a></p>
-<p>
-<b>Time:</b>
-<%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %>
-</p>
-<p>
-<b>Body:</b>
-<%= @contact.body %>
-</p>
-<p>
-<b>Screenshot:</b>
-<% if @contact.screenshot_url %>
-<%= image_tag @contact.screenshot_url %>
-<% else %>
-No screenshot attached.
-<% end %>
-</p>
+<p><b>Time:</b> <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></p>
+<p><b>Screenshot:</b>
+    <% if @contact.screenshot_url %>
+      <%= image_tag @contact.screenshot_url %>
+    <% else %>
+      No screenshot attached.
+    <% end %></p>
+<p><b>Body:</b><%= @contact.body %></p>
 
 <p> The FreeREG Team</p>
