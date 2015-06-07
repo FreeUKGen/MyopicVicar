@@ -36,7 +36,7 @@
         <li>
           <%= link_to "Donate", "/donate" %>
         </li>
-        <%if controller_name.nil?%>
+        <%if controller_name.nil?  || (controller_name == 'search_queries' && action_name == 'new' )  %>
         <li>
           <%= link_to "Members", refinery.login_path%>
         </li>
