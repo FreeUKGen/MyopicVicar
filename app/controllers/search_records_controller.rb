@@ -18,6 +18,7 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     end
+    @entry.display_fields
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
     session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end

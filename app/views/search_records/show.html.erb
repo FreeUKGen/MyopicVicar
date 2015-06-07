@@ -33,7 +33,7 @@
       <% unless (field == 'line_id' && !current_refinery_user) %>
       <tr>
         <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
-        <td class="weight--semibold"><%= @entry.display_field(field) %></td>
+        <td class="weight--semibold"><%= @entry[field] %></td>
       </tr>
       <% end %>
       <% end %>

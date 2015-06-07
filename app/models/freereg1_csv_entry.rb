@@ -304,12 +304,17 @@ class Freereg1CsvEntry
     SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
   end
 
-  def display_field(field_name)
-    if field_name == 'county'
-      ChapmanCode::name_from_code(self.county)
-    else
-      self[field_name]
-    end
+  
+
+  def display_fields
+    register  = self.freereg1_csv_file.register
+    self['register_type'] = register.register_type
+    church = register.church
+    self['church_name'] = church.church_name
+    place = church.place
+    self['place'] = place.place_name
+    self['county'] = place.county
+   
   end
 
 
