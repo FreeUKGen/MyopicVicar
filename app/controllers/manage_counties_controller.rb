@@ -5,7 +5,10 @@ class ManageCountiesController < ApplicationController
   end
   def new
     #get county to be used
+    clean_session
     session[:chapman_code] = nil
+    session[:sort] = nil
+    session[:sorted_by] = nil
     session[:county] = nil
     session[:my_own] = false
     get_user_info_from_userid
@@ -86,6 +89,8 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by descending number of errors and then filename)'
+     session[:sorted_by] = @sorted_by
+    session[:sort] = "error DESC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by("error DESC, file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -94,6 +99,8 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted alphabetically by file name)'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("file_name ASC").page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -105,6 +112,8 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by userid then alphabetically by file name)'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "userid_lower_case ASC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("userid_lower_case ASC, file_name ASC").page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -114,6 +123,8 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by descending date of uploading)'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "uploaded_date DESC"
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date DESC").page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -123,6 +134,8 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by ascending date of uploading)'
+    session[:sorted_by] = @sorted_by
+    session[:sort] ="uploaded_date ASC"
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date ASC").page(params[:page])
     render 'freereg1_csv_files/index'
   end

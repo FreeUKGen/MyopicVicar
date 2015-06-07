@@ -5,6 +5,8 @@ class ManageSyndicatesController < ApplicationController
   end
   def new
     clean_session
+    session[:sort] = nil
+    session[:sorted_by] = nil
     session[:syndicate] = nil
     session[:my_own] = false
     session[:page] = request.original_url
@@ -73,6 +75,8 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = nil
     @sorted_by = '(Sorted by descending number of errors and then filename)'
+     session[:sorted_by] = @sorted_by
+    session[:sort] = "error DESC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).gt(error: 0).order_by("error DESC, file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -81,6 +85,8 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = nil
     @sorted_by = '(Sorted by filename ascending)'
+     session[:sorted_by] = @sorted_by
+     session[:sort] = "file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -92,6 +98,8 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = nil
     @sorted_by = '(Sorted by userid and then filename ascending)'
+     session[:sorted_by] = @sorted_by
+    session[:sort] = "userid ASC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("userid ASC, file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -100,6 +108,8 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = nil
     @sorted_by = '(Sorted by most recent date of upload)'
+     session[:sorted_by] = @sorted_by
+    session[:sort] = "uploaded_date DESC"
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("uploaded_date DESC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -108,6 +118,8 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = nil
     @sorted_by = '(Sorted by oldest date of upload)'
+     session[:sort] = "uploaded_date ASC"
+      session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("uploaded_date ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end

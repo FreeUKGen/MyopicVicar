@@ -25,7 +25,7 @@ end
 
 #File
 crumb :my_options do 
-   link "File Options", my_own_freereg1_csv_file_path
+   link "My Files Options", my_own_freereg1_csv_file_path
 end
 
 crumb :files do  
@@ -33,27 +33,20 @@ crumb :files do
    if session[:my_own]
     parent :my_options, my_own_freereg1_csv_file_path
    else
-    if session[:role] == "county_coordinator" || session[:role] == "data_administrator" || session[:role] == "system_administrator" 
+    if session[:role] == "county_coordinator" || session[:role] == "data_manager" 
      parent :county_options, session[:county]
     end
-    if session[:role] == "syndicate_coordinator"
+    if session[:role] == "syndicate_coordinator" || session[:role] == "volunteer_coordinator"
      parent :userid_details_listing, session[:syndicate] 
+    end
+    if session[:role] == "system_administrator" || session[:role] == "technical"
+      parent :root
     end
    end
  end
 crumb :show_file do |file|
    link "Showing File", freereg1_csv_file_path(file)
-   if session[:my_own]
-    parent :my_options, my_own_freereg1_csv_file_path
-   else
-    if session[:role] == "county_coordinator" || session[:role] == "data_administrator" || session[:role] == "system_administrator" 
-     parent :county_options, session[:county]
-    end
-    if session[:role] == "syndicate_coordinator"
-      parent :files
-     
-    end
-   end
+   parent :files #parent :my_options, my_own_freereg1_csv_file_path
 end
 crumb :edit_file do |file|
    link "Editing File", edit_freereg1_csv_file_path(file)
@@ -79,7 +72,7 @@ end
 
 #manage county
 crumb :county_options do |county|
-   link "County Options", select_action_manage_counties_path("?county=#{county}")
+   link "County Options(#{county})", select_action_manage_counties_path("?county=#{county}")
    parent :root
 end
 crumb :county_places do |county,place|
@@ -149,7 +142,7 @@ end
 
 #manage syndicate
 crumb :syndicate_options do |syndicate|
-   link "Syndicate Options", select_action_manage_syndicates_path("?syndicate=#{syndicate}")
+   link "Syndicate Options(#{syndicate})", select_action_manage_syndicates_path("?syndicate=#{syndicate}")
    parent :root
 end
 crumb :userid_details_listing do |syndicate|

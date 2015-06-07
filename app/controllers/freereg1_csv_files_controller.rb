@@ -1,15 +1,22 @@
 class Freereg1CsvFilesController < ApplicationController
 
   def index
-    #the common listing entry by syndicate
+    #the common listing entry by syndicatep
     @register = session[:register_id]
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
-    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'syndicate_coordinator'
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) if session[:role] == 'county_coordinator'
+    @sorted_by = session[:sorted_by]
+    case 
+    when session[:my_own]
+       @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).page(params[:page])
+    when session[:role] == 'syndicate_coordinator' || session[:role] == 'system_administrator'
+        @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page])
+    when session[:role] == 'county_coordinator' || session[:role] == 'data_manager'
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) 
+    end
   end
-
+    
   def show
     #show an individual batch
     get_user_info_from_userid
@@ -19,8 +26,9 @@ class Freereg1CsvFilesController < ApplicationController
     set_controls
     display_info
     @role = session[:role]
-    p @user.person_role
+    
   end
+
   def relocate
     load(params[:id])
     records = @freereg1_csv_file.freereg1_csv_entries.count
@@ -44,7 +52,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     set_controls
     get_user_info_from_userid
-      display_info
+    display_info
     @county =  session[:county]
     unless session[:error_line].nil?
       #we are dealing with the edit of errors
@@ -113,7 +121,8 @@ class Freereg1CsvFilesController < ApplicationController
    end 
   end
   def my_own
-
+    session[:sorted_by] = nil
+    session[:sort] = nil
     get_user_info_from_userid
     session[:my_own] = true
     @freereg1_csv_file = Freereg1CsvFile.new
@@ -124,10 +133,13 @@ class Freereg1CsvFilesController < ApplicationController
     end
     @options= UseridRole::FILE_MANAGEMENT_OPTIONS
   end
+
   def display_my_own_files
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted alphabetically by file name)'
+    session[:sort] = "file_name ASC"
+    session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").page(params[:page])
     render :index
   end
@@ -135,6 +147,8 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by number of errors)'
+     session[:sorted_by] = @sorted_by
+    session[:sort] = "error DESC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC").page(params[:page])
     render :index
   end
@@ -142,6 +156,8 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by descending date of uploading)'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "uploaded_date DESC"
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").page(params[:page])
     render :index
   end
@@ -149,6 +165,8 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by ascending date of uploading)'
+    session[:sort] = "uploaded_date ASC"
+     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").page(params[:page])
     render :index
   end
