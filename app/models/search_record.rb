@@ -153,8 +153,7 @@ class SearchRecord
     end
 
     location_array = []
-    location_array << "#{place_name}"
-    location_array << " (#{church_name})"
+    location_array << "#{place_name} (#{church_name})"
     location_array << " [#{register_type}]"
     location_array
   end
