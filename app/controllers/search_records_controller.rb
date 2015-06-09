@@ -5,6 +5,8 @@ class SearchRecordsController < ApplicationController
     @page_number = params[:page_number].to_i
     @search_record = SearchRecord.find(params[:id])
     @entry = @search_record.freereg1_csv_entry
+    @individual = @search_record.freecen_individual
+    @household = @individual.freecen_household if @individual
     if params[:search_id].nil?
       redirect_to new_search_query_path
       return
