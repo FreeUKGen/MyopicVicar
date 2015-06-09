@@ -895,7 +895,7 @@ class FreeregCsvUpdateProcessor
               end
               p "Deleted #{counter} records in deleted locations"
               @batches_with_errors.each do |batch|
-                BatchError.where(:freereg1_csv_file_id => batch).all.each do |batch_error|
+                BatchError.where(:_id => batch).all.each do |batch_error|
                   batch_error.delete
                 end
               end
@@ -1221,8 +1221,7 @@ class FreeregCsvUpdateProcessor
                     end
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     @success = true
-                    sleep(60)
-                  end #filename loop end
+                   end #filename loop end
                   time = 0
                   time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
                   p "Created  #{nn} entries at an average time of #{time}ms per record" 
