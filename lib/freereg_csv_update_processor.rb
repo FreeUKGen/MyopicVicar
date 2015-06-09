@@ -892,11 +892,13 @@ class FreeregCsvUpdateProcessor
               @total_records.each do |record|
                 counter = counter + 1
                 Freereg1CsvEntry.find(record).destroy
+                sleep(Rails.application.config.sleep.to_f)
               end
               p "Deleted #{counter} records in deleted locations"
               @batches_with_errors.each do |batch|
                 BatchError.where(:_id => batch).all.each do |batch_error|
                   batch_error.delete
+                  sleep(Rails.application.config.sleep.to_f)
                 end
               end
               @locations.each do |location|
@@ -904,6 +906,7 @@ class FreeregCsvUpdateProcessor
                 puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
                 @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
                 loc.destroy
+                sleep(Rails.application.config.sleep.to_f)
               end
             end
 
