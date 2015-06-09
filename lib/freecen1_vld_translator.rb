@@ -22,7 +22,6 @@ module Freecen
       record = SearchRecord.new({ :transcript_dates => [transcript_date], :transcript_names => [transcript_name], :chapman_code => chapman_code})
       
       record.freecen_individual = individual
-      
       record.save! 
     end
     

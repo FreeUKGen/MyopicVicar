@@ -15,5 +15,5 @@ class FreecenHousehold
   field :unoccupied_notes, type: String
   belongs_to :freecen1_vld_file
   
-  embeds_many :freecen_individuals
+  has_many :freecen_individuals
 end

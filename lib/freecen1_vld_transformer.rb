@@ -20,7 +20,7 @@ module Freecen
           household = household_from_entry(entry)
         end
         unless household.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
-          household.freecen_individuals << individual_from_entry(entry)
+          individual_from_entry(entry, household)
         end
       end
       household.save!
@@ -37,12 +37,14 @@ module Freecen
       household
     end
     
-    def individual_from_entry(entry)
+    def individual_from_entry(entry, household)
       individual = FreecenIndividual.new
       (FreecenIndividual.fields.keys&Freecen1VldEntry.fields.keys).each do |key|
         individual[key] = entry.send(key) unless key == "_id"
       end
       individual.freecen1_vld_entry=entry
+      individual.freecen_household=household
+      individual.save!
       
       individual    
     end

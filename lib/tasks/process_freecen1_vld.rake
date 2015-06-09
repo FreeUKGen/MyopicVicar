@@ -28,6 +28,8 @@ namespace :freecen do
   end
   
   task :clean_freecen => [:environment] do
+    SearchRecord.delete_all
+    FreecenIndividual.delete_all
     FreecenHousehold.delete_all
     Freecen1VldEntry.delete_all
     Freecen1VldFile.delete_all
