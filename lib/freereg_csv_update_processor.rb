@@ -895,7 +895,7 @@ class FreeregCsvUpdateProcessor
               end
               p "Deleted #{counter} records in deleted locations"
               @batches_with_errors.each do |batch|
-                BatchError.where(:freereg1_csv_file_id => batch._id).all.each do |batch_error|
+                BatchError.where(:freereg1_csv_file_id => batch).all.each do |batch_error|
                   batch_error.delete
                 end
               end
