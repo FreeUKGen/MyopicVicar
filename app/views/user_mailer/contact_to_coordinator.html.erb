@@ -1,6 +1,6 @@
 <p> Dear <%= @name %>;</p>
 <p>We have received correspondence on a record that was directed to you as coordinator from <%=@contact.name%> at <%= @contact.email_address%>. </p>
-<p>Copies went to you and all registered system administrators: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
+<p>Copies went to you and all registered data managers: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
 <p>It is suggested that you take the lead in responding.
 <b>Content of report:</b>
 <%= @contact.body %>
