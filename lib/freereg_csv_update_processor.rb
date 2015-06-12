@@ -898,7 +898,8 @@ class FreeregCsvUpdateProcessor
               @batches_with_errors.each do |batch|
                 BatchError.where(:_id => batch).all.each do |batch_error|
                   batch_error.delete
-                  sleep(Rails.application.config.sleep.to_f)
+                  sleep_time = 2*(Rails.application.config.sleep.to_f)
+                  sleep(sleep_time)
                 end
               end
               @locations.each do |location|
