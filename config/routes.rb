@@ -135,6 +135,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :master_place_names
 
+  get 'places/:id/approve', :to => 'places#approve', :as => :approve_place
   get 'places/:id/rename', :to => 'places#rename', :as => :rename_place
   get 'places/:id/merge(.:format)', :to => 'places#merge', :as => :merge_place
   get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place

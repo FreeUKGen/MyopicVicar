@@ -24,11 +24,6 @@ class PlacesController < ApplicationController
     session[:page] = request.original_url
   end
 
-  def relocate
-    load(params[:id])
-    get_places_counties_and_contries
-  end
-
   def show
     load(params[:id])
     @places = Place.where( :chapman_code => @chapman_code,  :disabled.ne => "true" ).all.order_by( place_name: 1)
@@ -41,7 +36,7 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_contries
     @place_name = Place.find(session[:place_id]).place_name
-     @county = session[:county]
+    @county = session[:county]
     session[:type] = 'edit'
 
   end
@@ -50,7 +45,17 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_contries
     @county = session[:county]
+    @records = @place.search_records.count
 
+  end
+
+  def approve
+    session[:return_to] = request.referer
+     get_user_info_from_userid
+    load(params[:id])
+    @place.approve
+    flash[:notice] = "Unapproved flag removed"
+    redirect_to place_path(@place)
   end
 
   def relocate
@@ -58,6 +63,8 @@ class PlacesController < ApplicationController
     load(params[:id])
     @county = session[:county]
     get_places_counties_and_contries
+    @records = @place.search_records.count
+
   end
 
   def merge
@@ -110,15 +117,10 @@ class PlacesController < ApplicationController
     load(params[:id])
     case
     when params[:commit] == 'Submit'
-      p 'editing place'
-      p params
-      p @place
       @place.save_to_original
-      p @place
       @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name].blank?
       @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
       @place.update_attributes(params[:place])
-      p @place
       if @place.errors.any?  then
         flash[:notice] = 'The update of the Place was unsuccessful'
         render :action => 'edit'
@@ -157,7 +159,7 @@ class PlacesController < ApplicationController
       return
     else
       #we should never get here but just in case
-      flash[:notice] = 'The change to the Church was unsuccessful'
+      flash[:notice] = 'The change to the Place was unsuccessful'
       redirect_to place_path(@place)
 
     end
