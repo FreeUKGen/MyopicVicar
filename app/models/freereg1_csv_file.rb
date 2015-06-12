@@ -20,6 +20,7 @@ class Freereg1CsvFile
   require "#{Rails.root}/app/uploaders/csvfile_uploader"
   require 'record_type'
   require 'name_role'
+  require 'place_cache'
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
@@ -78,6 +79,8 @@ class Freereg1CsvFile
     p num
     entries.each do |entry|
       entry.destroy
+      sleep_time = 2*(Rails.application.config.sleep.to_f)
+      sleep(sleep_time)
     end
   end
 
@@ -278,13 +281,16 @@ class Freereg1CsvFile
     my_days
   end
   def backup_file
-    #this makes aback up copu of the file in the attic and
+    #this makes aback up copy of the file in the attic and creates a new one
     file = self
     file.save_to_attic
     file_name = file.file_name
     #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     file_parts = Freereg1CsvFile.where(:file_name => file_name, :userid => file.userid).all
     file_location = File.join(Rails.application.config.datafiles,file.userid,file_name)
+    register = file.register
+    church = register.church
+    place = church.place
     CSV.open(file_location, "wb", {:force_quotes => true, :row_sep => "\r\n"}) do |csv|
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       record_type = RecordType.display_name(file.record_type).upcase + 'S'
@@ -297,14 +303,15 @@ class Freereg1CsvFile
       csv << ['#',file.modification_date,file.first_comment,file.second_comment]
       #eg +LDS,,,,
       csv << ['+LDS'] if file.lds =='yes'
+
       file_parts.each do |fil|
         records = fil.freereg1_csv_entries
         records.each do |rec|
-          church_name = fil.church_name.to_s + " " + fil.register_type.to_s
+          church_name = church.church_name.to_s + " " + register.register_type.to_s
           case
           when fil.record_type == "ba"
 
-            csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
+            csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
                         "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
                         "#{rec.father_occupation}","#{rec.notes}"]
@@ -313,7 +320,7 @@ class Freereg1CsvFile
 
           when fil.record_type == "bu"
 
-            csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
+            csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
                         "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
                         "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
@@ -321,7 +328,7 @@ class Freereg1CsvFile
             csv << csv_hold
 
           when fil.record_type == "ma"
-            csv_hold = ["#{fil.county}","#{fil.place}","#{church_name}",
+            csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
                         "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
                         "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
@@ -336,34 +343,47 @@ class Freereg1CsvFile
   end #end method
 
   def self.update_location(file,param)
+    p "updating"
+    p param
     old_location = file.old_location
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
     new_location = file.new_location(param)
     file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
                            :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,:register_id => new_location[:register]._id)
-    new_location[:register].save(:validate => false) unless old_location[:register] == new_location[:register]
-    new_location[:church].save(:validate => false) unless old_location[:church] == new_location[:church]
-    new_location[:place].save(:validate => false)unless old_location[:place] == new_location[:place]
-      param[:place_id] = new_location[:place]._id
-      file.update_entries_and_search_records(param)
-      file.backup_file
-      file
-    end
-
-    def old_location
+    
+    new_location[:place].update_attribute(:data_present, true) 
+    p new_location[:place]
+    file.propogate_file_location_change(new_location)
+    PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
+    
+  end
+  def propogate_file_location_change(new_location)
+      p "progating" 
+      location_names =[]
+      place_name = new_location[:place].place_name
+      church_name = new_location[:church].church_name
+      location_names << "#{place_name} (#{church_name})"
+      location_names  << " [#{new_location[:register].register_type}]"
+      p location_names
+         self.freereg1_csv_entries.each do |entry|
+         entry.search_record.update_attributes(:location_names => location_names, :place_id => new_location[:place]._id)
+          
+         end
+       
+  end
+  def old_location
       old_register = self.register
       old_church = old_register.church
       old_place = old_church.place
       location = {:register => old_register, :church => old_church, :place => old_place}
-    end
+  end
 
     def new_location(param)
-      new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false').first
+      new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false', :error_flag.ne => "Place name is not approved").first
       new_church = Church.where(:place_id =>  new_place._id, :church_name => param[:church_name]).first
       if  new_church.nil?
         new_church = Church.new(:place_id =>  new_place._id,:church_name => param[:church_name],:place_name => param[:place])  if  new_church.nil?
-        new_church.save
       end
       number_of_registers = new_church.registers.count
       new_alternate_register_name = param[:church_name].to_s + ' ' + param[:register_type].to_s
@@ -377,8 +397,24 @@ class Freereg1CsvFile
           new_register = Register.where(:church_id => new_church._id, :alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).first
         end
       end
+      new_register.freereg1_csv_files << self unless new_register._id == self.register_id
       new_register.save
+      new_church.registers << new_register unless new_church._id == new_register.church_id
+      new_church.save
+      new_place.churches << new_church unless new_place._id == new_church.place_id
+      new_place.save
       location = {:register => new_register, :church => new_church, :place => new_place}
+    end
+
+    def adjust_for_collection_information
+      # this uses the collection information
+      register = self.register
+      church = register.church
+      place = church.place
+      self[:county] = place.county
+      self[:place] = place.place_name
+      self[:church_name] = church.church_name
+      self[:register_type] = register.register_type
     end
 
     def update_entries_and_search_records(param)
