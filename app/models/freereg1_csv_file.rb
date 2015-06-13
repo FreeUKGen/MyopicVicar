@@ -20,7 +20,6 @@ class Freereg1CsvFile
   require "#{Rails.root}/app/uploaders/csvfile_uploader"
   require 'record_type'
   require 'name_role'
-  require 'place_cache'
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
