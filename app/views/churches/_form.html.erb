@@ -9,8 +9,11 @@
   <%= f.input :location, :label => "The Church Location :",     :input_html => { :size => 60 } %>
  
   <%= f.input :website, :label => "The Church Website :",     :input_html => { :size => 60 } %>
- <br>
+  <%= f.input :church_notes, :label => "Notes about the church :",
+              :input_html =>
+               { :size => 100 } %>
   <%= f.input :last_amended, :label => "The last date when a register in the church was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
 
    <%= f.action :submit, :as => :input, :label => 'Submit'   %>
 <% end %>
+<br>
