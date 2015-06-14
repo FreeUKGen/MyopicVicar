@@ -534,6 +534,13 @@ class Freereg1CsvFile
         end
       end
     end
+    def self.delete_userid(userid)
+      p userid
+      folder_location = File.join(Rails.application.config.datafiles,userid)
+      change_folder_location = File.join(Rails.application.config.datafiles_changeset,userid)
+      FileUtils.remove_dir(folder_location, :force => true)
+      FileUtils.remove_dir(change_folder_location, :force => true)
+    end
 
     def are_we_changing_location?(param)
       change = false
@@ -564,12 +571,27 @@ class Freereg1CsvFile
       end
       new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
       old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
+      new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
+      old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
+
       if !Dir.exist?(new_folder_location)
         if Dir.exist?(old_folder_location) 
            
           FileUtils.mv(old_folder_location, new_folder_location, :force => true)
+          FileUtils.remove_dir(old_folder_location, :force => true)
         else
           Dir.mkdir(new_folder_location)
+        end
+      else
+        success = false
+      end
+      if !Dir.exist?(new_change_folder_location)
+        if Dir.exist?(old_change_folder_location) 
+           
+          FileUtils.mv(old_change_folder_location, new_change_folder_location, :force => true)
+          FileUtils.remove_dir(old_change_folder_location, :force => true)
+        else
+          Dir.mkdir(new_change_folder_location)
         end
       else
         success = false
