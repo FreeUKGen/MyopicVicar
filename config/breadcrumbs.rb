@@ -1,35 +1,40 @@
 crumb :root do
-  link "Your Actions:", new_manage_resource_path
+  link "Your Actions:", main_app.new_manage_resource_path
 end
-# Profile 
-crumb :userid_detail do |userid_detail|
-   link "Profile:#{userid_detail.userid}", userid_detail
-   if session[:my_own]
+#
+crumb :my_own_userid_detail do |userid_detail|
+   link "Profile:#{userid_detail.userid}", my_own_userid_detail_path
     parent :root
-   else
-    if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
-      session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator" || 
-      session[:role] == "system_administrator" 
-     parent :userid_details_listing, session[:syndicate] 
-    end
-   end
 end
+
 crumb :edit_userid_detail do |userid_detail|
-   link "Edit Profile:#{userid_detail.userid}", userid_detail
-   parent :userid_detail, userid_detail
+   link "Edit Profile:#{userid_detail.userid}", userid_detail_path
+   if session[:my_own]
+     parent :my_own_userid_detail, userid_detail
+   else
+     parent :userid_detail, userid_detail
+ end
 end
 crumb :disable_userid_detail do |userid_detail|
-   link "Disable Profile:#{userid_detail.userid}", userid_detail
+   link "Disable Profile:#{userid_detail.userid}", userid_detail_path
    parent :userid_detail, userid_detail
+end
+crumb :create_userid_detail do |userid_detail|
+   link "Create New Profile", new_userid_detail_path
+   if  session[:role] == "system_administrator" 
+     parent :regmanager_userid_options
+   else
+    parent :userid_detail, userid_detail
+   end
 end
 
 #File
 crumb :my_options do 
-   link "My Files Options", my_own_freereg1_csv_file_path
+   link "My Batches Options", my_own_freereg1_csv_file_path
 end
 
 crumb :files do  
-   link "List of Files", freereg1_csv_files_path
+   link "List of Batches", freereg1_csv_files_path
    if session[:my_own]
     parent :my_options, my_own_freereg1_csv_file_path
    else
@@ -40,35 +45,44 @@ crumb :files do
      parent :userid_details_listing, session[:syndicate] 
     end
     if session[:role] == "system_administrator" || session[:role] == "technical"
-      parent :root
+       parent :regmanager_userid_options
     end
    end
  end
 crumb :show_file do |file|
-   link "Showing File", freereg1_csv_file_path(file)
+   link "Batch Information", freereg1_csv_file_path(file)
    parent :files #parent :my_options, my_own_freereg1_csv_file_path
 end
 crumb :edit_file do |file|
-   link "Editing File", edit_freereg1_csv_file_path(file)
+   link "Editing Batch Information", edit_freereg1_csv_file_path(file)
    parent :show_file, file 
 end
 crumb :relocate_file do |file|
-   link "Relocating File", freereg1_csv_file_path(file)
+   link "Relocating Batch", freereg1_csv_file_path(file)
    parent :show_file, file 
 end
+
+#record or entry
 crumb :show_records do |file|
-   link "Listing the Records", freereg1_csv_entries_path
+   link "List of Records", freereg1_csv_entries_path
    parent :show_file, file 
 end
-crumb :new_record do |file|
-   link "Adding a Record", new_freereg1_csv_entry_path
+crumb :new_record do |entry,file|
+   link "Create New Record", new_freereg1_csv_entry_path
    parent :show_records, file 
 end
 crumb :error_records do |file|
-   link "Listing Errors", error_freereg1_csv_entry_path
+   link "List of Errors", error_freereg1_csv_file_path
    parent :show_records, file 
 end
-
+crumb :show_record do |entry,file|
+   link "Record Contents", freereg1_csv_entry_path(entry)
+   parent :show_records, file 
+end
+crumb :edit_record do |entry,file|
+   link "Edit Record", edit_freereg1_csv_entry_path(entry)
+   parent :show_record, entry,file 
+end
 
 #manage county
 crumb :county_options do |county|
@@ -147,8 +161,28 @@ crumb :syndicate_options do |syndicate|
 end
 crumb :userid_details_listing do |syndicate|
    link "Syndicate Listing", userid_details_path
-   parent :syndicate_options, syndicate
+   if session[:role] == "system_administrator" || session[:role] == "technical"
+     parent :regmanager_userid_options
+   else
+    parent :syndicate_options, syndicate
+   end
 end
+ #Profile 
+crumb :userid_detail do |userid_detail|
+   link "Profile:#{userid_detail.userid}", userid_detail_path
+   if session[:my_own]
+    parent :root
+   else
+    if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
+       session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator"  
+     parent :userid_details_listing, session[:syndicate] 
+    end
+    if  session[:role] == "system_administrator" || session[:role] == "technical"
+      parent :userid_details_listing, "all" 
+    end
+   end
+end
+
 
 #manage contacts
 crumb :contacts do 
@@ -160,6 +194,17 @@ crumb :show_contact do |contact|
    link "Show Contact", contact_path(contact)
    parent :contacts
 end
+#manage userids
+crumb :regmanager_userid_options do 
+   link "Userid Management Options", options_userid_details_path
+   parent :root
+end
+crumb :rename_userid do |user|
+   link "Rename Userid", rename_userid_details_path
+   parent :userid_detail, user
+end
+
+
 
 
 # crumb :projects do

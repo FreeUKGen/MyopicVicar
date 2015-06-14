@@ -3,17 +3,17 @@ module UseridRole
     'volunteer_coordinator','data_manager', 'technical','system_administrator']
     OPTIONS = {
       'researcher' => [ "Profile"], 
-      'trainee' => [ "Profile", "Files"],
+      'trainee' => [ "Profile", "Batches"],
       'pending' => [ "Profile"],
-      'transcriber' => [  "Profile", "Files"],
-      'syndicate_coordinator' => [  "Profile", "Files", "Manage Syndicate"],
-      'county_coordinator' =>  [  "Profile", "Files", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
-      'country_coordinator' => [  "Profile", "Files", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
-      'volunteer_coordinator' => [  "Profile", "Files", "Manage Syndicates", "Manage Userids","Contacts"],
-      'data_manager' => [  "Profile", "Files",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
-      'technical' => [  "Profile", "Files",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
+      'transcriber' => [  "Profile", "Batches"],
+      'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate"],
+      'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
+      'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
+      'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts"],
+      'data_manager' => [  "Profile", "Batches",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
+      'technical' => [  "Profile", "Batches",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
-      'system_administrator' =>[  "Profile", "Files", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
+      'system_administrator' =>[  "Profile", "Batches", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
           "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
       }
         

@@ -45,7 +45,7 @@ class UseridDetail
   has_many :search_queries
   has_many :freereg1_csv_files
   has_many :attic_files
-  validates_presence_of :email_address, :person_role
+  validates_presence_of :userid,:syndicate,:email_address, :person_role
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
@@ -64,13 +64,18 @@ class UseridDetail
   end
 
   def write_userid_file
+    p self
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
     Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
+    Dir.mkdir(change_details_dir)  unless Dir.exists?(change_details_dir)
     details_file = File.join(details_dir,".uDetails")
+    change_details_file = File.join(change_details_dir,".uDetails")
     if File.file?(details_file)
       save_to_attic
     end
+    #we do not need a udetails file in the change set
     details = File.new(details_file, "w")
     details.puts "Surname:#{user.person_surname}"
     details.puts "UserID:#{user.userid}"
@@ -232,6 +237,7 @@ class UseridDetail
     users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
     @userids = Array.new
+      @userids << ''
     users.each do |user|
       @userids << user.userid
     end
@@ -242,6 +248,7 @@ class UseridDetail
     users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
     @userids = Array.new
+      @userids << ''
     users.each do |user|
       @userids << user.email_address
     end
@@ -250,7 +257,8 @@ class UseridDetail
   def self.get_names_for_selection(syndicate)
     users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
-    @userids = Array.new
+      @userids = Array.new
+      @userids << ''
     users.each do |user|
       name = ""
       name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?

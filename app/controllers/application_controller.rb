@@ -70,16 +70,20 @@ class ApplicationController < ActionController::Base
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
   end
   def  get_user_info_from_userid
-    if current_refinery_user.nil?
-      redirect_to refinery.login_path
-      return
-    else
-      @user = current_refinery_user.userid_detail
-      @userid = @user._id
-      @first_name = @user.person_forename
-      @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
-    end
+     if session[:userid].nil?
+        if current_refinery_user.nil?
+          redirect_to refinery.login_path
+          return
+        else
+          @user = current_refinery_user.userid_detail
+        end
+     else
+       @user = UseridDetail.where(:userid => session[:userid]).first
+     end
+     @userid = @user._id
+     @first_name = @user.person_forename
+     @manager = manager?(@user)
+     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
   def  get_user_info(userid,name)
     #old version for compatibility

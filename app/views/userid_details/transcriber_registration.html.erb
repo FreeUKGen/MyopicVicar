@@ -13,6 +13,11 @@
   </ul>
   <%@userid.errors.clear%>
 <% end %>
+<p>
+  <b>
+    After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window)
+    WITHIN 24HRS.
+  </b></p>
 
 <%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
   <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
@@ -133,19 +138,17 @@
       Agree
     <% end %>
   </li>
-
 <%= f.action :submit,
-        :as => :button,
-        :label => 'Register Transcriber',
-        :button_html => { :class => "btn", :value => 'Register Transcriber' },
-        :wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+      :as => :input,
+      :label => 'Register Transcriber',
+      :button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
+      :wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+
 
 <% end %>
 <p>
   <b>
-    After submitting this form you will be redirected to the home page and will
-    receive an email that contains a link to complete the registration process.
-    Click on that link (or copy and paste it into you browser address window)
+    After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window)
     WITHIN 24HRS.
   </b>
 </p>

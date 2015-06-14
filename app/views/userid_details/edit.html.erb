@@ -5,8 +5,6 @@
     </div>
    <% end %>
 <section>
-<% if session[:my_own]%>
- <h4>You will need to login again after a successful change in your profile</h4>
-<% end %>
+
 <%= render 'form' %>
 <%= render "resource_sidebar" %>

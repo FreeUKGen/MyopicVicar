@@ -3,6 +3,7 @@ class UseridDetailsController < ApplicationController
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
   def index
+    session[:return_to] = request.fullpath
     get_user_info_from_userid
     session[:my_own] = false
     @role = session[:role]
@@ -15,6 +16,7 @@ class UseridDetailsController < ApplicationController
     @sorted_by = session[:active]
   end #end method
   def new
+    session[:return_to] = request.fullpath
     session[:type] = "add"
     get_user_info_from_userid
     @role = session[:role]
@@ -22,22 +24,25 @@ class UseridDetailsController < ApplicationController
     @userid = UseridDetail.new
   end
   def show
+    session[:return_to] = request.fullpath
     @syndicate = session[:syndicate]
     get_user_info_from_userid
     load(params[:id])
   end
   def all
+    session[:return_to] = request.fullpath
     get_user_info_from_userid
     @userids = UseridDetail.get_userids_for_display('all',params[:page])
     render "index"
   end
   def my_own
+    session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
     @userid = @user
-    render :action => 'show'
   end
   def edit
+    session[:return_to] = request.fullpath
     session[:type] = "edit"
     get_user_info_from_userid
     @userid = @user if  session[:my_own]
@@ -45,6 +50,7 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates
   end
   def rename
+    session[:return_to] = request.fullpath
     session[:type] = "edit"
     get_user_info_from_userid
     load(params[:id])
@@ -55,17 +61,21 @@ class UseridDetailsController < ApplicationController
     @userid.send_invitation_to_reset_password
     flash[:notice] = 'An email with instructions to reset the password have been sent'
     redirect_to :action => 'show'
+    return
   end
   def general
+    session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
   end
   def researcher_registration
+    session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "researcher_registration"
     @userid = UseridDetail.new
     @first_name = session[:first_name]
   end
   def transcriber_registration
+    session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "transcriber_registration"
     @userid = UseridDetail.new
@@ -74,11 +84,13 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
   end
   def technical_registration
+    session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "technical_registration"
     @userid = UseridDetail.new
   end
   def options
+    session[:return_to] = request.fullpath
     get_user_info_from_userid
     if session[:userid].nil?
       redirect_to '/', notice: "You are not authorised to use these facilities"
@@ -93,6 +105,7 @@ class UseridDetailsController < ApplicationController
     end
   end
   def selection
+    session[:return_to] = request.fullpath
     get_user_info_from_userid
     @userid = @user
     case
@@ -177,36 +190,32 @@ class UseridDetailsController < ApplicationController
     end
   end
   def create
-    get_user_info_from_userid
     @userid = UseridDetail.new(params[:userid_detail])
     @userid.add_fields(params[:commit])
     @userid.save
-    if @userid.errors.any?
+    if @userid.save
+      @userid.send_invitation_to_create_password
+      @userid.write_userid_file
+      flash[:notice] = 'The initial registration was successful; an email has been sent to complete the process'
+      next_place_to_go_successful_create
+    else
       flash[:notice] = 'The registration was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       next_place_to_go_unsuccessful_create
-    else
-      @userid.send_invitation_to_create_password
-      @userid.write_userid_file
-      flash[:notice] = 'The addition of the user details was successful'
-      redirect_to :back
-      return
     end
   end
   def update
     if params[:commit] == "Rename"
-      get_user_info_from_userid
       load(params[:id])
       success = true
       success = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
       success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success
       if !success
-        flash[:notice] = 'The update of the user details was unsuccessful please contact program support'
+        flash[:notice] = 'The update of the profile was unsuccessful please contact program support'
         @syndicates = Syndicate.get_syndicates_open_for_transcription
         redirect_to :action => 'all' and return
       end
     else
-      get_user_info_from_userid
       load(params[:id])
       if session[:type] == "disable"
         params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
@@ -218,26 +227,27 @@ class UseridDetailsController < ApplicationController
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
-
-    if @userid.errors.any?
-      flash[:notice] = 'The update of the user details was unsuccessful'
+    if !@userid.errors.any?
+      flash[:notice] = 'The update of the profile was successful'
+      next_place_to_go_successful_update
+    else
+      flash[:notice] = 'The update of the profile was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       next_place_to_go_unsuccessful_update
-    else
-      flash[:notice] = 'The update of the user details was successful'
-      next_place_to_go_successful_update(@userid)
     end
   end
   def destroy
     load(params[:id])
     session[:type] = "edit"
     if @userid.has_files?
-      flash[:notice] = 'The destruction of the userid is not permitted as there are batches stored under this name'
+      flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
       next_place_to_go_unsuccessful_update
     else
+      Freereg1CsvFile.delete_userid(@userid.userid)
+      p @userid
       @userid.destroy
-      flash[:notice] = 'The destruction of the userid was successful'
-      next_place_to_go_successful_update(@userid)
+      flash[:notice] = 'The destruction of the profile was successful'
+      redirect_to :action => 'options'
     end
   end
   def disable
@@ -286,38 +296,38 @@ class UseridDetailsController < ApplicationController
       redirect_to refinery.login_path and return
     end
   end
-  def next_place_to_go_successful_create(userid)
+  def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Submit'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
     @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
     when session[:type] == "add"
-      if @user.person_role == 'system_administrator'
-        redirect_to :back and return
+      if session[:role] == 'system_administrator'
+        redirect_to session[:return_to] and return
       else
         redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
       end
-    when session[:type] == 'researcher_registration' || session[:type] == 'transcriber_registration' || session[:type] == 'technical_registration'
-      redirect_to refinery.logout_path and return
     else
-      redirect_to refinery.login_path and return
-    end
-    redirect_to refinery.login_path
+      unless session[:return_to].nil?
+        redirect_to session[:return_to] and return
+      end
+       redirect_to refinery.login_path and return
+    end 
   end
-  def next_place_to_go_successful_update(userid)
+  def next_place_to_go_successful_update
     case
     when session[:my_own]
-      redirect_to refinery.login_path and return
-
+      @userid = @user
+      redirect_to :action => 'my_own' and return
     when (session[:type] == "edit" || session[:type] == "add")
       if @user.person_role == 'system_administrator'
-        redirect_to :action => 'all' and return
+        redirect_to session[:return_to] and return
       else
         redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
       end
     else
-      redirect_to refinery.login_path and return
+       redirect_to refinery.login_path and return
     end
   end
   def record_validation_errors(exception)
