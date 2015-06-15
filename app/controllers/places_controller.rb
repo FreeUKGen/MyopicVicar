@@ -150,11 +150,11 @@ class PlacesController < ApplicationController
       p @place
       p errors
       if errors[0]  then
-        flash[:notice] = "Place relocation unsuccessful; #{errors[1]}"
+        flash[:notice] = "Place filling unsuccessful; #{errors[1]}"
         render :action => 'show'
         return
       end
-      flash[:notice] = "The relocation of the Place was successful. \n PLEASE CHECK YOU STILL HAVE THE CORRECT LOCATION INFORMATION"
+      flash[:notice] = "The filling of the county country information was successful."
       redirect_to place_path(@place)
       return
     else

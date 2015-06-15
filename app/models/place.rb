@@ -237,11 +237,7 @@ class Place
     end
   end
 
-
-
   def relocate_place(param)
-    p param
-    p self
     self.save_to_original
     old_place = self
     if param[:county].blank?
