@@ -1,5 +1,5 @@
-<% breadcrumb :relocate_file,  @freereg1_csv_file%>
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<% breadcrumb :relocate_register,  @register%>
+<p style="text-align: center"><b><b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
@@ -9,8 +9,8 @@
  <% end %>
 <section class="island  island--light">
 <p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>
-You are changing <%= @records%> so it may take <%= @time%> seconds.
-  <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
+You are changing <%= @records%> so it may take some time.
+  <%= semantic_form_for @registers,:html => { :class =>  "grid"} do |f| %>
   
   <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
   :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>

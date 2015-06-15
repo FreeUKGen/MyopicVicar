@@ -131,6 +131,7 @@ MyopicVicar::Application.routes.draw do
 
   get 'registers/:id/rename', :to => 'registers#rename', :as => :rename_register
   get 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
+  get 'registers/:id/relocate', :to => 'registers#relocate', :as => :relocate_register
   resources :registers
 
   resources :master_place_names

@@ -1,6 +1,7 @@
 <% breadcrumb :rename_register,  @county, @place, @church, @register%>
 <p style="text-align: center">Changing the Register Type from <b><%= @register_type %></b> for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 </p>
+ <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
 
   <% if flash[:notice] %>
  <div id="notice" style="color:blue"><br>
@@ -20,7 +21,5 @@
    
  <%= f.action :submit, :as => :input, :label => 'Rename' %>
  <% end %>
- <p style="color:red">Please note if you are changing the Register Type of a register the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
-
  </section>
   

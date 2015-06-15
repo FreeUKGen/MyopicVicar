@@ -82,7 +82,28 @@ class Register
     register
   end
 
-
+  def records
+    records = 0
+    @self.freereg1_csv_files.each do |file|
+      records =  records + file.freereg1_csv_entries.count
+    end
+    records
+  end
+  def display_info
+     
+    @register = self
+    #@register_name = @register.register_name
+    #@register_name = @register.alternate_register_name if @register_name.nil?
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = @register.church
+    @church_name = @church.church_name
+    @place = @church.place
+    @county =  @place.county
+    @place_name = @place.place_name
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+  end
+  
 
 
   def self.find_register(args)
@@ -105,16 +126,24 @@ class Register
     register
   end
 
+  def propogate_register_type_change
+      location_names =[]
+      place_name = self.church.place.place_name
+      church_name = self.church.church_name
+      location_names << "#{place_name} (#{church_name})"
+      location_names  << " [#{self.register_type}]"
+        register.freereg1_csv_files do |file|
+          file.entries.each do |entry|
+            entry.search_record.update_attribute(:location_names, location_names)
+          end
+        end 
+  end
+
+
 
   def change_type(type)
-
     unless self.register_type == type
       self.update_attributes(:register_type => type, :alternate_register_name =>  self.church.church_name.to_s + " " + type.to_s )
-      self.freereg1_csv_files.each do |file|
-
-        file.update_attributes(:register_type => type)
-        file.update_entries_and_search_records_for_type(type)
-      end #file
     end
     if self.errors.any?
       return true
@@ -123,25 +152,15 @@ class Register
   end
 
   def merge_registers
-
     register_id = self._id
-
     church = self.church
-
     church.registers.each do |register|
-
       register.register_type
-      if (register._id == register_id || register.register_type != self.register_type)
-
-
-      else
-
+      unless (register._id == register_id || register.register_type != self.register_type)
         return [true, "a register being merged has input"] if register.has_input?
         register.freereg1_csv_files.each do |file|
-
-          file.update_attributes(:register_id => register_id)
+          file.update_attribute(:register_id, register_id)
         end
-
         church.registers.delete(register)
       end
     end
@@ -152,7 +171,6 @@ class Register
     value = false
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
                      self.minimum_year_for_register.present? || self.maximum_year_for_register.present? )
-
     value
   end
 end

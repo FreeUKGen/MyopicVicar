@@ -87,6 +87,12 @@ class ChurchesController < InheritedResources::Base
     @county = session[:county]
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
+    @records = 0
+    @church.registers do |register|
+        register.freereg1_csv_files.each do |file|
+         @records = @records + file.freereg1_csv_entries.count
+        end
+    end
   end
 
   def relocate
@@ -101,6 +107,12 @@ class ChurchesController < InheritedResources::Base
     @county = session[:county]
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
+    @records = 0
+    @church.registers do |register|
+        register.freereg1_csv_files.each do |file|
+         @records = @records + file.freereg1_csv_entries.count
+        end
+    end
   end
 
   def merge

@@ -9,9 +9,8 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
     #@freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1).page(params[:page])
-   
-
   end
+
   def show
     load(params[:id])
     @forenames = Array.new
@@ -76,12 +75,12 @@ class Freereg1CsvEntriesController < ApplicationController
       if session[:error_id].nil?
         @freereg1_csv_file.records = @freereg1_csv_file.records.to_i + 1
         case
-          when @freereg1_csv_file.record_type == 'ba'
-            date = params[:freereg1_csv_entry][:baptism_date]
-          when @freereg1_csv_file.record_type == 'ma'
-            date = params[:freereg1_csv_entry][:marriage_date]
-          when @freereg1_csv_file.record_type == 'bu'
-            date = params[:freereg1_csv_entry][:burial_date]
+        when @freereg1_csv_file.record_type == 'ba'
+          date = params[:freereg1_csv_entry][:baptism_date]
+        when @freereg1_csv_file.record_type == 'ma'
+          date = params[:freereg1_csv_entry][:marriage_date]
+        when @freereg1_csv_file.record_type == 'bu'
+          date = params[:freereg1_csv_entry][:burial_date]
         end
         date = FreeregValidations.year_extract(date)
         unless date.nil?
@@ -124,14 +123,14 @@ class Freereg1CsvEntriesController < ApplicationController
     if @freereg1_csv_entry.errors.any?
       flash[:notice] = 'The update of the record was unsuccessful'
       render :action => 'edit'
+      return
     else
       file = @freereg1_csv_file
-      file.backup_file
       file.locked_by_transcriber = "true" if session[:my_own]
       file.locked_by_coordinator = "true" unless session[:my_own]
       file.modification_date = Time.now.strftime("%d %b %Y")
       file.save
-      flash[:notice] = 'The change in entry contents was successful, backup of file made and locked'
+      flash[:notice] = 'The change in entry contents was successful, the file is now locked against an upload'
       render :action => 'show'
     end
   end
@@ -144,7 +143,8 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
     @number = params[:number].to_i
     @number = @freereg1_csv_file.records.to_i if @number > @freereg1_csv_file.records.to_i
-    @page_number = @number/50 + 1
+    @page_number = (@number/50).to_i 
+    @page_number =  (@page_number + 1) 
     params[:page] = @page_number
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
     render "index"
@@ -156,6 +156,7 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
   end
   def destroy
+    p params
    load(params[:id])
    return_location = @freereg1_csv_entry.freereg1_csv_file
      @freereg1_csv_entry.destroy

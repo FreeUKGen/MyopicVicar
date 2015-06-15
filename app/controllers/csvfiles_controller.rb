@@ -168,6 +168,7 @@ end
 def download
  @role = session[:role]
  @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
+ @freereg1_csv_file.backup_file
  my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
  send_file( my_file, :filename => @freereg1_csv_file.file_name)
  

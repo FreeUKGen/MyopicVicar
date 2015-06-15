@@ -240,6 +240,8 @@ class Place
 
 
   def relocate_place(param)
+    p param
+    p self
     self.save_to_original
     old_place = self
     if param[:county].blank?
@@ -251,8 +253,8 @@ class Place
     end
     country = old_place.country
     country = param[:country] if param[:country].present?
-    unless place.chapman_code == chapman_code
-        place.search_records.each do |record|
+    unless old_place.chapman_code == chapman_code
+        old_place.search_records.each do |record|
               record.update_attribute(:chapman_code , chapman_code)
               return [true, "Error in save of search record; contact the webmaster"] if record.errors.any?
         end

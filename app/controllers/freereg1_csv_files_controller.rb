@@ -25,16 +25,17 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     set_controls
     display_info
+    @freereg1_csv_file.adjust_for_collection_information
     @role = session[:role]
     
   end
 
   def relocate
     load(params[:id])
-    records = @freereg1_csv_file.freereg1_csv_entries.count
-    time = records * Rails.application.config.sleep.to_f
-    if time >= 180
-      flash[:notice] = "There are too many records (#{records}) for an on_line update. Please change the file and reload."
+    @records = @freereg1_csv_file.freereg1_csv_entries.count
+    @time = (@records * 2*Rails.application.config.sleep.to_f).to_i
+    if @time >= 240
+      flash[:notice] = "There are too many records (#{@records}) for an on_line update. Please change the file and reload."
       redirect_to :back
       return
     end
@@ -44,6 +45,7 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     @role = session[:role]
     get_places_for_menu_selection
+   
 
   end
 
@@ -73,7 +75,7 @@ class Freereg1CsvFilesController < ApplicationController
     #session role is used to control return navigation options
     @role = session[:role]
     get_places_for_menu_selection
-
+   
   end
 
 
@@ -260,41 +262,21 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.find(file_id)
   end
 
-  def display_info
-    
-    @freereg1_csv_file_id =   @freereg1_csv_file._id
-    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
-    @register = @freereg1_csv_file.register
-    #@register_name = @register.register_name
-    #@register_name = @register.alternate_register_name if @register_name.nil?
-    @register_name = RegisterType.display_name(@register.register_type)
-    @church = session[:church_id]
-    @church_name = session[:church_name]
-    @place = session[:place_id]
-    @county =  session[:county]
-    @place_name = session[:place_name]
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-  end
-
+  
 
   def set_controls
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
-    session[:freereg1_csv_file_name] = @freereg1_csv_file_name
-    session[:county] = ChapmanCode.has_key(@freereg1_csv_file.county)
-    session[:place_name] = @freereg1_csv_file.place
-    session[:church_name] = @freereg1_csv_file.church_name
-    session[:chapman_code] = @freereg1_csv_file.county
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    #session[:freereg1_csv_file_name] = @freereg1_csv_file_name
+    #session[:county] = ChapmanCode.has_key(@freereg1_csv_file.county)
+    #session[:place_name] = @freereg1_csv_file.place
+    #session[:church_name] = @freereg1_csv_file.church_name
+    #session[:chapman_code] = @freereg1_csv_file.county
   end
 
-  def get_places_for_menu_selection
-    placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
-    @placenames = Array.new
-    placenames.each do |placename|
-      @placenames << placename.place_name
-    end
-  end
+  
 
   def get_errors_for_error_display
     @errors = @freereg1_csv_file.batch_errors.count
@@ -314,4 +296,19 @@ class Freereg1CsvFilesController < ApplicationController
       end
     end
   end
+  def display_info
+    @freereg1_csv_file_id =   @freereg1_csv_file._id
+    @freereg1_csv_file_name = @freereg1_csv_file.file_name
+    @register = @freereg1_csv_file.register
+    #@register_name = @register.register_name
+    #@register_name = @register.alternate_register_name if @register_name.nil?
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = @register.church
+    @church_name = @church.church_name
+    @place = @church.place
+    @county =  @place.county
+    @place_name = @place.place_name
+    
+  end
+
 end

@@ -415,45 +415,7 @@ class Freereg1CsvFile
       self[:church_name] = church.church_name
       self[:register_type] = register.register_type
     end
-
-    def update_entries_and_search_records(param)
-        self.freereg1_csv_entries.no_timeout.each do |entry|
-        entry.update_attributes(:county => param[:county],:place =>param[:place],:church_name =>param[:church_name],:register_type => param[:register_type])
-        entry.search_record.update_attributes(:place_id => param[:place_id],:chapman_code => param[:county], :location_name =>"#{param[:place]} (#{param[:church_name]})") unless entry.search_record.nil?
-        sleep(Rails.application.config.sleep.to_f)
-      end
-    end
-    def update_entries_and_search_records_for_type(param)
-
-      self.freereg1_csv_entries.no_timeout.each do |entry|
-        entry.update_attributes(:register_type => param)
-        sleep(Rails.application.config.sleep.to_f)
-      end
-    end
-
-    def update_entries_and_search_records_for_church(place_name,church_name)
-
-      self.freereg1_csv_entries.no_timeout.each do |entry|
-        entry.update_attributes(:church_name => church_name)
-        entry.search_record.update_attributes(:location_name =>"#{place_name} (#{church_name})") unless entry.search_record.nil?
-        sleep(Rails.application.config.sleep.to_f)
-      end
-    end
-    def update_entries_and_search_records_for_place(place,church_name)
-
-      self.freereg1_csv_entries.no_timeout.each do |entry|
-        entry.update_attributes(:place => place.place_name)
-        entry.search_record.update_attributes(:place_id => place._id,:location_name =>"#{place.place_name} (#{church_name})") unless entry.search_record.nil?
-        sleep(Rails.application.config.sleep.to_f)
-      end
-    end
-    def update_entries_and_search_records_for_county(county,chapman_code)
-      self.freereg1_csv_entries.no_timeout.each do |entry|
-        entry.update_attributes(:county => chapman_code)
-        entry.search_record.update_attributes(:chapman_code => chapman_code) unless entry.search_record.nil?
-        sleep(Rails.application.config.sleep.to_f)
-      end
-    end
+    
     def date_change(transcription_date,modification_date)
       error = self.error
       if error > 0
@@ -493,6 +455,7 @@ class Freereg1CsvFile
       Place.recalculate_last_amended_date(place)
     end
 
+    
 
     def update_number_of_files
 

@@ -10,15 +10,20 @@
   :required => true, :collection => ['yes','no'], :size => 15 } %>
   <%= f.input :transcription_date ,:input_html => { :size => 25  }%>
   <%= f.input :modification_date ,:input_html => { :size => 25}%>
-<% if session[:role] == "county_coordinator" || session[:role] == 'syndicate_coordinator'%>
+
+  <% if session[:my_own] || session[:role] == "county_coordinator" || session[:role] == 'syndicate_coordinator'%>
   <%= f.input :locked_by_transcriber, { :as => :select,:label => "Locked by transcriber :",:include_blank => false,
   :required => true, :collection => [ 'true', 'false'], :size => 10 } %>
-  <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,
-  :required => true, :collection => [ 'true', 'false'], :size => 10 } %>
+      <% if session[:my_own]%>
+       <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
+       <%else%>
+       <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,
+      :required => true, :collection => [ 'true', 'false'], :size => 10 } %>
+     <% end %>
 <%else%>
-  <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
+ <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
   <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
-<% end%>
+<% end %>
 
 <%= f.action :submit, :as => :input, :label => 'Submit'   %>
 <% end %>
