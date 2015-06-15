@@ -1,9 +1,9 @@
 
 
-<p> Dear <%= @coordinator.person_forename %>; (Coordinator for <%@user.syndicate%>)</p>
+<p> Dear <%= @coordinator.person_forename %>; (Coordinator for <%@coordinator.syndicate%>)</p>
 
 
-<p>The transcriber <%= @user.person_forename%>  <%= @user.person_surname %> at <%= @user.email_address%> you registered with FreeREG using an userid of <b><%= @user.userid %></b> has been sent a link to confirm their email address and to register a password. You should receive confirmation of that final step in the registration processas soon as they have actioned that link.</p>
+<p>The person <%= @user.person_forename%>  <%= @user.person_surname %> at <%= @user.email_address%> has registered with FreeREG using an userid of <b><%= @user.userid %></b>. A link has been sent to them to establish a password and confirm their email address. You should receive confirmation of that final step in the registration process as soon as they have set up their password.</p>
 
 
 <p> The FreeREG Team</p>
