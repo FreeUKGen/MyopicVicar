@@ -117,7 +117,7 @@ class Freereg1CsvFilesController < ApplicationController
     redirect_to :action => 'show'
    end
    if params[:commit] == 'Relocate'
-     @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file])
+     @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
      flash[:notice] = 'The relocation of the batch was successful'
      redirect_to :action => 'show'
    end 

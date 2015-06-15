@@ -341,7 +341,7 @@ class Freereg1CsvFile
     end #end csv
   end #end method
 
-  def self.update_location(file,param)
+  def self.update_location(file,param,myown)
     p "updating"
     p param
     old_location = file.old_location
@@ -349,8 +349,14 @@ class Freereg1CsvFile
     param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
     new_location = file.new_location(param)
     file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
-                           :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,:register_id => new_location[:register]._id)
-    
+                           :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
+                           :register_id => new_location[:register]._id,)
+
+    if myown 
+        file.update_attribute(:locked_by_transcriber, "true")
+    else
+         file.update_attribute(:locked_by_coordinator, "true")
+    end
     new_location[:place].update_attribute(:data_present, true) 
     p new_location[:place]
     file.propogate_file_location_change(new_location)
@@ -364,7 +370,7 @@ class Freereg1CsvFile
       church_name = new_location[:church].church_name
       location_names << "#{place_name} (#{church_name})"
       location_names  << " [#{new_location[:register].register_type}]"
-      p location_names
+      p  location_names
          self.freereg1_csv_entries.each do |entry|
          entry.search_record.update_attributes(:location_names => location_names, :place_id => new_location[:place]._id)
           
