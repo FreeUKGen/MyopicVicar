@@ -21,9 +21,7 @@
         return
       end
       @user = current_refinery_user.userid_detail 
-      if @user.person_role == "researcher" || @user.person_role == "trainee" ||@user.person_role == 'pending' || @user.person_role == 'transcriber'
-       redirect_to refinery.logout_path
-       return
+      if @user.person_role == "researcher" || @user.person_role == "trainee" ||@user.person_role == 'pending' 
       end
 
       cookies.signed[:Administrator] = Rails.application.config.github_password
