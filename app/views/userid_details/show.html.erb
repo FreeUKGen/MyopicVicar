@@ -7,11 +7,12 @@
       'volunteer_coordinator'%>
       
          <%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %>
+       <% end %>  
       <% if @user.person_role == 'system_administrator'%>
       <%= link_to ' Change Userid', rename_userid_details_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  btn--small"  %>
        <%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small "  %>
       <% end %>
-      <% end %>
+      
     </div>
     <div style="clear:both;"> </div>
     <% if flash[:notice] %>
@@ -40,7 +41,7 @@
       <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
       <%end%>
     </tr>
-    <%unless @userid.person_role == 'researcher'%>
+    <% unless @userid.person_role == 'researcher'%>
     <tr>
       <td>Telephone number:</td><td > <%= @userid.telephone_number %>  </td>
     </tr>
@@ -79,12 +80,12 @@
   </tr>
   <% end%>
   <tr>
-    <%unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
+    <% unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
     <td>Counties coordinated:</td><td > <%=@userid.county_groups %>   </td>
   </tr>
   <% end%>
   <tr>
-    <%unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
+    <% unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
     <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
   </tr>
   <% end%>

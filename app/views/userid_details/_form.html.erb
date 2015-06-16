@@ -1,6 +1,6 @@
 
 <%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
-<%if session[:type] == "add"%>
+<% if session[:type] == "add"%>
   
 <%= f.input :userid,:label => "The UserID itself:",
               :input_html =>
@@ -12,8 +12,8 @@
               :input_html => { :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
-<%else%>
-<%if session[:my_own]%>
+<% else%>
+<% if session[:my_own]%>
 <%= f.input :userid, :label => "The UserId itself:",
               :input_html =>
               { :size => 40 ,:disabled => true, :class => "text-input"},
@@ -24,7 +24,7 @@
               { :size => 40 ,:disabled => true, :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-<%else%>
+<% else%>
 <%= f.input :userid, :label => "The UserId itself:",
               :input_html =>
               { :size => 40 ,  :disabled => true, :class => "text-input"},
@@ -35,8 +35,8 @@
               :input_html => { :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
-<%end%>
-<%end%>
+<% end%>
+<% end%>
 <%= f.input :person_forename,:label => "Forename :",
               :input_html =>
               { :size => 40 , :class => "text-input"},
@@ -57,7 +57,7 @@
               { :size => 40 , :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-<%unless @user.person_role == 'researcher' %>
+<% unless @user.person_role == 'researcher' %>
 <%= f.input :telephone_number,:label => "Telephone :",
               :input_html =>
               { :size => 40 , :class => "text-input"},
@@ -69,7 +69,7 @@
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
 <%= f.input :transcription_agreement,
-              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Transcription agreement accepted:", :size => 5,
+              {:as => :select, :collection => [true,false], :include_blank => false,:label => "Transcription agreement accepted:", :size => 5,
               :input_html => {  :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
@@ -94,7 +94,7 @@
               :input_html => {  :class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%> 
-<%end%>
+<% end%>
 <%= f.input :last_upload,:label => "Date of last upload :",
               :input_html =>
               { :size => 40 ,:disabled => true, :class => "text-input"},
@@ -105,13 +105,13 @@
               { :size => 40 ,:disabled => true, :class => "text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-<%if (@user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)) && !session[:my_own]%>
+<% if (@user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)) && !session[:my_own]%>
 <%= f.input :person_role,
               {:as => :select, :collection => UseridRole::VALUES, :include_blank => false,:label => "Person's role in FreeREG :", :size => 8,
               :input_html => {:class => "select" }, 
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%> 
-<%else%>
+<% else%>
 <%= f.input :person_role,:label => "Role in Freereg :",
               :input_html =>
               { :size => 40 ,:disabled => true, :class => "text-input"},
