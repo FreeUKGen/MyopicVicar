@@ -309,10 +309,7 @@ class UseridDetailsController < ApplicationController
         redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
       end
     else
-      unless session[:return_to].nil?
-        redirect_to session[:return_to] and return
-      end
-       redirect_to refinery.login_path and return
+      redirect_to refinery.login_path and return
     end 
   end
   def next_place_to_go_successful_update
