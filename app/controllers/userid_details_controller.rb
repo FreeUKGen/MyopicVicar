@@ -60,7 +60,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     @userid.send_invitation_to_reset_password
     flash[:notice] = 'An email with instructions to reset the password have been sent'
-    redirect_to :action => 'show'
+    redirect_to refinery.login_path
     return
   end
   def general
