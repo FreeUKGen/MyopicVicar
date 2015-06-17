@@ -101,7 +101,7 @@ a.bottom_tooltip span:after {
 content: '';
 position: absolute;
 bottom: 100%;
-left: 50%;
+left: 5%;
 margin-left: -8px;
 width: 0;
 height: 0;
@@ -113,7 +113,7 @@ a:hover.bottom_tooltip span {
 visibility: visible;
 opacity: 0.8;
 top: 30px;
-left: 50%;
+left: 5%;
 margin-left: -76px;
 z-index: 999;
 }
