@@ -342,8 +342,6 @@ class Freereg1CsvFile
   end #end method
 
   def self.update_location(file,param,myown)
-    p "updating"
-    p param
     old_location = file.old_location
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
@@ -351,31 +349,34 @@ class Freereg1CsvFile
     file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
                            :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
                            :register_id => new_location[:register]._id,)
-
     if myown 
         file.update_attribute(:locked_by_transcriber, "true")
     else
          file.update_attribute(:locked_by_coordinator, "true")
     end
     new_location[:place].update_attribute(:data_present, true) 
-    p new_location[:place]
     file.propogate_file_location_change(new_location)
     PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
     
   end
   def propogate_file_location_change(new_location)
-      p "progating" 
       location_names =[]
       place_name = new_location[:place].place_name
       church_name = new_location[:church].church_name
+      register_type = RegisterType.display_name(new_location[:register].register_type)
       location_names << "#{place_name} (#{church_name})"
-      location_names  << " [#{new_location[:register].register_type}]"
-      p  location_names
-         self.freereg1_csv_entries.each do |entry|
-         entry.search_record.update_attributes(:location_names => location_names, :place_id => new_location[:place]._id)
-          
+      location_names  << " [#{register_type}]"
+      self.freereg1_csv_entries.each do |entry|
+          if entry.search_record.nil?
+            logger.info "no search record for #{entry._id}"
+          else
+            record = entry.search_record
+            record.update_attribute(:location_names, location_names)
+           if record.place_id != new_location[:place]._id
+            record.update_attribute(:place_id, new_location[:place]._id)  
+           end 
+          end
          end
-       
   end
   def old_location
       old_register = self.register
