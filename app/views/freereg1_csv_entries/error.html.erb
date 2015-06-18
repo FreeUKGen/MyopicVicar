@@ -3,8 +3,7 @@
 
 <b>If the error was because of the Place Name not being in the database you must DISCARD the batch and UPLOAD a corrected batch</b><br>
 
-<div  style="text-align: center"> <%= link_to 'Batch',  freereg1_csv_file_path(@freereg1_csv_entry.freereg1_csv_file), method: :get, :class => "btn  btn--small"  %>  <%= link_to 'Create new entry', new_freereg1_csv_entry_path, method: :get , :class => "btn  btn--small"  %> <%= link_to 'Show Record',  freereg1_csv_entry_path(@freereg1_csv_entry), method: :get, :class => "btn  btn--small"  %> <%= link_to 'Listing of all Records in this Batch',  freereg1_csv_entries_path, method: :get, :class => "btn  btn--small"  %>  <%= link_to 'Listing of all Error Records in this Batch', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %> <%= button_to 'Destroy', freereg1_csv_entry_path(@freereg1_csv_file), confirm: 'Are you sure?', method: :delete , :class => "btn  btn--small"  %></div>
-<div style="clear:both;"> </div><br>
+
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
