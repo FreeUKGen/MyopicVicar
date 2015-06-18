@@ -33,12 +33,6 @@ class Freereg1CsvFilesController < ApplicationController
   def relocate
     load(params[:id])
     @records = @freereg1_csv_file.freereg1_csv_entries.count
-    @time = (@records * 2*Rails.application.config.sleep.to_f).to_i
-    if @time >= 240
-      flash[:notice] = "There are too many records (#{@records}) for an on_line update. Please change the file and reload."
-      redirect_to :back
-      return
-    end
     set_controls
     display_info
     get_user_info_from_userid
