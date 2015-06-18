@@ -307,13 +307,18 @@ class Freereg1CsvEntry
   
 
   def display_fields
-    register  = self.freereg1_csv_file.register
-    self['register_type'] = register.register_type
-    church = register.church
-    self['church_name'] = church.church_name
-    place = church.place
-    self['place'] = place.place_name
-    self['county'] = place.county
+    file = self.freereg1_csv_file
+    register  = file.register unless file.nil?
+    self['register_type'] = ""
+    self['register_type'] = register.register_type unless register.nil?
+    church = register.church unless register.nil?
+    self['church_name'] = ""
+    self['church_name'] = church.church_name unless church.nil?
+    place = church.place unless church.nil?
+    self['place'] = ""
+    self['county'] = ""
+    self['place'] = place.place_name unless place.nil?
+    self['county'] = place.county unless place.nil?
    
   end
 
