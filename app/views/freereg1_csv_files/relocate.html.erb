@@ -9,7 +9,7 @@
  <% end %>
 <section class="island  island--light">
 <p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>
-You are changing <%= @records%> so it may take <%= @time%> seconds.
+You are changing <%= @records%> records so it may take some time.
   <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
   
   <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
