@@ -242,15 +242,16 @@ class PlacesController < ApplicationController
     end
   end
   def for_freereg_content_form
-    chapman_codes = params[:freereg_content][:chapman_codes]
+    unless params[:freereg_content].nil?
+      chapman_codes = params[:freereg_content][:chapman_codes]
+      county_response = ""
+      county_places = PlaceCache.in(:chapman_code => chapman_codes)
+      county_places.each { |pc| county_response << pc.places_json }
 
-    county_places = PlaceCache.in(:chapman_code => chapman_codes)
-    county_response = ""
-    county_places.each { |pc| county_response << pc.places_json }
-
-    respond_to do |format|
-      format.json do
-        render :json => county_response
+      respond_to do |format|
+        format.json do
+          render :json => county_response
+        end
       end
     end
   end
