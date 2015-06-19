@@ -202,9 +202,9 @@ class Place
       self.save_to_original
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
       return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
+      self.propogate_place_name_change
+      PlaceCache.refresh(self.chapman_code)
     end
-    self.propogate_place_name_change
-    self.update_place_cache
     return [false, ""]
   end
 
@@ -217,7 +217,7 @@ class Place
       church.registers.each do |register|
         location_names  << " [#{register.register_type}]"
         register.freereg1_csv_files do |file|
-          file.entries.each do |entry|
+          file.freereg1_csv_entries.each do |entry|
             entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
           end
         end 
@@ -229,7 +229,7 @@ class Place
      self.churches.each do |church|
       church.registers.each do |register|
         register.freereg1_csv_files do |file|
-          file.entries.each do |entry|
+          file.freereg1_csv_entries.each do |entry|
             entry.search_record.update_attribute(:chapman_code, self.chapman_code)
           end
         end 

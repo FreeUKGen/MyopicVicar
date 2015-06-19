@@ -44,15 +44,14 @@ class Church
       church.registers.each do |register|
         location_names  << " [#{register.register_type}]"
         register.freereg1_csv_files do |file|
-          file.entries.each do |entry|
+          file.freereg1_csv_entries.each do |entry|
             entry.search_record.update_attribute(:location_names, location_names)
           end
         end 
       end
   
   end
-
-
+ 
   def change_name(param)
     unless self.church_name == param[:church_name]
       self.update_attribute(:church_name, param[:church_name])

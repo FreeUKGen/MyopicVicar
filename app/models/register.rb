@@ -130,13 +130,14 @@ class Register
       location_names =[]
       place_name = self.church.place.place_name
       church_name = self.church.church_name
+      register_type = RegisterType.display_name(self.register_type)
       location_names << "#{place_name} (#{church_name})"
-      location_names  << " [#{self.register_type}]"
-        self.freereg1_csv_files do |file|
-          file.entries.each do |entry|
+      location_names  << " [#{register_type}]"
+      self.freereg1_csv_files.each do |file|
+         file.freereg1_csv_entries.each do |entry|
             entry.search_record.update_attribute(:location_names, location_names)
           end
-        end 
+      end 
   end
 
 
