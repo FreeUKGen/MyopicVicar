@@ -2,7 +2,12 @@
 <p style="text-align: center">Details of the <b><%= @register_name %></b> for <b><%= @church_name %></b> in
 <b><%= @place_name %></b> of <b><%= @county %></b>
 </p>
-<div style="text-align: center"> <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, :class => "btn  btn--small" %>  <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn  btn--small "%>  </div>
+<div style="text-align: center"> <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn  btn--small" %>   <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn  btn--small "%>  
+ <% if @user.person_role == "system_administrator" %>
+    <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, :class => "btn  btn--small" %> <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn  btn--small "  %> <%= button_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn  btn--small "%> 
+ <% end%>
+
+</div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>

@@ -132,7 +132,7 @@ class Register
       church_name = self.church.church_name
       location_names << "#{place_name} (#{church_name})"
       location_names  << " [#{self.register_type}]"
-        register.freereg1_csv_files do |file|
+        self.freereg1_csv_files do |file|
           file.entries.each do |entry|
             entry.search_record.update_attribute(:location_names, location_names)
           end
@@ -148,6 +148,7 @@ class Register
     if self.errors.any?
       return true
     end
+     self.propogate_register_type_change
     return false
   end
 
