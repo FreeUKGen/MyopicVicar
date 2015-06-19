@@ -26,11 +26,11 @@ class Freereg1CsvEntriesController < ApplicationController
   def error
     session[:error_id] = params[:id]
     display_info
-    error_file = @freereg1_csv_file.batch_errors.find(params[:id])
-    error_file.data_line[:record_type] = error_file.record_type
-    @freereg1_csv_entry = Freereg1CsvEntry.new(error_file.data_line)
-    @error_line = error_file.record_number
-    @error_message = error_file.error_message
+    @error_file = @freereg1_csv_file.batch_errors.find(params[:id])
+    @error_file.data_line[:record_type] = @error_file.record_type
+    @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
+    @error_line = @error_file.record_number
+    @error_message = @error_file.error_message
     @place_names = Array.new
     Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
       @place_names << place.place_name

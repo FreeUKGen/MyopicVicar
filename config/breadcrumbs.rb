@@ -34,22 +34,28 @@ crumb :my_options do
 end
 
 crumb :files do  
+  p "files"
+   p session
    link "List of Batches", freereg1_csv_files_path
-   if session[:my_own]
+   case
+   when session[:my_own]
     parent :my_options, my_own_freereg1_csv_file_path
-   else
-    if session[:role] == "county_coordinator" || session[:role] == "data_manager" 
+   when session[:role] == "data_manager"
      parent :county_options, session[:county]
-    end
-    if session[:role] == "syndicate_coordinator" || session[:role] == "volunteer_coordinator"
+   when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
+     parent :county_options, session[:county]
+   when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
      parent :userid_details_listing, session[:syndicate] 
-    end
-    if session[:role] == "system_administrator" || session[:role] == "technical"
+   when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical") 
+      parent :userid_details_listing, session[:syndicate] 
+   when session[:role] == "system_administrator" || session[:role] == "technical"
        parent :regmanager_userid_options
-    end
    end
+
  end
 crumb :show_file do |file|
+  p " Batch info for #{file._id} "
+  p session
    link "Batch Information", freereg1_csv_file_path(file)
    parent :files #parent :my_options, my_own_freereg1_csv_file_path
 end
@@ -64,6 +70,7 @@ end
 
 #record or entry
 crumb :show_records do |file|
+   p " Records for #{file._id} "
    link "List of Records", freereg1_csv_entries_path
    parent :show_file, file 
 end
@@ -72,8 +79,9 @@ crumb :new_record do |entry,file|
    parent :show_records, file 
 end
 crumb :error_records do |file|
-   link "List of Errors", error_freereg1_csv_file_path
-   parent :show_records, file 
+  p " Error Records for #{file._id} "
+   link "List of Errors", error_freereg1_csv_file_path(file)
+   parent :show_file, file 
 end
 crumb :show_record do |entry,file|
    link "Record Contents", freereg1_csv_entry_path(entry)
@@ -83,6 +91,12 @@ crumb :edit_record do |entry,file|
    link "Edit Record", edit_freereg1_csv_entry_path(entry)
    parent :show_record, entry,file 
 end
+crumb :correct_error_record do |entry,file|
+   
+   link "Correct Error Record", error_freereg1_csv_entry_path(entry._id)
+   parent :error_records, file
+end
+
 
 #manage county
 crumb :county_options do |county|
@@ -161,12 +175,18 @@ crumb :syndicate_options do |syndicate|
 end
 crumb :userid_details_listing do |syndicate|
    link "Syndicate Listing", userid_details_path
-   if session[:role] == "system_administrator" || session[:role] == "technical"
+   case
+   when !session[:syndicate].nil? && (session[:role] == "county_coordinator" ||
+     session[:role] == "system_administrator" || session[:role] == "technical" ||
+     session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" ) 
+     parent :syndicate_options, session[:syndicate] 
+   when session[:role] == "system_administrator" || session[:role] == "technical"
      parent :regmanager_userid_options
    else
     parent :syndicate_options, syndicate
    end
 end
+
  #Profile 
 crumb :userid_detail do |userid_detail|
    link "Profile:#{userid_detail.userid}", userid_detail_path

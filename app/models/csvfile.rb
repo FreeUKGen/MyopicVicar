@@ -5,7 +5,7 @@ class Csvfile < CarrierWave::Uploader::Base
   field :userid, type: String
   field :file_name,type: String
   field :process,type: String, default: 'Scheduled'
-  belongs_to :freereg1_csv_file
+  belongs_to :freereg1_csv_file, index: true
   #validate :csvfile_already_exists, on: :create
 
   mount_uploader :csvfile, CsvfileUploader
