@@ -4,11 +4,7 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :action => 'new'
   end
   def new
-    clean_session
-    session[:sort] = nil
-    session[:sorted_by] = nil
-    session[:syndicate] = nil
-    session[:my_own] = false
+    clean_session_for_syndicate
     session[:page] = request.original_url
     get_user_info_from_userid
     get_syndicates_for_selection

@@ -24,19 +24,7 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
-  def clean_session
-    session.delete(:freereg1_csv_file_id) 
-    session.delete(:freereg1_csv_file_name) 
-    session.delete(:county) 
-    session.delete(:place_name) 
-    session.delete(:church_name) 
-    session.delete(:sort) 
-    session.delete(:csvfile) 
-    session[:my_own] = false
-    session.delete(:freereg) 
-    session.delete(:edit) 
 
-  end
   
   def load_last_stat
     @site_stat = SiteStatistic.last
@@ -121,4 +109,87 @@ class ApplicationController < ActionController::Base
       @placenames << placename.place_name
     end
   end
+
+  def clean_session
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:county) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session[:my_own] = false
+    session.delete(:freereg) 
+    session.delete(:edit) 
+
+  end
+def clean_session_for_county
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:county) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session[:my_own] = false
+    session.delete(:freereg) 
+    session.delete(:edit) 
+    session.delete(:chapman_code)
+    session.delete(:sort)
+    session.delete(:sorted_by)
+    session.delete(:county)
+    session.delete(:syndicate)
+    session.delete(:viewed)
+    session.delete(:active_place)
+    session.delete(:page)
+    session.delete(:parameters)
+    session.delete(:place_id)
+    session.delete(:id)
+    session.delete(:church_id)
+    session.delete(:register_id)
+    session.delete(:register_name)
+    session.delete(:county_id)
+    session.delete(:placeid)
+    session.delete(:place)
+    session.delete(:error_line)
+    session.delete(:error_id)
+    session.delete(:return_to)
+    session.delete(:header_errors)
+    session.delete(:type)
+end
+def clean_session_for_syndicate
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:county) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session[:my_own] = false
+    session.delete(:freereg) 
+    session.delete(:edit) 
+    session.delete(:chapman_code)
+    session.delete(:sort)
+    session.delete(:sorted_by)
+    session.delete(:county)
+    session.delete(:syndicate)
+    session.delete(:viewed)
+    session.delete(:active_place)
+    session.delete(:page)
+    session.delete(:parameters)
+    session.delete(:place_id)
+    session.delete(:id)
+    session.delete(:church_id)
+    session.delete(:register_id)
+    session.delete(:register_name)
+    session.delete(:county_id)
+    session.delete(:placeid)
+    session.delete(:place)
+    session.delete(:error_line)
+    session.delete(:error_id)
+    session.delete(:return_to)
+    session.delete(:header_errors)
+    session.delete(:type)
+  end
+
 end

@@ -5,12 +5,7 @@ class ManageCountiesController < ApplicationController
   end
   def new
     #get county to be used
-    clean_session
-    session[:chapman_code] = nil
-    session[:sort] = nil
-    session[:sorted_by] = nil
-    session[:county] = nil
-    session[:my_own] = false
+    clean_session_for_county
     get_user_info_from_userid
     get_counties_for_selection
     if @number_of_counties == 0

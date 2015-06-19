@@ -2,17 +2,20 @@ class Freereg1CsvFilesController < ApplicationController
 
   def index
     #the common listing entry by syndicatep
+    p session
     @register = session[:register_id]
     get_user_info_from_userid
-    @county =  session[:county]
+    @county =  session[:county] unless session[:county].nil?
+    @syndicate =  session[:syndicate] unless session[:syndicate].nil?
+
     @role = session[:role]
     @sorted_by = session[:sorted_by]
     case 
     when session[:my_own]
        @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).page(params[:page])
-    when session[:role] == 'syndicate_coordinator' || session[:role] == 'system_administrator'
+    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" ) 
         @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page])
-    when session[:role] == 'county_coordinator' || session[:role] == 'data_manager'
+    when !session[:county].nil? && (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical")
       @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) 
     end
   end
