@@ -55,6 +55,7 @@ class Register
     else
       #church does not exist so see if Place exists
       my_place = Place.where(:chapman_code => args[:chapman_code], :place_name => args[:place_name],:disabled => 'false', :error_flag.ne => "Place name is not approved").first
+      my_place = Place.where(:chapman_code => args[:chapman_code], :modified_place_name => args[:place_name].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :disabled => 'false', :error_flag.ne => "Place name is not approved").first if my_place.nil?
       unless my_place
         #place does not exist so lets create new place first
         my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805')
