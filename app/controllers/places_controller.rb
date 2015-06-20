@@ -69,11 +69,7 @@ class PlacesController < ApplicationController
 
   def merge
     load(params[:id])
-    p 'merging into'
-    p @place
     errors = @place.merge_places
-    p @place
-    p errors
     if errors[0]  then
       flash[:notice] = "Place Merge unsuccessful; #{errors[1]}"
       render :action => 'show'
@@ -120,6 +116,7 @@ class PlacesController < ApplicationController
       @place.save_to_original
       @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name].blank?
       @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
+      @place.adjust_location_before_applying(params,session)
       @place.update_attributes(params[:place])
       if @place.errors.any?  then
         flash[:notice] = 'The update of the Place was unsuccessful'
@@ -130,11 +127,7 @@ class PlacesController < ApplicationController
       redirect_to place_path(@place)
       return
     when params[:commit] == 'Rename'
-      p 'renaming place'
-      p @place
       errors = @place.change_name(params[:place])
-      p @place
-      p errors
       if errors[0]  then
         flash[:notice] = "Place rename unsuccessful; #{errors[1]}"
         render :action => 'rename'
@@ -144,11 +137,7 @@ class PlacesController < ApplicationController
       redirect_to place_path(@place)
       return
     when params[:commit] == 'Relocate'
-      p 'relocating place'
-      p @place
       errors = @place.relocate_place(params[:place])
-      p @place
-      p errors
       if errors[0]  then
         flash[:notice] = "Place filling unsuccessful; #{errors[1]}"
         render :action => 'show'

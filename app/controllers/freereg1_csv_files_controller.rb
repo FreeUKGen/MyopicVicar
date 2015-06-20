@@ -2,7 +2,6 @@ class Freereg1CsvFilesController < ApplicationController
 
   def index
     #the common listing entry by syndicatep
-    p session
     @register = session[:register_id]
     get_user_info_from_userid
     @county =  session[:county] unless session[:county].nil?

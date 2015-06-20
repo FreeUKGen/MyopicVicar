@@ -103,8 +103,8 @@ class Place
   end
 
   def add_location_if_not_present
-    if self.location.nil? || self.location.empty?
-      if self[:latitude].nil? || self[:longitude].nil? ||self[:latitude].empty? || self[:longitude].empty? then
+    if self.location.blank? 
+      if self[:latitude].blank || self[:longitude].blank then
         my_location = self[:grid_reference].to_latlng.to_a
         self[:latitude] = my_location[0]
         self[:longitude]= my_location[1]
@@ -114,12 +114,24 @@ class Place
   end
 
   def update_places_cache
-    p "updating cache"
     PlaceCache.refresh_all
   end
-
+ def adjust_location_before_applying(params,session)
+    self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
+    self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
+    self.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
+    self.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
+    #We use the lat/lon if provided and the grid reference if  lat/lon not available
+    change = self.change_lat_lon(params[:place][:latitude],params[:place][:longitude])
+    self.change_grid_reference(params[:place][:grid_reference]) unless change
+    #have already saved the appropriate location information so remove those parameters
+    params[:place].delete :latitude
+    params[:place].delete :longitude
+    params[:place].delete :grid_reference
+    params
+ end
   def change_grid_reference(grid)
-    unless grid.nil?
+    unless grid.blank?
       unless self.grid_reference == grid
         self.grid_reference = grid
         my_location = self.grid_reference.to_latlng.to_a
@@ -134,7 +146,7 @@ class Place
 
   def change_lat_lon(lat,lon)
     change = false
-    unless lat.nil?  || lon.nil?
+    unless lat.blank?  || lon.blank?
       unless self.latitude == lat && self.longitude == lon
         self.latitude = lat
         self.longitude = lon
@@ -295,20 +307,7 @@ class Place
     value
   end
 
-  def adjust_params_before_applying(params,session)
-    self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
-    self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
-    self.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
-    self.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
-    #We use the lat/lon if provided and the grid reference if  lat/lon not available
-    change = self.change_lat_lon(params[:place][:latitude],params[:place][:longitude])
-    self.change_grid_reference(params[:place][:grid_reference]) unless change
-    #have already saved the appropriate location information so remove those parameters
-    params[:place].delete :latitude
-    params[:place].delete :longitude
-    params[:place].delete :grid_reference
-    params
-  end
+ 
 
   def get_alternate_place_names
     @names = Array.new
