@@ -884,6 +884,7 @@ class FreeregCsvUpdateProcessor
                 header_errors = @@header_error.length unless  @@header_error.nil?
                 puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors "
                 @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors"
+                @@message_file.puts "Place name is unapproved" if @freereg1_csv_file.place.error_flag == "Place name is not approved"
                 @@number_of_error_messages = 0
                 @@header_error = nil
               end #end @@list
