@@ -104,7 +104,7 @@ class Place
 
   def add_location_if_not_present
     if self.location.blank? 
-      if self[:latitude].blank || self[:longitude].blank then
+      if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
         self[:latitude] = my_location[0]
         self[:longitude]= my_location[1]
