@@ -41,7 +41,11 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     @role = session[:role]
     get_places_for_menu_selection
-   
+    if @records.to_i >= 2000
+      flash[:notice] = 'There are too amy records for an on-line relocation'
+      render :action => 'show'
+      return
+    end
 
   end
 
@@ -227,6 +231,11 @@ class Freereg1CsvFilesController < ApplicationController
   def remove
     load(params[:id])
     return_location  = @freereg1_csv_file.register
+    if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
+      flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
+      redirect_to :back
+      return
+    end
     @freereg1_csv_file.delete
     flash[:notice] = 'The removal of the batch entry was successful'
     redirect_to register_path(return_location)
