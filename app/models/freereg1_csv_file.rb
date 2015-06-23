@@ -494,7 +494,7 @@ class Freereg1CsvFile
         if batch.userid == self.userid && batch.file_name == self.file_name
            unless batch._id == batch_id
               batch.freereg1_csv_entries.each do |entry|
-                added_records = added_record + 1
+                added_records = added_records + 1
                 entry.update_attribute(:freereg1_csv_file_id, batch_id)
               end
               register.freereg1_csv_files.delete(batch) 
