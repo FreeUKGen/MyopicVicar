@@ -485,25 +485,57 @@ class Freereg1CsvFile
       end
     end
 
-    def lock(type)
-
-      if  type
-        if  self.locked_by_transcriber == 'false'
-          self.update_attributes(:locked_by_transcriber => 'true')
-        else
-          self.update_attributes(:locked_by_transcriber => 'false')
-        end
-      else
-
-        if  self.locked_by_coordinator == 'false'
-          self.update_attributes(:locked_by_coordinator => 'true')
-          self.update_attributes(:locked_by_transcriber => 'false')
-        else
-          self.update_attributes(:locked_by_coordinator => 'false')
-          self.update_attributes(:locked_by_transcriber => 'false')
+    def merge_batches
+      batch_id = self._id
+      register = self.register
+      self.force_unlock
+      added_records = 0
+      register.freereg1_csv_files.each do |batch|
+        if batch.userid == self.userid && batch.file_name == self.file_name
+           unless batch._id == batch_id
+              batch.freereg1_csv_entries.each do |entry|
+                added_records = added_record + 1
+                entry.update_attribute(:freereg1_csv_file_id, batch_id)
+              end
+              register.freereg1_csv_files.delete(batch) 
+           end
         end
       end
+      #TODO need to recompute max, min and range
+      records = self.records + added_records
+      self.update_attribute(:records, records)
+      return [false, ""]
     end
+
+    def lock(type)
+       batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+       batches.each do |batch|
+         if  type
+            if  batch.locked_by_transcriber == 'false'
+              batch.update_attributes(:locked_by_transcriber => 'true')
+            else
+              batch.update_attributes(:locked_by_transcriber => 'false')
+            end
+         else
+
+            if  batch.locked_by_coordinator == 'false'
+              batch.update_attributes(:locked_by_coordinator => 'true')
+              batch.update_attributes(:locked_by_transcriber => 'false')
+            else
+              batch.update_attributes(:locked_by_coordinator => 'false')
+              batch.update_attributes(:locked_by_transcriber => 'false')
+            end
+         end
+       end
+    end
+    def force_unlock
+       batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+       batches.each do |batch|
+          batch.update_attributes(:locked_by_coordinator => 'false')
+          batch.update_attributes(:locked_by_transcriber => 'false')           
+       end
+    end
+
     def self.delete_userid(userid)
       p userid
       folder_location = File.join(Rails.application.config.datafiles,userid)
