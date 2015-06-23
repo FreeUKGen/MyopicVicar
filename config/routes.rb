@@ -19,6 +19,7 @@ MyopicVicar::Application.routes.draw do
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
+  resources :batches
 
   resources :search_statistics
 
@@ -52,11 +53,6 @@ MyopicVicar::Application.routes.draw do
   resources :csvfiles
   get 'csvfiles/:id/error(.:format)', :to => 'csvfiles#replace', :as => :replace_csvfile
   get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
-
-  get 'manage_freeregs', :to => 'manage_freeregs#index', :as => :manage_freeregs
-  get 'manage_freereg/all', :to => 'manage_freeregs#all', :as => :all_manage_freereg
-  
-
 
   resources :countries
 
@@ -152,6 +148,8 @@ MyopicVicar::Application.routes.draw do
   post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
+
+ get 'freereg1_csv_files/:id/merge', :to => 'freereg1_csv_files#merge', :as => :merge_freereg1_csv_file
   get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => :remove_freereg1_csv_file
   get 'freereg1_csv_files/:id/relocate(.:format)', :to => 'freereg1_csv_files#relocate', :as => :relocate_freereg1_csv_file
   get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
