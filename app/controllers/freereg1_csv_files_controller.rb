@@ -41,8 +41,8 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     @role = session[:role]
     get_places_for_menu_selection
-    if @records.to_i >= 2000
-      flash[:notice] = 'There are too amy records for an on-line relocation'
+    if @records.to_i >= 4000
+      flash[:notice] = 'There are too mamy records for an on-line relocation'
       render :action => 'show'
       return
     end
@@ -228,6 +228,19 @@ class Freereg1CsvFilesController < ApplicationController
     #determine how to return
     redirect_to :back
   end
+
+  def merge
+    load(params[:id])
+    errors = @freereg1_csv_file.merge_batches 
+    if errors[0]  then
+      flash[:notice] = "Merge unsuccessful; #{errors[1]}"
+      render :action => 'show'
+      return
+    end
+    flash[:notice] = 'The merge of the batches was successful'
+    redirect_to freereg1_csv_file_path(@freereg1_csv_file)
+  end
+
   def remove
     load(params[:id])
     return_location  = @freereg1_csv_file.register
