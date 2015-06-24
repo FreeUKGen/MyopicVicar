@@ -503,8 +503,10 @@ class Freereg1CsvFile
       end
       #TODO need to recompute max, min and range
       unless added_records == 0
-        records.to_s = self.records.to_i + added_records
-        self.update_attribute(:records, records)
+        logger.info "update record ccount #{self.records.to_i} and #{added_records}"
+        records = self.records.to_i + added_records
+        self.update_attribute(:records, records.to_s)
+        logger.info "updated record count #{self.records.to_i} "
       end
       return [false, ""]
     end
