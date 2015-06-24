@@ -41,7 +41,7 @@ class Church
       location_names =[]
       place_name = self.place.place_name
       location_names << "#{place_name} (#{self.church_name})"
-      church.registers.each do |register|
+      self.registers.each do |register|
         location_names  << " [#{register.register_type}]"
         register.freereg1_csv_files do |file|
           file.freereg1_csv_entries.each do |entry|
