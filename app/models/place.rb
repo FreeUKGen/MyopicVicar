@@ -225,7 +225,7 @@ class Place
     location_names =[]
     self.churches.each do |church|
       location_names << "#{place_name} (#{church.church_name})"
-      church.update_attribute(:place_id => place_id)
+      church.update_attribute(:place_id, place_id)
       church.registers.each do |register|
         location_names  << " [#{register.register_type}]"
         register.freereg1_csv_files do |file|
