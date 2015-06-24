@@ -222,13 +222,14 @@ class Place
 
   def propogate_place_name_change
     place_id = self._id
-    location_names =[]
+   
     self.churches.each do |church|
-      location_names << "#{place_name} (#{church.church_name})"
       church.update_attribute(:place_id, place_id)
       church.registers.each do |register|
+        location_names =[]
+        location_names << "#{place_name} (#{church.church_name})"
         location_names  << " [#{register.register_type}]"
-        register.freereg1_csv_files do |file|
+        register.freereg1_csv_files.each do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
               logger.info "search record missing for entry #{entry._id}" 

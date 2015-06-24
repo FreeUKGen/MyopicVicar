@@ -40,8 +40,14 @@ crumb :files do
     parent :my_options, my_own_freereg1_csv_file_path
    when session[:role] == "data_manager"
      parent :county_options, session[:county]
+
    when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
+     
+     unless  session[:place_name].nil?
      parent :show_place, session[:county], get_place(session[:chapman_code],session[:place_name])
+   else
+    parent :county_options, session[:county]
+   end
    when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
      parent :userid_details_listing, session[:syndicate] 
    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical") 
