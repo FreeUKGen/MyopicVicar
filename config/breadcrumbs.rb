@@ -34,8 +34,6 @@ crumb :my_options do
 end
 
 crumb :files do  
-  p "files"
-   p session
    link "List of Batches", freereg1_csv_files_path
    case
    when session[:my_own]
@@ -43,7 +41,7 @@ crumb :files do
    when session[:role] == "data_manager"
      parent :county_options, session[:county]
    when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
-     parent :county_options, session[:county]
+     parent :show_place, session[:county], get_place(session[:place_id])
    when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
      parent :userid_details_listing, session[:syndicate] 
    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical") 
@@ -54,8 +52,6 @@ crumb :files do
 
  end
 crumb :show_file do |file|
-  p " Batch info for #{file._id} "
-  p session
    link "Batch Information", freereg1_csv_file_path(file)
    parent :files #parent :my_options, my_own_freereg1_csv_file_path
 end
@@ -70,7 +66,6 @@ end
 
 #record or entry
 crumb :show_records do |file|
-   p " Records for #{file._id} "
    link "List of Records", freereg1_csv_entries_path
    parent :show_file, file 
 end
@@ -79,7 +74,6 @@ crumb :new_record do |entry,file|
    parent :show_records, file 
 end
 crumb :error_records do |file|
-  p " Error Records for #{file._id} "
    link "List of Errors", error_freereg1_csv_file_path(file)
    parent :show_file, file 
 end
@@ -92,7 +86,6 @@ crumb :edit_record do |entry,file|
    parent :show_record, entry,file 
 end
 crumb :correct_error_record do |entry,file|
-   
    link "Correct Error Record", error_freereg1_csv_entry_path(entry._id)
    parent :error_records, file
 end
@@ -114,6 +107,7 @@ end
 crumb :show_place do |county,place|
    link "Place Information", place_path(place)
     parent :county_places, county, place
+
 end
 crumb :edit_place do |county,place|
     link "Edit Place Information", edit_place_path(place)
