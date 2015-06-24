@@ -41,7 +41,7 @@ crumb :files do
    when session[:role] == "data_manager"
      parent :county_options, session[:county]
    when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
-     parent :show_place, session[:county], get_place(session[:place_id])
+     parent :show_place, session[:county], get_place(session[:chapman_code],session[:place_name])
    when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
      parent :userid_details_listing, session[:syndicate] 
    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical") 
