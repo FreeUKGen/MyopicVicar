@@ -191,5 +191,5 @@ def clean_session_for_syndicate
     session.delete(:header_errors)
     session.delete(:type)
   end
-
+  
 end

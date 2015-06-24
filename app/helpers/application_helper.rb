@@ -113,6 +113,6 @@ module ApplicationHelper
       HTML
     end
     banner.html_safe
-  end
+  end 
 
 end
