@@ -2,10 +2,7 @@
 
 <div style="text-align: center"> <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%>
   <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator'%>
-<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>   <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependants!' }, :class => "btn  btn--small" %>
-<% end%> 
- <% if  @user.person_role == 'system_administrator'%>
-<%= link_to 'Fill County and Country fields', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%>
+<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>   <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependants!' }, :class => "btn  btn--small" %> <%= link_to 'Fill County and Country fields', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%>
  <% end%> 
 </div>
 <div style="clear:both;"> </div>
