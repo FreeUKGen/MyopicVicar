@@ -368,7 +368,7 @@ class Freereg1CsvFile
       location_names  << " [#{register_type}]"
       self.freereg1_csv_entries.each do |entry|
           if entry.search_record.nil?
-            logger.info "no search record for #{entry._id}"
+            logger.info "search record missing for entry #{entry._id}"
           else
             record = entry.search_record
             record.update_attribute(:location_names, location_names)
