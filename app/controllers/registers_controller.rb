@@ -48,11 +48,7 @@ class RegistersController < ApplicationController
   def merge
 
     load(params[:id])
-    p 'merging into'
-    p @register
     errors = @register.merge_registers
-    p @register
-    p errors
     if errors[0]  then
       flash[:notice] = "Merge unsuccessful; #{errors[1]}"
       render :action => 'show'
@@ -106,11 +102,7 @@ class RegistersController < ApplicationController
       redirect_to register_path(@register)
       return
     when params[:commit] == 'Rename'
-      p 'renaming'
-      p @register
       errors = @register.change_type(params[:register][:register_type])
-      p @register
-      p errors
       if errors  then
         flash[:notice] = 'The change of register type for the Register was unsuccessful'
         render :action => 'rename'

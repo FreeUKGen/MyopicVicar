@@ -117,11 +117,7 @@ class ChurchesController < InheritedResources::Base
 
   def merge
     load(params[:id])
-    p 'merging into'
-    p @church
     errors = @church.merge_churches
-    p @church
-    p errors
     if errors[0]  then
       flash[:notice] = "Church Merge unsuccessful; #{errors[1]}"
       render :action => 'show'
@@ -136,13 +132,9 @@ class ChurchesController < InheritedResources::Base
 
     case
     when params[:commit] == 'Submit'
-      p 'editing church'
-      p params
-      p @church
       @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name].blank?
       @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
       @church.update_attributes(params[:church])
-      p @church
       if @church.errors.any?  then
         flash[:notice] = 'The update of the Church was unsuccessful'
         render :action => 'edit'
@@ -152,11 +144,7 @@ class ChurchesController < InheritedResources::Base
       redirect_to church_path(@church)
       return
     when params[:commit] == 'Rename'
-      p 'renaming'
-      p @church
       errors = @church.change_name(params[:church])
-      p @church
-      p errors
       if errors  then
         flash[:notice] = 'The rename of the Church was unsuccessful'
         render :action => 'rename'
@@ -166,11 +154,7 @@ class ChurchesController < InheritedResources::Base
       redirect_to church_path(@church)
       return
     when params[:commit] == 'Relocate'
-      p 'relocating church'
-      p @church
       errors = @church.relocate_church(params[:church])
-      p @church
-      p errors
       if errors[0]  then
         flash[:notice] = "Merge unsuccessful; #{errors[1]}"
         render :action => 'show'

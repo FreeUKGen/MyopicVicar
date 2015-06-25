@@ -38,20 +38,12 @@ class Church
 
   end
   def propogate_church_name_change
-    logger.info "propagating"
-    logger.info "#{self.church_name}"
-      
-      place_name = self.place.place_name
-      
-      self.registers.each do |register|
+    place_name = self.place.place_name
+    self.registers.each do |register|
         location_names = []
-        logger.info "#{register.alternate_register_name}"
         location_names << "#{place_name} (#{self.church_name})"
         location_names  << " [#{register.register_type}]"
-        logger.info "#{location_names}"  
         register.freereg1_csv_files.each do |file|
-          logger.info "#{file.file_name}"
-          logger.info "#{file.freereg1_csv_entries.count}"
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
               logger.info "search record missing for entry #{entry._id}" 
@@ -65,7 +57,6 @@ class Church
   end
  
   def change_name(param)
-    logger.info "changing #{param[:church_name]} from #{self.church_name}"
     unless self.church_name == param[:church_name]
       self.update_attribute(:church_name, param[:church_name])
     end
