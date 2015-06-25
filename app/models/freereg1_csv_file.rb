@@ -90,7 +90,7 @@ class Freereg1CsvFile
   belongs_to :userid_detail, index: true
 
   #register belongs to church which belongs to place
-  has_one :csvfile
+ 
   has_many :batch_errors
 
   scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
