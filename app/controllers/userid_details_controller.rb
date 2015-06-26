@@ -285,6 +285,8 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_update
     case
     when session[:my_own]
+      get_user_info_from_userid
+      @userid = @user 
       render :action => 'edit' and return
     when session[:type] == "edit" || session[:type] == "add"
       if @user.person_role == 'system_administrator'
