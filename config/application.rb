@@ -72,6 +72,7 @@ module MyopicVicar
 
     # make the designer's fonts available for the stylesheets
     config.assets.paths << Rails.root.join('app', 'assets') 
+    config.assets.paths << Rails.root.join("app", "assets", "fonts")
      
     
     config.generators do |g|
