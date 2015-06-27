@@ -95,6 +95,7 @@ class DeleteEntriesRecordsForRemovedBatches
              file_name = file_parts[-1]
              all_files[userid].delete_if {|name| name == file_name} unless all_files[userid].nil?
              process_files.delete_if {|name| name == file_name}
+             sleep(30)
           end
               
           unless process_files.empty?
@@ -107,8 +108,10 @@ class DeleteEntriesRecordsForRemovedBatches
               @@message_file.puts "#{userid}, #{my_file} deleted"
             end
               File.delete(delete_file) if File.exists?(delete_file)
+              sleep(30)
            end
           end
+
        end 
    end
      @@message_file.close

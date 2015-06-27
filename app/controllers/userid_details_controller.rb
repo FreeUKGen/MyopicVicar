@@ -195,8 +195,8 @@ class UseridDetailsController < ApplicationController
     @userid.save
     if @userid.save
       @userid.send_invitation_to_create_password
-      @userid.write_userid_file
       flash[:notice] = 'The initial registration was successful; an email has been sent to complete the process. Return to this page to login.'
+      @userid.write_userid_file
       next_place_to_go_successful_create
     else
       flash[:notice] = 'The registration was unsuccessful'
