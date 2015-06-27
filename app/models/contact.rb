@@ -38,6 +38,8 @@ class Contact
       github_issue(self)
     when self.contact_type == 'Data Problem'
       data_manager_issue(self)
+    when self.contact_type == 'Volunteer'
+      volunteering_issue(self) 
     else
       general_issue(self)
     end
@@ -98,8 +100,20 @@ class Contact
     UserMailer.contact_to_recipient(contact,data_manager,ccs).deliver unless coordinator.present?
     UserMailer.contact_to_data_manager(contact,data_manager,ccs).deliver if coordinator.present?
     end
-
   end
+  def volunteering_issue(contact)
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
+       ccs << person.person_forename
+    end
+     manager = UseridDetail.where(:userid => 'REGManager').first
+      ccs << manager.person_forename
+    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |volunteer|
+     UserMailer.contact_to_volunteer(contact,volunteer,ccs).deliver
+    end
+     UserMailer.contact_to_volunteer(contact,manager,ccs).deliver
+  end
+
   def get_coordinator
     entry = SearchRecord.find(self.record_id).freereg1_csv_entry
     record = Freereg1CsvEntry.find(entry)

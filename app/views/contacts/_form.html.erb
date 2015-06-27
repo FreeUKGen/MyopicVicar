@@ -54,9 +54,9 @@
 </select>
 </li>
 <li class="grid__item  one-whole  palm-one-whole">
-<label>Text <a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please enter your comments or question </span></a></label>
+<label>Comment, question or area in which you wish to volunteer. <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>If volunteering to transcribe please indicate the county that is of most interest. If wanting to assist in the project management or development please indicate your area of expertise.  </span></a></label>
 <% if @contact.body.nil? %>
-<textarea name="contact[body]" cols="80" rows="10">Enter text here...</textarea>
+<textarea name="contact[body]" cols="80" rows="10"></textarea>
 <% else%>
 <textarea name="contact[body]" cols="80" rows="10" ><%=@contact.body%></textarea>
 <% end%>

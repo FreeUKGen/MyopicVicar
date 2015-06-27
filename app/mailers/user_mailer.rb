@@ -137,6 +137,13 @@ class UserMailer < ActionMailer::Base
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
+  def contact_to_volunteer(contact,person,ccs)
+    @ccs = ccs
+    @contact = contact
+    @name = person.person_forename
+    @email_address = person.email_address
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+  end
 
   def contact_to_data_manager(contact,person,ccs)
     @ccs = ccs
