@@ -68,6 +68,7 @@ class UseridDetailsController < ApplicationController
     session[:first_name] = 'New Registrant'
   end
   def researcher_registration
+    cookies.signed[:Administrator] = Rails.application.config.github_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "researcher_registration"
@@ -75,6 +76,7 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
   end
   def transcriber_registration
+    cookies.signed[:Administrator] = Rails.application.config.github_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "transcriber_registration"
@@ -84,6 +86,7 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
   end
   def technical_registration
+    cookies.signed[:Administrator] = Rails.application.config.github_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "technical_registration"
