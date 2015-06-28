@@ -24,6 +24,9 @@ class ManageCountiesController < ApplicationController
     @prompt = 'You have access to multiple counties, please select one'
     @manage_county = ManageCounty.new
   end
+  def show
+     redirect_to :action => 'new'
+  end
   
   def create
     session[:chapman_code] = params[:manage_county][:chapman_code]
