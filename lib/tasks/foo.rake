@@ -1,6 +1,12 @@
 require 'chapman_code'
 namespace :foo do
 
+  desc "Initialize the Batch collection"
+  task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
+  require 'load_physical_file_records'
+    LoadPhysicalFileRecords.process(args.limit,args.range)
+  end
+
   desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked

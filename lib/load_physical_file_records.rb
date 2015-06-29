@@ -1,16 +1,17 @@
-desc "Initialize the Batch collection"
-
-task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
+class LoadPhysicalFileRecords
+  
+ 
+  def self.process(len,range)
   Mongoid.load!("#{Rails.root}/config/mongoid.yml")
   file_for_warning_messages = "log/add_physical_file_records.log"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
   message_file = File.new(file_for_warning_messages, "w")
-  limit = args.limit.to_i
-  message_file.puts "Adding #{limit} batch record for #{args.range}"
+  limit = len.to_i
+  message_file.puts "Adding #{limit} batch record for #{range}"
   base_directory = Rails.application.config.datafiles
   change_directory = Rails.application.config.datafiles_changeset
-  base_filenames = GetFiles.get_all_of_the_filenames(base_directory,args.range)
-  change_filenames = GetFiles.get_all_of_the_filenames(change_directory,args.range)
+  base_filenames = GetFiles.get_all_of_the_filenames(base_directory,range)
+  change_filenames = GetFiles.get_all_of_the_filenames(change_directory,range)
   message_file.puts "#{base_filenames.length}\t base batches selected for processing\t#{change_filenames.length}\t change batches selected for processing\t"
   process_batch = 0
   change_filenames.each do |file|
@@ -61,5 +62,6 @@ task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
   end
   message_file.puts "Processed #{process_batch}\t process status into the database and there were #{missing} batches not in the change folder"
 
+  end
 end
 
