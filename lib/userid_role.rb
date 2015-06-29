@@ -14,12 +14,12 @@ module UseridRole
       'technical' => [  "Profile", "Batches",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
       'system_administrator' =>[  "Profile", "Batches", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
-          "County Coordinators", "Country Coordinators","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
+          "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
       }
         
         OPTIONS_TRANSLATION = {"Saved Searches" => "/my_saved_searches",
           "Profile" => "/userid_details/my_own" ,
-          "Files" => "/freereg1_csv_files/my_own" ,
+          "Batches" => "/freereg1_csv_files/my_own" ,
           "Manage Syndicate" =>  "/manage_syndicates",
           "Manage Syndicates" =>  "/manage_syndicates",
           "Manage County" => "/manage_counties" ,
@@ -33,6 +33,7 @@ module UseridRole
           "Upload New Batch"  => "/manage_counties/selection?option=Upload New Batch",
           "RefineryCMS" =>  "/refinery",
           "Access Attic" => "/attic_files/select" ,
+          "Physical Files" => "/batches/select",
           "Search Performance" => "/search_queries/report" ,
           "Feedback" => "/feedbacks",
           "Contacts" => "/contacts",
