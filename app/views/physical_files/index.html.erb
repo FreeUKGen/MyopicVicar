@@ -7,7 +7,7 @@
 <% end %>
 <p>
 <div id="main" style="color:black">
-<%= paginate @batches %>
+<%= paginate @batches if session[:paginate]%>
   <table  class="table--bordered  table--data">
     <tr>
       <th>Userid</th>

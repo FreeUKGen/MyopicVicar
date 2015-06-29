@@ -24,6 +24,7 @@ class LoadPhysicalFileRecords
     unless batch.save
       message_file.puts "Batch number #{process_batch} #{file_name} for #{file_parts[-2]} was not saved"
     end
+    sleep(Rails.application.config.sleep.to_f)
   end
   message_file.puts "Processed #{process_batch}\t change batches into the database"
   message_file.puts "Processing base directory"
@@ -39,12 +40,12 @@ class LoadPhysicalFileRecords
     if batch.nil?
       missing = missing + 1
       message_file.puts "Batch number #{process_batch} from the base collection #{file_handle} for #{file_parts[-2]} was not in Batch collection"
-     batch = PhysicalFile.new(:userid => file_parts[-2], :file_name => file_name, :base => true, :base_uploaded_date => File.mtime(file))
+      batch = PhysicalFile.new(:userid => file_parts[-2], :file_name => file_name, :base => true, :base_uploaded_date => File.mtime(file))
+      batch.save
     else
       batch.update_attributes(:base => true, :base_uploaded_date => File.mtime(file))
-
     end
-
+   sleep(Rails.application.config.sleep.to_f)
   end
   message_file.puts "Processed #{process_batch} base batches and there were #{missing} extra batches in change and not in the base"
   process_batch = 0
@@ -59,6 +60,7 @@ class LoadPhysicalFileRecords
     else
       batch.update_attributes(:file_processed => true, :file_processed_date => file.updated_at)
     end
+    sleep(Rails.application.config.sleep.to_f)
   end
   message_file.puts "Processed #{process_batch}\t process status into the database and there were #{missing} batches not in the change folder"
 
