@@ -33,7 +33,7 @@ module UseridRole
           "Upload New Batch"  => "/manage_counties/selection?option=Upload New Batch",
           "RefineryCMS" =>  "/refinery",
           "Access Attic" => "/attic_files/select" ,
-          "Physical Files" => "/batches/select",
+          "Physical Files" => "/physical_files/select_action",
           "Search Performance" => "/search_queries/report" ,
           "Feedback" => "/feedbacks",
           "Contacts" => "/contacts",
@@ -95,8 +95,16 @@ module UseridRole
           'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch",
           'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
-     
-
+        PHYSICAL_FILES_OPTIONS =  ['Browse Files' ,'List Not Processed', 'List Processed but not in Base Folder',
+          'List Processed but not in Change Folder','List Files for Userid', 'List Files for Userid Not Processed']
+        PHYSICAL_FILES_OPTIONS_TRANSLATION ={
+          'Browse Files' => "/physical_files/",
+          'List Not Processed' => '/physical_files/not_processed',
+          'List Processed but not in Base Folder' => '/physical_files/processed_but_not_in_base',
+          'List Processed but not in Change Folder' => '/physical_files/processed_but_not_in_change',
+          'List Files for Userid' => '/physical_files/files_for_specific_userid',
+          'List Files for Userid Not Processed' => '/physical_files/files_for_specific_userid_not_processed'
+        }
 
 
         SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
