@@ -161,6 +161,19 @@ desc "Create a report of Surname Populations"
     puts "Task complete."
    end
   end
+desc "Create a report of files with errors"
 
+ task :list_of_error_files, [:limit] => [:environment] do |t, args|
+ require 'list_of_error_files' 
+ require 'freereg1_csv_file'
+  
+  Mongoid.unit_of_work(disable: :all) do
+   
+     ListOfErrorFiles.process(args.limit) 
+          
+     
+    puts "Task complete."
+   end
+  end
 
 end
