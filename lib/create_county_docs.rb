@@ -15,7 +15,7 @@ def self.process(type,range)
     n_f = 0
     users.each do |user|
       n_u = n_u + 1
-      files = Freereg1CsvFile.where(:userid = user.userid).all
+      files = Freereg1CsvFile.where(:userid => user.userid).all
       files.each do |file|
         n_f = n_f + 1
         file.transcriber_syndicate = user.syndicate
