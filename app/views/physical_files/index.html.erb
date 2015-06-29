@@ -1,0 +1,29 @@
+<% breadcrumb :physical_files%>
+<p style="text-align: center"><b>Listing of physical files <%= @sorted_by%></b></p>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+  </div>
+<% end %>
+<p>
+<div id="main" style="color:black">
+<%= paginate @batches %>
+  <table  class="table--bordered  table--data">
+    <tr>
+      <th>Userid</th>
+      <th >File Name</th>
+      <th >Uploaded into Base</th>
+      <th >Uploaded into Change</th>
+      <th >Processed into Database</th>
+    </tr>
+    <% @batches.each do |batch| %>
+      <tr id="<%=batch.id%>">
+        <td > <%= batch.userid  %>  </td>
+        <td > <%= batch.file_name  %>  </td>
+        <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
+        <td > <%= batch.change_uploaded_date.strftime("%d %b %Y") if batch.change %>  </td>
+        <td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed %>  </td>
+      </tr>
+    <% end %>
+  </table>
+</div>

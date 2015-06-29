@@ -19,7 +19,14 @@ MyopicVicar::Application.routes.draw do
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
-  resources :batches
+  get 'physical_files/files_for_specific_userid_not_processed', :to =>'physical_files#files_for_specific_userid_not_processed', :as => :files_for_specific_userid_not_processed_physical_files
+  get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
+  get 'physical_files/userid', :to =>'physical_files#userid', :as => :userid_physical_files
+  get 'physical_files/processed_but_not_in_change', :to =>'physical_files#processed_but_not_in_change', :as => :processed_but_not_in_change_physical_files
+  get 'physical_files/processed_but_not_in_base', :to =>'physical_files#processed_but_not_in_base', :as => :processed_but_not_in_base_physical_files
+  get 'physical_files/not_processed', :to =>'physical_files#not_processed', :as => :not_processed_physical_files
+  get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
+  resources :physical_files
 
   resources :search_statistics
 
