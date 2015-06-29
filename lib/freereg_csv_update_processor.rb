@@ -602,7 +602,7 @@ class FreeregCsvUpdateProcessor
 
               # do we validate the Place field?
               raise FreeREGError, "Place field #{@csvdata[1]} is invalid" unless validregister(@csvdata[1],"Place")
-              raise FreeREGError, "The Place #{@csvdata[1]} is not in the database" unless Place.where(:place_name => @csvdata[1]).exists
+              raise FreeREGError, "The Place #{@csvdata[1]} is unapproved" unless Place.where(:chapman_code => @csvdata[0],:place_name => @register, :error_flag.ne => "Place name is not approved").exists?
               data_record[:place] = @register
               # do we validate the register field
               raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
@@ -824,6 +824,8 @@ class FreeregCsvUpdateProcessor
                     @freereg1_csv_file.error = 0
                     BatchError.where(:freereg1_csv_file_id => @freereg1_csv_file._id).all.each do |batch_error|
                       batch_error.delete
+                      sleep_time = 2*(Rails.application.config.sleep.to_f)
+                      sleep(sleep_time)
                     end
                     #remove this location from batches with errors
                     ind = @batches_with_errors.find_index( @freereg1_csv_file._id)
@@ -882,15 +884,11 @@ class FreeregCsvUpdateProcessor
                 @freereg1_csv_file.save
                 header_errors = 0
                 header_errors = @@header_error.length unless  @@header_error.nil?
-                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{@@header_error} header errors and #{@@number_of_error_messages} data errors "
+                puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors "
                 @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors"
                 
                 if @freereg1_csv_file.register.church.place.error_flag == "Place name is not approved"
                 @@message_file.puts "Place name is unapproved" 
-             
-
-
-
                 end
 
                 @@number_of_error_messages = 0
