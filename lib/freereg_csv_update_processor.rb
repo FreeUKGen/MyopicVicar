@@ -598,12 +598,13 @@ class FreeregCsvUpdateProcessor
             def self.process_register_location(n)
               data_record = Hash.new
               raise FreeREGError, "Empty data line"  if @csvdata[0].nil?
-              raise FreeREGError,"The county code #{ @csvdata[0]} is invalid or you have a blank record line " unless ChapmanCode::values.include?(@csvdata[0])
+              raise FreeREGError,"The county code #{ @csvdata[0]} is invalid and rejected or you have a blank record line " unless  ChapmanCode::values.include?(@csvdata[0]) && 
+                  !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(@csvdata[0]))
 
               # do we validate the Place field?
-              raise FreeREGError, "Place field #{@csvdata[1]} is invalid" unless validregister(@csvdata[1],"Place")
-              raise FreeREGError, "The Place #{@csvdata[1]} is unapproved" unless Place.where(:chapman_code => @csvdata[0],:place_name => @register, :error_flag.ne => "Place name is not approved").exists?
-              data_record[:place] = @register
+              raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
+              raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" unless Place.where(:chapman_code => @csvdata[0],:place_name => @csvdata[1], :error_flag.ne => "Place name is not approved").exists?
+              data_record[:place] = @csvdata[1]
               # do we validate the register field
               raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
               data_record[:county] = @csvdata[0]
