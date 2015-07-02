@@ -96,14 +96,15 @@ module UseridRole
           'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
         PHYSICAL_FILES_OPTIONS =  ['Browse Files' ,'List Not Processed', 'List Processed but not in Base Folder',
-          'List Processed but not in Change Folder','List Files for Userid', 'List Files for Userid Not Processed']
+          'List Processed but not in Change Folder','List Processed but no files','List Files for Userid', 'List Files for Userid Not Processed']
         PHYSICAL_FILES_OPTIONS_TRANSLATION ={
           'Browse Files' => "/physical_files/",
           'List Not Processed' => '/physical_files/not_processed',
           'List Processed but not in Base Folder' => '/physical_files/processed_but_not_in_base',
           'List Processed but not in Change Folder' => '/physical_files/processed_but_not_in_change',
           'List Files for Userid' => '/physical_files/files_for_specific_userid',
-          'List Files for Userid Not Processed' => '/physical_files/files_for_specific_userid_not_processed'
+          'List Files for Userid Not Processed' => '/physical_files/files_for_specific_userid_not_processed',
+          'List Processed but no files' => '/physical_files/processed_but_no_file'
         }
 
 
