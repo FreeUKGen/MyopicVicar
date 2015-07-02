@@ -24,6 +24,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/userid', :to =>'physical_files#userid', :as => :userid_physical_files
   get 'physical_files/processed_but_not_in_change', :to =>'physical_files#processed_but_not_in_change', :as => :processed_but_not_in_change_physical_files
   get 'physical_files/processed_but_not_in_base', :to =>'physical_files#processed_but_not_in_base', :as => :processed_but_not_in_base_physical_files
+  get 'physical_files/processed_but_no_file', :to =>'physical_files#processed_but_no_file', :as => :processed_but_no_file_physical_files
   get 'physical_files/not_processed', :to =>'physical_files#not_processed', :as => :not_processed_physical_files
   get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
   resources :physical_files

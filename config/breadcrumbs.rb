@@ -231,7 +231,7 @@ crumb :physical_files_options do
    parent :root
 end
 crumb :physical_files do 
-   link "Listiing of Physical Files", physical_files_path
+   link "Listing of Physical Files", physical_files_path
    parent :physical_files_options
 end
 

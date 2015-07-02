@@ -3,7 +3,9 @@ class PhysicalFilesController < InheritedResources::Base
 def index
   @sorted_by = session[:sorted_by] unless session[:sorted_by].nil?
   get_user_info_from_userid
-  @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]) 
+  @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page])
+  p "index"
+  p params[:page] 
   session[:paginate] = true
 end 
 
@@ -41,6 +43,15 @@ def processed_but_not_in_base
    session[:paginate] = true
   render 'index'
 end
+def processed_but_no_file
+  get_user_info_from_userid
+  @sorted_by = '(processed but no files)'
+  session[:sorted_by] = @sorted_by
+  @batches = PhysicalFile.processed.not_uploaded_into_change.not_loaded_into_base.all.page(params[:page])
+  session[:paginate] = true
+  render 'index'
+  
+end
 def processed_but_not_in_change
   get_user_info_from_userid
   @sorted_by = '(processed but not in the change folder)'
@@ -77,16 +88,16 @@ def files_for_specific_userid
   end
   def userid
     @user = params[:params]
+    p "userid"
+    p params[:page] 
     @sorted_by = session[:sorted_by] + "( for userid #{@user} )"
     case 
     when session[:sorted_by] == 'all files'
       @batches = PhysicalFile.where(:userid => @user).all
-
     when session[:sorted_by] == 'not processed'
       @batches = PhysicalFile.userid(@user).not_processed.all
-     
-    end
-   session[:paginate] = false
+      end
+    session[:paginate] = false
     render 'index'  
   end
 

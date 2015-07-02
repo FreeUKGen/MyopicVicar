@@ -11,10 +11,17 @@ class PhysicalFile
  field :file_processed_date, type: DateTime
  field :file_processed, type: Boolean, default: false
  field :action, type: String
+
  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, base: 1, base_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, file_processed: 1, file_processed_date: 1})
 
+ def self.file_name(name)
+  where(:file_name => name)
+ end
+ def self.change_uploaded_date(date)
+  where(:change_uploaded_date => date)
+ end
  def self.processed
   where(:file_processed => true)
  end
