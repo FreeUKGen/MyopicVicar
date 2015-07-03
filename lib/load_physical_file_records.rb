@@ -56,7 +56,7 @@ class LoadPhysicalFileRecords
       if possible_file.base
         possible_file.update_attribute(:base_uploaded_date, File.mtime(file)) unless possible_file.base_uploaded_date == File.mtime(file)
       else
-        batch.update_attributes(:base => true, :base_uploaded_date => File.mtime(file))
+        possible_file.update_attributes(:base => true, :base_uploaded_date => File.mtime(file))
       end
     end
   end
@@ -80,7 +80,7 @@ class LoadPhysicalFileRecords
       if possible_file.file_processed
         possible_file.update_attribute(:file_processed_date, file.updated_at) unless possible_file.file_processed_date == file.updated_at
       else
-        batch.update_attributes(:file_processed => true, :file_processed_date => file.updated_at)
+         possible_file.update_attributes(:file_processed => true, :file_processed_date => file.updated_at)
       end
     end
   end
