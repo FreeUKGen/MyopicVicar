@@ -6,4 +6,15 @@ Allow: /donate
 Allow: /help
 Allow: /search_queries
 Allow: /freereg_contents
-
+Disallow: /manage_resources
+Disallow: /manage_syndicates
+Disallow: /manage_counties
+Disallow: /physical_files
+Disallow: /syndicates
+Disallow: /userid_details
+Disallow: /search_names
+Disallow: /search_records
+Disallow: /freereg1_csv_entries
+Disallow: /freereg1_csv_files
+Disallow: /contacts
+Disallow: /feedback
