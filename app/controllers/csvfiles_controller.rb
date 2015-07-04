@@ -1,5 +1,6 @@
 class CsvfilesController < InheritedResources::Base
   require 'freereg_csv_processor'
+  require 'digest/md5'
 def index
    if session[:userid].nil?
     redirect_to '/', notice: "You are not authorised to use these facilities"
@@ -171,7 +172,7 @@ def download
  @freereg1_csv_file.backup_file
  my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
  send_file( my_file, :filename => @freereg1_csv_file.file_name)
- 
+ @freereg1_csv_file.update_attribute(:digest, Digest::MD5.file(my_file).hexdigest)
 end
 
 end

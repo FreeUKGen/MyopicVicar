@@ -290,7 +290,7 @@ class Freereg1CsvFile
     register = file.register
     church = register.church
     place = church.place
-    CSV.open(file_location, "wb", {:force_quotes => true, :row_sep => "\r\n"}) do |csv|
+    CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       record_type = RecordType.display_name(file.record_type).upcase + 'S'
       csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
@@ -339,6 +339,7 @@ class Freereg1CsvFile
         end #end records
       end #file parts
     end #end csv
+
   end #end method
 
   def self.update_location(file,param,myown)

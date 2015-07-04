@@ -1121,12 +1121,7 @@ class FreeregCsvUpdateProcessor
                   return true
                 else
                   #file is in the database
-                  if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
-                    #do not process if coordinator has locked
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                      puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                      return false
-                    end
+                  
                     if @@header[:digest] == check_for_file.digest then
                       #file in database is same or more recent than we we are attempting to reload so do not process
                       p  "#{@@userid} #{@@header[:file_name]} has not changed since last build"
@@ -1147,6 +1142,12 @@ class FreeregCsvUpdateProcessor
                       p "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
                       return false
                     end #date check end
+                    if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
+                    #do not process if coordinator has locked
+                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                      puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                      return false
+                    end
 
                   end #check_for_file loop end
 
