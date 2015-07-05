@@ -131,6 +131,8 @@ class FreeregCsvUpdateProcessor
     'Saint' => 'St',
     'SAINT' => 'St',
     'St.' => 'St',
+    'st.' => 'St',
+    'sT.' => 'St',
     'ST' => 'St',
     'Gt' => 'Great',
     'GT' => 'Great',
