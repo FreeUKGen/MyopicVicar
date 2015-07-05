@@ -84,6 +84,10 @@ class Place
       OPTIONS.invert[system]
     end
   end
+  def self.county(county)
+    where(:chapman_code => county)
+    
+  end
 
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location
@@ -215,6 +219,7 @@ class Place
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
       return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
       self.propogate_place_name_change
+      self.propogate_batch_lock
       PlaceCache.refresh(self.chapman_code)
     end
     return [false, ""]
@@ -238,6 +243,16 @@ class Place
             end
           end
         end 
+      end
+    end
+  end
+
+  def propogate_batch_lock
+    self.churches.each do |church|
+      church.registers.each do |register|
+        register.freereg1_csv_files.each do |file|
+          file.update_attribute(:locked_by_coordinator, "true")
+        end
       end
     end
   end
