@@ -8,8 +8,7 @@
    <% end %> 
 <section class="island  island--light">
 <%= semantic_form_for  @place, :html => { :class => "grid"}  do |f| %>
-<%= f.input :place_name,{ :as => :select,:label => "New Place Name :",:include_blank => false,
-      :required => true, :collection => @placenames,:size => 15 } %>
+ <%= f.input :place_name, :label => "Enter the new Place Name",:input_html => { :size => 15 } %>
  
  <%= f.action :submit, :as => :input, :label => 'Rename' %>
  <% end %>
