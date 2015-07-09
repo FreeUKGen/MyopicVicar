@@ -1104,12 +1104,9 @@ class FreeregCsvUpdateProcessor
               end #method end
 
               def self.check_for_replace(filename)
-
                 #check to see if we should process the file
-                #is it aleady there?
                 check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
                                                          :userid => @@header[:userid]}).first
-
                 check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
 
                 if check_for_userid.nil?
@@ -1118,42 +1115,35 @@ class FreeregCsvUpdateProcessor
                   puts "#{@@header[:userid]} does not exit"
                   return false
                 end
+
                 if check_for_file.nil?
                   #if file not there then need to create
                   return true
                 else
-                  #file is in the database
-                  
-                    if @@header[:digest] == check_for_file.digest then
+                  #file is in the database so lets test to see if we process
+                  case
+                    when @@header[:digest] == check_for_file.digest 
                       #file in database is same or more recent than we we are attempting to reload so do not process
                       p  "#{@@userid} #{@@header[:file_name]} has not changed since last build"
                       @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
                       return false
-                    end
-
-                    if (@@uploaded_date.strftime("%s") > check_for_file.uploaded_date.strftime("%s"))
-
-                      #file is in the database but we have a more recent copy uploaded
-                      #so delete what is there and process the new file
-                      #Freereg1CsvFile.delete_file(check_for_file)
-                      @@update = true
-                      return true
-                    else
-                      #file in database is same or more recent than we we are attempting to reload so do not process
+                    when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
+                       #file in database is same or more recent than we we are attempting to reload so do not process
                       @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
                       p "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
                       return false
-                    end #date check end
-                    if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
+                    when (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
                     #do not process if coordinator has locked
                       @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
                       puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
                       return false
-                    end
+                    else
+                      @@update = true
+                      return true
+                  end
+                end #check_for_file loop end
 
-                  end #check_for_file loop end
-
-                end #method end
+              end #method end
 
                 def self.setup_for_new_file(filename)
                   # turn off domain checks -- some of these email accounts may no longer work and that's okay
