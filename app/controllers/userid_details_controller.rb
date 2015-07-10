@@ -227,6 +227,7 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
 
     end
+    params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
