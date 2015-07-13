@@ -100,7 +100,7 @@ class PlacesController < ApplicationController
       #we have errors on the creation
       flash[:notice] = 'The addition to Place Name was unsuccessful'
       get_places_counties_and_contries
-      @place_name = Place.find(session[:place_id]).place_name
+      @place_name = @place.place_name unless @place.nil?
       render :new
     else
       #we are clean on the addition
