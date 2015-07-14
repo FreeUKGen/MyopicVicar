@@ -28,6 +28,7 @@ class Freereg1CsvFile
 
 
   # Fields correspond to cells in CSV headers
+  field :country, type: String
   field :county, type: String #note in headers this is actually a chapman code
   field :place, type: String
   field :church_name, type: String

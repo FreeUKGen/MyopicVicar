@@ -1,5 +1,6 @@
 class Freereg1CsvFilesController < ApplicationController
-
+  require 'chapman_code'
+  require 'freereg_options_constants'
   def index
     #the common listing entry by syndicatep
     @register = session[:register_id]
@@ -34,20 +35,94 @@ class Freereg1CsvFilesController < ApplicationController
 
   def relocate
     load(params[:id])
+    session[:selectcountry] = nil
+    session[:selectcounty] = nil
     @records = @freereg1_csv_file.freereg1_csv_entries.count
+    if @records.to_i >= 4000
+      flash[:notice] = 'There are too mamy records for an on-line relocation'
+      redirect_to :action => 'show' and return
+    end
+    session[:records] = @records
     set_controls
     display_info
     get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
-    get_places_for_menu_selection
-    if @records.to_i >= 4000
-      flash[:notice] = 'There are too mamy records for an on-line relocation'
-      render :action => 'show'
-      return
+    unless  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
+      # only senior managers can move betweeen counties and countries; coordinators could loose files
+      place = @freereg1_csv_file.register.church.place
+      session[:selectcountry] = place.country
+      session[:selectcounty] = place.county
+      redirect_to :action => 'update_places' and return
+    else
+      @county =  session[:county]
+      set_locations
+      session[:selectcountry] = nil
+      session[:selectcounty] = nil
+      @countries = ['Select Country','England', 'Islands', 'Scotland', 'Wales']
+      @counties = Array.new
+      @placenames = Array.new
+      @churches = Array.new
     end
-
   end
+
+  def update_counties
+    get_user_info_from_userid
+    set_locations
+    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    @countries = [params[:country]] 
+    session[:selectcountry] = params[:country]
+    @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, "Select County")
+    @placenames = Array.new
+    @churches = Array.new
+    display_info
+  end
+
+  def update_places
+    get_user_info_from_userid
+    set_locations
+    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    @countries = [session[:selectcountry]]
+    if session[:selectcounty].nil?
+      session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]] 
+      places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+    else
+      places = Place.county(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+    end
+    @counties = Array.new
+    @counties << session[:selectcounty]
+   
+    @placenames = places.map{|a| [a.place_name, a.id]}.insert(0, "Select Place")
+    @churches = []
+    display_info
+  end
+
+  def update_churches
+    get_user_info_from_userid
+    set_locations
+    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    @countries = [session[:selectcountry]]
+    @counties = [session[:selectcounty]]
+    place = Place.find(params[:place_id])
+    @placenames = Array.new
+    @placenames  << place.place_name
+    @churches = place.churches.map{|a| [a.church_name, a.id]}.insert(0, "Select Church")
+    display_info
+  end
+
+   def update_registers
+    get_user_info_from_userid
+    set_locations
+    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    @countries = [session[:selectcountry]]
+    @counties = [session[:selectcounty]]
+    church = Church.find(params[:church_id])
+    place = church.place
+    @placenames = Array.new
+    @placenames  << place.place_name
+    @churches = Array.new
+    @churches << church.church_name
+    display_info
+  end
+
 
   def edit
     #edit the headers for a batch
@@ -327,6 +402,12 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  @place.county
     @place_name = @place.place_name
     
+  end
+  def set_locations
+    @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
+    @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value' 
+    @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place_id=" + this.value'
+    @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church_id=" + this.value'  
   end
 
 end

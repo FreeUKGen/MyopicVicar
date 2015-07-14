@@ -85,7 +85,19 @@ class Place
     end
   end
   def self.county(county)
-    where(:chapman_code => county)
+    where(:county => county) 
+  end
+  def self.chapman_code(chapman)
+    where(:chapman_code => chapman) 
+  end
+  def self.place(place)
+    where(:place_name => place) 
+  end
+  def self.not_disabled
+    where(:disabled => "false") 
+  end
+  def self.approved
+    where(:error_flag.ne => "Place name is not approved")
     
   end
 

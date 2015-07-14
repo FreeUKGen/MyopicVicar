@@ -1,0 +1,37 @@
+<p style="text-align: center"><b><%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+ 
+</div>
+ <% end %>
+<section class="island  island--light">
+<p><b>You may change the following parameters but do so with care as they will change where the batch is located. You are changing <%= session[:records]%> records so it may take some time.  </b></p>
+Please wait for selection boxes to fill after selecting the preceeding option.
+  <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
+ <% if  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'%>
+  <%= f.input :country,{ :as => :select,:label => "Select country from following list",:include_blank => false,
+  :required => true, :collection => @countries, :size => 15,
+  :input_html => {'onchange' =>   @update_counties_location}} %>
+  <%= f.input :county,{ :as => :select,:label => "Select county from following list",:include_blank => false,
+  :required => true, :collection => @counties, :size => 15,
+  :input_html => {'onchange' => @update_places_location}  } %>
+
+ <% end %>
+  <%= f.input :place,{ :as => :select,:label => "Select place name from the following list of Approved Names",:include_blank => false,
+  :required => true, :collection => @placenames, :size => 15,
+  :input_html => {'onchange' =>@update_churches_location}  } %>
+  <% if @churches[0] == "Select Church" && @churches.length == 1 %>
+     <%= f.input :church_name,:label => 'Enter a Church Name as there are no churches from which to select. The current church name is already entered. Change if you want a different name.',:input_html => { :size => 50 }%>
+  <% else%>
+   <%= f.input :church_name, { :as => :select,:label => "Select church name from the following list",:include_blank => false, :required => true, :collection => @churches, :size => 15,
+    :input_html => {'onchange' =>@update_registers_location}  } %>
+   <% end%>
+  
+  <%= f.input :register_type, { :as => :select,:label => "Select Type of Register :",:include_blank => false, :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
+ 
+  <%= f.action :submit, :as => :input, :label => 'Relocate'   %>
+  <% end %>
+
+  </section>
