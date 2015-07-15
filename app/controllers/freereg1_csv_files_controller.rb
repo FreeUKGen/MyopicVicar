@@ -55,6 +55,7 @@ class Freereg1CsvFilesController < ApplicationController
     else
       @county =  session[:county]
       set_locations
+      #setting these means that we are a DM
       session[:selectcountry] = nil
       session[:selectcounty] = nil
       @countries = ['Select Country','England', 'Islands', 'Scotland', 'Wales']
@@ -82,9 +83,11 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
     if session[:selectcounty].nil?
+      #means we are a DM selecting the county
       session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]] 
       places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     else
+      #we are a CC
       places = Place.county(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     end
     @counties = Array.new
@@ -98,10 +101,12 @@ class Freereg1CsvFilesController < ApplicationController
   def update_churches
     get_user_info_from_userid
     set_locations
+    p 'church'
+    p params
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
     @counties = [session[:selectcounty]]
-    place = Place.find(params[:place_id])
+    place = Place.find(params[:place])
     @placenames = Array.new
     @placenames  << place.place_name
     @churches = place.churches.map{|a| [a.church_name, a.id]}.insert(0, "Select Church")
@@ -111,10 +116,13 @@ class Freereg1CsvFilesController < ApplicationController
    def update_registers
     get_user_info_from_userid
     set_locations
+    p 'register'
+    p params
+    p params[:church].class
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
     @counties = [session[:selectcounty]]
-    church = Church.find(params[:church_id])
+    church = Church.find(params[:church])
     place = church.place
     @placenames = Array.new
     @placenames  << place.place_name
@@ -192,9 +200,18 @@ class Freereg1CsvFilesController < ApplicationController
     redirect_to :action => 'show'
    end
    if params[:commit] == 'Relocate'
-     @freereg1_csv_file =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
-     flash[:notice] = 'The relocation of the batch was successful'
-     redirect_to :action => 'show'
+    p params
+    p params[:freereg1_csv_file][:church_name].class
+     errors =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
+     if errors[0]
+       flash[:notice] = errors[1]
+       redirect_to :action => "relocate"
+       return
+     else
+      flash[:notice] = 'The relocation of the batch was successful'
+      redirect_to :action => 'show'
+      return
+     end
    end 
   end
   def my_own
@@ -406,8 +423,8 @@ class Freereg1CsvFilesController < ApplicationController
   def set_locations
     @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
     @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value' 
-    @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place_id=" + this.value'
-    @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church_id=" + this.value'  
+    @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
+    @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'  
   end
 
 end

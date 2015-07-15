@@ -345,6 +345,9 @@ class Freereg1CsvFile
 
   def self.update_location(file,param,myown)
     old_location = file.old_location
+    if param[:place] == "Select Place" || param[:church_name] == "Select Church" || param[:county] == "Select County"
+      return[true, "You must make a selection"]
+    end
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].nil? || param[:county].empty?
     new_location = file.new_location(param)
@@ -359,7 +362,7 @@ class Freereg1CsvFile
     new_location[:place].update_attribute(:data_present, true) 
     file.propogate_file_location_change(new_location)
     PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
-    
+    return[false,""]
   end
   def propogate_file_location_change(new_location)
       location_names =[]
