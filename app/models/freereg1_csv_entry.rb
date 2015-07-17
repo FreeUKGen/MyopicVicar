@@ -294,6 +294,7 @@ class Freereg1CsvEntry
      place = self.freereg1_csv_file.register.church.place
      place.search_records.delete(record) 
      self.search_record = nil
+     record.destroy
      self.transform_search_record  
    end
 
