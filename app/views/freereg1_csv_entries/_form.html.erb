@@ -1,4 +1,4 @@
-<%= semantic_form_for(@freereg1_csv_entry ,:html => { :class =>  "grid"}) do |f| %>
+<%= semantic_form_for(setup_freereg1_csv_entry(@freereg1_csv_entry) ,:html => { :class =>  "grid"}) do |f| %>
 
   
 
@@ -58,13 +58,7 @@
   
   <%= f.input :groom_father_surname %> 
  <%= f.input :groom_father_occupation %> 
-  <%= f.inputs :witness_forename,  :witness_surname,:for => :multiple_witnesses, :name => 'Edit Existing Witness #%i', :input_html => { :size => 60 }%>
-  
-  <%= f.inputs :witness_forename,:witness_surname, :for => :multiple_witness, :name => 'Add Additional Witness',  :input_html => { :size => 60}%>
-  
-  
-  
-   <%= f.input :notes, :label => 'Notes in register' ,    :input_html => { :size => 80 }%> 
+  <%= f.input :notes, :label => 'Notes in register' ,    :input_html => { :size => 80 }%> 
    <%= f.input :notes_from_transcriber,  :label => 'Notes from transcriber' ,     :input_html => { :size => 80 }%>
    <%= f.input :record_type , :input_html => { :disabled => true, :size => 10  }  %> 
     <%= f.input :film,      :input_html => { :size => 80 } %>

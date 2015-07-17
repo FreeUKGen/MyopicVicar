@@ -110,26 +110,32 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def edit
-
     load(params[:id])
-
   end
 
   def update
     load(params[:id])
-    record_type = @freereg1_csv_file.record_type
-    params[:freereg1_csv_entry][:record_type] = record_type
+    params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
+    #see if we need to recalculate search record
+    recreate_search_record = Freereg1CsvEntry.detect_change(params[:freereg1_csv_entry],@freereg1_csv_entry.attributes)
+    #remove empty parameters
+    params[:freereg1_csv_entry] = Freereg1CsvEntry.update_parameters(params[:freereg1_csv_entry],@freereg1_csv_entry)
+   
+    #update entry
     @freereg1_csv_entry.update_attributes(params[:freereg1_csv_entry])
+
     if @freereg1_csv_entry.errors.any?
       flash[:notice] = 'The update of the record was unsuccessful'
       render :action => 'edit'
       return
     else
-      file = @freereg1_csv_file
-      file.locked_by_transcriber = "true" if session[:my_own]
-      file.locked_by_coordinator = "true" unless session[:my_own]
-      file.modification_date = Time.now.strftime("%d %b %Y")
-      file.save
+      #update search record if there is a change
+      @freereg1_csv_entry.update_search_record if recreate_search_record  
+      # lock file and note modification date
+      @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own]
+      @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own]
+      @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
+      @freereg1_csv_file.save
       flash[:notice] = 'The change in entry contents was successful, the file is now locked against an upload'
       render :action => 'show'
     end
@@ -150,8 +156,8 @@ class Freereg1CsvEntriesController < ApplicationController
     render "index"
   end
 
-  def load(file_id)
-    @freereg1_csv_entry = Freereg1CsvEntry.find(file_id)
+  def load(entry_id)
+    @freereg1_csv_entry = Freereg1CsvEntry.find(entry_id)
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     display_info
   end

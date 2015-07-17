@@ -18,7 +18,8 @@ class Freereg1CsvEntry
   include Mongoid::Timestamps::Updated::Short
   require 'freereg_validations'
   require 'record_type'
- 
+  require 'freereg_options_constants'
+  require 'multiple_witness'
 
 
   # Fields here represent those currently requested by FreeREG1 at
@@ -98,7 +99,8 @@ class Freereg1CsvEntry
 
 
   embeds_many :multiple_witnesses
-  accepts_nested_attributes_for :multiple_witnesses
+  accepts_nested_attributes_for :multiple_witnesses,
+    reject_if: :all_blank
 
   index({freereg1_csv_file_id: 1,file_line_number:1})
   index({freereg1_csv_file_id: 1, record_digest:1})
@@ -269,8 +271,31 @@ class Freereg1CsvEntry
     equal    
   end
 
+  def self.detect_change(a,b)
+     a = a.delete_if{|k,v| v == ''}
+     b = b.delete_if{|k,v| v.nil?}
+     c = Hash[a.to_a - b.to_a].keys
+     c.each do |field|
+      return true if FreeregOptionsConstants::FORCE_SEARCH_RECORD_RECREATE.include?(field)
+     end
+     return false
+   end
+   def self.update_parameters(params,entry)
+     
+     #clean up old null entries
+    
+     params = params.delete_if{|k,v| v == ''}
+     return params   
+   end
 
-
+   def update_search_record
+     #delete existing and then recreate
+     record = self.search_record
+     place = self.freereg1_csv_file.register.church.place
+     place.search_records.delete(record) 
+     self.search_record = nil
+     self.transform_search_record  
+   end
 
 
   def date_beyond_cutoff?(date_string, cutoff)
@@ -294,8 +319,8 @@ class Freereg1CsvEntry
 
   def embed_witness
     if self.record_type == 'ma'
-      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}]
-      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}]
+      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}] unless self[:witness1_forename].blank? &&  self[:witness1_surname].blank?
+      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
     end
   end
 

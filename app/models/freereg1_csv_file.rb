@@ -342,6 +342,7 @@ class Freereg1CsvFile
     end #end csv
 
   end #end method
+ 
 
   def self.update_location(file,param,myown)
     old_location = file.old_location
