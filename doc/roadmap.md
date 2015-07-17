@@ -4,7 +4,7 @@ This is a roadmap for the development of the FreeREG2 software. Each release is 
 
 Version numbers refer to releases of the FreeREG 2 (FR2) project.
 
-## Version 1.0
+## Version 1.0 (Jan 2015)
 
 ### Targeted actors
 
@@ -19,6 +19,14 @@ Managers and Free UK Genealogy staff
 - UserID list (Users Collection)
 - System Administrator Ability to manage collections
 - All private functions behind security
+- Tools to manage above collections
+- Feedback collection
+- Comments collection
+- Documentation Repository
+- Attic Access
+- Basic usage statistics
+- Server and Database monitoring tools
+- Application error reporting system
 
 ### Changes required in order to effect release
 
@@ -32,7 +40,7 @@ Managers and Free UK Genealogy staff
 - EricD to introduce John Pingram (Executive member responsible for Coordinators/Syndicates) and Mick Claxton (Executive member responsible for Data) to v1.0 system.
 - New UserIDs will need to be entered into F2.
 
-## Version v1.1
+## Version v1.1 (April 2015)
 
 ### Targeted actors
 
@@ -56,11 +64,11 @@ Researchers
 - Login in ability
 - Simple navigation
 - Information about the search
-- Revise search capability
+- Capability to Revise search 
 
 Researcher registration, and the extra features asociated with being registered, are not part of this release.
 
-## Version v1.2
+## Version v1.2 (July 2015)
 
 ### Targeted actors
 
@@ -88,7 +96,7 @@ County coordinators and syndicate coordinators.
 
 - Both sc and cc to have access to their own batches and profile
 
-## Version 1.3
+## Version 1.3 (Sept 2015)
 
 ### Targeted actor
 
@@ -104,7 +112,7 @@ Transcribers
 - Upload a file into FR2 for batch processing.
 - Transcriber registration process
 
-## Version 1.4
+## Version 1.4 (Jan 2016)
 
 ### Targeted actor
 
@@ -123,7 +131,7 @@ Researchers
  - Avoid gateway timeout
 
 
-## Version 1.5
+## Version 1.5 (April 2016)
 
 ### Targeted actor
 
@@ -135,7 +143,7 @@ Coordinators
 - GAP a system to Gaps in Register information.
 - Error and usage reports
 
-## Version 1.6
+## Version 1.6 (July 2016)
 
 ### Targeted actor
 
@@ -148,7 +156,7 @@ Transcribers
 - Mail-groups.
 - Image management for work flow management
 
-## Version 1.7
+## Version 1.7 (Sept 2016)
 
 ### Targeted actor
 
