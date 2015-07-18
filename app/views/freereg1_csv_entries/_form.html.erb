@@ -1,4 +1,10 @@
-<%= semantic_form_for(setup_freereg1_csv_entry(@freereg1_csv_entry) ,:html => { :class =>  "grid"}) do |f| %>
+<div class="island  island--light">
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+   <%= semantic_form_for(setup_freereg1_csv_entry(@freereg1_csv_entry) ,:html => { :class =>  "grid"}) do |f| %>
 
   
 
@@ -91,4 +97,4 @@
       <%= f.action :submit, :as => :input, :label => 'Update'   %>
     
 <% end %>
-
+</div>
