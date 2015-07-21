@@ -6,6 +6,9 @@ class PlacesController < ApplicationController
 
 
   def index
+    if params[:page]
+    session[:place_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
@@ -14,9 +17,9 @@ class PlacesController < ApplicationController
       Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).each do |place|
         @places << place if place.churches.exists?
       end
-      @places = Kaminari.paginate_array(@places).page(params[:page])
+      @places = Kaminari.paginate_array(@places).page(session[:place_index_page] )
     else
-      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(params[:page])
+      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(session[:place_index_page] )
     end
 
     @first_name = session[:first_name]
@@ -36,6 +39,8 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_contries
     @place_name = Place.find(session[:place_id]).place_name
+    @alternateplacenames = @place.alternateplacenames
+    p @alternateplacenames
     @county = session[:county]
     session[:type] = 'edit'
 
