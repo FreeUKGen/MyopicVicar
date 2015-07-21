@@ -605,8 +605,11 @@ class FreeregCsvUpdateProcessor
 
               # do we validate the Place field?
               raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
-              raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" unless Place.where(:chapman_code => @csvdata[0],:place_name => @csvdata[1], :error_flag.ne => "Place name is not approved").exists?
-              data_record[:place] = @csvdata[1]
+              if Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved").exists?
+                data_record[:place] = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved").first.place_name
+              else
+                raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
+              end
               # do we validate the register field
               raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
               data_record[:county] = @csvdata[0]
