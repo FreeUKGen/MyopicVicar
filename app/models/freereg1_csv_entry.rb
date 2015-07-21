@@ -292,9 +292,9 @@ class Freereg1CsvEntry
      #delete existing and then recreate
      record = self.search_record
      place = self.freereg1_csv_file.register.church.place
-     place.search_records.delete(record) 
+     place.search_records.delete(record) unless record.nil?
      self.search_record = nil
-     record.destroy
+     record.destroy unless record.nil?
      self.transform_search_record  
    end
 
