@@ -4,7 +4,6 @@
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %> 
-
 <%= simple_form_for @freereg1_csv_entry, :html => { :class => "grid"}  do |f| %>
 <% case %>
 <% when @freereg1_csv_file.record_type == "ba" %> 

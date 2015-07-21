@@ -3,12 +3,14 @@ class Freereg1CsvEntriesController < ApplicationController
   require 'freereg_validations'
   skip_before_filter :require_login, only: [:show]
   def index
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
+
+
+   if params[:page]
+    session[:entry_index_page] = params[:page]
     end
     display_info
     #@freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1).page(params[:page])
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1).page(session[:entry_index_page])
   end
 
   def show
