@@ -172,7 +172,7 @@ def FreeregValidations.cleanage(field)
 
 
 
- def  FreeregValidations.cleansex(field)
+  def  FreeregValidations.cleansex(field)
   
       return false unless FreeregValidations.cleanname(field)
     case
@@ -197,11 +197,11 @@ def FreeregValidations.cleanage(field)
             
         else
           return false
-      end
+    end
   end
 
 
- def FreeregValidations.cleancondition(field)
+  def FreeregValidations.cleancondition(field)
     return true if field.nil? || field.empty?
      field = field.capitalize
      field = VALID_MARRIAGE_CONDITIONS[field] if VALID_MARRIAGE_CONDITIONS.has_key?(field)
@@ -240,46 +240,38 @@ def FreeregValidations.cleanage(field)
   end
 
   def self.check_year(a)
-     
-   p "yesr checking"
-          p a
-          characters =[]
-          characters = a.split("")
-          p characters
-          if characters.length == 4 #deal with the yyyy and permit the wild character
-            p "4 digits"
-            return true if a =~ WILD_CHARACTER
-            return false  unless (a.to_s =~ VALID_YEAR)
-            unless a.nil?
-                return false if a.to_i > YEAR_MAX || YEAR_MIN > a.to_i
-            end
-            return true
-           end
-          if ((characters.length == 6 || characters.length == 7 || characters.length == 8)  && characters[4] = "/" ) 
+    characters =[]
+    characters = a.split("")
+    if characters.length == 4 #deal with the yyyy and permit the wild character
+      return true if a =~ WILD_CHARACTER
+      return false  unless (a.to_s =~ VALID_YEAR)
+      unless a.nil?
+          return false if a.to_i > YEAR_MAX || YEAR_MIN > a.to_i
+      end
+      return true
+    end
+    if ((characters.length == 6 || characters.length == 7 || characters.length == 8)  && characters[4] = "/" ) 
 
-            #deal with the split year
-            p "split year"
-            p characters
-            year = characters
-            last = 2
-            last = 3 if characters.length == 7
-            last = 4 if characters.length == 8
-            year = characters.reverse.drop(last).reverse.join
-            p year
-            ext = characters.drop(5).join
-            p ext
-            return true if year =~ WILD_CHARACTER
-            return false  unless (year.to_s =~ VALID_YEAR)
-            return false if year.to_i > YEAR_MAX || 1753 < year.to_i
-            return false if ext.to_i < 0 || ext.to_i > 999
-            return true
-          else 
-              P "greater than 7 digits and character position 5 was not / for 6 and 7"
-           return false
-          end
-            p "less than 4 and greater than"
-          return false
-             
+      #deal with the split year
+     
+      year = characters
+      last = 2
+      last = 3 if characters.length == 7
+      last = 4 if characters.length == 8
+      year = characters.reverse.drop(last).reverse.join
+      ext = characters.drop(5).join
+      return true if year =~ WILD_CHARACTER
+      return false  unless (year.to_s =~ VALID_YEAR)
+      return false if year.to_i > YEAR_MAX || 1753 < year.to_i
+      return false if ext.to_i < 0 || ext.to_i > 999
+      return true
+    else 
+        P "greater than 7 digits and character position 5 was not / for 6 and 7"
+     return false
+    end
+      p "less than 4 and greater than 8"
+    return false
+       
   end
          
   def FreeregValidations.year_extract(field)
