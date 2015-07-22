@@ -3,6 +3,7 @@ class UseridDetailsController < ApplicationController
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
   def index
+    
     session[:return_to] = request.fullpath
     get_user_info_from_userid
     session[:my_own] = false

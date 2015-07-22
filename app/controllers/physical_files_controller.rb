@@ -1,9 +1,12 @@
 class PhysicalFilesController < InheritedResources::Base
 
 def index
+  if params[:page]
+    session[:physical_index_page] = params[:page]
+    end
   @sorted_by = session[:sorted_by] unless session[:sorted_by].nil?
   get_user_info_from_userid
-  @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page])
+  @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(session[:physical_index_page])
   p "index"
   p params[:page] 
   session[:paginate] = true

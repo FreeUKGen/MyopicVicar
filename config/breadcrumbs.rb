@@ -33,8 +33,13 @@ crumb :my_options do
    link "My Batches Options", my_own_freereg1_csv_file_path
 end
 
-crumb :files do  
-   link "List of Batches", freereg1_csv_files_path
+crumb :files  do |file|
+  if file.nil?
+    link "List of Batches", freereg1_csv_files_path
+  else
+p  
+   link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}")
+  end
    case
    when session[:my_own]
     parent :my_options, my_own_freereg1_csv_file_path
@@ -59,7 +64,7 @@ crumb :files do
  end
 crumb :show_file do |file|
    link "Batch Information", freereg1_csv_file_path(file)
-   parent :files #parent :my_options, my_own_freereg1_csv_file_path
+   parent :files, file #parent :my_options, my_own_freereg1_csv_file_path
 end
 crumb :edit_file do |file|
    link "Editing Batch Information", edit_freereg1_csv_file_path(file)
@@ -72,7 +77,7 @@ end
 
 #record or entry
 crumb :show_records do |file|
-   link "List of Records", freereg1_csv_entries_path
+   link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}")
    parent :show_file, file 
 end
 crumb :new_record do |entry,file|
