@@ -19,7 +19,14 @@ namespace :foo do
       puts "Completed Checking #{limit} Search records"
     end
   end
-
+ desc "Correct missing modified_place_names list"
+   task :missing_modified_place_names, [:limit] => [:environment] do |t, args|
+   require 'missing_modified_place_names' 
+   Mongoid.unit_of_work(disable: :all) do
+     MissingModifiedPlaceNames.process(args.limit) 
+     puts "Task complete."
+   end
+  end
  
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked

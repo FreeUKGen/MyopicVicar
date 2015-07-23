@@ -1,4 +1,22 @@
 namespace :reports do
+ desc "Unapproved_place_names list"
+   task :unapproved_place_names, [:limit] => [:environment] do |t, args|
+   require 'unapproved_place_names' 
+   Mongoid.unit_of_work(disable: :all) do
+     UnapprovedPlaceNames.process(args.limit) 
+     puts "Task complete."
+   end
+  end
+  
+ desc "Jail references list"
+   task :jail_reference, [:limit] => [:environment] do |t, args|
+   require 'jail_references' 
+   Mongoid.unit_of_work(disable: :all) do
+     JailReferences.process(args.limit) 
+     puts "Task complete."
+   end
+  end
+
 	
 desc "Create a missing locations list"
  task :missing_locations, [:limit] => [:environment] do |t, args|
