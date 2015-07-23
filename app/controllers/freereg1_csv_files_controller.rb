@@ -308,8 +308,12 @@ class Freereg1CsvFilesController < ApplicationController
 
   def by_userid
     #entry by userid
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     session[:page] = request.original_url
     session[:my_own] = false
+    session[:userid_id] = params[:id]
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]

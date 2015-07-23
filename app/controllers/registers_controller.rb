@@ -26,7 +26,7 @@ class RegistersController < ApplicationController
     load(params[:id])
     @records = 0
     @register.freereg1_csv_files.each do |file|
-     @records = @records + file.freereg1_csv_entries.count
+    @records = @records + file.freereg1_csv_entries.count
     end
   end
   def relocate
