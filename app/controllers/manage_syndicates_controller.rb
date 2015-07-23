@@ -5,6 +5,9 @@ class ManageSyndicatesController < ApplicationController
   end
   def new
     clean_session_for_syndicate
+    session.delete(:syndicate)
+    session.delete(:chapman_code)
+    session.delete(:county)
     session[:page] = request.original_url
     get_user_info_from_userid
     get_syndicates_for_selection
@@ -67,6 +70,9 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename"
   end
   def batches_with_errors
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -77,6 +83,9 @@ class ManageSyndicatesController < ApplicationController
     render 'freereg1_csv_files/index'
   end
   def display_by_filename
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -90,6 +99,9 @@ class ManageSyndicatesController < ApplicationController
     redirect_to new_csvfile_path
   end
   def display_by_userid_filename
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -100,6 +112,9 @@ class ManageSyndicatesController < ApplicationController
     render 'freereg1_csv_files/index'
   end
   def display_by_descending_uploaded_date
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -110,6 +125,9 @@ class ManageSyndicatesController < ApplicationController
     render 'freereg1_csv_files/index'
   end
   def display_by_ascending_uploaded_date
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil

@@ -15,11 +15,11 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = session[:sorted_by]
     case 
     when session[:my_own]
-       @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).page(session[:files_index_page])
+       @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).page(params[:page])
     when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" ) 
         @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(session[:files_index_page])
     when !session[:county].nil? && (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical")
-      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(session[:files_index_page]) 
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page]) 
     end
   end
     
@@ -31,7 +31,6 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     set_controls
     display_info
-    p @freereg1_csv_file
     @freereg1_csv_file.adjust_for_collection_information
     @role = session[:role]
     
@@ -235,50 +234,50 @@ class Freereg1CsvFilesController < ApplicationController
 
   def display_my_own_files
     if params[:page]
-    session[:my_own_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted alphabetically by file name)'
     session[:sort] = "file_name ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").page(session[:my_own_index_page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").page(params[:page])
     render :index
   end
   def display_my_error_files
     if params[:page]
-    session[:error_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by number of errors)'
      session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC").page( session[:error_index_page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC").page(params[:page])
     render :index
   end
   def display_my_own_files_by_descending_uploaded_date
     if params[:page]
-    session[:descending_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by descending date of uploading)'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").page( session[:descending_index_page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").page(params[:page])
     render :index
   end
   def display_my_own_files_by_ascending_uploaded_date
     if params[:page]
-    session[:acsending_index_page] = params[:page]
+    session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by ascending date of uploading)'
     session[:sort] = "uploaded_date ASC"
      session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").page( session[:ascending_index_page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").page(params[:page])
     render :index
   end
   def display_my_own_files_by_selection

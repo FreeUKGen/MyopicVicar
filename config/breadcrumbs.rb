@@ -7,12 +7,12 @@ crumb :my_own_userid_detail do |userid_detail|
     parent :root
 end
 
-crumb :edit_userid_detail do |userid_detail|
+crumb :edit_userid_detail do |syndicate, userid_detail|
    link "Edit Profile:#{userid_detail.userid}", userid_detail_path
    if session[:my_own]
      parent :my_own_userid_detail, userid_detail
    else
-     parent :userid_detail, userid_detail
+     parent :userid_detail, syndicate, userid_detail
  end
 end
 crumb :disable_userid_detail do |userid_detail|
@@ -34,11 +34,11 @@ crumb :my_options do
 end
 
 crumb :files  do |file|
+  p session
   if file.nil?
     link "List of Batches", freereg1_csv_files_path
   else
-p  
-   link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}")
+   link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:files_index_page]}")
   end
    case
    when session[:my_own]
@@ -49,22 +49,32 @@ p
    when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
      
      unless  session[:place_name].nil?
-     parent :show_place, session[:county], get_place(session[:chapman_code],session[:place_name])
-   else
-    parent :county_options, session[:county]
-   end
+       parent :show_place, session[:county], get_place(session[:chapman_code],session[:place_name])
+     else
+       parent :county_options, session[:county]
+     end
    when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
      parent :userid_details_listing, session[:syndicate] 
    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical") 
-      parent :userid_details_listing, session[:syndicate] 
+      unless  session[:userid_id].nil?
+       parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+      else
+        parent :syndicate_options, session[:syndicate]
+      end 
    when session[:role] == "system_administrator" || session[:role] == "technical"
        parent :regmanager_userid_options
    end
 
  end
 crumb :show_file do |file|
+  p "in batch"
+  p session
    link "Batch Information", freereg1_csv_file_path(file)
-   parent :files, file #parent :my_options, my_own_freereg1_csv_file_path
+   if session[:register_id]
+    parent :show_register, session[:county], Place.find(session[:place_id]), Church.find(session[:church_id]), Register.find(session[:register_id])
+   else
+    parent :files, file
+   end 
 end
 crumb :edit_file do |file|
    link "Editing Batch Information", edit_freereg1_csv_file_path(file)
@@ -77,7 +87,7 @@ end
 
 #record or entry
 crumb :show_records do |file|
-   link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}")
+   link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}", :page => "#{session[:entry_index_page]}")
    parent :show_file, file 
 end
 crumb :new_record do |entry,file|
@@ -108,10 +118,11 @@ crumb :county_options do |county|
    parent :root
 end
 crumb :county_places do |county,place|
-   if place.nil?
-   link "Places", places_path
-   else
-   link "Places", places_path(:anchor => "#{place.id}")
+   case
+   when place.nil?
+    link "Places", places_path
+   when !place.nil?
+    link "Places", places_path(:anchor => "#{place.id}", :page => "#{session[:place_index_page]}")
    end
     parent :county_options, county
 end
@@ -178,8 +189,14 @@ crumb :syndicate_options do |syndicate|
    link "Syndicate Options(#{syndicate})", select_action_manage_syndicates_path("?syndicate=#{syndicate}")
    parent :root
 end
-crumb :userid_details_listing do |syndicate|
-   link "Syndicate Listing", userid_details_path
+
+crumb :userid_details_listing do |syndicate,user|
+ case
+   when user.nil?
+    link "Syndicate Listing", userid_details_path
+   when !user.nil?
+    link "Syndicate Listing", userid_details_path(:anchor => "#{user.id}", :page => "#{session[:user_index_page]}")
+   end
    case
    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" ||
      session[:role] == "system_administrator" || session[:role] == "technical" ||
@@ -193,17 +210,17 @@ crumb :userid_details_listing do |syndicate|
 end
 
  #Profile 
-crumb :userid_detail do |userid_detail|
+crumb :userid_detail do |syndicate,userid_detail|
    link "Profile:#{userid_detail.userid}", userid_detail_path
    if session[:my_own]
     parent :root
    else
     if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
        session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator"  
-     parent :userid_details_listing, session[:syndicate] 
+     parent :userid_details_listing, session[:syndicate],userid_detail 
     end
     if  session[:role] == "system_administrator" || session[:role] == "technical"
-      parent :userid_details_listing, "all" 
+      parent :userid_details_listing, "all" ,userid_detail
     end
    end
 end

@@ -127,7 +127,9 @@ class RegistersController < ApplicationController
     @church = @register.church
     @church_name = @church.church_name
     session[:church_name] = @church_name
+    session[:church_id] = @church.id
     @place = @church.place
+    session[:place_id] = @place.id
     @county =  session[:county]
     @place_name = @place.place_name
     session[:place_name] = @place_name

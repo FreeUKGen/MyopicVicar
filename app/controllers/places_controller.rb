@@ -17,9 +17,9 @@ class PlacesController < ApplicationController
       Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).each do |place|
         @places << place if place.churches.exists?
       end
-      @places = Kaminari.paginate_array(@places).page(session[:place_index_page] )
+      @places = Kaminari.paginate_array(@places).page(params[:page])
     else
-      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(session[:place_index_page] )
+      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(params[:page])
     end
 
     @first_name = session[:first_name]

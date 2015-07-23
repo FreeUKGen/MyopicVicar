@@ -126,7 +126,6 @@ class ApplicationController < ActionController::Base
 def clean_session_for_county
     session.delete(:freereg1_csv_file_id) 
     session.delete(:freereg1_csv_file_name) 
-    session.delete(:county) 
     session.delete(:place_name) 
     session.delete(:church_name) 
     session.delete(:sort) 
@@ -134,10 +133,8 @@ def clean_session_for_county
     session[:my_own] = false
     session.delete(:freereg) 
     session.delete(:edit) 
-    session.delete(:chapman_code)
     session.delete(:sort)
     session.delete(:sorted_by)
-    session.delete(:county)
     session.delete(:syndicate)
     session.delete(:viewed)
     session.delete(:active_place)
@@ -156,11 +153,18 @@ def clean_session_for_county
     session.delete(:return_to)
     session.delete(:header_errors)
     session.delete(:type)
+    session.delete(:place_index_page)
+    session.delete(:entry_index_page)
+    session.delete(:files_index_page)
+    session.delete(:my_own_index_page)
+    session.delete(:error_index_page)
+    session.delete(:descending_index_page)
+    session.delete(:acsending_index_page)
+
 end
 def clean_session_for_syndicate
     session.delete(:freereg1_csv_file_id) 
     session.delete(:freereg1_csv_file_name) 
-    session.delete(:county) 
     session.delete(:place_name) 
     session.delete(:church_name) 
     session.delete(:sort) 
@@ -168,11 +172,8 @@ def clean_session_for_syndicate
     session[:my_own] = false
     session.delete(:freereg) 
     session.delete(:edit) 
-    session.delete(:chapman_code)
     session.delete(:sort)
     session.delete(:sorted_by)
-    session.delete(:county)
-    session.delete(:syndicate)
     session.delete(:viewed)
     session.delete(:active_place)
     session.delete(:page)

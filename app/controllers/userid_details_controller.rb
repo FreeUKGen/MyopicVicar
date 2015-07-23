@@ -3,7 +3,9 @@ class UseridDetailsController < ApplicationController
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
   def index
-    
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     session[:return_to] = request.fullpath
     get_user_info_from_userid
     session[:my_own] = false
@@ -31,12 +33,16 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
   end
   def all
+    if params[:page]
+     session[:user_index_page] = params[:page]
+    end
     session[:return_to] = request.fullpath
     get_user_info_from_userid
     @userids = UseridDetail.get_userids_for_display('all',params[:page])
     render "index"
   end
   def my_own
+
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
@@ -182,6 +188,9 @@ class UseridDetailsController < ApplicationController
           redirect_to userid_detail_path(userid)
           return
         else
+          if params[:page]
+     session[:user_index_page] = params[:page]
+    end
           @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page])
           render 'index'
           return
@@ -264,6 +273,7 @@ class UseridDetailsController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     @userid = UseridDetail.find(userid_id)
     session[:userid_id] = userid_id
+    @syndicate = session[:syndicate]
     @role = session[:role]
   end
   def next_place_to_go_unsuccessful_create

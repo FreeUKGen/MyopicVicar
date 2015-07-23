@@ -5,9 +5,14 @@ class ManageCountiesController < ApplicationController
   end
   def new
     #get county to be used
+   
     clean_session_for_county
+    session.delete(:county) 
+    session.delete(:chapman_code)
     get_user_info_from_userid
     get_counties_for_selection
+    p "starting county session"
+    p session
     if @number_of_counties == 0
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
@@ -37,6 +42,9 @@ class ManageCountiesController < ApplicationController
   end
 
   def select_action
+     p "starting session"
+    clean_session_for_county
+    p session
     get_user_info_from_userid
     @county =  session[:county]
     @manage_county = ManageCounty.new
@@ -83,6 +91,9 @@ class ManageCountiesController < ApplicationController
   render '_form_for_selection'
   end
   def batches_with_errors
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
@@ -93,6 +104,9 @@ class ManageCountiesController < ApplicationController
     render 'freereg1_csv_files/index'
   end
   def display_by_filename
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
@@ -106,6 +120,9 @@ class ManageCountiesController < ApplicationController
     redirect_to new_csvfile_path
   end
   def display_by_userid_filename
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
@@ -117,6 +134,9 @@ class ManageCountiesController < ApplicationController
   end
 
   def display_by_descending_uploaded_date
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
@@ -128,6 +148,9 @@ class ManageCountiesController < ApplicationController
   end
 
   def display_by_ascending_uploaded_date
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
@@ -152,6 +175,9 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
   def files
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page])
@@ -164,6 +190,9 @@ class ManageCountiesController < ApplicationController
     end
   end
   def places
+    if params[:page]
+    session[:place_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @county = session[:county]
     @places = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params]).all.page(params[:page])
