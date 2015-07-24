@@ -188,7 +188,7 @@ Researchers
 - Researchers can leave bouquets
 
 
-## Features we may include in future releases
+## Features to be included but not yet added to schedule
 
 - Report generator.
 - CCs and SCs can customise the DAP and RAP.
