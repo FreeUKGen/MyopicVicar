@@ -178,7 +178,7 @@ class PlacesController < ApplicationController
     unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
       unless @place.churches.count == 0
         flash[:notice] = 'The Place cannot be disabled because there were Dependant churches; please remove them first'
-        redirect_to places_path
+        redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
         return
       end
     end
@@ -186,9 +186,11 @@ class PlacesController < ApplicationController
     if @place.errors.any? then
       @place.errors
       flash[:notice] = "The disabling of the place was unsuccessful #{@place.errors.messages}"
+      redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
+      return
     end
      flash[:notice] = 'The disabling of the place was successful'
-    redirect_to places_path
+    redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
   end
 
   def get_places_counties_and_contries
