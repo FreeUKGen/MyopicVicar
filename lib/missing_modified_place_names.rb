@@ -16,15 +16,16 @@ include Mongoid::Document
     number = 0
   	Place.each do |place|
       number = number + 1
-      if place.modified_place_name.blank?
+      if place.modified_place_name.blank? || place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase != place.modified_place_name
     	  missing_records = missing_records + 1
+        
+    	  puts "\" #{place.chapman_code}\",\" #{place.place_name}\", \" #{place.modified_place_name}\", missing/incorrect modified place name" 
+        message_file.puts   "\" #{place.chapman_code}\",\" #{place.place_name}\",\" #{place.modified_place_name}\", missing/incorrect modified place name" 
         break if  missing_records == limit
-    	  puts "\" #{place.chapman_code}\",\" #{place.place_name}\", missing modified place name" 
-        message_file.puts   "\" #{place.chapman_code}\",\" #{place.place_name}\", jail grid reference" 
         place.update_attribute(:modified_place_name, place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)
       end # my entry if
     end #place
-    puts "There were #{missing_records} missing modified_place_names in #{number} processed records"
+    puts "There were #{missing_records} missing/incorrect modified_place_names in #{number} processed records"
     
   end
 end

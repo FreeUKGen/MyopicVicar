@@ -7,7 +7,14 @@ namespace :reports do
      puts "Task complete."
    end
   end
-  
+  desc "Multiple batches for a file"
+   task :multiple_batches, [:limit] => [:environment] do |t, args|
+   require 'multiple_batches' 
+   Mongoid.unit_of_work(disable: :all) do
+     MultipleBatches.process(args.limit) 
+     puts "Task complete."
+   end
+  end
  desc "Jail references list"
    task :jail_reference, [:limit] => [:environment] do |t, args|
    require 'jail_references' 

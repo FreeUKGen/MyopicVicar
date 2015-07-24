@@ -15,7 +15,7 @@ include Mongoid::Document
     number = 0
   	Place.each do |place|
       number = number + 1
-      if place.grid_reference == "TQ336805" 
+      if place.grid_reference == "TQ336805" && place.disabled == "false"
     	  missing_records = missing_records + 1
         break if  missing_records == limit
     	  puts "\" #{place.chapman_code}\",\" #{place.place_name}\", jail grid reference" 
