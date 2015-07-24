@@ -24,7 +24,7 @@ include Mongoid::Document
                  puts "\" #{file_name}\",  #{user_files.length}, batches" 
                  message_file.puts   "\" #{file_name}\", #{user_files.length}, batches" 
                  user_files.each do |file|
-                    message_file.puts   "\" #{file_name}\",\" #{file.userid}\", \" #{file.place}\",\" #{file.church_name}\",\" #{file.county}\"" 
+                    message_file.puts   "\" #{file_name}\",\" #{file.userid}\", \" #{file.place}\",\" #{file.church_name}\",\" #{file.register_type}\",\" #{file.county}\"" 
                  end
              end
         end 
