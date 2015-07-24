@@ -156,10 +156,8 @@ def clean_session_for_county
     session.delete(:place_index_page)
     session.delete(:entry_index_page)
     session.delete(:files_index_page)
-    session.delete(:my_own_index_page)
-    session.delete(:error_index_page)
-    session.delete(:descending_index_page)
-    session.delete(:acsending_index_page)
+   
+    
 
 end
 def clean_session_for_syndicate
@@ -191,6 +189,11 @@ def clean_session_for_syndicate
     session.delete(:return_to)
     session.delete(:header_errors)
     session.delete(:type)
+    session.delete(:userid_id)
+    session.delete(:place_index_page)
+    session.delete(:entry_index_page)
+    session.delete(:files_index_page)
+   
   end
   
 end
