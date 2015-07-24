@@ -1229,7 +1229,7 @@ class FreeregCsvUpdateProcessor
                     end
                     @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     @success = true
-                     sleep(30)
+                     sleep(Rails.application.config.sleep.to_f)
                    end #filename loop end
                   time = 0
                   time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
