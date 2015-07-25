@@ -11,8 +11,6 @@ class ManageCountiesController < ApplicationController
     session.delete(:chapman_code)
     get_user_info_from_userid
     get_counties_for_selection
-    p "starting county session"
-    p session
     if @number_of_counties == 0
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
@@ -42,9 +40,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def select_action
-     p "starting session"
     clean_session_for_county
-    p session
     get_user_info_from_userid
     @county =  session[:county]
     @manage_county = ManageCounty.new

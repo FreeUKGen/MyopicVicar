@@ -34,6 +34,7 @@ crumb :my_options do
 end
 
 crumb :files  do |file|
+  p "files"
   p session
   if file.nil?
     link "List of Batches", freereg1_csv_files_path

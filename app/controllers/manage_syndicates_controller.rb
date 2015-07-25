@@ -36,6 +36,7 @@ class ManageSyndicatesController < ApplicationController
 
 
   def select_action
+    clean_session_for_syndicate
     get_user_info_from_userid
     unless params[:syndicate].nil?
       session[:syndicate] = params[:syndicate]
