@@ -108,8 +108,8 @@ class ManageSyndicatesController < ApplicationController
     @who = nil
     @sorted_by = '(Sorted by userid and then filename ascending)'
      session[:sorted_by] = @sorted_by
-    session[:sort] = "userid ASC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("userid ASC, file_name ASC" ).page(params[:page])
+    session[:sort] = "userid_lower_case ASC, file_name ASC"
+    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("userid_lower_case ASC, file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
   def display_by_descending_uploaded_date
