@@ -59,7 +59,7 @@ class PlacesController < ApplicationController
      get_user_info_from_userid
     load(params[:id])
     @place.approve
-    flash[:notice] = "Unapproved flag removed"
+    flash[:notice] = "Unapproved flag removed; Don't forget you now need to update the Grid Ref as well as check that county and country fields are set."
     redirect_to place_path(@place)
   end
 
