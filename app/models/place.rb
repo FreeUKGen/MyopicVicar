@@ -103,15 +103,22 @@ class Place
   end
 
   def grid_reference_or_lat_lon_present_and_valid
+    p self
     #in addition to checking for validities it also sets the location
-    errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present") if ((self[:grid_reference].nil? || self[:grid_reference].empty?) && ((self[:latitude].nil? || self[:latitude].empty?) || (self[:longitude].nil? || self[:longitude].nil?)))
-    unless (self[:grid_reference].nil? || self[:grid_reference].empty?)
+    if self[:grid_reference].blank? 
+      if (self[:latitude].blank? || self[:longitude].blank?)
+      p "both blank"
+        errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
+      else
+      p "lat/lon present "
+        errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
+        errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+      end
+    else  
+      p "Grid ref present"
       errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
     end
-    unless self[:latitude].nil? || self[:longitude].nil?
-      errors.add(:latitude, "The latitude must be between 45 and 70") unless self[:latitude].to_i > 45 && self[:latitude].to_i < 70
-      errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
-    end #lat/lon
+    p errors
   end
 
 
@@ -137,8 +144,8 @@ class Place
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
     #We use the lat/lon if provided and the grid reference if  lat/lon not available
-    change = self.change_lat_lon(params[:place][:latitude],params[:place][:longitude])
-    self.change_grid_reference(params[:place][:grid_reference]) unless change
+    self.change_grid_reference(params[:place][:grid_reference])
+    self.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) if params[:place][:grid_reference].blank?
     #have already saved the appropriate location information so remove those parameters
     params[:place].delete :latitude
     params[:place].delete :longitude
@@ -146,31 +153,29 @@ class Place
     params
  end
   def change_grid_reference(grid)
-    unless grid.blank?
-      unless self.grid_reference == grid
-        self.grid_reference = grid
-        my_location = self.grid_reference.to_latlng.to_a
-        self.latitude = my_location[0]
-        self.longitude = my_location[1]
-        self.location = [self.longitude.to_f,self.latitude.to_f]
-        self.save(:validate => false)
-      end
-    end
+    p "applying" 
+    
+   self.grid_reference = grid
+   self.location = [0,0]
+   unless grid.blank?
+    my_location = self.grid_reference.to_latlng.to_a
+    self.latitude = my_location[0]
+    self.longitude = my_location[1]
+    self.location = [self.longitude.to_f,self.latitude.to_f]
+   end
+   self.save(:validate => false)
   end
 
 
   def change_lat_lon(lat,lon)
-    change = false
+    p "lat/lon"
+    self.latitude = lat
+    self.longitude = lon
+    self.location = [0,0]
     unless lat.blank?  || lon.blank?
-      unless self.latitude == lat && self.longitude == lon
-        self.latitude = lat
-        self.longitude = lon
         self.location = [self.longitude.to_f,self.latitude.to_f]
-        self.save(:validate => false)
-        change = true
-      end
     end
-    change
+    self.save(:validate => false)
   end
 
 
