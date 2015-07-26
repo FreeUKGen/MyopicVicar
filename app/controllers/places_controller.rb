@@ -120,7 +120,6 @@ class PlacesController < ApplicationController
       @place.save_to_original
       @place.adjust_location_before_applying(params,session)
       @place.update_attributes(params[:place])
-      p @place.errors
       if @place.errors.any?  then
         flash[:notice] = 'The update of the Place was unsuccessful'
         render :action => 'edit'

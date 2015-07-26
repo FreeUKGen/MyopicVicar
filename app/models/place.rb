@@ -103,22 +103,17 @@ class Place
   end
 
   def grid_reference_or_lat_lon_present_and_valid
-    p self
     #in addition to checking for validities it also sets the location
     if self[:grid_reference].blank? 
       if (self[:latitude].blank? || self[:longitude].blank?)
-      p "both blank"
         errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
       else
-      p "lat/lon present "
         errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
         errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
       end
     else  
-      p "Grid ref present"
       errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
     end
-    p errors
   end
 
 
@@ -153,8 +148,6 @@ class Place
     params
  end
   def change_grid_reference(grid)
-    p "applying" 
-    
    self.grid_reference = grid
    self.location = [0,0]
    unless grid.blank?
@@ -168,7 +161,6 @@ class Place
 
 
   def change_lat_lon(lat,lon)
-    p "lat/lon"
     self.latitude = lat
     self.longitude = lon
     self.location = [0,0]
