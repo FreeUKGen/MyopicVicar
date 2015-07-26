@@ -296,7 +296,7 @@ class Freereg1CsvFile
       record_type = RecordType.display_name(file.record_type).upcase + 'S'
       csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
       # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
-      csv << ['#','CCCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
+      csv << ['#','CCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
       # eg #,Credit,Libby,email address,,,,,,
       csv << ['#','CREDIT',file.credit_name,file.credit_email]
       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
