@@ -266,7 +266,7 @@ def FreeregValidations.cleanage(field)
       return false if ext.to_i < 0 || ext.to_i > 999
       return true
     else 
-        P "greater than 7 digits and character position 5 was not / for 6 and 7"
+        p "greater than 7 digits and character position 5 was not / for 6 and 7"
      return false
     end
       p "less than 4 and greater than 8"
