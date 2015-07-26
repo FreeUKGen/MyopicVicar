@@ -39,8 +39,7 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_contries
     @place_name = Place.find(session[:place_id]).place_name
-    @alternateplacenames = @place.alternateplacenames
-    p @alternateplacenames
+    @place.alternateplacenames.build
     @county = session[:county]
     session[:type] = 'edit'
 
@@ -116,11 +115,9 @@ class PlacesController < ApplicationController
 
   def update
     load(params[:id])
-    case
+   case
     when params[:commit] == 'Submit'
       @place.save_to_original
-      @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name].blank?
-      @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
       @place.adjust_location_before_applying(params,session)
       @place.update_attributes(params[:place])
       if @place.errors.any?  then
@@ -155,9 +152,7 @@ class PlacesController < ApplicationController
       #we should never get here but just in case
       flash[:notice] = 'The change to the Place was unsuccessful'
       redirect_to place_path(@place)
-
-    end
-
+   end
   end
 
 

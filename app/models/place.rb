@@ -40,11 +40,12 @@ class Place
   field :master_place_lon, type: String
   field :error_flag,type: String, default: nil
   field :data_present, type: Boolean, default: false
+  field :alternate, type: String, default: ""
 
 
   embeds_many :alternateplacenames
 
-  accepts_nested_attributes_for :alternateplacenames
+  accepts_nested_attributes_for :alternateplacenames, allow_destroy: true,  reject_if: :all_blank
 
 
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
@@ -135,8 +136,6 @@ class Place
  def adjust_location_before_applying(params,session)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
-    self.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
-    self.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
     #We use the lat/lon if provided and the grid reference if  lat/lon not available
     change = self.change_lat_lon(params[:place][:latitude],params[:place][:longitude])
     self.change_grid_reference(params[:place][:grid_reference]) unless change
@@ -334,7 +333,7 @@ class Place
     return [false, ""]
   end
   def approve
-    self.update_attribute(:error_flag, nil) 
+    self.update_attributes(:error_flag => nil,:modified_place_name => self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)  
   end
 
   def has_input?
