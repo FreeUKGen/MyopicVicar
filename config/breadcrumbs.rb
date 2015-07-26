@@ -34,8 +34,7 @@ crumb :my_options do
 end
 
 crumb :files  do |file|
-  p "files"
-  p session
+  
   if file.nil?
     link "List of Batches", freereg1_csv_files_path
   else
@@ -68,9 +67,7 @@ crumb :files  do |file|
 
  end
 crumb :show_file do |file|
-  p "in batch"
-  p session
-   link "Batch Information", freereg1_csv_file_path(file)
+  link "Batch Information", freereg1_csv_file_path(file)
    if session[:register_id]
     parent :show_register, session[:county], Place.find(session[:place_id]), Church.find(session[:church_id]), Register.find(session[:register_id])
    else

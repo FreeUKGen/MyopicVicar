@@ -210,11 +210,12 @@ def FreeregValidations.cleanage(field)
   end
 
   def FreeregValidations.cleandate(field)
+    
      return true if field.nil? || field.empty?
      return false unless FreeregValidations.cleannumeric(field)
-       
       a = field.split(" ")
       case
+       
       when a.length == 3
         #work with  dd mmm yyyy/y
         #firstly deal with the dd and allow the wild character
@@ -228,22 +229,26 @@ def FreeregValidations.cleanage(field)
      
       when a.length == 2
          #deal with dates that are mmm yyyy firstly the mmm then the split year
-         return false unless a[0].to_s =~ WILD_CHARACTER || a[1].to_s =~ WILD_CHARACTER
-         return false unless VALID_MONTH.include?(Unicode::upcase(a[0])) 
+         return false unless VALID_MONTH.include?(Unicode::upcase(a[0])) || a[0].to_s =~ WILD_CHARACTER
          check = FreeregValidations.check_year(a[1])
          return check       
       when a.length == 1
           #deal with dates that are year only
           check = FreeregValidations.check_year(a[0])
           return check
+      else
+        p "unknown date format"
+        return false
       end
+
   end
 
   def self.check_year(a)
+    return true if a =~ WILD_CHARACTER
     characters =[]
     characters = a.split("")
     if characters.length == 4 #deal with the yyyy and permit the wild character
-      return true if a =~ WILD_CHARACTER
+     
       return false  unless (a.to_s =~ VALID_YEAR)
       unless a.nil?
           return false if a.to_i > YEAR_MAX || YEAR_MIN > a.to_i
@@ -270,8 +275,7 @@ def FreeregValidations.cleanage(field)
      return false
     end
       p "less than 4 and greater than 8"
-    return false
-       
+    return false      
   end
          
   def FreeregValidations.year_extract(field)
