@@ -52,8 +52,13 @@
     <%= f.input :groom_father_forename %> 
     <%= f.input :groom_father_surname %> 
     <%= f.input :groom_father_occupation %> 
-    <%= f.input :notes, :label => 'Notes in register', :input_html => { :size => 80 }%> 
-    <%= f.input :notes_from_transcriber,:label => 'Notes from transcriber',:input_html => { :size => 80}%>
+    <%= f.simple_fields_for :multiple_witnesses do |multiple| %>
+           <%= multiple.input :witness_forename,:input_html => { :size => 30 } %> 
+           <%= multiple.input :witness_surname,:input_html => { :size => 30 } %> 
+           <%= multiple.input :_destroy, :as => :boolean %>  
+      <% end %>
+    <%= f.input :notes, :label => 'Notes from register', as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%> 
+    <%= f.input :notes_from_transcriber,:label => 'Notes from transcriber',as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%>
     <%= f.input :film %>
     <%= f.input :film_number %>
     <%= f.input :record_type , :input_html => { :disabled => true  }  %> 

@@ -3,8 +3,6 @@ class Freereg1CsvEntriesController < ApplicationController
   require 'freereg_validations'
   skip_before_filter :require_login, only: [:show]
   def index
-
-
    if params[:page]
     session[:entry_index_page] = params[:page]
     end
@@ -17,13 +15,7 @@ class Freereg1CsvEntriesController < ApplicationController
     load(params[:id])
     @forenames = Array.new
     @surnames = Array.new
-    @multiple_witness = @freereg1_csv_entry.multiple_witnesses.all
-    @multiple_witness.each do |witness|
-      name = witness.witness_forename
-      @forenames << name
-      name = witness.witness_surname
-      @surnames << name
-    end
+    
   end
   def error
     session[:error_id] = params[:id]
@@ -113,6 +105,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def edit
     load(params[:id])
+    @freereg1_csv_entry.multiple_witnesses.build 
   end
 
   def update
@@ -164,7 +157,6 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
   end
   def destroy
-    p params
    load(params[:id])
    return_location = @freereg1_csv_entry.freereg1_csv_file
      @freereg1_csv_entry.destroy

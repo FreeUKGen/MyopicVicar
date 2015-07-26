@@ -152,17 +152,17 @@
     <tr>
       <td>Occupation of the groom's father</td><td >   <%= @freereg1_csv_entry.groom_father_occupation %></td>
     </tr>
-    <tr>
-      <% if @forenames%>
-      <% i = 0 %>
-      <% while i < @forenames.length %>
-      <td>Forename for witness</td><td >  <%=  @forenames[i] %></td>
-    </tr>
-    <td>Surname for witness</td><td > <%=  @surnames[i] %></td>
-  </tr>
-  <% i = i + 1 %>
-  <% end%>
-  <% end%>
+    
+
+      <%  @freereg1_csv_entry.multiple_witnesses.each do |witness|%>
+      <tr>
+       <td>Forename for witness</td><td >  <%=  witness.witness_forename %></td> 
+        </tr> 
+        <tr>   
+       <td>Surname for witness</td><td > <%= witness.witness_surname %></td>
+     </tr>
+ 
+    <% end%>
   
   <tr>
     <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>

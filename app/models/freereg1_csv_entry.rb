@@ -99,7 +99,7 @@ class Freereg1CsvEntry
 
 
   embeds_many :multiple_witnesses
-  accepts_nested_attributes_for :multiple_witnesses,
+  accepts_nested_attributes_for :multiple_witnesses,allow_destroy: true, 
     reject_if: :all_blank
 
   index({freereg1_csv_file_id: 1,file_line_number:1})
