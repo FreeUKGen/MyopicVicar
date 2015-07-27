@@ -90,15 +90,13 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
           'Juvenis' => 'Minor'}
 
 
-def FreeregValidations.cleantext(field)
+  def FreeregValidations.cleantext(field)
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
      return true if field =~ VALID_TEXT
-       return true  
-     
-   
+       return true     
   end
-def FreeregValidations.cleanname(field)
+  def FreeregValidations.cleanname(field)
  
      #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
@@ -119,7 +117,7 @@ def FreeregValidations.cleanname(field)
   # check that the age is in one of several acceptable formats - infant
   # 1d (day), 2w (week), 3m (month), 2y5m (2 years, 5 months), or - for 'no age'
   # max 30d, 30w, 30m and 150y
-def FreeregValidations.cleanage(field)
+  def FreeregValidations.cleanage(field)
 
      #the planning team requested this code be deactivated for burials
     return true if field.nil? || field.empty?
@@ -166,8 +164,7 @@ def FreeregValidations.cleanage(field)
         
         else
               return false
-         end
-         
+        end      
   end
 
 
@@ -237,7 +234,7 @@ def FreeregValidations.cleanage(field)
           check = FreeregValidations.check_year(a[0])
           return check
       else
-        p "unknown date format"
+       log_messenger( "unknown date format")
         return false
       end
 
@@ -255,26 +252,25 @@ def FreeregValidations.cleanage(field)
       end
       return true
     end
-    if ((characters.length == 6 || characters.length == 7 || characters.length == 8)  && characters[4] = "/" ) 
-
+    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] = "/" ) 
       #deal with the split year
-     
       year = characters
       last = 2
       last = 3 if characters.length == 7
-      last = 4 if characters.length == 8
+      last = 4 if characters.length == 8 
+      last = 5 if characters.length == 9
       year = characters.reverse.drop(last).reverse.join
       ext = characters.drop(5).join
       return true if year =~ WILD_CHARACTER
       return false  unless (year.to_s =~ VALID_YEAR)
       return false if year.to_i > YEAR_MAX || 1753 < year.to_i
-      return false if ext.to_i < 0 || ext.to_i > 999
+      return false if ext.to_i < 0 || ext.to_i > 1753
       return true
     else 
-        p "greater than 7 digits and character position 5 was not / for 6 and 7"
+        log_messenger(  "greater than 9 digits and character position 5 was not / ")
      return false
     end
-      p "less than 4 and greater than 8"
+      log_messenger( "less than 4 and greater than 9")
     return false      
   end
          
