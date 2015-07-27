@@ -88,7 +88,7 @@ class Freereg1CsvEntry
 
   belongs_to :freereg1_csv_file, index: true
 
-  before_save :embed_witness, :add_digest
+  before_save :add_digest
 
 
   before_destroy do |entry|

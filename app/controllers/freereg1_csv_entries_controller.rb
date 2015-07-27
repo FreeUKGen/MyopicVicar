@@ -101,6 +101,7 @@ class Freereg1CsvEntriesController < ApplicationController
     file_line_number = @freereg1_csv_file.records.to_i + 1
     line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
+    @freereg1_csv_entry.multiple_witnesses.build 
   end
 
   def edit

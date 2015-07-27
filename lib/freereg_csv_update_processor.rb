@@ -954,6 +954,10 @@ class FreeregCsvUpdateProcessor
             def self.create_db_record_for_entry(data_record)
               # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
               entry = Freereg1CsvEntry.new(data_record)
+              if data_record[:record_type] == "ma"
+                entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
+                entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+              end
               entry.freereg1_csv_file = @freereg1_csv_file
               entry.save
               if entry.errors.any?
