@@ -456,8 +456,25 @@ class Freereg1CsvFile
 
     def clean_up
       self.update_number_of_files
-      place = self.register.church.place
-      Place.recalculate_last_amended_date(place)
+      register = self.register
+      if register.nil?
+        log_messenger("#{self.id} does not belong to a register ") 
+        return
+      else
+        church = register.church
+        if church.nil?
+          log_messenger("#{register.id} does not belong to a church ")
+          return
+        else
+          place = church.place
+          if place.nil?
+            log_messenger("#{church.id} does not belong to a place ")
+            return
+          else
+            Place.recalculate_last_amended_date(place)
+          end
+        end
+      end
     end
 
     def recalculate_last_amended

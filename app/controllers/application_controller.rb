@@ -102,6 +102,10 @@ class ApplicationController < ActionController::Base
     
     logger.warn(log_message)    
   end
+  def log_messenger(message)
+    log_message = message
+    logger.warn(log_message) 
+  end   
   def get_places_for_menu_selection
     placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = Array.new
