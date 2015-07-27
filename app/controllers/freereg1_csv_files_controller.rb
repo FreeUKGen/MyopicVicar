@@ -41,12 +41,14 @@ class Freereg1CsvFilesController < ApplicationController
     session[:selectcountry] = nil
     session[:selectcounty] = nil
     @records = @freereg1_csv_file.freereg1_csv_entries.count
-    if @records.to_i >= 4000
-      flash[:notice] = 'There are too mamy records for an on-line relocation'
+    set_controls
+    max_records = 4000
+    max_records = 15000 if @user.person_role == "data_manager" || @user.person_role == "system_administrator"
+    if @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to :action => 'show' and return
     end
     session[:records] = @records
-    set_controls
     display_info
     get_user_info_from_userid
     unless  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
@@ -104,8 +106,6 @@ class Freereg1CsvFilesController < ApplicationController
   def update_churches
     get_user_info_from_userid
     set_locations
-    p 'church'
-    p params
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
     @counties = [session[:selectcounty]]
@@ -119,9 +119,6 @@ class Freereg1CsvFilesController < ApplicationController
    def update_registers
     get_user_info_from_userid
     set_locations
-    p 'register'
-    p params
-    p params[:church].class
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
     @counties = [session[:selectcounty]]
@@ -203,8 +200,6 @@ class Freereg1CsvFilesController < ApplicationController
     redirect_to :action => 'show'
    end
    if params[:commit] == 'Relocate'
-    p params
-    p params[:freereg1_csv_file][:church_name].class
      errors =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
      if errors[0]
        flash[:notice] = errors[1]
