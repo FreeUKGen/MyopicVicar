@@ -1,59 +1,19 @@
 <section class="island  island--light">
-
-
-<%= semantic_form_for(@register, :html => { :class => "grid"}) do |f| %>
-<%= f.semantic_errors :class => "validation-list__error" %>
-
-  <%= f.input :quality,:label => "Quality of the Register images :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-  <%= f.input :source, :label => "Source of the Register images :",
-              :input_html =>
-              {:size => 80 , :class => "text-input"},
-              :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              }%>
-  <%= f.input :copyright, :label => "Any copyright issues ?",
-              :input_html =>
-               {:size => 60 , :class => "text-input"},
-              :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              }%>
-  <%= f.input :register_notes, :label => "Notes about Register :",
-              :input_html =>
-               { :size => 60 , :class => "text-input"},
-              :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              }%>
-  <%= f.input :status,  :label => "Status or transcriptions (i.e. Underway/Finished etc :",
-              :input_html =>
-              {  :size => 60, :class => "text-input"},
-               :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              }%>
-   <%= f.input :minimum_year_for_register, :label => "First permitted year :",
-              :input_html => 
-              { :length => 4, :size => 4,  :class => "text-input" }, 
-               :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              } %>
-  <%= f.input :maximum_year_for_register, :label => "Last permitted year :",
-              :input_html => 
-              { :length => 4, :size => 4,  :class => "text-input" }, 
-               :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              } %>
-  <%= f.input :last_amended,:label => "System generated date of last amended record :",
-              :input_html => 
-              { :disabled => true, :size => 20 ,:class => "text-input"},
-              :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              }%>
-<br>
-  
-  <%= f.action :submit, :as => :input, :label => 'Submit' %>
+<div class="grid">
+<%= simple_form_for @register do |f| %>
+ <% if controller.action_name == 'new' %>
+<%= f.input :register_type, :include_blank => true, :required => true, :collection => RegisterType::OPTIONS, :input_html => { :size => 10, :class => "grid__item  one-quarter "}%>
+  <% end %>
+  <%= f.input :quality,:label => "Quality of the Register images",:input_html => { :size => 40 } %>
+  <%= f.input :source, :label => "Source of the Register images",:input_html => { :size => 40 } %>
+  <%= f.input :copyright, :label => "Copyright issues",:input_html => { :size => 40 } %>
+  <%= f.input :status,  :label => "Status or transcriptions", :hint =>"Underway/Finished",:input_html => { :size => 40 } %>
+   <%= f.input :minimum_year_for_register, :label => "First permitted year",:input_html => { :size => 10 } %>
+  <%= f.input :maximum_year_for_register, :label => "Last permitted year",:input_html => { :size => 10 } %>
+  <%= f.input :register_notes, :label => "Notes about Register",as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%>
+  <%= f.input :last_amended,:label => "Last date when data for the place was updated", :hint =>"System generated ",:input_html => { :disabled => true, :size => 30  }%>
+   <%= f.button :submit, 'Submit'   %>
  <% end %>
+ </div>
  </section>
  
