@@ -258,7 +258,6 @@ class UseridDetailsController < ApplicationController
       next_place_to_go_unsuccessful_update
     else
       Freereg1CsvFile.delete_userid(@userid.userid)
-      p @userid
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
       redirect_to :action => 'options'

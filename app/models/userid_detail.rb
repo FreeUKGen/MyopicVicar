@@ -64,7 +64,6 @@ class UseridDetail
   end
 
   def write_userid_file
-    p self
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)

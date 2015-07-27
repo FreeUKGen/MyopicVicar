@@ -133,7 +133,7 @@ class Freereg1CsvEntry
     end
     md5 = OpenSSL::Digest::MD5.new
     if string.nil?
-      p "#{self._id}, nil string"
+     p "#{self._id}, nil string"
     else
     the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
     end
@@ -606,9 +606,7 @@ class Freereg1CsvEntry
         self.error_flag = "true"
       end
     else
-      p 'freereg entry validations'
-      p self
-      p 'no record type'
+      p "freereg entry validations #{self.id} no record type"
     end
   end
 

@@ -50,8 +50,6 @@ class Feedback
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
-      p 'response from git hub'
-      p response
       self.github_issue_url = response[:html_url]
       self.save!
     else

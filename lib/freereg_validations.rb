@@ -234,7 +234,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
           check = FreeregValidations.check_year(a[0])
           return check
       else
-       log_messenger( "unknown date format")
+       p "unknown date format"
         return false
       end
 
@@ -267,10 +267,10 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
       return false if ext.to_i < 0 || ext.to_i > 1753
       return true
     else 
-        log_messenger(  "greater than 9 digits and character position 5 was not / ")
+        p  "greater than 9 digits and character position 5 was not / "
      return false
     end
-      log_messenger( "less than 4 and greater than 9")
+      p "less than 4 and greater than 9"
     return false      
   end
          
