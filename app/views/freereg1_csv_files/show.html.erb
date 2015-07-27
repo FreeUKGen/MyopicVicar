@@ -68,7 +68,7 @@
       <td>Syndicate transcribed for </td><td class="weight--semibold">  <%= @freereg1_csv_file.transcriber_syndicate %></td>
     </tr>
     <tr>
-      <td>Date of upload </td><td class="weight--semibold"> <%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") %></td>
+      <td>Date of upload </td><td class="weight--semibold"> <%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") unless @freereg1_csv_file.uploaded_date.nil? %></td>
     </tr>
     <%case%>
     <%when @freereg1_csv_file.error == 0%>

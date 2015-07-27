@@ -52,7 +52,7 @@
        </tr>
 
        <tr>
-         <td>Last amended:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") %></td>   
+         <td>Last amended:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>   
        </tr>
        <tr>
          <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   

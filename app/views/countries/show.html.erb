@@ -39,7 +39,7 @@
    <td>Country Notes</td><td > <%= @country.country_notes %>  </td>   
    </tr>
  <tr>
-   <td>Country Last Updated</td><td > <%= @country.u_at.strftime("%d %b %Y") %>  </td>   
+   <td>Country Last Updated</td><td > <%= @country.u_at.strftime("%d %b %Y") unless  @country.u_at.nil?%>  </td>   
    </tr>
 
 </table>
