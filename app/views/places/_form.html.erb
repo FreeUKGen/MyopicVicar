@@ -5,7 +5,7 @@
     </div>
    <% end %>  
 <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>  
-      <% if session[:type] == 'new' %>
+      <% if controller.action_name == 'new' %>
           <%# This option is only for data manager%>
           <p style="color:red">Please take extreme care with the Place Name to get it correct!</p>
           <%= f.input :place_name, :label => "Enter the Place Name" %>

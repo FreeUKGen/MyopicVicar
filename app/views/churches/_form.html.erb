@@ -1,19 +1,24 @@
-<%= semantic_form_for  @church, :html => { :class => "grid"}   do |f| %>
+<%= simple_form_for  @church, :html => { :class => "grid"}   do |f| %>
 
- <%= f.inputs :alternate_name, :for => :alternatechurchnames, :name => 'Edit Existing Alternate Church Name #%i', :input_html => { :size => 60 }%>
-       
-  <%= f.inputs :alternate_name, :for => :alternatechurchname, :name => 'Add Alternate Church Name',  :size => 60 %>
-
+  <% if controller.action_name == 'new' %>
+    <p style="color:red">Please take extreme care with the Church Name to get it correct!</p>
+          <%= f.input :church_name, :label => "Enter the Church Name" %>
+  <% end %>
+  <%= f.simple_fields_for :alternatechurchnames do |alternate| %>
+           <%= alternate.input :alternate_name,:label => "Other Name for Church",:hint => "Alternative name by which church may be known. Use the destroy box below to delete this entry",:input_html => { :size => 30 } %> 
+           <%= alternate.input :_destroy, :as => :boolean %>  
+  <% end %>
+ 
   <%= f.input :denomination, :label => "Denomination of the Church :",:input_html => { :size => 60 }%>
 
   <%= f.input :location, :label => "The Church Location :",     :input_html => { :size => 60 } %>
  
   <%= f.input :website, :label => "The Church Website :",     :input_html => { :size => 60 } %>
-  <%= f.input :church_notes, :label => "Notes about the church :",
-              :input_html =>
-               { :size => 100 } %>
-  <%= f.input :last_amended, :label => "The last date when a register in the church was updated (System generated) :",:input_html => { :disabled => true, :size => 20  }%>
+  <%= f.input :church_notes, :label => "Notes about the church :",as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"} %>
+  <%= f.input :last_amended, :label => "Last date when data for the place was updated", :hint =>"System generated ",:input_html => { :disabled => true, :size => 20  }%>
 
-   <%= f.action :submit, :as => :input, :label => 'Submit'   %>
+    
+  <%= f.button :submit, 'Submit'   %>
+  
 <% end %>
 <br>

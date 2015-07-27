@@ -29,9 +29,7 @@ class PlacesController < ApplicationController
 
   def show
     load(params[:id])
-    @places = Place.where( :chapman_code => @chapman_code,  :disabled.ne => "true" ).all.order_by( place_name: 1)
-    session[:parameters] = params
-    @names = @place.get_alternate_place_names
+    
 
   end
 
@@ -41,7 +39,7 @@ class PlacesController < ApplicationController
     @place_name = Place.find(session[:place_id]).place_name
     @place.alternateplacenames.build
     @county = session[:county]
-    session[:type] = 'edit'
+ 
 
   end
   def rename
@@ -88,7 +86,7 @@ class PlacesController < ApplicationController
     get_places_counties_and_contries
     @place = Place.new
     get_user_info_from_userid
-    session[:type] = 'new'
+   
   end
 
   def create

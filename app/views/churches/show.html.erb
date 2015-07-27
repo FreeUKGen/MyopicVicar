@@ -33,15 +33,11 @@
           <th class="caps">Value</th>
         </tr>
         <tr>
-          <td>Church name :</td><td class="weight--semibold"><%= @church.church_name %></td>
-        </tr>
-        <% if @names%>
-        <% @names.each do |name| %>
-        <% unless name == ''%>
-        <tr><td>Other possible church names :</td><td class="weight--semibold"><%= name %> </td> </tr>
-        <% end%>
-        <% end%>
-        <% end%>
+        <td>Church name :</td><td class="weight--semibold"><%= @church.church_name %></td>
+
+          <%  @church.alternatechurchnames.each do |church|%>
+            <tr><td>Other possible church name :</td><td class="weight--semibold"><%= church.alternate_name %> </td> </tr>
+        <% end%>       
         <tr>
           <td>Denomination of the Church :</td><td class="weight--semibold"><%= @church.denomination %></td>
         </tr>

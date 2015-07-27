@@ -5,58 +5,24 @@ class ChurchesController < InheritedResources::Base
   require 'chapman_code'
 
   def show
-
-    @chapman_code = session[:chapman_code]
-    @places = Place.where( :chapman_code => @chapman_code ,:disabled.ne => "true").all.order_by( place_name: 1)
-    @county = session[:county]
-    @first_name = session[:first_name]
-
-
-    session[:parameters] = params
-    load(params[:id])
-    @names = Array.new
-    @alternate_church_names = @church.alternatechurchnames.all
-
-    @alternate_church_names.each do |acn|
-      name = acn.alternate_name
-      @names << name
-    end
-    @place = Place.find(session[:place_id])
-    @place_name = @place.place_name
+   load(params[:id]) 
+   @place = Place.find(session[:place_id])
+   @place_name = @place.place_name
   end
 
   def new
     @church = Church.new
     @county = session[:county]
-    @place = Place.where(:chapman_code => ChapmanCode.values_at(@county),:disabled.ne => "true").all.order_by( place_name: 1)
-    @places = Array.new
-    @place.each do |place|
-      @places << place.place_name
-    end
     @place = Place.find(session[:place_id])
     @place_name = @place.place_name
-    @county = session[:county]
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
-
+    @church.alternatechurchnames.build
   end
 
   def create
-    if params[:church][:place_name].nil?
-      #Only data_manager has ability at this time to change Place so need to use the cuurent place
-      place = Place.find(session[:place_id])
-    else
-      place = Place.where(:chapman_code => ChapmanCode.values_at(session[:county]),:place_name => params[:church][:place_name]).first
-    end
-    place.churches.each do |church|
-      if church.church_name == params[:church][:church_name]
-        flash[:notice] = "A church with that name already exists in this place #{place.place_name}"
-        redirect_to new_church_path
-        return
-      end
-    end
-    church = Church.new(params[:church])
-    church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name] == ''
+    church = Church.new(params[:church]) 
+    place = Place.find(session[:place_id])
     place.churches << church
     place.save
     # church.save
@@ -71,10 +37,11 @@ class ChurchesController < InheritedResources::Base
   end
 
   def edit
+    
     get_user_info_from_userid
     load(params[:id])
     @county = session[:county]
-
+    @church.alternatechurchnames.build
   end
 
 
@@ -129,8 +96,6 @@ class ChurchesController < InheritedResources::Base
 
     case
     when params[:commit] == 'Submit'
-      @church.alternatechurchnames_attributes = [{:alternate_name => params[:church][:alternatechurchname][:alternate_name]}] unless params[:church][:alternatechurchname][:alternate_name].blank?
-      @church.alternatechurchnames_attributes = params[:church][:alternatechurchnames_attributes] unless params[:church][:alternatechurchnames_attributes].nil?
       @church.update_attributes(params[:church])
       if @church.errors.any?  then
         flash[:notice] = 'The update of the Church was unsuccessful'
