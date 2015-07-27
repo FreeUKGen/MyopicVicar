@@ -53,7 +53,7 @@ class PlacesController < ApplicationController
 
   def approve
     session[:return_to] = request.referer
-     get_user_info_from_userid
+    get_user_info_from_userid
     load(params[:id])
     @place.approve
     flash[:notice] = "Unapproved flag removed; Don't forget you now need to update the Grid Ref as well as check that county and country fields are set."
@@ -86,6 +86,7 @@ class PlacesController < ApplicationController
     get_places_counties_and_contries
     @place = Place.new
     get_user_info_from_userid
+    @place.alternateplacenames.build
    
   end
 
@@ -96,7 +97,6 @@ class PlacesController < ApplicationController
     @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     #use the lat/lon if present if not calculate from the grid reference
     @place.add_location_if_not_present
-    @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.save
     if @place.errors.any?
       #we have errors on the creation

@@ -6,13 +6,12 @@
    <% end %>  
 <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>  
       <% if controller.action_name == 'new' %>
-          <%# This option is only for data manager%>
-          <p style="color:red">Please take extreme care with the Place Name to get it correct!</p>
-          <%= f.input :place_name, :label => "Enter the Place Name" %>
-          <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
-          :required => true, :collection => @counties,:size => 15 } %>
+          <%# This option is only for data manager%> 
           <%= f.input :country,{ :as => :select,:label => "Select the Country",:include_blank => false,
           :required => true, :collection => @countries,:size => 15 } %>
+           <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
+          :required => true, :collection => @counties,:size => 15 } %>
+          <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!"  %>
       <% end %>
       <%= f.simple_fields_for :alternateplacenames do |alternate| %>
            <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => { :size => 30 } %> 
