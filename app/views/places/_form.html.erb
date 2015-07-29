@@ -7,10 +7,10 @@
 <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>  
       <% if controller.action_name == 'new' %>
           <%# This option is only for data manager%> 
-          <%= f.input :country,{ :as => :select,:label => "Select the Country",:include_blank => false,
-          :required => true, :collection => @countries,:size => 15 } %>
-           <%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
-          :required => true, :collection => @counties,:size => 15 } %>
+          <%= f.input :country, :label => "Select the Country",:include_blank => false,
+          :required => true, :collection => @countries,:size => 15 , :input_html => {:class => "text-input", :size => 2  }%>
+           <%= f.input :county,:label => "Select the County",:include_blank => false,
+          :required => true, :collection => @counties,:size => 15, :input_html => {:class => "text-input", :size => 2  } %>
           <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!"  %>
       <% end %>
       <%= f.simple_fields_for :alternateplacenames do |alternate| %>

@@ -280,6 +280,13 @@ label.collection_check_boxes {
   margin-left: 2px;
 }
 
+/* ----- Override selection field width ----- */
+
+#register_register_type, #place_country, #place_county {
+   padding: 16px;
+    width: 300px !important; 
+    
+}
 
 
 /* width
