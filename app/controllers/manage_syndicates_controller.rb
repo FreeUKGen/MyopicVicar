@@ -72,7 +72,7 @@ class ManageSyndicatesController < ApplicationController
   end
   def batches_with_errors
     if params[:page]
-     session[:user_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -85,7 +85,7 @@ class ManageSyndicatesController < ApplicationController
   end
   def display_by_filename
     if params[:page]
-     session[:user_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -100,8 +100,9 @@ class ManageSyndicatesController < ApplicationController
     redirect_to new_csvfile_path
   end
   def display_by_userid_filename
+    
     if params[:page]
-     session[:user_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -114,7 +115,7 @@ class ManageSyndicatesController < ApplicationController
   end
   def display_by_descending_uploaded_date
     if params[:page]
-     session[:user_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -127,7 +128,7 @@ class ManageSyndicatesController < ApplicationController
   end
   def display_by_ascending_uploaded_date
     if params[:page]
-     session[:user_index_page] = params[:page]
+     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
     @county = session[:syndicate]

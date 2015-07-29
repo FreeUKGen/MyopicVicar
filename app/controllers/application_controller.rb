@@ -197,6 +197,7 @@ def clean_session_for_syndicate
     session.delete(:place_index_page)
     session.delete(:entry_index_page)
     session.delete(:files_index_page)
+    session.delete(:user_index_page)
    
   end
   

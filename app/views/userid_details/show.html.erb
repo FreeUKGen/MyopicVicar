@@ -2,7 +2,8 @@
 <section class="island  island--light">
   <div class="grid">
     <div style="text-align: center">
-      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %>     
+      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %> <%= link_to 'List Batches', by_userid_freereg1_csv_file_path(@userid), method: :get , :class => "btn  btn--small " %>
+          
       <% if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role ==
       'volunteer_coordinator'%>
       

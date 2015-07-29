@@ -13,7 +13,7 @@ class UseridDetailsController < ApplicationController
     if session[:active] ==  'All Members'
       @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
     else
-      @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
+      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page])
     end
     @syndicate = session[:syndicate]
     @sorted_by = session[:active]

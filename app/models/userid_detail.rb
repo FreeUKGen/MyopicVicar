@@ -213,23 +213,15 @@ class UseridDetail
   end
 
   def self.get_userids_for_display(syndicate,page)
-    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids = Array.new
-    users.each do |user|
-      @userids << user
-    end
-    @userids = Kaminari.paginate_array(@userids).page(page)
+   @userids  = UseridDetail.all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
+   @userids = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
+   
   end
 
   def self.get_active_userids_for_display(syndicate,page)
-    users = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids = Array.new
-    users.each do |user|
-      @userids << user
-    end
-    @userids = Kaminari.paginate_array(@userids).page(page)
+     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
+     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
+    
   end
 
   def self.get_userids_for_selection(syndicate)
