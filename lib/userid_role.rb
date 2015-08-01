@@ -10,10 +10,10 @@ module UseridRole
       'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
       'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
       'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts"],
-      'data_manager' => [  "Profile", "Batches",  "Upload New Batch","Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
-      'technical' => [  "Profile", "Batches",  "Upload New Batch", "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
+      'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Attic", "Feedback", "Contacts", "System Documentation" ],
+      'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
         "System Documentation" ,"Logout"],
-      'system_administrator' =>[  "Profile", "Batches", "Upload New Batch","Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
+      'system_administrator' =>[  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators", 
           "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "System Documentation" ]
       }
         

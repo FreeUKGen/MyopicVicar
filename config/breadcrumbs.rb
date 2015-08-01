@@ -53,7 +53,7 @@ crumb :files  do |file|
      end
    when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
      parent :userid_details_listing, session[:syndicate] 
-   when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical") 
+   when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "datamanager" ||session[:role] == "system_administrator" || session[:role] == "technical") 
     unless  session[:userid_id].nil?
       parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
     else
