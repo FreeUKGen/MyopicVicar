@@ -16,7 +16,8 @@
   end
 
   def new
-      unless current_refinery_user
+      unless current_refinery_user || current_refinery_user.userid_detail.active
+        flash[:notice] = "You are not currently active please contact your coordinator"
         redirect_to refinery.login_path
         return
       end
