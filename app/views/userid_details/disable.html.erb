@@ -1,9 +1,8 @@
 <% breadcrumb :disable_userid_detail, @userid %>
-<p style="text-align: center"><b>Changing Userid to inactive</b> </p>
-<%= semantic_form_for @userid do |f| %>
+<p style="text-align: center"><b>Changing <%= @userid.userid %> to inactive</b> </p>
+<%= simple_form_for @userid do |f| %>
 
-<%= f.input :userid,:label => "The UserId :",:input_html => { :disabled => true ,:size => 30 }%>
 <%= f.input :disabled_reason,:label => "Reason for making inactive :",:input_html => { :size => 60 }%>
- <%= f.action :submit, :as => :input, :label => 'Update'   %>
+ <%= f.button :submit, 'Update'   %>
  <% end %>
 
