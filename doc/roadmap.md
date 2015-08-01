@@ -102,7 +102,6 @@ County coordinators and syndicate coordinators.
 - Add a record to a batch on-line
 - Download a batch
 - Batches changed on-line will not be overwritten by a file reload
-
 - Both SC and CC to have access to their own batches and profile
 
 ## Version 1.3 Transcriber Access (Sept 2015)
