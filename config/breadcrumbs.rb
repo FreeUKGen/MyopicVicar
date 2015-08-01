@@ -17,14 +17,14 @@ crumb :edit_userid_detail do |syndicate, userid_detail|
 end
 crumb :disable_userid_detail do |userid_detail|
    link "Disable Profile:#{userid_detail.userid}", userid_detail_path
-   parent :userid_detail, userid_detail
+   parent :userid_detail, session[:syndicate],userid_detail
 end
 crumb :create_userid_detail do |userid_detail|
    link "Create New Profile", new_userid_detail_path
    if  session[:role] == "system_administrator" 
      parent :regmanager_userid_options
    else
-    parent :userid_detail, userid_detail
+    parent :userid_detail, session[:syndicate],userid_detail
    end
 end
 
