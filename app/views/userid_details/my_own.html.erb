@@ -3,6 +3,7 @@
   <div class="grid">
     <div style="text-align: center">
       <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small "%> <%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %>
+      
     </div>
     <div style="clear:both;"> </div>
     <% if flash[:notice] %>

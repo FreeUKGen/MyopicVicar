@@ -190,7 +190,11 @@ crumb :userid_details_listing do |syndicate,user|
    when user.nil?
     link "Syndicate Listing", userid_details_path
    when !user.nil?
-    link "Syndicate Listing", userid_details_path(:anchor => "#{user.id}", :page => "#{session[:user_index_page]}")
+    unless session[:manager].nil?
+      link "Syndicate Listing", userid_details_path(:anchor => "#{user.id}", :page => "#{session[:manager]}")
+    else
+      link "Syndicate Listing", userid_details_path(:anchor => "#{user.id}")
+    end
  end
    case
    when !session[:syndicate].nil? && (session[:role] == "county_coordinator" ||

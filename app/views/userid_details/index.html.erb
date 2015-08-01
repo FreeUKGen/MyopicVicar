@@ -5,8 +5,8 @@
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>
-
-<%= paginate @userids %> 
+<% unless @userids.nil? %>
+<%= paginate @userids   %> 
 
 <div id="main"style="color:black">
 <table  class="table--bordered  table--data">
@@ -25,7 +25,7 @@
 
 
   </tr>
-<% unless @userids.nil? %>
+
 
 <% @userids.each do |userid| %>
   <tr id="<%=userid.id%>">
@@ -56,12 +56,12 @@
       <% end %>   
   </tr>
   <% end %>
-  <%else%>
+ 
+</table>
+<%= paginate @userids   %> 
+ <%else%>
   You have no transcribers
   <% end %>
-</table>
-<%= paginate @userids %> 
-
 </div>
 <br>
 

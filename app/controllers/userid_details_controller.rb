@@ -264,7 +264,13 @@ class UseridDetailsController < ApplicationController
     end
   end
   def disable
+    session[:return_to] = request.fullpath
     load(params[:id])
+    unless @userid.active 
+      @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
+      flash[:notice] = "Userid re-activared"
+       redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
+    end
     session[:type] = "disable"
   end
   def load(userid_id)
@@ -302,11 +308,14 @@ class UseridDetailsController < ApplicationController
       get_user_info_from_userid
       @userid = @user 
       render :action => 'edit' and return
+    when session[:type] == "disable"  
+     redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
+    
     when session[:type] == "edit" || session[:type] == "add"
       if @user.person_role == 'system_administrator'
         redirect_to :action => 'all' and return
       else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
+        redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
       end
     else
       redirect_to refinery.login_path and return
@@ -319,10 +328,11 @@ class UseridDetailsController < ApplicationController
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
     when session[:type] == "add"
+
       if session[:role] == 'system_administrator'
         redirect_to session[:return_to] and return
       else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
+       redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
       end
     else
       redirect_to refinery.login_path and return
@@ -333,12 +343,15 @@ class UseridDetailsController < ApplicationController
     when session[:my_own]
       @userid = @user
       redirect_to :action => 'my_own' and return
+    when session[:type] == "disable"  
+     redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
     when (session[:type] == "edit" || session[:type] == "add")
       if @user.person_role == 'system_administrator'
         redirect_to session[:return_to] and return
       else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
+        redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
       end
+
     else
        redirect_to refinery.login_path and return
     end

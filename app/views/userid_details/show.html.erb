@@ -38,9 +38,9 @@
       <td>Physical Location:</td><td > <%= @userid.address  %>  </td>
     </tr>
     <tr>
-      <%unless @userid.sign_up_date.nil?%>
+      <% unless @userid.sign_up_date.nil?%>
       <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
-      <%end%>
+      <% end%>
     </tr>
     <% unless @userid.person_role == 'researcher'%>
     <tr>
@@ -72,7 +72,7 @@
     <tr>
       <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
     </tr>
-    <% if  session[:manager] == true%>
+    <% unless  session[:manager] %>
     <tr>
       <td>Active:</td><td > <%= @userid.active  %>  </td>
     </tr>
@@ -95,7 +95,7 @@
   </tr>
   <% unless  @userid.active %>
   <tr>
-    <%unless @userid.disabled_date.nil?%>
+    <% unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
     <% end%>
   </tr>
