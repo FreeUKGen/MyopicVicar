@@ -54,10 +54,10 @@
     <% end %>
     </tr>
     <tr>
-      <td>Number of files loaded:</td><td > <%= @userid.number_of_files  %>  </td>
+      <td>Number of files loaded:</td><td > <%= @userid.freereg1_csv_files.count  %> </td>
     </tr>
     <tr>
-      <td>Number of records loaded:</td><td > <%=@userid.number_of_records%>  </td>
+      <td>Number of records loaded:</td><td ><%=@userid.compute_records%>  </td>
     </tr>
     <tr>
       <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>

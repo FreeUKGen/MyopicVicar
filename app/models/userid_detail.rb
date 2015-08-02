@@ -20,8 +20,8 @@ class UseridDetail
   field :previous_syndicate, type: String
   field :active, type: Boolean
   field :last_upload, type: DateTime
-  field :number_of_files, type: Integer, default: 0
-  field :number_of_records, type: Integer, default: 0
+  field :number_of_files, type: Integer, default: 0 # not being used for display
+  field :number_of_records, type: Integer, default: 0 # not being used for display
   field :sign_up_date, type: DateTime
   field :disabled_date, type: DateTime
   field :disabled_reason, type: String
@@ -267,6 +267,16 @@ class UseridDetail
     value = false
     value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
     value
+  end
+
+  def compute_records
+    p self
+    count = 0
+    self.freereg1_csv_files.each do |file|
+      count = count + file.freereg1_csv_entries.count
+    end  
+    p count
+    count  
   end
 
 end #end class
