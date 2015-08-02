@@ -35,7 +35,7 @@ class Contact
     UserMailer.copy_to_contact_person(self).deliver
     case 
     when  self.contact_type == 'Website Problem'
-      github_issue(self)
+      self.github_issue
     when self.contact_type == 'Data Problem'
       data_manager_issue(self)
     when self.contact_type == 'Volunteer'
@@ -45,14 +45,14 @@ class Contact
     end
   end
 
-  def github_issue(contact)
+  def github_issue
     ccs = Array.new
       UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
        ccs << person.person_forename
       end
 
       UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      UserMailer.contact_to_freereg_manager(contact,person,ccs).deliver
+      UserMailer.contact_to_freereg_manager(self,person,ccs).deliver
       end
     if Contact.github_enabled
       Octokit.configure do |c|
