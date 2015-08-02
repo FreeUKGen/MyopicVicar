@@ -51,7 +51,7 @@ module UseridRole
         "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
         "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename" 
         }
-        FILE_MANAGEMENT_OPTIONS = ['List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'Review Specific Batch' ]
+        FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename', 'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'Review Specific Batch' ]
         FILE_OPTIONS_TRANSLATION ={
         'Upload New Batch' =>  "/csvfiles/new",
         'List by Number of Errors then Filename' =>  "/freereg1_csv_files/selection?option=List by Number of Errors then Filename",

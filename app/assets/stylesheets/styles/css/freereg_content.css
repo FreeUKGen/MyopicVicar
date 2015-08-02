@@ -221,7 +221,7 @@ margin-left: 0px;
 }
 
 div.boolean, .simple_form input[type='submit'] {
-  margin-left: 500px;
+  margin-left: 400px;
 }
 
 div.boolean label, label.collection_radio_buttons {
@@ -282,11 +282,15 @@ label.collection_check_boxes {
 
 /* ----- Override selection field width ----- */
 
-#register_register_type, #place_country, #place_county {
+#register_register_type, #place_country, #place_county , #userid_detail_syndicate, #userid_detail_person_role, 
+#userid_detail_skill_level
+{
    padding: 16px;
     width: 300px !important; 
     
 }
+.bgcolour{background: #33FF66; color: #000000;}
+
 
 
 /* width
