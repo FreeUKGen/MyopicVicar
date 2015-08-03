@@ -3,6 +3,9 @@ class ManageSyndicatesController < ApplicationController
   def index
     redirect_to :action => 'new'
   end
+  def show
+    redirect_to :action => 'new'
+  end
   def new
     clean_session_for_syndicate
     session.delete(:syndicate)
