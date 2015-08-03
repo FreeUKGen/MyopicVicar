@@ -73,7 +73,7 @@
       <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
     </tr>
     <% unless  session[:manager] %>
-    <tr><% if @userid.active %><td>Active:</td><td ><%="Yes" %><% else%><%="No" %><% end%></td></tr>
+    <tr><td>Active:</td><% if @userid.active %><td ><%="Yes" %></td><% else%><td><%="No" %></td><% end%></tr>
     <% unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0   %>
     <td>Syndicates managed:</td><td > <%= @userid.syndicate_groups  %>  </td>
   </tr>
