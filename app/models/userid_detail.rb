@@ -45,7 +45,8 @@ class UseridDetail
   has_many :search_queries
   has_many :freereg1_csv_files
   has_many :attic_files
-  validates_presence_of :userid,:syndicate,:email_address, :person_role
+  validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
+                        :skill_level,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
@@ -157,10 +158,6 @@ class UseridDetail
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
     errors.add(:userid, "Refinery User Already exits") if Refinery::User.where(:username => self[:userid]).exists?
-    unless self[:transcription_agreement].nil? # deals with off line updating
-      errors.add(:transcription_agreement, "Must be accepted") unless self[:transcription_agreement] == true
-    end
-
     errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
   end
@@ -193,7 +190,7 @@ class UseridDetail
   end
 
   def add_fields(type)
-    self.userid = self.userid.strip
+    self.userid = self.userid.strip unless self.userid.nil?
     self.sign_up_date =  DateTime.now
     self.active = true
     case
@@ -215,13 +212,13 @@ class UseridDetail
   def self.get_userids_for_display(syndicate,page)
    @userids  = UseridDetail.all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
    @userids = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
-   
+   @userids
   end
 
   def self.get_active_userids_for_display(syndicate,page)
      @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
      @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
-    
+     @userids
   end
 
   def self.get_userids_for_selection(syndicate)
@@ -270,12 +267,10 @@ class UseridDetail
   end
 
   def compute_records
-    p self
     count = 0
     self.freereg1_csv_files.each do |file|
       count = count + file.freereg1_csv_entries.count
     end  
-    p count
     count  
   end
 

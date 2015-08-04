@@ -216,7 +216,8 @@ crumb :userid_detail do |syndicate,userid_detail|
    else
    
     if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
-       session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator"  
+       session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator" || 
+       session[:role] == "data_manager"
    
      parent :userid_details_listing, session[:syndicate],userid_detail 
     end

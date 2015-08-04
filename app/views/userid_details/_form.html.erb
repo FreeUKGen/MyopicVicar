@@ -1,44 +1,45 @@
 
 <%= simple_form_for @userid, :html => { :class => "grid"} do |f| %>
- <% if controller.action_name == 'new' %>
   
-<%= f.input :userid,:label => "UserID",:input_html => { :size => 40 }%>
-<%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates, :input_html => {  :class => "text-input bgcolour", :size => 2 }%>
-<% else%>
-<% if session[:my_own]%>
-<%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
-<%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates, :input_html => {  :class => "text-input bgcolour", :size => 2 }%>
-<% else%>
-<%= f.input :userid, :label => "UserId",:input_html => { :size => 40 , :disabled => true}%>
-<%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates, :input_html => {  :class => "text-input bgcolour", :size => 2} %>
-<% end%>
-<% end%>
-<%= f.input :person_forename,:label => "Forename", :required => true, :input_html => {:class => "bgcolour", :size => 40 }%>
-<%= f.input :person_surname,:label => "Surname", :required => true,:input_html => { :class => "bgcolour",:size => 40 }%>
-<%= f.input :email_address,:label => "Email", :required => true,:input_html => {:class => "bgcolour", :size => 40 }%>
+<p style="text-align: center">Required fields are show with an *</p>
+  <% if controller.action_name == 'new' || controller.action_name == 'create'%>
+    <%= f.input :userid,:label => "UserID",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
+    <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }%>
+      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position", :size => 4 }%>
+    <% else%>
+        <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => " simple_form_bgcolour simple_form_position", :size => 2 }, :hint => "The syndicate MUST be selected"%>
+         <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position",:size => 2 }%>
+    <% end%>
+  <% else%>
+    <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
+    <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }%>
+      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position", :size => 4 }%>
+    <% else%>
+        <%= f.input :syndicate, :label => "Syndicate",:input_html => { :size => 40, :disabled => true }%>
+         <%= f.input :person_role,:label => "Role in Freereg",:input_html => { :size => 40, :disabled => true }%>
+    <% end%>
+  <% end%>
+  <%= f.input :person_forename,:label => "Forename", :required => true, :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <%= f.input :person_surname,:label => "Surname", :required => true,:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
+  <%= f.input :email_address,:label => "Email", :required => true,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
 
-<%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "bgcolour", :size => 40 }%>
-<% unless @user.person_role == 'researcher' %>
-<%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "bgcolour", :size => 40 }%>
-<%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
-<%= f.input :transcription_agreement, :as => :boolean, boolean_style: :inline, :required => true,:label => "Transcription agreement accepted?"%>
-
-<% unless session[:my_own] %>
-<%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>
-            
-<%= f.input :disabled_date,:label => "Date made inactive", :input_html => { :size => 20, :disabled => true}%>
-<%= f.input :disabled_reason,:label => "Reason for making inactive",:input_html => {:class => "bgcolour", :size => 40}%>
-<%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input bgcolour",  :size => 2} %>
-<% end%>
-<%= f.input :last_upload,:label => "Date of last upload", :input_html => { :size => 25, :disabled => true }%>
-<%= f.input :sign_up_date,:label => "Date signed up", :input_html => { :size => 25, :disabled => true }%>
-<% if (@user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)) && !session[:my_own]%>
-<%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => "text-input bgcolour", :size => 2 }%>
-<% else%>
-<%= f.input :person_role,:label => "Role in Freereg"%>
-<% end %>
- <%= f.button :submit, 'Submit'   %>
-<% end %>
-<% end %>
-<br>
-</section>
+  <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <% unless @user.person_role == 'researcher' %>
+    <%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
+    <%= f.input :transcription_agreement, :as => :radio_buttons, boolean_style: :inline,:label => "Transcription agreement accepted?", :required => true%>
+    <% unless session[:my_own] %>           
+      <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position",  :size => 4} %>
+      <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>
+      <%= f.input :disabled_reason,:hint => "If you are changing to inactive put in a reason",:label => "Reason for making inactive",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
+      <% unless @userid.active %> 
+        <%= f.input :disabled_date,:label => "Date made inactive", :input_html => { :size => 20, :disabled => true}%>
+      <% end%>
+    <% end%>
+    <%= f.input :last_upload,:label => "Date of last upload", :input_html => { :size => 25, :disabled => true }%>
+    <%= f.input :sign_up_date,:label => "Date signed up", :input_html => { :size => 25, :disabled => true }%>
+  <% end %>
+  <%= f.button :submit, 'Submit'   %>
+  <% end %>

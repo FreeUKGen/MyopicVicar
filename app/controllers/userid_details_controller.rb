@@ -24,6 +24,9 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @role = session[:role]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
+    @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
+     @user.person_role == "data_manager" 
+     p @syndicates
     @userid = UseridDetail.new
   end
   def show
@@ -121,6 +124,7 @@ class UseridDetailsController < ApplicationController
     case
     when params[:option] == 'Browse userids'
       @userids = UseridDetail.get_userids_for_display('all',params[:page])
+      @syndicate = 'all'
       render "index"
       return
     when params[:option] == "Create userid"
@@ -203,12 +207,13 @@ class UseridDetailsController < ApplicationController
     end
   end
   def create
+    session[:refinery] = current_refinery_user
     @userid = UseridDetail.new(params[:userid_detail])
     @userid.add_fields(params[:commit])
     @userid.save
     if @userid.save
       @userid.send_invitation_to_create_password
-      flash[:notice] = 'The initial registration was successful; an email has been sent to complete the process. Return to this page to login.'
+      flash[:notice] = 'The initial registration was successful; an email has been sent to the new person to complete the process.'
       @userid.write_userid_file
       next_place_to_go_successful_create
     else
@@ -218,38 +223,34 @@ class UseridDetailsController < ApplicationController
     end
   end
   def update
-    if params[:commit] == "Rename"
-      load(params[:id])
-      success = true
-      success = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
-      success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success
-      if !success
-        flash[:notice] = 'The update of the profile was unsuccessful please contact program support'
-        @syndicates = Syndicate.get_syndicates_open_for_transcription
-        redirect_to :action => 'all' and return
-      end
-    else
-      load(params[:id])
-      if session[:type] == "disable"
+    load(params[:id])
+    success = true
+    case 
+      when params[:commit] == "Rename" 
+        success = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
+        success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success
+      when params[:commit] == "Disable"
         params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
         params[:userid_detail][:active]  = false
-      end
-      params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
-
+        params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
+     when params[:commit] == "Update"
+      params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     end
-    params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
-    if !@userid.errors.any?
-      flash[:notice] = 'The update of the profile was successful'
-      next_place_to_go_successful_update
+    if !@userid.errors.any? || success
+     flash[:notice] = 'The update of the profile was successful'
+     redirect_to userid_detail_path(@userid)
+     return
     else
       flash[:notice] = 'The update of the profile was unsuccessful'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_update
+      render :action => 'edit'
+      return
     end
   end
+
   def destroy
     load(params[:id])
     session[:type] = "edit"
@@ -268,7 +269,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     unless @userid.active 
       @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
-      flash[:notice] = "Userid re-activared"
+      flash[:notice] = "Userid re-activated"
        redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
     end
     session[:type] = "disable"
@@ -283,11 +284,8 @@ class UseridDetailsController < ApplicationController
   end
   def next_place_to_go_unsuccessful_create
     case
-    when session[:type] == "add"
-      @user = current_refinery_user.userid_detail
-      @first_name = @user.person_forename
-      @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    when  params[:commit] == "Submit"
+      @user = UseridDetail.where(userid:  session[:userid]).first
       render :action => 'new' and return
     when session[:type] == 'researcher_registration'
       render :action => 'researcher_registration' and return
@@ -298,64 +296,28 @@ class UseridDetailsController < ApplicationController
     when session[:type] == 'technical_registration'
       render :action => 'technical_registration' and return
     else
-      get_user_info_from_userid
+      @user = UseridDetail.where(userid:  session[:userid]).first
       render :action => 'new' and return
     end
   end
-  def next_place_to_go_unsuccessful_update
-    case
-    when session[:my_own]
-      get_user_info_from_userid
-      @userid = @user 
-      render :action => 'edit' and return
-    when session[:type] == "disable"  
-     redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
-    
-    when session[:type] == "edit" || session[:type] == "add"
-      if @user.person_role == 'system_administrator'
-        redirect_to :action => 'all' and return
-      else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
-      end
-    else
-      redirect_to refinery.login_path and return
-    end
-  end
+  
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Submit'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
     @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
+    #sending out the password reset destroys the current_user
+    current_refinery_user = session[:refinery]
+    session.delete(:refinery)
     case
-    when session[:type] == "add"
-
-      if session[:role] == 'system_administrator'
-        redirect_to session[:return_to] and return
-      else
-       redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
-      end
+   
+    when params[:commit] == "Submit"
+      redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
     else
       redirect_to refinery.login_path and return
     end 
   end
-  def next_place_to_go_successful_update
-    case
-    when session[:my_own]
-      @userid = @user
-      redirect_to :action => 'my_own' and return
-    when session[:type] == "disable"  
-     redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
-    when (session[:type] == "edit" || session[:type] == "add")
-      if @user.person_role == 'system_administrator'
-        redirect_to session[:return_to] and return
-      else
-        redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
-      end
-
-    else
-       redirect_to refinery.login_path and return
-    end
-  end
+  
   def record_validation_errors(exception)
     flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
     @userid.delete

@@ -255,7 +255,7 @@ label.collection_radio_buttons {
 .simple_form .hint {
   clear: left;
   margin-left: 400px;
-  font-size: 12px;
+  font-size: 16px;
   color: #555;
   display: block;
   font-style: italic;
@@ -289,8 +289,8 @@ label.collection_check_boxes {
     width: 300px !important; 
     
 }
-.bgcolour{background: #33FF66; color: #000000;}
-
+.simple_form_bgcolour{background: #C2FFD1; color: #000000;}
+.simple_form_position{margin-left: 420px;}
 
 
 /* width
