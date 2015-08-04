@@ -21,11 +21,17 @@ crumb :disable_userid_detail do |userid_detail|
 end
 crumb :create_userid_detail do |userid_detail|
    link "Create New Profile", new_userid_detail_path
-   if  session[:role] == "system_administrator" 
-     parent :regmanager_userid_options
-   else
-    parent :userid_detail, session[:syndicate],userid_detail
-   end
+
+   if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
+       session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator" || 
+       session[:role] == "data_manager"
+   
+     parent :userid_details_listing, session[:syndicate],userid_detail 
+    end
+    if  session[:role] == "system_administrator" || session[:role] == "technical"
+    
+      parent :userid_details_listing, "all" ,userid_detail
+    end
 end
 
 #File

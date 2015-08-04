@@ -207,9 +207,10 @@ class UseridDetailsController < ApplicationController
     end
   end
   def create
+    p params
     session[:refinery] = current_refinery_user
     @userid = UseridDetail.new(params[:userid_detail])
-    @userid.add_fields(params[:commit])
+    @userid.add_fields(params[:commit],session[:syndicate])
     @userid.save
     if @userid.save
       @userid.send_invitation_to_create_password

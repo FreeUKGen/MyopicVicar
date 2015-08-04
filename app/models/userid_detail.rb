@@ -68,8 +68,8 @@ class UseridDetail
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
-    Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
-    Dir.mkdir(change_details_dir)  unless Dir.exists?(change_details_dir)
+    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
+    Dir.mkdir(change_details_dir)  unless Dir.exist?(change_details_dir)
     details_file = File.join(details_dir,".uDetails")
     change_details_file = File.join(change_details_dir,".uDetails")
     if File.file?(details_file)
@@ -189,7 +189,8 @@ class UseridDetail
     UserMailer.notification_of_technical_registration(self).deliver
   end
 
-  def add_fields(type)
+  def add_fields(type,syndicate)
+    self.syndicate = syndicate if self.syndicate.nil?
     self.userid = self.userid.strip unless self.userid.nil?
     self.sign_up_date =  DateTime.now
     self.active = true

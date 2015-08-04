@@ -268,13 +268,13 @@ input.radio {
 }
 
 input.check_boxes {
-
   margin-left: 3px;
   vertical-align: -3px;
 }
 
 label.collection_check_boxes {
-  float: none;
+   display: inline;
+  float: left;
   margin: 0;
   vertical-align: -2px;
   margin-left: 2px;
@@ -286,11 +286,11 @@ label.collection_check_boxes {
 #userid_detail_skill_level
 {
    padding: 16px;
-    width: 300px !important; 
+    width: 350px !important; 
     
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000;}
-.simple_form_position{margin-left: 420px;}
+.simple_form_position{margin-left: 420px}
 
 
 /* width
