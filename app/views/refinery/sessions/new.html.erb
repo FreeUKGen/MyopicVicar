@@ -3,9 +3,10 @@
 </div>
 <%= form_for resource, :as => resource_name,
                        :url => refinery.refinery_user_session_path do |f| %>
-                       <p> The Member login in currently for transcribers and FreeREG personnel only. You do not need to be a Member to use the Search Facilities.</p>
-  <p> The Username is not case sensitive. If you have forgotten your Username you can use your email address instead. If you have forgotten both then contact your coordinator. 
-  The Password is case sensitive. If you have forgotten your password use the "I forgot my password" link below. Alternatively contact your coordinator. Selecting "Remember Me" will have the system fill the Username field the next time you come to this page.</p>
+                       <p>You do not need to be a Member to use the Search Facilities. The Member login is for transcribers, cooordinators and managers. <br> The Username is not case sensitive. If you have forgotten your Username you can use your email address instead. If you have forgotten both then contact your coordinator.<br>
+  The Password is case sensitive. If you have forgotten your password use the following link to receive an email to reset your password.<br>
+      <%= link_to t('.forgot_password'), refinery.new_refinery_user_password_path %>.
+   Alternatively your coordinator can send you the email for a reset. <br>Selecting "Remember Me" will have the system fill the Username field the next time you come to this page.</p>
   <div class='field session_username clearfix'>
     <%= f.label :login %>
     <%= f.text_field :login, :class => 'larger widest' %>
@@ -21,11 +22,7 @@
         <%= f.label :remember_me %>
       </div>
     <% end %>
-    <div class='field forgot_password'>
-      <%= link_to t('.forgot_password'), refinery.new_refinery_user_password_path %>
-    </div>
-  </div>
-  <br>
+    
   <%= render '/refinery/admin/form_actions', :f => f,
              :submit_button_text => t('.sign_in'),
              :hide_cancel => true %>
