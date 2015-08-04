@@ -45,7 +45,7 @@
         <% end%>       
       
       <tr>
-        <td>Genuki page :</td><td ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--small") unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
+        <td>Genuki page :</td><td ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--small",:target => "_blank") unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
         
         
         <tr>
