@@ -31,9 +31,9 @@ class UseridDetail
   field :country_groups, type: Array
   field :digest, type: String, default: nil
   field :skill_notes, type: String
-  field :transcription_agreement, type: Boolean
-  field :technical_agreement, type: Boolean
-  field :research_agreement, type: Boolean
+  field :transcription_agreement, type: Boolean, default: false
+  field :technical_agreement, type: Boolean, default: false
+  field :research_agreement, type: Boolean, default: false
 
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
