@@ -183,10 +183,12 @@ class FreeregCsvUpdateProcessor
     datemax = @@list_of_registers[@@place_register_key].fetch(:datemax)
     datemin = @@list_of_registers[@@place_register_key].fetch(:datemin)
     daterange = @@list_of_registers[@@place_register_key].fetch(:daterange)
-    datemax = xx if xx > datemax && xx < DATEMAX
+    datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
     datemin = xx if xx < datemin
-    bin = (xx-DATEMIN)/10
-      daterange[bin] = daterange[bin] + 1 unless xx > DATEMAX || xx < DATEMIN #avoid going beyond the range
+    bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i
+    bin = 0 if bin < 0
+    bin = 50 if bin > 50
+    daterange[bin] = daterange[bin] + 1 
     #   p "data range #{datemax} #{datemin} #{bin} #{daterange}"
       @@list_of_registers[@@place_register_key].store(:datemax,datemax)
       @@list_of_registers[@@place_register_key].store(:datemin,datemin)
@@ -639,8 +641,9 @@ class FreeregCsvUpdateProcessor
               data_record[:file_line_number] = n
               data_record[:register_entry_number] = @csvdata[3]
               data_record[:birth_date] = @csvdata[4]
+              data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
               data_record[:baptism_date] = @csvdata[5]
-              data_record[:year] = FreeregValidations.year_extract(@csvdata[5])
+              data_record[:year] = FreeregValidations.year_extract(@csvdata[5]) if data_record[:year].nil?
               datestat(data_record[:year]) unless data_record[:year].nil?
               data_record[:person_forename] = @csvdata[6]
               data_record[:person_sex] = cleansex(@csvdata[7])
@@ -673,9 +676,9 @@ class FreeregCsvUpdateProcessor
 
               data_record[:register_entry_number] = @csvdata[3]
 
-              data_record[:marriage_date] = @csvdata[4]
+              data_record[:marriage_date] = @csvdata[4] unless data_record[:year].nil?
               data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
-              datestat(data_record[:year]) unless data_record[:year].nil?
+              datestat(data_record[:year]) 
               data_record[:groom_forename] = @csvdata[5]
               data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
               data_record[:groom_surname] = @csvdata[6]  if @csvdata[6].nil?
@@ -1186,13 +1189,14 @@ class FreeregCsvUpdateProcessor
                 def self.process(range,type,delta)
                   #this is the basic processing
                   recreate = 'add'
-                  create_search_records = "no" unless type == "search_records"
-                  create_search_records = 'create_search_records' if type == "search_records"
+                  create_search_records = "no" 
+                  create_search_records = 'create_search_records' if type == "search_records" || type == "create_search_records" 
                   #set up message files
                   EmailVeracity::Config[:skip_lookup]=true
                   base_directory = Rails.application.config.datafiles
                   change_directory = Rails.application.config.datafiles_changeset
                   delta_directory = Rails.application.config.datafiles_delta
+                  process_directory = Rails.application.config.processing_delta
                   file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
                   time = Time.new.to_i.to_s
                   file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
@@ -1206,6 +1210,7 @@ class FreeregCsvUpdateProcessor
                   #set up to determine files to be processed
                   filenames = GetFiles.get_all_of_the_filenames(change_directory,range) if delta == 'change'
                   filenames = GetFiles.use_the_delta(change_directory,delta_directory) if delta == 'delta'
+                  filenames = GetFiles.use_the_delta(change_directory,process_directory) if delta == 'process'
                   p "#{filenames.length} files selected for processing"
                   @@message_file.puts "#{filenames.length}\t files selected for processing\n"
                   time_start = Time.now
@@ -1221,32 +1226,37 @@ class FreeregCsvUpdateProcessor
                     @success = slurp_the_csv_file(filename) if process == true
 
                     if @success == true  && process == true
-
                       n = process_the_data
-                      if Dir.exists?(File.join(base_directory, @@header[:userid]))
-                        p "copying file to base"
-                        FileUtils.cp(filename,File.join(base_directory, @@header[:userid], @@header[:file_name] ),:verbose => true) if @success == true  && process == true
-                      else
-                        @@message_file.puts "No userid directory for #{@@header[:userid]} to hold #{@@header[:file_name]}"
-                      end
+                      file_location = File.join(base_directory, @@header[:userid])
+                      Dir.mkdir(file_location) unless Dir.exists?(file_location)
+                      p "copying file to base"
+                      FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true) if @success == true  && process == true
+                      batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
+                      batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
                       nn = nn + n unless n.nil?
+                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver unless filenames.length > 1
+                    else
+                     @@message_file.puts "File not processed due to error in reading the file" if @success == false 
+                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver unless  filenames.length > 1
                     end
-                    @@message_file.puts "File not processed due to error in reading the file" if @success == false
                     @success = true
                     #we pause for a time to allow the slaves to really catch up
                     sleep_time = 300 * Rails.application.config.sleep.to_f
-                    sleep(sleep_time)
-                   end #filename loop end
+                    sleep(sleep_time) if filenames.length >= 5
+                   
+                  end #filename loop end
                   time = 0
                   time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
                   p "Created  #{nn} entries at an average time of #{time}ms per record" 
                   @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
                   @@message_file.close 
                   file = @@message_file
-                  user = UseridDetail.where(userid: "REGManager").first
-                  UserMailer.update_report_to_freereg_manager(file,user).deliver
-                  user = UseridDetail.where(userid: "Captainkirk").first
-                  UserMailer.update_report_to_freereg_manager(file,user).deliver
+                  if filenames.length > 1
+                    user = UseridDetail.where(userid: "REGManager").first
+                    UserMailer.update_report_to_freereg_manager(file,user).deliver
+                    user = UseridDetail.where(userid: "Captainkirk").first
+                    UserMailer.update_report_to_freereg_manager(file,user).deliver
+                  end
                   at_exit do
                   p "goodbye"
                 end
