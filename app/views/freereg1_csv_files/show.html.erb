@@ -50,7 +50,7 @@
       <td>Maximum year in dataset </td><td class="weight--semibold"> <%= @freereg1_csv_file.datemax %></td>
     </tr>
     <tr>
-      <td>Number of years in each decade starting in 1530</td><td class="weight--semibold"> <%= @freereg1_csv_file.daterange %></td>
+      <td>Number of records in each decade starting in 1530<br> The first decade will also contain any record of a year less than 1530<br> The last decade will also contain any record of a year after the current decade<br> Any year containing a UCF character will not be classified in a decade.</td><td class="weight--semibold"> <%= @freereg1_csv_file.daterange %></td>
     </tr>
     <tr>
       <td>Uploaded by userid </td><td class="weight--semibold"> <%= @freereg1_csv_file.userid %> </td>
