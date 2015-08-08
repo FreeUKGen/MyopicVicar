@@ -347,7 +347,13 @@ class Freereg1CsvFilesController < ApplicationController
       render :action => 'show'
       return
     end
-    flash[:notice] = 'The merge of the batches was successful'
+    success = @freereg1_csv_file.calculate_distribution
+    p success
+    if success
+      flash[:notice] = 'The merge of the batches was successful'
+    else
+      flash[:notice] = 'The recalculation of the number of records and distribution was unsuccessful'
+    end
     redirect_to freereg1_csv_file_path(@freereg1_csv_file)
   end
 

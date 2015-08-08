@@ -68,30 +68,24 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
       if session[:error_id].nil?
         @freereg1_csv_file.records = @freereg1_csv_file.records.to_i + 1
-        case
-        when @freereg1_csv_file.record_type == 'ba'
-          date = params[:freereg1_csv_entry][:baptism_date]
-        when @freereg1_csv_file.record_type == 'ma'
-          date = params[:freereg1_csv_entry][:marriage_date]
-        when @freereg1_csv_file.record_type == 'bu'
-          date = params[:freereg1_csv_entry][:burial_date]
-        end
-        date = FreeregValidations.year_extract(date)
-        unless date.nil?
-          @freereg1_csv_file.datemax = date if date > @freereg1_csv_file.datemax
-          @freereg1_csv_file.datemin = date if date < @freereg1_csv_file.datemin
-          xx = ((date.to_i - 1530)/10).to_i unless date.to_i <= 1530 # avoid division into zero
-          @freereg1_csv_file.daterange[xx] = @freereg1_csv_file.daterange[xx] + 1 unless (xx < 0 || xx > 50)
-        end
+        @freereg1_csv_file.calculate_date(params)
       else
           @freereg1_csv_file.error =  @freereg1_csv_file.error - 1
           @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id]))
       end
-        session[:error_id] = nil
-        @freereg1_csv_file.save
+       
         display_info
-        flash[:notice] = 'The creation/update in entry contents was successful, backup of file made and locked'
-        render :action => 'show'
+        @freereg1_csv_file.save
+        if  @freereg1_csv_file.errors.any?
+         flash[:notice] = 'The update in entry data distribution contents was unsuccessful'
+         redirect_to :action => 'error'
+          return
+        else
+          session[:error_id] = nil
+          flash[:notice] = 'The creation/update in entry contents was successful, backup of file made and locked'
+          render :action => 'show'
+          return
+        end
     end 
   end
 

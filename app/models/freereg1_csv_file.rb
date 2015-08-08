@@ -284,13 +284,14 @@ class Freereg1CsvFile
     #this makes aback up copy of the file in the attic and creates a new one
     file = self
     file.save_to_attic
-    file_name = file.file_name
+    file_location = File.join(Rails.application.config.datafiles,file.userid,file.file_name)
+    file.write_csv_file(file_location)
+  end
+
+  def write_csv_file(file_location) 
+    file = self 
     #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
-    file_parts = Freereg1CsvFile.where(:file_name => file_name, :userid => file.userid).all
-    file_location = File.join(Rails.application.config.datafiles,file.userid,file_name)
-    register = file.register
-    church = register.church
-    place = church.place
+    file_parts = Freereg1CsvFile.where(:file_name => file.file_name, :userid => file.userid).all  
     CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       record_type = RecordType.display_name(file.record_type).upcase + 'S'
@@ -300,11 +301,14 @@ class Freereg1CsvFile
       # eg #,Credit,Libby,email address,,,,,,
       csv << ['#','CREDIT',file.credit_name,file.credit_email]
       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
-      csv << ['#',file.modification_date,file.first_comment,file.second_comment]
+      csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
       #eg +LDS,,,,
       csv << ['+LDS'] if file.lds =='yes'
 
       file_parts.each do |fil|
+        register = fil.register
+        church = register.church
+        place = church.place
         records = fil.freereg1_csv_entries
         records.each do |rec|
           church_name = church.church_name.to_s + " " + register.register_type.to_s
@@ -342,7 +346,7 @@ class Freereg1CsvFile
     end #end csv
 
   end #end method
- 
+     
 
   def self.update_location(file,param,myown)
     old_location = file.old_location
@@ -488,6 +492,7 @@ class Freereg1CsvFile
     
 
     def update_number_of_files
+      #this code although here and works produces values in fields that are no longer being used
 
       userid = UseridDetail.where(:userid => self.userid).first
       return if userid.nil?
@@ -627,5 +632,49 @@ class Freereg1CsvFile
       end
       success
     end
-
+  def calculate_distribution
+    daterange = Array.new(50){|i| i * 0 }
+    number_of_records = 0
+    datemax = FreeregValidations::YEAR_MIN
+    datemin = FreeregValidations::YEAR_MAX
+    self.freereg1_csv_entries.each do |entry|
+      number_of_records =  number_of_records + 1
+      xx = entry.year
+      p xx
+      unless xx.nil?
+        xx = entry.year.to_i
+        datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
+        datemin = xx if xx < datemin
+        bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i 
+        bin = 0 if bin < 0
+        bin = 50 if bin > 50
+        daterange[bin] = daterange[bin] + 1 
+      end
+    end
+    self.update_attributes(:datemin => datemin,:datemax => datemax,:daterange => daterange,:records =>  number_of_records )
+    success = true
+    success = false if self.errors.any?
+    return success
+  end
+  def calculate_date(param)
+    case
+      when self.record_type == 'ba'
+        date = param[:freereg1_csv_entry][:baptism_date]  
+        date = param[:freereg1_csv_entry][:birth_date] if param[:freereg1_csv_entry][:baptism_date].nil?
+      when self.record_type == 'ma'
+        date = param[:freereg1_csv_entry][:marriage_date]
+      when self.record_type == 'bu'
+        date = param[:freereg1_csv_entry][:burial_date]
+    end
+    date = FreeregValidations.year_extract(date)
+    unless date.nil?
+      date = date.to_i
+      self.datemax = date if date > self.datemax.to_i && date < FreeregValidations::YEAR_MAX
+      @self.datemin = date if date < self.datemin.to_i
+      bin = ((date - FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i 
+      bin = 0 if bin < 0
+      bin = 50 if bin > 50
+      self.daterange[bin] = self.daterange[bin] + 1 
+    end
+  end
 end
