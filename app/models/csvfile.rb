@@ -4,9 +4,9 @@ class Csvfile < CarrierWave::Uploader::Base
   include Mongoid::Timestamps::Updated::Short
   field :userid, type: String
   field :file_name,type: String
-  field :process,type: String, default: 'Scheduled'
+  field :process,type: String, default: "Process tonight"
  # files are stored in Rails.application.config.datafiles_changeset
-  #validate :csvfile_already_exists, on: :create
+  validate :csvfile_already_exists, on: :create
 
   mount_uploader :csvfile, CsvfileUploader
 
@@ -21,7 +21,7 @@ class Csvfile < CarrierWave::Uploader::Base
   def estimate_time
     place = File.join(Rails.application.config.datafiles_changeset,self.userid,self.file_name)
     size = (File.size("#{place}"))
-    unit = 0.001
+    unit = 0.0003
     processing_time = (size.to_i*unit).to_i 
   end
 end

@@ -1244,10 +1244,10 @@ class FreeregCsvUpdateProcessor
                         batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
                       end
                       nn = nn + n unless n.nil?
-                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process'
+                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     else
                      @@message_file.puts "File not processed due to error in reading the file" if @success == false 
-                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process'
+                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     end
                     @success = true
                     #we pause for a time to allow the slaves to really catch up
