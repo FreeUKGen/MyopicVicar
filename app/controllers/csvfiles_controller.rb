@@ -19,6 +19,8 @@ def create
   @csvfile.save
   if @csvfile.errors.any?
     flash[:notice] = 'The upload of the file was unsuccessful, please review and resubmit'
+    get_user_info_from_userid
+    get_userids_and_transcribers
     render 'new'
     return 
   end #errors
