@@ -28,9 +28,11 @@ class ManageCountiesController < ApplicationController
     @manage_county = ManageCounty.new
   end
   def show
-     redirect_to :action => 'new'
+    redirect_to :action => 'new'
   end
-  
+   def selection
+    redirect_to :action => 'new'
+  end
   def create
     session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
@@ -74,6 +76,9 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
   def places_with_unapproved_names
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
     get_user_info_from_userid
     @manage_county = ManageCounty.new
     @county = session[:county]
