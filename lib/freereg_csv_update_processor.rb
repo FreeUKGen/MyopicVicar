@@ -1232,7 +1232,12 @@ class FreeregCsvUpdateProcessor
                       p "copying file to base"
                       FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true) if @success == true  && process == true
                       batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
-                      batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                      if batch.nil?
+                        batch = PhysicalFile.new(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                        batch.save
+                      else
+                        batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                      end
                       nn = nn + n unless n.nil?
                       UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver unless filenames.length > 1
                     else
