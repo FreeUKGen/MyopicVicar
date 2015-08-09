@@ -14,7 +14,7 @@ class CsvfileUploader < CarrierWave::Uploader::Base
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
         # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
-    "#{Rails.application.config.datafiles}/#{model.userid}/"
+    "#{Rails.application.config.datafiles_changeset}/#{model.userid}/"
     #{ }"#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     #{}"uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
     

@@ -9,12 +9,14 @@
 <div id="main" style="color:black">
 <%= paginate @batches if session[:paginate]%>
   <table  class="table--bordered  table--data">
-    <tr>
+    <tr >
       <th>Userid</th>
       <th >File Name</th>
       <th >Uploaded into Base</th>
       <th >Uploaded into Change</th>
       <th >Processed into Database</th>
+      <th >Process base file</th>
+       <th >Process change file</th>
     </tr>
     <% @batches.each do |batch| %>
       <tr id="<%=batch.id%>">
@@ -23,6 +25,8 @@
         <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
         <td > <%= batch.change_uploaded_date.strftime("%d %b %Y") if batch.change %>  </td>
         <td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed %>  </td>
+        <td><%= link_to 'Process base', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+        <td><%= link_to 'Process change', submit_for_processing_physical_file_path(batch,  :params=> {:loc => "change"}) ,method: :get  %></td>
       </tr>
     <% end %>
   </table>

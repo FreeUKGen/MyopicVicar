@@ -2,27 +2,25 @@ class UserMailer < ActionMailer::Base
   default from: "reg-web@freereg.org.uk"
 
   def batch_processing_success(user,batch)
-    userid = UseridDetail.where(userid: user).first
-    @user = userid
-    syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
-    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
-    cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{userid.person_forename} <#{userid.email_address}>", :subject => "Batch Processing")
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
+    @userid = UseridDetail.where(userid: user).first
+    #syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
+    #sc = UseridDetail.where(userid: syndicate_coordinator).first
+    #@batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+    #county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
+    #cc = UseridDetail.where(userid: county_coordinator).first
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}") unless @userid.nil?
+    #mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
+    #mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end
 
   def batch_processing_failure(user,batch)
-    userid = UseridDetail.where(userid: user).first
-    @user = userid
-    syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
-    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
-    cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{userid.person_forename} <#{userid.email_address}>", :subject => "Batch Processing")
+    @userid = UseridDetail.where(userid: user).first
+  #  syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
+   # sc = UseridDetail.where(userid: syndicate_coordinator).first
+    #@batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+    #county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
+    #cc = UseridDetail.where(userid: county_coordinator).first
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}")
     mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
     mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end

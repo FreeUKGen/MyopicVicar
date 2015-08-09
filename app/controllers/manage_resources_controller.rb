@@ -16,13 +16,19 @@
   end
 
   def new
-      unless current_refinery_user || current_refinery_user.userid_detail.active
-        flash[:notice] = "You are not currently active please contact your coordinator"
+      if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
+        flash[:notice] = "You are not currently permitted to access the system "
+        redirect_to refinery.login_path
+        return
+      end
+      unless  current_refinery_user.userid_detail.active
+        flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
         redirect_to refinery.login_path
         return
       end
       @user = current_refinery_user.userid_detail 
-      if @user.person_role == "researcher" || @user.person_role == "volunteer" || @user.person_role == "trainee" ||@user.person_role == 'pending' 
+      if @user.person_role == "researcher" || @user.person_role == "transcriber" || @user.person_role == "trainee" || @user.person_role == 'pending' 
+       flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
        redirect_to refinery.logout_path
        return
       end

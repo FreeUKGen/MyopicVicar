@@ -348,7 +348,6 @@ class Freereg1CsvFilesController < ApplicationController
       return
     end
     success = @freereg1_csv_file.calculate_distribution
-    p success
     if success
       flash[:notice] = 'The merge of the batches was successful'
     else

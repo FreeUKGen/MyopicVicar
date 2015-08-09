@@ -27,8 +27,8 @@
          
           <th colspan = 2>Locked by<br> Owner   Coord</th>
          
-           <th colspan="7">Action<br>SH: Show, ED: Edit,DLD: Download <br>
-    ER: Errors, LK/UN: Change Lock<br>DES: Destroy</th>
+           <th colspan="8">Action<br>SH: Show, ED: Edit,DLD: Download <br>
+    ER: Errors, LK/UN: Change Lock<br>DES: Destroy, RP: Reprocess</th>
         </tr>
         <% @freereg1_csv_files.each do |freereg1_csv_file| %>
         <%case%>
@@ -62,7 +62,8 @@
                   </td>
                    <td><%= link_to 'DES', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete   %></td>
                   </td>            
-                  
+                  <td ><%= link_to 'RP', reprocess_physical_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to reprocess this file?' %>
+                  </td>
                 </tr>
                 <% end %>
               </table>

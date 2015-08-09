@@ -265,8 +265,18 @@ crumb :physical_files do
    link "Listing of Physical Files", physical_files_path
    parent :physical_files_options
 end
-
-
+#csvfiles
+crumb :new_csvfile do |csvfile|
+   link "Upload New File", new_csvfile_path
+   case 
+   when session[:my_own]
+     parent :my_options
+   when session[:county]
+     parent :county_options, session[:county] 
+   when session[:syndicate]
+     parent :syndicate_options, session[:syndicate]
+   end   
+end
 
 
 # crumb :projects do

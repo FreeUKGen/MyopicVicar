@@ -30,7 +30,7 @@ module UseridRole
           "Syndicate Coordinators" => "/syndicates" ,      
           "County Coordinators" => "/counties" ,
           "Country Coordinators" => "/countries" ,
-          "Upload New Batch"  => "/manage_counties/selection?option=Upload New Batch",
+          "Upload New Batch"  =>   "/csvfiles/new", #"/manage_counties/selection?option=Upload New Batch",
           "RefineryCMS" =>  "/refinery",
           "Access Attic" => "/attic_files/select" ,
           "Physical Files" => "/physical_files/select_action",
@@ -62,7 +62,7 @@ module UseridRole
         }
         COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
           'Review Batches by Filename', 'Review Batches by Userid then Filename',
-          'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch']
+          'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',"Upload New Batch"]
         COUNTY_OPTIONS_TRANSLATION = {
           'All Places' => "/manage_counties/selection?option=Work with All Places",
           'Active Places' => "/manage_counties/selection?option=Work with Active Places",
@@ -74,12 +74,13 @@ module UseridRole
           'Review Batches by Userid then Filename' => "/manage_counties/selection?option=Review Batches by Userid then Filename",
           'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
           'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
-          'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch"
+          'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
+          'Upload New Batch' =>  "/csvfiles/new"
         }
         SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
           'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Create userid",'Review Batches with Errors','Review Batches by Filename', 
           'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
-          'Review Specific Batch', 'Change Recruiting Status']
+          'Review Specific Batch',"Upload New Batch",'Change Recruiting Status']
         SYNDICATE_OPTIONS_TRANSLATION = {
           'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
           'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
@@ -94,13 +95,16 @@ module UseridRole
           'Review Batches by Most Recent Date of Change' => "/manage_syndicates/selection?option=Review Batches by Most Recent Date of Change",
           'Review Batches by Oldest Date of Change' => "/manage_syndicates/selection?option=Review Batches by Oldest Date of Change",
           'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch",
+          'Upload New Batch' =>  "/csvfiles/new",
           'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
-        PHYSICAL_FILES_OPTIONS =  ['Browse Files' ,'List Not Processed', 'List Processed but not in Base Folder',
+        PHYSICAL_FILES_OPTIONS =  ['Browse Files' ,'Base Files Not Processed','Change Files Not Processed', 'All Files Not Processed','List Processed but not in Base Folder',
           'List Processed but not in Change Folder','List Processed but no files','List Files for Userid', 'List Files for Userid Not Processed']
         PHYSICAL_FILES_OPTIONS_TRANSLATION ={
           'Browse Files' => "/physical_files/",
-          'List Not Processed' => '/physical_files/not_processed',
+          'Change Files Not Processed' => '/physical_files/change_not_processed',
+          'Base Files Not Processed' => '/physical_files/base_not_processed',
+          'All Files Not Processed'=> '/physical_files/all_not_processed',
           'List Processed but not in Base Folder' => '/physical_files/processed_but_not_in_base',
           'List Processed but not in Change Folder' => '/physical_files/processed_but_not_in_change',
           'List Files for Userid' => '/physical_files/files_for_specific_userid',

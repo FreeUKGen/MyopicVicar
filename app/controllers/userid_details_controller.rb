@@ -26,7 +26,6 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
      @user.person_role == "data_manager" 
-     p @syndicates
     @userid = UseridDetail.new
   end
   def show
@@ -207,7 +206,6 @@ class UseridDetailsController < ApplicationController
     end
   end
   def create
-    p params
     session[:refinery] = current_refinery_user
     @userid = UseridDetail.new(params[:userid_detail])
     @userid.add_fields(params[:commit],session[:syndicate])

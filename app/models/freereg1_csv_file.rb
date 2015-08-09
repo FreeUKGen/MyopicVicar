@@ -569,7 +569,6 @@ class Freereg1CsvFile
     end
 
     def self.delete_userid(userid)
-      p userid
       folder_location = File.join(Rails.application.config.datafiles,userid)
       change_folder_location = File.join(Rails.application.config.datafiles_changeset,userid)
       FileUtils.remove_dir(folder_location, :force => true)
@@ -640,7 +639,6 @@ class Freereg1CsvFile
     self.freereg1_csv_entries.each do |entry|
       number_of_records =  number_of_records + 1
       xx = entry.year
-      p xx
       unless xx.nil?
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX

@@ -133,7 +133,7 @@ class Freereg1CsvEntry
     end
     md5 = OpenSSL::Digest::MD5.new
     if string.nil?
-     p "#{self._id}, nil string"
+     p "#{self._id}, nil string for MD5"
     else
     the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
     end

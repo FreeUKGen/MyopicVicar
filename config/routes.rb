@@ -25,8 +25,12 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/processed_but_not_in_change', :to =>'physical_files#processed_but_not_in_change', :as => :processed_but_not_in_change_physical_files
   get 'physical_files/processed_but_not_in_base', :to =>'physical_files#processed_but_not_in_base', :as => :processed_but_not_in_base_physical_files
   get 'physical_files/processed_but_no_file', :to =>'physical_files#processed_but_no_file', :as => :processed_but_no_file_physical_files
-  get 'physical_files/not_processed', :to =>'physical_files#not_processed', :as => :not_processed_physical_files
+  get 'physical_files/all_not_processed', :to =>'physical_files#all_not_processed', :as => :all_not_processed_physical_files
+  get 'physical_files/change_not_processed', :to =>'physical_files#change_not_processed', :as => :change_not_processed_physical_files
+  get 'physical_files/base_not_processed', :to =>'physical_files#base_not_processed', :as => :base_not_processed_physical_files
   get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
+  get 'physical_files/:id/submit_for_processing(.:format)',  :to => 'physical_files#submit_for_processing', :as => :submit_for_processing_physical_file
+  get 'physical_files/:id/reprocess(.:format)',  :to => 'physical_files#reprocess', :as => :reprocess_physical_file
   resources :physical_files
 
   resources :search_statistics

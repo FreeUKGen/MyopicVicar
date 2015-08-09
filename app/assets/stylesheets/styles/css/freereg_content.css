@@ -283,7 +283,7 @@ label.collection_check_boxes {
 /* ----- Override selection field width ----- */
 
 #register_register_type, #place_country, #place_county , #userid_detail_syndicate, #userid_detail_person_role, 
-#userid_detail_skill_level
+#userid_detail_skill_level, #csvfile_userid,#csvfile_process
 {
    padding: 16px;
     width: 350px !important; 

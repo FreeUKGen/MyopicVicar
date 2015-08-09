@@ -35,7 +35,7 @@ class PlacesController < ApplicationController
 
   def edit
     load(params[:id])
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @place_name = Place.find(session[:place_id]).place_name
     @place.alternateplacenames.build
     @county = session[:county]
@@ -45,7 +45,7 @@ class PlacesController < ApplicationController
   def rename
     get_user_info_from_userid
     load(params[:id])
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @county = session[:county]
     @records = @place.search_records.count
 
@@ -64,7 +64,7 @@ class PlacesController < ApplicationController
     get_user_info_from_userid
     load(params[:id])
     @county = session[:county]
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @records = @place.search_records.count
 
   end
@@ -83,7 +83,7 @@ class PlacesController < ApplicationController
 
 
   def new
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @place = Place.new
     get_user_info_from_userid
     @place.alternateplacenames.build
@@ -101,7 +101,7 @@ class PlacesController < ApplicationController
     if @place.errors.any?
       #we have errors on the creation
       flash[:notice] = 'The addition to Place Name was unsuccessful'
-      get_places_counties_and_contries
+      get_places_counties_and_countries
       @place_name = @place.place_name unless @place.nil?
       render :new
     else
@@ -186,7 +186,7 @@ class PlacesController < ApplicationController
     redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
   end
 
-  def get_places_counties_and_contries
+  def get_places_counties_and_countries
     @countries = Array.new
     Country.all.each do |country|
       @countries << country.country_code
