@@ -1113,7 +1113,7 @@ class FreeregCsvUpdateProcessor
                 return success
               end #method end
 
-              def self.check_for_replace(filename)
+              def self.check_for_replace(filename,process)
                 #check to see if we should process the file
                 check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
                                                          :userid => @@header[:userid]}).first
@@ -1132,6 +1132,9 @@ class FreeregCsvUpdateProcessor
                 else
                   #file is in the database so lets test to see if we process
                   case
+                    when process
+                       #process file regardless
+                       return true
                     when @@header[:digest] == check_for_file.digest 
                       #file in database is same or more recent than we we are attempting to reload so do not process
                       p  "#{@@userid} #{@@header[:file_name]} has not changed since last build"
@@ -1211,6 +1214,8 @@ class FreeregCsvUpdateProcessor
                   filenames = GetFiles.get_all_of_the_filenames(change_directory,range) if delta == 'change'
                   filenames = GetFiles.use_the_delta(change_directory,delta_directory) if delta == 'delta'
                   filenames = GetFiles.use_the_delta(change_directory,process_directory) if delta == 'process'
+                  force =false
+                  force = true if delta == 'process'
                   p "#{filenames.length} files selected for processing"
                   @@message_file.puts "#{filenames.length}\t files selected for processing\n"
                   time_start = Time.now
@@ -1221,7 +1226,7 @@ class FreeregCsvUpdateProcessor
                     @@file_start = Time.new
                     setup_for_new_file(filename)
                     process = false
-                    process = check_for_replace(filename) unless recreate == "recreate"
+                    process = check_for_replace(filename,force) unless recreate == "recreate"
 
                     @success = slurp_the_csv_file(filename) if process == true
 
@@ -1239,10 +1244,10 @@ class FreeregCsvUpdateProcessor
                         batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
                       end
                       nn = nn + n unless n.nil?
-                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver unless filenames.length > 1
+                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process'
                     else
                      @@message_file.puts "File not processed due to error in reading the file" if @success == false 
-                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver unless  filenames.length > 1
+                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process'
                     end
                     @success = true
                     #we pause for a time to allow the slaves to really catch up

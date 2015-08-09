@@ -154,7 +154,10 @@ class PhysicalFilesController < InheritedResources::Base
   end
   def reprocess
       file = Freereg1CsvFile.find(params[:id])
+      #we write a new copy of the file from current on-line contents
+      file.backup_file
       @batch = PhysicalFile.new(:file_name => file.file_name, :userid => file.userid, :change_uploaded_date => Time.now, :change => true)
+      #add to processing queue and place in change
       success = @batch.add_file("reprocessing")
       flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
       @batch.save
