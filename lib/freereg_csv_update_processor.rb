@@ -676,9 +676,9 @@ class FreeregCsvUpdateProcessor
 
               data_record[:register_entry_number] = @csvdata[3]
 
-              data_record[:marriage_date] = @csvdata[4] unless data_record[:year].nil?
+              data_record[:marriage_date] = @csvdata[4] 
               data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
-              datestat(data_record[:year]) 
+              datestat(data_record[:year]) unless data_record[:year].nil?
               data_record[:groom_forename] = @csvdata[5]
               data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
               data_record[:groom_surname] = @csvdata[6]  if @csvdata[6].nil?

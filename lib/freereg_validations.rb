@@ -275,8 +275,9 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
   end
          
   def FreeregValidations.year_extract(field)
-   if (field.nil? || field.empty?)
+   if field.blank?
       year = nil
+      return
      else
       a = field.split(" ")
       case 
