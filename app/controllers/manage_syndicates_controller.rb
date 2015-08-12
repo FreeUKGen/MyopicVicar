@@ -148,7 +148,7 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @files = Hash.new
     Freereg1CsvFile.syndicate(session[:syndicate]).order_by(file_name: 1).each do |file|
-     @files[":#{file.file_name}"] = file._id unless file.file_name.nil?
+      @files["#{file.file_name}:#{file.userid}"] = file._id unless file.file_name.nil?
     end
     @options = @files
     @location = 'location.href= "/freereg1_csv_files/" + this.value'
