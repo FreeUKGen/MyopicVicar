@@ -13,15 +13,21 @@ def new
 end
 
 def create
+  if params[:csvfile].blank?
+    flash[:notice] = 'You must select a file'
+    redirect_to :action => 'new'
+    return 
+  end
   @csvfile  = Csvfile.new(params[:csvfile])
   @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
-  @csvfile.save
-  if @csvfile.errors.any?
+  proceed = @csvfile.check_for_existing_unprocessed_file
+  @csvfile.save if proceed
+  if @csvfile.errors.any? || !proceed
     flash[:notice] = 'The upload of the file was unsuccessful, please review and resubmit'
     get_user_info_from_userid
     get_userids_and_transcribers
-    render 'new'
+    render :action => 'new'
     return 
   end #errors
   @processing_time = @csvfile.save_and_estimate_time
@@ -41,19 +47,24 @@ def update
     start = Time.now
     case
     when params[:csvfile][:process]  == "Just check for errors"
-     #add code
-     flash[:notice] =  "Not Coded yet"
+     success = FreeregCsvUpdateProcessor.process(range,'no_search_records',"change")
+     process_time = Time.now - start
+     if success
+      flash[:notice] =  "The csv file #{ @csvfile.file_name} has been checked in #{process_time.to_i} seconds."
+     else
+      flash[:notice] =  "The csv file #{ @csvfile.file_name} was not checked for some reason."
+     end #if success
      redirect_to freereg1_csv_files_path( :page => "#{session[:files_index_page]}")
      return
     
     when params[:csvfile][:process]  == "Now" 
-           success = FreeregCsvUpdateProcessor.process(range,'search_records',"change")
-           process_time = Time.now - start
-           if success
-            flash[:notice] =  "The csv file #{ @csvfile.file_name} has been processed into the database in #{process_time.to_i} seconds."
-           else
-            flash[:notice] =  "The csv file #{ @csvfile.file_name} was not processed into the database."
-           end #if success
+     success = FreeregCsvUpdateProcessor.process(range,'search_records',"change")
+     process_time = Time.now - start
+     if success
+      flash[:notice] =  "The csv file #{ @csvfile.file_name} has been processed into the database in #{process_time.to_i} seconds."
+     else
+      flash[:notice] =  "The csv file #{ @csvfile.file_name} was not processed into the database."
+     end #if success
    
     when params[:csvfile][:process]  == "Process tonight" 
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
@@ -62,7 +73,6 @@ def update
     when params[:csvfile][:process]  == "As soon as you can"
       pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]") 
       flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed into the database. You will receive an email when it has been completed."
-      p "#{pid1} started at #{Time.now} for #{range}"
     else
     end #case
     @csvfile.delete

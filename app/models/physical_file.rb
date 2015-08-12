@@ -57,8 +57,8 @@ def add_file(batch)
     Dir.mkdir(file_location) unless Dir.exists?(file_location)
     old_file = File.join(base_directory,self.userid,self.file_name)
     new_file = File.join(file_location,self.file_name)
-    FileUtils.cp(old_file,new_file,:verbose => true)
-    self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :base =>false, :base_uploaded_date => nil) 
+    FileUtils.mv(old_file,new_file,:verbose => true)
+    self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :base =>false, :base_uploaded_date => nil, :file_processed => false, :file_processed_date => nil) 
   when batch == "change"
     self.update_attributes(:change => true,:change_uploaded_date =>Time.now) 
   else 

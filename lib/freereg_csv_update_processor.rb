@@ -597,8 +597,6 @@ class FreeregCsvUpdateProcessor
               end
             end
 
-
-
             def self.process_register_location(n)
               data_record = Hash.new
               raise FreeREGError, "Empty data line"  if @csvdata[0].nil?
@@ -607,10 +605,11 @@ class FreeregCsvUpdateProcessor
 
               # do we validate the Place field?
               raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
-              if Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved").exists?
-                data_record[:place] = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved").first.place_name
+              place = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved").first
+              if place.nil?
+               raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
               else
-                raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
+               data_record[:place] = place.place_name
               end
               # do we validate the register field
               raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
@@ -1241,13 +1240,17 @@ class FreeregCsvUpdateProcessor
                         batch = PhysicalFile.new(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
                         batch.save
                       else
-                        batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                        if @@create_search_records
+                         batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                        else
+                         batch.update_attributes(:file_processed => false, :file_processed_date => nil, :base => true, :base_uploaded_date => Time.now)
+                        end
                       end
                       nn = nn + n unless n.nil?
-                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
+                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 &&  @@create_search_records)
                     else
                      @@message_file.puts "File not processed due to error in reading the file" if @success == false 
-                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
+                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 && @@create_search_records)
                     end
                     @success = true
                     #we pause for a time to allow the slaves to really catch up

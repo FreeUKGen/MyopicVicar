@@ -61,8 +61,8 @@ class Place
   after_create :update_places_cache
 
   index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
+  index({ chapman_code: 1, modified_place_name: 1, error_flag: 1, disabled: 1 })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
-  index({ chapman_code: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
   index({ source: 1})
 

@@ -10,7 +10,6 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @county =  session[:county] unless session[:county].nil?
     @syndicate =  session[:syndicate] unless session[:syndicate].nil?
-
     @role = session[:role]
     @sorted_by = session[:sorted_by]
     case 
@@ -35,6 +34,7 @@ class Freereg1CsvFilesController < ApplicationController
     set_controls
     display_info
     @freereg1_csv_file.adjust_for_collection_information
+    @processed = PhysicalFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).first
     @role = session[:role]
     
   end

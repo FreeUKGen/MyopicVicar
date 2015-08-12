@@ -61,8 +61,9 @@ class Freereg1CsvFile
   field :characterset, type: String
   field :alternate_register_name, type: String
   field :csvfile, type: String
+  
 
-
+ 
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
@@ -674,5 +675,23 @@ class Freereg1CsvFile
       bin = 50 if bin > 50
       self.daterange[bin] = self.daterange[bin] + 1 
     end
+  end
+  def define_colour
+    processed = PhysicalFile.where(:userid => self.userid,:file_name =>self.file_name).first
+    if processed.nil? || processed.file_processed
+     case
+     when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'    
+      color ="color:teal"
+     when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true') 
+      color = "color:blue"
+     when self.error != 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')  
+      color = "color:maroon"
+     when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'  
+       color = "color:red"
+     end
+    else
+       color = "color:orange"
+    end
+    color  
   end
 end

@@ -6,10 +6,13 @@
      <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
-     
+     <ul>
+    <% @csvfile.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
     <div >
     <%= simple_form_for @csvfile, html: { multipart: true ,:class => "grid"} do |f| %>
-
+  
   
 
      <%= f.input :csvfile, :label => "Please select file to upload", :hint => "Locate the file on your device." %><br>
