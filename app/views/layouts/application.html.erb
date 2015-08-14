@@ -62,8 +62,9 @@
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
-    
+     <%= javascript_include_tag "jquery.cookiesDirective.js" %>
      <%= csrf_meta_tags %>
+
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     
@@ -120,8 +121,20 @@
         } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
         }
-    </script>
+    </script> 
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $.cookiesDirective({
+            fontSize: '13px',
+            privacyPolicyUri:  "/about/cookie_policy",
+            duration: 30
+        });
+    });
+</script>   
+
   </body>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
