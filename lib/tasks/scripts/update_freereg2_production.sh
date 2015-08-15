@@ -21,6 +21,7 @@ FREEREG1=${DATA_ROOT}/freereg1/users
 FREEREG1_DELTA=${DATA_ROOT}/tmp
 ROOT=/home/apache/hosts/freereg2/production
 LOG_DIR=${DATA_ROOT}/log
+PROCESS=${LOG_DIR}/processing_delta
 umask 0002
 if [[ ! -d ${FREEREG1} ]] ; then
   # create target if absent (or we could call fail() to stop here)
@@ -31,6 +32,11 @@ if [[ ! -d ${FREEREG1_DELTA} ]] ; then
   # create target if absent (or we could call fail() to stop here)
   trace "${FREEREG1_DELTA} doesn't exist, creating"
   mkdir -p ${FREEREG1_DELTA}
+fi
+if [[ ! -e ${PROCESS} ]] ; then
+  # create target if absent (or we could call fail() to stop here)
+  trace "${PROCESS} doesn't exist, creating"
+  touch ${PROCESS}
 fi
 trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
