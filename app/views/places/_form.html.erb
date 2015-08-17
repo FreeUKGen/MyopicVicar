@@ -4,28 +4,29 @@
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
-<%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>  
-      <% if controller.action_name == 'new' %>
+<%= simple_form_for @place, :html => { :class => "grid"}  do |f| %> 
+
+      <% if controller.action_name == 'new' || controller.action_name == 'create'%>
           <%# This option is only for data manager%> 
           <%= f.input :country, :label => "Select the Country",:include_blank => false,
-          :required => true, :collection => @countries,:size => 15 , :input_html => {:class => "text-input", :size => 2  }%>
+          :required => true, :collection => @countries ,:input_html => {  :class => " simple_form_bgcolour simple_form_position",:size => 4 }%>
            <%= f.input :county,:label => "Select the County",:include_blank => false,
-          :required => true, :collection => @counties,:size => 15, :input_html => {:class => "text-input", :size => 2  } %>
-          <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!"  %>
+          :required => true, :collection => @counties,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position",:size => 10 } %>
+          <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <% end %>
       <%= f.simple_fields_for :alternateplacenames do |alternate| %>
-           <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => { :size => 30 } %> 
+           <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
            <%= alternate.input :_destroy, :as => :boolean %>  
       <% end %>
-      <%= f.input :grid_reference ,:hint => "Must be 2 capital characters followed by  4, 6 or 8 numerics eg NX123456", :label => " Grid Reference ",:input_html => { :size => 40 }%>
-      <%= f.input :latitude ,:hint => "Required if no Grid Reference entered", :label => "Latitude in degrees eg 50.234 :",:input_html => { :size => 40 }%>
-      <%= f.input :longitude ,:hint => "Required if no Grid Reference entered", :label => "Longitude in degrees eg -1.234 :", :input_html => { :size => 40 }%>
-      <%= f.input :genuki_url,as: :url,:hint => "Paste the link from the appropriate website page", :label => "Genuki Gazatteer website ", :input_html => { :size => 60 }%>
-      <%= f.input :source ,:hint => "Where was the information obtained for this Place entry",:label => "The source of the information", :input_html => { :size => 40 }%>
-      <%= f.input :place_notes,:label => "Notes about the Place",as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%>
+      <%= f.input :grid_reference ,:hint => "Must be 2 capital characters followed by  4, 6 or 8 numerics eg NX123456", :label => " Grid Reference ",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :latitude ,:hint => "Required if no Grid Reference entered", :label => "Latitude in degrees eg 50.234 :",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :longitude ,:hint => "Required if no Grid Reference entered", :label => "Longitude in degrees eg -1.234 :",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :genuki_url,as: :url,:hint => "Paste the link from the appropriate website page", :label => "Genuki Gazatteer website ",:input_html => {:class => "simple_form_bgcolour", :size => 80 }%>
+      <%= f.input :source ,:hint => "Where was the information obtained for this Place entry",:label => "The source of the information",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :place_notes,:label => "Notes about the Place",as: :text, :input_html => { :class => "simple_form_bgcolour",:rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%>
       <% if session[:type] == "edit" then %>
-        <%= f.input :reason_for_change ,:label => "Your reason for making the change", :input_html => { :size => 40 }%>
-        <%= f.input :other_reason_for_change ,:label => "Your reason for a further change",:input_html => { :size => 40 }%>
+        <%= f.input :reason_for_change ,:label => "Your reason for making the change",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+        <%= f.input :other_reason_for_change ,:label => "Your reason for a further change",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <% end %>
       
       <%= f.input :last_amended, :label => "Last date when data for the place was updated", :hint =>"System generated ",:input_html => { :disabled => true, :size => 30  }%>

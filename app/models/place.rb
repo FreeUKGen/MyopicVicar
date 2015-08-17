@@ -133,8 +133,9 @@ class Place
   end
 
   def update_places_cache
-    PlaceCache.refresh_all
+    PlaceCache.refresh(self.chapman_code)
   end
+
  def adjust_location_before_applying(params,session)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
