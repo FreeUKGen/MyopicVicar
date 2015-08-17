@@ -21,7 +21,6 @@ class PlacesController < ApplicationController
     else
       @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(params[:page])
     end
-
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
     session[:page] = request.original_url
@@ -87,6 +86,7 @@ class PlacesController < ApplicationController
     @place = Place.new
     get_user_info_from_userid
     @place.alternateplacenames.build
+    @county = session[:county]
    
   end
 
@@ -101,13 +101,14 @@ class PlacesController < ApplicationController
     if @place.errors.any?
       #we have errors on the creation
       flash[:notice] = 'The addition to Place Name was unsuccessful'
+      @county = session[:county]
       get_places_counties_and_countries
       @place_name = @place.place_name unless @place.nil?
       render :new
     else
       #we are clean on the addition
       flash[:notice] = 'The addition to Place Name was successful'
-      redirect_to places_path
+      redirect_to place_path(@place)
     end
   end
 
@@ -188,12 +189,10 @@ class PlacesController < ApplicationController
 
   def get_places_counties_and_countries
     @countries = Array.new
-    Country.all.each do |country|
+    Country.all.order_by(country_code: 1).each do |country|
       @countries << country.country_code
     end
-    @countries.insert(0,'England')
     @counties = ChapmanCode.keys
-    @counties.insert(0,@county)
     placenames = Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = Array.new
     placenames.each do |placename|
