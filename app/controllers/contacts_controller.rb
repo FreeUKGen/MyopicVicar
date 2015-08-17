@@ -63,7 +63,7 @@ class ContactsController < InheritedResources::Base
     @contact = Contact.find(params[:id])
     @contact.github_issue
     flash.notice = "Issue created on Github."
-    show
+    redirect_to contact_path(@contact.id)
   end
 
   def set_session_parameters_for_record(contact)
