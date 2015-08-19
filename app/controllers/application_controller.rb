@@ -125,6 +125,7 @@ class ApplicationController < ActionController::Base
     session[:my_own] = false
     session.delete(:freereg) 
     session.delete(:edit) 
+    session.delete(:sorted_by) 
 
   end
 def clean_session_for_county
