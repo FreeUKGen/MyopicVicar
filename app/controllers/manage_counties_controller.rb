@@ -196,9 +196,9 @@ class ManageCountiesController < ApplicationController
     end
     get_user_info_from_userid
     @county = session[:county]
-    @places = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params]).all.page(params[:page])
+    @places = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params],:disabled => 'false').all.page(params[:page])
     if @places.length == 1
-      place = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params]).first
+      place = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params],:disabled => 'false').first
       redirect_to place_path(place)
       return
     else
