@@ -681,7 +681,7 @@ class Freereg1CsvFile
     if processed.nil? || processed.file_processed
      case
      when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'    
-      color ="color:teal"
+      color ="color:green"
      when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true') 
       color = "color:blue"
      when self.error != 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')  
