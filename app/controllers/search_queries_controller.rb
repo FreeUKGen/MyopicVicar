@@ -1,5 +1,6 @@
 class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
+  skip_before_filter :require_cookie_directive, :only => :new
   before_filter :check_for_mobile, :only => :show
   RECORDS_PER_PAGE = 100
   def index

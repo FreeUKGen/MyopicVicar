@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
   before_filter :require_login
+  before_filter :require_cookie_directive
   before_filter :load_last_stat
 
   require 'record_type'
@@ -31,10 +32,15 @@ class ApplicationController < ActionController::Base
   end
   private
 
-   def check_for_mobile
+  def check_for_mobile
     session[:mobile_override] = true if mobile_device?
   end
-
+  def require_cookie_directive
+    if cookies[:cookiesDirective].blank?
+     flash[:notice] = 'This website only works if you are willing to accept cookies'
+     redirect_to new_search_query_path
+    end  
+  end
   
   def mobile_device?
    # Season this regexp to taste. I prefer to treat iPad as non-mobile.
