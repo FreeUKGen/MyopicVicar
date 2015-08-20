@@ -61,6 +61,8 @@ class Freereg1CsvFile
   field :characterset, type: String
   field :alternate_register_name, type: String
   field :csvfile, type: String
+  field :processed, type: Boolean, default: true
+  field :processed_date, type: DateTime
   
 
  
@@ -677,9 +679,10 @@ class Freereg1CsvFile
     end
   end
   def define_colour
-    processed = PhysicalFile.where(:userid => self.userid,:file_name =>self.file_name).first
-    if processed.nil? || processed.file_processed
+    #need to consider storing the processed rather than a look up
      case
+     when !self.processed
+      color = "color:orange" 
      when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'    
       color ="color:green"
      when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true') 
@@ -688,10 +691,9 @@ class Freereg1CsvFile
       color = "color:maroon"
      when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'  
        color = "color:red"
+     else
+       color = "color:black"
      end
-    else
-       color = "color:orange"
-    end
     color  
   end
 end

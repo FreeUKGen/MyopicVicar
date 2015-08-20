@@ -24,14 +24,16 @@ def create
   proceed = @csvfile.check_for_existing_unprocessed_file
   @csvfile.save if proceed
   if @csvfile.errors.any? || !proceed
-    flash[:notice] = 'The upload of the file was unsuccessful, please review and resubmit'
+    flash[:notice] = 'The upload of the file was unsuccessful, please review, correct and resubmit'
     get_user_info_from_userid
     get_userids_and_transcribers
     render :action => 'new'
     return 
   end #errors
+  batch =PhysicalFile.new(:userid => @csvfile.userid, :file_name => @csvfile.file_name, :base => true, :base_uploaded_date => Time.now)
+  batch.save
   @processing_time = @csvfile.save_and_estimate_time
-  flash[:notice] = 'The upload of the file was successful'
+  flash[:notice] = 'The upload of the file was successful' 
   render 'process' 
 end #method
 
@@ -44,28 +46,10 @@ def update
   if params[:commit] == 'Process'
     @csvfile = Csvfile.find(params[:id])
     range = File.join(@csvfile.userid ,@csvfile.file_name)
-    start = Time.now
     case
     when params[:csvfile][:process]  == "Just check for errors"
-     success = FreeregCsvUpdateProcessor.process(range,'no_search_records',"change")
-     process_time = Time.now - start
-     if success
-      flash[:notice] =  "The csv file #{ @csvfile.file_name} has been checked in #{process_time.to_i} seconds."
-     else
-      flash[:notice] =  "The csv file #{ @csvfile.file_name} was not checked for some reason."
-     end #if success
-     redirect_to freereg1_csv_files_path( :page => "#{session[:files_index_page]}")
-     return
-    
-    when params[:csvfile][:process]  == "Now" 
-     success = FreeregCsvUpdateProcessor.process(range,'search_records',"change")
-     process_time = Time.now - start
-     if success
-      flash[:notice] =  "The csv file #{ @csvfile.file_name} has been processed into the database in #{process_time.to_i} seconds."
-     else
-      flash[:notice] =  "The csv file #{ @csvfile.file_name} was not processed into the database."
-     end #if success
-   
+     pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]") 
+     flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."  
     when params[:csvfile][:process]  == "Process tonight" 
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
       batch.add_file("change")
@@ -85,11 +69,7 @@ def update
   end  #commit
 end
 
-
-
-
 def delete
-
   @role = session[:role]
   @csvfile  = Csvfile.new(:userid  => session[:userid])
   freefile = Freereg1CsvFile.find(params[:id])
@@ -105,7 +85,6 @@ def get_userids_and_transcribers
  syndicate = session[:syndicate] unless session[:syndicate].nil?
  @people =Array.new  
  @people <<  @user.userid
-
  case
  when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
   @userids = UseridDetail.all.order_by(userid_lower_case: 1)
@@ -119,7 +98,6 @@ def get_userids_and_transcribers
       @people << ids.userid
     end
   end
-  
 end
 
 def download

@@ -38,7 +38,7 @@ class UseridDetail
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
-  scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
+  
   attr_protected
   #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
 
@@ -55,10 +55,16 @@ class UseridDetail
 
   after_create :save_to_refinery
   after_update :update_refinery
-
   before_destroy :delete_refinery_user_and_userid_folder
 
-
+  class << self
+    def syndicate(syndicate)
+      where(:syndicate => syndicate)
+    end
+    def userid(userid)
+      where(:userid => userid)
+    end
+  end
 
   def remember_search(search_query)
     self.search_queries << search_query
@@ -212,7 +218,7 @@ class UseridDetail
 
   def self.get_userids_for_display(syndicate,page)
    @userids  = UseridDetail.all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
-   @userids = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
+   @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
    @userids
   end
 
@@ -226,7 +232,6 @@ class UseridDetail
     users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
     @userids = Array.new
-      @userids << ''
     users.each do |user|
       @userids << user.userid
     end
