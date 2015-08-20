@@ -4,21 +4,21 @@ class PhysicalFilesController < InheritedResources::Base
     if params[:page]
       session[:physical_index_page] = params[:page]
     end
+    @sorted_by = "(All files by userid then batch name)"
     @sorted_by = session[:sorted_by] unless session[:sorted_by].nil?
     get_user_info_from_userid
+    p  @sorted_by
     case 
-    when session[:sorted_by] == '(Change not processed)'
-      @batches = PhysicalFile.uploaded_into_change.not_processed.all.page(params[:page])
-    when session[:sorted_by] == '(Base not processed)'
-      @batches = PhysicalFile.uploaded_into_base.not_processed.all.page(params[:page])
-    when session[:sorted_by] == '(All not processed)'
-      @batches = PhysicalFile.not_processed.all.page(params[:page])  
-    when session[:sorted_by] == '(processed but not in the base folder)'
+    when session[:sorted_by] == '(File not processed)'
+    @batches = PhysicalFile.not_processed.all.order_by(base_uploaded_date: 1).page(params[:page])    
+    when session[:sorted_by] == '(Processed but no file)'
       @batches = PhysicalFile.processed.not_uploaded_into_base.all.page(params[:page])
-    when session[:sorted_by] == '(processed but no files)'
-      @batches = PhysicalFile.processed.not_uploaded_into_change.not_loaded_into_base.all.page(params[:page])
-    when session[:sorted_by] == '(processed but not in the change folder)'
-      @batches = PhysicalFile.processed.not_uploaded_into_change.all.page(params[:page])
+    when session[:sorted_by] == 'all files'
+      @batches = PhysicalFile.userid(@user).all.order_by(base_uploaded_date: 1).page(params[:page])
+    when session[:sorted_by] == 'processed but no file'
+      @batches = PhysicalFile.userid(@user).processed.not_uploaded_into_base.all.order_by(file_processed_date: 1).page(params[:page])  
+    when session[:sorted_by] == 'files_not processed'
+      @batches = PhysicalFile.userid(@user).not_processed.all.order_by(base_uploaded_date: 1).page(params[:page])
     else
       @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page])
     end
@@ -33,6 +33,7 @@ class PhysicalFilesController < InheritedResources::Base
 
   
   def select_action
+    session.delete(:sorted_by)
     get_user_info_from_userid
     @batches = PhysicalFile.new
     @options= UseridRole::PHYSICAL_FILES_OPTIONS
@@ -43,102 +44,73 @@ class PhysicalFilesController < InheritedResources::Base
   def load(batch)
     @batch = PhysicalFile.find(batch)
   end
-  def change_not_processed
+  
+  def file_not_processed
     if params[:page]
       session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
-    @sorted_by = '(Change not processed)'
+    @sorted_by = '(File not processed)'
     session[:sorted_by] = @sorted_by
-    @batches = PhysicalFile.uploaded_into_change.not_processed.all.page(params[:page])    
+    @batches = PhysicalFile.not_processed.all.order_by(base_uploaded_date: 1).page(params[:page])    
     render 'index'
   end
-  def base_not_processed
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
-    get_user_info_from_userid
-    @sorted_by = '(Base not processed)'
-    session[:sorted_by] = @sorted_by
-    @batches = PhysicalFile.uploaded_into_base.not_processed.all.page(params[:page])    
-    render 'index'
-  end
-  def all_not_processed
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
-    get_user_info_from_userid
-    @sorted_by = '(All not processed)'
-    session[:sorted_by] = @sorted_by
-    @batches = PhysicalFile.not_processed.all.page(params[:page])    
-    render 'index'
-  end
-  def processed_but_not_in_base
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
-    get_user_info_from_userid
-    @sorted_by = '(processed but not in the base folder)'
-    session[:sorted_by] = @sorted_by
-    @batches = PhysicalFile.processed.not_uploaded_into_base.all.page(params[:page])
-    render 'index'
-  end
+  
   def processed_but_no_file
     if params[:page]
     session[:files_index_page] = params[:page]
     end
     get_user_info_from_userid
-    @sorted_by = '(processed but no files)'
+    @sorted_by = '(Processed but no file)'
     session[:sorted_by] = @sorted_by
-    @batches = PhysicalFile.processed.not_uploaded_into_change.not_uploaded_into_base.all.page(params[:page])
+    @batches = PhysicalFile.processed.not_uploaded_into_base.all.order_by(file_processed_date: 1).page(params[:page])
     render 'index'
     
   end
-  def processed_but_not_in_change
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
-    get_user_info_from_userid
-    @sorted_by = '(processed but not in the change folder)'
-    session[:sorted_by] = @sorted_by
-    @batches = PhysicalFile.processed.not_uploaded_into_change.all.page(params[:page])
-    render 'index'
-  end
+  
   def files_for_specific_userid
     get_user_info_from_userid
     @batch = PhysicalFile.new
-    @userids = Array.new
-    UseridDetail.all.order_by(userid_lower_case: 1).each do |user|
-     @userids << user.userid
-    end
-    @options = @userids
+    @options = UseridDetail.get_userids_for_selection('all')
     session[:sorted_by] = 'all files'
     @location = 'location.href= "/physical_files/userid?params=" + this.value'
     @prompt = 'Select Userid'
     render '_form_for_selection'
   end
-  def files_for_specific_userid_not_processed
+   
+  def processed_but_no_file_for_specific_userid
     get_user_info_from_userid
     @batch = PhysicalFile.new
-    @userids = Array.new
-    UseridDetail.all.order_by(userid_lower_case: 1).each do |user|
-     @userids << user.userid
-    end
-    @options = @userids
-    session[:sorted_by] = 'not processed'
+    @options = UseridDetail.get_userids_for_selection('all')
+    session[:sorted_by] = 'processed but no file'
     @location = 'location.href= "/physical_files/userid?params=" + this.value'
     @prompt = 'Select Userid'
     render '_form_for_selection'
-    return
   end
+  def files_not_processed_specific_userid
+    get_user_info_from_userid
+    @batch = PhysicalFile.new
+    @options = UseridDetail.get_userids_for_selection('all')
+    session[:sorted_by] = 'files_not_processed'
+    @location = 'location.href= "/physical_files/userid?params=" + this.value'
+    @prompt = 'Select Userid'
+    render '_form_for_selection'
+  end
+  
   def userid
+    if params[:page]
+      session[:physical_index_page] = params[:page]
+    end
     @user = params[:params]  
     @sorted_by = session[:sorted_by] + ( " for #{@user}")  
     case 
     when session[:sorted_by] == 'all files'
-      @batches = PhysicalFile.where(:userid => @user).all
-    when session[:sorted_by] == 'not processed'
-      @batches = PhysicalFile.userid(@user).not_processed.all
+      #@batches = PhysicalFile.where(:userid => @user).all.order_by(base_uploaded_date: 1).page(params[:page])
+      @batches = PhysicalFile.userid(@user).all.order_by(base_uploaded_date: 1).page(params[:page])
+    when session[:sorted_by] == 'processed but no file'
+      @batches = PhysicalFile.userid(@user).processed.not_uploaded_into_base.all.order_by(file_processed_date: 1).page(params[:page])  
+    when session[:sorted_by] == 'files_not_processed'
+      @batches = PhysicalFile.userid(@user).not_processed.all.order_by(base_uploaded_date: 1).page(params[:page])
     end
     session[:paginate] = false
     render 'index' 

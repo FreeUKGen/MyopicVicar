@@ -605,11 +605,14 @@ class FreeregCsvUpdateProcessor
 
               # do we validate the Place field?
               raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
-              place = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved").first
-              if place.nil?
-               raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
-              else
-               data_record[:place] = place.place_name
+              if @@place.nil? || @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase != @@place
+              place = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved", :disabled => 'false').first 
+               if place.nil?
+                raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
+               else
+                @@place = place.place_name
+               end
+               data_record[:place] = @@place
               end
               # do we validate the register field
               raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
@@ -888,6 +891,8 @@ class FreeregCsvUpdateProcessor
                     batch_error.save
                   end #end header errors
                 end # #header error nil
+                @freereg1_csv_file.update_attribute(:processed, false) if !@@create_search_records
+                @freereg1_csv_file.update_attribute(:processed_date, Time.now) if @@create_search_records
                 @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
                 @freereg1_csv_file.save
                 header_errors = 0
@@ -937,6 +942,12 @@ class FreeregCsvUpdateProcessor
                   success = create_db_record_for_entry(data_record)
                   sleep(Rails.application.config.sleep.to_f)
                 else
+                  #check to see if the seach_record is there
+                
+                  if record_exists.search_record.nil?
+                    record = Freereg1CsvEntry.find(record_exists.id)
+                    record.transform_search_record if  @@create_search_records == true
+                  end
                   success = "nochange"
                   #remove from this location
                   ind = @records.find_index(record_exists._id)
@@ -1136,13 +1147,13 @@ class FreeregCsvUpdateProcessor
                        return true
                     when @@header[:digest] == check_for_file.digest 
                       #file in database is same or more recent than we we are attempting to reload so do not process
-                      p  "#{@@userid} #{@@header[:file_name]} has not changed since last build"
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
+                      p  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} digest has not changed since last build"
                       return false
                     when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                        #file in database is same or more recent than we we are attempting to reload so do not process
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
-                      p "#{@@userid}\t#{@@header[:file_name]} has not changed since last build"
+                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} is not more recent than the last processing"
+                      p "#{@@userid}\t#{@@header[:file_name]} is not more recent than the last processing"
                       return false
                     when (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
                     #do not process if coordinator has locked
@@ -1162,6 +1173,8 @@ class FreeregCsvUpdateProcessor
                   #initializes variables
                   #gets information on the file to be processed
                   @@update = false
+                  #@@place is used to hold the last place name processed for this file
+                  @@place = nil
                   @@header = Hash.new
                   @csvdata = Array.new
                   @@list_of_registers = Hash.new()
@@ -1191,32 +1204,29 @@ class FreeregCsvUpdateProcessor
                 def self.process(range,type,delta)
                   #this is the basic processing
                   recreate = 'add'
-                  create_search_records = "no" 
-                  create_search_records = 'create_search_records' if type == "search_records" || type == "create_search_records" 
+                  @@create_search_records = false
+                  @@create_search_records = true if type == "search_records" || type == "create_search_records" 
                   #set up message files
                   EmailVeracity::Config[:skip_lookup]=true
                   base_directory = Rails.application.config.datafiles
-                  change_directory = Rails.application.config.datafiles_changeset
-                  delta_directory = Rails.application.config.datafiles_delta
-                  process_directory = Rails.application.config.processing_delta
+                  delta_file = Rails.application.config.datafiles_delta
+                  process_file = Rails.application.config.processing_delta
                   file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
                   time = Time.new.to_i.to_s
                   file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
                   @@message_file = File.new(file_for_warning_messages, "w")
                   @@message_file.puts " Using #{Rails.application.config.website}"
                   report_time = Time.now.strftime("%d/%m/%Y %H:%M")
-                  p "Started a build with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
-                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
-                  @@create_search_records = false
-                  @@create_search_records = true if create_search_records == 'create_search_records'
+                  p "Started a build with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
+                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
                   #set up to determine files to be processed
-                  filenames = GetFiles.get_all_of_the_filenames(change_directory,range) if delta == 'change'
-                  filenames = GetFiles.use_the_delta(change_directory,delta_directory) if delta == 'delta'
-                  filenames = GetFiles.use_the_delta(change_directory,process_directory) if delta == 'process'
-                  force =false
+                  filenames = GetFiles.get_all_of_the_filenames(base_directory,range) if delta == 'change'
+                  filenames = GetFiles.use_the_delta(base_directory,delta_file) if delta == 'delta'
+                  filenames = GetFiles.use_the_delta(base_directory,process_file) if delta == 'process'
+                  force = false
                   force = true if delta == 'process'
-                  p "#{filenames.length} files selected for processing"
-                  @@message_file.puts "#{filenames.length}\t files selected for processing\n"
+                  p "#{filenames.length} files selected for processing" unless filenames.nil?
+                  @@message_file.puts "#{filenames.length}\t files selected for processing\n" unless filenames.nil?
                   time_start = Time.now
                   nn = 0
                   #now we cycle through the files
@@ -1232,25 +1242,23 @@ class FreeregCsvUpdateProcessor
                     if @success == true  && process == true
                       n = process_the_data
                       file_location = File.join(base_directory, @@header[:userid])
-                      Dir.mkdir(file_location) unless Dir.exists?(file_location)
-                      p "copying file to base"
-                      FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true) if @success == true  && process == true
                       batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
-                      if batch.nil?
-                        batch = PhysicalFile.new(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                      if batch.nil? && @@create_search_records
+                        batch = PhysicalFile.new(:base => true, :base_uploaded_date => Time.now, :file_processed => true, :file_processed_date => Time.now)
                         batch.save
                       else
                         if @@create_search_records
-                         batch.update_attributes(:file_processed => true, :file_processed_date => Time.now, :base => true, :base_uploaded_date => Time.now)
+                           batch.update_attributes( :base => true, :base_uploaded_date => Time.now, :file_processed => true, :file_processed_date => Time.now)
                         else
-                         batch.update_attributes(:file_processed => false, :file_processed_date => nil, :base => true, :base_uploaded_date => Time.now)
+                           batch.update_attributes(:file_processed => false, :file_processed_date => nil, :base => true, :base_uploaded_date => Time.now)
+                        
                         end
                       end
                       nn = nn + n unless n.nil?
-                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 &&  @@create_search_records)
+                      UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     else
-                     @@message_file.puts "File not processed due to error in reading the file" if @success == false 
-                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 && @@create_search_records)
+                     @@message_file.puts "File not processed" if @success == false 
+                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 )
                     end
                     @success = true
                     #we pause for a time to allow the slaves to really catch up

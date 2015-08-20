@@ -98,19 +98,20 @@ module UseridRole
           'Upload New Batch' =>  "/csvfiles/new",
           'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
-        PHYSICAL_FILES_OPTIONS =  ['Browse Files' ,'Base Files Not Processed','Change Files Not Processed', 'All Files Not Processed','List Processed but not in Base Folder',
-          'List Processed but not in Change Folder','List Processed but no files','List Files for Userid', 'List Files for Userid Not Processed']
+        PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no files','Browse Files','Select File' ,
+           'Files Not Processed for Userid','Files uploaded for Userid', 'Processed but no files for Userid']
         PHYSICAL_FILES_OPTIONS_TRANSLATION ={
           'Browse Files' => "/physical_files/",
-          'Change Files Not Processed' => '/physical_files/change_not_processed',
-          'Base Files Not Processed' => '/physical_files/base_not_processed',
-          'All Files Not Processed'=> '/physical_files/all_not_processed',
-          'List Processed but not in Base Folder' => '/physical_files/processed_but_not_in_base',
-          'List Processed but not in Change Folder' => '/physical_files/processed_but_not_in_change',
-          'List Files for Userid' => '/physical_files/files_for_specific_userid',
-          'List Files for Userid Not Processed' => '/physical_files/files_for_specific_userid_not_processed',
-          'List Processed but no files' => '/physical_files/processed_but_no_file'
+          'Select File' => "/physical_files/select_file",
+          'Files Not Processed' => '/physical_files/file_not_processed',
+           'Processed but no files' => '/physical_files/processed_but_no_file',
+          'Select by Userid' => '/physical_files/userid',
+          'Files uploaded for Userid' => '/physical_files/files_for_specific_userid',
+          'Processed but no files for Userid' => '/physical_files/processed_but_no_file_for_specific_userid',
+          'Files Not Processed for Userid' => '/physical_files/files_not_processed_specific_userid'
         }
+          
+         
 
 
         SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
