@@ -194,11 +194,11 @@
 		// Build the rest of the disclosure for implied and explicit consent
 		if(settings.explicitConsent) {
 			// Explicit consent disclosure
-			html += scriptsDisclosure + 'You may delete and block all cookies from this site, but parts of the site will not work.';
+			html += scriptsDisclosure + 'You may delete and block all cookies from this site, but the search will no longer work.';
 			html += 'To find out more about cookies on this website, see our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
 			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">privacy policy</a>.<br/>';
 			html += '<div id="epdnotick" style="color:#ca0000;display:none;margin:2px;"><span style="background:#cecece;padding:2px;">You must tick the "I accept cookies from this site" box to accept</span></div>';
-			html += '<div style="margin-top:5px;">I accept cookies from this site <input type="checkbox" name="epdagree" id="epdagree" />&nbsp;';
+			html += '<div style="margin-top:5px;">I accept cookies from this site (by ticking this box) &nbsp<input type="checkbox" name="epdagree" id="epdagree" />&nbsp &nbsp;';
 			html += '<input type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/><br/></div></div>';
 		
 		} else {
