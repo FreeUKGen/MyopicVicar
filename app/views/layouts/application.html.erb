@@ -126,9 +126,13 @@
     <script type="text/javascript">
     $(document).ready(function() {
         $.cookiesDirective({
-            fontSize: '13px',
             privacyPolicyUri:  "/about/cookie-policy",
-            duration: 300
+            duration: 300,
+            fontColor: '#FFFFFF', // font color for disclosure panel
+            fontSize: '24px', // font size for disclosure panel
+            backgroundColor: '#000000', // background color of disclosure panel
+            backgroundOpacity: '95', // opacity of disclosure panel
+            linkColor: '#E02424' // link color in disclosure panel
         });
     });
 </script>   
