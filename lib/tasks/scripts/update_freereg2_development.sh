@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script updates the freereg2 development database
+# This script updates the freereg2 production database
 set -uo pipefail
 IFS=$'\n\t'
 
@@ -10,40 +10,43 @@ trace() {
 }
 
 fail() {
+  sudo /root/bin/searchctl.sh enable
   trace "FATAL $@"
   exit 1
 }
 trap fail ERR
 
 DATA_ROOT=/raid/freereg2
-FREEREG1=${DATA_ROOT}/freereg1/users
-FREEREG1_DELTA=${DATA_ROOT}/tmp
+FREEREG2=${DATA_ROOT}/users
+FREEREG2_DELTA=${DATA_ROOT}/log
 ROOT=/home/apache/hosts/freereg2/production
 LOG_DIR=${DATA_ROOT}/log
+PROCESS=${LOG_DIR}/processing_delta
 umask 0002
-
-if [[ ! -d ${FREEREG1} ]] ; then
+if [[ ! -d ${FREEREG2} ]] ; then
   # create target if absent (or we could call fail() to stop here)
-  trace "${FREEREG1} doesn't exist, creating"
-  mkdir -p ${FREEREG1}
+  trace "${FREEREG2} doesn't exist, creating"
+  mkdir -p ${FREEREG2}
 fi
-if [[ ! -d ${FREEREG1_DELTA} ]] ; then
+if [[ ! -d ${FREEREG2_DELTA} ]] ; then
   # create target if absent (or we could call fail() to stop here)
-  trace "${FREEREG1_DELTA} doesn't exist, creating"
-  mkdir -p ${FREEREG1_DELTA}
+  trace "${FREEREG2_DELTA} doesn't exist, creating"
+  mkdir -p ${FREEREG2_DELTA}
 fi
-
-
-trace "enforcing ownership on ${DATA_ROOT}"
+if [[ ! -e ${PROCESS} ]] ; then
+  # create target if absent (or we could call fail() to stop here)
+  trace "${PROCESS} doesn't exist, creating"
+  touch ${PROCESS}
+fi
 
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo -u webserv rsync -e ssh -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails'  colobus.freebmd.org.uk::regusers/ ${FREEREG1}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
+sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
 trace "update of the database2"
-sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a,search_records,delta] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,process] --trace
 trace "delete of entries and records for removed batches"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
-
 trace "finished"
 exit
 
