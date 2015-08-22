@@ -1,10 +1,11 @@
 require 'chapman_code'
 namespace :foo do
 
-  desc "Initialize the Batch collection"
+  desc "Initialize the Physical files collection"
   task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
   require 'load_physical_file_records'
     LoadPhysicalFileRecords.process(args.limit,args.range)
+    PhysicalFile.create_indexes()
   end
 
   desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
@@ -23,7 +24,8 @@ namespace :foo do
    task :missing_modified_place_names, [:limit] => [:environment] do |t, args|
    require 'missing_modified_place_names' 
    Mongoid.unit_of_work(disable: :all) do
-     MissingModifiedPlaceNames.process(args.limit) 
+     MissingModifiedPlaceNames.process(args.limit)
+
      puts "Task complete."
    end
   end
