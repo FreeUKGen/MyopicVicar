@@ -30,8 +30,6 @@ def create
     render :action => 'new'
     return 
   end #errors
-  batch =PhysicalFile.new(:userid => @csvfile.userid, :file_name => @csvfile.file_name, :base => true, :base_uploaded_date => Time.now)
-  batch.save
   @processing_time = @csvfile.save_and_estimate_time
   flash[:notice] = 'The upload of the file was successful' 
   render 'process' 

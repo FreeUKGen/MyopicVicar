@@ -13,7 +13,8 @@ class UserMailer < ActionMailer::Base
     #mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end
 
-  def batch_processing_failure(user,batch)
+  def batch_processing_failure(file,user,batch)
+    attachments["report.log"] = File.read(file)
     @userid = UseridDetail.where(userid: user).first
     syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
     sc = UseridDetail.where(userid: syndicate_coordinator).first

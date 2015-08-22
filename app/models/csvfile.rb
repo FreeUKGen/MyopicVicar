@@ -14,7 +14,7 @@ class Csvfile < CarrierWave::Uploader::Base
     errors.add(:file_name, "File already exits and has been processed. You need to replace the existing file") unless  PhysicalFile.where(userid: self.userid, file_name: self.file_name,file_processed: true).first.nil?
   end
   def save_and_estimate_time
-    batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now)
+    batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
     batch.save
     processing_time = self.estimate_time
   end

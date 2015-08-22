@@ -1206,11 +1206,14 @@ class FreeregCsvUpdateProcessor
                   recreate = 'add'
                   @@create_search_records = false
                   @@create_search_records = true if type == "search_records" || type == "create_search_records" 
-                  #set up message files
                   EmailVeracity::Config[:skip_lookup]=true
                   base_directory = Rails.application.config.datafiles
+                  #delta files holds the list of userid/files names that have changed either as a result of syncing with FR1
+                  #or as a single file for processing in FR2. The latter can be a check for errors or adding to the database
                   delta_file = Rails.application.config.datafiles_delta
+                  #process files holds the list of userid/file names that have been submitted for overnight processing in FR2
                   process_file = Rails.application.config.processing_delta
+                  #set up message files
                   file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
                   time = Time.new.to_i.to_s
                   file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
@@ -1223,6 +1226,7 @@ class FreeregCsvUpdateProcessor
                   filenames = GetFiles.get_all_of_the_filenames(base_directory,range) if delta == 'change'
                   filenames = GetFiles.use_the_delta(base_directory,delta_file) if delta == 'delta'
                   filenames = GetFiles.use_the_delta(base_directory,process_file) if delta == 'process'
+                  #force is used to override the replacement check
                   force = false
                   force = true if delta == 'process'
                   p "#{filenames.length} files selected for processing" unless filenames.nil?
@@ -1234,31 +1238,40 @@ class FreeregCsvUpdateProcessor
                     p "Started on the file #{filename}"
                     @@file_start = Time.new
                     setup_for_new_file(filename)
+                    #do we process the file
                     process = false
                     process = check_for_replace(filename,force) unless recreate == "recreate"
-
+                    #get the data for the file in one gob
                     @success = slurp_the_csv_file(filename) if process == true
-
+                    #check to see that we need to process the data and we got it all
                     if @success == true  && process == true
+                    #how many records did we process?
                       n = process_the_data
                       file_location = File.join(base_directory, @@header[:userid])
+                      #do we have a record of this physical file
                       batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
                       if batch.nil? && @@create_search_records
+                        #file did not come in through FR2 so its unkown
                         batch = PhysicalFile.new(:base => true, :base_uploaded_date => Time.now, :file_processed => true, :file_processed_date => Time.now)
                         batch.save
                       else
+                        #came in through FR2
                         if @@create_search_records
-                           batch.update_attributes( :base => true, :base_uploaded_date => Time.now, :file_processed => true, :file_processed_date => Time.now)
+                          # we created search records so its in the search database database
+                           batch.update_attributes( :file_processed => true, :file_processed_date => Time.now)
                         else
-                           batch.update_attributes(:file_processed => false, :file_processed_date => nil, :base => true, :base_uploaded_date => Time.now)
-                        
+                          #only checked for errors so file is not processed into search database
+                           batch.update_attributes(:file_processed => false, :file_processed_date => nil)
                         end
                       end
                       nn = nn + n unless n.nil?
+                      #kludge to send email to user if a check for errors or an on-line process
                       UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     else
+                      #another kludge to send a message to user and sc that the file did not get processed
+                     file = @@message_file
                      @@message_file.puts "File not processed" if @success == false 
-                     UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 )
+                     UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 )
                     end
                     @success = true
                     #we pause for a time to allow the slaves to really catch up
