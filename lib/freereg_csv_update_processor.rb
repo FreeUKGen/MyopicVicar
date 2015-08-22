@@ -1269,12 +1269,15 @@ class FreeregCsvUpdateProcessor
                       UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     else
                       #another kludge to send a message to user that the file did not get processed
-                     
-                     p "Trying to send failure"
-                     file = @@message_file
-                     @@message_file.puts "File not processed" if @success == false 
-                     UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 )
+                    if delta == 'process' || (delta == 'change' && filenames.length == 1 )          
+                      @@message_file.puts "File not processed" if @success == false 
+                      file = @@message_file
+                      @@message_file.close
+                      UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver 
+                      @@message_file = File.new(file_for_warning_messages, "w")
                     end
+                    end
+                    #reset for next file
                     @success = true
                     #we pause for a time to allow the slaves to really catch up
                     sleep_time = 300 * Rails.application.config.sleep.to_f
