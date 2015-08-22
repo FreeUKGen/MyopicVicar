@@ -607,13 +607,13 @@ class FreeregCsvUpdateProcessor
               raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
               if @@place.nil? || @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase != @@place
               place = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved", :disabled => 'false').first 
-               if place.nil?
-                raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
-               else
-                @@place = place.place_name
-               end
-               data_record[:place] = @@place
+                if place.nil?
+                  raise FreeREGError, "The Place #{@csvdata[1]} is unapproved and rejected" 
+                else
+                  @@place = place.place_name           
+                end
               end
+               data_record[:place] = @@place
               # do we validate the register field
               raise FreeREGError, "Church field #{@csvdata[2]} is invalid in some way" unless validregister(@csvdata[2],"Church")
               data_record[:county] = @csvdata[0]
@@ -1268,7 +1268,9 @@ class FreeregCsvUpdateProcessor
                       #kludge to send email to user if a check for errors or an on-line process
                       UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     else
-                      #another kludge to send a message to user and sc that the file did not get processed
+                      #another kludge to send a message to user that the file did not get processed
+                     
+                     p "Trying to send failure"
                      file = @@message_file
                      @@message_file.puts "File not processed" if @success == false 
                      UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1 )

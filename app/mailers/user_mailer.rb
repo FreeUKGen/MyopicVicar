@@ -16,13 +16,13 @@ class UserMailer < ActionMailer::Base
   def batch_processing_failure(file,user,batch)
     attachments["report.log"] = File.read(file)
     @userid = UseridDetail.where(userid: user).first
-    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
+   # syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
+    #sc = UseridDetail.where(userid: syndicate_coordinator).first
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     #county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
     #cc = UseridDetail.where(userid: county_coordinator).first
     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}")
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
+   # mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg2 processed #{batch}")
     #mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end
 
