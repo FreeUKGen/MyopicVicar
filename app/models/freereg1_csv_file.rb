@@ -97,9 +97,6 @@ class Freereg1CsvFile
  
   has_many :batch_errors
 
-  scope :syndicate, ->(syndicate) { where(:transcriber_syndicate => syndicate) }
-  scope :county, ->(county) { where(:county => county) }
-  scope :userid, ->(userid) { where(:userid => userid) }
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4}\z/
@@ -118,6 +115,18 @@ class Freereg1CsvFile
     'Nov' => '11',
     'Dec' => '12'
   }
+
+  class << self
+    def syndicate(name)
+      where(:syndicate => name)
+    end
+    def county(name)
+      where(:county => name)
+    end
+    def userid(name)
+      where(:userid => name)
+    end
+  end
 
   def add_lower_case_userid
     self[:userid_lower_case] = self[:userid].downcase
