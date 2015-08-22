@@ -23,7 +23,11 @@
     <% @batches.each do |batch| %>
       <tr id="<%=batch.id%>">
         <td > <%= batch.userid  %>  </td>
-        <td > <%= batch.file_name  %>  </td>
+        <% if @sorted_by == '(Processed but no file)' || @sorted_by == 'processed but no file' %>
+          <td>  <%= link_to batch.file_name , freereg1_csv_file_path(Freereg1CsvFile.where(:userid =>batch.userid, :file_name => batch.file_name).first.id) %> </td>
+        <% else %>
+          <td > <%= batch.file_name  %>  </td>
+        <% end %>
         <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
         <td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed %>  </td>
         <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
