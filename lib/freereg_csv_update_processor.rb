@@ -1281,7 +1281,7 @@ class FreeregCsvUpdateProcessor
                     @success = true
                     #we pause for a time to allow the slaves to really catch up
                     sleep_time = 300 * Rails.application.config.sleep.to_f
-                    sleep(sleep_time) if filenames.length >= 5
+                    sleep(sleep_time) if filenames.length >= 5 && process
                    
                   end #filename loop end
                   time = 0
