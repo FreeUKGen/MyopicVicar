@@ -17,7 +17,7 @@ fail() {
 trap fail ERR
 
 DATA_ROOT=/raid/freereg2
-FREEREG2=${DATA_ROOT}/users
+FREEREG2=${DATA_ROOT}/freereg1/users
 FREEREG2_DELTA=${DATA_ROOT}/log
 ROOT=/home/apache/hosts/freereg2/production
 LOG_DIR=${DATA_ROOT}/log
