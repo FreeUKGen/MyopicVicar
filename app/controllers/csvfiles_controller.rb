@@ -13,7 +13,7 @@ def new
 end
 
 def create
-  if params[:csvfile].blank?
+  if params[:csvfile][:csvfile].blank?
     flash[:notice] = 'You must select a file'
     redirect_to :action => 'new'
     return 
