@@ -42,7 +42,7 @@ trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo -u webserv rsync  -avz  --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
+sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
 trace "update of the database2"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,process] --trace
