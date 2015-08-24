@@ -12,10 +12,11 @@
     <tr >
       <th>Userid</th>
       <th >File Name</th>
-      <th >Uploaded</th>
+      <th >loaded into FR2</th>
+      <th> Copied from FR1 </th>
       <th >Processed into Database</th>
-      <th >Process file</th>
-      
+      <th >Process FR2 file</th>
+    
     </tr>
     <% if @batches.nil? %>
       There are none
@@ -29,8 +30,11 @@
           <td > <%= batch.file_name  %>  </td>
         <% end %>
         <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
+        <td > <%= batch.change_uploaded_date.strftime("%d %b %Y") if batch.change %>  </td>
+  
         <td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed %>  </td>
-        <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+        <td><%= link_to 'Process FR2 file', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+         
       </tr>
     <% end %>
     <% end %>

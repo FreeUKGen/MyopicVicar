@@ -657,7 +657,7 @@ class Freereg1CsvFile
         datemin = xx if xx < datemin
         bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i 
         bin = 0 if bin < 0
-        bin = 50 if bin > 50
+        bin = 49 if bin > 49
         daterange[bin] = daterange[bin] + 1 
       end
     end
@@ -683,7 +683,7 @@ class Freereg1CsvFile
       @self.datemin = date if date < self.datemin.to_i
       bin = ((date - FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i 
       bin = 0 if bin < 0
-      bin = 50 if bin > 50
+      bin = 49 if bin > 49
       self.daterange[bin] = self.daterange[bin] + 1 
     end
   end

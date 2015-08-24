@@ -187,7 +187,7 @@ class FreeregCsvUpdateProcessor
     datemin = xx if xx < datemin
     bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i
     bin = 0 if bin < 0
-    bin = 50 if bin > 50
+    bin = 49 if bin >= 50
     daterange[bin] = daterange[bin] + 1 
     #   p "data range #{datemax} #{datemin} #{bin} #{daterange}"
       @@list_of_registers[@@place_register_key].store(:datemax,datemax)
@@ -1148,17 +1148,17 @@ class FreeregCsvUpdateProcessor
                     when @@header[:digest] == check_for_file.digest 
                       #file in database is same or more recent than we we are attempting to reload so do not process
                       p  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} digest has not changed since last build"
+                      @@message_file.puts "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
                       return false
                     when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                        #file in database is same or more recent than we we are attempting to reload so do not process
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} is not more recent than the last processing"
-                      p "#{@@userid}\t#{@@header[:file_name]} is not more recent than the last processing"
+                      @@message_file.puts "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
+                      p "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
                       return false
                     when (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
                     #do not process if coordinator has locked
-                      @@message_file.puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                      puts "#{@@userid}\t#{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                      @@message_file.puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                      puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
                       return false
                     else
                       @@update = true
@@ -1208,6 +1208,7 @@ class FreeregCsvUpdateProcessor
                   @@create_search_records = true if type == "search_records" || type == "create_search_records" 
                   EmailVeracity::Config[:skip_lookup]=true
                   base_directory = Rails.application.config.datafiles
+                  change_directory = Rails.application.config.datafiles_changeset
                   #delta files holds the list of userid/files names that have changed either as a result of syncing with FR1
                   #or as a single file for processing in FR2. The latter can be a check for errors or adding to the database
                   delta_file = Rails.application.config.datafiles_delta
@@ -1220,12 +1221,12 @@ class FreeregCsvUpdateProcessor
                   @@message_file = File.new(file_for_warning_messages, "w")
                   @@message_file.puts " Using #{Rails.application.config.website}"
                   report_time = Time.now.strftime("%d/%m/%Y %H:%M")
-                  p "Started a build with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
-                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
+                  p "Started a build with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
+                  @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"            
                   #set up to determine files to be processed
                   filenames = GetFiles.get_all_of_the_filenames(base_directory,range) if delta == 'change'
-                  filenames = GetFiles.use_the_delta(base_directory,delta_file) if delta == 'delta'
-                  filenames = GetFiles.use_the_delta(base_directory,process_file) if delta == 'process'
+                  filenames = GetFiles.use_the_delta(change_directory,delta_directory) if delta == 'delta'
+                  filenames = GetFiles.use_the_delta(base_directory,process_directory) if delta == 'process'
                   #force is used to override the replacement check
                   force = false
                   force = true if delta == 'process'
@@ -1247,7 +1248,12 @@ class FreeregCsvUpdateProcessor
                     if @success == true  && process == true
                     #how many records did we process?
                       n = process_the_data
-                      file_location = File.join(base_directory, @@header[:userid])
+                      if delta == "delta"
+                        file_location = File.join(base_directory, @@header[:userid])
+                        Dir.mkdir(file_location) unless Dir.exists?(file_location)
+                        p "copying file to freereg2 base"
+                        FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true) if @success == true  && process == true
+                      end
                       #do we have a record of this physical file
                       batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
                       if batch.nil? && @@create_search_records
