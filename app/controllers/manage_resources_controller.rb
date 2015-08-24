@@ -16,12 +16,25 @@
   end
 
   def new
-      unless current_refinery_user
+      if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
+        flash[:notice] = "You are not currently permitted to access the system "
         redirect_to refinery.login_path
         return
       end
-      cookies.signed[:Administrator] = Rails.application.config.github_password
+      unless  current_refinery_user.userid_detail.active
+        flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
+        redirect_to refinery.login_path
+        return
+      end
       @user = current_refinery_user.userid_detail 
+      if @user.person_role == "researcher" || @user.person_role == "transcriber" || @user.person_role == "trainee" || @user.person_role == 'pending' 
+       flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
+       redirect_to refinery.logout_path
+       return
+      end
+
+      cookies.signed[:Administrator] = Rails.application.config.github_password
+     
 
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe

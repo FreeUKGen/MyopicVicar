@@ -8,11 +8,10 @@
    <% end %> 
 <section class="island  island--light">
 <%= semantic_form_for  @place, :html => { :class => "grid"}  do |f| %>
-<%= f.input :place_name,{ :as => :select,:label => "New Place Name :",:include_blank => false,
-      :required => true, :collection => @placenames,:size => 15 } %>
+ <%= f.input :place_name, :label => "Enter the new Place Name",:input_html => { :size => 15 } %>
  
  <%= f.action :submit, :as => :input, :label => 'Rename' %>
  <% end %>
- <p style="color:red">Please note if you are changing the name in a large numer of records the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
+ <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
  </section>
   

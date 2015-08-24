@@ -49,7 +49,7 @@
           <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/images/info.png"><span>County in which event was recorded. Click heading to sort by the county</span></a>
         </td>
         <td>
-          <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
+           <%= search_record.place.county %> 
         </td>
       </tr>
       <tr>

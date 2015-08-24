@@ -36,7 +36,7 @@ include Mongoid::Document
       if my_entry.last_upload.nil?
         my_entry.last_upload = DateTime.new(1970,1,1)
       end
-      message_file.puts "\"#{my_entry.userid}\",\" #{my_entry.syndicate}\",\" #{my_entry.person_surname}\",\"#{my_entry.person_forename}\",\"#{my_entry.email_address}\",\" #{my_entry.active}\",\" #{my_entry.last_upload.strftime("%d %b %Y")}\",\"#{my_entry.number_of_files}\",\"#{my_entry.number_of_records}\",\" #{my_entry.person_role}\"\n" 
+      message_file.puts "\"#{my_entry.userid}\",\" #{my_entry.syndicate}\",\" #{my_entry.person_surname}\",\"#{my_entry.person_forename}\",\"#{my_entry.email_address}\",\" #{my_entry.active}\",\" #{my_entry.last_upload.strftime("%d %b %Y")}\",\"#{my_entry.freereg1_csv_files.count}\",\"#{my_entry.compute_records}\",\" #{my_entry.person_role}\"\n" 
       end #place
   p "Finished #{number} records"
     

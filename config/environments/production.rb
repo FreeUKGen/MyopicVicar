@@ -96,6 +96,8 @@ MyopicVicar::Application.configure do
   config.github_login = 'FreeUKGenIssues'
   config.github_password = ENV["GITHUB_WORD"]
   config.github_repo = 'FreeUKGen/FreeUKGenProductIssues'
-
+  config.days_to_retain_search_queries = 90
+  config.sleep = MyopicVicar::MongoConfig['sleep']
+  config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
 
 end

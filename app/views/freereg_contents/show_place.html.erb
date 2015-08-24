@@ -33,7 +33,7 @@
      <%end%>
      </tr>
      <tr>
-       <td>Genuki location page :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--exsmall")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td>
+       <td>Genuki location page :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--exsmall", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td>
         </tr>
        <tr>
          <td>Notes about the Place :</td><td class="weight--semibold" > <%= @place.place_notes %> </td>   
@@ -52,7 +52,7 @@
        </tr>
 
        <tr>
-         <td>Last amended:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") %></td>   
+         <td>Last amended:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>   
        </tr>
        <tr>
          <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   

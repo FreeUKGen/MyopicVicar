@@ -24,16 +24,31 @@ class RegistersController < ApplicationController
   def rename
     get_user_info_from_userid
     load(params[:id])
+    @records = 0
+    @register.freereg1_csv_files.each do |file|
+    @records = @records + file.freereg1_csv_entries.count
+    end
+  end
+  def relocate
+    load(params[:id])
+    @records = @register.records
+    time = @records * Rails.application.config.sleep.to_f
+    if time >= 180
+      flash[:notice] = "There are too many records (#{records}) for an on_line update. Please change the file and reload."
+      redirect_to :back
+      return
+    end
+    @register.display_info
+    get_user_info_from_userid
+    @county =  session[:county]
+    @role = session[:role]
+    get_places_for_menu_selection
   end
 
   def merge
 
     load(params[:id])
-    p 'merging into'
-    p @register
     errors = @register.merge_registers
-    p @register
-    p errors
     if errors[0]  then
       flash[:notice] = "Merge unsuccessful; #{errors[1]}"
       render :action => 'show'
@@ -77,10 +92,7 @@ class RegistersController < ApplicationController
     load(params[:id])
     case
     when params[:commit] == 'Submit'
-      p 'editing'
-      p @register
       @register.update_attributes(params[:register])
-      p @register
       if @register.errors.any?  then
         flash[:notice] = 'The update of the Register was unsuccessful'
         render :action => 'edit'
@@ -90,17 +102,13 @@ class RegistersController < ApplicationController
       redirect_to register_path(@register)
       return
     when params[:commit] == 'Rename'
-      p 'renaming'
-      p @register
       errors = @register.change_type(params[:register][:register_type])
-      p @register
-      p errors
       if errors  then
-        flash[:notice] = 'The rename of the Register was unsuccessful'
+        flash[:notice] = 'The change of register type for the Register was unsuccessful'
         render :action => 'rename'
         return
       end
-      flash[:notice] = 'The rename the Register was successful'
+      flash[:notice] = 'The change of register type for the Register was successful'
       redirect_to register_path(@register)
       return
     else
@@ -119,7 +127,9 @@ class RegistersController < ApplicationController
     @church = @register.church
     @church_name = @church.church_name
     session[:church_name] = @church_name
+    session[:church_id] = @church.id
     @place = @church.place
+    session[:place_id] = @place.id
     @county =  session[:county]
     @place_name = @place.place_name
     session[:place_name] = @place_name

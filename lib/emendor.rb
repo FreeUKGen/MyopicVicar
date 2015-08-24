@@ -77,15 +77,20 @@ module Emendor
       print "\tApplying #{rule.original}=>#{rule.replacement} over records in #{code}\n" if verbose
 
       records = matching_records(code, rule, verbose)
+      
+      ids = [] 
+      records.each { |r| ids << r.id }
 
-      records.each do |record|
+      ids.each do |id|
+        record = SearchRecord.find(id)
         if transformed = record.search_names.to_a.detect { |n| n.origin == SearchRecord::Source::EMENDOR }
           print "\t\tSkipping record #{transformed.first_name} #{transformed.last_name} (as already emended)\n" if verbose
         else
+          print "\t\tTransforming record "+record.search_names.inject("") { |acc,n| acc << "#{n.first_name} #{n.last_name} & " }+"\n" if verbose
           record.transform
           unless pretend
             record.save! 
-            sleep(1)
+            sleep(0.1)
           end
         end
       end

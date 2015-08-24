@@ -1,12 +1,10 @@
-<% breadcrumb :edit_userid_detail, @userid %>
+<% breadcrumb :edit_userid_detail, @syndicate, @userid %>
+<p style="text-align: center"><b>Editing Profile for <%= @userid.userid %></b> </p>
  <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
+   <div id="notice" style="color:blue"><br>
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
-   <% end %>
+  <% end %>
 <section>
-<% if session[:my_own]%>
- <h4>You will need to login again after a successful change in your profile</h4>
-<% end %>
 <%= render 'form' %>
-<%= render "resource_sidebar" %>
+</section>

@@ -1,15 +1,14 @@
 <p> Dear <%= @name %>;</p>
-<p>We have received correspondence that was directed to you from <%=@contact.name%> at <%= @contact.email_address%>. </p>
+<p>We have received correspondence on a <%= @contact.contact_type %> from <%=@contact.name%> at <%= @contact.email_address%>. </p>
+<p>Copies gone to all registered data managers: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
+<p>It has been suggested that the first person in the list takes the lead in responding.
 <b>Content of report:</b>
 <%= @contact.body %>
 </p>
-<p>
-<b>Type:</b>
-<%= @contact.contact_type %>
-</p>
-<% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-<p> No coordinator was provided with a copy of this contact</p>
-<p> <%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%>
+
+<% if @contact.contact_type == 'Data Problem' %>
+<p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the contact on line if you are logged into the system. </a></p>
+
 <% end%>
 <p>
 <b>Time:</b>
@@ -23,6 +22,5 @@
 No screenshot attached.
 <% end %>
 </p>
-<p>You may review the material on line if you are logged into the system.</p>
-<%= button_to ' Access the contact', contact_path(@contact),  method: :get%>
+
 <p> The FreeREG Team</p>

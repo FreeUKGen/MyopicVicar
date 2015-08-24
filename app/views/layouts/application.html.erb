@@ -9,11 +9,13 @@
   <head>
     <meta charset="utf-8"/>
     <title>FreeReg</title>
-    <meta name="keywords" content="">
-    <meta name="description" content="">
+    <meta name="keywords" content="genealogy,registers,parish registers,church registers,transcriptions,indexes,baptism,marriage,burial">
+    <meta name="description" content="The FreeREG Project provides free Internet searches of baptism, marriage, and burial transcriptions of parish registers from England, Scotland and Wales.">
+    <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
     <!--[if lt IE 9]>
     <%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
     <![endif]-->
+    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" >
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="568">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +62,9 @@
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
+     <%= javascript_include_tag "jquery.cookiesDirective.js" %>
      <%= csrf_meta_tags %>
+
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     
@@ -71,9 +75,11 @@
       
       <main role="main" class="site__content  icon__honeycomb--top-right">
       <div class="container">
-       <% if current_refinery_user %>
-      <%= breadcrumbs  :class => "delta  text--teal" %>
-       <%end%>
+     
+      <% if current_refinery_user || !session[:userid].nil?%>
+         <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+         controller_name == "pages"%>
+      <% end%>
      
         <% if content_for? :sidebar %>
         <div class="grid">
@@ -115,8 +121,24 @@
         } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
         }
-    </script>
+    </script> 
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $.cookiesDirective({
+            privacyPolicyUri:  "/about/cookie-policy",
+            duration: 300,
+            fontColor: '#FFFFFF', // font color for disclosure panel
+            fontSize: '24px', // font size for disclosure panel
+            backgroundColor: '#000000', // background color of disclosure panel
+            backgroundOpacity: '95', // opacity of disclosure panel
+            linkColor: '#E02424' // link color in disclosure panel
+        });
+    });
+</script>   
+
   </body>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

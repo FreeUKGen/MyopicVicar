@@ -2,11 +2,6 @@ class CountriesController < InheritedResources::Base
 
 
   def index
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-    end
-    
-
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
     @counties = Country.all.order_by(chapman_code: 1)
@@ -63,7 +58,7 @@ def show
 	person = UseridDetail.where(:userid => @country.country_coordinator).first
   @person = person.person_forename + ' ' + person.person_surname unless person.nil? 
   person = UseridDetail.where(:userid => @country.previous_country_coordinator).first
-  @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? 
+  @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
 end
 
 def load(id)

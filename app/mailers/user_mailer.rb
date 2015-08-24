@@ -2,29 +2,28 @@ class UserMailer < ActionMailer::Base
   default from: "reg-web@freereg.org.uk"
 
   def batch_processing_success(user,batch)
-    userid = UseridDetail.where(userid: user).first
-    @user = userid
-    syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
-    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
-    cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{userid.person_forename} <#{userid.email_address}>", :subject => "Batch Processing")
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
+    @userid = UseridDetail.where(userid: user).first
+    #syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
+    #sc = UseridDetail.where(userid: syndicate_coordinator).first
+    #@batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+    #county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
+    #cc = UseridDetail.where(userid: county_coordinator).first
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}") unless @userid.nil?
+    #mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
+    #mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end
 
-  def batch_processing_failure(user,batch)
-    userid = UseridDetail.where(userid: user).first
-    @user = userid
-    syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
+  def batch_processing_failure(file,user,batch)
+    attachments["report.txt"] = File.read(file)
+    @userid = UseridDetail.where(userid: user).first
+   # syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
+    #sc = UseridDetail.where(userid: syndicate_coordinator).first
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
-    cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{userid.person_forename} <#{userid.email_address}>", :subject => "Batch Processing")
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing")
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
+    #county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
+    #cc = UseridDetail.where(userid: county_coordinator).first
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}")
+   # mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg2 processed #{batch}")
+    #mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless county_coordinator == syndicate_coordinator
   end
 
   def update_report_to_freereg_manager(file,user)
@@ -122,28 +121,38 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_freereg_manager(contact,person)
+  def contact_to_freereg_manager(contact,person,ccs)
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_recipient(contact,person)
+  def contact_to_recipient(contact,person,ccs)
+    @ccs = ccs
+    @contact = contact
+    @name = person.person_forename
+    @email_address = person.email_address
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+  end
+  def contact_to_volunteer(contact,person,ccs)
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
 
-  def contact_to_data_manager(contact,person,coordinator)
+  def contact_to_data_manager(contact,person,ccs)
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
-    @coordinator = coordinator.person_forename if coordinator.present?
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
-  def contact_to_coordinator(contact,person)
+  def contact_to_coordinator(contact,person,ccs)
+     @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address

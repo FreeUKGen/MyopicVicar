@@ -43,7 +43,7 @@
    <td>Syndicate Notes</td><td > <%= @syndicate.syndicate_notes %>  </td>   
    </tr>
  <tr>
-   <td>Syndicate Last Updated</td><td > <%= @syndicate.u_at.strftime("%d %b %Y") %>  </td>   
+   <td>Syndicate Last Updated</td><td > <%= @syndicate.u_at.strftime("%d %b %Y") unless @syndicate.u_at.nil?%>  </td>   
    </tr>
 
 </table>

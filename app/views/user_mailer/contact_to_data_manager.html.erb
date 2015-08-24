@@ -1,22 +1,18 @@
 <p> Dear <%= @name %>;</p>
-<p>We have received correspondence that was directed to the coordinator <%=@coordinator%> from <%=@contact.name%> at <%= @contact.email_address%>. </p>
-<p>This is a copy for your information and further action if it is required or appropriate</p>
-<b>Content of report:</b>
-<%= @contact.body %>
-</p>
-<p>
-<b>Type:</b>
-<%= @contact.contact_type %>
+<p>We have received correspondence on a <%= @contact.contact_type %> that has been sent to the coordinator <%=@coordinator%> from <%=@contact.name%> at <%= @contact.email_address%>. </p>
+<p>Copies went to the coordinator and all registered data managers: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
+<p>It has been suggested that the coordinator takes the lead in responding.
+  <b>Content of report:</b>
+  <%= @contact.body %>
 </p>
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
 <p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
 <% end%>
 <p>
-<b>Time:</b>
-<% unless @contact.contact_time.nil? %>
-<%= @contact.contact_time.strftime("%H:%M on %F") %>
-<% end%>
+  <b>Time:</b>
+  <% unless @contact.contact_time.nil? %>
+  <%= @contact.contact_time.strftime("%H:%M on %F") %>
+  <% end%>
 </p>
 <p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the contact on line if you are logged into the system. </a></p>
-
 <p> The FreeREG Team</p>

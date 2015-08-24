@@ -1,4 +1,7 @@
 <h4 class="title text--center">Transcriber Registration</h4>
+<div class="weight--semibold text--center" style="color:red">
+ Please note that this page is here in preparation for opening FR2 to transcribers. It is possible to register BUT there is no ability for transcribers to load their work into FR2 yet. You may review the list of syndicates accepting volunteers in the list below BUT to actually register and submit work for inclusion in both FR1 and FR2 you must still register on original site at <p><a title="register" href="http://www.freereg.org.uk/cgi/AddUser.pl" class="btn">Original Registration on FR1</a>
+</div>
 <% if flash[:notice] %>
   <div class="weight--semibold text--center" style="color:red"><br/>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br/>
@@ -13,11 +16,16 @@
   </ul>
   <%@userid.errors.clear%>
 <% end %>
+<p>
+  <b>
+    After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window)
+    WITHIN 24HRS.
+  </b></p>
 
 <%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
   <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
     <label class="label" for="name">Your Forename
-      <a href="#" class="right_tooltip">
+      <a href="#" class="bottom_tooltip">
         <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
         <span>Provide your forename for when we contact you</span>
       </a>
@@ -30,7 +38,7 @@
   </li>
   <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
     <label class="label" for="name">Your Surname
-      <a href="#" class="right_tooltip">
+      <a href="#" class="bottom_tooltip">
         <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
         <span>Provide your surname for when we contact you</span>
       </a>
@@ -43,7 +51,7 @@
   </li>
   <li class="grid__item  one-third  palm-one-whole" id="email_address_input">
     <label class="label" for="email_address">Your email address
-      <a href="#" class="right_tooltip">
+      <a href="#" class="bottom_tooltip">
         <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
         <span>Enter your email address so we can contact you; it will not be made public</span>
       </a>
@@ -63,7 +71,7 @@
           This will be used by the system to identify you at all times.
           It must only contain alphabetic characters and numbers; it must NOT
           contain any special characters or spaces. It can be of any length.
-          Avoid using your forename as it likely to have already been taken.
+          Avoid using just your forename as it likely to have already been taken.
         </span>
       </a>
     </label>
@@ -100,13 +108,12 @@
     <% end %>
   </li>
   <li class="grid__item  one-half  palm-one-whole" id="syndicate_input">
-    <label class="label" for="syndicate">Syndicate
+    <label class="label" for="syndicate">Syndicates currently looking for volunteers
       <a href="#" class="right_tooltip">
         <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
         <span>
-          Select the syndicate you would like to work with.
-          If you are in doubt select the general group and they will reassign
-          you depending upon your interests.
+          Select the syndicate with which you would like to work.
+          If you are in doubt select the England group and you will be reassigned depending upon your interests.
         </span>
       </a>
     </label>
@@ -125,7 +132,7 @@
       Review our <%= link_to 'participation agreement', "../contributing-to-the-freereg-project/free-uk-genealogy-transcriber-agreement"%> and confirm your acceptance.
       <a href="#" class="left_tooltip">
         <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Please indicate that you are willing to accept the transcriber agreement.</span>
+        <span>Please indicate that you accept the transcriber agreement.</span>
       </a>
     </label>
     <%= f.label :transcription_agreement do %>
@@ -133,19 +140,11 @@
       Agree
     <% end %>
   </li>
-
 <%= f.action :submit,
-        :as => :button,
-        :label => 'Register Transcriber',
-        :button_html => { :class => "btn", :value => 'Register Transcriber' },
-        :wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+      :as => :input,
+      :label => 'Register Transcriber',
+      :button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
+      :wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+
 
 <% end %>
-<p>
-  <b>
-    After submitting this form you will be redirected to the home page and will
-    receive an email that contains a link to complete the registration process.
-    Click on that link (or copy and paste it into you browser address window)
-    WITHIN 24HRS.
-  </b>
-</p>

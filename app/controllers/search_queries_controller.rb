@@ -1,5 +1,6 @@
 class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
+  skip_before_filter :require_cookie_directive, :only => :new
   before_filter :check_for_mobile, :only => :show
   RECORDS_PER_PAGE = 100
   def index
@@ -39,8 +40,9 @@ class SearchQueriesController < ApplicationController
     old_query = SearchQuery.find(params[:id])
     @search_query = SearchQuery.new(old_query.attributes)
     @search_query.radius_factor = @search_query.radius_factor * 2
+    @search_query.search_result = nil
     @search_query.save
-
+    @search_results = @search_query.search
     redirect_to search_query_path(@search_query)
   end
 
@@ -48,8 +50,9 @@ class SearchQueriesController < ApplicationController
     old_query = SearchQuery.find(params[:id])
     @search_query = SearchQuery.new(old_query.attributes)
     @search_query.radius_factor = @search_query.radius_factor / 2
+    @search_query.search_result = nil
     @search_query.save
-
+    @search_results = @search_query.search
     redirect_to search_query_path(@search_query)
   end
 

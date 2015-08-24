@@ -5,11 +5,15 @@
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>
+<% unless @userids.nil? %>
+<%= paginate @userids   %> 
 
-<%= paginate @userids %> 
 
-<div id="main"style="color:black">
-<table  class="table--bordered  table--data">
+
+<section class="island ">
+<div class="table-wrapper">
+<table  class="table--bordered  table--data ">
+
   <tr>
     
     <th >UserID</th>
@@ -18,14 +22,13 @@
     <th >Email</th>
     <th >Active</th>
     <th >Last Upload</th>
-    <th >Batches</th>
-    <th >Records</th>
-    <th colspan="7">Action<br>SH: Show, ED: Edit, LB: List Batches<br>
-    IN/ACT: Inactivate/Activate<br>SPR: Send Password Reset</th>
+    <th >Num Batches</th>
+    <th colspan="5">Functions<br>SH: Show, ED: Edit, <br>LB: List Batches<br>
+    IN/ACT: Inactivate/Activate</th>
 
 
   </tr>
-<% unless @userids.nil? %>
+
 
 <% @userids.each do |userid| %>
   <tr id="<%=userid.id%>">
@@ -33,12 +36,12 @@
    <td > <%= userid.person_forename %>  </td>   
    <td > <%= userid.person_surname %>  </td>   
    <td ><div class=scrollable> <%= userid.email_address %> </div> </td> 
-    <td > <%= userid.active %>  </td> 
+
+   <td >     <% if userid.active %> <%="Yes" %>    <% else%>    <%="No" %>     <% end%>     </td> 
+
     <td > <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td> 
-    <td ><%= userid.number_of_files %> </td> 
-    <td ><%= userid.number_of_records %> </td>  
-    
-     <td><%= button_to 'SH', userid_detail_path(userid), method: :get  %>
+      <td > <%= userid.freereg1_csv_files.count %>  </td>  
+    <td><%= button_to 'SH', userid_detail_path(userid), method: :get  %>
      </td><td><%= button_to 'ED', edit_userid_detail_path(userid), method: :get  %>
       </td><td><%= button_to 'LB', by_userid_freereg1_csv_file_path(userid), method: :get  %>
       
@@ -49,20 +52,17 @@
      </td> <td><%= button_to 'ACT', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
        </td>
       <% end %>
-       </td><td><%= button_to 'SPR', change_password_userid_detail_path(userid), method: :get %>
-     
-      <% if @user.person_role == 'system_administrator' || @user.person_role  == 'technical'%>     
-     </td><td> </td> <td><%= button_to 'DES', userid_detail_path(userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  %>
-      <% end %>   
   </tr>
   <% end %>
-  <%else%>
+ 
+</table>
+<%= paginate @userids   %> 
+ <%else%>
   You have no transcribers
   <% end %>
-</table>
-<%= paginate @userids %> 
-
 </div>
+</section>
+
 <br>
 
 

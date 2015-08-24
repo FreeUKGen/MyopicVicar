@@ -50,7 +50,6 @@ class ContactsController < InheritedResources::Base
     @contact.record_id = params[:id]
     @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
     @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
-    p @freereg1_csv_entry
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 
@@ -64,7 +63,7 @@ class ContactsController < InheritedResources::Base
     @contact = Contact.find(params[:id])
     @contact.github_issue
     flash.notice = "Issue created on Github."
-    show
+    redirect_to contact_path(@contact.id)
   end
 
   def set_session_parameters_for_record(contact)

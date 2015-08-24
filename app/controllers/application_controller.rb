@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
   before_filter :require_login
+  before_filter :require_cookie_directive
   before_filter :load_last_stat
 
   require 'record_type'
@@ -24,29 +25,22 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
-  def clean_session
-    session.delete(:freereg1_csv_file_id) 
-    session.delete(:freereg1_csv_file_name) 
-    session.delete(:county) 
-    session.delete(:place_name) 
-    session.delete(:church_name) 
-    session.delete(:sort) 
-    session.delete(:csvfile) 
-    session[:my_own] = false
-    session.delete(:freereg) 
-    session.delete(:edit) 
 
-  end
   
   def load_last_stat
     @site_stat = SiteStatistic.last
   end
   private
 
-   def check_for_mobile
+  def check_for_mobile
     session[:mobile_override] = true if mobile_device?
   end
-
+  def require_cookie_directive
+    if cookies[:cookiesDirective].blank?
+     flash[:notice] = 'This website only works if you are willing to accept cookies'
+     redirect_to new_search_query_path
+    end  
+  end
   
   def mobile_device?
    # Season this regexp to taste. I prefer to treat iPad as non-mobile.
@@ -70,16 +64,20 @@ class ApplicationController < ActionController::Base
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
   end
   def  get_user_info_from_userid
-    if current_refinery_user.nil?
-      redirect_to refinery.login_path
-      return
-    else
-      @user = current_refinery_user.userid_detail
-      @userid = @user._id
-      @first_name = @user.person_forename
-      @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
-    end
+     if session[:userid].nil?
+        if current_refinery_user.nil?
+          redirect_to refinery.login_path
+          return
+        else
+          @user = current_refinery_user.userid_detail
+        end
+     else
+       @user = UseridDetail.where(:userid => session[:userid]).first
+     end
+     @userid = @user._id
+     @first_name = @user.person_forename
+     @manager = manager?(@user)
+     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
   def  get_user_info(userid,name)
     #old version for compatibility
@@ -92,8 +90,8 @@ class ApplicationController < ActionController::Base
 
   def manager?(user)
     #sets the manager flag status
-    a = false
-    a = true if (user.person_role == 'technical' || user.person_role == 'system_administrator' || user.person_role == 'country_coordinator'  || user.person_role == 'county_coordinator'  || user.person_role == 'volunteer_coordinator' || user.person_role == 'syndicate_coordinator')
+    a = true
+    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'data_manager' || user.person_role == 'technical')
   end
 
 
@@ -110,5 +108,104 @@ class ApplicationController < ActionController::Base
     
     logger.warn(log_message)    
   end
+  def log_messenger(message)
+    log_message = message
+    logger.warn(log_message) 
+  end   
+  def get_places_for_menu_selection
+    placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+    @placenames = Array.new
+    placenames.each do |placename|
+      @placenames << placename.place_name
+    end
+  end
 
+  def clean_session
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:county) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session[:my_own] = false
+    session.delete(:freereg) 
+    session.delete(:edit) 
+    session.delete(:sorted_by) 
+
+  end
+def clean_session_for_county
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session[:my_own] = false
+    session.delete(:freereg) 
+    session.delete(:edit) 
+    session.delete(:sort)
+    session.delete(:sorted_by)
+    session.delete(:syndicate)
+    session.delete(:viewed)
+    session.delete(:active_place)
+    session.delete(:page)
+    session.delete(:parameters)
+    session.delete(:place_id)
+    session.delete(:id)
+    session.delete(:church_id)
+    session.delete(:register_id)
+    session.delete(:register_name)
+    session.delete(:county_id)
+    session.delete(:placeid)
+    session.delete(:place)
+    session.delete(:error_line)
+    session.delete(:error_id)
+    session.delete(:return_to)
+    session.delete(:header_errors)
+    session.delete(:type)
+    session.delete(:place_index_page)
+    session.delete(:entry_index_page)
+    session.delete(:files_index_page)
+   
+    
+
+end
+def clean_session_for_syndicate
+    session.delete(:freereg1_csv_file_id) 
+    session.delete(:freereg1_csv_file_name) 
+    session.delete(:place_name) 
+    session.delete(:church_name) 
+    session.delete(:sort) 
+    session.delete(:csvfile) 
+    session[:my_own] = false
+    session.delete(:freereg) 
+    session.delete(:edit) 
+    session.delete(:sort)
+    session.delete(:sorted_by)
+    session.delete(:viewed)
+    session.delete(:active_place)
+    session.delete(:page)
+    session.delete(:parameters)
+    session.delete(:place_id)
+    session.delete(:id)
+    session.delete(:church_id)
+    session.delete(:register_id)
+    session.delete(:register_name)
+    session.delete(:county_id)
+    session.delete(:placeid)
+    session.delete(:place)
+    session.delete(:error_line)
+    session.delete(:error_id)
+    session.delete(:return_to)
+    session.delete(:header_errors)
+    session.delete(:type)
+    session.delete(:userid_id)
+    session.delete(:place_index_page)
+    session.delete(:entry_index_page)
+    session.delete(:files_index_page)
+    session.delete(:user_index_page)
+   
+  end
+  
 end

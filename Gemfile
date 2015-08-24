@@ -47,6 +47,8 @@ gem "fog"
 gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid'
 gem "listen"
 
+gem 'simple_form'
+
 
 gem 'newrelic_rpm'
 gem 'newrelic_moped'

@@ -1,6 +1,7 @@
 <section class="island  " >
-  <div class="table-wrapper">
+  
     <div class="grid">
+    <div class="table-wrapper">
         <table class="table--bordered grid__item one-whole" >
         <colgroup >
         <col class=t20>
@@ -56,7 +57,7 @@
               <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%>
             </td>
             <td>
-              <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
+             <%= search_record.place.county %>
             </td>
             <td>
               <%= format_location(search_record) %>

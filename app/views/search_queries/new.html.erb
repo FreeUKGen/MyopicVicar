@@ -3,6 +3,11 @@
    <%= @page%>
    </div>
 <% end%>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+</div>
+<% end %>
 <h1 class="title text--center">Search our Parish Registers</h1>
 <%= render app_specific_partial('form') %>
 

@@ -1,24 +1,27 @@
-<% breadcrumb :userid_detail, @userid %>
+<% breadcrumb :userid_detail, @syndicate, @userid %>
 <section class="island  island--light">
   <div class="grid">
-    <div>
-      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left"  %>     
+    <div style="text-align: center">
+      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %> <%= link_to 'List Batches', by_userid_freereg1_csv_file_path(@userid), method: :get , :class => "btn  btn--small " %>
+          
       <% if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role ==
       'volunteer_coordinator'%>
       
-         <%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small float--left" %>
+         <%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %>
+       <% end %>  
       <% if @user.person_role == 'system_administrator'%>
-      <%= button_to ' Change Userid', rename_userid_details_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  btn--small float--left"  %>
-       <%= button_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small float--left"  %>
+      <%= link_to ' Change Userid', rename_userid_details_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  btn--small"  %>
+       <%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small "  %>
       <% end %>
-      <% end %>
+      
     </div>
+    <div style="clear:both;"> </div>
     <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
       <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
     </div>
     <% end %>
-    <table  class="table--bordered grid__item  two-third  palm-one-whole " >
+    <table  class="table--bordered   palm-one-whole " >
       <tr>
         <th >Field</th>
         <th class="caps">Value</th>
@@ -35,11 +38,11 @@
       <td>Physical Location:</td><td > <%= @userid.address  %>  </td>
     </tr>
     <tr>
-      <%unless @userid.sign_up_date.nil?%>
+      <% unless @userid.sign_up_date.nil?%>
       <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
-      <%end%>
+      <% end%>
     </tr>
-    <%unless @userid.person_role == 'researcher'%>
+    <% unless @userid.person_role == 'researcher'%>
     <tr>
       <td>Telephone number:</td><td > <%= @userid.telephone_number %>  </td>
     </tr>
@@ -61,29 +64,27 @@
     <% end %>
     </tr>
     <tr>
-      <td>Number of files loaded:</td><td > <%= @userid.number_of_files  %>  </td>
+      <td>Number of files loaded:</td><td > <%= @userid.freereg1_csv_files.count  %>  </td>
     </tr>
     <tr>
-      <td>Number of records loaded:</td><td > <%=@userid.number_of_records%>  </td>
+      <td>Number of records loaded:</td><td > <%=@userid.compute_records%>  </td>
     </tr>
     <tr>
       <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
     </tr>
-    <% if  session[:manager] == true%>
-    <tr>
-      <td>Active:</td><td > <%= @userid.active  %>  </td>
-    </tr>
+    <% unless  session[:manager] %>
+    <tr><td>Active:</td><% if @userid.active %><td ><%="Yes" %></td><% else%><td><%="No" %></td><% end%></tr>
     <% unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0   %>
     <td>Syndicates managed:</td><td > <%= @userid.syndicate_groups  %>  </td>
   </tr>
   <% end%>
   <tr>
-    <%unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
+    <% unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
     <td>Counties coordinated:</td><td > <%=@userid.county_groups %>   </td>
   </tr>
   <% end%>
   <tr>
-    <%unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
+    <% unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
     <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
   </tr>
   <% end%>
@@ -92,7 +93,7 @@
   </tr>
   <% unless  @userid.active %>
   <tr>
-    <%unless @userid.disabled_date.nil?%>
+    <% unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
     <% end%>
   </tr>

@@ -9,8 +9,8 @@ class SearchRecord
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
 
-  before_save :transform
-
+  #before_save :transform
+  before_create :transform
   module Source
     TRANSCRIPT='transcript'
     EMENDOR='e'
@@ -144,17 +144,18 @@ class SearchRecord
   end
 
   def format_location
-   
-    place_name = self.place.place_name unless self.place.nil? # should not be nil but!
     location_array = []
-  
+    register_type = ''
+    church_name = ''
     if self.freereg1_csv_entry
-      place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place.place_name if self.place.nil?
-      church_name = self.freereg1_csv_entry.church_name
-      register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
-      
+      register = self.freereg1_csv_entry.freereg1_csv_file.register
+      register_type = ''
+      register_type = RegisterType.display_name(register.register_type) unless register.nil? # should not be nil but!
+      church = register.church
+      church_name = church.church_name unless church.nil? # should not be nil but!
+      place_name = self.place.place_name unless self.place.nil? # should not be nil but!
       location_array << "#{place_name} (#{church_name})"
-      location_array << "[#{register_type}]"
+      location_array << " [#{register_type}]"
     else
       location_array << "#{place_name} (#{church_name})"
     end

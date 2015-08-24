@@ -1,0 +1,38 @@
+<% breadcrumb :physical_files%>
+<p style="text-align: center"><b>Listing of physical files <%= @sorted_by%></b></p>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+  </div>
+<% end %>
+<p>
+<div id="main" style="color:black">
+  <%= paginate @batches %>
+  <table  class="table--bordered  table--data">
+    <tr >
+      <th>Userid</th>
+      <th >File Name</th>
+      <th >Uploaded</th>
+      <th >Processed into Database</th>
+      <th >Process file</th>
+      
+    </tr>
+    <% if @batches.nil? %>
+      There are none
+    <% else %>
+    <% @batches.each do |batch| %>
+      <tr id="<%=batch.id%>">
+        <td > <%= batch.userid  %>  </td>
+        <% if @sorted_by == '(Processed but no file)' || @sorted_by == 'processed but no file' %>
+          <td>  <%= link_to batch.file_name , freereg1_csv_file_path(Freereg1CsvFile.where(:userid =>batch.userid, :file_name => batch.file_name).first.id) %> </td>
+        <% else %>
+          <td > <%= batch.file_name  %>  </td>
+        <% end %>
+        <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
+        <td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed %>  </td>
+        <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+      </tr>
+    <% end %>
+    <% end %>
+  </table>
+</div>

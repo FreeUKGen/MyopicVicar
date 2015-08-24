@@ -1,77 +1,61 @@
 <% breadcrumb :files %>
-<p style="text-align: center"><b> <%=@sorted_by%></b>
+<p style="text-align: center"><b> <%=@who%> <%=@sorted_by%></b>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 </div>
 <% end %>
-<div style="text-align: center">Batches are colour coded. Teal: OK; Red: Errors; Blue: Locked and OK; Maroon: Locked with errors</div>
+<div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Not processed</FONT></div>
 <div class="grid">
   <section class="island ">
     <div class="grid__item ">
       <% unless @freereg1_csv_files.nil? %>
       <%= paginate @freereg1_csv_files %>
       <table class="table--bordered   table--data" >
-        <tr>
-        
+        <tr>    
           <th >Place</th>
           <th >Church</th>
           <th >Reg type</th>
           <th >Rec type</th>
-         
-
           <th >UserID</th>
           <th >File name</th>
-        
           <th  >Loaded</th>
-         
           <th colspan = 2>Locked by<br> Owner   Coord</th>
-         
-           <th colspan="7">Action<br>SH: Show, ED: Edit,DLD: Download <br>
-    ER: Errors, LK/UN: Change Lock<br>DES: Destroy</th>
+          <th colspan="8">Action<br>SH: Show, ED: Edit,DLD: Download <br>
+              ER: Errors, LK/UN: Change Lock<br>DES: Destroy, RP: Reprocess</th>
         </tr>
         <% @freereg1_csv_files.each do |freereg1_csv_file| %>
-        <%case%>
-        <% when freereg1_csv_file.error == 0 && freereg1_csv_file.locked_by_coordinator == 'false' && freereg1_csv_file.locked_by_transcriber == 'false' %>
-        <tr id="<%=freereg1_csv_file.id%>"  style="color:teal">
-          <% when freereg1_csv_file.error == 0 && (freereg1_csv_file.locked_by_coordinator == 'true' || freereg1_csv_file.locked_by_transcriber == 'true') %>
-          <tr id="<%=freereg1_csv_file.id%>"  style="color:blue">
-            <% when freereg1_csv_file.error != 0 && (freereg1_csv_file.locked_by_coordinator == 'true' || freereg1_csv_file.locked_by_transcriber == 'true')  %>
-            <tr id="<%=freereg1_csv_file.id%>"  style="color:maroon">
-              <% when freereg1_csv_file.error != 0 && freereg1_csv_file.locked_by_coordinator == 'false' && freereg1_csv_file.locked_by_transcriber == 'false'  %>
-              <tr id="<%=freereg1_csv_file.id%>"  style="color:red">
-                <% end %>
-             
-                <td><%= freereg1_csv_file.place %></td>
-                <td><%= freereg1_csv_file.church_name %></td>
-                <td><%= freereg1_csv_file.register_type %></td>
-                <td><%= freereg1_csv_file.record_type %></td>
-                <td><%= freereg1_csv_file.userid %></td>
-                <td><%= freereg1_csv_file.file_name[0..-5]  unless freereg1_csv_file.file_name.nil?%></td>
-              
-                <td><%= freereg1_csv_file.uploaded_date.strftime("%d %b %Y") unless freereg1_csv_file.uploaded_date.nil?%></td>
+          <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">  
+            <td><%= freereg1_csv_file.place %></td>
+            <td><%= freereg1_csv_file.church_name %></td>
+            <td><%= freereg1_csv_file.register_type %></td>
+            <td><%= freereg1_csv_file.record_type %></td>
+            <td><%= freereg1_csv_file.userid %></td>
+            <td><%= freereg1_csv_file.file_name[0..-5]  unless freereg1_csv_file.file_name.nil?%></td>
           
-                <td><%= freereg1_csv_file.locked_by_transcriber %></td>
-                <td><%= freereg1_csv_file.locked_by_coordinator %></td>
-                
-                <td><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
-                  <td><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>                 
-                  <td><%= link_to 'DLD', download_csvfile_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get  %></td>
-                  <td><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
-                  <td ><%= link_to 'LK/UN', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?' %>
-                  </td>
-                   <td><%= link_to 'DES', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete   %></td>
-                  </td>            
-                  
-                </tr>
-                <% end %>
-              </table>
-              <%= paginate @freereg1_csv_files %>
-              <%else%>
-              You have no files
-              <%end%>
+            <td><%= freereg1_csv_file.uploaded_date.strftime("%d %b %Y") unless freereg1_csv_file.uploaded_date.nil?%></td>
+      
+            <td><%= freereg1_csv_file.locked_by_transcriber %></td>
+            <td><%= freereg1_csv_file.locked_by_coordinator %></td>
+            
+            <td><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
+            <td><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>                 
+            <td><%= link_to 'DLD', download_csvfile_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get  %></td>
+            <td><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
+            <td ><%= link_to 'LK/UN', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?' %>
+            </td>
+             <td><%= link_to 'DES', freereg1_csv_file, confirm: 'Are you sure you want to discard this file?', method: :delete   %></td>
+            </td>            
+            <td ><%= link_to 'RP', reprocess_physical_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to reprocess this file?' %>
+            </td>
+            </tr>
+        <% end %>
+        </table>
+        <%= paginate @freereg1_csv_files %>
+        <% else%>
+            You have no files
+        <% end%>
            
-          </div>
-        </section>
       </div>
-      <br>
+    </section>
+  </div>

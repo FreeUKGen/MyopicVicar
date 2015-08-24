@@ -1,100 +1,93 @@
-<%= semantic_form_for(@freereg1_csv_entry ,:html => { :class =>  "grid"}) do |f| %>
+<div class="island  island--light">
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %> 
+<%= simple_form_for @freereg1_csv_entry, :html => { :class => "grid"}  do |f| %>
+<% case %>
+<% when @freereg1_csv_file.record_type == "ba" %> 
 
-  
-
-  <% case %>
-<% when @freereg1_csv_file.record_type == "ba" %>
-  <%= f.input :register_entry_number , :input_html => { :size => 10} %> 
- 
-  <%= f.input :baptism_date %> 
-  <%= f.input :birth_date %> 
+   <%= f.input :register_entry_number  %>
+   <%= f.input :baptism_date %> 
+   <%= f.input :birth_date %>  
    <%= f.input :person_forename %> 
- 
-  <%= f.input :father_forename %> 
- 
-  <%= f.input :father_surname %> 
+   <%= f.input :father_forename %>
+   <%= f.input :father_surname %> 
    <%= f.input :father_occupation %> 
-  <%= f.input :mother_forename %> 
-  <%= f.input :mother_surname %> 
-  <%= f.input :person_abode %> 
- 
-   <%= f.input :person_sex,  {:as => :select,:label => "Sex of Individual",:include_blank => false,
-          :required => true, :collection => [' ','M','F','?'], :size => 15 } %> 
-  <%= f.input :notes, :label => 'Notes in register',     :input_html => { :size => 80 }%> 
-   <%= f.input :notes_from_transcriber,  :label => 'Notes from transcriber' ,     :input_html => { :size => 80 }%>
-  <%= f.input :record_type, :input_html => { :disabled => true, :size => 10  }%> 
-   <%= f.input :film,      :input_html => { :size => 80 } %>
-     <%= f.input :film_number,      :input_html => { :size => 80 } %>
-      <%= f.input :line_id, :input_html => { :disabled => true, :size => 80  }%>
-      <%= f.input :file_line_number, :input_html => { :disabled => true, :size => 10  } %> 
-
+   <%= f.input :mother_forename %> 
+   <%= f.input :mother_surname %> 
+   <%= f.input :person_abode %> 
+   <%= f.input :notes, :label => 'Notes in register'%> 
+   <%= f.input :notes_from_transcriber,  :label => 'Notes from transcriber'      %>
+   <%= f.input :film      %>
+   <%= f.input :film_number%>
+   <%= f.input :person_sex, collection: ['M','F','?'], :include_blank => true,
+               :input_html =>{:class => 'width-35'}%>       
+   <%= f.input :record_type, :input_html => {:disabled => true  }%> 
+   <%= f.input :line_id, :input_html => {:disabled => true  }%>
+   <%= f.input :file_line_number, :input_html => { :disabled => true} %> 
 
   <% when @freereg1_csv_file.record_type == "ma" %>
-  <%= f.input :register_entry_number , :label =>'Register entry number' ,    :input_html => { :size => 10 }%> 
-  <%= f.input :marriage_date %> 
-  <%= f.input :bride_forename %> 
- <%= f.input :bride_surname %> 
-<%= f.input :bride_age %> 
-  <%= f.input :bride_condition %> 
 
-  <%= f.input :bride_abode %> 
-  <%= f.input :bride_occupation %> 
-  <%= f.input :bride_parish %> 
- 
-  
-  <%= f.input :bride_father_forename %> 
- 
-  <%= f.input :bride_father_surname %> 
-   <%= f.input :bride_father_occupation %> 
-   <%= f.input :groom_forename %> 
+    <%= f.input :register_entry_number %>
+    <%= f.input :marriage_date %> 
+    <%= f.input :bride_forename %> 
+    <%= f.input :bride_surname %> 
+    <%= f.input :bride_age %> 
+    <%= f.input :bride_condition %> 
+    <%= f.input :bride_abode %> 
+    <%= f.input :bride_occupation %> 
+    <%= f.input :bride_parish %> 
+    <%= f.input :bride_father_forename %> 
+    <%= f.input :bride_father_surname %> 
+    <%= f.input :bride_father_occupation %> 
+    <%= f.input :groom_forename %> 
     <%= f.input :groom_surname %> 
-<%= f.input :groom_age %> 
-  <%= f.input :groom_condition %> 
+    <%= f.input :groom_age %> 
+    <%= f.input :groom_condition %> 
+    <%= f.input :groom_abode %> 
+    <%= f.input :groom_occupation %> 
+    <%= f.input :groom_parish %> 
+    <%= f.input :groom_father_forename %> 
+    <%= f.input :groom_father_surname %> 
+    <%= f.input :groom_father_occupation %> 
+    <%= f.simple_fields_for :multiple_witnesses do |multiple| %>
+           <%= multiple.input :witness_forename,:input_html => { :size => 30 } %> 
+           <%= multiple.input :witness_surname,:input_html => { :size => 30 } %> 
+           <%= multiple.input :_destroy, :as => :boolean %>  
+      <% end %>
+    <%= f.input :notes, :label => 'Notes from register', as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%> 
+    <%= f.input :notes_from_transcriber,:label => 'Notes from transcriber',as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%>
+    <%= f.input :film %>
+    <%= f.input :film_number %>
+    <%= f.input :record_type , :input_html => { :disabled => true  }  %> 
+    <%= f.input :line_id, :input_html => { :disabled => true  }%>
+    <%= f.input :file_line_number, :input_html => { :disabled => true  } %> 
 
-  <%= f.input :groom_abode %> 
-   <%= f.input :groom_occupation %> 
-  <%= f.input :groom_parish %> 
-  <%= f.input :groom_father_forename %> 
-  
-  <%= f.input :groom_father_surname %> 
- <%= f.input :groom_father_occupation %> 
-  <%= f.inputs :witness_forename,  :witness_surname,:for => :multiple_witnesses, :name => 'Edit Existing Witness #%i', :input_html => { :size => 60 }%>
-  
-  <%= f.inputs :witness_forename,:witness_surname, :for => :multiple_witness, :name => 'Add Additional Witness',  :input_html => { :size => 60}%>
-  
-  
-  
-   <%= f.input :notes, :label => 'Notes in register' ,    :input_html => { :size => 80 }%> 
-   <%= f.input :notes_from_transcriber,  :label => 'Notes from transcriber' ,     :input_html => { :size => 80 }%>
-   <%= f.input :record_type , :input_html => { :disabled => true, :size => 10  }  %> 
-    <%= f.input :film,      :input_html => { :size => 80 } %>
-     <%= f.input :film_number,      :input_html => { :size => 80 } %>
-         <%= f.input :line_id, :input_html => { :disabled => true, :size => 80  }%>
-      <%= f.input :file_line_number, :input_html => { :disabled => true, :size => 10  } %> 
   <% when @freereg1_csv_file.record_type == "bu" %>
-  <%= f.input :register_entry_number ,      :input_html => { :size => 10 }%> 
-  <%= f.input :burial_date %> 
-  <%= f.input :burial_person_forename %> 
-  <%= f.input :burial_person_surname %> 
-  <%= f.input :burial_person_abode %> 
-   <%= f.input :person_age %>  
-  <%= f.input :relationship %> 
-  <%= f.input :male_relative_forename %>
-  <%= f.input :female_relative_forename %>   
-   <%= f.input :relative_surname %> 
 
+    <%= f.input :register_entry_number%> 
+    <%= f.input :burial_date %> 
+    <%= f.input :burial_person_forename %> 
+    <%= f.input :burial_person_surname %> 
+    <%= f.input :burial_person_abode %> 
+    <%= f.input :person_age %>  
+    <%= f.input :relationship %> 
+    <%= f.input :male_relative_forename %>
+    <%= f.input :female_relative_forename %>   
+    <%= f.input :relative_surname %> 
+    <%= f.input :notes, :label => 'Notes in register' ,    :input_html => { :size => 80 }%> 
+    <%= f.input :notes_from_transcriber,:label => 'Notes from transcriber',:input_html => {:size => 80}%>
+    <%= f.input :film %>
+    <%= f.input :film_number %>
+    <%= f.input :record_type, :input_html => { :disabled => true  } %>  
+    <%= f.input :line_id, :input_html => { :disabled => true }%>
+    <%= f.input :file_line_number, :input_html => { :disabled => true } %> 
 
-   <%= f.input :notes, :label => 'Notes in register' ,    :input_html => { :size => 80 }%> 
-   <%= f.input :notes_from_transcriber,  :label => 'Notes from transcriber' ,     :input_html => { :size => 80 }%>
-   <%= f.input :record_type, :input_html => { :disabled => true, :size => 10  } %>  
-    <%= f.input :film,      :input_html => { :size => 80 } %>
-     <%= f.input :film_number,      :input_html => { :size => 80 } %>
-       <%= f.input :line_id, :input_html => { :disabled => true, :size => 80  }%>
-      <%= f.input :file_line_number, :input_html => { :disabled => true, :size => 10  } %> 
   <% else %>
   <% end %>
-  
-      <%= f.action :submit, :as => :input, :label => 'Update'   %>
-    
-<% end %>
+  <%= f.button :submit, 'Submit'   %>
+  <% end %>
+  </div>
 
