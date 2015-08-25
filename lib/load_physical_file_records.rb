@@ -26,7 +26,7 @@ class LoadPhysicalFileRecords
       unless batch.save
         message_file.puts "Batch number #{process_batch} #{file_name} for #{file_parts[-2]} was not saved"
       end
-      sleep(Rails.application.config.sleep.to_f)
+      
     else
       if possible_file.change
         possible_file.update_attribute(:change_uploaded_date, File.mtime(file)) unless possible_file.change_uploaded_date == File.mtime(file)
@@ -51,7 +51,7 @@ class LoadPhysicalFileRecords
       message_file.puts "Batch number #{process_batch} from the base collection #{file_name} for #{file_parts[-2]} was not in Batch collection"
       batch = PhysicalFile.new(:userid => file_parts[-2], :file_name => file_name, :base => true, :base_uploaded_date => File.mtime(file))
       batch.save
-      sleep(Rails.application.config.sleep.to_f)
+      
     else
       if possible_file.base
         possible_file.update_attribute(:base_uploaded_date, File.mtime(file)) unless possible_file.base_uploaded_date == File.mtime(file)
@@ -71,11 +71,9 @@ class LoadPhysicalFileRecords
     possible_file = PhysicalFile.userid(file.userid).file_name(file.file_name).first
     if possible_file.nil?
       missing = missing + 1
-      missing = missing + 1
       message_file.puts "Batch number #{process_batch} #{file.file_name} for #{file.userid} was not in Batch collection"
       batch = PhysicalFile.new(:userid => file.userid, :file_name => file.file_name, :file_processed => true, :file_processed_date => file.updated_at)
-      batch.save
-      sleep(Rails.application.config.sleep.to_f)
+      batch.save   
     else
       if possible_file.file_processed
         possible_file.update_attribute(:file_processed_date, file.updated_at) unless possible_file.file_processed_date == file.updated_at
