@@ -1225,8 +1225,8 @@ class FreeregCsvUpdateProcessor
                   @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"            
                   #set up to determine files to be processed
                   filenames = GetFiles.get_all_of_the_filenames(base_directory,range) if delta == 'change'
-                  filenames = GetFiles.use_the_delta(change_directory,delta_files) if delta == 'delta'
-                  filenames = GetFiles.use_the_delta(base_directory,process_files) if delta == 'process'
+                  filenames = GetFiles.use_the_delta(change_directory,delta_file) if delta == 'delta'
+                  filenames = GetFiles.use_the_delta(base_directory,process_file) if delta == 'process'
                   #force is used to override the replacement check
                   force = false
                   force = true if delta == 'process'
