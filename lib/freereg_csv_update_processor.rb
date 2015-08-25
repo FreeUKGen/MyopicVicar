@@ -1258,7 +1258,7 @@ class FreeregCsvUpdateProcessor
                       batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
                       if batch.nil? && @@create_search_records
                         #file did not come in through FR2 so its unkown
-                        batch = PhysicalFile.new(:base => true, :base_uploaded_date => Time.now, :file_processed => true, :file_processed_date => Time.now)
+                        batch = PhysicalFile.new(:base => true, :base_uploaded_date => Time.now,:change => true, :change_uploaded_date => Time.now,:file_processed => true, :file_processed_date => Time.now)
                         batch.save
                       else
                         #came in through FR2

@@ -17,7 +17,7 @@ namespace :build do
 	$collections[13] = "search_queries"
   $collections[14] = "contacts"
   $collections[15] = "attic_files"
-
+  $collections[16] = "physical_files"
 	COLLECTIONS = {
 		'master_place_names' => 'MasterPlaceName',
 		'batch_errors' => 'BatchError',
@@ -34,7 +34,8 @@ namespace :build do
 		'search_queries' => 'SearchQuery',
 		'feedbacks' => 'Feedback',
     'contacts' => 'Contact',
-    'attic_files' => 'AtticFile'
+    'attic_files' => 'AtticFile',
+    'physical_files' => 'PhysicalFile'
 	}
 	EXPORT_COMMAND =  "mongoexport --db "
 	EXPORT_OUT = " --out  "
@@ -88,7 +89,7 @@ namespace :build do
 		#@datafile_location =  Rails.application.config.mongodb_datafile
 		#save master_place_names and alias
 		p "Save started"
-		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13","14","15"]
+		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13","14","15","16"]
    db = Mongoid.sessions[:default][:database]
     hosts = Mongoid.sessions[:default][:hosts]
     if args[:port] == "37017"
@@ -264,7 +265,7 @@ namespace :build do
     require "feedback"
     require "search_query"
     require "attic_file"
-
+    require "physical_file"
 
 		puts "Freereg build indexes."
 		Country.create_indexes()
@@ -282,7 +283,7 @@ namespace :build do
     Feedback.create_indexes()
     SearchQuery.create_indexes()
     AtticFile.create_indexes()
-
+    PhysicalFile.create_indexes()
 		puts "Indexes complete."
 	end
 
@@ -436,6 +437,7 @@ namespace :build do
     require "feedback"
     require "search_query"
     require "attic_file"
+    require "physical_file"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
     hosts = Mongoid.sessions[:default][:hosts]
@@ -472,8 +474,8 @@ namespace :build do
      host = hosts[0]
     end
      p "using database #{db} on host #{host}"
-		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14","15"] if args.save == 'partial'
-		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"] if args.save == 'full'
+		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14","15","16"] if args.save == 'partial'
+		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"] if args.save == 'full'
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_location
 		@tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
