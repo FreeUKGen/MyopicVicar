@@ -9,11 +9,27 @@
 				<% end %>
 				in the 24 hrs ending at 6am GMT. 
 			<% end %>
+
+
+    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
       <p>
        The FreeREG database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
     
        Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
-    </p>
+      </p>
+    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+      <p>
+       The FreeCEN database is just a finding tool. It should not be considered to be *proof* that such information was recorded.<br>
+    
+       Always confirm its content with the actual census record at a County Record Office, local Family History Society or LDS Family History Centre.
+      </p>
+    <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+      <p>
+       The FreeBMD database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
+    
+       Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
+      </p>
+    <% end %>
 		</div>
 	</div>
 
@@ -23,10 +39,18 @@
 
 			<ul class="icon-list">
 				<li>
+				  <% if MyopicVicar::Application.config.template_set == 'freecen' %>
+<a href="http://freereg2.freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
+				  <% else %>
 					<a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCen</span></a>
+                                  <% end %>
 				</li>
 				<li>
+				  <% if MyopicVicar::Application.config.template_set == 'freebmd' %>
+					<a href="http://freereg2.freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
+				  <% else %>
 					<a href="http://www.freebmd.org.uk/" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
+                                  <% end %>
 				</li>
 			</ul>
 		</div>
@@ -67,7 +91,15 @@
         <div class="island  island--grey  flush--bottom">
         <div class="container  text--center">
         <p class="micro  text--grey">
-        Search engine, layout and database Copyright © 1998-2015 The Trustees of Free UK Genealogy, a charity registered in England and Wales, Number 1096940. We make no warranty whatsoever as to the accuracy or completeness of the FreeREG data.
+        Search engine, layout and database Copyright © 1998-2015 The Trustees of Free UK Genealogy, a charity registered in England and Wales, Number 1096940. We make no warranty whatsoever as to the accuracy or completeness of the 
+	<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+	FreeREG
+	<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+	FreeCEN
+	<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+	FreeBMD
+	<% end %>
+	data.
       </p>
 			</div>
 		</div>

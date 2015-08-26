@@ -8,14 +8,29 @@
   <!--<![endif]-->
   <head>
     <meta charset="utf-8"/>
+
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
     <title>FreeReg</title>
     <meta name="keywords" content="genealogy,registers,parish registers,church registers,transcriptions,indexes,baptism,marriage,burial">
     <meta name="description" content="The FreeREG Project provides free Internet searches of baptism, marriage, and burial transcriptions of parish registers from England, Scotland and Wales.">
+    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" >
+
+<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+    <title>FreeCen - UK Census Records (England, Scotland, Wales)</title>
+    <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
+    <meta name="description" content="The FreeCEN Project provides free Internet searches of census records from the United Kingdom, including England, Scotland and Wales.">
+    <meta name="google-site-verification" content="" >
+
+<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+    <title>FreeBMD - UK Birth, Marriage, and Death Records (England, Scotland, Wales)</title>
+    <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
+    <meta name="description" content="The FreeBMD Project provides free Internet searches of birth, marriage, and death record transcriptions of civil records from England, Scotland and Wales.">
+    <meta name="google-site-verification" content="" >
+<% end %>
     <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
     <!--[if lt IE 9]>
     <%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
     <![endif]-->
-    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" >
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="568">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

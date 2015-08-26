@@ -70,11 +70,21 @@ module MyopicVicar
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
 
+    # set config.template_set before asset directories are selected
+    config.template_set = TemplateSet::FREECEN
+
     # Enable the asset pipeline
     config.assets.enabled = true
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    # add app-specifc (reg/gen/bmd) path to config.assets.path
+    # for example, app/assets/freecen/images
+    config.assets.paths << Rails.root.join('app', "assets_#{config.template_set}");
+    config.assets.paths << Rails.root.join('app', "assets_#{config.template_set}", 'images');
+    config.assets.paths << Rails.root.join('app', "assets_#{config.template_set}", 'stylesheets');
+    
 
     # make the designer's fonts available for the stylesheets
     config.assets.paths << Rails.root.join('app', 'assets') 
@@ -85,9 +95,6 @@ module MyopicVicar
       g.orm :active_record
     end
 
-    
-    config.template_set = TemplateSet::FREECEN
-    
     config.before_configuration do
       env_file = Rails.root.join("config", 'application.yml').to_s
 
