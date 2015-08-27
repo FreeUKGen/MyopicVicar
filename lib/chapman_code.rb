@@ -30,7 +30,7 @@ module ChapmanCode
       end
     end
     
-    if MyopicVicar::Application.config.template_set == MyopicVicar::Application::TemplateSet::FREEREG
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
       hash.delete("'England and Wales Shipping'")
     end
     
