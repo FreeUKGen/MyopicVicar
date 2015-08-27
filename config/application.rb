@@ -79,17 +79,9 @@ module MyopicVicar
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    # add app-specifc (reg/gen/bmd) path to config.assets.path
-    # for example, app/assets/freecen/images
-    config.assets.paths << Rails.root.join('app', "assets_#{config.template_set}");
-    config.assets.paths << Rails.root.join('app', "assets_#{config.template_set}", 'images');
-    config.assets.paths << Rails.root.join('app', "assets_#{config.template_set}", 'stylesheets');
-    
-
     # make the designer's fonts available for the stylesheets
     config.assets.paths << Rails.root.join('app', 'assets') 
     config.assets.paths << Rails.root.join("app", "assets", "fonts")
-     
     
     config.generators do |g|
       g.orm :active_record
