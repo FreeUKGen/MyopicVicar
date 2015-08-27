@@ -29,6 +29,11 @@ module ChapmanCode
         value.delete_if {|key, value| key == country }
       end
     end
+    
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+      hash.delete("'England and Wales Shipping'")
+    end
+    
     hash
   end
 
@@ -211,8 +216,10 @@ module ChapmanCode
        'Montgomeryshire' => 'MGY',
        'Pembrokeshire' => 'PEM',
        'Powys' => 'POW',
-       'Radnorshire' => 'RAD',
-       'Unknown' => 'UNK'}
+       'Radnorshire' => 'RAD' },
+     "Special" => {
+       'Unknown' => 'UNK',
+       'England and Wales Shipping' => 'EWS' }
   }
 
   private
