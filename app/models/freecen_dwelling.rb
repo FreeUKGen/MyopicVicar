@@ -1,8 +1,8 @@
-class FreecenHousehold
+class FreecenDwelling
   include Mongoid::Document
   field :entry_number, type: Integer
-  field :deleted_flag, type: Boolean
-  field :household_number, type: Integer
+  field :deleted_flag, type: String
+  field :dwelling_nummber, type: Integer
   field :civil_parish, type: String
   field :ecclesiastical_parish, type: String
   field :enumeration_district, type: String
@@ -14,6 +14,5 @@ class FreecenHousehold
   field :uninhabited_flag, type: String
   field :unoccupied_notes, type: String
   belongs_to :freecen1_vld_file
-  
   has_many :freecen_individuals
 end

@@ -1,0 +1,49 @@
+<h1>Listing freecen_dwellings</h1>
+
+<table>
+  <tr>
+    <th>Entry number</th>
+    <th>Deleted flag</th>
+    <th>Dwelling nummber</th>
+    <th>Civil parish</th>
+    <th>Ecclesiastical parish</th>
+    <th>Enumeration district</th>
+    <th>Folio number</th>
+    <th>Page number</th>
+    <th>Schedule number</th>
+    <th>House number</th>
+    <th>House or street name</th>
+    <th>Uninhabited flag</th>
+    <th>Unoccupied notes</th>
+    <th>Freecen1 vld file</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freecen_dwellings.each do |freecen_dwelling| %>
+  <tr>
+    <td><%= freecen_dwelling.entry_number %></td>
+    <td><%= freecen_dwelling.deleted_flag %></td>
+    <td><%= freecen_dwelling.dwelling_nummber %></td>
+    <td><%= freecen_dwelling.civil_parish %></td>
+    <td><%= freecen_dwelling.ecclesiastical_parish %></td>
+    <td><%= freecen_dwelling.enumeration_district %></td>
+    <td><%= freecen_dwelling.folio_number %></td>
+    <td><%= freecen_dwelling.page_number %></td>
+    <td><%= freecen_dwelling.schedule_number %></td>
+    <td><%= freecen_dwelling.house_number %></td>
+    <td><%= freecen_dwelling.house_or_street_name %></td>
+    <td><%= freecen_dwelling.uninhabited_flag %></td>
+    <td><%= freecen_dwelling.unoccupied_notes %></td>
+    <td><%= freecen_dwelling.freecen1_vld_file %></td>
+    <td><%= link_to 'Show', freecen_dwelling %></td>
+    <td><%= link_to 'Edit', edit_freecen_dwelling_path(freecen_dwelling) %></td>
+    <td><%= link_to 'Destroy', freecen_dwelling, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freecen dwelling', new_freecen_dwelling_path %>

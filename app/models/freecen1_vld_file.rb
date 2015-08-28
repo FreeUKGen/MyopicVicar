@@ -1,7 +1,7 @@
 class Freecen1VldFile
   include Mongoid::Document
   has_many :freecen1_vld_entries
-  has_many :freecen_households
+  has_many :freecen_dwellings
   
   field :file_name, type: String
   field :dir_name, type: String

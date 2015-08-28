@@ -21,6 +21,6 @@ class FreecenIndividual
   field :disability, type: String
   field :language, type: String
   field :notes, type: String
-  belongs_to :freecen_household
+  belongs_to :freecen_dwelling
   belongs_to :freecen1_vld_entry
 end

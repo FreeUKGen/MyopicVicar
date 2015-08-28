@@ -41,11 +41,11 @@
     </tbody>
   </table>
     <% end %>
-    <% if @household %>
+    <% if @dwelling %>
 	  <table class="table--bordered ">
 	    <thead>
 	      <tr>
-	      	<% @individual.attributes.keys.each do |attribute| %>
+	      	<% @dwelling.attributes.keys.each do |attribute| %>
 	      		<td>
 	      			<%= attribute.to_s.titleize %>
 	      		</td>
@@ -53,7 +53,7 @@
 		  </tr>
 	    </thead>
 	    <tbody>
-	    	<% @household.freecen_individuals.each do |individual| %>
+	    	<% @dwelling.freecen_individuals.each do |individual| %>
 	    		<tr>
 			      	<% individual.attributes.values.each do |attribute| %>
 			      		<td>

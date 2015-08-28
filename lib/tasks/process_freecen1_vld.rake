@@ -13,7 +13,7 @@ namespace :freecen do
     
     translator = Freecen::Freecen1VldTranslator.new
     translator.translate_file_record(file_record)
-    print "\t#{filename} contained #{file_record.freecen_households.count} households in #{file_record.freecen1_vld_entries.count} entries\n"
+    print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
   end
   
   desc "Process legacy FreeCEN1 VLD files"
@@ -30,7 +30,7 @@ namespace :freecen do
   task :clean_freecen => [:environment] do
     SearchRecord.delete_all
     FreecenIndividual.delete_all
-    FreecenHousehold.delete_all
+    FreecenDwelling.delete_all
     Freecen1VldEntry.delete_all
     Freecen1VldFile.delete_all
   end

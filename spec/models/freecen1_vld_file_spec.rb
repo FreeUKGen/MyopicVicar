@@ -9,9 +9,9 @@ describe Freecen1VldFile do
   TEST_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'DUR', 'RG093730.VLD')
   before(:all) do
     clean_database
-    print "before(:all) household count=#{FreecenHousehold.count} before file is processed\n"
+    print "before(:all) dwelling count=#{FreecenDwelling.count} before file is processed\n"
     process_file(TEST_VLD_FILE)
-    print "before(:all) household count=#{FreecenHousehold.count} after file is processed\n"
+    print "before(:all) dwelling count=#{FreecenDwelling.count} after file is processed\n"
   end
 
   before(:each) do
@@ -22,32 +22,32 @@ describe Freecen1VldFile do
   it "should create the correct number of entries" do
     Freecen1VldFile.count.should  eq 1
     Freecen1VldEntry.count.should eq 3058
-    FreecenHousehold.count.should eq 654
+    FreecenDwelling.count.should eq 654
     SearchRecord.count.should     eq 0 #this will change once uninhabited houses work
   end
   
-  it "should transform a household with search records" do
-    household = FreecenHousehold.first
+  it "should transform a dwelling with search records" do
+    dwelling = FreecenDwelling.first
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_household(household, 'DUR')
-    SearchRecord.count.should eq household.freecen_individuals.count     
+    translator.translate_dwelling(dwelling, 'DUR')
+    SearchRecord.count.should eq dwelling.freecen_individuals.count     
   end
 
-  it "should not transform an uninhabited household" do
+  it "should not transform an uninhabited dwelling" do
     [Freecen::Uninhabited::BUILDING, Freecen::Uninhabited::FAMILY_AWAY_VISITING, Freecen::Uninhabited::UNOCCUPIED].each do |flag|
-      unoccupied_household = FreecenHousehold.where(:uninhabited_flag => flag).first
+      unoccupied_dwelling = FreecenDwelling.where(:uninhabited_flag => flag).first
       translator = Freecen::Freecen1VldTranslator.new
-      translator.translate_household(unoccupied_household, 'DUR')
+      translator.translate_dwelling(unoccupied_dwelling, 'DUR')
       SearchRecord.count.should eq 0
     end    
   end
 
   it "should find records by name" do
-    household = FreecenHousehold.last
+    dwelling = FreecenDwelling.last
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_household(household, 'DUR')
+    translator.translate_dwelling(dwelling, 'DUR')
 
-    household.freecen_individuals.each do |individual|
+    dwelling.freecen_individuals.each do |individual|
       query_params = { :first_name => individual.forenames,
                        :last_name => individual.surname,
                        :inclusive => false }
@@ -60,11 +60,11 @@ describe Freecen1VldFile do
   end
 
   it "should find records by name and county" do
-    household = FreecenHousehold.last
+    dwelling = FreecenDwelling.last
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_household(household, 'DUR')
+    translator.translate_dwelling(dwelling, 'DUR')
 
-    household.freecen_individuals.each do |individual|
+    dwelling.freecen_individuals.each do |individual|
       query_params = { :first_name => individual.forenames,
                        :last_name => individual.surname,
                        :chapman_codes => ['DUR'],
@@ -83,7 +83,7 @@ describe Freecen1VldFile do
   def clean_database
     Place.delete_all
     SearchRecord.delete_all
-    FreecenHousehold.delete_all
+    FreecenDwelling.delete_all
     Freecen1VldEntry.delete_all
     Freecen1VldFile.delete_all
     

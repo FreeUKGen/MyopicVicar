@@ -6,7 +6,7 @@ class SearchRecordsController < ApplicationController
     @search_record = SearchRecord.find(params[:id])
     @entry = @search_record.freereg1_csv_entry
     @individual = @search_record.freecen_individual
-    @household = @individual.freecen_household if @individual
+    @dwelling = @individual.freecen_dwelling if @individual
     if params[:search_id].nil?
       redirect_to new_search_query_path
       return
@@ -20,7 +20,7 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     end
-    @entry.display_fields
+    @entry.display_fields if @entry
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
     session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end
