@@ -12,6 +12,8 @@ class PhysicalFile
  field :file_processed, type: Boolean, default: false
  field :action, type: String
 
+ attr_accessor :type
+ 
  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, base: 1, base_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, file_processed: 1, file_processed_date: 1})

@@ -98,17 +98,12 @@ module UseridRole
           'Upload New Batch' =>  "/csvfiles/new",
           'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
         }
-        PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no files','Browse Files','Select File' ,
-           'Files Not Processed for Userid','Files uploaded for Userid', 'Processed but no files for Userid']
+        PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no File','Browse Files' ,'Files for Specific Userid' ]
         PHYSICAL_FILES_OPTIONS_TRANSLATION ={
-          'Browse Files' => "/physical_files/",
-          'Select File' => "/physical_files/select_file",
+          'Browse Files' => "/physical_files/all_files",
           'Files Not Processed' => '/physical_files/file_not_processed',
-           'Processed but no files' => '/physical_files/processed_but_no_file',
-          'Select by Userid' => '/physical_files/userid',
-          'Files uploaded for Userid' => '/physical_files/files_for_specific_userid',
-          'Processed but no files for Userid' => '/physical_files/processed_but_no_file_for_specific_userid',
-          'Files Not Processed for Userid' => '/physical_files/files_not_processed_specific_userid'
+          'Processed but no File' => '/physical_files/processed_but_no_file',
+          'Files for Specific Userid' => '/physical_files/files_for_specific_userid',
         }
           
          

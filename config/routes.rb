@@ -19,16 +19,14 @@ MyopicVicar::Application.routes.draw do
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
-  get 'physical_files/processed_but_no_file_for_specific_userid', :to =>'physical_files#processed_but_no_file_for_specific_userid', :as => :processed_but_no_file_for_specific_userid_physical_files
+  
   get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
-  get 'physical_files/files_not_processed_specific_userid', :to => 'physical_files#files_not_processed_specific_userid', :as => :files_not_processed_specific_userid_physical_files
-  get 'physical_files/userid', :to =>'physical_files#userid', :as => :userid_physical_files
   get 'physical_files/processed_but_no_file', :to =>'physical_files#processed_but_no_file', :as => :processed_but_no_file_physical_files
   get 'physical_files/file_not_processed', :to =>'physical_files#file_not_processed', :as => :file_not_processed_physical_files
   get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
   get 'physical_files/:id/submit_for_processing(.:format)',  :to => 'physical_files#submit_for_processing', :as => :submit_for_processing_physical_file
   get 'physical_files/:id/reprocess(.:format)',  :to => 'physical_files#reprocess', :as => :reprocess_physical_file
-  get 'physical_files/select_file', :to => 'physical_files#select_file', :as => :select_file_physical_files
+  get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
   resources :physical_files
 
   resources :search_statistics
