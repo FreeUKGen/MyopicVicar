@@ -120,7 +120,7 @@
             <td>Character set of original file</td><td class="weight--semibold"><%= @freereg1_csv_file.characterset %></td>
           </tr>
           <tr>
-            <td>Processed</td><td class="weight--semibold"><%= @freereg1_csv_file.processed %></td>
+            <td>Processed (False means that it was only checked for errors)</td><td class="weight--semibold"><%= @freereg1_csv_file.processed %></td>
           </tr>
           <tr>
             <td>Processed Date</td><td class="weight--semibold"><%= @freereg1_csv_file.processed_date.strftime("%d %b %Y") unless @freereg1_csv_file.processed_date.nil? %></td>
