@@ -8,8 +8,11 @@ def new
   @csvfile  = Csvfile.new(:userid  => session[:userid])
   #get @userid
   get_user_info_from_userid
+
+  p @user
   #get @people
   get_userids_and_transcribers
+    p @user
 end
 
 def create
@@ -18,6 +21,7 @@ def create
     redirect_to :action => 'new'
     return 
   end
+  get_user_info_from_userid
   @csvfile  = Csvfile.new(params[:csvfile])
   @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
@@ -25,11 +29,12 @@ def create
   @csvfile.save if proceed
   if @csvfile.errors.any? || !proceed
     flash[:notice] = 'The upload of the file was unsuccessful, please review, correct and resubmit'
-    get_user_info_from_userid
+    
     get_userids_and_transcribers
     render :action => 'new'
     return 
   end #errors
+
   @processing_time = @csvfile.save_and_estimate_time
   flash[:notice] = 'The upload of the file was successful' 
   render 'process' 

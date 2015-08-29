@@ -7,10 +7,9 @@
 <div >
   <%= simple_form_for @csvfile do |f| %>
   <%case%>
-  <%  when @processing_time <= 30 %>
-  <%= f.input :process,  :collection => ["Just check for errors","Now", "As soon as you can", "Process tonight"],:include_blank => false,:label => "How to process the file", :input_html => {  :class => " simple_form_bgcolour simple_form_position ", :size => 3 }, :selected =>  "Process tonight" %>
-
-  <%  when @processing_time > 30 && @processing_time < 60 %>
+  <% when @user.person_role == "trainee" %>
+      <%= f.input :process,  :collection => ["Just check for errors"],:include_blank => false,:label => "How to process the file", :input_html => {  :class => " simple_form_bgcolour simple_form_position ", :size => 3 }, :selected =>  "Just check for errors" %>
+  <%  when @processing_time < 60 %>
   <%= f.input :process,  :collection => ["Just check for errors", "As soon as you can", "Process tonight"],:include_blank => false,:label => "How to process the file", :input_html => {  :class => " simple_form_bgcolour simple_form_position ", :size => 3 }, :selected =>  "Process tonight" %>
  
   <%  when @processing_time >= 60 && @processing_time < 300 %>
