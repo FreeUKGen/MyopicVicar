@@ -8,11 +8,8 @@ def new
   @csvfile  = Csvfile.new(:userid  => session[:userid])
   #get @userid
   get_user_info_from_userid
-
-  p @user
   #get @people
   get_userids_and_transcribers
-    p @user
 end
 
 def create
