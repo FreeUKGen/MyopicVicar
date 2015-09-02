@@ -13,18 +13,18 @@
         <thead  >
           <th>
             <%= link_to('Individuals', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
-            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/images/info.png"><span>Name of main person in the record. Click heading to sort by the name. </span></a>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
           </th>
           <th>
             <%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
-            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/images/info.png"><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a>
           </th>
           <th>
             <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
-            <a href="#" class="bottom_tooltip"><img alt="Information" height="16" src="/assets/images/info.png"><span>County in which event was recorded. Click heading to sort by the county</span></a>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>County in which event was recorded. Click heading to sort by the county</span></a>
           </th>
           <th>Detail<br>
-            <a href="#" class="left_tooltip"><img alt="Information" height="16" src="/assets/images/info.png"><span>Click on the detail link in the record below to get transcription details</span></a>
+            <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Click on the detail link in the record below to get transcription details</span></a>
           </th>
         </thead >
         <% @search_results.each do |search_record| %>
