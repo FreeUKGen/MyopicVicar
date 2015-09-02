@@ -505,7 +505,11 @@ namespace :build do
     p "using database #{db} on host #{host}"
     
       FreeregCsvUpdateProcessor.process(args.range,args.type,args.delta)
-   
+    if args.delta == "process"
+      delta = Rails.application.config.processing_delta
+      File.delete(delta) if File.file?(delta)
+      p "deleted processing delta"
+    end
   end
 
     task :delete_entries_records_for_removed_batches => [:environment] do |t,args|
