@@ -27,7 +27,7 @@ class Csvfile < CarrierWave::Uploader::Base
   def check_for_existing_unprocessed_file
    process = false
    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true,:file_processed => false).first
-   unless batch.nil?
+  unless batch.nil?
     file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
     if File.file?(file_location)
       newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
@@ -46,6 +46,8 @@ class Csvfile < CarrierWave::Uploader::Base
       p "file does not exist"
     end
     batch.destroy
+    process = true
+  else
     process = true
   end
   process

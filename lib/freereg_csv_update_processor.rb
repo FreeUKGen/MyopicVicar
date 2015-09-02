@@ -1191,7 +1191,7 @@ class FreeregCsvUpdateProcessor
                   parent_dirname = File.dirname(full_dirname)
                   user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
                   @@userid = user_dirname
-                  @@header[:digest] = Digest::MD5.file(filename).hexdigest
+                  @@header[:digest] = Digest::MD5.file(filename).hexdigest unless filename.nil?
                   #delete any user log file for errors we put it in the same directory as the csv file came from
                   @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
                   File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)

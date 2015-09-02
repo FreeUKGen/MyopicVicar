@@ -27,7 +27,7 @@ def create
   @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
   p @csvfile
-  if params[:commit] = "Replace"
+  if params[:commit] == "Replace"
     #on a replace make sure its the same file_name
     if session[:file_name] == @csvfile.file_name
       #set up to allow the file save to occur in check_for_existing_place
@@ -43,8 +43,10 @@ def create
   end
   #lets check for existing file, save if required
   proceed = @csvfile.check_for_existing_unprocessed_file 
+  p proceed
   @csvfile.save if proceed
   if @csvfile.errors.any? || !proceed
+    p  @csvfile.errors
     flash[:notice] = 'The upload of the file was unsuccessful, please review, correct and resubmit'
     get_userids_and_transcribers
     redirect_to :back
