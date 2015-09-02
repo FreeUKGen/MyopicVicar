@@ -5,40 +5,70 @@ class CsvfilesController < ApplicationController
 
 
 def new
-  @csvfile  = Csvfile.new(:userid  => session[:userid])
   #get @userid
   get_user_info_from_userid
+  #Lets create for the user and change later
+  @csvfile  = Csvfile.new(:userid  => session[:userid])
   #get @people
   get_userids_and_transcribers
 end
 
 def create
-  if params[:csvfile][:csvfile].blank?
+  if params[:csvfile][:csvfile].blank?  
     flash[:notice] = 'You must select a file'
-    redirect_to :action => 'new'
+    redirect_to :back
     return 
   end
+  p "create"
+  p session
+  p params
   get_user_info_from_userid
   @csvfile  = Csvfile.new(params[:csvfile])
   @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
-  proceed = @csvfile.check_for_existing_unprocessed_file
+  p @csvfile
+  if params[:commit] = "Replace"
+    #on a replace make sure its the same file_name
+    if session[:file_name] == @csvfile.file_name
+      #set up to allow the file save to occur in check_for_existing_place
+      batch = PhysicalFile.where(userid: @csvfile.userid, file_name: @csvfile.file_name).first
+      batch.update_attributes(:base => true,:file_processed => false)
+    else
+      flash[:notice] = 'The file you are replacing must have the same name'  
+      session.delete(:file_name)
+      redirect_to :back
+      return 
+    end
+    session.delete(:file_name) 
+  end
+  #lets check for existing file, save if required
+  proceed = @csvfile.check_for_existing_unprocessed_file 
   @csvfile.save if proceed
   if @csvfile.errors.any? || !proceed
     flash[:notice] = 'The upload of the file was unsuccessful, please review, correct and resubmit'
-    
     get_userids_and_transcribers
-    render :action => 'new'
+    redirect_to :back
     return 
   end #errors
-
   @processing_time = @csvfile.save_and_estimate_time
   flash[:notice] = 'The upload of the file was successful' 
   render 'process' 
 end #method
 
 def edit
-
+#code to move existing file to attic
+ get_user_info_from_userid
+ @file = Freereg1CsvFile.find(params[:id])
+ if @file.locked_by_transcriber == 'true' ||  @file.locked_by_coordinator == 'true'
+    flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock' 
+    redirect_to :back 
+    return
+ end
+ @person = @file.userid
+ @file_name = @file.file_name 
+ @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
+ session[:file_name] =  @file_name 
+ get_userids_and_transcribers
 end
  
 def update
@@ -67,6 +97,8 @@ def update
     redirect_to freereg1_csv_files_path( :page => "#{session[:files_index_page]}")
     return 
   end  #commit
+
+
 end
 
 def delete

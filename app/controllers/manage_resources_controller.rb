@@ -16,6 +16,8 @@
   end
 
   def new
+      clean_session 
+      session[:initial_page] = request.original_url
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
         flash[:notice] = "You are not currently permitted to access the system "
         redirect_to refinery.login_path

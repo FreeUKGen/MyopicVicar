@@ -25,6 +25,7 @@ class Csvfile < CarrierWave::Uploader::Base
     processing_time = (size.to_i*unit).to_i 
   end
   def check_for_existing_unprocessed_file
+   process = false
    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true,:file_processed => false).first
    unless batch.nil?
     file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
@@ -35,6 +36,7 @@ class Csvfile < CarrierWave::Uploader::Base
       renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
       FileUtils.mv(renamed_file,newdir,:verbose => true)
+      FileUtils.rm(file_location) if File.file?(file_location)
       user =UseridDetail.where(:userid => self.userid).first
       unless user.nil?
         attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
@@ -44,7 +46,8 @@ class Csvfile < CarrierWave::Uploader::Base
       p "file does not exist"
     end
     batch.destroy
+    process = true
   end
-  true
+  process
   end
 end

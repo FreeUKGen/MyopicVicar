@@ -63,7 +63,7 @@ class Freereg1CsvFile
   field :csvfile, type: String
   field :processed, type: Boolean, default: true
   field :processed_date, type: DateTime
-  
+  field :waiting_to_be_processed, type: Boolean, default: false
 
  
 
@@ -71,6 +71,7 @@ class Freereg1CsvFile
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
   index({file_name:1,error:1})
   index({error:1, file_name:1})
+  index({userid:1,waiting_to_be_processed:1})
 
   before_save :add_lower_case_userid
   after_save :recalculate_last_amended, :update_number_of_files
@@ -125,6 +126,9 @@ class Freereg1CsvFile
     end
     def userid(name)
       where(:userid => name)
+    end
+    def waiting
+      where(:waiting_to_be_processed => true)
     end
   end
 

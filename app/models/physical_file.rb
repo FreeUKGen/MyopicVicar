@@ -59,10 +59,24 @@ def add_file(batch)
     self.update_attributes(:change => true,:change_uploaded_date =>Time.now) 
   else 
     p "why here"
-  end 
+  end
+  # set a flag saying it is waiting to be processed
+  Freereg1CsvFile.where(:userid => self.userid, :file_name => self.file_name).all.each do |file|
+    file.update_attribute(:waiting_to_be_processed, true)
+  end
+
   processing_file = Rails.application.config.processing_delta
   File.open(processing_file, 'a') do |f|
    f.write("#{self.userid}/#{self.file_name}\n")
+  end
+end
+def file_delete
+  Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all
+  unless self.file_name.nil?
+    base_file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    change_file_location = File.join(Rails.application.config.datafiles_changeset,self.userid,self.file_name)  
+    File.delete(base_file_location) if File.file?(base_file_location)
+    File.delete(change_file_location) if File.file?(change_file_location)
   end
 end
 end

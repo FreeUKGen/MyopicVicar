@@ -826,7 +826,7 @@ class FreeregCsvUpdateProcessor
                     p "No records in the original batch for this location"
                   else
                     p "#{@freereg1_csv_file.records} in the original batch for this location"
-                    
+                    @freereg1_csv_file.update_attribute(:waiting_to_be_processed => false) if  @freereg1_csv_file.waiting_to_be_processed
                     @freereg1_csv_file.update_attributes(@@header)
                     Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id).only(:id).each  do |record|
                       @records << record.id

@@ -51,6 +51,7 @@ class PhysicalFilesController < InheritedResources::Base
   end
   def select_action
     session.delete(:sorted_by)
+    session.delete(:physical_index_page)
     get_user_info_from_userid
     @batches = PhysicalFile.new
     @options= UseridRole::PHYSICAL_FILES_OPTIONS
@@ -87,7 +88,6 @@ class PhysicalFilesController < InheritedResources::Base
     load(params[:id])
     success = @batch.add_file(params[:loc])
     flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
-    @batch.update_attributes(:change_uploaded_date => Time.now, :change => true)
     redirect_to physical_files_path(:anchor => "#{@batch.id}", :page => "#{ session[:physical_index_page] }")   
   end
   def reprocess
@@ -100,6 +100,13 @@ class PhysicalFilesController < InheritedResources::Base
       flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
       @batch.save
       redirect_to :back#freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:files_index_page]}")
-    end
+  end
+  def destroy
+    load(params[:id])
+    @batch.file_delete
+    @batch.destroy
+    flash[:notice] = 'The destruction of the Physical file was successful'
+    redirect_to :back 
+  end
 
 end

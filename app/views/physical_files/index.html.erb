@@ -16,7 +16,7 @@
       <th> Copied from FR1 </th>
       <th >Processed into Database</th>
       <th >Process FR2 file</th>
-    
+      <th >Delete File and Entries</th>
     </tr>
     <% if @batches.nil? %>
       There are none
@@ -31,11 +31,9 @@
         <% end %>
         <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
         <td > <%= batch.change_uploaded_date.strftime("%d %b %Y") if batch.change %>  </td>
-  
         <td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed %>  </td>
-        <td><%= link_to 'Process FR2 file', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
-         
-      </tr>
+        <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+        <td><%= link_to 'Delete', physical_file_path(batch), data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
     <% end %>
     <% end %>
   </table>

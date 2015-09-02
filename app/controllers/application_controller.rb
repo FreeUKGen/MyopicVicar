@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
   end
   def require_cookie_directive
     if cookies[:cookiesDirective].blank?
-     flash[:notice] = 'This website only works if you are willing to accept cookies'
+     flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
      redirect_to new_search_query_path
     end  
   end
@@ -131,8 +131,8 @@ class ApplicationController < ActionController::Base
     session[:my_own] = false
     session.delete(:freereg) 
     session.delete(:edit) 
-    session.delete(:sorted_by) 
-
+    session.delete(:sorted_by)
+    session.delete(:physical_index_page)
   end
 def clean_session_for_county
     session.delete(:freereg1_csv_file_id) 

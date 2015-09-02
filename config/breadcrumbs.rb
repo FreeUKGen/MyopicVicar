@@ -277,7 +277,18 @@ crumb :new_csvfile do |csvfile|
      parent :syndicate_options, session[:syndicate]
    end   
 end
-
+crumb :edit_csvfile do |csvfile,file|
+   link "Replace File", edit_csvfile_path
+   case 
+   when session[:my_own]
+     parent :my_options
+   when session[:county]
+     parent :files, file
+     #parent :county_options, session[:county] 
+   when session[:syndicate]
+     parent :syndicate_options, session[:syndicate]
+   end   
+end
 
 # crumb :projects do
 #   link "Projects", projects_path

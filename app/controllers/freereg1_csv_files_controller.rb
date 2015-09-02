@@ -292,7 +292,20 @@ class Freereg1CsvFilesController < ApplicationController
     @prompt = 'Select batch'
     render '_form_for_selection'
   end
-
+  def display_my_own_files_waiting_to_be_processed
+    if params[:page]
+    session[:files_index_page] = params[:page]
+    end
+    get_user_info_from_userid
+    @who = @user.userid
+    @sorted_by = '(Waiting to be processed)'
+    session[:sort] = "uploaded_date DESC"
+    session[:sorted_by] = @sorted_by
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).waiting.order_by("uploaded_date DESC").page(params[:page])
+    p @freereg1_csv_files
+    render :index
+    
+  end
   def error
     #display the errors in a batch
     load(params[:id])
