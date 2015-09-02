@@ -192,8 +192,8 @@ class UseridDetailsController < ApplicationController
           return
         else
           if params[:page]
-     session[:user_index_page] = params[:page]
-    end
+            session[:user_index_page] = params[:page]
+          end
           @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page])
           render 'index'
           return
