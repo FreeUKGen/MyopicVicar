@@ -50,8 +50,9 @@ class PhysicalFilesController < InheritedResources::Base
     end
   end
   def select_action
-    session.delete(:sorted_by)
-    session.delete(:physical_index_page)
+    clean_session
+    clean_session_for_county
+    clean_session_for_syndicate
     get_user_info_from_userid
     @batches = PhysicalFile.new
     @options= UseridRole::PHYSICAL_FILES_OPTIONS

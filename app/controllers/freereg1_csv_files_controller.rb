@@ -216,9 +216,9 @@ class Freereg1CsvFilesController < ApplicationController
    end 
   end
   def my_own
-
-    session[:sorted_by] = nil
-    session[:sort] = nil
+    clean_session
+    clean_session_for_county
+    clean_session_for_syndicate
     get_user_info_from_userid
     session[:my_own] = true
     @freereg1_csv_file = Freereg1CsvFile.new

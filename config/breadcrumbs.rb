@@ -27,7 +27,7 @@ crumb :create_userid_detail do |userid_detail|
        session[:role] == "data_manager"
    
      parent :userid_details_listing, session[:syndicate],userid_detail 
-    end
+  end
     if  session[:role] == "system_administrator" || session[:role] == "technical"
     
       parent :userid_details_listing, "all" ,userid_detail
@@ -45,9 +45,7 @@ crumb :files  do |file|
   else
    link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:files_index_page]}")
   end
-  p "checking session in crumbs"
-  p session
-  case
+   case
    when session[:my_own].present?
     parent :my_options, my_own_freereg1_csv_file_path
    when session[:role] == "data_manager"
@@ -69,11 +67,11 @@ crumb :files  do |file|
     end 
    when session[:role] == "system_administrator" || session[:role] == "technical"
        parent :regmanager_userid_options
-  end
+   end
  end
 crumb :show_file do |file|
   link "Batch Information", freereg1_csv_file_path(file)
-   if session[:register_id]
+   if session[:register_id].present?
     parent :show_register, session[:county], Place.find(session[:place_id]), Church.find(session[:church_id]), Register.find(session[:register_id])
    else
     parent :files, file

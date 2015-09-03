@@ -11,6 +11,7 @@ class SyndicatesController < ApplicationController
   end
 
   def new
+    
     get_user_info_from_userid
     @syndicate = Syndicate.new
     get_userids_and_transcribers

@@ -44,7 +44,9 @@ class UseridDetailsController < ApplicationController
     render "index"
   end
   def my_own
-
+    clean_session
+    clean_session_for_county
+    clean_session_for_syndicate
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
@@ -102,6 +104,9 @@ class UseridDetailsController < ApplicationController
     @userid = UseridDetail.new
   end
   def options
+    clean_session
+    clean_session_for_county
+    clean_session_for_syndicate
     session[:return_to] = request.fullpath
     get_user_info_from_userid
     if session[:userid].nil?

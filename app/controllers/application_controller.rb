@@ -70,6 +70,7 @@ class ApplicationController < ActionController::Base
           return
         else
           @user = current_refinery_user.userid_detail
+          session[:userid] = @user.userid
         end
      else
        @user = UseridDetail.where(:userid => session[:userid]).first
