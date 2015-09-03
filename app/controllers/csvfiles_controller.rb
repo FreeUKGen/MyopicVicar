@@ -19,9 +19,6 @@ def create
     redirect_to :back
     return 
   end
-  p "create"
-  p session
-  p params
   get_user_info_from_userid
   @csvfile  = Csvfile.new(params[:csvfile])
   @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
@@ -84,7 +81,7 @@ def update
      flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."  
     when params[:csvfile][:process]  == "Process tonight" 
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
-      batch.add_file("change")
+      batch.add_file("base")
       flash[:notice] =  "The file has been placed in the queue for overnight processing"
     when params[:csvfile][:process]  == "As soon as you can"
       pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]") 

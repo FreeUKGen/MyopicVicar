@@ -1,0 +1,31 @@
+<% breadcrumb :waiting%>
+<p style="text-align: center"><b>Listing of files waiting to be processed for <%= @who %></b></p>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+  </div>
+<% end %>
+<p>
+<div id="main" style="color:black">
+<% if @batches.nil? %>
+      There are none
+    <% else %>
+  <table  class="table--bordered  table--data">
+    <tr >
+      <th>Userid</th>
+      <th >File Name</th>
+      <th >loaded into FR2</th>
+      <th >Submitted for processing</th>
+    </tr>
+    
+    <% @batches.each do |batch| %>
+      <tr id="<%=batch.id%>">
+        <td > <%= batch.userid  %>  </td>
+        <td > <%= batch.file_name  %>  </td>
+        <td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base %>  </td>
+        <td > <%= batch.waiting_date.strftime("%d %b %Y") if batch.waiting_to_be_processed %>  </td>
+      </tr>
+    <% end %>  
+    </table>
+  <% end %>
+</div>

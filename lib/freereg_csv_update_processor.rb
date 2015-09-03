@@ -826,7 +826,6 @@ class FreeregCsvUpdateProcessor
                     p "No records in the original batch for this location"
                   else
                     p "#{@freereg1_csv_file.records} in the original batch for this location"
-                    @freereg1_csv_file.update_attribute(:waiting_to_be_processed => false) if  @freereg1_csv_file.waiting_to_be_processed
                     @freereg1_csv_file.update_attributes(@@header)
                     Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id).only(:id).each  do |record|
                       @records << record.id
@@ -1257,17 +1256,17 @@ class FreeregCsvUpdateProcessor
                       #do we have a record of this physical file
                       batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
                       if batch.nil? && @@create_search_records
-                        #file did not come in through FR2 so its unkown
+                        #file did not come in through FR2 so its unknown
                         batch = PhysicalFile.new(:base => true, :base_uploaded_date => Time.now,:change => true, :change_uploaded_date => Time.now,:file_processed => true, :file_processed_date => Time.now)
                         batch.save
                       else
                         #came in through FR2
                         if @@create_search_records
                           # we created search records so its in the search database database
-                           batch.update_attributes( :file_processed => true, :file_processed_date => Time.now)
+                           batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
                         else
                           #only checked for errors so file is not processed into search database
-                           batch.update_attributes(:file_processed => false, :file_processed_date => nil)
+                           batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
                         end
                       end
                       nn = nn + n unless n.nil?

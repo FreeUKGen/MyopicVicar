@@ -85,6 +85,11 @@ crumb :relocate_file do |file|
    link "Relocating Batch", freereg1_csv_file_path(file)
    parent :show_file, file 
 end
+crumb :waiting do |file|
+  link "Files waiting to be processed"
+  parent :my_options  
+end
+
 
 #record or entry
 crumb :show_records do |file|

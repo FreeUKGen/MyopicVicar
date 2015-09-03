@@ -11,7 +11,8 @@ class PhysicalFile
  field :file_processed_date, type: DateTime
  field :file_processed, type: Boolean, default: false
  field :action, type: String
-
+ field :waiting_to_be_processed, type: Boolean, default: false
+ field :waiting_date, type: DateTime
  attr_accessor :type
  
  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
@@ -45,7 +46,9 @@ class PhysicalFile
      def uploaded_into_change
       where(:change => true)
      end
-
+     def waiting
+      where(:waiting_to_be_processed => true)
+     end
 
      def userid(id)
       where(:userid => id)
@@ -54,15 +57,12 @@ class PhysicalFile
 def add_file(batch)
   case 
   when  batch == "base" || batch == "reprocessing"
-    self.update_attributes(:file_processed => false, :file_processed_date => nil) 
+    self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
   when batch == "change"
-    self.update_attributes(:change => true,:change_uploaded_date =>Time.now) 
+    self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
+  when batch == "change" 
   else 
     p "why here"
-  end
-  # set a flag saying it is waiting to be processed
-  Freereg1CsvFile.where(:userid => self.userid, :file_name => self.file_name).all.each do |file|
-    file.update_attribute(:waiting_to_be_processed, true)
   end
 
   processing_file = Rails.application.config.processing_delta

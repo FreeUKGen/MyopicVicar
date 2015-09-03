@@ -105,7 +105,7 @@ class PhysicalFilesController < InheritedResources::Base
     load(params[:id])
     @batch.file_delete
     @batch.destroy
-    flash[:notice] = 'The destruction of the Physical file was successful'
+    flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_to :back 
   end
 
