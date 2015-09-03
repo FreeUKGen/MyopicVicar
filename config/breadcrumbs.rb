@@ -45,8 +45,10 @@ crumb :files  do |file|
   else
    link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:files_index_page]}")
   end
+  p "checking session in crumbs"
+  p session
   case
-   when session[:my_own]
+   when session[:my_own].present?
     parent :my_options, my_own_freereg1_csv_file_path
    when session[:role] == "data_manager"
      parent :county_options, session[:county]
