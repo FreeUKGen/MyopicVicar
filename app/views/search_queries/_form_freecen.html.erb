@@ -114,6 +114,7 @@
 	<% end %>
 </section>
 
+<% if false %>
 <script type="text/javascript" charset="utf-8" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
 		var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
@@ -130,3 +131,4 @@
 		<% end %>
 	});})(jQuery);
 </script>
+<% end %>
