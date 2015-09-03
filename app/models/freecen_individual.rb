@@ -23,4 +23,6 @@ class FreecenIndividual
   field :notes, type: String
   belongs_to :freecen_dwelling
   belongs_to :freecen1_vld_entry
+  
+  index(freecen_dwelling_id:1)
 end
