@@ -53,7 +53,7 @@
             <td><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
             <td ><%= link_to 'LK/UN', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?' %>
             </td>
-             <td><%= link_to 'DEL', remove_freereg1_csv_file_path, confirm: 'Are you sure you want to discard this file? This may take a few minutes if there many records', method: :get   %></td>
+             <td><%= link_to 'DEL', remove_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to delete this file? This may take a few minutes if there many records', method: :get   %></td>
             </td>  
             <td ><%= link_to 'RPL', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?' %> 
             </td>          
