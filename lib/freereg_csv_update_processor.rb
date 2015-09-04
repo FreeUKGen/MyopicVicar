@@ -1142,6 +1142,7 @@ class FreeregCsvUpdateProcessor
                   #file is in the database so lets test to see if we process
                   case
                     when process
+                       @@update = true
                        #process file regardless
                        return true
                     when @@header[:digest] == check_for_file.digest 
@@ -1247,6 +1248,7 @@ class FreeregCsvUpdateProcessor
                     if @success == true  && process == true
                     #how many records did we process?
                       n = process_the_data
+                    #now lets clean up the files and send out messages after a success
                       if delta == "delta"
                         file_location = File.join(base_directory, @@header[:userid])
                         Dir.mkdir(file_location) unless Dir.exists?(file_location)
@@ -1273,14 +1275,14 @@ class FreeregCsvUpdateProcessor
                       #kludge to send email to user if a check for errors or an on-line process
                       UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                     else
-                      #another kludge to send a message to user that the file did not get processed
-                    if delta == 'process' || (delta == 'change' && filenames.length == 1 )          
-                      @@message_file.puts "File not processed" if @success == false 
-                      file = @@message_file
-                      @@message_file.close
-                      UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver 
-                      @@message_file = File.new(file_for_warning_messages, "w")
-                    end
+                        #another kludge to send a message to user that the file did not get processed when the processing failed
+                      if delta == 'process' || (delta == 'change' && filenames.length == 1 )          
+                        @@message_file.puts "File not processed" if @success == false 
+                        file = @@message_file
+                        @@message_file.close
+                        UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver 
+                        @@message_file = File.new(file_for_warning_messages, "w")
+                      end
                     end
                     #reset for next file
                     @success = true

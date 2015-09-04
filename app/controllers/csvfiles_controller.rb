@@ -40,15 +40,14 @@ def create
   end
   #lets check for existing file, save if required
   proceed = @csvfile.check_for_existing_unprocessed_file 
-  p proceed
   @csvfile.save if proceed
   if @csvfile.errors.any? || !proceed
-    p  @csvfile.errors
     flash[:notice] = 'The upload of the file was unsuccessful, please review, correct and resubmit'
     get_userids_and_transcribers
     redirect_to :back
     return 
   end #errors
+  
   @processing_time = @csvfile.save_and_estimate_time
   flash[:notice] = 'The upload of the file was successful' 
   render 'process' 

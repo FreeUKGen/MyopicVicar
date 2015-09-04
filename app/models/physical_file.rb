@@ -14,6 +14,7 @@ class PhysicalFile
  field :waiting_to_be_processed, type: Boolean, default: false
  field :waiting_date, type: DateTime
  attr_accessor :type
+
  
  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, base: 1, base_uploaded_date: 1})
@@ -22,6 +23,8 @@ class PhysicalFile
  index ({file_processed: 1})
  index ({ change: 1})
  index ({ waiting_to_be_processed: 1})
+  
+
   class << self
      def file_name(name)
       where(:file_name => name)
@@ -55,29 +58,29 @@ class PhysicalFile
       where(:userid => id)
      end
   end
-def add_file(batch)
-  case 
-  when  batch == "base" || batch == "reprocessing"
-    self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
-  when batch == "change"
-    self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
-  when batch == "change" 
-  else 
-    p "why here"
+  
+  def add_file(batch)
+    case 
+    when  batch == "base" || batch == "reprocessing"
+      self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
+    when batch == "change"
+      self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
+    when batch == "change" 
+    else 
+      p "why here"
+    end
+    processing_file = Rails.application.config.processing_delta
+    File.open(processing_file, 'a') do |f|
+     f.write("#{self.userid}/#{self.file_name}\n")
+    end
   end
-
-  processing_file = Rails.application.config.processing_delta
-  File.open(processing_file, 'a') do |f|
-   f.write("#{self.userid}/#{self.file_name}\n")
+  def file_delete
+    Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all
+    unless self.file_name.nil?
+      base_file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+      change_file_location = File.join(Rails.application.config.datafiles_changeset,self.userid,self.file_name)  
+      File.delete(base_file_location) if File.file?(base_file_location)
+      File.delete(change_file_location) if File.file?(change_file_location)
+    end
   end
-end
-def file_delete
-  Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all
-  unless self.file_name.nil?
-    base_file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
-    change_file_location = File.join(Rails.application.config.datafiles_changeset,self.userid,self.file_name)  
-    File.delete(base_file_location) if File.file?(base_file_location)
-    File.delete(change_file_location) if File.file?(change_file_location)
-  end
-end
 end

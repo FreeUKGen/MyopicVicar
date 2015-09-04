@@ -362,37 +362,52 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def remove
+    #this just removes a batch of records
     load(params[:id])
+    session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
     return_location  = @freereg1_csv_file.register
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
-      flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
+      flash[:notice] = 'The removal of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return
     end
     @freereg1_csv_file.delete
-    flash[:notice] = 'The removal of the batch entry was successful'
-    redirect_to register_path(return_location)
+    batch = PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).first
+    batch.update_attributes(:file_processed =>false, :file_processed_date => nil) if Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).count == 0
+    flash[:notice] = 'The removal of the batch entry was successful'   
+    if session[:my_own]
+      redirect_to my_own_freereg1_csv_file_path
+      return
+    else 
+      redirect_to register_path(return_location)
+      return
+    end
   end
 
   def destroy
+    # this removes all batches and the file
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
+    session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
     return_location  = @freereg1_csv_file.register
-    @role = session[:role]
     if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
       flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return
     end
-    #there can actually be multiple files that are split into seperate counties/places/churches
-    Freereg1CsvFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).all.each do |file|
-      file.destroy
+    #there should only be one physical file entry for the same user but just in case
+    PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).each do |file|
+      file.file_delete
+      file.delete
     end
     session[:type] = "edit"
-    flash[:notice] = 'The deletion of the batch was successful'
-    redirect_to :back
+    flash[:notice] = 'The deletion of the batches was successful'
+    if session[:my_own]
+      redirect_to my_own_freereg1_csv_file_path
+      return
+    else 
+      redirect_to register_path(return_location)
+      return
+    end
   end
 
   def load(file_id)
@@ -404,8 +419,8 @@ class Freereg1CsvFilesController < ApplicationController
   def set_controls
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    #@first_name = session[:first_name]
+    #@user = UseridDetail.where(:userid => session[:userid]).first
     #session[:freereg1_csv_file_name] = @freereg1_csv_file_name
     #session[:county] = ChapmanCode.has_key(@freereg1_csv_file.county)
     #session[:place_name] = @freereg1_csv_file.place
