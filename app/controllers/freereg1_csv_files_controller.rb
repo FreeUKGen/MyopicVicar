@@ -40,6 +40,7 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def relocate
+    get_user_info_from_userid
     load(params[:id])
     session[:selectcountry] = nil
     session[:selectcounty] = nil
@@ -53,7 +54,6 @@ class Freereg1CsvFilesController < ApplicationController
     end
     session[:records] = @records
     display_info
-    get_user_info_from_userid
     unless  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
       # only senior managers can move betweeen counties and countries; coordinators could loose files
       place = @freereg1_csv_file.register.church.place
