@@ -152,10 +152,15 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
   end
   def contact_to_coordinator(contact,person,ccs)
-     @ccs = ccs
+    @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report")
+  end
+  def send_change_of_syndicate_notification_to_sc(user)
+    @user = user
+    get_coordinator_name
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Change of Syndicate") unless @coordinator.nil?  
   end
 end

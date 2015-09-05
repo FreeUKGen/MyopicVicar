@@ -18,6 +18,7 @@ class UseridDetailsController < ApplicationController
     @syndicate = session[:syndicate]
     @sorted_by = session[:active]
   end #end method
+
   def new
     session[:return_to] = request.fullpath
     session[:type] = "add"
@@ -25,15 +26,17 @@ class UseridDetailsController < ApplicationController
     @role = session[:role]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
-     @user.person_role == "data_manager" 
+    @user.person_role == "data_manager" 
     @userid = UseridDetail.new
   end
+
   def show
     session[:return_to] = request.fullpath
     @syndicate = session[:syndicate]
     get_user_info_from_userid
     load(params[:id])
   end
+
   def all
     if params[:page]
      session[:user_index_page] = params[:page]
@@ -43,6 +46,7 @@ class UseridDetailsController < ApplicationController
     @userids = UseridDetail.get_userids_for_display('all',params[:page])
     render "index"
   end
+
   def my_own
     clean_session
     clean_session_for_county
@@ -52,6 +56,7 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @userid = @user
   end
+
   def edit
     session[:return_to] = request.fullpath
     session[:type] = "edit"
@@ -60,6 +65,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
+
   def rename
     session[:return_to] = request.fullpath
     session[:type] = "edit"
@@ -67,6 +73,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
+
   def change_password
     load(params[:id])
     @userid.send_invitation_to_reset_password
@@ -74,10 +81,12 @@ class UseridDetailsController < ApplicationController
     redirect_to refinery.login_path
     return
   end
+
   def general
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
   end
+
   def researcher_registration
     cookies.signed[:Administrator] = Rails.application.config.github_password
     session[:return_to] = request.fullpath
@@ -86,6 +95,7 @@ class UseridDetailsController < ApplicationController
     @userid = UseridDetail.new
     @first_name = session[:first_name]
   end
+
   def transcriber_registration
     cookies.signed[:Administrator] = Rails.application.config.github_password
     session[:return_to] = request.fullpath
@@ -96,6 +106,7 @@ class UseridDetailsController < ApplicationController
     @transcription_agreement = [true,false]
     @first_name = session[:first_name]
   end
+
   def technical_registration
     cookies.signed[:Administrator] = Rails.application.config.github_password
     session[:return_to] = request.fullpath
@@ -103,6 +114,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "technical_registration"
     @userid = UseridDetail.new
   end
+
   def options
     clean_session
     clean_session_for_county
@@ -121,6 +133,7 @@ class UseridDetailsController < ApplicationController
       @options= UseridRole::USERID_ACCESS_OPTIONS
     end
   end
+
   def selection
     session[:return_to] = request.fullpath
     get_user_info_from_userid
@@ -155,6 +168,7 @@ class UseridDetailsController < ApplicationController
     params[:option] = nil
     @manage_syndicate = session[:syndicate]
   end
+
   def select
     get_user_info(session[:userid],session[:first_name])
     case
@@ -210,6 +224,7 @@ class UseridDetailsController < ApplicationController
       return
     end
   end
+
   def create
     session[:refinery] = current_refinery_user
     @userid = UseridDetail.new(params[:userid_detail])
@@ -226,6 +241,7 @@ class UseridDetailsController < ApplicationController
       next_place_to_go_unsuccessful_create
     end
   end
+
   def update
     load(params[:id])
     success = true
@@ -239,11 +255,14 @@ class UseridDetailsController < ApplicationController
         params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
      when params[:commit] == "Update"
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
+      note_to_send_email_to_sc = false
+      note_to_send_email_to_sc = true if params[:userid_detail][:syndicate] != @userid.syndicate
     end
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? || success
+     UserMailer.send_change_of_syndicate_notification_to_sc(@userid) if note_to_send_email_to_sc
      flash[:notice] = 'The update of the profile was successful'
      redirect_to userid_detail_path(@userid)
      return
@@ -268,6 +287,7 @@ class UseridDetailsController < ApplicationController
       redirect_to :action => 'options'
     end
   end
+
   def disable
     session[:return_to] = request.fullpath
     load(params[:id])
@@ -278,6 +298,7 @@ class UseridDetailsController < ApplicationController
     end
     session[:type] = "disable"
   end
+
   def load(userid_id)
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -286,6 +307,7 @@ class UseridDetailsController < ApplicationController
     @syndicate = session[:syndicate]
     @role = session[:role]
   end
+
   def next_place_to_go_unsuccessful_create
     case
     when  params[:commit] == "Submit"
@@ -327,4 +349,5 @@ class UseridDetailsController < ApplicationController
     @userid.delete
     next_place_to_go_unsuccessful_update
   end
+
 end
