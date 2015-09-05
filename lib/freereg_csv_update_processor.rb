@@ -1122,7 +1122,7 @@ class FreeregCsvUpdateProcessor
                 return success
               end #method end
 
-              def self.check_for_replace(filename,process)
+              def self.check_for_replace(filename,force)
                 #check to see if we should process the file
                 check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
                                                          :userid => @@header[:userid]}).first
@@ -1141,7 +1141,7 @@ class FreeregCsvUpdateProcessor
                 else
                   #file is in the database so lets test to see if we process
                   case
-                    when process
+                    when force
                        @@update = true
                        #process file regardless
                        return true
@@ -1249,31 +1249,31 @@ class FreeregCsvUpdateProcessor
                     #how many records did we process?
                       n = process_the_data
                     #now lets clean up the files and send out messages after a success
+                     
+                      #do we have a record of this physical file
+                      batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
+                      if batch.nil?
+                        #file did not come in through FR2 so its unknown
+                        batch = PhysicalFile.new(:userid => @@header[:userid], :file_name => @@header[:file_name],:change => true, :change_uploaded_date => Time.now)
+                        batch.save
+                      end
                       if delta == "delta"
                         file_location = File.join(base_directory, @@header[:userid])
                         Dir.mkdir(file_location) unless Dir.exists?(file_location)
                         p "copying file to freereg2 base"
-                        FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true) if @success == true  && process == true
-                      end
-                      #do we have a record of this physical file
-                      batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
-                      if batch.nil? && @@create_search_records
-                        #file did not come in through FR2 so its unknown
-                        batch = PhysicalFile.new(:base => true, :base_uploaded_date => Time.now,:change => true, :change_uploaded_date => Time.now,:file_processed => true, :file_processed_date => Time.now)
-                        batch.save
-                      else
-                        #came in through FR2
-                        if @@create_search_records
+                        FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true) 
+                        batch.update_attributes( :base => true, :base_processed_date => Time.now)
+                      end                 
+                      if @@create_search_records
                           # we created search records so its in the search database database
                            batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
-                        else
+                      else
                           #only checked for errors so file is not processed into search database
                            batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
-                        end
-                      end
-                      nn = nn + n unless n.nil?
+                      end                        
                       #kludge to send email to user if a check for errors or an on-line process
                       UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name] ).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
+                     nn = nn + n unless n.nil?
                     else
                         #another kludge to send a message to user that the file did not get processed when the processing failed
                       if delta == 'process' || (delta == 'change' && filenames.length == 1 )          
@@ -1288,8 +1288,7 @@ class FreeregCsvUpdateProcessor
                     @success = true
                     #we pause for a time to allow the slaves to really catch up
                     sleep_time = 300 * Rails.application.config.sleep.to_f
-                    sleep(sleep_time) if filenames.length >= 5 && process
-                   
+                    sleep(sleep_time) if filenames.length >= 5 && process                
                   end #filename loop end
                   time = 0
                   time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
