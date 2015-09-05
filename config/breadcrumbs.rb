@@ -218,6 +218,11 @@ crumb :userid_details_listing do |syndicate,user|
     parent :syndicate_options, syndicate
    end
 end
+crumb :syndicate_waiting do |syndicate|
+   link "Files waiting to be processed"
+   parent :syndicate_options,syndicate  
+end
+
 
  #Profile 
 crumb :userid_detail do |syndicate,userid_detail|

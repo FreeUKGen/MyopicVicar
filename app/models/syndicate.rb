@@ -105,5 +105,12 @@ class Syndicate
     coordinator.person_role = 'syndicate_coordinator' if  coordinator.person_role == 'transcriber' || coordinator.person_role == 'researcher'
     coordinator.save(:validate => false)
   end
+  def self.get_userids_for_syndicate(syndicate)
+     userids = Array.new
+     UseridDetail.syndicate(syndicate).each do |user|
+      userids << user.userid
+     end 
+     userids   
+  end
 
 end

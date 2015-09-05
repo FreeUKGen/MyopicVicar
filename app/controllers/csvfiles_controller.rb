@@ -14,6 +14,8 @@ def new
 end
 
 def create
+  # There can be two types of creation firstly for an Upload of a new file and secondly from the Replacement of an exiting file.
+  #processing is slightly different depending upon the type
   if params[:csvfile][:csvfile].blank?  
     flash[:notice] = 'You must select a file'
     redirect_to :back
@@ -21,6 +23,7 @@ def create
   end
   get_user_info_from_userid
   @csvfile  = Csvfile.new(params[:csvfile])
+  #if the process does not have a userid then the process has been initiated by the user on his own batches
   @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
   @csvfile.file_name = @csvfile.csvfile.identifier
   p @csvfile
@@ -42,7 +45,7 @@ def create
   proceed = @csvfile.check_for_existing_unprocessed_file 
   @csvfile.save if proceed
   if @csvfile.errors.any? || !proceed
-    flash[:notice] = 'The upload of the file was unsuccessful, please review, correct and resubmit'
+    flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
     get_userids_and_transcribers
     redirect_to :back
     return 
@@ -57,13 +60,16 @@ def edit
 #code to move existing file to attic
  get_user_info_from_userid
  @file = Freereg1CsvFile.find(params[:id])
- if @file.locked_by_transcriber == 'true' ||  @file.locked_by_coordinator == 'true'
-    flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock' 
-    redirect_to :back 
-    return
- end
  @person = @file.userid
  @file_name = @file.file_name 
+ #there can be multiple batches only one of which might be locked
+ Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
+    if file.locked_by_transcriber == 'true' ||  file.locked_by_coordinator == 'true'
+      flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock' 
+      redirect_to :back 
+      return
+    end
+ end
  @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
  session[:file_name] =  @file_name 
  get_userids_and_transcribers

@@ -118,7 +118,7 @@ class Freereg1CsvFile
 
   class << self
     def syndicate(name)
-      where(:syndicate => name)
+      where(:transcriber_syndicate => name)
     end
     def county(name)
       where(:county => name)
