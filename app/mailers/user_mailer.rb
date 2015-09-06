@@ -161,6 +161,6 @@ class UserMailer < ActionMailer::Base
   def send_change_of_syndicate_notification_to_sc(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Change of Syndicate") unless @coordinator.nil?  
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Change of Syndicate") unless @coordinator.blank?
   end
 end
