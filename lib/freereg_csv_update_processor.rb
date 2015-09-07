@@ -18,11 +18,6 @@ class FreeregCsvUpdateProcessor
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
   ST_PERIOD = /\A[Ss][Tt]\z/
-
-  VALID_CHAR = /[^a-zA-Z\d\!\+\=\_\&\?\*\)\(\]\[\}\{\'\" \.\,\;\/\:\r\n\@\$\%\^\-\#]/
-
-  VALID_MALE= ["SON"]
-  VALID_FEMALE =["DAU"]
   VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
   RECORD_TYPE_TRANSLATION = {
     "BAPTISMS" => RecordType::BAPTISM,
@@ -36,9 +31,6 @@ class FreeregCsvUpdateProcessor
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
   VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
-  VALID_NAME = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_]/
-  VALID_TEXT = /[^A-Za-z\)\(\]\[\}\{\?\*\'\"\ \.\,\;\:\_\!\+\=]/
-
   VALID_MALE_SEX = ["M","M." ,"SON","MALE","MM","SON OF"]
   UNCERTAIN_MALE_SEX = ["M?","SON?","[M]" ,"MF"]
   UNCERTAIN_FEMALE_SEX = ["F?", "DAU?"]

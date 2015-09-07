@@ -279,7 +279,8 @@ class Freereg1CsvEntry
       return true if FreeregOptionsConstants::FORCE_SEARCH_RECORD_RECREATE.include?(field)
      end
      return false
-   end
+  end
+
    def self.update_parameters(params,entry)
      
      #clean up old null entries
