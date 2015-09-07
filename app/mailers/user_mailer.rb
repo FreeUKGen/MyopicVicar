@@ -89,8 +89,10 @@ class UserMailer < ActionMailer::Base
 
   def notification_of_registration_completion(user)
     @user = user
+    reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
+    mail(:to => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeREG2 Registration") unless reg_manager.nil? 
   end
 
   def reset_notification(user,z)
