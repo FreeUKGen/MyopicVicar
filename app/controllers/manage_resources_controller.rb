@@ -25,6 +25,9 @@
       end
       unless  current_refinery_user.userid_detail.active
        flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
+       p session
+       p session[:flash]
+       p session[:flash][:notice]
        redirect_to refinery.logout_path
        return
       end
