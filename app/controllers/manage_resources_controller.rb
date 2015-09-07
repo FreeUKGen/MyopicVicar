@@ -20,13 +20,13 @@
       session[:initial_page] = request.original_url
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
         flash[:notice] = "You are not currently permitted to access the system "
-        redirect_to refinery.login_path
+        redirect_to refinery.logout_path
         return
       end
       unless  current_refinery_user.userid_detail.active
-        flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
-        redirect_to refinery.login_path
-        return
+       flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
+       redirect_to refinery.logout_path
+       return
       end
       @user = current_refinery_user.userid_detail 
       if @user.person_role == "researcher" || @user.person_role == "transcriber" || @user.person_role == "trainee" || @user.person_role == 'pending' 
