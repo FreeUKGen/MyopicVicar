@@ -127,19 +127,7 @@
       <% end %>
     </select>
   </li>
-  <li class="grid__item  one-half palm-one-whole" id="transcriber_input">
-    <label class="label" for="transcription_agreement">
-      Review our <%= link_to 'participation agreement', "../contributing-to-the-freereg-project/free-uk-genealogy-transcriber-agreement"%> and confirm your acceptance.
-      <a href="#" class="left_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Please indicate that you accept the transcriber agreement.</span>
-      </a>
-    </label>
-    <%= f.label :transcription_agreement do %>
-      <%= f.check_box :transcription_agreement, {}, "true", "false" %>
-      Agree
-    <% end %>
-  </li>
+  
 <%= f.action :submit,
       :as => :input,
       :label => 'Register Transcriber',

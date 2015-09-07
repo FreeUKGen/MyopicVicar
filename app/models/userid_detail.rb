@@ -46,7 +46,7 @@ class UseridDetail
   has_many :freereg1_csv_files
   has_many :attic_files
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
-                        :skill_level,:transcription_agreement
+                        :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
