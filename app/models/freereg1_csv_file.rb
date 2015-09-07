@@ -691,6 +691,8 @@ class Freereg1CsvFile
   def define_colour
     #need to consider storing the processed rather than a look up
      case
+     when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'  
+       color = "color:red"
      when !self.processed
       color = "color:orange" 
      when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'    
@@ -698,9 +700,7 @@ class Freereg1CsvFile
      when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true') 
       color = "color:blue"
      when self.error != 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')  
-      color = "color:maroon"
-     when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'  
-       color = "color:red"
+      color = "color:maroon" 
      else
        color = "color:black"
      end
