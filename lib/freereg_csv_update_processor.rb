@@ -1101,7 +1101,7 @@ class FreeregCsvUpdateProcessor
                 #we rescue when for some reason the slurp barfs
               rescue => e
 
-                @@message_file.puts "#{@@userid}\t#{@@filename} *barfed the system*************"
+                @@message_file.puts "#{@@userid}\t#{@@filename} *We were unable to process the file possibly due to an invaid structure or character. Please consult the System Administrator*"
                 @@message_file.puts e.message
                 @@message_file.puts e.backtrace.inspect
                 success = false
