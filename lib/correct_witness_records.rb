@@ -33,6 +33,7 @@ class CorrectWitnessRecords
           multiple_witness.each do |witness|
             if  witness.witness_forename.present? || witness.witness_surname.present?
               witness.witness_forename = 'blankfiller' if  witness.witness_forename.blank?
+              witness.witness_surname = 'blankfiller' if  witness.witness_surname.blank? 
               witnesses[ind] = witness.witness_forename + " " + witness.witness_surname
               entry.multiple_witnesses.delete(witness)
               ind = ind + 1
