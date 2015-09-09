@@ -1,28 +1,94 @@
 <section>
-    <% if @dwelling %>
-	  <table class="table--bordered ">
-	    <thead>
-	      <tr>
-	      	<% @dwelling.attributes.keys.each do |attribute| %>
-	      		<td>
-	      			<%= attribute.to_s.titleize %>
-	      		</td>
-			<% end %>
-		  </tr>
-	    </thead>
-	    <tbody>
-	    	<% @dwelling.freecen_individuals.each do |individual| %>
-	    		<tr>
-			      	<% individual.attributes.values.each do |attribute| %>
-			      		<td>
-			      			<%= attribute %>	      			
-			      		</td>
-	    			<% end %>
-	    		</tr>
-		   	<% end %>	    	
-	    </tbody>
-       </table>
+
+  <% if false && @dwelling %>
+    <% display_fields_order = ['civil_parish','enumeration_district','folio_number','page_number','schedule_number','house_number','house_or_street_name','sequence_in_household','surname','forenames','relationship','marital_status','condition','sex','age','age_unit','occupation','occupation_flag','verbatim_birth_county','verbatim_birth_place','disability','language','notes'] %>
+    <table class="table--bordered ">
+      <thead>
+	<tr>
+	  <% display_fields_order.each do |fld| %>
+	  <td>
+	    <%= fld.titleize %>
+	  </td>
+	  <% end %>
+	</tr>
+      </thead>
+      <tbody>
+	<% @dwelling.freecen_individuals.each do |individual| %>
+	  <% all_fields = individual.attributes.merge(@dwelling.attributes) %>
+	  <tr>
+	    <% display_fields_order.each do |fld| %>
+	    <td>
+	      <%= all_fields[fld] %>
+	    </td>
+	    <% end %>
+	  </tr>
+	  <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  
+  
+  
+  
+  
+  <% if true && @dwelling %>
+    <% dwelling_fields = ['civil_parish','enumeration_district','folio_number','page_number','schedule_number','house_number','house_or_street_name'] %>
+    <% individual_fields = ['sequence_in_household','surname','forenames','relationship','marital_status','condition','sex','age','age_unit','occupation','occupation_flag','verbatim_birth_county','verbatim_birth_place','disability','language','notes'] %>
+
+    <table class="table--bordered " style="background-color:#ffffff;">
+      <thead>
+	<tr>
+	  <% dwelling_fields.each do |fld| %>
+	  <td>
+	    <%= fld.titleize %>
+	  </td>
+	  <% end %>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <% dwelling_fields.each do |fld| %>
+	  <td>
+	    <%= @dwelling.attributes[fld] %>
+	  </td>
+	  <% end %>
+	</tr>
+      </tbody>
+    </table>
+    <div style="height:0px;"></div>
+    <table class="table--bordered " style="background-color:#ffffff;">
+      <thead>
+	<tr>
+	  <% individual_fields.each do |fld| %>
+	  <td>
+	    <%= fld.titleize %>
+	  </td>
+	  <% end %>
+	</tr>
+      </thead>
+      <tbody>
+	<% @dwelling.freecen_individuals.each do |individual| %>
+	<tr>
+	  <% individual_fields.each do |fld| %>
+	  <td>
+	    <%= individual.attributes[fld] %>
+	  </td>
+	  <% end %>
+	</tr>
+	<% end %>
+      </tbody>
+    </table>
     <% end %>
+
+
+  <% if false && @dwelling %>
+    <%=  @dwelling.attributes.inspect %>
+    <div style="height:30px;"></div>
+    <%=  @dwelling.freecen_individuals[0].attributes.inspect %>
+  <% end %>
+
+
+
   <% if @annotations && @annotations.length > 0 %>
   <table class="table--bordered ">
     <thead>
@@ -109,3 +175,4 @@
   </table>
   <% end %>
 </section>
+
