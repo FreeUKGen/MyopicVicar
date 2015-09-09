@@ -64,8 +64,14 @@ class PhysicalFile
     when  batch == "base" || batch == "reprocessing"
       self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
     when batch == "change"
+      base_directory = Rails.application.config.datafiles
+      change_directory = Rails.application.config.datafiles_changeset
       self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
-    when batch == "change" 
+      filename = File.join(change_directory, self.userid,self.file_name)
+      file_location = File.join(base_directory, self.userid)
+      Dir.mkdir(file_location) unless Dir.exists?(file_location)
+      FileUtils.cp(filename,File.join(file_location,self.file_name ),:verbose => true) 
+      self.update_attributes(:base => true, :base_uploaded_date => Time.now,:file_processed => false)
     else 
       p "why here"
     end
