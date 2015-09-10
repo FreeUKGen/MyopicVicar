@@ -277,13 +277,17 @@ class SearchQuery
   end
 
   def county_is_valid
-    if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
-      errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
-    end
-    if chapman_codes.length > 3
-      if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
-       errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
+        errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
       end
+      if chapman_codes.length > 3
+        if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
+          errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+        end
+      end
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      # don't require date range for now. may need to add back in later.
     end
   end
 
