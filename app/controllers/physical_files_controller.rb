@@ -19,15 +19,15 @@ class PhysicalFilesController < InheritedResources::Base
       @batches = PhysicalFile.not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
     when @sorted_by ==  "Not Processed"
       @batches = PhysicalFile.userid(session[:who]).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
-    when   @sorted_by == '(Processed but no file)'
+    when   @sorted_by == '(Processed but no file in FR2)'
       @batches = PhysicalFile.processed.not_uploaded_into_base.all.page(params[:page])
-    when   @sorted_by == "Processed but no File"
+    when   @sorted_by == "Processed but no file in FR2"
       @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
     when  @sorted_by == 'all files'
       @batches = PhysicalFile.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
     when   @sorted_by == 'All'
       @batches = PhysicalFile.userid(session[:who]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
-    when  @sorted_by == 'processed but no file'
+    when  @sorted_by == 'Processed but no file in FR2'
       @batches = PhysicalFile.userid(@user).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
     when  @sorted_by == 'files_not processed'
       @batches = PhysicalFile.userid(@user).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
@@ -69,8 +69,18 @@ class PhysicalFilesController < InheritedResources::Base
     redirect_to  :action => 'index'
   end
 
-  def processed_but_no_file
-    session[:sorted_by] = '(Processed but no file)'
+  def processed_but_no_file_in_fr2
+    session[:sorted_by] = '(Processed but no file in FR2)'
+    session[:who] = nil
+    redirect_to  :action => 'index'
+  end
+  def processed_but_no_file_in_fr1
+    session[:sorted_by] = '(Processed but no file in FR1)'
+    session[:who] = nil
+    redirect_to  :action => 'index'
+  end
+  def processed_but_no_files
+    session[:sorted_by] = '(Processed but no files)'
     session[:who] = nil
     redirect_to  :action => 'index'
   end

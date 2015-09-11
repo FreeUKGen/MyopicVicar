@@ -107,8 +107,9 @@ class FreeregCsvUpdateProcessor
     'Steven\'s' => 'Steven',
 
     'Swithen' => 'Swithin',
-    'Swithins' => 'Swith1n',
+    'Swithins' => 'Swithin',
     'Swithin\'s' => 'Swithin',
+    'Swith1n' => 'Swithin' ,
     'Swithuns' => 'Swithun',
     'Wilfreds' => 'Wilfred',
     'Wilfrid\'s' => 'Wilfrid',
