@@ -3,7 +3,7 @@
 	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<% if @search_query.errors.any? %>
+<% if @search_query.errors.present? || @search_query.errors.any? %>
 <h4 class="text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h4>
 <ul class="validation-list" >
 	<% @search_query.errors.messages.each do |key, msg| %>
@@ -116,8 +116,8 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<%= f.label :inclusive do %>
 				<%= f.check_box :inclusive, { :tabindex => 7 }, "true", "false" %>
-				Search family members
-				<a href="#" class="top_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				Family members
+				<a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>Check to search names of family members mentioned within records in addition to the names of the main participants.</span>
 				</a>
 			<% end %>
@@ -125,8 +125,8 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<%= f.label :search_nearby_places do %>
 				<%= f.check_box :search_nearby_places, { :tabindex => 8 }, "true", "false" %>
-				Search nearby places
-				<a href="#" class="top_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+			Nearby places
+				<a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>Check to search places in the vicinity of the selected starting place. (Up to 40 additional places will be included.)</span>
 				</a>
 			<% end %>
@@ -135,11 +135,14 @@
 			<%= f.label :fuzzy do %>
 				<%= f.check_box :fuzzy, { :tabindex => 9 }, "true", "false" %>
 				Soundex on Names
-				<a href="#" class="top_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>Check to include Soundex equivalent of the name, it is applied to both surname and forename(if entered).</span>
 				</a>
 			<% end %>
-		</li>
+     </li>
+     <div id="betterstyling">
+               <li class="grid__item  one-quarter  palm-one-whole"> <label> Region </label> <input name="search_query[region]" type="text"   ></li>
+    </div>
 		<%= f.action :submit,
 			:as => :button,
 			:label => 'Search',

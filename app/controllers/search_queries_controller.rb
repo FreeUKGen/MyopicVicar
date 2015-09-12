@@ -10,7 +10,7 @@ class SearchQueriesController < ApplicationController
 
   def new
     if @page = Refinery::Page.where(:slug => 'message').exists?
-       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
+      @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
     else
       @page = nil
     end
@@ -57,22 +57,26 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
-    @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
-    @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
-    if @search_query["chapman_codes"][1].eql?("YKS")
-      @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
-    end
-    if @search_query["chapman_codes"][1].eql?("CHI")
-      @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
-    end
-    @search_query.session_id = request.session_options[:id]
+    if params[:search_query][:region].blank?
+      @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+      @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
+      @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
+      if @search_query["chapman_codes"][1].eql?("YKS")
+        @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
+      end
+      if @search_query["chapman_codes"][1].eql?("CHI")
+        @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+      end
+      @search_query.session_id = request.session_options[:id]
 
-    if  @search_query.save
-      @search_results = @search_query.search
-      redirect_to search_query_path(@search_query)
+      if  @search_query.save
+        @search_results = @search_query.search
+        redirect_to search_query_path(@search_query)
+      else
+        render :new
+      end
     else
-     render :new
+      render :new
     end
   end
 
@@ -133,7 +137,7 @@ class SearchQueriesController < ApplicationController
       old_query.order_asc = true
     end
     old_query.save!
-#    old_query.new_order(old_query)
+    #    old_query.new_order(old_query)
     redirect_to search_query_path(old_query)
   end
 
@@ -155,13 +159,13 @@ class SearchQueriesController < ApplicationController
 
   end
   def update
-     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+    @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
     @search_query.session_id = request.session_options[:id]
 
     if  @search_query.save
       redirect_to search_query_path(@search_query)
     else
-     render :edit
+      render :edit
     end
 
   end

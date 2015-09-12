@@ -51,7 +51,7 @@ class SearchQuery
   field :order_field, type: String, default: SearchOrder::DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
-
+  field :region, type: String #bot honeypot
   belongs_to :userid_detail
 
   embeds_one :search_result
