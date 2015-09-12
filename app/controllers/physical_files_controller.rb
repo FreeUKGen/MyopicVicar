@@ -23,6 +23,14 @@ class PhysicalFilesController < InheritedResources::Base
       @batches = PhysicalFile.processed.not_uploaded_into_base.all.page(params[:page])
     when   @sorted_by == "Processed but no file in FR2"
       @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
+     when   @sorted_by == '(Processed but no file in FR1)'
+      @batches = PhysicalFile.processed.not_uploaded_into_change.all.page(params[:page])
+    when   @sorted_by == "Processed but no file in FR1"
+      @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
+    when   @sorted_by == '(Processed but no files)'
+      @batches = PhysicalFile.processed.not_uploaded_into_base.not_uploaded_into_change.all.page(params[:page])
+    when   @sorted_by == "Processed but no files"
+      @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.not_uploaded_into_change.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])  
     when  @sorted_by == 'all files'
       @batches = PhysicalFile.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
     when   @sorted_by == 'All'
