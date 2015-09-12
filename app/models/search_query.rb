@@ -62,6 +62,12 @@ class SearchQuery
   validate :county_is_valid
   before_validation :clean_blanks
 
+  class << self
+     def search_id(name)
+      where(:id => name)
+     end
+  end
+
   def search
     records = SearchRecord.collection.find(search_params).hint(SearchRecord.index_hint(search_params)).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
 

@@ -7,7 +7,6 @@ class SearchQueriesController < ApplicationController
     redirect_to :action => :new
   end
 
-
   def new
     if @page = Refinery::Page.where(:slug => 'message').exists?
       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
@@ -15,17 +14,15 @@ class SearchQueriesController < ApplicationController
       @page = nil
     end
     if params[:search_id]
-      begin
-        old_query = SearchQuery.find(params[:search_id])
+      old_query = SearchQuery.search_id(params[:search_id]).first
+      if old_query.present?
         @search_query = SearchQuery.new(old_query.attributes)
-      rescue Mongoid::Errors::DocumentNotFound
-        log_possible_host_change
+      else
         @search_query = SearchQuery.new
       end
     else
       @search_query = SearchQuery.new
     end
-
   end
 
 
