@@ -21,7 +21,9 @@ MyopicVicar::Application.routes.draw do
 
   
   get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
-  get 'physical_files/processed_but_no_file', :to =>'physical_files#processed_but_no_file', :as => :processed_but_no_file_physical_files
+  get 'physical_files/processed_but_no_files', :to =>'physical_files#processed_but_no_files', :as => :processed_but_no_files_physical_files
+  get 'physical_files/processed_but_no_file_in_fr1', :to =>'physical_files#processed_but_no_file_in_fr1', :as => :processed_but_no_file_in_fr1_physical_files
+  get 'physical_files/processed_but_no_file_in_fr2', :to =>'physical_files#processed_but_no_file_in_fr2', :as => :processed_but_no_file_in_fr2_physical_files
   get 'physical_files/file_not_processed', :to =>'physical_files#file_not_processed', :as => :file_not_processed_physical_files
   get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
   get 'physical_files/:id/submit_for_processing(.:format)',  :to => 'physical_files#submit_for_processing', :as => :submit_for_processing_physical_file
