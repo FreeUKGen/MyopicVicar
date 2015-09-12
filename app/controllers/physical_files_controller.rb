@@ -26,7 +26,7 @@ class PhysicalFilesController < InheritedResources::Base
      when   @sorted_by == '(Processed but no file in FR1)'
       @batches = PhysicalFile.processed.not_uploaded_into_change.all.page(params[:page])
     when   @sorted_by == "Processed but no file in FR1"
-      @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
+      @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_change.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
     when   @sorted_by == '(Processed but no files)'
       @batches = PhysicalFile.processed.not_uploaded_into_base.not_uploaded_into_change.all.page(params[:page])
     when   @sorted_by == "Processed but no files"
@@ -35,10 +35,6 @@ class PhysicalFilesController < InheritedResources::Base
       @batches = PhysicalFile.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
     when   @sorted_by == 'All'
       @batches = PhysicalFile.userid(session[:who]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
-    when  @sorted_by == 'Processed but no file in FR2'
-      @batches = PhysicalFile.userid(@user).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page])
-    when  @sorted_by == 'files_not processed'
-      @batches = PhysicalFile.userid(@user).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
     else
       @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page])
     end
