@@ -3,8 +3,8 @@ class Freereg1CsvEntriesController < ApplicationController
   require 'freereg_validations'
   skip_before_filter :require_login, only: [:show]
   def index
-   if params[:page]
-    session[:entry_index_page] = params[:page]
+    if params[:page]
+      session[:entry_index_page] = params[:page]
     end
     display_info
     #@freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
@@ -15,7 +15,7 @@ class Freereg1CsvEntriesController < ApplicationController
     load(params[:id])
     @forenames = Array.new
     @surnames = Array.new
-    
+
   end
   def error
     session[:error_id] = params[:id]
@@ -45,13 +45,14 @@ class Freereg1CsvEntriesController < ApplicationController
     end
     @freereg1_csv_entry.update_attributes(:line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
     #need to deal with change in place
-    unless @freereg1_csv_file.place == params[:freereg1_csv_entry][:place]
+    unless @freereg1_csv_file.register.church.place.place_name == params[:freereg1_csv_entry][:place]
       #need to think about how to do this
     end
-
-    @freereg1_csv_entry.church_name = @freereg1_csv_file.church_name
-    @freereg1_csv_entry.place = @freereg1_csv_file.place
-    @freereg1_csv_entry.county = @freereg1_csv_file.county
+    church =  @freereg1_csv_file.register.church
+    place = church.place
+    @freereg1_csv_entry.church_name = church.church_name
+    @freereg1_csv_entry.place = place.place_name
+    @freereg1_csv_entry.county = place.county
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
 
@@ -70,23 +71,23 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_file.records = @freereg1_csv_file.records.to_i + 1
         @freereg1_csv_file.calculate_date(params)
       else
-          @freereg1_csv_file.error =  @freereg1_csv_file.error - 1
-          @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id]))
+        @freereg1_csv_file.error =  @freereg1_csv_file.error - 1
+        @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id]))
       end
-       
-        display_info
-        @freereg1_csv_file.save
-        if  @freereg1_csv_file.errors.any?
-         flash[:notice] = 'The update in entry data distribution contents was unsuccessful'
-         redirect_to :action => 'error'
-          return
-        else
-          session[:error_id] = nil
-          flash[:notice] = 'The creation/update in entry contents was successful, backup of file made and locked'
-          render :action => 'show'
-          return
-        end
-    end 
+
+      display_info
+      @freereg1_csv_file.save
+      if  @freereg1_csv_file.errors.any?
+        flash[:notice] = 'The update in entry data distribution contents was unsuccessful'
+        redirect_to :action => 'error'
+        return
+      else
+        session[:error_id] = nil
+        flash[:notice] = 'The creation/update in entry contents was successful, backup of file made and locked'
+        render :action => 'show'
+        return
+      end
+    end
   end
 
   def new
@@ -95,12 +96,12 @@ class Freereg1CsvEntriesController < ApplicationController
     file_line_number = @freereg1_csv_file.records.to_i + 1
     line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
-    @freereg1_csv_entry.multiple_witnesses.build 
+    @freereg1_csv_entry.multiple_witnesses.build
   end
 
   def edit
     load(params[:id])
-    @freereg1_csv_entry.multiple_witnesses.build 
+    @freereg1_csv_entry.multiple_witnesses.build
   end
 
   def update
@@ -110,7 +111,7 @@ class Freereg1CsvEntriesController < ApplicationController
     recreate_search_record = Freereg1CsvEntry.detect_change(params[:freereg1_csv_entry],@freereg1_csv_entry.attributes)
     #remove empty parameters
     params[:freereg1_csv_entry] = Freereg1CsvEntry.update_parameters(params[:freereg1_csv_entry],@freereg1_csv_entry)
-   
+
     #update entry
     @freereg1_csv_entry.update_attributes(params[:freereg1_csv_entry])
 
@@ -120,7 +121,7 @@ class Freereg1CsvEntriesController < ApplicationController
       return
     else
       #update search record if there is a change
-      @freereg1_csv_entry.update_search_record if recreate_search_record  
+      @freereg1_csv_entry.update_search_record if recreate_search_record
       # lock file and note modification date
       @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own]
       @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own]
@@ -139,8 +140,8 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
     @number = params[:number].to_i
     @number = @freereg1_csv_file.records.to_i if @number > @freereg1_csv_file.records.to_i
-    @page_number = (@number/50).to_i 
-    @page_number =  (@page_number + 1) 
+    @page_number = (@number/50).to_i
+    @page_number =  (@page_number + 1)
     params[:page] = @page_number
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
     render "index"
@@ -152,19 +153,19 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
   end
   def destroy
-   load(params[:id])
-   return_location = @freereg1_csv_entry.freereg1_csv_file
-     @freereg1_csv_entry.destroy
+    load(params[:id])
+    return_location = @freereg1_csv_entry.freereg1_csv_file
+    @freereg1_csv_entry.destroy
     flash[:notice] = 'The deletion of the record was successful'
     redirect_to freereg1_csv_file_path(return_location)
 
   end
-  
+
   def display_info
     if @freereg1_csv_entry.nil?
-     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     else
-     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+      @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
     end
     @freereg1_csv_file_id =  @freereg1_csv_file._id
     @freereg1_csv_file_name =  @freereg1_csv_file.file_name
