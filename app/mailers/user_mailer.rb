@@ -1,8 +1,10 @@
 class UserMailer < ActionMailer::Base
   default from: "reg-web@freereg.org.uk"
 
-  def batch_processing_success(user,batch)
+  def batch_processing_success(user,batch,error,headers)
     @userid = UseridDetail.where(userid: user).first
+    @errors = error
+    @headers = headers
     #syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
     #sc = UseridDetail.where(userid: syndicate_coordinator).first
     #@batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
