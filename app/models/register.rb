@@ -17,20 +17,16 @@ class Register
   field :minimum_year_for_register
   field :maximum_year_for_register
   field :credit, type: String
+  field :credit_from_files, type: String
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
-
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
   index({ alternate_register_name: 1})
   index({ church_id: 1, alternate_register_name: 1})
 
-
-
-
   def self.update_or_create_register(freereg1_csv_file)
-
     # find if register exists
     register = find_register(freereg1_csv_file.to_register)
     if register
@@ -51,7 +47,6 @@ class Register
     if @@my_church
       # locate place
       my_place = @@my_church.place
-
     else
       #church does not exist so see if Place exists
       my_place = Place.where(:chapman_code => args[:chapman_code], :place_name => args[:place_name],:disabled => 'false', :error_flag.ne => "Place name is not approved").first
@@ -69,16 +64,14 @@ class Register
     #now create the register
     register = Register.new(args)
     register.freereg1_csv_files << freereg1_csv_file
-
-
-
     @@my_church.registers << register
     @@my_church.save
     #and save everything
-
+    #Make a note to refresh place cache
+    refresh_cache = true unless my_place.data_present
     my_place.data_present = true
-
     my_place.save!
+    PlaceCache.refresh(my_place.chapman_code) if refresh_cache
     #freereg1_csv_file.save
     register
   end
@@ -91,7 +84,7 @@ class Register
     records
   end
   def display_info
-     
+
     @register = self
     #@register_name = @register.register_name
     #@register_name = @register.alternate_register_name if @register_name.nil?
@@ -104,18 +97,13 @@ class Register
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
   end
-  
-
 
   def self.find_register(args)
-
     @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
     if @@my_church
-
       my_church_id = @@my_church[:_id]
       register = Register.where(:church_id =>my_church_id, :alternate_register_name=> args[:alternate_register_name] ).first
       unless register then
-
         register = Register.where(:church_id =>my_church_id, :register_name=> args[:alternate_register_name] ).first
         unless register
           register = nil
@@ -128,24 +116,22 @@ class Register
   end
 
   def propogate_register_type_change
-      location_names =[]
-      place_name = self.church.place.place_name
-      church_name = self.church.church_name
-      register_type = RegisterType.display_name(self.register_type)
-      location_names << "#{place_name} (#{church_name})"
-      location_names  << " [#{register_type}]"
-      self.freereg1_csv_files.each do |file|
-         file.freereg1_csv_entries.each do |entry|
-           if entry.search_record.nil?
-            logger.info "search record missing for entry #{entry._id}"
-           else
-            entry.search_record.update_attribute(:location_names, location_names) 
-           end
-          end
-      end 
+    location_names =[]
+    place_name = self.church.place.place_name
+    church_name = self.church.church_name
+    register_type = RegisterType.display_name(self.register_type)
+    location_names << "#{place_name} (#{church_name})"
+    location_names  << " [#{register_type}]"
+    self.freereg1_csv_files.each do |file|
+      file.freereg1_csv_entries.each do |entry|
+        if entry.search_record.nil?
+          logger.info "search record missing for entry #{entry._id}"
+        else
+          entry.search_record.update_attribute(:location_names, location_names)
+        end
+      end
+    end
   end
-
-
 
   def change_type(type)
     unless self.register_type == type
@@ -154,7 +140,7 @@ class Register
     if self.errors.any?
       return true
     end
-     self.propogate_register_type_change
+    self.propogate_register_type_change
     return false
   end
 

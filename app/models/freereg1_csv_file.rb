@@ -697,7 +697,22 @@ class Freereg1CsvFile
     names["ba"]['transcriber_name'] = names["ba"]['transcriber_name'].uniq unless names["ba"]['transcriber_name'].nil?
     names["ba"]['credit_name'] = names["ba"]['credit_name'].uniq unless names["ba"]['credit_name'].nil?
     names["ma"]['transcriber_name'] = names["ma"]['transcriber_name'].uniq unless names["ma"]['transcriber_name'].nil?
-    names["ma"]['credit_name'] = names["ma"]['credit_name'].uniq unless names["ma"]['credit_name'].nil?     
-    p names
+    names["ma"]['credit_name'] = names["ma"]['credit_name'].uniq unless names["ma"]['credit_name'].nil? 
+    if names["bu"]['transcriber_name'].present? && names["bu"]['credit_name'].present?
+      names["bu"]['transcriber_name'].each do |name|
+        names["bu"]['credit_name'].delete_if { |x| x == name}
+      end 
+    end 
+    if names["ma"]['transcriber_name'].present? && names["ma"]['credit_name'].present?
+      names["ma"]['transcriber_name'].each do |name|
+        names["ma"]['credit_name'].delete_if { |x| x == name}
+      end 
+    end  
+    if names["ba"]['transcriber_name'].present? && names["ba"]['credit_name'].present?
+      names["ba"]['transcriber_name'].each do |name|
+        names["ba"]['credit_name'].delete_if { |x| x == name}
+      end
+    end
+    p names   
   end
 end
