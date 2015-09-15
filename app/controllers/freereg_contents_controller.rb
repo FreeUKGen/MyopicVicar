@@ -114,11 +114,11 @@ class FreeregContentsController < ApplicationController
     @files = Freereg1CsvFile.combine_files(individual_files)
     @decade = { }
     max = 1
-    @files.each do |my_file|
-      @decade[my_file.record_type] = my_file.daterange
-      if @decade[my_file.record_type]
-        if my_file.daterange.length > max
-          max = my_file.daterange.length
+    @files.each_pair do |key,my_file|
+      @decade[key] = my_file["daterange"]
+      if @decade[key]
+        if my_file["daterange"].length > max
+          max = my_file["daterange"].length
         end
       end
     end

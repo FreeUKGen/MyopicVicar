@@ -16,7 +16,7 @@ class Register
   field :last_amended, type: String
   field :minimum_year_for_register
   field :maximum_year_for_register
-
+  field :credit, type: String
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 

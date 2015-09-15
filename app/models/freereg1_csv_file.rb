@@ -154,74 +154,58 @@ class Freereg1CsvFile
 
 
   def self.combine_files(all_files)
-    #needs review
-    hold_combined_files = Array.new
-    hold_file_ba = Freereg1CsvFile.new(:record_type => "ba")
-    hold_file_bu = Freereg1CsvFile.new(:record_type => "bu")
-    hold_file_ma = Freereg1CsvFile.new(:record_type => "ma")
+    number_of_files = all_files.length unless all_files.blank?
+    holding_information = Hash.new
+    holding_information["ba"] = Hash.new
+    holding_information["bu"] = Hash.new
+    holding_information["ma"] = Hash.new  
     nm = 0
     nba = 0
     nbu = 0
-
     all_files.each do |individual_file|
       case
       when individual_file.record_type == "ba"
-        combine_now(hold_file_ba,individual_file,nba)
+        combine_now_new(holding_information["ba"],individual_file,nba,number_of_files)
         nba = nba + 1
       when individual_file.record_type == "bu"
-        combine_now(hold_file_bu,individual_file,nbu)
+        combine_now_new(holding_information["bu"],individual_file,nbu,number_of_files)
         nbu = nbu + 1
       when individual_file.record_type == "ma"
-        combine_now(hold_file_ma,individual_file,nm)
+        combine_now_new(holding_information["ma"],individual_file,nm,number_of_files)
         nm = nm + 1
       end
     end
-    hold_combined_files << hold_file_ba
-    hold_combined_files << hold_file_bu
-    hold_combined_files << hold_file_ma
+    holding_information = Freereg1CsvFile.unique_names(holding_information)
+    holding_information
   end
-
-  def self.combine_now(hold_file,individual_file,n)
-    #needs review
-    if n == 0
-      hold_file.records = individual_file.records
-      hold_file.datemax = individual_file.datemax
-      hold_file.datemin = individual_file.datemin
-      hold_file.daterange = individual_file.daterange
-      hold_file.transcriber_name = individual_file.transcriber_name
-      hold_file.credit_name = individual_file.credit_name
-      hold_file.transcription_date = individual_file.transcription_date
-      hold_file.modification_date = individual_file.modification_date
-    else
-      hold_file.records = individual_file.records.to_i + hold_file.records.to_i
-      hold_file.datemax = individual_file.datemax if individual_file.datemax > hold_file.datemax
-      hold_file.datemin = individual_file.datemin if individual_file.datemin < hold_file.datemin
-      if hold_file.transcriber_name.nil?
-        hold_file.transcriber_name = individual_file.transcriber_name
-      else
-        unless individual_file.transcriber_name.nil?
-          hold_file.transcriber_name = hold_file.transcriber_name + ", " + individual_file.transcriber_name unless (hold_file.transcriber_name == individual_file.transcriber_name)
-        end
-      end
-      if hold_file.credit_name.nil?
-        hold_file.credit_name = individual_file.transcriber_name
-      else
-        unless individual_file.credit_name.nil?
-          hold_file.credit_name = hold_file.credit_name + ", " + individual_file.credit_name unless (hold_file.credit_name == individual_file.credit_name)
-        end
-      end
-
-      hold_file.daterange.each_index do |i|
-        hold_file.daterange[i] = hold_file.daterange[i].to_i + individual_file.daterange[i].to_i
-
-      end
-      hold_file.transcription_date = individual_file.transcription_date if (Freereg1CsvFile.convert_date(individual_file.transcription_date) < Freereg1CsvFile.convert_date(hold_file.transcription_date))
-      hold_file.modification_date = individual_file.modification_date if (Freereg1CsvFile.convert_date(individual_file.modification_date) > Freereg1CsvFile.convert_date(hold_file.modification_date))
-
+  def self.combine_now_new(holding,individual,index,number)
+    if index == 0
+      holding['transcriber_name'] = Array.new
+      holding['credit_name'] = Array.new
+      holding['records'] = individual.records
+      holding['datemax'] = individual.datemax
+      holding['datemin'] = individual.datemin
+      holding['daterange'] = individual.daterange
+      holding['transcriber_name'] << individual.transcriber_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') unless individual.transcriber_name.blank?
+      holding['credit_name'] << individual.credit_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') unless individual.credit_name.blank?
+      holding['transcription_date'] = individual.transcription_date
+      holding['modification_date'] = individual.modification_date
     end
-
-    hold_file
+    if index > 0 && index <= number
+      holding['records'] = holding['records'].to_i + individual.records.to_i
+      holding['datemax'] = individual.datemax  if individual.datemax.to_i > holding['datemax'].to_i
+      holding['datemin'] = individual.datemin if individual.datemin.to_i < holding['datemin'].to_i
+      holding['daterange'].each_index do |i|
+        holding['daterange'][i] = holding['daterange'][i].to_i + individual.daterange[i].to_i
+      end
+      holding['transcriber_name'] << individual.transcriber_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') unless individual.transcriber_name.blank?
+      holding['credit_name'] << individual.credit_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') unless individual.credit_name.blank?
+      holding['transcription_date'] = individual.transcription_date if (Freereg1CsvFile.convert_date(individual.transcription_date) < Freereg1CsvFile.convert_date(holding['transcription_date']))
+      holding['modification_date'] = individual.modification_date if (Freereg1CsvFile.convert_date(individual.modification_date) > Freereg1CsvFile.convert_date(holding['modification_date']))
+    end
   end
+
+
   def self.delete_file(file)
     file.save_to_attic
     p "Deleting file and entries"
@@ -705,5 +689,15 @@ class Freereg1CsvFile
        color = "color:black"
      end
     color  
+  end
+  def self.unique_names(names)
+    p names
+    names["bu"]['transcriber_name'] = names["bu"]['transcriber_name'].uniq unless names["bu"]['transcriber_name'].nil?
+    names["bu"]['credit_name'] = names["bu"]['credit_name'].uniq  unless names["bu"]['credit_name'].nil?
+    names["ba"]['transcriber_name'] = names["ba"]['transcriber_name'].uniq unless names["ba"]['transcriber_name'].nil?
+    names["ba"]['credit_name'] = names["ba"]['credit_name'].uniq unless names["ba"]['credit_name'].nil?
+    names["ma"]['transcriber_name'] = names["ma"]['transcriber_name'].uniq unless names["ma"]['transcriber_name'].nil?
+    names["ma"]['credit_name'] = names["ma"]['credit_name'].uniq unless names["ma"]['credit_name'].nil?     
+    p names
   end
 end
