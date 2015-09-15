@@ -1273,7 +1273,7 @@ class FreeregCsvUpdateProcessor
                                    #kludge to send email to user if a check for errors or an on-line process
                                    header_errors = 0
                                    header_errors= @@header_error.length unless  @@header_error.nil?
-                                   UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
+                                   UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                                    nn = nn + n unless n.nil?
                                    else
                                      #another kludge to send a message to user that the file did not get processed when the processing failed
