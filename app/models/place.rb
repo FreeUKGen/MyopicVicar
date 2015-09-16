@@ -86,32 +86,32 @@ class Place
     end
   end
   def self.county(county)
-    where(:county => county) 
+    where(:county => county)
   end
   def self.chapman_code(chapman)
-    where(:chapman_code => chapman) 
+    where(:chapman_code => chapman)
   end
   def self.place(place)
-    where(:place_name => place) 
+    where(:place_name => place)
   end
   def self.not_disabled
-    where(:disabled => "false") 
+    where(:disabled => "false")
   end
   def self.approved
     where(:error_flag.ne => "Place name is not approved")
-    
+
   end
 
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location
-    if self[:grid_reference].blank? 
+    if self[:grid_reference].blank?
       if (self[:latitude].blank? || self[:longitude].blank?)
         errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
       else
         errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
         errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
       end
-    else  
+    else
       errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
     end
   end
@@ -122,7 +122,7 @@ class Place
   end
 
   def add_location_if_not_present
-    if self.location.blank? 
+    if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
         self[:latitude] = my_location[0]
@@ -136,7 +136,7 @@ class Place
     PlaceCache.refresh(self.chapman_code)
   end
 
- def adjust_location_before_applying(params,session)
+  def adjust_location_before_applying(params,session)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
     #We use the lat/lon if provided and the grid reference if  lat/lon not available
@@ -147,17 +147,17 @@ class Place
     params[:place].delete :longitude
     params[:place].delete :grid_reference
     params
- end
+  end
   def change_grid_reference(grid)
-   self.grid_reference = grid
-   self.location = [0,0]
-   unless grid.blank?
-    my_location = self.grid_reference.to_latlng.to_a
-    self.latitude = my_location[0]
-    self.longitude = my_location[1]
-    self.location = [self.longitude.to_f,self.latitude.to_f]
-   end
-   self.save(:validate => false)
+    self.grid_reference = grid
+    self.location = [0,0]
+    unless grid.blank?
+      my_location = self.grid_reference.to_latlng.to_a
+      self.latitude = my_location[0]
+      self.longitude = my_location[1]
+      self.location = [self.longitude.to_f,self.latitude.to_f]
+    end
+    self.save(:validate => false)
   end
 
 
@@ -166,7 +166,7 @@ class Place
     self.longitude = lon
     self.location = [0,0]
     unless lat.blank?  || lon.blank?
-        self.location = [self.longitude.to_f,self.latitude.to_f]
+      self.location = [self.longitude.to_f,self.latitude.to_f]
     end
     self.save(:validate => false)
   end
@@ -196,6 +196,14 @@ class Place
       #p place.last_amended
     end #end of church
     place.save
+    place.update_data_present
+  end
+  def update_data_present
+    if self.data_present?
+      self.update_attribute(:data_present,true)
+    else
+      self.update_attribute(:data_present,false)
+    end
   end
 
   def places_near(radius_factor, system)
@@ -236,7 +244,7 @@ class Place
 
   def propogate_place_name_change
     place_id = self._id
-   
+
     self.churches.each do |church|
       church.update_attribute(:place_id, place_id)
       church.registers.each do |register|
@@ -246,12 +254,12 @@ class Place
         register.freereg1_csv_files.each do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}" 
+              logger.info "search record missing for entry #{entry._id}"
             else
-               entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
+              entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
             end
           end
-        end 
+        end
       end
     end
   end
@@ -267,17 +275,17 @@ class Place
   end
 
   def propogate_county_change
-     self.churches.each do |church|
+    self.churches.each do |church|
       church.registers.each do |register|
         register.freereg1_csv_files do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}" 
+              logger.info "search record missing for entry #{entry._id}"
             else
-               entry.search_record.update_attribute(:chapman_code, self.chapman_code)
+              entry.search_record.update_attribute(:chapman_code, self.chapman_code)
             end
           end
-        end 
+        end
       end
     end
   end
@@ -295,16 +303,16 @@ class Place
     country = old_place.country
     country = param[:country] if param[:country].present?
     unless old_place.chapman_code == chapman_code
-        old_place.search_records.each do |record|
-              record.update_attribute(:chapman_code , chapman_code)
-              return [true, "Error in save of search record; contact the webmaster"] if record.errors.any?
-        end
+      old_place.search_records.each do |record|
+        record.update_attribute(:chapman_code , chapman_code)
+        return [true, "Error in save of search record; contact the webmaster"] if record.errors.any?
+      end
     end
     self.update_attributes(:county => county, :chapman_code => chapman_code, :country => country)
     if self.errors.any?
-      return [true, "Error in save of place; contact the webmaster"] 
+      return [true, "Error in save of place; contact the webmaster"]
     end
-     self.propogate_county_change
+    self.propogate_county_change
     return [false, ""]
   end
 
@@ -315,23 +323,23 @@ class Place
     all_places.each do |place|
       place._id = place_id
       if place.has_input?
-        return [true, "a place being merged has input"] 
+        return [true, "a place being merged has input"]
       end
-      
+
       place.churches.each do |church|
-          church.update_attribute(:place_id , place_id)
-          return [true, "Error in save of church; contact the webmaster"] if church.errors.any?
+        church.update_attribute(:place_id , place_id)
+        return [true, "Error in save of church; contact the webmaster"] if church.errors.any?
       end
       place.search_records.each do |search_record|
-          search_record.update_attribute(:place_id, place_id)
-          return [true, "Error in save of search record; contact the webmaster"] if search_record.errors.any?
+        search_record.update_attribute(:place_id, place_id)
+        return [true, "Error in save of search record; contact the webmaster"] if search_record.errors.any?
       end
-        place.delete
+      place.delete
     end
     return [false, ""]
   end
   def approve
-    self.update_attributes(:error_flag => nil,:modified_place_name => self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)  
+    self.update_attributes(:error_flag => nil,:modified_place_name => self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)
   end
 
   def has_input?
@@ -340,7 +348,7 @@ class Place
     value
   end
 
- 
+
 
   def get_alternate_place_names
     @names = Array.new
