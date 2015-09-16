@@ -43,17 +43,15 @@ class Register
   def update_data_present_in_place(file)
     #also refresh the cache if the place is newly active
     place = self.church.place
-    logger.warn("Place #{place.place_name} #{place.chapman_code} #{place.data_present}")
     refresh_cache = false
-    refresh_cache = true unless place.data_present?
-    logger.warn("Place refresh_cache #{refresh_cache}")
+    refresh_cache = true unless place.data_present
     place.update_attribute(:data_present, true)
     PlaceCache.refresh(place.chapman_code) if refresh_cache
   end
   def update_userid_with_new_file(file)
     user =UseridDetail.where(:userid => file.userid).first
     user.freereg1_csv_files << file
-    user.save(validate: false)   
+    user.save(validate: false)
   end
   def self.create_register_for_church(args,freereg1_csv_file)
     # look for the church
