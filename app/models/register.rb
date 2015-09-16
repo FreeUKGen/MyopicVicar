@@ -68,7 +68,10 @@ class Register
     @@my_church.save
     #and save everything
     #Make a note to refresh place cache
+    logger.warn("Place #{my_place.place_name} #{my_place.chapman_code} #{my_place.data_present}")
+    refresh_cache = false
     refresh_cache = true unless my_place.data_present
+    logger.warn("Place refresh_cache #{refresh_cache}")
     my_place.data_present = true
     my_place.save!
     PlaceCache.refresh(my_place.chapman_code) if refresh_cache

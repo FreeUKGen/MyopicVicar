@@ -4,6 +4,7 @@ class PlaceCache
 
 
   def self.refresh(county)
+    logger.warn("PlaceCache refresh #{county}")
     PlaceCache.where(:chapman_code => county).destroy_all
     # the js library expects a certain format
     county_response = {"" => []}
