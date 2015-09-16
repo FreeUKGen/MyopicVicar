@@ -37,11 +37,24 @@ class Register
       # create the register
       register = create_register_for_church(freereg1_csv_file.to_register, freereg1_csv_file)
     end
-    user =UseridDetail.where(:userid => freereg1_csv_file.userid).first
-    user.freereg1_csv_files << freereg1_csv_file
-    user.save(validate: false)
+    register.update_userid_with_new_file(freereg1_csv_file)
+    register.update_data_present_in_place(freereg1_csv_file)
   end
-
+  def update_data_present_in_place(file)
+    #also refresh the cache if the place is newly active
+    place = self.church.place
+    logger.warn("Place #{place.place_name} #{place.chapman_code} #{place.data_present}")
+    refresh_cache = false
+    refresh_cache = true unless place.data_present?
+    logger.warn("Place refresh_cache #{refresh_cache}")
+    place.update_attribute(:data_present, true)
+    PlaceCache.refresh(place.chapman_code) if refresh_cache
+  end
+  def update_userid_with_new_file(file)
+    user =UseridDetail.where(:userid => file.userid).first
+    user.freereg1_csv_files << file
+    user.save(validate: false)   
+  end
   def self.create_register_for_church(args,freereg1_csv_file)
     # look for the church
     if @@my_church
@@ -54,8 +67,8 @@ class Register
       unless my_place
         #place does not exist so lets create new place first
         my_place = Place.new(:chapman_code => args[:chapman_code], :place_name => args[:place_name], :disabled => 'false', :grid_reference => 'TQ336805')
-
         my_place.error_flag = "Place name is not approved"
+        my_place.save
       end
       #now create the church entry
       @@my_church = Church.new(:church_name => args[:church_name])
@@ -66,16 +79,6 @@ class Register
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register
     @@my_church.save
-    #and save everything
-    #Make a note to refresh place cache
-    logger.warn("Place #{my_place.place_name} #{my_place.chapman_code} #{my_place.data_present}")
-    refresh_cache = false
-    refresh_cache = true unless my_place.data_present
-    logger.warn("Place refresh_cache #{refresh_cache}")
-    my_place.data_present = true
-    my_place.save!
-    PlaceCache.refresh(my_place.chapman_code) if refresh_cache
-    #freereg1_csv_file.save
     register
   end
 
