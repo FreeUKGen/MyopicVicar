@@ -7,12 +7,18 @@ module FreeregContentsHelper
       ""
     end
   end
-  def credit(register,files)
+  def credit(register)
     if register.credit.present?
       field = register.credit
     else
-      p files
-      people = Array.new
+      field = nil
+    end
+    field
+  end
+  def credit_files(files)
+    people = Array.new
+    field = nil
+    if files.present?
       files.each_value do |file|
         people << file["credit_name"] unless file["credit_name"].blank?
       end

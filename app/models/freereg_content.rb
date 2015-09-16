@@ -43,7 +43,7 @@ class FreeregContent
   end
 
   def place_ids_is_valid
-    if self.place_ids.nil? 
+    if self.place_ids.nil?
       errors.add(:place_ids, "At least one place must be selected. If there are none then there are no places transcribed")
     end
   end

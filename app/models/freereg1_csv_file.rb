@@ -63,15 +63,15 @@ class Freereg1CsvFile
   field :csvfile, type: String
   field :processed, type: Boolean, default: true
   field :processed_date, type: DateTime
-  
 
- 
+
+
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
   index({file_name:1,error:1})
   index({error:1, file_name:1})
- 
+
   before_save :add_lower_case_userid
   after_save :recalculate_last_amended, :update_number_of_files
   before_destroy do |file|
@@ -94,7 +94,7 @@ class Freereg1CsvFile
   belongs_to :userid_detail, index: true
 
   #register belongs to church which belongs to place
- 
+
   has_many :batch_errors
 
   VALID_DAY = /\A\d{1,2}\z/
@@ -126,7 +126,7 @@ class Freereg1CsvFile
     def userid(name)
       where(:userid => name)
     end
-    
+
   end
 
   def add_lower_case_userid
@@ -158,7 +158,7 @@ class Freereg1CsvFile
     holding_information = Hash.new
     holding_information["ba"] = Hash.new
     holding_information["bu"] = Hash.new
-    holding_information["ma"] = Hash.new  
+    holding_information["ma"] = Hash.new
     nm = 0
     nba = 0
     nbu = 0
@@ -285,10 +285,10 @@ class Freereg1CsvFile
     file.write_csv_file(file_location)
   end
 
-  def write_csv_file(file_location) 
-    file = self 
+  def write_csv_file(file_location)
+    file = self
     #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
-    file_parts = Freereg1CsvFile.where(:file_name => file.file_name, :userid => file.userid).all  
+    file_parts = Freereg1CsvFile.where(:file_name => file.file_name, :userid => file.userid).all
     CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       record_type = RecordType.display_name(file.record_type).upcase + 'S'
@@ -343,7 +343,7 @@ class Freereg1CsvFile
     end #end csv
 
   end #end method
-     
+
 
   def self.update_location(file,param,myown)
     old_location = file.old_location
@@ -356,278 +356,278 @@ class Freereg1CsvFile
     file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
                            :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
                            :register_id => new_location[:register]._id,)
-    if myown 
-        file.update_attribute(:locked_by_transcriber, "true")
+    if myown
+      file.update_attribute(:locked_by_transcriber, "true")
     else
-         file.update_attribute(:locked_by_coordinator, "true")
+      file.update_attribute(:locked_by_coordinator, "true")
     end
-    new_location[:place].update_attribute(:data_present, true) 
+    new_location[:place].update_attribute(:data_present, true)
     file.propogate_file_location_change(new_location)
     PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
     return[false,""]
   end
   def propogate_file_location_change(new_location)
-      location_names =[]
-      place_name = new_location[:place].place_name
-      church_name = new_location[:church].church_name
-      register_type = RegisterType.display_name(new_location[:register].register_type)
-      location_names << "#{place_name} (#{church_name})"
-      location_names  << " [#{register_type}]"
-      self.freereg1_csv_entries.each do |entry|
-          if entry.search_record.nil?
-            logger.info "search record missing for entry #{entry._id}"
-          else
-            record = entry.search_record
-            record.update_attribute(:location_names, location_names)
-           if record.place_id != new_location[:place]._id
-            record.update_attribute(:place_id, new_location[:place]._id)  
-           end 
-          end
-         end
+    location_names =[]
+    place_name = new_location[:place].place_name
+    church_name = new_location[:church].church_name
+    register_type = RegisterType.display_name(new_location[:register].register_type)
+    location_names << "#{place_name} (#{church_name})"
+    location_names  << " [#{register_type}]"
+    self.freereg1_csv_entries.each do |entry|
+      if entry.search_record.nil?
+        logger.info "search record missing for entry #{entry._id}"
+      else
+        record = entry.search_record
+        record.update_attribute(:location_names, location_names)
+        if record.place_id != new_location[:place]._id
+          record.update_attribute(:place_id, new_location[:place]._id)
+        end
+      end
+    end
   end
   def old_location
-      old_register = self.register
-      old_church = old_register.church
-      old_place = old_church.place
-      location = {:register => old_register, :church => old_church, :place => old_place}
+    old_register = self.register
+    old_church = old_register.church
+    old_place = old_church.place
+    location = {:register => old_register, :church => old_church, :place => old_place}
   end
 
-    def new_location(param)
-      new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false', :error_flag.ne => "Place name is not approved").first
-      new_church = Church.where(:place_id =>  new_place._id, :church_name => param[:church_name]).first
-      if  new_church.nil?
-        new_church = Church.new(:place_id =>  new_place._id,:church_name => param[:church_name],:place_name => param[:place])  if  new_church.nil?
-      end
-      number_of_registers = new_church.registers.count
-      new_alternate_register_name = param[:church_name].to_s + ' ' + param[:register_type].to_s
-      if number_of_registers == 0
-        new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type])
+  def new_location(param)
+    new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false', :error_flag.ne => "Place name is not approved").first
+    new_church = Church.where(:place_id =>  new_place._id, :church_name => param[:church_name]).first
+    if  new_church.nil?
+      new_church = Church.new(:place_id =>  new_place._id,:church_name => param[:church_name],:place_name => param[:place])  if  new_church.nil?
+    end
+    number_of_registers = new_church.registers.count
+    new_alternate_register_name = param[:church_name].to_s + ' ' + param[:register_type].to_s
+    if number_of_registers == 0
+      new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type])
 
+    else
+      if Register.where(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).count == 0
+        new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type =>param[:register_type])
       else
-        if Register.where(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).count == 0
-          new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type =>param[:register_type])
-        else
-          new_register = Register.where(:church_id => new_church._id, :alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).first
-        end
+        new_register = Register.where(:church_id => new_church._id, :alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).first
       end
-      new_register.freereg1_csv_files << self unless new_register._id == self.register_id
-      new_register.save
-      new_church.registers << new_register unless new_church._id == new_register.church_id
-      new_church.save
-      new_place.churches << new_church unless new_place._id == new_church.place_id
-      new_place.save
-      location = {:register => new_register, :church => new_church, :place => new_place}
     end
+    new_register.freereg1_csv_files << self unless new_register._id == self.register_id
+    new_register.save
+    new_church.registers << new_register unless new_church._id == new_register.church_id
+    new_church.save
+    new_place.churches << new_church unless new_place._id == new_church.place_id
+    new_place.save
+    location = {:register => new_register, :church => new_church, :place => new_place}
+  end
 
-    def adjust_for_collection_information
-      # this uses the collection information
-      register = self.register
-      church = register.church
-      place = church.place
-      self[:county] = place.county
-      self[:place] = place.place_name
-      self[:church_name] = church.church_name
-      self[:register_type] = register.register_type
-    end
-    
-    def date_change(transcription_date,modification_date)
-      error = self.error
-      if error > 0
-        lines = self.batch_errors.all
-        lines.each do |line|
-          if line.error_type == 'Header_Error'
-            if /^Header_Error,The transcription date/ =~ line.error_message
-              unless self.transcription_date == transcription_date
-                line.destroy
-                error = error - 1
-                self.update_attributes(:error => error)
-              end
+  def adjust_for_collection_information
+    # this uses the collection information
+    register = self.register
+    church = register.church
+    place = church.place
+    self[:county] = place.county
+    self[:place] = place.place_name
+    self[:church_name] = church.church_name
+    self[:register_type] = register.register_type
+  end
+
+  def date_change(transcription_date,modification_date)
+    error = self.error
+    if error > 0
+      lines = self.batch_errors.all
+      lines.each do |line|
+        if line.error_type == 'Header_Error'
+          if /^Header_Error,The transcription date/ =~ line.error_message
+            unless self.transcription_date == transcription_date
+              line.destroy
+              error = error - 1
+              self.update_attributes(:error => error)
             end
-            if /^Header_Error,The modification date/ =~ line.error_message
-              unless self.modification_date == modification_date
-                line.destroy
-                error = error - 1
-                self.update_attributes(:error => error)
-              end
+          end
+          if /^Header_Error,The modification date/ =~ line.error_message
+            unless self.modification_date == modification_date
+              line.destroy
+              error = error - 1
+              self.update_attributes(:error => error)
             end
           end
         end
       end
     end
+  end
 
-    def clean_up
-      self.update_number_of_files
-      register = self.register
-      if register.nil?
-        p "#{self.id} does not belong to a register "
+  def clean_up
+    self.update_number_of_files
+    register = self.register
+    if register.nil?
+      p "#{self.id} does not belong to a register "
+      return
+    else
+      church = register.church
+      if church.nil?
+        p "#{register.id} does not belong to a church "
         return
       else
-        church = register.church
-        if church.nil?
-          p "#{register.id} does not belong to a church "
+        place = church.place
+        if place.nil?
+          p "#{church.id} does not belong to a place "
           return
         else
-          place = church.place 
-          if place.nil?
-          p "#{church.id} does not belong to a place "
-            return
-          else
-            Place.recalculate_last_amended_date(place)
-          end
+          Place.recalculate_last_amended_date(place)
         end
       end
     end
+  end
 
-    def recalculate_last_amended
-      register = self.register
-      return if register.nil?
-      church = register.church
-      place = church.place
-      Place.recalculate_last_amended_date(place)
-    end
+  def recalculate_last_amended
+    register = self.register
+    return if register.nil?
+    church = register.church
+    place = church.place
+    Place.recalculate_last_amended_date(place)
+  end
 
-    
 
-    def update_number_of_files
-      #this code although here and works produces values in fields that are no longer being used
 
-      userid = UseridDetail.where(:userid => self.userid).first
-      return if userid.nil?
-      files = userid.freereg1_csv_files
-      if files.length.nil?
-        number = 0
-        records = 0
-        last_uploaded = DateTime.new(1998,1,1)
-      else
-        number = files.length
-        last_uploaded = DateTime.new(1998,1,1)
-        records = 0
-        files.each do |file|
-          records = records + file.records.to_i
-          last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded
-        end
-        userid.update_attributes(:number_of_files  => number, :number_of_records => records, :last_upload => last_uploaded)
-      end
-    end
+  def update_number_of_files
+    #this code although here and works produces values in fields that are no longer being used
 
-    def merge_batches
-      batch_id = self._id
-      register = self.register
-      self.force_unlock
-      added_records = 0
-      register.freereg1_csv_files.each do |batch|
-        if batch.userid == self.userid && batch.file_name == self.file_name
-           unless batch._id == batch_id
-              batch.freereg1_csv_entries.each do |entry|
-                added_records = added_records + 1
-                entry.update_attribute(:freereg1_csv_file_id, batch_id)
-              end
-              register.freereg1_csv_files.delete(batch) 
-           end
-        end
-      end
-      #TODO need to recompute max, min and range
-      unless added_records == 0
-        logger.info "update record ccount #{self.records.to_i} and #{added_records}"
-        records = self.records.to_i + added_records
-        self.update_attribute(:records, records.to_s)
-        logger.info "updated record count #{self.records.to_i} "
-      end
-      return [false, ""]
-    end
-
-    def lock(type)
-       batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
-       batches.each do |batch|
-         if  type
-            if  batch.locked_by_transcriber == 'false'
-              batch.update_attributes(:locked_by_transcriber => 'true')
-            else
-              batch.update_attributes(:locked_by_transcriber => 'false')
-            end
-         else
-
-            if  batch.locked_by_coordinator == 'false'
-              batch.update_attributes(:locked_by_coordinator => 'true')
-              batch.update_attributes(:locked_by_transcriber => 'false')
-            else
-              batch.update_attributes(:locked_by_coordinator => 'false')
-              batch.update_attributes(:locked_by_transcriber => 'false')
-            end
-         end
-       end
-    end
-    def force_unlock
-       batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
-       batches.each do |batch|
-          batch.update_attributes(:locked_by_coordinator => 'false')
-          batch.update_attributes(:locked_by_transcriber => 'false')           
-       end
-    end
-
-    def self.delete_userid(userid)
-      folder_location = File.join(Rails.application.config.datafiles,userid)
-      change_folder_location = File.join(Rails.application.config.datafiles_changeset,userid)
-      FileUtils.remove_dir(folder_location, :force => true)
-      FileUtils.remove_dir(change_folder_location, :force => true)
-    end
-
-    def are_we_changing_location?(param)
-      change = false
-      change = true unless param[:register_type] == self.register_type
-      change = true unless param[:church_name] == self.church_name
-      change = true unless param[:place] == self.place
-      change
-    end
-
-    def old_place
-      reg_id = self.register_id
-      church_id = Register.find(reg_id).church_id
-      old_place_id = Church.find(church_id).place_id
-    end
-
-    def check_locking_and_set(param,sess)
-      if sess[:my_own]
-        self.update_attributes(:locked_by_transcriber => "true")
-      else
-        self.update_attributes(:locked_by_coordinator => "true")
-      end
-    end
-    def self.change_userid(id,old_userid, new_userid)
-      success = true
-      files = Freereg1CsvFile.where(:userid_detail_id => id)
+    userid = UseridDetail.where(:userid => self.userid).first
+    return if userid.nil?
+    files = userid.freereg1_csv_files
+    if files.length.nil?
+      number = 0
+      records = 0
+      last_uploaded = DateTime.new(1998,1,1)
+    else
+      number = files.length
+      last_uploaded = DateTime.new(1998,1,1)
+      records = 0
       files.each do |file|
-        file.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
+        records = records + file.records.to_i
+        last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded
       end
-      new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
-      old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
-      new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
-      old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
-
-      if !Dir.exist?(new_folder_location)
-        if Dir.exist?(old_folder_location) 
-           
-          FileUtils.mv(old_folder_location, new_folder_location, :force => true)
-          FileUtils.remove_dir(old_folder_location, :force => true)
-        else
-          Dir.mkdir(new_folder_location)
-        end
-      else
-        success = false
-      end
-      if !Dir.exist?(new_change_folder_location)
-        if Dir.exist?(old_change_folder_location) 
-           
-          FileUtils.mv(old_change_folder_location, new_change_folder_location, :force => true)
-          FileUtils.remove_dir(old_change_folder_location, :force => true)
-        else
-          Dir.mkdir(new_change_folder_location)
-        end
-      else
-        success = false
-      end
-      success
+      userid.update_attributes(:number_of_files  => number, :number_of_records => records, :last_upload => last_uploaded)
     end
+  end
+
+  def merge_batches
+    batch_id = self._id
+    register = self.register
+    self.force_unlock
+    added_records = 0
+    register.freereg1_csv_files.each do |batch|
+      if batch.userid == self.userid && batch.file_name == self.file_name
+        unless batch._id == batch_id
+          batch.freereg1_csv_entries.each do |entry|
+            added_records = added_records + 1
+            entry.update_attribute(:freereg1_csv_file_id, batch_id)
+          end
+          register.freereg1_csv_files.delete(batch)
+        end
+      end
+    end
+    #TODO need to recompute max, min and range
+    unless added_records == 0
+      logger.info "update record ccount #{self.records.to_i} and #{added_records}"
+      records = self.records.to_i + added_records
+      self.update_attribute(:records, records.to_s)
+      logger.info "updated record count #{self.records.to_i} "
+    end
+    return [false, ""]
+  end
+
+  def lock(type)
+    batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+    batches.each do |batch|
+      if  type
+        if  batch.locked_by_transcriber == 'false'
+          batch.update_attributes(:locked_by_transcriber => 'true')
+        else
+          batch.update_attributes(:locked_by_transcriber => 'false')
+        end
+      else
+
+        if  batch.locked_by_coordinator == 'false'
+          batch.update_attributes(:locked_by_coordinator => 'true')
+          batch.update_attributes(:locked_by_transcriber => 'false')
+        else
+          batch.update_attributes(:locked_by_coordinator => 'false')
+          batch.update_attributes(:locked_by_transcriber => 'false')
+        end
+      end
+    end
+  end
+  def force_unlock
+    batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+    batches.each do |batch|
+      batch.update_attributes(:locked_by_coordinator => 'false')
+      batch.update_attributes(:locked_by_transcriber => 'false')
+    end
+  end
+
+  def self.delete_userid(userid)
+    folder_location = File.join(Rails.application.config.datafiles,userid)
+    change_folder_location = File.join(Rails.application.config.datafiles_changeset,userid)
+    FileUtils.remove_dir(folder_location, :force => true)
+    FileUtils.remove_dir(change_folder_location, :force => true)
+  end
+
+  def are_we_changing_location?(param)
+    change = false
+    change = true unless param[:register_type] == self.register_type
+    change = true unless param[:church_name] == self.church_name
+    change = true unless param[:place] == self.place
+    change
+  end
+
+  def old_place
+    reg_id = self.register_id
+    church_id = Register.find(reg_id).church_id
+    old_place_id = Church.find(church_id).place_id
+  end
+
+  def check_locking_and_set(param,sess)
+    if sess[:my_own]
+      self.update_attributes(:locked_by_transcriber => "true")
+    else
+      self.update_attributes(:locked_by_coordinator => "true")
+    end
+  end
+  def self.change_userid(id,old_userid, new_userid)
+    success = true
+    files = Freereg1CsvFile.where(:userid_detail_id => id)
+    files.each do |file|
+      file.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
+    end
+    new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
+    old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
+    new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
+    old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
+
+    if !Dir.exist?(new_folder_location)
+      if Dir.exist?(old_folder_location)
+
+        FileUtils.mv(old_folder_location, new_folder_location, :force => true)
+        FileUtils.remove_dir(old_folder_location, :force => true)
+      else
+        Dir.mkdir(new_folder_location)
+      end
+    else
+      success = false
+    end
+    if !Dir.exist?(new_change_folder_location)
+      if Dir.exist?(old_change_folder_location)
+
+        FileUtils.mv(old_change_folder_location, new_change_folder_location, :force => true)
+        FileUtils.remove_dir(old_change_folder_location, :force => true)
+      else
+        Dir.mkdir(new_change_folder_location)
+      end
+    else
+      success = false
+    end
+    success
+  end
   def calculate_distribution
     daterange = Array.new(50){|i| i * 0 }
     number_of_records = 0
@@ -640,7 +640,7 @@ class Freereg1CsvFile
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
         datemin = xx if xx < datemin
-        bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i 
+        bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i
         bin = 0 if bin < 0
         bin = 49 if bin > 49
         daterange[bin] = daterange[bin] + 1 
@@ -667,52 +667,51 @@ class Freereg1CsvFile
       self.datemax = date if date > self.datemax.to_i && date < FreeregValidations::YEAR_MAX
       @self.datemin = date if date < self.datemin.to_i
       bin = ((date - FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i 
-      bin = 0 if bin < 0
-      bin = 49 if bin > 49
-      self.daterange[bin] = self.daterange[bin] + 1 
-    end
-  end
-  def define_colour
-    #need to consider storing the processed rather than a look up
-     case
-     when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'  
-       color = "color:red"
-     when !self.processed
-      color = "color:orange" 
-     when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'    
-      color ="color:green"
-     when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true') 
-      color = "color:blue"
-     when self.error != 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')  
-      color = "color:maroon" 
-     else
-       color = "color:black"
-     end
-    color  
-  end
-  def self.unique_names(names)
-    p names
-    names["bu"]['transcriber_name'] = names["bu"]['transcriber_name'].uniq unless names["bu"]['transcriber_name'].nil?
-    names["bu"]['credit_name'] = names["bu"]['credit_name'].uniq  unless names["bu"]['credit_name'].nil?
-    names["ba"]['transcriber_name'] = names["ba"]['transcriber_name'].uniq unless names["ba"]['transcriber_name'].nil?
-    names["ba"]['credit_name'] = names["ba"]['credit_name'].uniq unless names["ba"]['credit_name'].nil?
-    names["ma"]['transcriber_name'] = names["ma"]['transcriber_name'].uniq unless names["ma"]['transcriber_name'].nil?
-    names["ma"]['credit_name'] = names["ma"]['credit_name'].uniq unless names["ma"]['credit_name'].nil? 
-    if names["bu"]['transcriber_name'].present? && names["bu"]['credit_name'].present?
-      names["bu"]['transcriber_name'].each do |name|
-        names["bu"]['credit_name'].delete_if { |x| x == name}
-      end 
-    end 
-    if names["ma"]['transcriber_name'].present? && names["ma"]['credit_name'].present?
-      names["ma"]['transcriber_name'].each do |name|
-        names["ma"]['credit_name'].delete_if { |x| x == name}
-      end 
-    end  
-    if names["ba"]['transcriber_name'].present? && names["ba"]['credit_name'].present?
-      names["ba"]['transcriber_name'].each do |name|
-        names["ba"]['credit_name'].delete_if { |x| x == name}
+        bin = 0 if bin < 0
+        bin = 49 if bin > 49
+        self.daterange[bin] = self.daterange[bin] + 1
       end
     end
-    p names   
+    def define_colour
+      #need to consider storing the processed rather than a look up
+      case
+      when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'
+        color = "color:red"
+      when !self.processed
+        color = "color:orange"
+      when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'
+        color ="color:green"
+      when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')
+        color = "color:blue"
+      when self.error != 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')
+        color = "color:maroon"
+      else
+        color = "color:black"
+      end
+      color
+    end
+    def self.unique_names(names)
+      names["bu"]['transcriber_name'] = names["bu"]['transcriber_name'].uniq unless names["bu"]['transcriber_name'].nil?
+      names["bu"]['credit_name'] = names["bu"]['credit_name'].uniq  unless names["bu"]['credit_name'].nil?
+      names["ba"]['transcriber_name'] = names["ba"]['transcriber_name'].uniq unless names["ba"]['transcriber_name'].nil?
+      names["ba"]['credit_name'] = names["ba"]['credit_name'].uniq unless names["ba"]['credit_name'].nil?
+      names["ma"]['transcriber_name'] = names["ma"]['transcriber_name'].uniq unless names["ma"]['transcriber_name'].nil?
+      names["ma"]['credit_name'] = names["ma"]['credit_name'].uniq unless names["ma"]['credit_name'].nil?
+      if names["bu"]['transcriber_name'].present? && names["bu"]['credit_name'].present?
+        names["bu"]['transcriber_name'].each do |name|
+          names["bu"]['credit_name'].delete_if { |x| x == name}
+        end
+      end
+      if names["ma"]['transcriber_name'].present? && names["ma"]['credit_name'].present?
+        names["ma"]['transcriber_name'].each do |name|
+          names["ma"]['credit_name'].delete_if { |x| x == name}
+        end
+      end
+      if names["ba"]['transcriber_name'].present? && names["ba"]['credit_name'].present?
+        names["ba"]['transcriber_name'].each do |name|
+          names["ba"]['credit_name'].delete_if { |x| x == name}
+        end
+      end
+      names
+    end
   end
-end
