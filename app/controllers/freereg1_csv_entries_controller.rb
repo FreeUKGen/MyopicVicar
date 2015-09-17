@@ -58,7 +58,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_entry.county = place.county
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
-    @freereg1_csv_file.calculate_distrubution
+    @freereg1_csv_file.calculate_distribution
 
     if @freereg1_csv_entry.errors.any?
       flash[:notice] = 'The creation of the record was unsuccessful'
