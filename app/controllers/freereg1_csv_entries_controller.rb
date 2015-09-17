@@ -1,6 +1,7 @@
 class Freereg1CsvEntriesController < ApplicationController
   require 'chapman_code'
   require 'freereg_validations'
+ 
   skip_before_filter :require_login, only: [:show]
   def index
     if params[:page]
@@ -33,6 +34,8 @@ class Freereg1CsvEntriesController < ApplicationController
   def create
     @user = UseridDetail.where(:userid => session[:userid]).first
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
+    params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry]) 
     @freereg1_csv_entry = Freereg1CsvEntry.new(params[:freereg1_csv_entry])
     unless session[:error_id].nil?
       error_file = @freereg1_csv_file.batch_errors.find( session[:error_id])
@@ -55,6 +58,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_entry.county = place.county
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
+    @freereg1_csv_file.calculate_distrubution
 
     if @freereg1_csv_entry.errors.any?
       flash[:notice] = 'The creation of the record was unsuccessful'
@@ -67,6 +71,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own]
       @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own]
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
+
       if session[:error_id].nil?
         @freereg1_csv_file.records = @freereg1_csv_file.records.to_i + 1
         @freereg1_csv_file.calculate_date(params)
@@ -107,6 +112,7 @@ class Freereg1CsvEntriesController < ApplicationController
   def update
     load(params[:id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
+    params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry]) 
     #see if we need to recalculate search record
     recreate_search_record = Freereg1CsvEntry.detect_change(params[:freereg1_csv_entry],@freereg1_csv_entry.attributes)
     #remove empty parameters
@@ -127,6 +133,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own]
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
       @freereg1_csv_file.save
+      @freereg1_csv_file.calculate_distribution
       flash[:notice] = 'The change in entry contents was successful, the file is now locked against an upload'
       render :action => 'show'
     end
@@ -154,10 +161,13 @@ class Freereg1CsvEntriesController < ApplicationController
   end
   def destroy
     load(params[:id])
-    return_location = @freereg1_csv_entry.freereg1_csv_file
+    freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
     @freereg1_csv_entry.destroy
+    freereg1_csv_file.calculate_distribution
+    freereg1_csv_file.recalculate_last_amended
+    freereg1_csv_file.update_number_of_files
     flash[:notice] = 'The deletion of the record was successful'
-    redirect_to freereg1_csv_file_path(return_location)
+    redirect_to freereg1_csv_file_path(freereg1_csv_file)
 
   end
 
@@ -180,6 +190,18 @@ class Freereg1CsvEntriesController < ApplicationController
     @place_name = @place.place_name
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+  end
+  def get_year(param)
+    case param[:record_type]
+    when "ba"
+      year = FreeregValidations.year_extract(param[:baptism_date]) if  param[:baptism_date].present?
+      year = FreeregValidations.year_extract(param[:birth_date]) if param[:birth_date].present? && year.blank?
+    when "bu"
+      year = FreeregValidations.year_extract(param[:burial_date]) if  param[:burial_date].present?
+    when "ma"
+      year = FreeregValidations.year_extract(param[:marriage_date]) if  param[:marriage_date].present?
+    end
+    year     
   end
 
 end

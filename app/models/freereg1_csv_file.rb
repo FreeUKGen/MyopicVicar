@@ -74,6 +74,7 @@ class Freereg1CsvFile
 
   before_save :add_lower_case_userid
   after_save :recalculate_last_amended, :update_number_of_files
+  
   before_destroy do |file|
     file.save_to_attic
     p "Deleting entries"
@@ -459,17 +460,17 @@ class Freereg1CsvFile
     self.update_number_of_files
     register = self.register
     if register.nil?
-      p "#{self.id} does not belong to a register "
+      logger.warn("#{self.id} does not belong to a register ")
       return
     else
       church = register.church
       if church.nil?
-        p "#{register.id} does not belong to a church "
+        logger.warn( "#{register.id} does not belong to a church ")
         return
       else
         place = church.place
         if place.nil?
-          p "#{church.id} does not belong to a place "
+          logger.warn( "#{church.id} does not belong to a place ")
           return
         else
           Place.recalculate_last_amended_date(place)
@@ -479,6 +480,7 @@ class Freereg1CsvFile
   end
 
   def recalculate_last_amended
+    p "In calculate last amended"
     register = self.register
     return if register.nil?
     church = register.church
@@ -490,6 +492,7 @@ class Freereg1CsvFile
 
   def update_number_of_files
     #this code although here and works produces values in fields that are no longer being used
+  p "in update number of files"
 
     userid = UseridDetail.where(:userid => self.userid).first
     return if userid.nil?
@@ -629,13 +632,16 @@ class Freereg1CsvFile
     success
   end
   def calculate_distribution
+    p "In calculate distribution"
     daterange = Array.new(50){|i| i * 0 }
     number_of_records = 0
     datemax = FreeregValidations::YEAR_MIN
     datemin = FreeregValidations::YEAR_MAX
     self.freereg1_csv_entries.each do |entry|
-      number_of_records =  number_of_records + 1
-      xx = entry.year
+      p entry.inspect if number_of_records == 0
+      xx = entry.year 
+      p xx.inspect if number_of_records == 0
+
       unless xx.nil?
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
@@ -643,9 +649,14 @@ class Freereg1CsvFile
         bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i
         bin = 0 if bin < 0
         bin = 49 if bin > 49
-        daterange[bin] = daterange[bin] + 1 
+        daterange[bin] = daterange[bin] + 1
+        p daterange[bin] if number_of_records == 0
       end
+                 number_of_records =  number_of_records + 1
+
     end
+    p datemin
+    p daterange
     self.update_attributes(:datemin => datemin,:datemax => datemax,:daterange => daterange,:records =>  number_of_records )
     success = true
     success = false if self.errors.any?
