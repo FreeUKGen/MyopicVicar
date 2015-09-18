@@ -7,6 +7,7 @@
 <html lang="en">
   <!--<![endif]-->
   <head>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
     <title>FreeReg</title>
     <meta name="keywords" content="genealogy,registers,parish registers,church registers,transcriptions,indexes,baptism,marriage,burial">
@@ -73,7 +74,7 @@
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
       
-      <main role="main" class="site__content  icon__honeycomb--top-right">
+      <main  class="site__content  icon__honeycomb--top-right">
       <div class="container">
      
       <% if current_refinery_user || !session[:userid].nil?%>
@@ -110,7 +111,7 @@
     <!-- TODO fix above this -->
     <!-- example offcanvas switching code -->
     
-    <script charset="utf-8">
+    <script type="text/javascript">
     var el = document.getElementById("trigger-offcanvas");
         var switchOffCanvas = function() {
           classie.toggle(document.body, 'offcanvas--active');
@@ -135,10 +136,7 @@
             linkColor: '#E02424' // link color in disclosure panel
         });
     });
-</script>   
-
-  </body>
-
+</script> 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -148,4 +146,8 @@
   ga('create', 'UA-62395250-1', 'auto');
   ga('send', 'pageview');
 
-</script></html>
+</script>  
+
+  </body>
+
+</html>

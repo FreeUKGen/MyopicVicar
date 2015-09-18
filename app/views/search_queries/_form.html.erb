@@ -49,7 +49,7 @@
 				</a>
 			</label>
 			<% if @search_query.start_year.nil? %>
-				<input name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional"  tabindex="3">
+				<input name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional"  tabindex="3">
 			<% else%>
 				<input name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" tabindex="3">
 			<% end%>
@@ -62,7 +62,7 @@
 				</a>
 			</label>
 			<% if @search_query.end_year.nil? %>
-				<input name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional" tabindex="4">
+				<input name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional" tabindex="4">
 			<%else%>
 				<input name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>" tabindex="4">
 			<% end%>
@@ -78,7 +78,7 @@
 			</label>
 			<% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
  %>
-<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" } tabindex="5">
+<select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]"  tabindex="5">
 
 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
 			<%= grouped_options_for_select(grouped_options, selected_key = key) %>
@@ -100,8 +100,8 @@
 				Record type
 				<a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small>
 			</label>
-			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]"  tabindex="6">
-				<option value=""></option>
+			<select id="search_query_record_type" name="search_query[record_type]" class="select" tabindex="6">
+				<option value="">--</option>
 				<% RecordType::OPTIONS.each_pair do |name, value| %>
 		      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
 		    		<option value="<%= value %>" selected="selected"> <%= name %></option>
