@@ -8,7 +8,7 @@
  <% end %>
 <section class="island  island--light">
 <p><b>You may change the following parameters but do so with care as they will change where the batch is located. You are changing <%= session[:records]%> records so it may take some time.  </b></p>
-Please wait for selection boxes to fill after selecting the preceeding option.
+Please wait for selection boxes to fill after selecting the preceding option.
   <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
  <% if  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'%>
   <%= f.input :country,{ :as => :select,:label => "Select country from following list",:include_blank => false,
