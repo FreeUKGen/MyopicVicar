@@ -23,7 +23,7 @@
  <li class="grid__item  two-fifths  palm-one-whole " id="freereg_content_chapman_codes_input">
     	<input name="freereg_content[chapman_codes][]" type="hidden" value="" />
     	<label class=" label" for="freereg_content_chapman_codes">
-       <a href="#" class="left_tooltip">County<span>These are the county boundaries as specified in 1831</span></a><small class="additional">Select one</small>
+      County <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>These are the county boundaries as specified in 1831. Please select just one.</span></a><small class="additional">Select one</small>
 		</label>
     <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
  %>
@@ -35,7 +35,7 @@
   
     <li class="grid__item  two-fifths  palm-one-whole"  id="freereg_content_place_input">
 		<label class=" label" for="freereg_content_place_ids">
-    <a href="#" class="right_tooltip">Place<span>The places will fill once you have selected a county. Then select one place.</span></a><small class="additional">Select one</small>
+    Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The places will fill once you have selected a county. Then select just one place.</span></a><small class="additional">Select one</small>
     </label>
 		<select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select" size="8">
 			<option value="">--</option>
