@@ -49,7 +49,7 @@
 <% end %>
 </div>
 
-  <script type="text/javascript" charset="utf-8" >
+  <script type="text/javascript"  >
 <% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
 var selection=<%= raw(PlaceCache.where(:chapman_code => @freereg_content.chapman_codes.first).first.places_json) %>;
 <% if @freereg_content.place.size > 0 %>

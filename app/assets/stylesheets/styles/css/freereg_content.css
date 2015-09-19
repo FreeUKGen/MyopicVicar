@@ -303,5 +303,4 @@ label.collection_check_boxes {
 
 /* Used for spam trap
 -------------------------------------------------*/
-div#badstyling { display: inline; }
-div#betterstyling { display: none; visibility: hidden; }
+.betterstyling { display: none; visibility: hidden; } 

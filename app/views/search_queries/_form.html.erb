@@ -140,9 +140,9 @@
 				</a>
 			<% end %>
      </li>
-     <div id="betterstyling">
-               <li class="grid__item  one-quarter  palm-one-whole"> <label> Region </label> <input name="search_query[region]" type="text"   ></li>
-    </div>
+   
+               <li class="betterstyling grid__item  one-quarter  palm-one-whole"> <label > Region </label> <input name="search_query[region]" type="text"   ></li>
+    
 		<%= f.action :submit,
 			:as => :button,
 			:label => 'Search',
@@ -152,7 +152,7 @@
 	<% end %>
 </section>
 
-<script type="text/javascript" charset="utf-8" >
+<script type="text/javascript" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
 		var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
 		<% if @search_query.places.size > 0 %>
