@@ -23,6 +23,7 @@ gem 'airbrake'
 gem 'text'
 gem 'json'
 gem 'pry'
+gem 'pry-byebug'
 gem 'pry-stack_explorer'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"

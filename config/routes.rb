@@ -14,7 +14,13 @@
 # 
 MyopicVicar::Application.routes.draw do
 
-  resources :freecen_households
+  resources :freecen1_fixed_dat_files
+
+
+  resources :freecen1_fixed_dat_entries
+
+
+  resources :freecen_dwellings
 
 
   resources :freecen_individuals

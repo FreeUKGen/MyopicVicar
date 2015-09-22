@@ -1,0 +1,16 @@
+<%= simple_form_for(@freecen1_fixed_dat_entry) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :piece_number %>
+    <%= f.input :district_name %>
+    <%= f.input :subplaces %>
+    <%= f.input :parish_number %>
+    <%= f.input :suffix %>
+    <%= f.association :freecen1_fixed_dat_file %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
