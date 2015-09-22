@@ -609,13 +609,13 @@ class Freereg1CsvFile
        @message = "Folder with that name already exists for #{new_userid} in the base"
         success = false
     else
-      Dir.mkdir(new_folder_location,0664)
+      Dir.mkdir(new_folder_location,0774)
     end
     if Dir.exist?(new_change_folder_location)
         @message = "Folder with that name already exists for #{new_userid} in the change set"
         success = false
     else
-      Dir.mkdir(new_change_folder_location,0664) 
+      Dir.mkdir(new_change_folder_location,0774) 
     end
     if Dir.exist?(old_folder_location) && success
       Dir.glob(File.join(old_folder_location, '*')).each do |file|
@@ -637,14 +637,15 @@ class Freereg1CsvFile
       files.each do |file|
         physical_file = PhysicalFile.userid(old_userid).file_name(file.file_name).first
         physical_file.update_userid(new_userid) if physical_file.present?     
-        file.promulgate_userid_change(new_userid)        
+        file.promulgate_userid_change(new_userid,old_userid)        
       end
     end
     return[success,@message]
   end
-  def promulgate_userid_change(new_userid)
+  def promulgate_userid_change(new_userid,old_userid)
     self.update_entries_userid(new_userid)
     self.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
+    self.update_userids_with_change(new_userid,old_userid)
   end
   def move_file_between_userids(new_userid)
     #first step is to move the files
@@ -688,7 +689,7 @@ class Freereg1CsvFile
       #now we update the system information
       physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
       physical_file.update_userid(new_userid) if physical_file.present?
-      self.promulgate_userid_change(new_userid)  
+      self.promulgate_userid_change(old_userid,new_userid)  
     end
     return[success,message]
   end
