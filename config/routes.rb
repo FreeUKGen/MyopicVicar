@@ -159,8 +159,8 @@ MyopicVicar::Application.routes.draw do
   post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
-
-   get 'freereg1_csv_files/update_counties', :to => 'freereg1_csv_files#update_counties', :as => :update_counties
+  get 'freereg1_csv_files/:id/change_userid', :to => 'freereg1_csv_files#change_userid', :as => :change_userid_freereg1_csv_file
+  get 'freereg1_csv_files/update_counties', :to => 'freereg1_csv_files#update_counties', :as => :update_counties
   get 'freereg1_csv_files/update_places', :to => 'freereg1_csv_files#update_places', :as => :update_places
   get 'freereg1_csv_files/update_churches', :to => 'freereg1_csv_files#update_churches', :as => :update_churches
   get 'freereg1_csv_files/update_registers', :to => 'freereg1_csv_files#update_registers', :as => :update_registers

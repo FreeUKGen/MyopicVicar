@@ -91,4 +91,7 @@ class PhysicalFile
       File.delete(change_file_location) if File.file?(change_file_location)
     end
   end
+  def update_userid(new_userid)
+    self.update_attribute(:userid, new_userid)  
+  end
 end

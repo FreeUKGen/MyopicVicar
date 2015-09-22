@@ -85,6 +85,18 @@ class Freereg1CsvFilesController < ApplicationController
     @churches = Array.new
     display_info
   end
+  def change_userid
+    get_user_info_from_userid
+    set_locations
+    load(params[:id])
+    display_info
+    @records = @freereg1_csv_file.freereg1_csv_entries.count
+    userids = UseridDetail.all.order_by(userid_lower_case: 1)
+    @userids = Array.new
+    userids.each do |userid|
+      @userids << userid.userid
+    end
+  end
 
   def update_places
     get_user_info_from_userid
@@ -169,11 +181,23 @@ class Freereg1CsvFilesController < ApplicationController
   def update
     #update the headers
     load(params[:id])
+    p params
     set_controls
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
-    if params[:commit] == 'Submit'
+    case params[:commit]
+    when 'Change Userid'
+      success = @freereg1_csv_file.move_file_between_userids(params[:freereg1_csv_file][:userid])
+      p success
+      if !success[0]
+        flash[:notice] = "The change of userid was unsuccessful: #{success[1]}"
+        redirect_to change_userid_freereg1_csv_file_path(@freereg1_csv_file)
+        return
+      else
+        flash[:notice] = "The change of userid was successful #{success[1]} "
+      end
+    when 'Submit'
       #lets see if we are moving the file
       @freereg1_csv_file.date_change(params[:freereg1_csv_file][:transcription_date],params[:freereg1_csv_file][:modification_date])
       @freereg1_csv_file.check_locking_and_set(params[:freereg1_csv_file],session)
@@ -196,25 +220,24 @@ class Freereg1CsvFilesController < ApplicationController
         session[:error_id] = nil
         session[:header_errors] = nil
         session[:error_line] = nil
-      end
-      session[:type] = "edit"
-      flash[:notice] = 'The update of the batch was successful'
-      @current_page = session[:page]
-      session[:page] = session[:initial_page]
-      redirect_to :action => 'show'
-    end
-    if params[:commit] == 'Relocate'
+      else
+        session[:type] = "edit"
+        flash[:notice] = 'The update of the batch was successful'
+        @current_page = session[:page]
+        session[:page] = session[:initial_page]
+      end 
+    when 'Relocate'
       errors =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
       if errors[0]
         flash[:notice] = errors[1]
         redirect_to :action => "relocate"
-        return
+        return       
       else
         flash[:notice] = 'The relocation of the batch was successful'
-        redirect_to :action => 'show'
-        return
       end
-    end
+    end    
+    redirect_to :action => 'show'
+    return
   end
   def my_own
     clean_session

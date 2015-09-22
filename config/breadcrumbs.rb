@@ -89,6 +89,10 @@ crumb :waiting do |file|
   link "Files waiting to be processed"
   parent :my_options  
 end
+crumb :change_userid do |file|
+  link "Changing owner"
+  parent :show_file, file
+end
 
 
 #record or entry
@@ -262,7 +266,7 @@ crumb :regmanager_userid_options do
 end
 crumb :rename_userid do |user|
    link "Rename Userid", rename_userid_details_path
-   parent :userid_detail, user
+   parent :userid_detail, user.syndicate,user
 end
 
 #Physical Files
