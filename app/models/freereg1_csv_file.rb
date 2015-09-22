@@ -609,13 +609,13 @@ class Freereg1CsvFile
        @message = "Folder with that name already exists for #{new_userid} in the base"
         success = false
     else
-      Dir.mkdir(new_folder_location,664)
+      Dir.mkdir(new_folder_location,0664)
     end
     if Dir.exist?(new_change_folder_location)
         @message = "Folder with that name already exists for #{new_userid} in the change set"
         success = false
     else
-      Dir.mkdir(new_change_folder_location,664) 
+      Dir.mkdir(new_change_folder_location,0664) 
     end
     if Dir.exist?(old_folder_location) && success
       Dir.glob(File.join(old_folder_location, '*')).each do |file|
