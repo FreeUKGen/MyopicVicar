@@ -71,6 +71,8 @@ class Place
 
   has_many :churches, dependent: :restrict
   has_many :search_records
+  has_many :freecen_piece
+
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem

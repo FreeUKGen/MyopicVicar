@@ -14,6 +14,9 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+  resources :freecen_pieces
+
+
   resources :freecen1_fixed_dat_files
 
 

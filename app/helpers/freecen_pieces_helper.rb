@@ -1,0 +1,2 @@
+module FreecenPiecesHelper
+end
