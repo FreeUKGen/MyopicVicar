@@ -482,7 +482,6 @@ class Freereg1CsvFile
   end
 
   def recalculate_last_amended
-    p "In calculate last amended"
     register = self.register
     return if register.nil?
     church = register.church
@@ -494,8 +493,6 @@ class Freereg1CsvFile
 
   def update_number_of_files
     #this code although here and works produces values in fields that are no longer being used
-    p "in update number of files"
-
     userid = UseridDetail.where(:userid => self.userid).first
     return if userid.nil?
     files = userid.freereg1_csv_files
@@ -642,11 +639,7 @@ class Freereg1CsvFile
     end
     return[success,@message]
   end
-  def promulgate_userid_change(new_userid,old_userid)
-    self.update_entries_userid(new_userid)
-    self.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
-    self.update_userids_with_change(new_userid,old_userid)
-  end
+  
   def move_file_between_userids(new_userid)
     #first step is to move the files
     old_userid = self.userid
@@ -689,7 +682,7 @@ class Freereg1CsvFile
       #now we update the system information
       physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
       physical_file.update_userid(new_userid) if physical_file.present?
-      self.promulgate_userid_change(old_userid,new_userid)  
+      self.promulgate_userid_change(new_userid,old_userid)  
     end
     return[success,message]
   end
@@ -732,13 +725,14 @@ class Freereg1CsvFile
     end
     return[success,message]
   end
-  def update_userids_with_change(old_userid,new_userid)
-    old_userid_detail = UseridDetail.userid(old_userid).first
+  def promulgate_userid_change(new_userid,old_userid)
+    self.update_entries_userid(new_userid)
+    self.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
+    self.update_userids_with_change(new_userid)
+  end
+  def update_userids_with_change(new_userid)
     new_userid_detail = UseridDetail.userid(new_userid).first
-    old_userid_detail.freereg1_csv_files.delete(self)
-    new_userid_detail.freereg1_csv_files << self
-    old_userid_detail.save(:validate => false)
-    old_userid_detail.save(:validate => false)   
+    self.update_attribute(:userid_detail_id,new_userid_detail.id)
   end
   def update_entries_userid(userid)
     self.freereg1_csv_entries.each do |entry|
@@ -751,7 +745,6 @@ class Freereg1CsvFile
     true
   end
   def calculate_distribution
-    p "In calculate distribution"
     daterange = Array.new(50){|i| i * 0 }
     number_of_records = 0
     datemax = FreeregValidations::YEAR_MIN
