@@ -225,17 +225,17 @@ class Freereg1CsvFilesController < ApplicationController
         flash[:notice] = 'The update of the batch was successful'
         @current_page = session[:page]
         session[:page] = session[:initial_page]
-      end 
+      end
     when 'Relocate'
       errors =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
       if errors[0]
         flash[:notice] = errors[1]
         redirect_to :action => "relocate"
-        return       
+        return
       else
         flash[:notice] = 'The relocation of the batch was successful'
       end
-    end    
+    end
     redirect_to :action => 'show'
     return
   end

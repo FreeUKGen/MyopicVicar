@@ -289,6 +289,10 @@ label.collection_check_boxes {
     width: 350px !important; 
     
 }
+.overide_selection_field_width{
+  padding: 16px;
+    width: 350px !important;  
+}
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
 .simple_form_position{margin-left: 420px}
 

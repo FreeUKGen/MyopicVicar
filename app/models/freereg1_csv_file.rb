@@ -603,16 +603,16 @@ class Freereg1CsvFile
     new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
     old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
     if Dir.exist?(new_folder_location)
-       @message = "Folder with that name already exists for #{new_userid} in the base"
-        success = false
+      @message = "Folder with that name already exists for #{new_userid} in the base"
+      success = false
     else
       Dir.mkdir(new_folder_location,0774)
     end
     if Dir.exist?(new_change_folder_location)
-        @message = "Folder with that name already exists for #{new_userid} in the change set"
-        success = false
+      @message = "Folder with that name already exists for #{new_userid} in the change set"
+      success = false
     else
-      Dir.mkdir(new_change_folder_location,0774) 
+      Dir.mkdir(new_change_folder_location,0774)
     end
     if Dir.exist?(old_folder_location) && success
       Dir.glob(File.join(old_folder_location, '*')).each do |file|
@@ -633,13 +633,13 @@ class Freereg1CsvFile
       files = Freereg1CsvFile.where(:userid_detail_id => id).all
       files.each do |file|
         physical_file = PhysicalFile.userid(old_userid).file_name(file.file_name).first
-        physical_file.update_userid(new_userid) if physical_file.present?     
-        file.promulgate_userid_change(new_userid,old_userid)        
+        physical_file.update_userid(new_userid) if physical_file.present?
+        file.promulgate_userid_change(new_userid,old_userid)
       end
     end
     return[success,@message]
   end
-  
+
   def move_file_between_userids(new_userid)
     #first step is to move the files
     old_userid = self.userid
@@ -665,7 +665,7 @@ class Freereg1CsvFile
         if Dir.exist?(old_change_folder_location)
           result = self.move_fr1_file(new_userid,old_userid,self.file_name)
           message = result[1]
-        return[result[0],result[1]] if !result[0]
+          return[result[0],result[1]] if !result[0]
         else
           success = true
           message= "No FR1 folder for the old userid"
@@ -682,7 +682,7 @@ class Freereg1CsvFile
       #now we update the system information
       physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
       physical_file.update_userid(new_userid) if physical_file.present?
-      self.promulgate_userid_change(new_userid,old_userid)  
+      self.promulgate_userid_change(new_userid,old_userid)
     end
     return[success,message]
   end
@@ -701,7 +701,7 @@ class Freereg1CsvFile
         FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
       end
     else
-       message = "File does not exist in FR2 folder for the old userid"
+      message = "File does not exist in FR2 folder for the old userid"
     end
     return[success,message]
   end
@@ -715,20 +715,24 @@ class Freereg1CsvFile
       if File.exist?(new_file_location)
         success = false
         message = "File already exists in FR1 folder for the new userid"
-      else 
+      else
         FileUtils.mv(old_file_location, new_folder_location, :force => true,:verbose => true)
-        FileUtils.remove(old_file_location, :force => true,:verbose => true) 
+        FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
       end
-    else 
+    else
       p "File does not exist in FR1 folder for the old userid"
       message = "File does not exist in FR1 folder for the old userid"
     end
     return[success,message]
   end
   def promulgate_userid_change(new_userid,old_userid)
-    self.update_entries_userid(new_userid)
-    self.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
-    self.update_userids_with_change(new_userid)
+    #since a file may have many batches we must change them all as we have moved the file
+    batches = Freereg1CsvFile.userid(old_userid).file_name(self.file_name).all
+    batches.each do |batch|
+      batch.update_entries_userid(new_userid)
+      batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
+      batch.update_userids_with_change(new_userid)
+    end
   end
   def update_userids_with_change(new_userid)
     new_userid_detail = UseridDetail.userid(new_userid).first
@@ -772,6 +776,7 @@ class Freereg1CsvFile
     self.update_attributes(:datemin => datemin,:datemax => datemax,:daterange => daterange,:records =>  number_of_records )
     success = true
     success = false if self.errors.any?
+    
     return success
   end
   def calculate_date(param)
