@@ -10,7 +10,7 @@ module Freecen
     end
   
     def translate_piece(piece)
-      pp piece.attributes
+      # pp piece.attributes
       place = existing_place_for_piece(piece)
       unless place
         place = Place.new
@@ -26,8 +26,8 @@ module Freecen
       
       piece.place = place
       piece.save!
-      pp place.attributes
-      print "\n\n"
+      # pp place.attributes
+      # print "\n\n"
     end
     
     def existing_place_for_piece(piece)

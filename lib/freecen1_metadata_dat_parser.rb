@@ -134,7 +134,7 @@ module Freecen
       DAT_POSITION_MAP.each_pair do |attribute, location|
         record[attribute] = line[location[0],location[1]]
       end
-      print_record(record)
+      # print_record(record)
       
       record
     end
