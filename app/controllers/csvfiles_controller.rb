@@ -140,8 +140,8 @@ class CsvfilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
     @freereg1_csv_file.backup_file
     my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
-    send_file( my_file, :filename => @freereg1_csv_file.file_name)
-    @freereg1_csv_file.update_attribute(:digest, Digest::MD5.file(my_file).hexdigest)
+    send_file( my_file, :filename => @freereg1_csv_file.file_name) unless File.file?(my_file)
+    @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest,:locked_by_transcriber => 'false')
   end
 
 end

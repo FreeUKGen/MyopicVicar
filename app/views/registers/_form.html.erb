@@ -2,7 +2,7 @@
 <div class="grid">
 <%= simple_form_for @register do |f| %>
  <% if controller.action_name == 'new' %>
-<%= f.input :register_type, :include_blank => true, :required => true, :collection => RegisterType::OPTIONS, :input_html => { :size => 10, :class => "grid__item  one-quarter "}%>
+<%= f.input :register_type, :include_blank => true, :required => true, :collection => RegisterType::OPTIONS, :input_html => { :size => 10, :class => "grid__item  one-quarter overide_selection_field_width"}%>
   <% end %>
   <%= f.input :quality,:label => "Quality of the Register images",:input_html => { :size => 40 } %>
   <%= f.input :source, :label => "Source of the Register images",:input_html => { :size => 40 } %>

@@ -5,17 +5,17 @@
   <% if controller.action_name == 'new' || controller.action_name == 'create'%>
     <%= f.input :userid,:label => "UserID",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
-      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }%>
-      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position", :size => 4 }%>
+      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
     <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => "  simple_form_position", :size => 2}, :hint => "You can only create a Userid in your own syndicate"%>
-         <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position",:size => 2 },:selected => "trainee" %>
+         <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
     <% end%>
   <% else%>
     <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
-      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position ", :size => 4 }%>
+      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
     <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:input_html => { :size => 40, :disabled => true }%>
          <%= f.input :person_role,:label => "Role in Freereg",:input_html => { :size => 40, :disabled => true }%>
@@ -31,7 +31,7 @@
     <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
     <%= f.input :transcription_agreement, :as => :boolean,:label => "Transcription agreement accepted?"%>
     <% unless session[:my_own] %>           
-      <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position",  :size => 4},:selected => "Learning" %>
+      <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 4},:selected => "Learning" %>
       <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active"%>
       <%= f.input :disabled_reason,:hint => "If you are changing to inactive put in a reason",:label => "Reason for making inactive",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
       <% unless @userid.active %> 
