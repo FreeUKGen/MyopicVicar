@@ -139,21 +139,11 @@ class CsvfilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
     @freereg1_csv_file.backup_file
-    my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
-    
+    my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)   
     if File.file?(my_file)
-      send_file( my_file, :filename => @freereg1_csv_file.file_name) if File.file?(my_file)
+      send_file( my_file, :filename => @freereg1_csv_file.file_name)
       @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest,:locked_by_transcriber => 'false')
-      flash[:notice] = "Download successful"
-    else
-      flash[:notice] = "There was no file to download for some reason"
     end 
-   if session[:my_own]
-        redirect_to my_own_freereg1_csv_file_path
-        return
-      end #session
-      redirect_to freereg1_csv_files_path( :page => "#{session[:files_index_page]}")
-      return
+    
   end
-
 end
