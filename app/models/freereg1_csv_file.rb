@@ -692,8 +692,8 @@ class Freereg1CsvFile
     new_file_location = File.join(Rails.application.config.datafiles,new_userid,file_name)
     new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
     old_file_location = File.join(Rails.application.config.datafiles,old_userid,file_name)
-    if File.exist?(old_file_location)
-      if  File.exist?(new_file_location)
+    if File.file?(old_file_location)
+      if  File.file?(new_file_location)
         success = false
         message = "File already exists in FR2 folder for the new userid"
       else
@@ -711,8 +711,8 @@ class Freereg1CsvFile
     new_file_location = File.join(Rails.application.config.datafiles_changeset,new_userid,file_name)
     new_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
     old_file_location = File.join(Rails.application.config.datafiles_changeset,old_userid,file_name)
-    if File.exist?(old_file_location)
-      if File.exist?(new_file_location)
+    if File.file?(old_file_location)
+      if File.file?(new_file_location)
         success = false
         message = "File already exists in FR1 folder for the new userid"
       else
