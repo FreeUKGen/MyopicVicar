@@ -6,6 +6,7 @@
       <thead>
 	<tr>
 	  <td>Year</td>
+	  <td>Place</td>
 	  <td>Piece</td>
 	  <% @search_record.cen_dwelling_fields.each do |fld| %>
 	  <td>
@@ -17,6 +18,7 @@
       <tbody>
 	<tr>
 	  <td><%= @cen_year %></td>
+	  <td><%= @search_record.place.place_name %></td>
 	  <td><%= @cen_piece %></td>
 	  <% @search_record.cen_dwelling_fields.each do |fld| %>
 	  <td>
@@ -38,7 +40,7 @@
 	</tr>
       </thead>
       <tbody>
-	<% @dwelling.freecen_individuals.each do |individual| %>
+	<% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
 	<tr>
 	  <% @search_record.cen_individual_fields.each do |fld| %>
 	  <td>
