@@ -3,11 +3,11 @@
  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 <% end %>
 </div>
-<%= semantic_form_for @userid do |f| %>
-  <%= f.input :userid, { :as => :select, :prompt => "Select",
+<%= simple_form_for @userid do |f| %>
+  <%= f.input :userid, { :as => :select, 
                         :label => @prompt,
-                        :include_blank => true,
+                        :include_blank => false,
                         :required => false,:size => 5,
                         :collection => @userids,
-                        :input_html => {'onchange' => @location} }%>
+                        :input_html => {'onchange' => @location,:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%>
 <% end %>
