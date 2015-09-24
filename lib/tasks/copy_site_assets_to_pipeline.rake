@@ -17,6 +17,7 @@
 
 require 'fileutils'
 
+desc "copy_site_assets_to_pipeline"
 task :copy_site_assets_to_pipeline => :environment do
   remove_freexxx_site_assets
   copy_freexxx_site_assets

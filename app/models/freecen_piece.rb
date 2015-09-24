@@ -8,4 +8,6 @@ class FreecenPiece
   field :suffix, type: String
   belongs_to :freecen1_fixed_dat_entry
   belongs_to :place
+  
+  index(:piece_number => 1, :chapman_code => 1)
 end

@@ -83,7 +83,7 @@
 			<%= grouped_options_for_select(grouped_options, selected_key = key) %>
 		</select>
 		</li>
-		<% if false %>
+		<% if true %>
 		<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
 			<label class=" label" for="search_query_place_ids">
 				Place
@@ -114,7 +114,7 @@
 	<% end %>
 </section>
 
-<% if false %>
+<% if true %>
 <script type="text/javascript" charset="utf-8" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
 		var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;

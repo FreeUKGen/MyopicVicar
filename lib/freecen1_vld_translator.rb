@@ -23,6 +23,11 @@ module Freecen
       record.place = check_and_get_place(individual.freecen_dwelling, chapman_code)
       record.freecen_individual = individual
       record.save! 
+      
+      if record.place.data_present == false
+        record.place.data_present = true
+        record.place.save!
+      end
     end
     
     def check_and_get_place(dwelling, chapman_code)
