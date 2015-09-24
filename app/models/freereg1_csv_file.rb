@@ -725,7 +725,7 @@ class Freereg1CsvFile
         FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
       end
     else
-      success = false
+      success = true
       message = "File does not exist in FR1 folder for the old userid"
     end
     return[success,message]
