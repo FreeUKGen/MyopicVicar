@@ -2,9 +2,8 @@
 
 <table>
   <tr>
-    <th>Entry number</th>
     <th>Deleted flag</th>
-    <th>Dwelling nummber</th>
+    <th>Dwelling number</th>
     <th>Civil parish</th>
     <th>Ecclesiastical parish</th>
     <th>Enumeration district</th>
@@ -23,9 +22,8 @@
 
 <% @freecen_dwellings.each do |freecen_dwelling| %>
   <tr>
-    <td><%= freecen_dwelling.entry_number %></td>
     <td><%= freecen_dwelling.deleted_flag %></td>
-    <td><%= freecen_dwelling.dwelling_nummber %></td>
+    <td><%= freecen_dwelling.dwelling_number %></td>
     <td><%= freecen_dwelling.civil_parish %></td>
     <td><%= freecen_dwelling.ecclesiastical_parish %></td>
     <td><%= freecen_dwelling.enumeration_district %></td>

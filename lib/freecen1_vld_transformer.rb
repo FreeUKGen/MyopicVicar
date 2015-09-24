@@ -10,7 +10,7 @@ module Freecen
       # extract individual
       dwelling = nil
       freecen1_vld_file.freecen1_vld_entries.each do |entry|
-        if dwelling && dwelling.entry_number == entry.entry_number
+        if dwelling && dwelling.dwelling_number == entry.dwelling_number
           # do nothing -- the dwelling on this record is the same as for the previous entry
         else
           # save previous dwelling
