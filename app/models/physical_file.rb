@@ -94,4 +94,7 @@ class PhysicalFile
   def update_userid(new_userid)
     self.update_attribute(:userid, new_userid)  
   end
+  def update_change(new_userid)
+    self.update_attributes(:change => false, :change_uploaded_date => nil)  
+  end
 end

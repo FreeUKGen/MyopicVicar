@@ -672,7 +672,7 @@ class Freereg1CsvFile
         end
       else
         message = "No FR1 folder for the new userid"
-        success = false
+        success = true
       end
     else
       message = "No FR2 folder for the new userid"
@@ -681,7 +681,12 @@ class Freereg1CsvFile
     if success
       #now we update the system information
       physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
-      physical_file.update_userid(new_userid) if physical_file.present?
+      if physical_file.present?
+      physical_file.update_userid(new_userid) 
+        if message == "No FR1 folder for the old userid" || message == message = "No FR1 folder for the new userid"
+          physical_file.update_change(new_userid)
+        end
+      end
       self.promulgate_userid_change(new_userid,old_userid)
     end
     return[success,message]
@@ -720,7 +725,7 @@ class Freereg1CsvFile
         FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
       end
     else
-      p "File does not exist in FR1 folder for the old userid"
+      success = false
       message = "File does not exist in FR1 folder for the old userid"
     end
     return[success,message]
