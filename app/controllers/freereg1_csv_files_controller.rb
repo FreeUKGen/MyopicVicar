@@ -181,6 +181,7 @@ class Freereg1CsvFilesController < ApplicationController
   def update
     #update the headers
     load(params[:id])
+
     p params
     set_controls
     get_user_info_from_userid
@@ -188,6 +189,8 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     case params[:commit]
     when 'Change Userid'
+      flash[:notice] = "Cannot select a blank userid" if params[:freereg1_csv_file][:userid].blank?
+      redirect_to :action => "change_userid" and return if params[:freereg1_csv_file][:userid].blank?
       success = @freereg1_csv_file.move_file_between_userids(params[:freereg1_csv_file][:userid])
       p success
       if !success[0]
