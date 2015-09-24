@@ -3,8 +3,8 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 </div>
 <% end %>
-<%= semantic_form_for @manage_syndicate do |f| %>
-<%= f.input :syndicate, { :as => :select, :include_blank => true,  
- :label => "Make a Selection",:required => true, :collection => @options,:width => 10  }%>
+<%= simple_form_for @manage_syndicate do |f| %>
+<%= f.input :syndicate, { :as => :select,   
+ :label => "Make a Selection",:required => true, :collection => @options,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%> 
  <%= f.submit  'Select'   %>
 <% end %></div>
