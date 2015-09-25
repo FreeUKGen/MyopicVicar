@@ -135,7 +135,7 @@ class Place
   end
 
   def update_places_cache
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh(false, self.chapman_code)
   end
 
  def adjust_location_before_applying(params,session)

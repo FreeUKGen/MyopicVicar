@@ -4,7 +4,7 @@ module Freecen
     def translate_file_record(freecen1_fixed_dat_file)
       # extract dwellings
       freecen1_fixed_dat_file.freecen1_fixed_dat_entries.each do |entry|
-        binding.pry unless entry.freecen_piece
+        # binding.pry unless entry.freecen_piece
         translate_piece(entry.freecen_piece)
       end      
     end
