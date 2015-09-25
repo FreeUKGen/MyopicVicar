@@ -10,7 +10,7 @@
 <%= link_to "Next Dwelling", search_record_path(@search_record, :search_id => @search_query, :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small" unless @cen_next_dwelling.nil?%>
 
 <% if @dwelling_offset && 0 != @dwelling_offset %>
-  <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query, :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small"%>
+  <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query, :page_number => @page_number, :dwel => @dwelling.id), :class => "btn  btn--small"%>
 <% else %>
   <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  btn--small"%>
 <% end %>
