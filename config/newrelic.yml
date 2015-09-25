@@ -49,6 +49,7 @@ common: &default_settings
   # See https://newrelic.com/docs/site/renaming-applications for more details
   # on renaming your New Relic applications.
   #
+  # app_name: Myopic Vicar
   app_name: FreeCen MyopicVicar
 
   # When "true", the agent collects performance data about your
