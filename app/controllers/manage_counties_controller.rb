@@ -34,6 +34,11 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
   def create
+    if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
+      flash[:notice] = 'You do not selected anything'
+      redirect_to :action => 'new'
+      return
+    end
     session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
