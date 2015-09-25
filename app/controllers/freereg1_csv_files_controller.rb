@@ -420,10 +420,14 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to :back
       return
     end
-    #there should only be one physical file entry for the same user but just in case
+    #there should only be one physical file entry for the same user but just in case. This gets rid of physical files
     PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).each do |file|
       file.file_delete
       file.delete
+    end
+    #there can actually be multiple files that are split into separate counties/places/churches
+    Freereg1CsvFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).all.each do |file|
+      file.destroy
     end
     session[:type] = "edit"
     flash[:notice] = 'The deletion of the batches was successful'
