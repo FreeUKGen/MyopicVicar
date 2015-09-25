@@ -192,7 +192,7 @@ class SearchRecord
   end
 
   def cen_individual_fields
-    ifields = ['sequence_in_household','surname','forenames','relationship','marital_status','condition','sex','age','age_unit','occupation','occupation_flag','verbatim_birth_county','verbatim_birth_place','disability','language','notes']
+    ifields = ['surname','forenames','relationship','marital_status','sex','age','age_unit','occupation','verbatim_birth_county','verbatim_birth_place','disability','language','notes']
     ifields
   end
 
