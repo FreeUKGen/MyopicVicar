@@ -11,12 +11,13 @@ class ManageCountiesController < ApplicationController
     session.delete(:chapman_code)
     get_user_info_from_userid
     get_counties_for_selection
-    if @number_of_counties == 0
+    number_of_counties = @counties.length
+    if number_of_counties == 0
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
       return
     end
-    if @number_of_counties == 1
+    if number_of_counties == 1
       session[:chapman_code] = @counties[0]
       @county = ChapmanCode.has_key(@counties[0])
       session[:county] = @county
@@ -228,6 +229,7 @@ class ManageCountiesController < ApplicationController
         @counties << county unless  @counties.include?(county)
       end
     end
+    @counties = @counties.compact
   end
 
 end
