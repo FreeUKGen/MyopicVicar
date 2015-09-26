@@ -54,8 +54,8 @@ class Freereg1CsvFile
   field :uploaded_date, type: DateTime
   field :error, type: Integer, default: 0
   field :digest, type: String
-  field :locked_by_transcriber, type: String, default: 'false'
-  field :locked_by_coordinator, type: String, default: 'false'
+  field :locked_by_transcriber, type: Boolean, default: false
+  field :locked_by_coordinator, type: Boolean, default: false
   field :lds, type: String, default: 'no'
   field :action, type: String
   field :characterset, type: String
@@ -360,9 +360,9 @@ class Freereg1CsvFile
                            :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
                            :register_id => new_location[:register]._id,)
     if myown
-      file.update_attribute(:locked_by_transcriber, "true")
+      file.update_attribute(:locked_by_transcriber, true)
     else
-      file.update_attribute(:locked_by_coordinator, "true")
+      file.update_attribute(:locked_by_coordinator, true)
     end
     new_location[:place].update_attribute(:data_present, true)
     file.propogate_file_location_change(new_location)
@@ -542,19 +542,21 @@ class Freereg1CsvFile
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
     batches.each do |batch|
       if  type
-        if  batch.locked_by_transcriber == 'false'
-          batch.update_attributes(:locked_by_transcriber => 'true')
+        if  batch.locked_by_transcriber
+          batch.update_attributes(:locked_by_transcriber => false)
         else
-          batch.update_attributes(:locked_by_transcriber => 'false')
+          batch.update_attributes(:locked_by_transcriber => true)
+
         end
       else
 
-        if  batch.locked_by_coordinator == 'false'
-          batch.update_attributes(:locked_by_coordinator => 'true')
-          batch.update_attributes(:locked_by_transcriber => 'false')
+        if  batch.locked_by_coordinator
+          batch.update_attributes(:locked_by_coordinator => false)
+          batch.update_attributes(:locked_by_transcriber => false)
+          
         else
-          batch.update_attributes(:locked_by_coordinator => 'false')
-          batch.update_attributes(:locked_by_transcriber => 'false')
+          batch.update_attributes(:locked_by_coordinator => true)
+          batch.update_attributes(:locked_by_transcriber => false)
         end
       end
     end
@@ -562,8 +564,8 @@ class Freereg1CsvFile
   def force_unlock
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
     batches.each do |batch|
-      batch.update_attributes(:locked_by_coordinator => 'false')
-      batch.update_attributes(:locked_by_transcriber => 'false')
+      batch.update_attributes(:locked_by_coordinator => false)
+      batch.update_attributes(:locked_by_transcriber => false)
     end
   end
 
@@ -590,9 +592,9 @@ class Freereg1CsvFile
 
   def check_locking_and_set(param,sess)
     if sess[:my_own]
-      self.update_attributes(:locked_by_transcriber => "true")
+      self.update_attributes(:locked_by_transcriber => true)
     else
-      self.update_attributes(:locked_by_coordinator => "true")
+      self.update_attributes(:locked_by_coordinator => true)
     end
   end
   def self.change_userid(id,old_userid, new_userid)
@@ -808,15 +810,15 @@ class Freereg1CsvFile
     def define_colour
       #need to consider storing the processed rather than a look up
       case
-      when self.error != 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'
+      when self.error != 0 && !self.locked_by_coordinator  && !self.locked_by_transcriber
         color = "color:red"
       when !self.processed
         color = "color:orange"
-      when self.error == 0 && self.locked_by_coordinator == 'false' && self.locked_by_transcriber == 'false'
+      when self.error == 0 && !self.locked_by_coordinator && !self.locked_by_transcriber 
         color ="color:green"
-      when self.error == 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')
+      when self.error == 0 && (self.locked_by_coordinator || self.locked_by_transcriber )
         color = "color:blue"
-      when self.error != 0 && (self.locked_by_coordinator == 'true' || self.locked_by_transcriber == 'true')
+      when self.error != 0 && (self.locked_by_coordinator || self.locked_by_transcriber)
         color = "color:maroon"
       else
         color = "color:black"

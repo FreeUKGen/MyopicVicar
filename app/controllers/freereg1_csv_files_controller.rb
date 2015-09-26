@@ -392,7 +392,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
     return_location  = @freereg1_csv_file.register
-    if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
+    if @freereg1_csv_file.locked_by_transcriber  ||  @freereg1_csv_file.locked_by_coordinator
       flash[:notice] = 'The removal of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return
@@ -415,7 +415,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
     return_location  = @freereg1_csv_file.register
-    if @freereg1_csv_file.locked_by_transcriber == 'true' ||  @freereg1_csv_file.locked_by_coordinator == 'true'
+    if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator 
       flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return

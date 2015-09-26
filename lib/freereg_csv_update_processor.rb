@@ -1153,7 +1153,7 @@ class FreeregCsvUpdateProcessor
                            @@message_file.puts "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
                            p "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
                            return false
-                         when (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
+                         when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
                              @@message_file.puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
                              puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"

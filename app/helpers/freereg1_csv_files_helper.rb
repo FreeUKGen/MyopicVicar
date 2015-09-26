@@ -40,7 +40,7 @@ module Freereg1CsvFilesHelper
    file.file_name[0..-5]  unless file.file_name.nil?
   end
   def locked_by_transcriber(file)
-    if file.locked_by_transcriber == "true"
+    if file.locked_by_transcriber
       value = "Y"
     else
       value = "N"
@@ -48,7 +48,7 @@ module Freereg1CsvFilesHelper
     value    
   end
   def locked_by_coordinator(file)
-    if file.locked_by_coordinator == "true"
+    if file.locked_by_coordinator
       value = "Y"
     else
       value = "N"
