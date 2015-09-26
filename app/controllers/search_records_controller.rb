@@ -70,6 +70,8 @@ class SearchRecordsController < ApplicationController
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
+      render "_search_records_freecen_print", :layout => false
+      return
     end
     if params[:search_id].nil?
       redirect_to new_search_query_path
