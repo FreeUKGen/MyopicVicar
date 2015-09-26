@@ -25,7 +25,7 @@ class ManageCountiesController < ApplicationController
       return
     end
     @options = @counties
-    @prompt = 'You have access to multiple counties, please select one'
+    @prompt = 'Please select one'
     @manage_county = ManageCounty.new
   end
   def show
@@ -36,7 +36,7 @@ class ManageCountiesController < ApplicationController
   end
   def create
     if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
-      flash[:notice] = 'You do not selected anything'
+      flash[:notice] = 'You did not selected anything'
       redirect_to :action => 'new'
       return
     end
