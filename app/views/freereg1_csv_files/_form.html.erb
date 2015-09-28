@@ -18,7 +18,7 @@
        <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
        <%else%>
        <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,
-      :required => true, :collection => [ 'true', 'false'], :size => 10 } %>
+      :required => true, :collection => [ true, false], :size => 10 } %>
      <% end %>
 <%else%>
  <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>

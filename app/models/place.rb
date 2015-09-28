@@ -268,7 +268,7 @@ class Place
     self.churches.each do |church|
       church.registers.each do |register|
         register.freereg1_csv_files.each do |file|
-          file.update_attribute(:locked_by_coordinator, "true")
+          file.update_attribute(:locked_by_coordinator, true)
         end
       end
     end

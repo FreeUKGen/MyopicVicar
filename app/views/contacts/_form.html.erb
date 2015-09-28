@@ -43,7 +43,7 @@
   Type of contact <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please select the type of contact you are making so we may refer it to the correct person. <b>Data problems are best reported from the specific record from your search</b></span></a>
   
 </label>
-<select id="contact_type" name="contact[contact_type]" class="select" required="required" size="3">
+<select id="contact_type" name="contact[contact_type]" class="select" required="required" size="5">
   <% @options.each do |value| %>
   <% if value == @contact.contact_type %>
   <option value="<%=value%>" selected="selected" ><%=value%></option>

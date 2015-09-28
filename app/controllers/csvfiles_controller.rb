@@ -63,7 +63,7 @@ class CsvfilesController < ApplicationController
     @file_name = @file.file_name
     #there can be multiple batches only one of which might be locked
     Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
-      if file.locked_by_transcriber == 'true' ||  file.locked_by_coordinator == 'true'
+      if file.locked_by_transcriber ||  file.locked_by_coordinator
         flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
         redirect_to :back
         return

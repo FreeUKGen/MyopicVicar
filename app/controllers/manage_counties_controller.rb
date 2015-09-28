@@ -11,12 +11,13 @@ class ManageCountiesController < ApplicationController
     session.delete(:chapman_code)
     get_user_info_from_userid
     get_counties_for_selection
-    if @number_of_counties == 0
+    number_of_counties = @counties.length
+    if number_of_counties == 0
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
       return
     end
-    if @number_of_counties == 1
+    if number_of_counties == 1
       session[:chapman_code] = @counties[0]
       @county = ChapmanCode.has_key(@counties[0])
       session[:county] = @county
@@ -24,7 +25,7 @@ class ManageCountiesController < ApplicationController
       return
     end
     @options = @counties
-    @prompt = 'You have access to multiple counties, please select one'
+    @prompt = 'Please select one'
     @manage_county = ManageCounty.new
   end
   def show
@@ -34,6 +35,11 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
   def create
+    if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
+      flash[:notice] = 'You did not selected anything'
+      redirect_to :action => 'new'
+      return
+    end
     session[:chapman_code] = params[:manage_county][:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
@@ -223,6 +229,7 @@ class ManageCountiesController < ApplicationController
         @counties << county unless  @counties.include?(county)
       end
     end
+    @counties = @counties.compact
   end
 
 end

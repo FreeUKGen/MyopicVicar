@@ -68,8 +68,8 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_entry.transform_search_record
       @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
-      @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own]
-      @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own]
+      @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
+      @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
 
       if session[:error_id].nil?
@@ -129,8 +129,8 @@ class Freereg1CsvEntriesController < ApplicationController
       #update search record if there is a change
       @freereg1_csv_entry.update_search_record if recreate_search_record
       # lock file and note modification date
-      @freereg1_csv_file.locked_by_transcriber = "true" if session[:my_own]
-      @freereg1_csv_file.locked_by_coordinator = "true" unless session[:my_own]
+      @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
+      @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
       @freereg1_csv_file.save
       @freereg1_csv_file.calculate_distribution
