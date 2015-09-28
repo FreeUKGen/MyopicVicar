@@ -1,5 +1,14 @@
-<p id="notice"><%= notice %></p>
+<% breadcrumb :download_file%>
+<p style="text-align: center"><b>Download of file complete></b></p>
 
-
-<%= link_to 'Edit', edit_csvfile_path(@csvfile) %> |
-<%= link_to 'Back', csvfiles_path %>
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+     <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+     <ul>
+    <% @csvfile.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    <div >
+     
