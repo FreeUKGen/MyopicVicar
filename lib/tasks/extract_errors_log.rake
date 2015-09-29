@@ -14,12 +14,12 @@ task :extract_errors_log, [:log] => [:environment] do |t, args|
      end 
     end  
     errors = errors.uniq  
-
+    record_number = errors.length
     puts " #{record_number} errors"
     p errors
 
     errors.each do |error|
-       entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => error)
+       entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => error).count
        Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => error)
        p " #{entries} for #{error} deleted"
     end 
