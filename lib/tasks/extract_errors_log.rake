@@ -19,7 +19,7 @@ task :extract_errors_log, [:log] => [:environment] do |t, args|
   p errors
 
   errors.each do |error|
-    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => error).count.hint({freereg1_csv_file_id:1,file_line_number:1})
+    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => error).hint({freereg1_csv_file_id:1,file_line_number:1}).count
     Freereg1CsvEntry.destroy_all(:freereg1_csv_file_id => error).hint({freereg1_csv_file_id:1,file_line_number:1})
     p " #{entries} for #{error} deleted"
   end
