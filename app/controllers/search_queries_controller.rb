@@ -54,7 +54,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    if params[:search_query][:region].blank?
+    if params[:search_query].present? && params[:search_query][:region].blank?
       @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
       @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
       @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
@@ -141,7 +141,7 @@ class SearchQueriesController < ApplicationController
   def show
     begin
       @search_query = SearchQuery.find(params[:id])
-      @search_results =   @search_query.results
+      @search_results =   @search_query.results 
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path

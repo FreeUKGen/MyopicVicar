@@ -86,10 +86,12 @@ class SearchQuery
 
   def fetch_records
     return @search_results if @search_results
-    
-    records = self.search_result.records
-    @search_results = SearchRecord.find(records)
-    
+    if self.search_result.present?
+      records = self.search_result.records
+      @search_results = SearchRecord.find(records)
+    else
+      @search_results = nil
+    end
     @search_results    
   end
 
@@ -130,53 +132,54 @@ class SearchQuery
 
   def sort_results(results)
     # next reorder in memory
-    case self.order_field
-    when SearchOrder::COUNTY
-      if self.order_asc
-        results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
-      else
-        results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
-      end
-    when SearchOrder::DATE 
-      if self.order_asc
-        results.sort! { |x,y| (x.search_dates.first||'') <=> (y.search_dates.first||'') }
-      else
-        results.sort! { |x,y| (y.search_dates.first||'') <=> (x.search_dates.first||'') }        
-      end
-    when SearchOrder::TYPE
-      if self.order_asc
-        results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
-      else
-        results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
-      end
-    when SearchOrder::LOCATION
-      if self.order_asc
-        results.sort! do |x, y|
-          compare_location(x,y)
+    if results.present?
+      case self.order_field
+      when SearchOrder::COUNTY
+        if self.order_asc
+          results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
+        else
+          results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
         end
-      else
-        results.sort! do |x, y|
-          compare_location(y,x)  # note the reverse order
+      when SearchOrder::DATE 
+        if self.order_asc
+          results.sort! { |x,y| (x.search_dates.first||'') <=> (y.search_dates.first||'') }
+        else
+          results.sort! { |x,y| (y.search_dates.first||'') <=> (x.search_dates.first||'') }        
         end
-      end
-    when SearchOrder::NAME
-      if self.order_asc
-        results.sort! do |x, y|
-          compare_name(x,y)
+      when SearchOrder::TYPE
+        if self.order_asc
+          results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
+        else
+          results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
         end
-      else
-        results.sort! do |x, y|
-          compare_name(y,x)  # note the reverse order
+      when SearchOrder::LOCATION
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_location(x,y)
+          end
+        else
+          results.sort! do |x, y|
+            compare_location(y,x)  # note the reverse order
+          end
         end
-      end
-    end    
+      when SearchOrder::NAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name(x,y)
+          end
+        else
+          results.sort! do |x, y|
+            compare_name(y,x)  # note the reverse order
+          end
+        end
+      end 
+    end   
   end
 
   def results
     records = fetch_records
     sort_results(records) unless records.nil?
-    persist_results(records) unless records.nil?
-    
+    persist_results(records) unless records.nil? 
     records
   end
 
