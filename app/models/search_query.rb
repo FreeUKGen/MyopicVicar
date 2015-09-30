@@ -174,8 +174,8 @@ class SearchQuery
 
   def results
     records = fetch_records
-    sort_results(records)
-    persist_results(records)
+    sort_results(records) unless records.nil?
+    persist_results(records) unless records.nil?
     
     records
   end
