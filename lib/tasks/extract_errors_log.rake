@@ -22,7 +22,7 @@ task :extract_errors_log, [:log] => [:environment] do |t, args|
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => error).hint({freereg1_csv_file_id:1,file_line_number:1}).all
     entries_number = entries.count
     entries.destroy_all
-    p " #{entries} for #{error} deleted"
+    p " #{entries_number} for #{error} deleted"
   end
   output_file.close
   p "finished"
