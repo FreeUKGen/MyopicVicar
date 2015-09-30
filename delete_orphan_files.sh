@@ -1,1 +1,1 @@
-sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production extract_errors_log[production.log] --trace
