@@ -13,15 +13,29 @@ class FreeregContentsController < ApplicationController
   end
 
   def create 
+    p params
+    if params[:freereg_content][:place_ids].blank?
+      p "blank"
+      params[:freereg_content][:place_ids] = ""
+    end
+    p params
     @freereg_content = FreeregContent.new(params[:freereg_content].delete_if{|k,v| v.blank? })
     @county = params[:freereg_content][:chapman_codes][1]
     place = params[:freereg_content][:place_ids]
     session[:chapman_code] = @county
+    p @county
+    p place
     if  @freereg_content.save
+      p  "saved"
       @county = ChapmanCode.name_from_code(@county)
       session[:county] = @county
-      redirect_to show_place_path(place)
-      return
+      if place.present?
+        redirect_to show_place_path(place)
+        return
+      else
+        redirect_to freereg_content_path(@county)
+        return
+      end
     else
       @freereg_content.chapman_codes = []
       @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
@@ -43,6 +57,8 @@ class FreeregContentsController < ApplicationController
     @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
     session[:page] = request.original_url
     session[:county_id]  = params[:id]
+    @records = number_of_records_in_county(@county)
+
   end
 
   def show_place
@@ -135,6 +151,32 @@ class FreeregContentsController < ApplicationController
   end
 
   def remove_countries_from_parenthetical_codes
+  end
+  def number_of_records_in_county(county)
+    chapman = ChapmanCode.values_at(county)
+    files = Freereg1CsvFile.county(chapman).all
+    record = Array.new
+    records = 0
+    records_ma = 0
+    records_ba = 0
+    records_bu = 0
+    files.each do |file|
+      p file
+      records = records.to_i + file.records.to_i unless file.records.nil?
+      case file.record_type
+      when "ba"
+        records_ba = records_ba + file.records.to_i unless file.records.nil?
+      when "ma"
+        records_ma = records_ma + file.records.to_i unless file.records.nil?
+      when "bu"
+        records_bu = records_bu + file.records.to_i unless file.records.nil?
+      end
+    end
+    record[0] = records
+    record[1] = records_ba
+    record[2] = records_bu
+    record[3] = records_ma
+    record
   end
 
 end

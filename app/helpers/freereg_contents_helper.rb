@@ -27,4 +27,46 @@ module FreeregContentsHelper
     end
     field
   end
+  def number_of_records_in_register(register)
+    if session["#{register.id}"].blank?
+      individual_files = register.freereg1_csv_files
+      files = Freereg1CsvFile.combine_files(individual_files)
+      records = 0
+      datemax = FreeregValidations::YEAR_MIN
+      datemin = FreeregValidations::YEAR_MAX
+      files.each_pair do |key,value|
+        if value.present?
+          records = records + value["records"].to_i unless value["records"].blank?
+          datemax = value["datemax"].to_i if value["datemax"].to_i > datemax && value["datemax"].to_i < FreeregValidations::YEAR_MAX
+          datemin = value["datemin"].to_i if value["datemin"].to_i < datemin
+        end
+      end
+      session["#{register.id}"]= Array.new
+      session["#{register.id}"][0] = records
+      session["#{register.id}"][1] = datemin
+      session["#{register.id}"][2] = datemax
+      field = session["#{register.id}"][0]
+    else
+      field = session["#{register.id}"][0]
+    end
+    field 
+  end
+  def first_year_in_register(register)
+    if session["#{register.id}"][1] == FreeregValidations::YEAR_MAX
+      field = ""
+    else
+      field = session["#{register.id}"][1]
+    end
+  end
+  def last_year_in_register(register)
+    if session["#{register.id}"][2] == FreeregValidations::YEAR_MIN
+      field = ""
+    else
+      field = session["#{register.id}"][2]
+    end
+  end
+  def clear(register)
+    session.delete("#{register.id}") 
+  end
+  
 end

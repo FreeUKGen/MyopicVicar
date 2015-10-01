@@ -1,10 +1,9 @@
-
-    <h4 class="text--center">The FreeREG database has records for the <%= @RType %> Registers for <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b>
+<div class="grid">
+<h4 class="text--center">Records have been transcribed in the following decades for the <%= @RType %> Registers of <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b>
       <p>(Those periods with zero data may span several decades)</p>
     </h4>
-    <div style="text-align: center"><%= link_to 'Back to County/Place Selection', freereg_contents_path, :class => "btn  btn--small"%> 
-<%= link_to 'Back to Place for this Church', show_place_path(@register.church.place), :class => "btn  btn--small" %> <%= link_to 'Back to Church for this Register', show_church_path( @register.church), :class => "btn  btn--small" %>
-    <br></div>
+    <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@register.church.place.county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @register.church.place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register.church), :class => "btn  btn--small" %>
+</div>
     <section class="island  island--light " >
  <div class="table-wrapper"> 
  <div class="grid"> 

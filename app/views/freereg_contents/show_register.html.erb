@@ -1,9 +1,9 @@
-<h4 style="text-align: center">Details of the
+<div class="grid">
+<h4 class="text--center">Transcriptions of the
 <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b>
 of <b><%= @county %></b>.  </h4>
-<div style="text-align: center"><%= link_to 'Back to County/Place Selection', freereg_contents_path, :class => "btn  btn--small"%>
-  <%= link_to 'Back to Place for this Church', show_place_path( @register.church.place), :class => "btn  btn--small" %> <%= link_to 'Back to Church for this Register', show_church_path( @register.church), :class => "btn  btn--small" %>
-<br></div>
+<div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@register.church.place.county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @register.church.place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %>
+</div>
 <section class="island ">
   <table  class="table--bordered t100">
     <colgroup >
@@ -82,7 +82,7 @@ of <b><%= @county %></b>.  </h4>
       <td ><%= file["transcriber_name"].join(',').to_s%></td>
       <td ><%= file["transcription_date"] %></td>
       <td ><%= file["modification_date"] %></td>
-      <td ><%= link_to "Link", show_decade_path(value)  %></td>
+      <td ><%= link_to "Link", show_decade_freereg_content_path(value)  %></td>
       <%end%>
       
       

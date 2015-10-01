@@ -12,7 +12,6 @@ class FreeregContent
   field :record_type, type: String#, :required => false
   field :place_ids, type: String
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
-  validate :place_ids_is_valid
   validate :county_is_valid
 
   before_validation :clean_blanks
