@@ -1,9 +1,10 @@
 task :extract_errors_log, [:log] => [:environment] do |t, args|
   file_for_warning_messages = "#{Rails.root}/log/errors.txt"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
-  output_file = File.new(file_for_warning_messages, "w")
+  output_file = File.new(file_for_warning_messages, "a")
   file = File.join("#{Rails.root}", "log", args.log)
   input_file = File.open(file,"r")
+  output_file.puts Time.now
   record_number = 0
   errors = Array.new
   input_file.each_line  do |line|
@@ -16,13 +17,14 @@ task :extract_errors_log, [:log] => [:environment] do |t, args|
   errors = errors.uniq
   record_number = errors.length
   puts " #{record_number} errors"
-  p errors
+  output_file.puts " #{record_number} errors"
 
   errors.each do |error|
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => error).hint({freereg1_csv_file_id:1,file_line_number:1}).all
     entries_number = entries.count
     entries.destroy_all
-    p " #{entries_number} for #{error} deleted"
+    output_file.puts " #{entries_number} for #{error} deleted"
+    p "#{entries_number} for #{error} deleted"
   end
   output_file.close
   p "finished"
