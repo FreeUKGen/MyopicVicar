@@ -3,7 +3,7 @@
  <section class="island ">
   <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%></div> <br>
   <h4 class="text--center">Transcription for <%= @place.place_name %> within <%= @county %> </h4> 
-    <h4 class="text--center">The Place has the following Church(es)
+    <h4 class="text--center">The Place has the following Church(es):
     <% @place.churches.order_by(church_name: 1).each do |church| %>
     <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn  btn--small"  %>
     <% end %></h4>
