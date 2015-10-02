@@ -1,29 +1,32 @@
+<% title "County Contents #{@county}" %>
+<div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, :class => "btn btn--small "%></div> 
 <div class="grid">
 <h1 class="title  text--center"> <%= @county  %> General Information</h1>
 <h2 class="text--center">Coordinator: <%= @coordinator  %></h2>
-<h3 class="text--center">  As of today there are <%= @records[0]%> records (<%= @records[1]%> baptisms, <%=@records[2]%> burials and <%= @records[3]%> marriages) </h3>
-<div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, :class => "btn btn--small "%> 
+<h3 class="text--center">  As of today there are <%= display_number(@records[0])%> records (<%= display_number(@records[1])%> baptisms, <%=display_number(@records[2])%> burials and <%= display_number(@records[3])%> marriages) </h3>
 <%= county_content(@chapman_code) %>
-<div class="table-wrapper">
+
   These Places, Churches and Registers have data records. Click on the name for more information. The register display provides access to data on the number of records per decade.
     <%= paginate @places  %>
-    <table  class="grid__item one-whole table--bordered ">  
+  </div>
+    <div class="table-wrapper">
+    <table  class=" table--bordered ">  
       <thead >
         <tr>
           <th>Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>A Place for which we have transcribed records. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></th>
+            <span>A Place for which we have transcribed records. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
           <th>Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></th>
+            <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
           <th>Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
             <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcript; Bishop's Transcript; Transcript of the Parish Registers; Phillimore Transcript of a Parish Register; Selective Extract of the Parish Register; Dwelly's Transcript of a Parish register; Unspecified document that is most likely a Parish Register.</span>
           </a></th>
           <th>Last changed <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>The most recent date when at least one record in the register was amended, added or deleted.</span></th>
+            <span>The most recent date when at least one record in the register was amended, added or deleted.</span></a></th>
           <th>Number of records</th>
           <th>First year <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>The first year for which there is a record transcribed in the register.</span></th>
+            <span>The first year for which there is a record transcribed in the register.</span></a></th>
           <th>Last year <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>The last year for which there is a record transcribed in the register.</span></th>
+            <span>The last year for which there is a record transcribed in the register.</span></a></th>
         </tr>
       </thead>
       <tbody>
@@ -52,7 +55,7 @@
               <td > <% registertype = RegisterType.display_name(register.register_type)%>
               <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
               <td > <%= register.last_amended %> </td>
-              <td > <%= number_of_records_in_register(register) %> </td>
+              <td > <%= display_number(number_of_records_in_register(register)) %> </td>
               <td > <%= first_year_in_register(register) %> </td>
               <td > <%= last_year_in_register(register) %> </td>
               <% clear(register) %>

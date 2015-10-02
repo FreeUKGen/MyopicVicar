@@ -68,5 +68,8 @@ module FreeregContentsHelper
   def clear(register)
     session.delete("#{register.id}") 
   end
+  def display_number(num)
+    number_with_delimiter(num, :delimiter => ',')
+  end
   
 end
