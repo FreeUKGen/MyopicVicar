@@ -10,9 +10,8 @@
 <% @registers.each do |register| %>
   <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn  btn--small") %> 
 <% end %></h4>
-</table>
- 
- <table  class="grid__item one_whole table--bordered ">
+
+ <table  class=" table--bordered ">
 <colgroup >
      <col class="t20">
    <col class="t30 weight--semibold">
