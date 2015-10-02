@@ -1,62 +1,56 @@
+<% title "#{@church.church_name} #{@place_name} #{@county} transcriptions" %>
 <div class="grid">
-<h4 class="text--center">Transcriptions for <%@church.church_name %> of <%= @place_name %> within <%= @county %>. </h4>
- <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @church.place), :class => "btn  btn--small" %>
-    <br></div>
-
   <section class="island ">
-
-<h4 style="text-align: center">There are transcriptions for the following register(s):
-
-<% @registers.each do |register| %>
-  <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn  btn--small") %> 
-<% end %></h4>
-
- <table  class=" table--bordered ">
-<colgroup >
-     <col class="t20">
-   <col class="t30 weight--semibold">
- </colgroup>
-   <thead  >
-  <tr>    
-    <th >Field</th>
-    <th >Value</th>
-  </tr>
-</thead>
-  <tbody>
-  <tr> 
-   <td>Church name :</td><td class="weight--semibold" > <%= @church.church_name %></td>
-  </tr>
-  
-   <% if @names%>
-     <%  @names.each do |name| %>
-         <% unless name == ''%> 
-           <tr><td>Other possible church names :</td><td class="weight--semibold" ><%= name %>  </td>  </tr>
-         <%end%>
-     <%end%>
-   <%end%>
-   
-   <tr>
-   <td>Denomination of the Church :</td><td class="weight--semibold" ><%= @church.denomination %></td>   
-   </tr>
-  <tr>
+   <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @church.place), :class => "btn  btn--small" %>
+    </div><br>
+    <h4 class="text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> within <%= @county %>. </h4>  
+    <h4 style="text-align: center">There are transcriptions for the following register(s):
+    <% @registers.each do |register| %>
+    <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn  btn--small") %>
+    <% end %></h4>
+    <table  class=" table--bordered ">
+      <colgroup >
+      <col class="t20">
+      <col class="t30 weight--semibold">
+      </colgroup>
+      <thead  >
+        <tr>
+          <th >Field</th>
+          <th >Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <% if @names%>
+        <%  @names.each do |name| %>
+        <% unless name == ''%>
+        <tr><td>Other possible church names :</td><td class="weight--semibold" ><%= name %>  </td>  </tr>
+        <%end%>
+        <%end%>
+        <%end%>
+        
+        <tr>
+          <td>Denomination of the Church :</td><td class="weight--semibold" ><%= @church.denomination %></td>
+        </tr>
+        <tr>
           <td>The Church Website :</td><td class="weight--semibold"><%= @church.website %></td>
         </tr>
-   <tr>
-   <td>Notes about the Church :</td><td class="weight--semibold" > <%= @church.church_notes %> </td>   
-   </tr>
-    <tr>
-   <td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td>   
-   </tr>
-   <tr>
-         <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   
-       </tr>
         <tr>
-         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td>   
-       </tr>
-       <tr>
-         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td>   
-       </tr>
- </tbody>      
-</table>  
-</section>
+          <td>Notes about the Church :</td><td class="weight--semibold" > <%= @church.church_notes %> </td>
+        </tr>
+        <tr>
+          <td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td>
+        </tr>
+        <tr>
+          <td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td>
+        </tr>
+        <tr>
+          <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td>
+        </tr>
+        <tr>
+          <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 </div>
