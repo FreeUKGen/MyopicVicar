@@ -1,9 +1,9 @@
 <% title "#{@church.church_name} #{@place_name} #{@county} transcriptions" %>
 <div class="grid">
   <section class="island ">
-   <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @church.place), :class => "btn  btn--small" %>
+    <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @church.place), :class => "btn  btn--small" %>
     </div><br>
-    <h4 class="text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> within <%= @county %>. </h4>  
+    <h4 class="text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> within <%= @county %>. </h4>
     <h4 style="text-align: center">There are transcriptions for the following register(s):
     <% @registers.each do |register| %>
     <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn  btn--small") %>

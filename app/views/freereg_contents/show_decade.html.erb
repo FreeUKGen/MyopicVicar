@@ -1,13 +1,14 @@
+<% title "#{@RType} #{@church} #{@place_name} #{@county} transcriptions" %>
 <div class="grid">
-<h4 class="text--center">Records have been transcribed in the following decades for the <%= @RType %> Registers of <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b>
-      <p>(Those periods with zero data may span several decades)</p>
-    </h4>
-    <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@register.church.place.county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @register.church.place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register.church), :class => "btn  btn--small" %>
-</div>
-    <section class="island  island--light " >
- <div class="table-wrapper"> 
- <div class="grid"> 
-  <div class="grid__item one-whole" >
+  <section class="island  island--light " >
+    <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county ), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register), :class => "btn  btn--small" %>
+    </div><br>
+    <h4 class="text--center">Records have been transcribed in the following decades for the <%= @RType %> Registers of <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b></h4>
+    <h4 class="text--center">(Those periods with zero data may span several decades)</h4> 
+  </section>  
+  </div>
+  <section class="island  island--light " >
+  <div class="table-wrapper">    
     <table class="table--bordered " >
       <colgroup >
       <col class=t30>
@@ -15,73 +16,70 @@
       <col >
       <col >
       <col >
-    </colgroup>
-    <thead >
-      <tr>
-        <th>Period</th>
-        <th>Number of Baptism records</th>
-        <th>Number of Marriage records</th>
-        <th>Number of Burial records</th>
-        <th>Total number of records</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% decade_start = 1530%>
-      <% decade_end = 1539%>
-      <% current_index = 0 %>
-      <% next_index = 0 %>
-      <% decade_total = 0 %>
-      <% next_total = 0 %>
-
-      <% while current_index < @decade["ba"].count %>
-        <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
-        <% if decade_total > 0 then %>
-          <tr >
+      </colgroup>
+      <thead >
+        <tr>
+          <th>Period</th>
+          <th>Number of Baptism records</th>
+          <th>Number of Marriage records</th>
+          <th>Number of Burial records</th>
+          <th>Total number of records</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% decade_start = 1530%>
+        <% decade_end = 1539%>
+        <% current_index = 0 %>
+        <% next_index = 0 %>
+        <% decade_total = 0 %>
+        <% next_total = 0 %>
+        <% while current_index < @decade["ba"].count %>
+          <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
+          <% if decade_total > 0 then %>
+            <tr >
             <td><%= decade_start %>-<%= decade_end %></td>
-            <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
-            <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
-            <td><%= @decade["bu"][current_index].to_s.sub(/^0$/, " ") %></td>
-            <td><%= decade_total %></td>
-          </tr>
-          <% decade_start += 10 %>
-          <% decade_end += 10 %>
-          <% current_index += 1 %>
-        <% else %>
-          <% next_index = current_index + 1 %>
-          <% if next_index < @decade["ba"].count then %>
-            <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
-            <% if next_total > 0 then %>
-              <tr>
-                <td><%= decade_start %>-<%= decade_end %></td>
-                <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
-                <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
-                <td><%= @decade["bu"][current_index].to_s.sub(/^0$/, " ") %></td>
-                <td><%= decade_total %></td>
-              </tr>
-              <% current_index += 1 %>
-              <% decade_start = decade_end + 1 %>
-              <% decade_end += 10 %>
-            <% else %>
-              <% decade_end += 10 %>
-              <% current_index = next_index %>
-            <% end %>
-          <% else %>
-            <tr>
-              <td><%= decade_start %>-<%= decade_end %></td>
-              <td><%= @decade["ba"][current_index].to_s.sub(/^0$/, " ") %></td>
-              <td><%= @decade["ma"][current_index].to_s.sub(/^0$/, " ") %></td>
-              <td><%= @decade["bu"][current_index].to_s.sub(/^0$/, " ") %></td>
-              <td><%= decade_total %></td>
+            <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+            <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+            <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+            <td><%= display_number(decade_total) %></td>
             </tr>
-            <% current_index += 1 %>
-            <% decade_start = decade_end + 1 %>
+            <% decade_start += 10 %>
             <% decade_end += 10 %>
-          <% end %>
+            <% current_index += 1 %>
+          <% else %>
+            <% next_index = current_index + 1 %>
+            <% if next_index < @decade["ba"].count then %>
+              <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
+              <% if next_total > 0 then %>
+                <tr>
+                  <td><%= decade_start %>-<%= decade_end %></td>
+                  <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
+                  <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
+                  <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(decade_total) %></td>
+                </tr>
+                <% current_index += 1 %>
+                <% decade_start = decade_end + 1 %>
+                <% decade_end += 10 %>
+                <% else %>
+                <% decade_end += 10 %>
+                <% current_index = next_index %>
+                <% end %>
+              <% else %>
+                <tr>
+                <td><%= decade_start %>-<%= decade_end %></td>
+                <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                <td><%= display_number(decade_total) %></td>
+                </tr>
+                <% current_index += 1 %>
+                <% decade_start = decade_end + 1 %>
+                <% decade_end += 10 %>
+              <% end %>
+            <% end %>
         <% end %>
-      <% end %>
-    </tbody>
-  </table>
-</div>
-</div>
-</div>
+      </tbody>
+    </table>
+  </div>
 </section>

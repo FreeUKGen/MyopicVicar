@@ -8,11 +8,11 @@ class FreeregContentsController < ApplicationController
   end
 
   def new
-    @freereg_content = FreeregContent.new 
+    @freereg_content = FreeregContent.new
     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
 
-  def create 
+  def create
     if params[:freereg_content][:place_ids].blank?
       params[:freereg_content][:place_ids] = ""
     end
@@ -64,7 +64,7 @@ class FreeregContentsController < ApplicationController
     @country = @place.country
     @place_name = @place.place_name
     @names = @place.get_alternate_place_names
-    @stats = @place.data_contents   
+    @stats = @place.data_contents
     session[:place] = @place_name
     session[:place_id] = @place._id
   end
@@ -75,9 +75,8 @@ class FreeregContentsController < ApplicationController
     else
       @page = ""
     end
-
     @church = Church.find(params[:id])
-    @stats = @church.data_contents 
+    @stats = @church.data_contents
     @place_name = @church.place.place_name
     @place = @church.place
     @county = session[:county]
@@ -91,7 +90,6 @@ class FreeregContentsController < ApplicationController
     else
       @page = ""
     end
-
     @register = Register.find(params[:id])
     @church  = @register.church
     @place = @church.place
@@ -99,7 +97,7 @@ class FreeregContentsController < ApplicationController
     @files_id = Array.new
     @place_name = @place.place_name
     session[:register_id] = params[:id]
-    @register_name = @register.register_name 
+    @register_name = @register.register_name
     @register_name = @register.alternate_register_name if @register_name.nil?
     session[:register_name] = @register_name
     @church = @church.church_name
@@ -113,9 +111,9 @@ class FreeregContentsController < ApplicationController
 
   def show_decade
     if session[:register_id].nil?
-    #trap bots
-       redirect_to :action => :new
-       return
+      #trap bots
+      redirect_to :action => :new
+      return
     end
     @register = Register.find(session[:register_id])
     @files_id = session[:files]
@@ -136,7 +134,6 @@ class FreeregContentsController < ApplicationController
     @decade["ba"] = Array.new(max, 0) unless @decade["ba"]
     @decade["bu"] = Array.new(max, 0) unless @decade["bu"]
     @decade["ma"] = Array.new(max, 0) unless @decade["ma"]
-
     @record_type = params[:id]
     @place = Place.find(session[:place_id])
     @church = session[:church_name]
