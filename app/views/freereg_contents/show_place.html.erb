@@ -5,7 +5,7 @@
     <section class="island ">
       <h4 style="text-align: center">The Place has the following Church(es)
       <% @place.churches.order_by(church_name: 1).each do |church| %>
-      <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn  btn--exsmall"  %>
+      <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn  btn--small"  %>
       <% end %></h4>
       <table class="grid__item one_whole table--bordered " >
         <colgroup >

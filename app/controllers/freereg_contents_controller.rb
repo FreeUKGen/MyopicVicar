@@ -13,9 +13,7 @@ class FreeregContentsController < ApplicationController
   end
 
   def create 
-    p params
     if params[:freereg_content][:place_ids].blank?
-      p "blank"
       params[:freereg_content][:place_ids] = ""
     end
     p params
@@ -23,14 +21,11 @@ class FreeregContentsController < ApplicationController
     @county = params[:freereg_content][:chapman_codes][1]
     place = params[:freereg_content][:place_ids]
     session[:chapman_code] = @county
-    p @county
-    p place
     if  @freereg_content.save
-      p  "saved"
       @county = ChapmanCode.name_from_code(@county)
       session[:county] = @county
       if place.present?
-        redirect_to show_place_path(place)
+        redirect_to show_place_freereg_content_path(place)
         return
       else
         redirect_to freereg_content_path(@county)
