@@ -19,6 +19,13 @@
         </tr>
       </thead>
       <tbody>
+       <tr>
+          <td>Place : </td> <td class="weight--semibold"> <%= @place.place_name %>  </td>
+        </tr>
+        <tr>
+          <td>County:</td> <td class="weight--semibold"><%= @place.county %></td></tr>
+          <tr>
+            <td>Country:</td> <td class="weight--semibold"><%= @place.country %></td></tr>
            <% if @names%>
               <%  @names.each do |name| %>
                 <tr>

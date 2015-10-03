@@ -68,8 +68,11 @@ module FreeregContentsHelper
   def clear(register)
     session.delete("#{register.id}") 
   end
-  def display_number(num)
-    number_with_delimiter(num, :delimiter => ',')
+  def add_blank(field)
+    if field.blank?
+      field = " "
+    end
+    field
   end
   
 end
