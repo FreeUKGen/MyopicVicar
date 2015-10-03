@@ -1,4 +1,4 @@
-<% title "#{@RType} #{@church} #{@place_name} #{@county} transcriptions" %>
+<% title "Decade for #{@RType} #{@church} #{@place_name} #{@county} transcriptions" %>
 <div class="grid">
   <section class="island  island--light " >
     <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county ), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register), :class => "btn  btn--small" %>
