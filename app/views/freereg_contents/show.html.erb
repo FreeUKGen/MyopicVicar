@@ -7,8 +7,8 @@
     <h1 class="title  text--center"> <%= @county %> General Information</h1>
     <h2 class="text--center">Coordinator: <%= @coordinator %> </h2>
   </header>
-  <div class="grid__item one-third palm-one-whole">
-    <div class="island island--navy float--right push-half--top">
+  <div class="grid__item one-third palm-one-whole float--right ">
+    <div class="island island--blue push-half--top">
       <strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
       <ul>
         <li><%= display_number(@records[1])%> baptisms</li>
