@@ -10,7 +10,7 @@ class Csvfile < CarrierWave::Uploader::Base
   mount_uploader :csvfile, CsvfileUploader
 
   def csvfile_already_exists
-    errors.add(:file_name, "File already exits and has been processed. You need to replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.exists?
+    errors.add(:file_name, "File already exists and has been processed. You need to replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.exists?
   end
   def create_batch_unless_exists
     batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).exists?
