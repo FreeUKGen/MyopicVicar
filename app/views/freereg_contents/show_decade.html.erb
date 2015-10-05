@@ -1,14 +1,13 @@
 <% title "Decade for #{@RType} #{@church} #{@place_name} #{@county} transcriptions" %>
-<div class="grid">
-  <section class="island  island--light " >
+
+  <section class="island " >
     <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county ), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register), :class => "btn  btn--small" %>
     </div><br>
-    <h4 class="text--center">Records have been transcribed in the following decades for the <%= @RType %> Registers of <b><%= @church %></b> in <b><%= @place_name %></b> in the County of <b><%= @county %>. </b></h4>
-    <h4 class="text--center">(Those periods with zero data may span several decades)</h4> 
+    <h2 class=" gamma text--center">Records by decade of the <%= @RType %> Registers for <%= @church %> of <%= @place_name %> within <%= @county %> </h2>
+    <p class="text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. The last period may include post 2029 records.</p> 
   </section>  
-  </div>
-  <section class="island  island--light " >
-  <div class="table-wrapper">    
+  <div class="grid">  
+  <section class="island " > 
     <table class="table--bordered " >
       <colgroup >
       <col class=t30>
@@ -37,7 +36,7 @@
           <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
           <% if decade_total > 0 then %>
             <tr >
-            <td><%= decade_start %>-<%= decade_end %></td>
+            <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
             <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
             <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
             <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
@@ -52,7 +51,7 @@
               <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
               <% if next_total > 0 then %>
                 <tr>
-                  <td><%= decade_start %>-<%= decade_end %></td>
+                  <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>
                   <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
                   <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
                   <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
@@ -67,7 +66,7 @@
                 <% end %>
               <% else %>
                 <tr>
-                <td><%= decade_start %>-<%= decade_end %></td>
+                <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
                 <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
                 <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
                 <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
@@ -81,5 +80,5 @@
         <% end %>
       </tbody>
     </table>
-  </div>
 </section>
+</div>

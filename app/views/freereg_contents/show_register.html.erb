@@ -3,9 +3,9 @@
   <section class="island ">
     <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path(@place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %>
     </div><br>
-    <h4 class="text--center">Transcriptions of the
-    <b><%= RegisterType.display_name(@register.register_type) %></b> register for <b><%= @church %></b> in <b><%= @place_name %></b>
-    of <b><%= @county %></b>.  </h4>
+    <h4 class=" gamma text--center">Transcriptions of the
+    <%= RegisterType.display_name(@register.register_type) %> register for <%= @church %> of <%= @place_name %>
+    within <%= @county %>  </h4>
     <table  class="table--bordered ">
       <colgroup >
       <col class="t20">
@@ -44,8 +44,8 @@
         </tr>
       </tbody>
     </table>
-    <h4 class="text--center">Summary of transcribed records</h4>
-    <h4 class="text--center">You may see the decades for which data has been transcribed by following the "Link".</h4>
+    <h4 class=" gamma text--center">Summary of transcribed records</h4>
+    <h4 class=" delta text--center">Follow any of the links in the table below to see the decades for which data has been transcribed.</h4>
     <table  class="table--bordered ">
       <colgroup >
       <col >
