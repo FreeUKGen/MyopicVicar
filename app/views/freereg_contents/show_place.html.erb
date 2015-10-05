@@ -1,58 +1,43 @@
 <% title "#{@place.place_name} #{@county} transcriptions " %>
-<div class="grid">
- <section class="island ">
-  <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%></div> <br>
-  <h2 class=" gamma text--center">Transcriptions of <%= @place.place_name %> within <%= @county %> </h2> 
+<div class="container">
+  <section class="island ">
+    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%>
+    </div> <br>
+    <h2 class=" gamma text--center">Transcriptions of <%= @place.place_name %> within <%= @county %> </h2>
     <h4 class=" delta text--center">The Place has the following Church(es):
     <% @place.churches.order_by(church_name: 1).each do |church| %>
-    <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn  btn--small"  %>
+      <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn  btn--small"  %>
     <% end %></h4>
-    <table class=" table--bordered " >
-      <colgroup >
-      <col class="t20">
-      <col class="t30 weight--semibold">
-      </colgroup>
-      <thead  >
-        <tr>
-          <th >Field</th>
-          <th >Value</th>
-        </tr>
-      </thead>
-      <tbody>
-       <tr>
-          <td>Place : </td> <td class="weight--semibold"> <%= @place.place_name %>  </td>
-        </tr>
-        <tr>
-          <td>County:</td> <td class="weight--semibold"><%= @place.county %></td></tr>
+    <div class="table-wrapper">
+      <table class=" table--bordered " >
+        <colgroup >
+        <col class="t20">
+        <col class="t30 weight--semibold">
+        </colgroup>
+        <thead  >
           <tr>
-            <td>Country:</td> <td class="weight--semibold"><%= @place.country %></td></tr>
-           <% if @names%>
-              <%  @names.each do |name| %>
-                <tr>
-                  <td>Other possible place names :</td><td class="weight--semibold" ><%= name %>  </td>
-                </tr>
-              <%end%>
+            <th >Field</th>
+            <th >Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Place : </td> <td class="weight--semibold"> <%= @place.place_name %>  </td></tr>
+          <tr><td>County:</td> <td class="weight--semibold"><%= @place.county %></td></tr>
+          <tr><td>Country:</td> <td class="weight--semibold"><%= @place.country %></td></tr>
+          <% if @names%>
+            <%  @names.each do |name| %>
+              <tr><td>Other possible place names :</td><td class="weight--semibold" ><%= name %>  </td></tr>
             <%end%>
-          <tr>
-            <td>Location on map :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td>
-          </tr>
-          <tr>
-            <td>Notes about the Place :</td><td class="weight--semibold" > <%= @place.place_notes %> </td>
-          </tr>
-          <tr>
-          <td>Last changed:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>
-        </tr>
-        <tr>
-          <td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td>
-        </tr>
-        <tr>
-          <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td>
-        </tr>
-        <tr>
-          <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td>
-        </tr>
-      </tbody>
-    </table>
-    
+          <%end%>
+          <tr><td>Location on map :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
+          <tr><td>Notes about the Place :</td><td class="weight--semibold" > <%= @place.place_notes %> </td></tr>
+          <tr><td>Last changed:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>
+              </tr>
+          <tr><td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td></tr>
+          <tr><td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td></tr>
+          <tr><td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td></tr>
+        </tbody>
+      </table>
+    </div>    
   </section>
 </div>
