@@ -3,6 +3,7 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 </div>
 <% end %>
+
 <%= simple_form_for @manage_syndicate do |f| %>
 <%= f.input :syndicate, { :as => :select,   
  :label => "Make a Selection",:required => true, :collection => @options,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%> 
