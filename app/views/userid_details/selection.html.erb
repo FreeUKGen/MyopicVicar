@@ -1,13 +1,10 @@
 <div id="notice" style="color:red">
-<% if flash[:notice] %>
- <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-<% end %>
+  <% if flash[:notice] %>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  <% end %>
 </div>
-<%= simple_form_for @userid do |f| %>
-  <%= f.input :userid, { :as => :select, 
-                        :label => @prompt,
-                        :include_blank => false,
-                        :required => false,:size => 5,
-                        :collection => @userids,
-                        :input_html => {'onchange' => @location,:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%>
-<% end %>
+<div class="grid">
+  <%= simple_form_for @userid do |f| %>
+  <%= f.input :userid, { :as => :select, :include_blank => false, :required => false,:size => 5, :collection => @userids, :input_html => {'onchange' => @location,:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%>
+  <% end %>
+</div>
