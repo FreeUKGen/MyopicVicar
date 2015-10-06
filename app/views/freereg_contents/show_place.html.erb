@@ -8,7 +8,7 @@
     <% @place.churches.order_by(church_name: 1).each do |church| %>
       <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn  btn--small"  %>
     <% end %></h4>
-    <div class="table-wrapper">
+    <div style="height: 500px; overflow: auto;">
       <table class=" table--bordered " >
         <colgroup >
         <col class="t20">
@@ -20,7 +20,7 @@
             <th >Value</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="scrollable">
           <tr><td>Place : </td> <td class="weight--semibold"> <%= @place.place_name %>  </td></tr>
           <tr><td>County:</td> <td class="weight--semibold"><%= @place.county %></td></tr>
           <tr><td>Country:</td> <td class="weight--semibold"><%= @place.country %></td></tr>

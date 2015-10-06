@@ -1,67 +1,59 @@
-
-
-  <% if flash[:notice] %>
-<div class="weight--semibold text--center" style="color:red"><br>
- <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
- </div>
-   <% end %>
-
-  <% if @freereg_content.errors.any? %>
-   <h4 class="text--center"><%= pluralize(@freereg_content.errors.count, "error") %> prohibited this search from being processed:</h4>
-    <ul class="validation-list" >
-      <% @freereg_content.errors.messages.each do |key, msg| %>
-        <li class="validation-list__error text--center" ><%= msg[0] %></li>
-      <% end %>
-    </ul>
-      <%@freereg_content.errors.clear%>
+<% if flash[:notice] %>
+  <div class="weight--semibold text--center" style="color:red"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
 <% end %>
-
-<div class="island  island--light">
-
-<%= semantic_form_for @freereg_content do |f| %>
-
- <li class="grid__item  two-fifths  palm-one-whole " id="freereg_content_chapman_codes_input">
-    	<input name="freereg_content[chapman_codes][]" type="hidden" value="" />
-    	<label class=" label" for="freereg_content_chapman_codes">
-      County <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>These are the county boundaries as specified in 1831. Please select just one.</span></a><small class="additional">Select one</small>
-		</label>
-    <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
- %>
-		<select class="select" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="8" tabindex="5" >
-      <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
-      <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-    </select>
-    </li>
-  
-    <li class="grid__item  two-fifths  palm-one-whole"  id="freereg_content_place_input">
-		<label class=" label" for="freereg_content_place_ids">
-    Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The places will fill once you have selected a county. Then select nothing for a summary or one specific place.</span></a><small class="additional">Select nothing for a county summary or one specific place</small>
-    </label>
-		<select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select" size="8">
-			<option value="">List will fill when single county selected</option>
-		</select>
-	</li>
-
-       <%= f.action :submit, :as => :button,  :label => 'Contents' ,
-    :button_html => { :class => "btn ", :type => 'submit' },
-    :wrapper_html => { :class => "grid__item  one-fifth" }  %>
-
+<% if @freereg_content.errors.any? %>
+  <h4 class="text--center"><%= pluralize(@freereg_content.errors.count, "error") %> prohibited this search from being processed:</h4>
+  <ul class="validation-list" >
+    <% @freereg_content.errors.messages.each do |key, msg| %>
+      <li class="validation-list__error text--center" ><%= msg[0] %></li>
+    <% end %>
+  </ul>
+  <%@freereg_content.errors.clear%>
 <% end %>
+<div class="grid">
+  <div class="island  ">
+    <%= semantic_form_for @freereg_content do |f| %>
+        <li class="grid__item  two-fifths  palm-one-whole  " id="freereg_content_chapman_codes_input">
+          <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
+          <label class=" label" for="freereg_content_chapman_codes">
+            County <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>These are the county boundaries as specified in 1831. Please select just one.</span></a><small class="additional">Select one county</small>
+          </label>
+          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+          %>
+          <select class="select simple_form_bgcolour" id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="8" tabindex="5" >
+            <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
+            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+          </select>
+        </li>
+        <li class="grid__item  two-fifths  palm-one-whole"  id="freereg_content_place_input">
+          <label class=" label" for="freereg_content_place_ids">
+            Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The places will fill once you have selected a county. Then select nothing for a summary or one specific place.</span></a><small class="additional">Select nothing for a county summary or one specific place</small>
+          </label>
+          <select id="freereg_content_place_ids" name="freereg_content[place_ids][]" class="select simple_form_bgcolour" size="8">
+            <option value="">List will fill when single county selected</option>
+          </select>
+        </li>
+        <%= f.action :submit, :as => :button,  :label => 'Contents' , :button_html => { :class => "btn ", :type => 'submit' },
+          :wrapper_html => { :class => "grid__item  one-fifth" }  %>
+    <% end %>
+  </div>
 </div>
 
-  <script type="text/javascript"  >
-<% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
-var selection=<%= raw(PlaceCache.where(:chapman_code => @freereg_content.chapman_codes.first).first.places_json) %>;
-<% if @freereg_content.place.size > 0 %>
-selection["selected"]="<%= @freereg_content.place.first.id %>";
-<% end %>
-<% end %>
-(function($) {$("#freereg_content_place_ids").remoteChained({
-parents : "#freereg_content_chapman_codes",
-url : "/places/for_freereg_content_form.json",
-loading : "Loading..."
-<% if @freereg_content && @freereg_content.chapman_codes.size ==1 %>
-, bootstrap: selection
-<% end %>
-});})(jQuery);
+<script type="text/javascript"  >
+  <% if @freereg_content && @freereg_content.chapman_codes.size > 0 %>
+  var selection=<%= raw(PlaceCache.where(:chapman_code => @freereg_content.chapman_codes.first).first.places_json) %>;
+  <% if @freereg_content.place.size > 0 %>
+  selection["selected"]="<%= @freereg_content.place.first.id %>";
+  <% end %>
+  <% end %>
+  (function($) {$("#freereg_content_place_ids").remoteChained({
+  parents : "#freereg_content_chapman_codes",
+  url : "/places/for_freereg_content_form.json",
+  loading : "Loading..."
+  <% if @freereg_content && @freereg_content.chapman_codes.size ==1 %>
+  , bootstrap: selection
+  <% end %>
+  });})(jQuery);
 </script>

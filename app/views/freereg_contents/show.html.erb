@@ -27,7 +27,7 @@
   </div>
 </div>
 <div class="container">
-  <div class="table-wrapper">
+  <div class="scrollable">
     <table  class=" table--bordered ">
       <thead >
         <tr>
@@ -46,7 +46,7 @@
                     <span>The last year for which there is a record transcribed in the register.</span></a></th>
                   </tr>
         </thead>
-        <tbody>
+        <tbody >
           <% old_place_name = nil %>
           <% @places.order_by(place_name: 1).each do |place| %>
             <% old_church_name = nil %>
