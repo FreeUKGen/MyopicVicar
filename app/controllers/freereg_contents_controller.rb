@@ -48,8 +48,11 @@ class FreeregContentsController < ApplicationController
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
-    @places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
-    @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
+    #@places = Places.where(:data_present => true).all.order_by(place_name: 1).page(page) if @county == 'all'
+    #@places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1).page(params[:page])  unless @county == 'all'
+    @places = Places.where(:data_present => true).all.order_by(place_name: 1) if @county == 'all'
+    @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)  unless @county == 'all'
+    
     session[:page] = request.original_url
     session[:county_id]  = params[:id]
     @records = number_of_records_in_county(@county)
