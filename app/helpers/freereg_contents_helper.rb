@@ -74,5 +74,12 @@ module FreeregContentsHelper
     end
     field
   end
+  def amended(date)
+    if date.nil?
+      field = ""
+    else
+      field = date[3,8]
+    end
+  end
   
 end
