@@ -3,7 +3,7 @@
     <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county ), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register), :class => "btn  btn--small" %>
     </div><br>
     <h2 class=" gamma text--center">Records by decade of the <%= @RType %> Registers for <%= @church %> of <%= @place_name %> within <%= @county %> </h2>
-    <p class="text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. The last period may include post 2029 records.</p> 
+    <p class="text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
   </section>  
   <div class="container">  
   <section class="island " > 
