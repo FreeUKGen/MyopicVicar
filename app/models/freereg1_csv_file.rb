@@ -723,8 +723,9 @@ class Freereg1CsvFile
         success = false
         message = "File already exists in FR1 folder for the new userid"
       else
-        FileUtils.mv(old_file_location, new_folder_location, :force => true,:verbose => true)
-        FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
+        FileUtils.cp(old_file_location, new_folder_location, :force => true,:verbose => true)
+        #must not remove the old file or the rsync will add it back
+        #FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
       end
     else
       success = true
