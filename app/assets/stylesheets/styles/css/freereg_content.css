@@ -354,12 +354,5 @@ h1#body_content_title {
             display: table-row;
             width:auto;
         }
-h1#body_content_title {
-        border-bottom: 1px solid #999;
-        font-size: 3.33333rem;
-        font-weight: lighter;
-        line-height: 1.2;
-        padding-bottom: 14px;
-}
 
 
