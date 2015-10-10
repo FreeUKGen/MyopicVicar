@@ -6,10 +6,10 @@ module UseridRole
       'trainee' => [ "Profile", "Batches"],
       'pending' => [ "Profile"],
       'transcriber' => [  "Profile", "Batches"],
-      'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate"],
-      'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Userids","Contacts"],
-      'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts"],
-      'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts"],
+      'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Roadmap"],
+      'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Userids","Contacts","Roadmap"],
+      'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts","Roadmap"],
+      'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts","Roadmap"],
       'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties",  "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
         "Feedback", "Contacts", "System Documentation" ],
       'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", 
@@ -39,6 +39,7 @@ module UseridRole
           "Feedback" => "/feedbacks",
           "Contacts" => "/contacts",
           "System Documentation" => "/system-documents",
+          "Roadmap" => "system-documents/development-roadmap",
           "Logout" => "/refinery/logout"
         }
         USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
