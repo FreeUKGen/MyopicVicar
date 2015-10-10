@@ -10,8 +10,8 @@
     <% @csvfile.errors.full_messages.each do |msg| %>
       <li><%= msg %></li>
     <% end %>
-    <div >
-     
+  
+    <div class="grid"> 
 
     <%= simple_form_for @csvfile, html: { multipart: true ,:class => "grid"} do |f| %>
   

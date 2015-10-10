@@ -4,7 +4,7 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 </div>
 <% end %>
-<div >
+<div class="grid">
   <%= simple_form_for @csvfile do |f| %>
   <%case%>
   <% when @user.person_role == "trainee" %>
