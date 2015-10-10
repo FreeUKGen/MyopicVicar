@@ -1,107 +1,79 @@
 <% title "County Contents #{@county}" %>
 <div class="grid">
-  <header class="grid__item one-whole">
-    <div class="text--center push-half--bottom">
-      <%= link_to 'County/Place Selection', freereg_contents_path, :class => "btn btn--small "%>
-    </div>
-    <h1 class="title  text--center"> <%= @county %> General Information</h1>
-    <h2 class="text--center">Coordinator: <%= @coordinator %> </h2>
-  </header>
-  <div class="grid__item one-third palm-one-whole float--right ">
-    <div class="island island--blue push-half--top">
-      <strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
-      <ul>
-        <li><%= display_number(@records[1])%> baptisms</li>
-        <li><%=display_number(@records[2])%> burials</li>
-        <li><%= display_number(@records[3])%> marriages</li>
-      </ul>
-    </div>
-  </div>
-  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-    <%= county_content(@chapman_code) %>
-    <hr class="rule">
-    <p>These Places, Churches and Registers have data records. Click on the name for more information.<br /> The register display provides access to data on the number of records per decade.</p>
-  </div>
-  </div>
- <div id="constrainer">
-    <div class="scrolltable">
-    <table  class="header table--bordered " style="width:98.5%">  
-    <colgroup >
-      <col class="t20">
-      <col class="t20">
-      <col class="t20">
-      <col class="t10">
-      <col class="t10">
-      <col class="t10">
-      <col class="t10">
-      </colgroup>
-      <thead >
-        <tr>
-          <th>Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>A Place for which we have transcribed records. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
-          <th>Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
-          <th>Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcript; Bishop's Transcript; Transcript of the Parish Registers; Phillimore Transcript of a Parish Register; Selective Extract of the Parish Register; Dwelly's Transcript of a Parish register; Unspecified document that is most likely a Parish Register.</span>
-          </a></th>
-          <th>Date <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>The most recent date when at least one record in the register was amended, added or deleted.</span></a></th>
-          <th>Number</th>
-          <th>First <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>The first year for which there is a record transcribed in the register.</span></a></th>
-          <th>Last <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-            <span>The last year for which there is a record transcribed in the register.</span></a></th>
-        </tr>
-      </thead>
-    </table>
-  <div class="body">
-  <table  class="table--bordered "> 
-   <colgroup >
-      <col class="t20">
-      <col class="t20">
-      <col class="t20">
-      <col class="t10">
-      <col class="t10">
-      <col class="t10">
-  <col class="t10">
-      </colgroup>
-      <tbody>
-        <% old_place_name = nil %>
-        <% @places.order_by(place_name: 1).each do |place| %>
-            <%logger.warn("#{place.place_name}")%>
-          <% old_church_name = nil %>
-          <% place.churches.order_by(church_name: 1).each do |church| %>
-           <%  logger.warn("#{church.church_name}")%>
-            <% church.registers.order_by(register_type: 1).each do |register| %>
-             <%  logger.warn("#{register.register_type}")%>
-              <% session[:placeid] = place.id%>
-              <tr style= "color:black" id="<%=place.id%>">
-              <% if place.place_name != old_place_name %>
-                <td > <%= link_to(place.place_name, show_place_freereg_content_path(place)) %> </td>
-                <% old_place_name = place.place_name %>
-              <% else %>
-                <td> " </td>
-              <% end%>
-              <% if church.church_name != old_church_name %>
-                <td > <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
-                <% old_church_name = church.church_name %>
-              <% else %>
-                <td> " </td>
-              <% end%>
-              <td > <% registertype = RegisterType.display_name(register.register_type)%>
-              <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
-              <td > <%= amended(register.last_amended)%> </td>
-              <td > <%= display_number(number_of_records_in_register(register)) %> </td>
-              <td > <%= first_year_in_register(register) %> </td>
-              <td > <%= last_year_in_register(register) %> </td>
-              <% clear(register) %>
-            </tr>
-            <% end%>
-          <% end%>
-        <% end %>
-      </tbody>
-    </table>
+	<header class="grid__item one-whole">
+		<div class="text--center push-half--bottom">
+			<%= link_to 'County/Place Selection', freereg_contents_path, :class => "btn btn--small "%>
+		</div>
+		<h1 class="title  text--center"> <%= @county %> General Information</h1>
+		<h2 class="text--center">Coordinator: <%= @coordinator %> </h2>
+	</header>
+	<div class="grid__item one-third palm-one-whole float--right ">
+		<div class="island island--blue push-half--top">
+			<strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
+			<ul>
+				<li><%= display_number(@records[1])%> baptisms</li>
+				<li><%=display_number(@records[2])%> burials</li>
+				<li><%= display_number(@records[3])%> marriages</li>
+			</ul>
+		</div>
+	</div>
+	<div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+		<%= county_content(@chapman_code) %>
+		<hr class="rule">
+		<p>These Places, Churches and Registers have data records. Click on the name for more information.<br /> The register display provides access to data on the number of records per decade.</p>
+	</div>
+	<div class="grid__item one-whole">
+		<%= paginate @places  %>
+	</div>
 </div>
-</div>
-</div>
-  
+<table  class=" table--bordered ">
+	<thead >
+		<tr>
+			<th>Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<span>A Place for which we have transcribed records. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
+			<th>Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+					<span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
+			<th>Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+						<span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcript; Bishop's Transcript; Transcript of the Parish Registers; Phillimore Transcript of a Parish Register; Selective Extract of the Parish Registers; Dwelly's Transcript of a Parish Register; Unspecified document that is most likely a Parish Register.</span></a></th>
+			<th>Last changed <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+							<span>The most recent date when at least one record in the register was amended, added or deleted.</span></a></th>
+			<th>Records</th>
+			<th>First year <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+								<span>The first year for which there is a record transcribed in the register.</span></a></th>
+			<th>Last year <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+									<span>The last year for which there is a record transcribed in the register.</span></a></th>
+		</tr>
+	</thead>
+	<tbody >
+		<% old_place_name = nil %>
+		<% @places.order_by(place_name: 1).each do |place| %>
+		<% old_church_name = nil %>
+		<% place.churches.order_by(church_name: 1).each do |church| %>
+		<% church.registers.order_by(register_type: 1).each do |register| %>
+		<% session[:placeid] = place.id%>
+		<tr style= "color:black" id="<%=place.id%>">
+			<% if place.place_name != old_place_name %>
+			<td > <%= link_to(place.place_name, show_place_freereg_content_path(place)) %> </td>
+			<% old_place_name = place.place_name %>
+			<% else %>
+			<td> " </td>
+			<% end%>
+			<% if church.church_name != old_church_name %>
+			<td > <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
+			<% old_church_name = church.church_name %>
+			<% else %>
+			<td> " </td>
+			<% end%>
+			<td > <% registertype = RegisterType.display_name(register.register_type)%>
+			<%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
+			<td > <%= register.last_amended %> </td>
+			<td > <%= display_number(number_of_records_in_register(register)) %> </td>
+			<td > <%= first_year_in_register(register) %> </td>
+			<td > <%= last_year_in_register(register) %> </td>
+			<% clear(register) %>
+		</tr>
+		<% end%>
+		<% end%>
+		<% end %>
+	</tbody>
+</table>
