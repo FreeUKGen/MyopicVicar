@@ -1,7 +1,7 @@
 <% title "#{@register.register_type} #{@church} #{@place_name} #{@county} transcriptions" %>
 <div class="container">
   <section class="island ">
-    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%> <%= link_to 'Place for this Church', show_place_freereg_content_path(@place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %>
+    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small" unless @county.nil?%> <%= link_to 'Place for this Church', show_place_freereg_content_path(@place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %>
     </div><br>
     <h4 class=" gamma text--center">Transcriptions of the <%= RegisterType.display_name(@register.register_type) %> register for <%= @church %> of <%= @place_name %> within <%= @county %>  </h4>
 

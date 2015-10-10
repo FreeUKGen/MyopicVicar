@@ -1,7 +1,7 @@
 <% title "#{@place.place_name} #{@county} transcriptions " %>
 <div class="container">
   <section class="island ">
-    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small"%>
+    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small" unless @county.nil?%>
     </div> <br>
     <h2 class=" gamma text--center">Transcriptions of <%= @place.place_name %> within <%= @county %> </h2>
     <h4 class=" delta text--center">The Place has the following Church(es):
