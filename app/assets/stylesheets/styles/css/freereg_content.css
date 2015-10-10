@@ -331,4 +331,35 @@ th, td {
    
     height: 700px;
 }
+h1#body_content_title {
+        border-bottom: 1px solid #999;
+        font-size: 3.33333rem;
+        font-weight: lighter;
+        line-height: 1.2;
+        padding-bottom: 14px;
+}
+#constrainer2 {
+           
+            overflow-x: scroll;
+        }
+        #constrainer2 table {
+            overflow-y: scroll;
+        }
+        #constrainer2 tbody {
+            overflow-x: scroll;
+            display: block;
+            height: 700px;
+        }
+        #constrainer2 thead {
+            display: table-row;
+            width:auto;
+        }
+h1#body_content_title {
+        border-bottom: 1px solid #999;
+        font-size: 3.33333rem;
+        font-weight: lighter;
+        line-height: 1.2;
+        padding-bottom: 14px;
+}
+
 
