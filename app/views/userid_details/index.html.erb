@@ -1,70 +1,49 @@
 <% breadcrumb :userid_details_listing, @syndicate%>
 <p style="text-align: center"><b>Syndicate Members Management for <%=@syndicate%> :<%=@sorted_by%></b></p>
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
 <% unless @userids.nil? %>
-<%= paginate @userids   %> 
-
-
-
-<section class="island ">
-<div class="table-wrapper">
-<table  class="table--bordered  table--data ">
-
-  <tr>
-    
-    <th >UserID</th>
-    <th >Forename</th>
-    <th >Surname</th>
-    <th >Email</th>
-    <th >Active</th>
-    <th >Last Upload</th>
-    <th >Num Batches</th>
-    <th colspan="5">Functions<br>SH: Show, ED: Edit, <br>LB: List Batches<br>
-    IN/ACT: Inactivate/Activate</th>
-
-
-  </tr>
-
-
-<% @userids.each do |userid| %>
-  <tr id="<%=userid.id%>">
-   <td > <%= userid.userid %>  </td>
-   <td > <%= userid.person_forename %>  </td>   
-   <td > <%= userid.person_surname %>  </td>   
-   <td ><div class=scrollable> <%= userid.email_address %> </div> </td> 
-
-   <td >     <% if userid.active %> <%="Yes" %>    <% else%>    <%="No" %>     <% end%>     </td> 
-
-    <td > <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td> 
-      <td > <%= userid.freereg1_csv_files.count %>  </td>  
-    <td><%= button_to 'SH', userid_detail_path(userid), method: :get  %>
-     </td><td><%= button_to 'ED', edit_userid_detail_path(userid), method: :get  %>
-      </td><td><%= button_to 'LB', by_userid_freereg1_csv_file_path(userid), method: :get  %>
-      
-      <% if userid.active %>
-     </td> <td><%= button_to 'IN', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
-       </td> 
-      <% else%>
-     </td> <td><%= button_to 'ACT', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %>
-       </td>
-      <% end %>
-  </tr>
-  <% end %>
- 
-</table>
-<%= paginate @userids   %> 
- <%else%>
+  <%= paginate @userids   %>
+  <section class="island ">
+    <div class="table-wrapper">
+      <table  class="table--bordered  table--data ">
+        <tr>      
+          <th >UserID</th>
+          <th >Forename</th>
+          <th >Surname</th>
+          <th >Email</th>
+          <th >Active</th>
+          <th >Last Upload</th>
+          <th >Num Batches</th>
+          <th colspan="5">Functions<br>SH: Show, ED: Edit, <br>LB: List Batches<br>
+          IN/ACT: Inactivate/Activate</th>
+        </tr>
+        <% @userids.each do |userid| %>
+          <tr id="<%=userid.id%>">
+            <td > <%= userid.userid %>  </td>
+            <td > <%= userid.person_forename %>  </td>
+            <td > <%= userid.person_surname %>  </td>
+            <td > <%= userid.email_address %> </td>
+            <td >     <% if userid.active %> <%="Yes" %>    <% else%>    <%="No" %>     <% end%>     </td>
+            <td > <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td>
+            <td > <%= userid.freereg1_csv_files.count %>  </td>
+            <td><%= button_to 'SH', userid_detail_path(userid), method: :get  %>
+            </td><td><%= button_to 'ED', edit_userid_detail_path(userid), method: :get  %>
+            </td><td><%= button_to 'LB', by_userid_freereg1_csv_file_path(userid), method: :get  %>   </td>    
+            <% if userid.active %>
+              <td><%= button_to 'IN', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %></td>
+            <% else%>
+              <td><%= button_to 'ACT', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+      <%= paginate @userids   %>
+    </div>
+  </section>
+<%else%>
   You have no transcribers
-  <% end %>
-</div>
-</section>
-
-<br>
-
-
-
-
+<% end %>
