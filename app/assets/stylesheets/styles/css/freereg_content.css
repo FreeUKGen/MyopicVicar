@@ -316,6 +316,11 @@ label.collection_check_boxes {
         }
 .scrolltable > .header {
 }
+.my-width{
+  width:1000;
+
+}
+
 .scrolltable > .body {
     /*noinspection CssInvalidPropertyValue*/
     width: -webkit-fit-content;
@@ -355,4 +360,4 @@ h1#body_content_title {
             width:auto;
         }
 
-
+ 
