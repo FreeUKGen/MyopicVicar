@@ -19,7 +19,7 @@
   <%= f.hidden_field :session_id %>
   <%= f.hidden_field :problem_page_url %>
   <%= f.hidden_field :previous_page_url %>
-  <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
+  <li  class="grid__item  two-fifths  palm-one-whole" id="name_input">
     <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please provide a name for when we contact you; it will not be made public</span></a>
     </label>
   <% if @contact.name.nil? %>
@@ -28,13 +28,22 @@
     <input name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
   <% end %>
   </li>
-  <li  class="grid__item  one-third  palm-one-whole" id="email_address_input">
+  <li  class="grid__item  two-fifths  palm-one-whole" id="email_address_input">
       <label class="label" for="email_address">Your email address <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please enter your email address so we can contact you; it will not be made public</span></a></label>
   <% if @contact.email_address.nil? %>
     <input name="contact[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
   <% else%>
     <input name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
   <% end%>
+  </li>
+  
+  <li class="grid__item  one-half  palm-one-whole ">
+    <label>Comment, question or area in which you wish to volunteer <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>If volunteering to transcribe please indicate the county that is of most interest. If wanting to assist in the project management or development please indicate your area of expertise.  </span></a></label>
+    <% if @contact.body.nil? %>
+      <textarea name="contact[body]" cols="70" rows="10"></textarea>
+    <% else%>
+      <textarea name="contact[body]" cols="70" rows="10" ><%=@contact.body%></textarea>
+    <% end%>
   </li>
   <li  class="grid__item  one-third  palm-one-whole" id="contact_type_input">
     <label class="label" for="contact_type">
@@ -49,16 +58,8 @@
     <% end %>
     </select>
   </li>
-  <li class="grid__item  one-whole  palm-one-whole push--bottom">
-    <label>Comment, question or area in which you wish to volunteer <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>If volunteering to transcribe please indicate the county that is of most interest. If wanting to assist in the project management or development please indicate your area of expertise.  </span></a></label>
-    <% if @contact.body.nil? %>
-      <textarea name="contact[body]" cols="80" rows="10"></textarea>
-    <% else%>
-      <textarea name="contact[body]" cols="80" rows="10" ><%=@contact.body%></textarea>
-    <% end%>
-  </li>
-  <li class="grid__item  one-third  palm-one-whole">
-    <label>Screenshot or image (Optional)<a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  class="weight--normal">Please select the image you wish to upload (jpg, jpeg or gif only)</span></a></label>
+  <li class="grid__item  one-third  palm-one-whole push--bottom">
+    <label>Screenshot or image<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select the image you wish to upload (jpg, jpeg or gif only)</span></a></label>
     <input name="contact[screenshot]" type="file" >
   </li>
   <p class="betterstyling">Please add your name again: </p><input class= "betterstyling" type="text" name="contact[contact_name]">
