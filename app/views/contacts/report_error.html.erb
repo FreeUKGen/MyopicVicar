@@ -15,7 +15,9 @@
         </ul>
       </div>
   <% end %>
-  <p class="grid__item  four-fifths">We are sorry that you feel the transcription may be in error. Please let us know why you believe we have misinterpreted the original record. We will adjust the record if, upon review of the original, we agree with your interpretation. <br>Please be aware we do not adjust transcriptions based upon other sources of information than the original register.</p>
+  <div style="margin: 0 auto;" class="grid__item  four-fifths">
+    <p >We are sorry that you feel the transcription may be in error. Please let us know why you believe we have misinterpreted the original record. We will adjust the record if, upon review of the original, we agree with your interpretation. <br>Please be aware we do not adjust transcriptions based upon sources of information than the original register.</p>
+  </div>
   <div class="island  island--light ">
       <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
       <%= f.hidden_field :query %>
