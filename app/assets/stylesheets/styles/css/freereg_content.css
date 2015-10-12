@@ -304,38 +304,9 @@ label.collection_check_boxes {
 
 .scrollable {
     overflow: auto;
-    height: 500px;  
-}
-.scrolltable {
-            overflow-x: scroll;
-            height: 100%;
-            display: flex;
-            display: -webkit-flex;
-            flex-direction: column;
-            -webkit-flex-direction: column;
-        }
-.scrolltable > .header {
-}
-.my-width{
-  width:1000;
-
+    height: 400px;  
 }
 
-.scrolltable > .body {
-    /*noinspection CssInvalidPropertyValue*/
-    width: -webkit-fit-content;
-    overflow-y: scroll;
-    flex: 1;
-    -webkit-flex: 1;
-}
-th, td {
-    min-width: 10px;
-}
-/* an outside constraint to react against */
-#constrainer {
-   
-    height: 700px;
-}
 h1#body_content_title {
         border-bottom: 1px solid #999;
         font-size: 3.33333rem;
@@ -343,21 +314,10 @@ h1#body_content_title {
         line-height: 1.2;
         padding-bottom: 14px;
 }
-#constrainer2 {
-           
-            overflow-x: scroll;
-        }
-        #constrainer2 table {
-            overflow-y: scroll;
-        }
-        #constrainer2 tbody {
-            overflow-x: scroll;
-            display: block;
-            height: 700px;
-        }
-        #constrainer2 thead {
-            display: table-row;
-            width:auto;
-        }
+table.my-width{
+  width:1000;
+}
 
- 
+table.my-width-min{
+  width:980;
+}
