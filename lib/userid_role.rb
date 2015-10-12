@@ -38,8 +38,8 @@ module UseridRole
           "Search Performance" => "/search_queries/report" ,
           "Feedback" => "/feedbacks",
           "Contacts" => "/contacts",
-          "System Documentation" => "/system-documents",
-          "Roadmap" => "/system-documents/development-roadmap",
+          "System Documentation" => "../system-documents",
+          "Roadmap" => "../system-documents/development-roadmap",
           "Logout" => "/refinery/logout"
         }
         USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
