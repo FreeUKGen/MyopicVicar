@@ -30,6 +30,10 @@ module FreeregContentsHelper
   def number_of_records_in_register(register)
     if session["#{register.id}"].blank?
       individual_files = register.freereg1_csv_files
+      actual_records = 0
+      individual_files.each do |file|
+        actual_records = actual_records + file.freereg1_csv_entries.count
+      end
       files = Freereg1CsvFile.combine_files(individual_files)
       records = 0
       datemax = FreeregValidations::YEAR_MIN
@@ -45,9 +49,9 @@ module FreeregContentsHelper
       session["#{register.id}"][0] = records
       session["#{register.id}"][1] = datemin
       session["#{register.id}"][2] = datemax
-      field = session["#{register.id}"][0]
+      field = actual_records
     else
-      field = session["#{register.id}"][0]
+      field = actual_records
     end
     field 
   end
