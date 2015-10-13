@@ -30,9 +30,10 @@ class SiteStatistic
     stat.day = last_midnight.day    
     
     stat.n_records = SearchRecord.count
-    stat.n_records_marriages = SearchRecord.marriages.count
-    stat.n_records_burials = SearchRecord.burials.count
-    stat.n_records_baptisms = SearchRecord.baptisms.count
+    results = SiteStatistic.record_type_counts
+    stat.n_records_marriages = results['marriages']
+    stat.n_records_burials = results['burials']
+    stat.n_records_baptisms = results['baptisms']
     stat.n_searches = SearchStatistic.where(:year => stat.year, :month => stat.month, :day => stat.day).inject(0) { |accum, ss| accum += ss.n_searches }
     #find the previous one
     previous_stat = SiteStatistic.where(:interval_end => stat.interval_end - 1.day).first
@@ -45,6 +46,23 @@ class SiteStatistic
     end
     
     stat.save!
+  end
+  def self.record_type_counts
+    result = Hash.new
+    result["marriages"] = 0
+    result["baptisms"] = 0
+    result["burials"] = 0
+    Freereg1CsvFile.no_timeout.each do |file|
+      case 
+      when file.record_type == "ma"
+        result['marriages'] =  result['marriages'] + file.freereg1_csv_entries.count
+      when file.record_type == "ma"
+        result['baptisms'] =  result['baptisms'] + file.freereg1_csv_entries.count
+      when file.record_type == "ma"
+        result['burials'] =  result['burials'] + file.freereg1_csv_entries.count 
+      end
+    end
+      result  
   end
 
 end
