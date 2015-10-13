@@ -1,0 +1,42 @@
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th>Record number</th>
+        <th>Burial date</th>
+        <th>Person forename</th>
+        <th>Person surname</th>
+        <th>Relative (M) forename</th>
+        <th>Relative (F) forename</th>
+        <th>Relative surname</th>
+        <th >Action</th>
+        <th ></th>
+        <th ></th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable ">
+    <table class=" my-width table--data">
+      <tbody >
+        <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
+          <% if freereg1_csv_entry.error_flag == 'true' %>
+            <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
+          <%else%>
+              <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
+          <% end%>
+            <td><%= freereg1_csv_entry.file_line_number%></td>
+            <td><%= freereg1_csv_entry.burial_date %></td>
+            <td><%= freereg1_csv_entry.burial_person_forename %></td>
+            <td><%= freereg1_csv_entry.burial_person_surname %></td>
+            
+            <td><%= freereg1_csv_entry.male_relative_forename %></td>
+            <td><%= freereg1_csv_entry.female_relative_forename %></td>
+            <td><%= freereg1_csv_entry.relative_surname %></td>
+            
+            <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

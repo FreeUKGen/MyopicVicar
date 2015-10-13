@@ -1,131 +1,22 @@
 <% breadcrumb :show_records,  @freereg1_csv_file%>
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %></b> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
-
+<p style="text-align: center"><b><%= @freereg1_csv_file_name %></b> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %> </b> of <b><%= @county %></b><br></p>
 <div  style="text-align: center"> <%= link_to 'Create new entry', new_freereg1_csv_entry_path, method: :get , :class => "btn  btn--small"  %> <%= link_to 'Listing of all Error Records in this Batch', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %> </div>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
+  <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-</div>
+  </div>
 <% end %>
 <div class="grid">
-  <section class="island ">
-    <div class="grid__item  ">
-<% case %>
-<% when @freereg1_csv_file.record_type == "ba" %>
-<%= paginate @freereg1_csv_entries %>
-<table class="table--bordered  table--data" >
- 
-  <tr>
-    <th>Record</th>
-    
-    <th>Baptism date</th>
-    <th>Birth date</th>
-    <th>Person forename</th>
-    
-    <th>Father forename</th>
-    <th>Father surname</th>
-    
-    <th>Mother forename</th>
-    <th>Mother surname</th>
-    <th colspan = 3>Action<br>SH: Show, ED: Edit, DES: Destroy</th>
-  </tr>
-  <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-  <% if freereg1_csv_entry.error_flag == 'true' %>
-  <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
-    <%else%>
-    <tr id="<%= freereg1_csv_entry.id %>" style= "color:green">
-      <%end%>
-      <td><%= freereg1_csv_entry.file_line_number %></td>
-      <td><%= freereg1_csv_entry.baptism_date %></td>
-      <td><%= freereg1_csv_entry.birth_date %></td>
-      <td><%= freereg1_csv_entry.person_forename %></td>
-      
-      <td><%= freereg1_csv_entry.father_forename %></td>
-      <td><%= freereg1_csv_entry.father_surname %></td>
-      
-      <td><%= freereg1_csv_entry.mother_forename %></td>
-      <td><%= freereg1_csv_entry.mother_surname %></td>
-      
-      <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
-    </tr>
-  </tr>
-  <% end %>
-</table>
-<%= paginate @freereg1_csv_entries %>
-<% when @freereg1_csv_file.record_type == "bu" %>
-<%= paginate @freereg1_csv_entries %>
-<table class="table--bordered  table--data">
- 
-  <tr >
-    <th>Record number</th>
-    <th>Burial date</th>
-    <th>Burial person forename</th>
-    <th>Burial person surname</th>
-    <th>Male relative forename</th>
-    <th>Female relative forename</th>
-    <th>Relative surname</th>
-   <th colspan = 3>Action<br>SH: Show, ED: Edit, DES: Destroy</th>
-    
-  </tr>
-  <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-  <% if freereg1_csv_entry.error_flag == 'true' %>
-  <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
-    <%else%>
-    <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
-      <%end%>
-      <td><%= freereg1_csv_entry.file_line_number%></td>
-      <td><%= freereg1_csv_entry.burial_date %></td>
-      <td><%= freereg1_csv_entry.burial_person_forename %></td>
-      <td><%= freereg1_csv_entry.burial_person_surname %></td>
-      
-      <td><%= freereg1_csv_entry.male_relative_forename %></td>
-      <td><%= freereg1_csv_entry.female_relative_forename %></td>
-      <td><%= freereg1_csv_entry.relative_surname %></td>
-      
-      <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
-    </tr>
-  </tr>
-  <% end %>
-</table>
-<%= paginate @freereg1_csv_entries %>
-<% when @freereg1_csv_file.record_type == "ma" %>
-<%= paginate @freereg1_csv_entries %>
-<table class="table--bordered  table--data">
-  
-  <tr>
-    <th>Record number</th>
-    <th>Marriage date</th>
-    <th>Bride forename</th>
-    <th>Bride surname</th>
-    <th>Groom forename</th>
-    <th>Groom surname</th>
-  <th colspan = 3>Action<br>SH: Show, ED: Edit, DES: Destroy</th>
-  </tr>
-  <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
-  <% if freereg1_csv_entry.error_flag == 'true' %>
-  <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
-    <%else%>
-    <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
-      <%end%>
-      <td><%= freereg1_csv_entry.file_line_number %></td>
-      
-      <td><%= freereg1_csv_entry.marriage_date %></td>
-      
-      <td><%= freereg1_csv_entry.bride_forename %></td>
-      
-      <td><%= freereg1_csv_entry.bride_surname %></td>
-      
-      <td><%= freereg1_csv_entry.groom_forename %></td>
-      
-      <td><%= freereg1_csv_entry.groom_surname %></td>
-     <td><%= link_to 'SH', freereg1_csv_entry %>  <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %>  <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
-    </tr>
+  <section class="island  ">
+    <% case %>
+    <% when @freereg1_csv_file.record_type == "ba" %>
+      <%= render 'baptism_index' %>
+    <% when @freereg1_csv_file.record_type == "bu" %>
+      <%= render 'burial_index' %>
+    <% when @freereg1_csv_file.record_type == "ma" %>
+      <%= render 'marriage_index' %>
     <% end %>
-  </table>
-  <%= paginate @freereg1_csv_entries %>
-  <% end %>
-   </div>
-</section>
+  </section>
 </div>
 <br>
