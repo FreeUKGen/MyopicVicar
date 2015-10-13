@@ -475,6 +475,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file_id =   @freereg1_csv_file._id
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     @register = @freereg1_csv_file.register
+    @file_owner = @freereg1_csv_file.userid
     #@register_name = @register.register_name
     #@register_name = @register.alternate_register_name if @register_name.nil?
     @register_name = RegisterType.display_name(@register.register_type)
