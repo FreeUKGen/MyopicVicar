@@ -56,9 +56,9 @@ class SiteStatistic
       case 
       when file.record_type == "ma"
         result['marriages'] =  result['marriages'] + file.freereg1_csv_entries.count
-      when file.record_type == "ma"
+      when file.record_type == "ba"
         result['baptisms'] =  result['baptisms'] + file.freereg1_csv_entries.count
-      when file.record_type == "ma"
+      when file.record_type == "bu"
         result['burials'] =  result['burials'] + file.freereg1_csv_entries.count 
       end
     end
