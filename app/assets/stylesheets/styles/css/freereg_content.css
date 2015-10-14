@@ -324,7 +324,7 @@ table.my-width-min{
 dl.table-display
 {
   float: left;
-  width: 400px;
+  width: auto;
   margin: 1em 0;
   padding: 0;
   border-bottom: 1px solid #999;
@@ -334,7 +334,7 @@ dl.table-display
 {
   clear: left;
   float: left;
-  width: 100px;
+  width: 90px;
   margin: 0;
   padding: 5px;
   border-top: 1px solid #999;
@@ -344,7 +344,7 @@ dl.table-display
 .table-display dd
 {
   float: left;
-  width: 300px;
+  width: auto;
   margin: 0;
   padding: 5px;
   border-top: 1px solid #999;

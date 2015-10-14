@@ -2,7 +2,7 @@
   <% @search_results.each do |search_record| %>
     <div > 
       <dl class="table-display">
-        <dt ><%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+        <dt ><%= link_to('Person', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
             <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a></dt>
         <dd ><% search_record.transcript_names.uniq.each_with_index do |name, i| %>
             <% if  name['type'] == 'primary' %>
