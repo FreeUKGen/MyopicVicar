@@ -6,9 +6,11 @@
 				<%= number_with_delimiter(@site_stat.n_searches)%> searches were performed on <%= number_with_delimiter(@site_stat.n_records) %> records
         (<%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages and 
         <%= number_with_delimiter(@site_stat.n_records_burials) %> burials)
-				<% if @site_stat.n_records_added %> 
+				<% if @site_stat.n_records_added && @site_stat.n_records_added > 0 %> 
 					and <%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages and 
         <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials) were added
+          <% else %>
+          and no records were added 
 				<% end %>
 				in the 24 hrs ending at midnight GMT. 
 			<% end %>
