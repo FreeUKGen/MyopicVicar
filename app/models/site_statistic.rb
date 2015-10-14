@@ -29,11 +29,12 @@ class SiteStatistic
     stat.month = last_midnight.month
     stat.day = last_midnight.day    
     
-    stat.n_records = SearchRecord.count
+    
     results = SiteStatistic.record_type_counts
     stat.n_records_marriages = results['marriages']
     stat.n_records_burials = results['burials']
     stat.n_records_baptisms = results['baptisms']
+    stat.n_records = results['marriages'] + results['burials'] + results['baptisms']
     stat.n_searches = SearchStatistic.where(:year => stat.year, :month => stat.month, :day => stat.day).inject(0) { |accum, ss| accum += ss.n_searches }
     #find the previous one
     previous_stat = SiteStatistic.where(:interval_end => stat.interval_end - 1.day).first
