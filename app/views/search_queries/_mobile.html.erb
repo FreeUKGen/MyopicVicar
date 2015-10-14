@@ -25,7 +25,7 @@
           <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>County in which event was recorded. Click heading to sort by the county</span></a></dt>
         <dd >  <%= search_record.place.county %></dd>
         
-        <dt ><%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+        <dt ><%= link_to('Place', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
           <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a></dt>
         <dd ><%= format_location(search_record) %></dd>
         <dt >Detail <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Click on the detail link to get transcription details</span></a></dt>
