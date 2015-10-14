@@ -5,7 +5,7 @@
 </section>
 <section>
   <% if @search_record.freereg1_csv_entry %>
-  <table class="table--bordered ">
+  <table class="table--bordered table--data">
     <colgroup >
     <col class=t40>
     <col class=t60>
@@ -42,7 +42,7 @@
   </table>
   <% end %>
   <% if @annotations && @annotations.length > 0 %>
-  <table class="table--bordered ">
+  <table class="table--bordered table--data">
     <thead>
       <tr>
         <td colspan="2">
@@ -86,7 +86,7 @@
   </table>
   <% end%>
   <% unless params[:debug].blank? %>
-  <table class="table--bordered ">
+  <table class="table--bordered table--data">
     <thead>
       <tr>
         <td colspan="2">

@@ -49,6 +49,11 @@ class ApplicationController < ActionController::Base
 
   helper_method :mobile_device?
 
+  helper_method :device_type  
+  def device_type  
+      request.env['mobvious.device_type']
+  end  
+
 
   def require_login
     if session[:userid].nil?
