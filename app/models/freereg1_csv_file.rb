@@ -79,11 +79,11 @@ class Freereg1CsvFile
     file.save_to_attic
     p "Deleting entries"
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-    num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
+    num = entries.length unless entries.nil?
     p num
     entries.each do |entry|
       entry.destroy
-      sleep_time = 2*(Rails.application.config.sleep.to_f)
+      sleep_time = 5*(Rails.application.config.sleep.to_f).to_f
       sleep(sleep_time)
     end
   end

@@ -399,7 +399,7 @@ class Freereg1CsvFilesController < ApplicationController
     end
     batch = PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).first
     batch.update_attributes(:file_processed =>false, :file_processed_date => nil) if Freereg1CsvFile.where(:file_name => @freereg1_csv_file.file_name, :userid => @freereg1_csv_file.userid).count >= 1
-    @freereg1_csv_file.delete
+    @freereg1_csv_file.destroy
     flash[:notice] = 'The removal of the batch entry was successful'
     if session[:my_own]
       redirect_to my_own_freereg1_csv_file_path
@@ -475,6 +475,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file_id =   @freereg1_csv_file._id
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     @register = @freereg1_csv_file.register
+    @file_owner = @freereg1_csv_file.userid
     #@register_name = @register.register_name
     #@register_name = @register.alternate_register_name if @register_name.nil?
     @register_name = RegisterType.display_name(@register.register_type)
