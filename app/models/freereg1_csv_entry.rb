@@ -92,7 +92,7 @@ class Freereg1CsvEntry
 
 
   before_destroy do |entry|
-    entry.search_record.destroy
+    SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
   end
 
   has_one :search_record
