@@ -16,7 +16,7 @@
     </thead>
   </table>
   <div class="scrollable ">
-    <table class=" my-width table--data">
+    <table class="table--bordered my-width table--data just--left">
       <tbody >
         <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
           <% if freereg1_csv_entry.error_flag == 'true' %>
@@ -33,7 +33,7 @@
             <td><%= freereg1_csv_entry.female_relative_forename %></td>
             <td><%= freereg1_csv_entry.relative_surname %></td>
             
-            <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DES', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
+            <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DE', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
           </tr>
         <% end %>
       </tbody>
