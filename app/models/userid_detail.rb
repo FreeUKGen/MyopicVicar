@@ -216,15 +216,15 @@ class UseridDetail
     self.password_confirmation = password
   end
 
-  def self.get_userids_for_display(syndicate,page)
-   @userids  = UseridDetail.all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
-   @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
+  def self.get_userids_for_display(syndicate)
+   @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+   @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
    @userids
   end
 
-  def self.get_active_userids_for_display(syndicate,page)
-     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
-     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
+  def self.get_active_userids_for_display(syndicate)
+     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
+     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
      @userids
   end
 

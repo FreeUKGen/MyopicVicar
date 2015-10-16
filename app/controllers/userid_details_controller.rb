@@ -3,17 +3,14 @@ class UseridDetailsController < ApplicationController
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
   def index
-    if params[:page]
-     session[:user_index_page] = params[:page]
-    end
     session[:return_to] = request.fullpath
     get_user_info_from_userid
     session[:my_own] = false
     @role = session[:role]
     if session[:active] ==  'All Members'
-      @userids = UseridDetail.get_userids_for_display(session[:syndicate],params[:page])
+      @userids = UseridDetail.get_userids_for_display(session[:syndicate])
     else
-      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate],params[:page])
+      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate])
     end
     @syndicate = session[:syndicate]
     @sorted_by = session[:active]
