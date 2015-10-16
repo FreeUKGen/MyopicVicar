@@ -2,9 +2,6 @@ class Freereg1CsvFilesController < ApplicationController
   require 'chapman_code'
   require 'freereg_options_constants'
   def index
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
     #the common listing entry by syndicatep
     @register = session[:register_id]
     get_user_info_from_userid
@@ -14,14 +11,13 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = session[:sorted_by]
     case
     when session[:my_own]
-      @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).page(params[:page])
+      @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort])
     when !session[:syndicate].nil? && session[:userid_id].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" )
-      @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort]).page(params[:page])
+      @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort])
     when !session[:syndicate].nil? && !session[:userid_id].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" )
-      @freereg1_csv_files = Freereg1CsvFile.userid( UseridDetail.find(session[:userid_id]).userid).order_by(session[:sort]).page(params[:page])
+      @freereg1_csv_files = Freereg1CsvFile.userid( UseridDetail.find(session[:userid_id]).userid).order_by(session[:sort])
     when !session[:county].nil? && (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical")
-      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort]).page(params[:page])
-    else
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort])
     end
   end
 
@@ -181,8 +177,6 @@ class Freereg1CsvFilesController < ApplicationController
   def update
     #update the headers
     load(params[:id])
-
-    p params
     set_controls
     get_user_info_from_userid
     @county =  session[:county]
@@ -258,9 +252,6 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def display_my_own_files
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted alphabetically by file name)'
@@ -270,9 +261,6 @@ class Freereg1CsvFilesController < ApplicationController
     render :index
   end
   def display_my_error_files
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by number of errors)'
@@ -282,9 +270,6 @@ class Freereg1CsvFilesController < ApplicationController
     render :index
   end
   def display_my_own_files_by_descending_uploaded_date
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by descending date of uploading)'
@@ -294,9 +279,6 @@ class Freereg1CsvFilesController < ApplicationController
     render :index
   end
   def display_my_own_files_by_ascending_uploaded_date
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @who = @user.userid
     @sorted_by = '(Sorted by ascending date of uploading)'
@@ -337,9 +319,6 @@ class Freereg1CsvFilesController < ApplicationController
 
   def by_userid
     #entry by userid
-    if params[:page]
-      session[:files_index_page] = params[:page]
-    end
     session[:page] = request.original_url
     session[:my_own] = false
     session[:userid_id] = params[:id]
