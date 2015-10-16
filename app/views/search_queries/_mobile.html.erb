@@ -2,7 +2,7 @@
   <% @search_results.each do |search_record| %>
     <div > 
       <dl class="table-display">
-        <dt ><%= link_to('Person', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+        <dt ><%= link_to('Person ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
             <a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a></dt>
         <dd ><% search_record.transcript_names.uniq.each_with_index do |name, i| %>
             <% if  name['type'] == 'primary' %>
@@ -13,23 +13,23 @@
               <% end %>
             <% end%></dd>
         
-        <dt > <%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+        <dt > <%= link_to('Type ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
           <a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Type of record. Click heading to sort by type</span></a></dt>
         <dd >  <%= RecordType::display_name(search_record.record_type) %></dd>
         
-        <dt ><%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
+        <dt ><%= link_to('Date ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
           <a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a></dt>
         <dd > <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%></dd>
         
-        <dt > <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
+        <dt > <%= link_to('County ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
           <a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>County in which event was recorded. Click heading to sort by the county</span></a></dt>
         <dd >  <%= search_record.place.county %></dd>
         
-        <dt ><%= link_to('Place', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+        <dt ><%= link_to('Place ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
           <a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a></dt>
         <dd ><%= format_location(search_record) %></dd>
         <dt >Detail <a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Click on the detail link to get transcription details</span></a></dt>
-        <dd ><%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
+        <dd ><%= link_to("Detail ", search_record_path(search_record, :search_id => @search_query)) %>
           <% if session[:viewed] %>
             <i>
           <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
