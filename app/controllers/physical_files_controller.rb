@@ -114,7 +114,7 @@ class PhysicalFilesController < InheritedResources::Base
     success = @batch.add_file("reprocessing")
     flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
     @batch.save
-    redirect_to :back#freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:files_index_page]}")
+    redirect_to :back#freereg1_csv_files_path(:anchor => "#{file.id}")
   end
   def destroy
     load(params[:id])
