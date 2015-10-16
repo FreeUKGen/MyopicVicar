@@ -34,7 +34,7 @@ class UserMailer < ActionMailer::Base
       attachments["report.log"] = File.read(file)
       @person_forename = user.person_forename
       @email_address = user.email_address
-      mail(:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeREG2 Update")
+      mail(:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeREG Update processing report")
     
   end
 
@@ -42,60 +42,60 @@ class UserMailer < ActionMailer::Base
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Registration")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREG Registration")
   end
 
   def invitation_to_register_researcher(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Registration")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREG Registration")
   end
 
   def invitation_to_register_technical(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Registration")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREG Registration")
   end
 
   def invitation_to_reset_password(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "FreeREG2 Password Reset")
+    mail(:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password Reset for FreeREG ")
   end
 
   def notification_of_transcriber_creation(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Userid Creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Transcriber Registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Research Registration") unless @coordinator.nil?
   end
 
   def notification_of_technical_registration(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Technical Registration notification") unless @coordinator.nil?
   end
 
   def notification_of_registration_completion(user)
     @user = user
     reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Registration") unless @coordinator.nil?
-    mail(:to => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeREG2 Registration") unless reg_manager.nil? 
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration Completion") unless @coordinator.nil?
+    mail(:to => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeREG Registration Completion") unless reg_manager.nil? 
   end
 
   def reset_notification(user,z)
@@ -123,7 +123,7 @@ class UserMailer < ActionMailer::Base
 
   def copy_to_contact_person(contact)
     @contact = contact
-    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "FreeREG2 Contact")
+    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for contacting us")
   end
 
   def contact_to_freereg_manager(contact,person,ccs)
@@ -131,7 +131,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a FreeREG Contact")
   end
 
   def contact_to_recipient(contact,person,ccs)
@@ -139,14 +139,14 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a FreeREG Contact")
   end
   def contact_to_volunteer(contact,person,ccs)
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a FreeREG Contact")
   end
 
   def contact_to_data_manager(contact,person,ccs)
@@ -154,14 +154,14 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "FreeREG2 Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a FreeREG Contact")
   end
   def contact_to_coordinator(contact,person,ccs)
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report from a Contact")
   end
   def send_change_of_syndicate_notification_to_sc(user)
     @user = user
