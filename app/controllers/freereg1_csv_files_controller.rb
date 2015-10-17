@@ -28,6 +28,7 @@ class Freereg1CsvFilesController < ApplicationController
   def show
     #show an individual batch
     get_user_info_from_userid
+    go_back if params[:id].nil?
     load(params[:id])
     #TODO check on need for these
     @county =  session[:county]
@@ -441,7 +442,8 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def load(file_id)
-    @freereg1_csv_file = Freereg1CsvFile.find(file_id)
+    @freereg1_csv_file = Freereg1CsvFile.where(:_id => file_id).first
+    go_back if @freereg1_csv_file.nil?
   end
 
 
@@ -490,6 +492,12 @@ class Freereg1CsvFilesController < ApplicationController
     @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value'
     @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
     @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'
+  end
+
+  def go_back
+    flash[:notice] = "That file does not exist"
+    redirect_to :back
+    return
   end
 
 end
