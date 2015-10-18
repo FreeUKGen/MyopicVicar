@@ -39,7 +39,7 @@ gem 'devise-encryptable'
 gem 'nokogiri'
 gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
 gem 'quiet_assets', :group => :development
-gem 'rmagick', "2.13.2", require: false   #version added by kirk as windows requires this version
+#gem 'rmagick', "2.13.2", require: false   #version added by kirk as windows requires this version
 gem 'rubyzip', "~> 0.9.9"
 
 gem 'rspec-rails'
