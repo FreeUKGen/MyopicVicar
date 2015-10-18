@@ -21,12 +21,6 @@
               <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcript; Bishop's Transcript; Transcript of the Parish Registers; Phillimore Transcript of a Parish Register; Selective Extract of the Parish Registers; Dwelly's Transcript of a Parish Register; Unspecified document that is most likely a Parish Register.</span></a></th>
         <th class="t15">Last changed <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
                 <span>The most recent date when at least one record in the register was amended, added or deleted.</span></a></th>
-        <th class="t10">Records <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                  <span>The number of actual transcription records.</span></a></th>
-        <th class="t10">First <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                  <span>The first year for which there is a record transcribed in the register.</span></a></th>
-        <th class="t10">Last <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                    <span>The last year for which there is a record transcribed in the register.</span></a></th>
       </tr>
     </thead>
   </table>
@@ -49,9 +43,7 @@
               <td class="t25"> No church </td>              
               <td class="t15"> No register</td>
               <td class="t15"> - </td>
-              <td class="t10"> - </td>
-              <td class="t10"> - </td>
-              <td class="t10"> - </td>
+              
             </tr>
           <% else%>
             <% place.churches.order_by(church_name: 1).each do |church| %>
@@ -72,9 +64,7 @@
                   <% end%>
                   <td class="t15"> No register</td>
                   <td class="t15"> - </td>
-                  <td class="t10"> - </td>
-                  <td class="t10"> - </td>
-                  <td class="t10"> - </td>
+                  
                 </tr>
               <% else %> 
                 <% church.registers.order_by(register_type: 1).each do |register| %>
@@ -95,9 +85,6 @@
                     <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
                     <%= link_to(registertype, register_path(register)) %></td>
                     <td class="t15"> <%= register.last_amended %> </td>
-                    <td class="t10"> <%= display_number(number_of_records_in_register(register)) %> </td>
-                    <td class="t10"> <%= first_year_in_register(register) %> </td>
-                    <td class="t10"> <%= last_year_in_register(register) %> </td>
                     <% clear(register) %>
                   </tr>
                 <% end%>
