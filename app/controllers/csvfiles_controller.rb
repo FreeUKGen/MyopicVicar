@@ -31,7 +31,12 @@ class CsvfilesController < ApplicationController
       if session[:file_name] == @csvfile.file_name
         #set up to allow the file save to occur in check_for_existing_place
         batch = PhysicalFile.where(userid: @csvfile.userid, file_name: @csvfile.file_name).first
-        batch.update_attributes(:base => true,:file_processed => false)
+        unless batch.nil?
+          batch.update_attributes(:base => true,:file_processed => false)
+        else
+          batch = PhysicalFile.new(:base => true,:file_processed => false, :userid =>@csvfile.userid , :file_name => @csvfile.file_name)
+          batch.save
+        end
       else
         flash[:notice] = 'The file you are replacing must have the same name'
         session.delete(:file_name)
