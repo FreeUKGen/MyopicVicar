@@ -11,6 +11,8 @@ class FreeregContent
   field :church, type: String
   field :record_type, type: String#, :required => false
   field :place_ids, type: String
+  attr_accessor :character
+  attr_accessible :chapman_codes
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
   validate :county_is_valid
 

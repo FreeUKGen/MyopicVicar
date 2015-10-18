@@ -1,0 +1,10 @@
+<% title "Alphabet Selection" %>
+<div class="container">
+<h1 class="title text--center">Explore Database contents</h1>
+<p class=" text--center"><%= @county%> has too many places for an effective display. Please click on the letter to see all of the places starting that letter.</p>
+
+<div class="grid">
+  <%= simple_form_for @freereg_content do |f| %>
+  <%= f.input :character, { :as => :select, :include_blank => true, :required => true,:size => 5, :collection => @options, :input_html => {'onchange' => @location,:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%>
+  <% end %>
+</div>

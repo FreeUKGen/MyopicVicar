@@ -6,7 +6,7 @@ CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales','Unknown', 'Clwyd','
 MAXIMUM_NUMBER_OF_RESULTS = 250
 MAXIMUM_NUMBER_OF_SCANS = 500
 DATERANGE_MINIMUM = 1530
-ISSUES = ['Data Problem', 'Website Problem','Volunteer','Question', 'Thank-you' ]
+ISSUES = ['Data Problem', 'Website Problem','Volunteer','Question', 'Thank you' ]
 FORCE_SEARCH_RECORD_RECREATE = [
   "baptism_date", 
   "birth_date", 
@@ -35,6 +35,7 @@ FORCE_SEARCH_RECORD_RECREATE = [
   "witness2_forename", 
   "witness2_surname"
  ]
-
+ALPHABET = ['A',"B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+ALPHABET_SELECTION_LIST = ["CAM","CON","DUR","ESS","GLA","KEN","LAN","LIN","MDX","NBL","NFK","NTH","NTT","SOM","SRY","STS","WRY"]
 
 end
