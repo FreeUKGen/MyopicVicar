@@ -321,3 +321,53 @@ table.my-width{
 table.my-width-min{
   width:980;
 }
+dl.table-display
+{
+  float: left;
+  width: auto;
+  margin: 1em 0;
+  padding: 0;
+  border-bottom: 1px solid #999;
+}
+  
+.table-display dt
+{
+  clear: left;
+  float: left;
+  width: 30%;
+  margin: 0;
+  padding: 5px;
+  border-top: 1px solid #999;
+  font-weight: bold;
+}
+  
+.table-display dd
+{
+  float: left;
+  width: 70%;
+  margin: 0;
+  padding: 5px;
+  border-top: 1px solid #999;
+}
+.just--left td{
+  text-align: left  !important; 
+  padding:6px;
+}
+.t3 {
+  width: 3%;
+}
+.t4 {
+  width: 4%;
+}
+.t7 {
+  width: 7%;
+}
+.t9 {
+  width: 9%;
+}
+.t12 {
+  width: 12%;
+}
+.t13 {
+  width: 13%;
+}

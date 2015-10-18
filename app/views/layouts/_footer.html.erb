@@ -4,10 +4,15 @@
 		<div class="container  text--center">
 			<% if @site_stat %>
 				<%= number_with_delimiter(@site_stat.n_searches)%> searches were performed on <%= number_with_delimiter(@site_stat.n_records) %> records
-				<% if @site_stat.n_records_added %> 
-					and <%= number_with_delimiter(@site_stat.n_records_added) %> records were added
+        (<%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages and 
+        <%= number_with_delimiter(@site_stat.n_records_burials) %> burials)<br>
+				<% if @site_stat.n_records_added && @site_stat.n_records_added > 0 %> 
+					<%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages and 
+        <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials) were added
+          <% else %>
+          No records were added 
 				<% end %>
-				in the 24 hrs ending at 6am GMT. 
+				in the 24 hrs ending at midnight GMT. 
 			<% end %>
       <p>
        The FreeREG database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>

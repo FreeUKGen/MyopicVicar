@@ -43,7 +43,7 @@ crumb :files  do |file|
   if file.nil?
     link "List of Batches", freereg1_csv_files_path
   else
-   link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:files_index_page]}")
+   link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}")
   end
    case
    when session[:my_own].present?

@@ -1,0 +1,42 @@
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+          <th>Record</th>
+          <th>Birth date</th>
+          <th>Baptism date</th>
+          <th>Person forename</th>
+          <th>Father forename</th>
+          <th>Father surname</th>
+          <th>Mother forename</th>
+          <th>Mother surname</th>
+          <th >Action</th>
+          <th> </th>
+        </tr>
+    </thead>
+  </table>
+
+  <div class="scrollable ">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody >      
+        <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
+          <% if freereg1_csv_entry.error_flag == 'true' %>
+            <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
+          <%else%>
+            <tr id="<%= freereg1_csv_entry.id %>" style= "color:green">
+          <% end%>
+          <td><%= freereg1_csv_entry.file_line_number %></td>
+          <td><%= freereg1_csv_entry.birth_date %></td>
+          <td><%= freereg1_csv_entry.baptism_date %></td>
+          <td><%= freereg1_csv_entry.person_forename %></td>
+          <td><%= freereg1_csv_entry.father_forename %></td>
+          <td><%= freereg1_csv_entry.father_surname %></td>
+          <td><%= freereg1_csv_entry.mother_forename %></td>
+          <td><%= freereg1_csv_entry.mother_surname %></td>
+          <td><%= link_to 'SH', freereg1_csv_entry %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %> <%= link_to 'DE', freereg1_csv_entry, confirm: 'Are you sure you want to delete this record?', method: :delete   %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -8,6 +8,7 @@ class FreeregContentsController < ApplicationController
   end
 
   def new
+    session[:character] = nil
     @freereg_content = FreeregContent.new
     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
@@ -23,12 +24,31 @@ class FreeregContentsController < ApplicationController
     if  @freereg_content.save
       @county = ChapmanCode.name_from_code(@county)
       session[:county] = @county
+
       if place.present?
         redirect_to show_place_freereg_content_path(place)
         return
       else
-        redirect_to freereg_content_path(@county)
-        return
+        if FreeregOptionsConstants::ALPHABET_SELECTION_LIST.include?(session[:chapman_code])
+          redirect_to :action => "alphabet"
+        else
+          if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
+            @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
+          else
+            @page = ""
+          end
+          @county = session[:county]
+          @chapman_code = session[:chapman_code]
+          @character =  session[:character] 
+          @coordinator = County.coordinator_name(@chapman_code)
+          @places = Places.where(:data_present => true).all.order_by(place_name: 1) if @county == 'all'
+          @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)  unless @county == 'all'
+          session[:page] = request.original_url
+          session[:county_id]  = params[:id]
+          @records = number_of_records_in_county(@county)
+          render :action => 'show'
+          return
+        end
       end
     else
       @freereg_content.chapman_codes = []
@@ -36,9 +56,15 @@ class FreeregContentsController < ApplicationController
       render :new
     end
   end
-
-
-  def show
+  def alphabet
+    @freereg_content = FreeregContent.new
+    @options = FreeregOptionsConstants::ALPHABET
+    @county = session[:county]
+    @location = 'location.href= "/freereg_contents/select_places?character=" + this.value'
+  end
+  def select_places
+    @character = params[:character]
+    session[:character] = @character
     if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
       @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
     else
@@ -47,12 +73,15 @@ class FreeregContentsController < ApplicationController
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
-    @places = Places.where(:data_present => true).all.order_by(place_name: 1) if @county == 'all'
-    @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)  unless @county == 'all'
-    session[:page] = request.original_url
-    session[:county_id]  = params[:id]
+    @places = Place.county(@county).any_of({:place_name => Regexp.new("^"+@character+"+") }).data_present.all.order_by(place_name: 1)
     @records = number_of_records_in_county(@county)
+    render :action => 'show'
+    return
+  end
 
+  def show
+     @county = session[:county]
+     @character =  session[:character] 
   end
 
   def show_place
@@ -60,6 +89,7 @@ class FreeregContentsController < ApplicationController
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
+    @character =  session[:character] 
     @country = @place.country
     @place_name = @place.place_name
     @names = @place.get_alternate_place_names
@@ -79,6 +109,7 @@ class FreeregContentsController < ApplicationController
     @place_name = @church.place.place_name
     @place = @church.place
     @county = session[:county]
+    @character =  session[:character] 
     @church_name = @church.church_name
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
@@ -93,6 +124,7 @@ class FreeregContentsController < ApplicationController
     @church  = @register.church
     @place = @church.place
     @county = session[:county]
+    @character =  session[:character] 
     @files_id = Array.new
     @place_name = @place.place_name
     session[:register_id] = params[:id]
@@ -118,6 +150,7 @@ class FreeregContentsController < ApplicationController
     @files_id = session[:files]
     @register_id = session[:register_id]
     @register_name = session[:register_name]
+    @character =  session[:character] 
     individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
     @files = Freereg1CsvFile.combine_files(individual_files)
     @decade = { }
@@ -152,7 +185,6 @@ class FreeregContentsController < ApplicationController
     records_ba = 0
     records_bu = 0
     files.each do |file|
-      p file
       records = records.to_i + file.records.to_i unless file.records.nil?
       case file.record_type
       when "ba"

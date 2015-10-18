@@ -1,5 +1,5 @@
 <% breadcrumb :error_records,  @freereg1_csv_file%>
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<p style="text-align: center"><b><%= @freereg1_csv_file_name %> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 
 <% if @errors == 0 %>
    <p  style="text-align: center" %><b>There are no errors in this batch </b></p>

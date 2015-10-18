@@ -8,8 +8,7 @@ class Freereg1CsvEntriesController < ApplicationController
       session[:entry_index_page] = params[:page]
     end
     display_info
-    #@freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1).page(params[:page])
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
   end
 
   def show
@@ -179,6 +178,7 @@ class Freereg1CsvEntriesController < ApplicationController
     end
     @freereg1_csv_file_id =  @freereg1_csv_file._id
     @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @file_owner = @freereg1_csv_file.userid
     @register = @freereg1_csv_file.register
     #@register_name = @register.register_name
     #@register_name = @register.alternate_register_name if @register_name.nil?

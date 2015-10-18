@@ -99,8 +99,11 @@ class Place
   end
   def self.approved
     where(:error_flag.ne => "Place name is not approved")
-
   end
+  def self.data_present
+    where(:data_present => true)
+  end
+
 
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location

@@ -35,6 +35,7 @@ FORCE_SEARCH_RECORD_RECREATE = [
   "witness2_forename", 
   "witness2_surname"
  ]
-
+ALPHABET = ['A',"B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+ALPHABET_SELECTION_LIST = ["CAM","CON","DUR","ESS","GLA","KEN","LAN","LIN","MDX","NBL","NFK","NTH","NTT","SOM","SRY","STS","WRY"]
 
 end

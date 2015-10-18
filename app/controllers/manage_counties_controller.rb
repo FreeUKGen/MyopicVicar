@@ -82,9 +82,6 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
   def places_with_unapproved_names
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @manage_county = ManageCounty.new
     @county = session[:county]
@@ -98,73 +95,58 @@ class ManageCountiesController < ApplicationController
   render '_form_for_selection'
   end
   def batches_with_errors
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by descending number of errors and then filename)'
      session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by("error DESC, file_name ASC" ).page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by("error DESC, file_name ASC" )
     render 'freereg1_csv_files/index'
   end
   def display_by_filename
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted alphabetically by file name)'
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("file_name ASC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("file_name ASC")
     render 'freereg1_csv_files/index'
   end
   def upload_batch
     redirect_to new_csvfile_path
   end
   def display_by_userid_filename
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by userid then alphabetically by file name)'
     session[:sorted_by] = @sorted_by
     session[:sort] = "userid_lower_case ASC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("userid_lower_case ASC, file_name ASC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("userid_lower_case ASC, file_name ASC")
     render 'freereg1_csv_files/index'
   end
 
   def display_by_descending_uploaded_date
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by descending date of uploading)'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date DESC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date DESC")
     render 'freereg1_csv_files/index'
   end
 
   def display_by_ascending_uploaded_date
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
     @who = nil
     @sorted_by = '(Sorted by ascending date of uploading)'
     session[:sorted_by] = @sorted_by
     session[:sort] ="uploaded_date ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date ASC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date ASC")
     render 'freereg1_csv_files/index'
   end
 
@@ -182,12 +164,9 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
   def files
-    if params[:page]
-    session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
-    @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all.page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).all
     if @freereg1_csv_files.length == 1
       file = Freereg1CsvFile.where(:county => session[:chapman_code],:file_name =>params[:params]).first
       redirect_to freereg1_csv_file_path(file)
@@ -197,12 +176,9 @@ class ManageCountiesController < ApplicationController
     end
   end
   def places
-    if params[:page]
-    session[:place_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:county]
-    @places = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params],:disabled => 'false').all.page(params[:page])
+    @places = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params],:disabled => 'false').all
     if @places.length == 1
       place = Place.where(:chapman_code => session[:chapman_code],:place_name =>params[:params],:disabled => 'false').first
       redirect_to place_path(place)
