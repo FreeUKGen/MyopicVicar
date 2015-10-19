@@ -35,6 +35,8 @@ class PhysicalFilesController < InheritedResources::Base
       @batches = PhysicalFile.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
     when   @sorted_by == 'All'
       @batches = PhysicalFile.userid(session[:who]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])
+     when   @sorted_by == '(Waiting_to_be_processed)'
+      @batches = PhysicalFile.waiting.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page])   
     else
       @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page])
     end
@@ -93,6 +95,12 @@ class PhysicalFilesController < InheritedResources::Base
     session[:who] = nil
     redirect_to  :action => 'index'
   end
+  def waiting_to_be_processed
+    session[:sorted_by] = '(Waiting_to_be_processed)'
+    session[:who] = nil
+    redirect_to  :action => 'index'
+  end
+
   def files_for_specific_userid
     get_user_info_from_userid
     @batch = PhysicalFile.new

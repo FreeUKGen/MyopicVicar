@@ -29,6 +29,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/:id/submit_for_processing(.:format)',  :to => 'physical_files#submit_for_processing', :as => :submit_for_processing_physical_file
   get 'physical_files/:id/reprocess(.:format)',  :to => 'physical_files#reprocess', :as => :reprocess_physical_file
   get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
+  get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   resources :physical_files
 
   resources :search_statistics
