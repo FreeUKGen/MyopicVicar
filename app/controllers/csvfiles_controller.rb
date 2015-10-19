@@ -102,8 +102,13 @@ class CsvfilesController < ApplicationController
         redirect_to my_own_freereg1_csv_file_path
         return
       end #session
-      redirect_to freereg1_csv_files_path(:anchor => "#{file.id}")
-      return
+      unless session[:freereg1_csv_file_id].nil?
+        redirect_to freereg1_csv_files_path(:anchor => "#{session[:freereg1_csv_file_id]}")
+        return
+      else
+        redirect_to freereg1_csv_files_path
+        return
+      end
     end  #commit
 
 
