@@ -48,7 +48,7 @@ namespace :freecen do
   desc "Process legacy FreeCEN1 DAT files"
   task :process_freecen1_metadata_dat, [:filename] => [:environment] do |t, args| 
     if Dir.exist? args.filename
-      Dir.glob(File.join(args.filename, '*.[Dd][Aa][Tt]')).each do |filename|
+      Dir.glob(File.join(args.filename, '*.[Dd][Aa][Tt]')).sort.each do |filename|
         process_metadata_file(filename)  
       end
     else
