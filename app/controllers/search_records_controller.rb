@@ -10,8 +10,22 @@ class SearchRecordsController < ApplicationController
     @cen_year = ' '
     @cen_piece = ' '
     if @dwelling && @dwelling.freecen1_vld_file
+      @dwelling_offset = 0
+      @dwelling_number = @dwelling.dwelling_number
+      if !params[:dwel].nil?
+        @dwelling = @dwelling.freecen1_vld_file.freecen_dwellings.where(_id: params[:dwel]).first
+        if @dwelling.nil?
+          redirect_to new_search_query_path
+          return
+        end
+        @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
+        @dwelling_number = @dwelling.dwelling_number
+      end
       @cen_year = @dwelling.freecen1_vld_file.full_year
       @cen_piece = @dwelling.freecen1_vld_file.piece
+      prev_next_dwellings = @dwelling.prev_next_dwelling_ids
+      @cen_prev_dwelling = prev_next_dwellings[0]
+      @cen_next_dwelling = prev_next_dwellings[1]
     end
     if params[:search_id].nil?
       redirect_to new_search_query_path
@@ -40,8 +54,24 @@ class SearchRecordsController < ApplicationController
     @cen_year = ' '
     @cen_piece = ' '
     if @dwelling && @dwelling.freecen1_vld_file
+      @dwelling_offset = 0
+      @dwelling_number = @dwelling.dwelling_number
+      if !params[:dwel].nil?
+        @dwelling = @dwelling.freecen1_vld_file.freecen_dwellings.where(_id: params[:dwel]).first
+        if @dwelling.nil?
+          redirect_to new_search_query_path
+          return
+        end
+        @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
+        @dwelling_number = @dwelling.dwelling_number
+      end
       @cen_year = @dwelling.freecen1_vld_file.full_year
       @cen_piece = @dwelling.freecen1_vld_file.piece
+      prev_next_dwellings = @dwelling.prev_next_dwelling_ids
+      @cen_prev_dwelling = prev_next_dwellings[0]
+      @cen_next_dwelling = prev_next_dwellings[1]
+      render "_search_records_freecen_print", :layout => false
+      return
     end
     if params[:search_id].nil?
       redirect_to new_search_query_path

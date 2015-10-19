@@ -1,28 +1,28 @@
 <section>
 
-  <% if true && @dwelling %>
+  <% if @dwelling %>
+    <% if 0 != @dwelling_offset %>
+      <p class="text--center">
+	<%= dwelling_offset_message(@dwelling_offset) %>
+      </p>
+    <% end %>
 
     <table class="table--bordered " style="background-color:#ffffff;">
       <thead>
 	<tr>
-	  <td>Year</td>
-	  <td>Place</td>
-	  <td>Piece</td>
-	  <% @search_record.cen_dwelling_fields.each do |fld| %>
+	  <% FreecenDwelling.dwelling_display_labels.each do |lbl| %>
 	  <td>
-	    <%= fld.titleize %>
+	    <%= lbl %>
 	  </td>
 	  <% end %>
 	</tr>
       </thead>
       <tbody>
 	<tr>
-	  <td><%= @cen_year %></td>
-	  <td><%= @search_record.place.place_name %></td>
-	  <td><%= @cen_piece %></td>
-	  <% @search_record.cen_dwelling_fields.each do |fld| %>
+	  <%# @search_record.place.place_name --- moved to models/freecen_dwelling (see "*TODO*") %>
+	  <% @dwelling.dwelling_display_values.each do |field_val| %>
 	  <td>
-	    <%= @dwelling.attributes[fld] %>
+	    <%= field_val %>
 	  </td>
 	  <% end %>
 	</tr>
@@ -32,9 +32,9 @@
     <table class="table--bordered " style="background-color:#ffffff;">
       <thead>
 	<tr>
-	  <% @search_record.cen_individual_fields.each do |fld| %>
+	  <% FreecenIndividual.individual_display_labels.each do |lbl| %>
 	  <td>
-	    <%= fld.titleize %>
+	    <%= lbl %>
 	  </td>
 	  <% end %>
 	</tr>
@@ -42,9 +42,9 @@
       <tbody>
 	<% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
 	<tr>
-	  <% @search_record.cen_individual_fields.each do |fld| %>
+	  <% individual.individual_display_values.each do |field_val| %>
 	  <td>
-	    <%= individual.attributes[fld] %>
+	    <%= field_val %>
 	  </td>
 	  <% end %>
 	</tr>

@@ -25,4 +25,18 @@ class FreecenIndividual
   belongs_to :freecen1_vld_entry
   
   index(freecen_dwelling_id:1)
+
+  # labels/values for dwelling page table body (header in freecen_dwelling)
+  def self.individual_display_labels
+    ['Surname','Forenames','Relationship','Marital Status','Sex','Age','Occupation','Birth County','Birth Place','Disability','Language','Notes']
+  end
+  def individual_display_values
+    disp_age = self.age
+    if self.age_unit && !self.age_unit.empty? && 'y' != self.age_unit
+      disp_age = self.age + self.age_unit
+    end
+    disp_occupation = self.occupation
+    [self.surname, self.forenames, self.relationship, self.marital_status, self.sex, disp_age, disp_occupation, self.verbatim_birth_county, self.verbatim_birth_place, self.disability, self.language, self.notes]
+  end
+
 end

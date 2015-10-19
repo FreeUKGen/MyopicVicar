@@ -22,7 +22,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen1_fixed_dat_entries
 
-  get 'dwelling/:id', :to =>'freecen_dwellings#show', :as => :dwelling
+
+  resources :freecen_dwellings
 
 
   resources :freecen_individuals

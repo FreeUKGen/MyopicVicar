@@ -186,16 +186,6 @@ class SearchRecord
     order
   end
 
-  def cen_dwelling_fields
-    dfields = ['civil_parish','enumeration_district','folio_number','page_number','schedule_number','house_number','house_or_street_name']
-    dfields
-  end
-
-  def cen_individual_fields
-    ifields = ['sequence_in_household','surname','forenames','relationship','marital_status','condition','sex','age','age_unit','occupation','occupation_flag','verbatim_birth_county','verbatim_birth_place','disability','language','notes']
-    ifields
-  end
-
   def transform
     populate_search_from_transcript
 
