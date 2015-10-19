@@ -3,6 +3,10 @@ class SearchRecordsController < ApplicationController
   skip_before_filter :require_login
   def show
     @page_number = params[:page_number].to_i
+    if params[:id].nil?
+      redirect_to new_search_query_path
+      return
+    end
     @search_record = SearchRecord.find(params[:id])
     @entry = @search_record.freereg1_csv_entry
     if params[:search_id].nil?
