@@ -80,38 +80,42 @@ class CsvfilesController < ApplicationController
   end
 
   def update
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    if params[:commit] == 'Process'
-      @csvfile = Csvfile.find(params[:id])
-      range = File.join(@csvfile.userid ,@csvfile.file_name)
-      case
-      when params[:csvfile][:process]  == "Just check for errors"
-        pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]")
-        flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
-      when params[:csvfile][:process]  == "Process tonight"
-        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
-        batch.add_file("base")
-        flash[:notice] =  "The file has been placed in the queue for overnight processing"
-      when params[:csvfile][:process]  == "As soon as you can"
-        pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
-        flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed into the database. You will receive an email when it has been completed."
-      else
-      end #case
-      @csvfile.delete
-      if session[:my_own]
-        redirect_to my_own_freereg1_csv_file_path
-        return
-      end #session
-      unless session[:freereg1_csv_file_id].nil?
-        redirect_to freereg1_csv_files_path(:anchor => "#{session[:freereg1_csv_file_id]}")
-        return
-      else
-        redirect_to freereg1_csv_files_path
-        return
-      end
-    end  #commit
-
-
+    if params[:id].nil?
+      flash[:notice] = "There was no file to process"
+      redirect_to :back
+      return
+    else
+      @user = UseridDetail.where(:userid => session[:userid]).first
+      if params[:commit] == 'Process'
+        @csvfile = Csvfile.find(params[:id])
+        range = File.join(@csvfile.userid ,@csvfile.file_name)
+        case
+        when params[:csvfile][:process]  == "Just check for errors"
+          pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]")
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
+        when params[:csvfile][:process]  == "Process tonight"
+          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+          batch.add_file("base")
+          flash[:notice] =  "The file has been placed in the queue for overnight processing"
+        when params[:csvfile][:process]  == "As soon as you can"
+          pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed into the database. You will receive an email when it has been completed."
+        else
+        end #case
+        @csvfile.delete
+        if session[:my_own]
+          redirect_to my_own_freereg1_csv_file_path
+          return
+        end #session
+        unless session[:freereg1_csv_file_id].nil?
+          redirect_to freereg1_csv_files_path(:anchor => "#{session[:freereg1_csv_file_id]}")
+          return
+        else
+          redirect_to freereg1_csv_files_path
+          return
+        end
+      end  #commit
+    end
   end
 
   def delete
