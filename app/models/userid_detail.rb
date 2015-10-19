@@ -71,6 +71,7 @@ class UseridDetail
   end
 
   def write_userid_file
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
