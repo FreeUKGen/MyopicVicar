@@ -1,4 +1,5 @@
 <% title "#{@county} Contents" %>
+<% unless @county.nil? || @records.nil? %>
 <div class="grid">
 	<header class="grid__item one-whole">
 		<div class="text--center push-half--bottom">
@@ -12,7 +13,7 @@
 	</header>
 	<div class="grid__item one-third palm-one-whole float--right ">
 		<div class="island island--blue push-half--top">
-			<strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
+      <strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
 			<ul>
 				<li><%= display_number(@records[1])%> baptisms</li>
 				<li><%=display_number(@records[2])%> burials</li>
@@ -84,3 +85,6 @@
     </table>
   </div>
 </div>
+<% else%>
+<p>There is something wrong with the request</p>
+<% end %>
