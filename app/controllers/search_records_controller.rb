@@ -7,12 +7,14 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     end
-    @search_record = SearchRecord.find(params[:id])
-    @entry = @search_record.freereg1_csv_entry
-    if params[:search_id].nil?
+
+    @search_record = SearchRecord.record_id(params[:id]).first  
+    if params[:search_id].nil? || @search_record.nil?
+       flash[:notice] = "Prior records no longer exist"
       redirect_to new_search_query_path
       return
     end
+    @entry = @search_record.freereg1_csv_entry
     begin
       @search_query = SearchQuery.find(params[:search_id])
       @previous_record = @search_query.previous_record(params[:id])

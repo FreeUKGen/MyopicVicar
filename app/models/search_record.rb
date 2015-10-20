@@ -83,6 +83,9 @@ class SearchRecord
      def burials
       where(:record_type => "bu")
      end
+     def record_id(id)
+       where(:id => id)
+     end
   end
 
   INDEXES.each_pair do |name,fields|
