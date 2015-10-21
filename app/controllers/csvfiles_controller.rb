@@ -3,7 +3,6 @@ class CsvfilesController < ApplicationController
   require 'freereg_csv_update_processor'
   require 'digest/md5'
 
-
   def new
     #get @userid
     get_user_info_from_userid
@@ -99,7 +98,7 @@ class CsvfilesController < ApplicationController
           flash[:notice] =  "The file has been placed in the queue for overnight processing"
         when params[:csvfile][:process]  == "As soon as you can"
           pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
-          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed into the database. You will receive an email when it has been completed."
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
         else
         end #case
         @csvfile.delete
@@ -132,21 +131,18 @@ class CsvfilesController < ApplicationController
   def get_userids_and_transcribers
     syndicate = @user.syndicate
     syndicate = session[:syndicate] unless session[:syndicate].nil?
-    @people =Array.new
+    @people = Array.new
     @people <<  @user.userid
     case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
+      load_people(@userids)
     when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator'
       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)
+      load_people(@userids)
     else
       @userids = @user
     end #end case
-    unless session[:my_own]
-      @userids.each do |ids|
-        @people << ids.userid
-      end
-    end
   end
 
   def download
@@ -159,5 +155,11 @@ class CsvfilesController < ApplicationController
       @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest,:locked_by_transcriber => 'false')
     end 
     @freereg1_csv_file.update_attributes(:locked_by_coordinator => false,:locked_by_transcriber => false)
+  end
+
+  def load_people(userids)
+    userids.each do |ids|
+       @people << ids.userid
+    end
   end
 end
