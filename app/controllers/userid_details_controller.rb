@@ -258,7 +258,7 @@ class UseridDetailsController < ApplicationController
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
-    if !@userid.errors.any? || success[0]
+    if !@userid.errors.any? || success
      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
      flash[:notice] = 'The update of the profile was successful'
      redirect_to userid_detail_path(@userid)
