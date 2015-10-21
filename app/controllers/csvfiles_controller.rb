@@ -15,7 +15,7 @@ class CsvfilesController < ApplicationController
   def create
     # There can be two types of creation firstly for an Upload of a new file and secondly from the Replacement of an exiting file.
     #processing is slightly different depending upon the type
-    if params[:csvfile][:csvfile].blank?
+    if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
       flash[:notice] = 'You must select a file'
       redirect_to :back
       return
