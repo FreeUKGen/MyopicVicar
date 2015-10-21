@@ -258,7 +258,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = '(Sorted alphabetically by file name)'
     session[:sort] = "file_name ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC")
     render :index
   end
   def display_my_error_files
@@ -267,7 +267,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = '(Sorted by number of errors)'
     session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC")
     render :index
   end
   def display_my_own_files_by_descending_uploaded_date
@@ -276,7 +276,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = '(Sorted by descending date of uploading)'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC")
     render :index
   end
   def display_my_own_files_by_ascending_uploaded_date
@@ -285,7 +285,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = '(Sorted by ascending date of uploading)'
     session[:sort] = "uploaded_date ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC")
     render :index
   end
   def display_my_own_files_by_selection
