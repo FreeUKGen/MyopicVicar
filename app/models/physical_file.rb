@@ -57,6 +57,10 @@ class PhysicalFile
      def userid(id)
       where(:userid => id)
      end
+     def remove_waiting_flag(id,file)
+      batch = PhysicalFile.userid(id).file_name(file).first
+      batch.update_attributes(:waiting_to_be_processed => false, :waiting_date => nil) if batch.present?  
+     end
   end
   
   def add_file(batch)

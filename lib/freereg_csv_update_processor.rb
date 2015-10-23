@@ -1114,13 +1114,14 @@ class FreeregCsvUpdateProcessor
                      else
                        raise FreeREGError,  "System_Error,Empty file" if @@array_of_data_lines.nil?
                        ensure
-                         #we ensure that processing keeps going by dropping outthrough the bottom
+                         #we ensure that processing keeps going by dropping out through the bottom
                        end #begin end
                        return success
                      end #method end
 
                      def self.check_for_replace(filename,force)
                        if !File.exists?(filename)
+                          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                          p  "#{@@userid} #{@@header[:file_name]} file does not exist"
                          @@message_file.puts "#{@@userid} #{@@header[:file_name]} file does not exist"
                          return false
@@ -1132,6 +1133,7 @@ class FreeregCsvUpdateProcessor
 
                        if check_for_userid.nil?
                          #but first we need to check that there is a userid
+                         PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                          @@message_file.puts "#{@@header[:userid]} does not exit"
                          puts "#{@@header[:userid]} does not exit"
                          return false
@@ -1151,21 +1153,24 @@ class FreeregCsvUpdateProcessor
                            #file in database is same or more recent than we we are attempting to reload so do not process
                            p  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
                            @@message_file.puts "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                            return false
                          when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                            #file in database is same or more recent than we we are attempting to reload so do not process
                            @@message_file.puts "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
                            p "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                            return false
                          when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
                              @@message_file.puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
                              puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                              PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                              return false
-                             else
+                          else
                                @@update = true
                                return true
-                             end
+                          end
                            end #check_for_file loop end
 
                          end #method end
@@ -1248,7 +1253,7 @@ class FreeregCsvUpdateProcessor
                                #get the data for the file in one gob
                                @success = slurp_the_csv_file(filename) if process == true
                                #check to see that we need to process the data and we got it all
-                               if @success == true  && process == true
+                              if @success == true  && process == true
                                  #how many records did we process?
                                  n = process_the_data
                                  #now lets clean up the files and send out messages after a success
@@ -1279,7 +1284,7 @@ class FreeregCsvUpdateProcessor
                                    header_errors= @@header_error.length unless  @@header_error.nil?
                                    UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                                    nn = nn + n unless n.nil?
-                                else
+                              else
                                      #another kludge to send a message to user that the file did not get processed when the processing failed
                                      if delta == 'process' || (delta == 'change' && filenames.length == 1 )
                                        @@message_file.puts "File not processed" if @success == false
@@ -1288,7 +1293,8 @@ class FreeregCsvUpdateProcessor
                                        UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver
                                        @@message_file = File.new(file_for_warning_messages, "w")
                                      end
-                                end
+                                     PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                              end
                                    #reset for next file
                                    @success = true
                                    #we pause for a time to allow the slaves to really catch up
