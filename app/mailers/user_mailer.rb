@@ -31,7 +31,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def update_report_to_freereg_manager(file,user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     attachments["report.log"] = File.read(file)
     @person_forename = user.person_forename
     @email_address = user.email_address
@@ -39,7 +39,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def invitation_to_register_transcriber(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     get_token
@@ -47,7 +47,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def invitation_to_register_researcher(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     get_token
@@ -55,7 +55,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def invitation_to_register_technical(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     get_token
@@ -63,7 +63,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def invitation_to_reset_password(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     get_token
@@ -71,35 +71,35 @@ class UserMailer < ActionMailer::Base
   end
 
   def notification_of_transcriber_creation(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration") unless @coordinator.nil?
   end
 
   def notification_of_technical_registration(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration") unless @coordinator.nil?
   end
 
   def notification_of_registration_completion(user)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration") unless @coordinator.nil?
@@ -129,13 +129,13 @@ class UserMailer < ActionMailer::Base
   end
 
   def copy_to_contact_person(contact)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
     mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "#{appname} Contact")
   end
 
   def contact_to_freexxx_manager(contact,person,ccs)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
@@ -144,7 +144,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def contact_to_recipient(contact,person,ccs)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
@@ -152,7 +152,7 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@name} <#{@email_address}>", :subject => "#{appname} Contact")
   end
   def contact_to_volunteer(contact,person,ccs)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
@@ -161,7 +161,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def contact_to_data_manager(contact,person,ccs)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
@@ -169,20 +169,11 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@name} <#{@email_address}>", :subject => "#{appname} Contact")
   end
   def contact_to_coordinator(contact,person,ccs)
-    appname = application_name_from_config_template_set
+    appname = MyopicVicar::Application.config.freexxx_display_name
     @ccs = ccs
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
     mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report (#{appname})")
-  end
-  def application_name_from_config_template_set
-    if MyopicVicar::Application.config.template_set == 'freereg'
-      return "FreeREG"
-    elsif MyopicVicar::Application.config.template_set == 'freecen'
-      return "FreeCEN"
-    elsif MyopicVicar::Application.config.template_set == 'freebmd'
-      return "FreeBMD"
-    end
   end
 end

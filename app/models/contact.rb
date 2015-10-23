@@ -117,6 +117,7 @@ class Contact
   end
 
   def get_coordinator
+    return nil if MyopicVicar::Application.config.template_set == 'freecen'
     entry = SearchRecord.find(self.record_id).freereg1_csv_entry
     record = Freereg1CsvEntry.find(entry)
     file = record.freereg1_csv_file
