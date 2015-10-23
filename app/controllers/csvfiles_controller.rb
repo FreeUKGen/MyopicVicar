@@ -152,7 +152,7 @@ class CsvfilesController < ApplicationController
     my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)   
     if File.file?(my_file)
       send_file( my_file, :filename => @freereg1_csv_file.file_name)
-      @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest,:locked_by_transcriber => 'false')
+      @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
     end 
     @freereg1_csv_file.update_attributes(:locked_by_coordinator => false,:locked_by_transcriber => false)
   end
