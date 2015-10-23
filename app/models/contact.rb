@@ -108,6 +108,8 @@ class Contact
       manager = UseridDetail.where(:userid => 'REGManager').first
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       manager = UseridDetail.where(:userid => 'CENManager').first
+    else
+      manager = nil
     end
     ccs << manager.person_forename unless manager.nil?
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |volunteer|

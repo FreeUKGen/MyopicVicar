@@ -101,8 +101,16 @@ class UserMailer < ActionMailer::Base
   def notification_of_registration_completion(user)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      manager = UseridDetail.userid("REGManager").first
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      manager = UseridDetail.userid("CENManager").first
+    else
+      manager = nil
+    end
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Registration Completion") unless @coordinator.nil?
+    mail(:to => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} Registration Completion") unless manager.nil?
   end
 
   def reset_notification(user,z)
@@ -131,7 +139,7 @@ class UserMailer < ActionMailer::Base
   def copy_to_contact_person(contact)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
-    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "#{appname} Contact")
+    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for contacting us (#{appname})")
   end
 
   def contact_to_freexxx_manager(contact,person,ccs)
@@ -140,7 +148,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "#{appname} Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
   end
 
   def contact_to_recipient(contact,person,ccs)
@@ -149,7 +157,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "#{appname} Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
   end
   def contact_to_volunteer(contact,person,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
@@ -157,7 +165,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "#{appname} Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
   end
 
   def contact_to_data_manager(contact,person,ccs)
@@ -166,7 +174,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "#{appname} Contact")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
   end
   def contact_to_coordinator(contact,person,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
@@ -174,6 +182,6 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @name = person.person_forename
     @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report (#{appname})")
+    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report from a #{appname} contact")
   end
 end
