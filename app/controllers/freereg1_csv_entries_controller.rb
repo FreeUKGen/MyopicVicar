@@ -149,7 +149,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @page_number = (@number/50).to_i
     @page_number =  (@page_number + 1)
     params[:page] = @page_number
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1).page(params[:page])
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).order_by(file_line_number: 1)
     render "index"
   end
 

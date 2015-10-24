@@ -74,9 +74,6 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename"
   end
   def batches_with_errors
-    if params[:page]
-     session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -84,13 +81,11 @@ class ManageSyndicatesController < ApplicationController
      session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
     userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-    @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).gt(error: 0).order_by("error DESC, file_name ASC" ).page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).gt(error: 0).all.order_by("error DESC, file_name ASC" )
     render 'freereg1_csv_files/index'
   end
   def display_by_filename
-    if params[:page]
-     session[:files_index_page] = params[:page]
-    end
+    
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -98,7 +93,7 @@ class ManageSyndicatesController < ApplicationController
      session[:sorted_by] = @sorted_by
      session[:sort] = "file_name ASC"
      userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-     @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by("file_name ASC" ).page(params[:page])
+     @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).all.order_by("file_name ASC" )
     #@freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by("file_name ASC" ).page(params[:page])
     render 'freereg1_csv_files/index'
   end
@@ -106,10 +101,6 @@ class ManageSyndicatesController < ApplicationController
     redirect_to new_csvfile_path
   end
   def display_by_userid_filename
-    
-    if params[:page]
-     session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -117,13 +108,10 @@ class ManageSyndicatesController < ApplicationController
      session[:sorted_by] = @sorted_by
     session[:sort] = "userid_lower_case ASC, file_name ASC"
     userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-     @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by("userid_lower_case ASC, file_name ASC" ).page(params[:page])
+     @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).all.order_by("userid_lower_case ASC, file_name ASC" )
     render 'freereg1_csv_files/index'
   end
   def display_by_descending_uploaded_date
-    if params[:page]
-     session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -131,13 +119,10 @@ class ManageSyndicatesController < ApplicationController
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
     userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-    @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by("uploaded_date DESC" ).page(params[:page])
+    @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).all.order_by("uploaded_date DESC" )
     render 'freereg1_csv_files/index'
   end
   def display_by_ascending_uploaded_date
-    if params[:page]
-     session[:files_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = nil
@@ -145,7 +130,7 @@ class ManageSyndicatesController < ApplicationController
      session[:sort] = "uploaded_date ASC"
       session[:sorted_by] = @sorted_by
    userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-     @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by("uploaded_date ASC" ).page(params[:page])
+     @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).all.order_by("uploaded_date ASC" )
     render 'freereg1_csv_files/index'
   end
   def review_a_specific_batch
@@ -184,7 +169,7 @@ class ManageSyndicatesController < ApplicationController
   def display_files_waiting_to_be_processed
     @who = session[:syndicate]
     userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-    @batches = PhysicalFile.in(userid: userids).waiting.order_by("userid ASC, waiting_date DESC")
+    @batches = PhysicalFile.in(userid: userids).waiting.all.order_by("userid ASC, waiting_date DESC")
   end
 
 
