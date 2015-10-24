@@ -287,7 +287,7 @@ class Freereg1CsvFile
     success = Array.new
     success[0] = true
     success[1] = ""
-    case 
+    case
     when self.nil?
       success[0] = false
       success[1] = "file does not exist"
@@ -300,12 +300,12 @@ class Freereg1CsvFile
     when self.record_type.blank?
       success[0] = false
       success[1] = "record type is missing"
-     when self.freereg1_csv_entries.count == 0
+    when self.freereg1_csv_entries.count == 0
       success[0] = false
       success[1] = "file has no entries"
     end
     p success
-    success   
+    success
   end
   def backup_file
     #this makes aback up copy of the file in the attic and creates a new one
@@ -579,7 +579,7 @@ class Freereg1CsvFile
         if  batch.locked_by_coordinator
           batch.update_attributes(:locked_by_coordinator => false)
           batch.update_attributes(:locked_by_transcriber => false)
-          
+
         else
           batch.update_attributes(:locked_by_coordinator => true)
           batch.update_attributes(:locked_by_transcriber => false)
@@ -710,7 +710,7 @@ class Freereg1CsvFile
       #now we update the system information
       physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
       if physical_file.present?
-      physical_file.update_userid(new_userid) 
+        physical_file.update_userid(new_userid)
         if message == "No FR1 folder for the old userid" || message == message = "No FR1 folder for the new userid"
           physical_file.update_change(new_userid)
         end
@@ -763,9 +763,9 @@ class Freereg1CsvFile
     #since a file may have many batches we must change them all as we have moved the file
     batches = Freereg1CsvFile.userid(old_userid).file_name(self.file_name).all
     batches.each do |batch|
-      batch.update_entries_userid(new_userid)
-      batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
-      batch.update_userids_with_change(new_userid)
+      success = batch.update_entries_userid(new_userid)
+      batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase) if success
+      batch.update_userids_with_change(new_userid) if success
     end
   end
   def update_userids_with_change(new_userid)
@@ -775,9 +775,13 @@ class Freereg1CsvFile
   def update_entries_userid(userid)
     self.freereg1_csv_entries.each do |entry|
       line = entry.line_id
-      line_parts = line.split('.')
-      line_parts[0] = userid
-      line = line_parts.join('.')
+      if line.present?
+        line_parts = line.split('.')
+        line_parts[0] = userid
+        line = line_parts.join('.')
+      else
+        line = (userid + "." + self.file_name + "." + self.file_line_number).to_s
+      end
       entry.update_attribute(:line_id,line)
     end
     true
@@ -788,10 +792,7 @@ class Freereg1CsvFile
     datemax = FreeregValidations::YEAR_MIN
     datemin = FreeregValidations::YEAR_MAX
     self.freereg1_csv_entries.each do |entry|
-      p entry.inspect if number_of_records == 0
       xx = entry.year
-      p xx.inspect if number_of_records == 0
-
       unless xx.nil?
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
@@ -800,17 +801,12 @@ class Freereg1CsvFile
         bin = 0 if bin < 0
         bin = 49 if bin > 49
         daterange[bin] = daterange[bin] + 1
-        p daterange[bin] if number_of_records == 0
       end
-                 number_of_records =  number_of_records + 1
-
+      number_of_records =  number_of_records + 1
     end
-    p datemin
-    p daterange
     self.update_attributes(:datemin => datemin,:datemax => datemax,:daterange => daterange,:records =>  number_of_records )
     success = true
     success = false if self.errors.any?
-    
     return success
   end
   def calculate_date(param)
@@ -841,7 +837,7 @@ class Freereg1CsvFile
         color = "color:red"
       when !self.processed
         color = "color:orange"
-      when self.error == 0 && !self.locked_by_coordinator && !self.locked_by_transcriber 
+      when self.error == 0 && !self.locked_by_coordinator && !self.locked_by_transcriber
         color ="color:green"
       when self.error == 0 && (self.locked_by_coordinator || self.locked_by_transcriber )
         color = "color:blue"
