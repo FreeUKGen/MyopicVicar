@@ -147,7 +147,12 @@ class CsvfilesController < ApplicationController
 
   def download
     @role = session[:role]
-    @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    ok_to_proceed = @freereg1_csv_file.check_file
+    if !ok_to_proceed[0] 
+      flash[:notice] =  "There is a problem with the file you are attempting to download; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
+      redirect_to :back and return
+    end
     @freereg1_csv_file.backup_file
     my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)   
     if File.file?(my_file)
@@ -155,6 +160,7 @@ class CsvfilesController < ApplicationController
       @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
     end 
     @freereg1_csv_file.update_attributes(:locked_by_coordinator => false,:locked_by_transcriber => false)
+    flash[:notice] =  "The file has been downloaded to your computer"
   end
 
   def load_people(userids)

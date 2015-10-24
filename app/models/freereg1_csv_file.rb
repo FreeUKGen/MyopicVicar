@@ -130,6 +130,9 @@ class Freereg1CsvFile
     def file_name(name)
       where(:file_name => name)
     end
+    def id(id)
+      where(:id => id)
+    end
   end
 
   def add_lower_case_userid
@@ -280,12 +283,35 @@ class Freereg1CsvFile
     my_days = date_year.to_i*365 + date_month.to_i*30 + date_day.to_i
     my_days
   end
+  def check_file
+    success = Array.new
+    success[0] = true
+    success[1] = ""
+    case 
+    when self.nil?
+      success[0] = false
+      success[1] = "file does not exist"
+    when self.file_name.blank?
+      success[0] = false
+      success[1] = "file name is missing"
+    when self.userid.blank?
+      success[0] = false
+      success[1] = "userid is missing"
+    when self.record_type.blank?
+      success[0] = false
+      success[1] = "record type is missing"
+     when self.freereg1_csv_entries.count == 0
+      success[0] = false
+      success[1] = "file has no entries"
+    end
+    p success
+    success   
+  end
   def backup_file
     #this makes aback up copy of the file in the attic and creates a new one
-    file = self
-    file.save_to_attic
-    file_location = File.join(Rails.application.config.datafiles,file.userid,file.file_name)
-    file.write_csv_file(file_location)
+    self.save_to_attic
+    file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    self.write_csv_file(file_location)
   end
 
   def write_csv_file(file_location)
