@@ -156,8 +156,9 @@ class SearchRecord
       place_name = self.place.place_name unless self.place.nil? # should not be nil but!
       location_array << "#{place_name} (#{church_name})"
       location_array << " [#{register_type}]"
-    else
-      location_array << "#{place_name} (#{church_name})"
+    else # freecen
+      place_name = self.place.place_name unless self.place.nil?
+      location_array << "#{place_name}"
     end
 
     location_array

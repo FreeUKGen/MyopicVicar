@@ -4,10 +4,6 @@ module Freecen
   class Freecen1VldTransformer
       
     def transform_file_record(freecen1_vld_file)
-      # extract places
-      # extract pieces
-      # extract dwelling
-      # extract individual
       dwelling = nil
       freecen1_vld_file.freecen1_vld_entries.each do |entry|
         if dwelling && dwelling.dwelling_number == entry.dwelling_number
@@ -26,6 +22,7 @@ module Freecen
       dwelling.save!
       
     end
+
   
     def dwelling_from_entry(entry)
       dwelling = FreecenDwelling.new
@@ -33,6 +30,7 @@ module Freecen
         dwelling[key] = entry.send(key) unless key == "_id"
       end
       dwelling.freecen1_vld_file=entry.freecen1_vld_file
+      dwelling.place = check_and_get_place(dwelling, entry.freecen1_vld_file.chapman_code)
       
       dwelling
     end
@@ -49,6 +47,16 @@ module Freecen
       individual    
     end
     
-  
+    def check_and_get_place(dwelling, chapman_code)
+      chapman_code = dwelling.freecen1_vld_file.chapman_code
+      place_name = dwelling.civil_parish
+      place = Place.where(:chapman_code => chapman_code, :place_name => dwelling.civil_parish).first
+      
+      if nil == place
+        place = Place.create!(:chapman_code => chapman_code, :place_name => dwelling.civil_parish, :latitude => 50, :longitude => 0)
+      end
+            
+      place
+    end
   end
 end

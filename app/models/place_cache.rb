@@ -19,7 +19,6 @@ class PlaceCache
       places = Place.where(:chapman_code => county).asc(:place_name)
       places.each do |place|
         if place.data_present
-          binding.pry
           county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
         end
       end      
