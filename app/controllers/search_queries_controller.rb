@@ -139,16 +139,31 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-    begin
-      @search_query = SearchQuery.find(params[:id])
-      @search_results =   @search_query.results 
-    rescue Mongoid::Errors::DocumentNotFound
-      log_possible_host_change
-      redirect_to new_search_query_path
+    if params[:id].present?
+      @search_query = SearchQuery.where(:id => params[:id]).first
+    else
+      logger.warn("SEARCH_ERROR:nil parameter condition occurred")
+      go_back
+      return
     end
-
+    if @search_query.present?
+      @search_results =   @search_query.results
+    else
+      logger.warn("SEARCH_ERROR:search query no longer present")
+      go_back
+      return
+    end
+    if @search_results.nil? || @search_query.result_count.nil?
+      logger.warn("SEARCH_ERROR:search results no longer present")
+      go_back
+      return
+    end
   end
-
+  def go_back
+    flash[:notice] = "We found it impossible to complete your search as submitted, please rephrase"
+    redirect_to new_search_query_path
+    return
+  end
 
 
   def edit
