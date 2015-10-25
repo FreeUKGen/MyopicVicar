@@ -17,7 +17,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def batch_processing_failure(file,user,batch)
-    attachments["report.txt"] = File.read(file)
+    
     @userid = UseridDetail.where(userid: user).first
    # syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
     #sc = UseridDetail.where(userid: syndicate_coordinator).first
