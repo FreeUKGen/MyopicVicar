@@ -110,11 +110,12 @@ class SearchQuery
   def compare_name(x,y)
     x_name = x.comparable_name
     y_name = y.comparable_name
-    
-    if x_name['last_name'] == y_name['last_name']
-      x_name['first_name'] <=> y_name['first_name']
-    else
-      x_name['last_name'] <=> y_name['last_name']
+    unless x_name.blank? || y_name.blank?
+      if x_name['last_name'] == y_name['last_name']
+        x_name['first_name'] <=> y_name['first_name']
+      else
+        x_name['last_name'] <=> y_name['last_name']
+      end
     end
   end
 
