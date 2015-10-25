@@ -780,7 +780,7 @@ class Freereg1CsvFile
         line_parts[0] = userid
         line = line_parts.join('.')
       else
-        line = (userid + "." + self.file_name + "." + self.file_line_number).to_s
+        line = (userid + "." + self.file_name + "." + entry.file_line_number).to_s
       end
       entry.update_attribute(:line_id,line)
     end
