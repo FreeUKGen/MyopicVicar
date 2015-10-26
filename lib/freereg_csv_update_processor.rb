@@ -1288,8 +1288,15 @@ class FreeregCsvUpdateProcessor
                                      #another kludge to send a message to user that the file did not get processed when the processing failed
                                      if delta == 'process' || (delta == 'change' && filenames.length == 1 )
                                        @@message_file.puts "File not processed" if @success == false
-                                        UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver
+                                       UserMailer.batch_processing_failure( @@message_file,@@header[:userid],@@header[:file_name]).deliver
                                      end
+                                     if (delta == 'change' && filenames.length == 1 )
+                                        @@message_file.close
+                                        file = @@message_file
+                                        user = UseridDetail.where(userid: "REGManager").first
+                                        UserMailer.update_report_to_freereg_manager(file,user).deliver
+                                     end
+
                                      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                               end
                                    #reset for next file
