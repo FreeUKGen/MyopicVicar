@@ -23,7 +23,7 @@ end
 # load_freecen_refinery_pages imports all refinery data except that related
 # to users and user roles from the sql file specified as an argument
 desc "Reload all refinery data (except users/roles) from sql file"
-task :load_freecen_users, [:in_sql] => :environment do |t, args|
+task :load_freecen_refinery_pages, [:in_sql] => :environment do |t, args|
   if !args[:in_sql].nil? && File.exists?(args[:in_sql])
     dbname = Rails.configuration.database_configuration[Rails.env]["database"]
     dbuser = Rails.configuration.database_configuration[Rails.env]["username"]
@@ -40,6 +40,6 @@ task :load_freecen_users, [:in_sql] => :environment do |t, args|
     puts "done."
   else
     puts "ERROR! could not find file '#{args[:in_sql]}"
-    puts 'usage: rake load_freecen_users["/path/in.sql"]'
+    puts 'usage: rake load_freecen_refinery_pages["/path/in.sql"]'
   end
 end
