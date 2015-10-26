@@ -30,7 +30,6 @@ class Register
     def id(id)
       where(:id => id)
     end
-
   end
 
   def self.update_or_create_register(freereg1_csv_file)
@@ -90,7 +89,7 @@ class Register
 
   def records
     records = 0
-    @self.freereg1_csv_files.each do |file|
+    self.freereg1_csv_files.each do |file|
       records =  records + file.freereg1_csv_entries.count
     end
     records
@@ -134,8 +133,8 @@ class Register
     register_type = RegisterType.display_name(self.register_type)
     location_names << "#{place_name} (#{church_name})"
     location_names  << " [#{register_type}]"
-    self.freereg1_csv_files.each do |file|
-      file.freereg1_csv_entries.each do |entry|
+    self.freereg1_csv_files.no_timeout.each do |file|
+      file.freereg1_csv_entries.no_timeout.each do |entry|
         if entry.search_record.nil?
           logger.info "search record missing for entry #{entry._id}"
         else
@@ -162,14 +161,14 @@ class Register
     church.registers.each do |register|
       register.register_type
       unless (register._id == register_id || register.register_type != self.register_type)
-        return [true, "a register being merged has input"] if register.has_input?
+        return [false, "a register being merged has input"] if register.has_input?
         register.freereg1_csv_files.each do |file|
           file.update_attribute(:register_id, register_id)
         end
         church.registers.delete(register)
       end
     end
-    return [false, ""]
+    return [true, ""]
   end
 
   def has_input?
