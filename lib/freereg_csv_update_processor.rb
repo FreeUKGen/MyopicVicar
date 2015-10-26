@@ -1256,8 +1256,7 @@ class FreeregCsvUpdateProcessor
                               if @success == true  && process == true
                                  #how many records did we process?
                                  n = process_the_data
-                                 #now lets clean up the files and send out messages after a success
-
+                                 #now lets clean up the files and send out messages 
                                  #do we have a record of this physical file
                                    batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
                                    if batch.nil?
@@ -1279,22 +1278,24 @@ class FreeregCsvUpdateProcessor
                                      #only checked for errors so file is not processed into search database
                                      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
                                    end
-                                   #kludge to send email to user if a check for errors or an on-line process
+                                   #kludge to send email to user 
                                    header_errors = 0
                                    header_errors= @@header_error.length unless  @@header_error.nil?
                                    UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                                    nn = nn + n unless n.nil?
                               else
                                      #another kludge to send a message to user that the file did not get processed when the processing failed
-                                     if delta == 'process' || (delta == 'change' && filenames.length == 1 )
-                                       @@message_file.puts "File not processed" if @success == false
-                                       UserMailer.batch_processing_failure( @@message_file,@@header[:userid],@@header[:file_name]).deliver
-                                     end
                                      if (delta == 'change' && filenames.length == 1 )
+                                        @@message_file.puts "File not processed" if @success == false
                                         @@message_file.close
                                         file = @@message_file
+                                        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver
                                         user = UseridDetail.where(userid: "REGManager").first
                                         UserMailer.update_report_to_freereg_manager(file,user).deliver
+                                     end
+                                     if delta == 'process' 
+                                        file = @@message_file
+                                        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver                                          
                                      end
 
                                      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
