@@ -66,7 +66,7 @@ MyopicVicar::Application.configure do
   if config.respond_to?(:action_mailer)
     # config.action_mailer.raise_delivery_errors = false
   end
-
+  config.action_dispatch.ip_spoofing_check = false
   # Enable threaded mode
   # config.threadsafe!
 
