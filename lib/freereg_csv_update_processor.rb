@@ -1288,7 +1288,7 @@ class FreeregCsvUpdateProcessor
                                      #another kludge to send a message to user that the file did not get processed when the processing failed
                                      if delta == 'process' || (delta == 'change' && filenames.length == 1 )
                                        @@message_file.puts "File not processed" if @success == false
-                                        UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver
+                                        UserMailer.batch_processing_failure(@@header[:userid],@@header[:file_name]).deliver
                                      end
                                      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                               end
