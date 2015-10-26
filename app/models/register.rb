@@ -26,6 +26,13 @@ class Register
   index({ alternate_register_name: 1})
   index({ church_id: 1, alternate_register_name: 1})
 
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+
+  end
+
   def self.update_or_create_register(freereg1_csv_file)
     # find if register exists
     register = find_register(freereg1_csv_file.to_register)

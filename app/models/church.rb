@@ -20,6 +20,13 @@ class Church
   validates_presence_of :church_name
   validate :church_does_not_exist, on: :create
 
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
+
+
   def church_does_not_exist
     #errors.add(:church_name, "Church of that name already exits") unless place.church.nil?
   end
