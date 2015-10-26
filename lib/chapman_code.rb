@@ -32,6 +32,9 @@ module ChapmanCode
     
     if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
       hash.delete("'England and Wales Shipping'")
+      hash.delete("'Out of County'")
+      hash.delete("'Overseas British'")
+      hash.delete("'Overseas Foreign'")
     end
     
     hash
@@ -219,7 +222,10 @@ module ChapmanCode
        'Radnorshire' => 'RAD' },
      "Special" => {
        'Unknown' => 'UNK',
-       'England and Wales Shipping' => 'EWS' }
+       'England and Wales Shipping' => 'EWS',
+       'Out of County' => 'OUC',
+       'Overseas British' => 'OVB',
+       'Overseas Foreign' => 'OVF'}
   }
 
   private

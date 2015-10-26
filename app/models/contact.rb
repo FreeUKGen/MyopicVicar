@@ -47,13 +47,13 @@ class Contact
 
   def github_issue
     ccs = Array.new
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-       ccs << person.person_forename
-      end
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.person_forename
+    end
 
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      UserMailer.contact_to_freereg_manager(self,person,ccs).deliver
-      end
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UserMailer.contact_to_freexxx_manager(self,person,ccs).deliver
+    end
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_login
@@ -63,7 +63,6 @@ class Contact
       logger.info(response)
       self.github_issue_url = response[:html_url]
       self.save!
-      
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
@@ -79,25 +78,25 @@ class Contact
 
   def general_issue(contact)
     ccs = Array.new
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-       ccs << person.person_forename
-      end
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-    UserMailer.contact_to_freereg_manager(contact,person,ccs).deliver
+      ccs << person.person_forename
+    end
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UserMailer.contact_to_freexxx_manager(contact,person,ccs).deliver
     end
   end
-
+  
   def data_manager_issue(contact)
     ccs = Array.new
     coordinator = contact.get_coordinator if contact.record_id.present?
-    ccs << coordinator.person_forename if contact.record_id.present?
+    ccs << coordinator.person_forename if contact.record_id.present? && coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
-       ccs << person.person_forename
+      ccs << person.person_forename
     end
     UserMailer.contact_to_coordinator(contact,coordinator,ccs).deliver if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
-    UserMailer.contact_to_recipient(contact,data_manager,ccs).deliver unless coordinator.present?
-    UserMailer.contact_to_data_manager(contact,data_manager,ccs).deliver if coordinator.present?
+      UserMailer.contact_to_recipient(contact,data_manager,ccs).deliver unless coordinator.present?
+      UserMailer.contact_to_data_manager(contact,data_manager,ccs).deliver if coordinator.present?
     end
   end
   def volunteering_issue(contact)
@@ -105,15 +104,22 @@ class Contact
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
        ccs << person.person_forename
     end
-     manager = UseridDetail.where(:userid => 'REGManager').first
-      ccs << manager.person_forename
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      manager = UseridDetail.where(:userid => 'REGManager').first
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      manager = UseridDetail.where(:userid => 'CENManager').first
+    else
+      manager = nil
+    end
+    ccs << manager.person_forename unless manager.nil?
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |volunteer|
      UserMailer.contact_to_volunteer(contact,volunteer,ccs).deliver
     end
-     UserMailer.contact_to_volunteer(contact,manager,ccs).deliver
+    UserMailer.contact_to_volunteer(contact,manager,ccs).deliver unless manager.nil?
   end
 
   def get_coordinator
+    return nil if MyopicVicar::Application.config.template_set == 'freecen'
     entry = SearchRecord.find(self.record_id).freereg1_csv_entry
     record = Freereg1CsvEntry.find(entry)
     file = record.freereg1_csv_file

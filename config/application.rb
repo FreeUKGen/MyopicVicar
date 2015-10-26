@@ -73,6 +73,15 @@ module MyopicVicar
     # set config.template_set before asset directories are selected
     config.template_set = TemplateSet::FREECEN
 
+    #set config.freexxx_display_name based on the template_set
+    if config.template_set == TemplateSet::FREECEN
+      config.freexxx_display_name = "FreeCen"
+    elsif config.template_set == TemplateSet::FREEREG
+      config.freexxx_display_name = "FreeReg"
+    elsif config.template_set == TemplateSet::FREEBMD
+      config.freexxx_display_name = "FreeBMD"
+    end
+
     # Enable the asset pipeline
     config.assets.enabled = true
 
