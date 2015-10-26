@@ -60,7 +60,6 @@ class Syndicate
   def self.get_syndicates_open_for_transcription
     @syndicates = Array.new
     syndicates = Syndicate.where(:accepting_transcribers.ne => false).all.order_by(syndicate_code: 1)
-    @syndicates << "Researcher"
     syndicates.each do |syn|
       @syndicates << syn.syndicate_code unless syn.syndicate_code == "Researcher"
     end
