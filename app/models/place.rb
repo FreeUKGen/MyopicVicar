@@ -81,15 +81,14 @@ class Place
       'miles' => ENGLISH,
       'kilometers' => SI
     }
+    def self.system_to_units(system)
+      OPTIONS.invert[system]
+    end
   end
-
   class << self
     def id(id)
       where(:id => id)
-    end
-    def system_to_units(system)
-      OPTIONS.invert[system]
-    end
+    end 
     def county(county)
       where(:county => county)
     end
