@@ -389,7 +389,7 @@ class Freereg1CsvFile
                         "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
                         "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
                         "#{rec.father_occupation}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
             csv << csv_hold
 
           when file.record_type == "bu"
@@ -398,7 +398,7 @@ class Freereg1CsvFile
                         "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
                         "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
                         "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
             csv << csv_hold
 
           when file.record_type == "ma"
@@ -408,7 +408,7 @@ class Freereg1CsvFile
                         "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
                         "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
                         "#{rec.witness1_forename}","#{rec.witness1_surname}","#{rec.witness2_forename}","#{rec.witness2_surname}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
             csv << csv_hold
           end #end case
         end #end records
