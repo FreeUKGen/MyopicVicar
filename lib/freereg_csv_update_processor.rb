@@ -1122,8 +1122,10 @@ class FreeregCsvUpdateProcessor
                      def self.check_for_replace(filename,force)
                        if !File.exists?(filename)
                           PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                         p  "#{@@userid} #{@@header[:file_name]} file does not exist"
-                         @@message_file.puts "#{@@userid} #{@@header[:file_name]} file does not exist"
+                          message = "#{@@userid} #{@@header[:file_name]} file does not exist"
+                         p  message
+                         @@message_file.puts message
+                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
                          return false
                        end
                        #check to see if we should process the file
@@ -1134,8 +1136,10 @@ class FreeregCsvUpdateProcessor
                        if check_for_userid.nil?
                          #but first we need to check that there is a userid
                          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                         @@message_file.puts "#{@@header[:userid]} does not exit"
-                         puts "#{@@header[:userid]} does not exit"
+                         message = "#{@@header[:userid]} does not exit"
+                         p  message
+                         @@message_file.puts message
+                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                          return false
                        end
 
@@ -1151,22 +1155,28 @@ class FreeregCsvUpdateProcessor
                            return true
                          when @@header[:digest] == check_for_file.digest
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           p  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
-                           @@message_file.puts "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                           message =  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                            p  message
+                           @@message_file.puts message
+                           UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                             PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                            return false
                          when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           @@message_file.puts "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
-                           p "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
+                             message = "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
+                            p  message
+                            @@message_file.puts message
+                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                             PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                            return false
                          when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
-                             @@message_file.puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                             puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                              PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                             return false
+                            message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                            p  message
+                            @@message_file.puts message
+                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            return false
                           else
                                @@update = true
                                return true
@@ -1293,8 +1303,8 @@ class FreeregCsvUpdateProcessor
                                         user = UseridDetail.where(userid: "REGManager").first
                                         UserMailer.update_report_to_freereg_manager(file,user).deliver
                                      end
-                                     if delta == 'process' 
-                                        file = @@message_file
+                                     if delta == 'process' && process == true
+                                        file = "There was a malfunction in the processing; contact system administration"
                                         UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver                                          
                                      end
 

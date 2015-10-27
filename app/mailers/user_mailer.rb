@@ -11,22 +11,22 @@ class UserMailer < ActionMailer::Base
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}") unless @userid.nil?
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Batch Processing") unless sc.email_address == @userid.email_address
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") unless @userid.nil?
+    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
+    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg processed #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address
   end
 
-  def batch_processing_failure(file,user,batch)
-
+  def batch_processing_failure(message,user,batch)
+    @message = message
     @userid = UseridDetail.where(userid: user).first
     syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
     sc = UseridDetail.where(userid: syndicate_coordinator).first
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg2 processed #{batch}") unless @userid.nil?
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg2 processed #{batch}") unless sc.email_address == @userid.email_address
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Batch Processing") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") unless @userid.nil?
+    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless sc.email_address == @userid.email_address
+    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address
   end
 
   def update_report_to_freereg_manager(file,user)
