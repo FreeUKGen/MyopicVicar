@@ -11,7 +11,7 @@ class UserMailer < ActionMailer::Base
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") unless @userid.nil?
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") if @userid.active
     mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
     mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg processed #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address
   end
@@ -24,8 +24,8 @@ class UserMailer < ActionMailer::Base
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator).first
-    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") unless @userid.nil?
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless sc.email_address == @userid.email_address
+    mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") if @userid.active
+    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless sc.email_address == @userid.email_address 
     mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address
   end
 
