@@ -54,11 +54,11 @@ task :save_freecen_users, [:out_json,:out_sql] => :environment do |t, args|
     dbname = Rails.configuration.database_configuration[Rails.env]["database"]
     dbuser = Rails.configuration.database_configuration[Rails.env]["username"]
     dbpw = Rails.configuration.database_configuration[Rails.env]["password"]
-    puts "saving refinery_users, refinery_roles_users, and refinery_roles sql"
+    puts "saving refinery_users, refinery_roles_users, refinery_roles, and refinery_user_plugins sql"
     puts "*** please enter the mysql password for the freecen2 user ***"
     cmd = "mysqldump --opt -u #{dbuser} -p #{dbname} " + \
-          "refinery_users refinery_roles refinery_roles_users " \
-          "> #{args[:out_sql]}"
+          "refinery_users refinery_roles refinery_roles_users " + \
+	  "refinery_user_plugins > #{args[:out_sql]}"
     rv = `#{cmd}`
     puts rv
 
