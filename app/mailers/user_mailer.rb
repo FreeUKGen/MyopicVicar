@@ -6,7 +6,7 @@ class UserMailer < ActionMailer::Base
     @errors = error
     @headers = headers
     @records = records
-    syndicate_coordinator = Syndicate.where(syndicate_code: userid.syndicate).first.syndicate_coordinator
+    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
     sc = UseridDetail.where(userid: syndicate_coordinator).first
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
