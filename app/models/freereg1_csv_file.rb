@@ -383,7 +383,7 @@ class Freereg1CsvFile
         records.each do |rec|
           church_name = church.church_name.to_s + " " + register.register_type.to_s
           case
-          when fil.record_type == "ba"
+          when file.record_type == "ba"
 
             csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
@@ -392,7 +392,7 @@ class Freereg1CsvFile
             csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
             csv << csv_hold
 
-          when fil.record_type == "bu"
+          when file.record_type == "bu"
 
             csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
@@ -401,7 +401,7 @@ class Freereg1CsvFile
             csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
             csv << csv_hold
 
-          when fil.record_type == "ma"
+          when file.record_type == "ma"
             csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
                         "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
