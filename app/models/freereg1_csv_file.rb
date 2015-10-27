@@ -375,11 +375,11 @@ class Freereg1CsvFile
       #eg +LDS,,,,
       csv << ['+LDS'] if file.lds =='yes'
 
-      file_parts.each do |fil|
-        register = fil.register
+      
+        register = file.register
         church = register.church
         place = church.place
-        records = fil.freereg1_csv_entries
+        records = file.freereg1_csv_entries
         records.each do |rec|
           church_name = church.church_name.to_s + " " + register.register_type.to_s
           case
@@ -412,9 +412,7 @@ class Freereg1CsvFile
             csv << csv_hold
           end #end case
         end #end records
-      end #file parts
     end #end csv
-
   end #end method
 
 
