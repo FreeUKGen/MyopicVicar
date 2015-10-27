@@ -35,10 +35,11 @@ class FreecenDwelling
 
   # labels/vals for dwelling page header section (body in freecen_individuals)
   def self.dwelling_display_labels
-    ['Census Year', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    ['Census Year', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
   end
   def dwelling_display_values
-    [self.freecen1_vld_file.full_year, self.place.place_name, self.civil_parish, self.freecen1_vld_file.piece, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
+    # if self.place.place_name is populated from civil parish, then I think displaying both may be redundant.  I have (temporarily?) removed place from before civil parish
+    [self.freecen1_vld_file.full_year, self.civil_parish, self.freecen1_vld_file.piece, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
   end
 
 end
