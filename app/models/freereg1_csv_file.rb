@@ -283,28 +283,72 @@ class Freereg1CsvFile
     my_days = date_year.to_i*365 + date_month.to_i*30 + date_day.to_i
     my_days
   end
+  def check_batch
+    success = Array.new
+    success[0] = true
+    success[1] = ""
+    batch = self
+    case batch
+    when nil?
+      success[0] = false
+      success[1] = success[1] + "batch #{batch} does not exist"
+    when file_name.blank?
+      success[0] = false
+      success[1] = success[1] + "batch name is missing #{batch} "
+    when userid.blank?
+      success[0] = false
+      success[1] = success[1] + "batch userid is missing #{batch} "
+    when record_type.blank?
+      success[0] = false
+      success[1] = success[1] + "batch record type is missing #{batch} "
+    when freereg1_csv_entries.count == 0
+      success[0] = false
+      success[1] = success[1] + "batch has no entries #{batch} "
+    when register.blank?
+      success[0] = false
+      success[1] = success[1] + "batch has a null register #{batch} "
+    when register.church.blank?
+      success[0] = false
+      success[1] = success[1] + "batch has a null church #{batch} " 
+    when register.church.place.blank?
+      success[0] =  false
+      success[1] = success[1] + "batch has a null church #{batch} " 
+    end
+    success
+  end
+
   def check_file
     success = Array.new
     success[0] = true
     success[1] = ""
-    case
-    when self.nil?
-      success[0] = false
-      success[1] = "file does not exist"
-    when self.file_name.blank?
-      success[0] = false
-      success[1] = "file name is missing"
-    when self.userid.blank?
-      success[0] = false
-      success[1] = "userid is missing"
-    when self.record_type.blank?
-      success[0] = false
-      success[1] = "record type is missing"
-    when self.freereg1_csv_entries.count == 0
-      success[0] = false
-      success[1] = "file has no entries"
+    Freereg1CsvFile.file_name(self.file_name).userid(self.userid).hint("file_name_1_userid_1_county_1_place_1_church_name_1_register_type_1").each do |batch|
+      case batch
+      when nil?
+        success[0] = false
+        success[1] = success[1] + "file #{batch} does not exist"
+      when file_name.blank?
+        success[0] = false
+        success[1] = success[1] + "file name is missing #{batch} "
+      when userid.blank?
+        success[0] = false
+        success[1] = success[1] + "userid is missing #{batch} "
+      when record_type.blank?
+        success[0] = false
+        success[1] = success[1] + "record type is missing #{batch} "
+      when freereg1_csv_entries.count == 0
+        success[0] = false
+        success[1] = success[1] + "file has no entries #{batch} "
+      when register.blank?
+        success[0] = false
+        success[1] = success[1] + "file has a null register #{batch} "
+      when register.church.blank?
+        success[0] = false
+        success[1] = success[1] + "file has a null church #{batch} " 
+      when register.church.place.blank?
+        success[0] =  false
+        success[1] = success[1] + "file has a null church #{batch} " 
+      end
     end
-    p success
     success
   end
   def backup_file
