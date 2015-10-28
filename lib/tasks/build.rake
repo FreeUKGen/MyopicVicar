@@ -1,23 +1,23 @@
 namespace :build do
 
-	$collections = Array.new
-	$collections[0] = "master_place_names"
-	$collections[1] = "batch_errors"
-	$collections[2] = "places"
-	$collections[3] = "churches"
-	$collections[4] = "registers"
-	$collections[5] = "freereg1_csv_files"
-	$collections[6] = "freereg1_csv_entries"
-	$collections[7] = "search_records"
-	$collections[8] = "userid_details"
-	$collections[9] = "syndicates"
-	$collections[10] = "counties"
-	$collections[11] = "countries"
-	$collections[12] = "feedbacks"
-	$collections[13] = "search_queries"
-  $collections[14] = "contacts"
-  $collections[15] = "attic_files"
-  $collections[16] = "physical_files"
+	collection_array = Array.new
+	collection_array[0] = "master_place_names"
+	collection_array[1] = "batch_errors"
+	collection_array[2] = "places"
+	collection_array[3] = "churches"
+	collection_array[4] = "registers"
+	collection_array[5] = "freereg1_csv_files"
+	collection_array[6] = "freereg1_csv_entries"
+	collection_array[7] = "search_records"
+	collection_array[8] = "userid_details"
+	collection_array[9] = "syndicates"
+	collection_array[10] = "counties"
+	collection_array[11] = "countries"
+	collection_array[12] = "feedbacks"
+	collection_array[13] = "search_queries"
+  collection_array[14] = "contacts"
+  collection_array[15] = "attic_files"
+  collection_array[16] = "physical_files"
 	COLLECTIONS = {
 		'master_place_names' => 'MasterPlaceName',
 		'batch_errors' => 'BatchError',
@@ -100,8 +100,8 @@ namespace :build do
      p "using database #{db} on host #{host}"
 		collections_to_save.each  do |col|
 			coll  = col.to_i
-			collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --port #{args.port}  --collection " + $collections[coll] + EXPORT_OUT + File.join(@tmp_location, $collections[coll] + ".json")
-			puts "#{$collections[coll]} being saved in #{@tmp_location}"
+			collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --port #{args.port}  --collection " + collection_array[coll] + EXPORT_OUT + File.join(@tmp_location, collection_array[coll] + ".json")
+			puts "#{collection_array[coll]} being saved in #{@tmp_location}"
 			output =  `#{collection}`
 			p output
 		end
@@ -116,9 +116,9 @@ namespace :build do
 			collections_to_drop = ["5","6","7",]
 			collections_to_drop.each  do |col|
 				coll  = col.to_i
-				model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll])
+				model = COLLECTIONS[collection_array[coll]].constantize if COLLECTIONS.has_key?(collection_array[coll])
 				model.collection.drop
-				puts "#{$collections[coll]} dropped"
+				puts "#{collection_array[coll]} dropped"
 			end
 		end
 		puts "Collections drop task completed"
@@ -326,8 +326,8 @@ namespace :build do
 			collections_to_save = args[:save].split("/")
 			collections_to_save.each  do |col|
 				coll  = col.to_i
-				collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
-				puts "#{$collections[coll]} being saved in #{@tmp_location}"
+				collection = @mongodb_bin + EXPORT_COMMAND + collection_array[coll] + EXPORT_OUT + @tmp_location + '/' + collection_array[coll] + ".json"
+				puts "#{collection_array[coll]} being saved in #{@tmp_location}"
 				output =  `#{collection}`
 				p output
 			end
@@ -350,9 +350,9 @@ namespace :build do
 			collections_to_drop = args[:drop].split("/")
 			collections_to_drop.each  do |col|
 				coll  = col.to_i
-				model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll])
+				model = COLLECTIONS[collection_array[coll]].constantize if COLLECTIONS.has_key?(collection_array[coll])
 				model.collection.drop
-				puts "#{$collections[coll]} dropped"
+				puts "#{collection_array[coll]} dropped"
 			end
 		end
 		puts "Collections drop task completed"
@@ -379,8 +379,8 @@ namespace :build do
 			collections_to_reload = args[:reload_from_temp].split("/")
 			collections_to_reload.each  do |col|
 				coll  = col.to_i
-				collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + File.join(@tmp_location, $collections[coll] + ".json")
-				puts "#{$collections[coll]} being reloaded from #{@tmp_location}"
+				collection = @mongodb_bin + IMPORT_COMMAND + collection_array[coll] + IMPORT_IN + File.join(@tmp_location, collection_array[coll] + ".json")
+				puts "#{collection_array[coll]} being reloaded from #{@tmp_location}"
 				p collection
 				output = `#{collection}`
 				p output
@@ -411,8 +411,8 @@ namespace :build do
 			collections_to_load = args[:load_from_file].split("/")
 			collections_to_load.each  do |col|
 				coll  = col.to_i
-				collection = @mongodb_bin + IMPORT_COMMAND + $collections[coll] + IMPORT_IN + File.join(@file_location, $collections[coll] + ".json")
-				puts "#{$collections[coll]} being loaded from #{@file_location}"
+				collection = @mongodb_bin + IMPORT_COMMAND + collection_array[coll] + IMPORT_IN + File.join(@file_location, collection_array[coll] + ".json")
+				puts "#{collection_array[coll]} being loaded from #{@file_location}"
 				p collection
 				output = `#{collection}`
 				puts output
@@ -453,9 +453,9 @@ namespace :build do
 			puts "Freereg build indexes."
 			collections_to_index.each  do |col|
 				coll  = col.to_i
-				model = COLLECTIONS[$collections[coll]].constantize if COLLECTIONS.has_key?($collections[coll])
+				model = COLLECTIONS[collection_array[coll]].constantize if COLLECTIONS.has_key?(collection_array[coll])
 				model.create_indexes()
-				puts "#{$collections[coll]} indexed"
+				puts "#{collection_array[coll]} indexed"
 			end
 		end
 		puts " Index task complete."
@@ -486,8 +486,8 @@ namespace :build do
 
 		collections_to_save.each  do |col|
 			coll  = col.to_i
-			collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
-			puts "#{$collections[coll]} being saved in #{@tmp_location}"
+			collection = @mongodb_bin + EXPORT_COMMAND + collection_array[coll] + EXPORT_OUT + @tmp_location + '/' + collection_array[coll] + ".json"
+			puts "#{collection_array[coll]} being saved in #{@tmp_location}"
 			output =  `#{collection}`
 			p output
 		end
