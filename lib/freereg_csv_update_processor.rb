@@ -827,7 +827,7 @@ class FreeregCsvUpdateProcessor
                            @freereg1_csv_file.error = 0
                            BatchError.where(:freereg1_csv_file_id => @freereg1_csv_file._id).all.each do |batch_error|
                              batch_error.delete
-                             sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+                             sleep_time = Rails.application.config.sleep.to_f
                              sleep(sleep_time)
                            end
                            #remove this location from batches with errors
@@ -1320,9 +1320,10 @@ class FreeregCsvUpdateProcessor
                                  time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
                   p "Created  #{nn} entries at an average time of #{time}ms per record" 
                   @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
-                  @@message_file.close 
+                  
                   file = @@message_file
                   if filenames.length > 1
+                    @@message_file.close 
                     user = UseridDetail.where(userid: "REGManager").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
                     user = UseridDetail.where(userid: "Captainkirk").first
