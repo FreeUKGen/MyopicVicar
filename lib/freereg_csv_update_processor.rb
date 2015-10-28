@@ -148,7 +148,7 @@ class FreeregCsvUpdateProcessor
     "-" => /\-/,
   "/" => /\\/}
   CAPITALIZATION_WORD_EXCEPTIONS = [
-    "a", "an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so",
+    "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so",
   "the", "to", "under","upon","von", "with", "yet", "y"]
 
 
