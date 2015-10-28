@@ -22,8 +22,8 @@ task :delete_file,[:limit] => [:environment] do |t, args|
     sleep_time_one_hundred = 100*(Rails.application.config.sleep.to_f).to_f
     p "starting"
     delete_files.each  do |line|
-      break if files == args.limit.to_i
       files = files + 1
+      break if files == args.limit.to_i 
       parts = line.split(",")
       line = line.chomp
       p " Starting #{files}  #{parts[0]},#{parts[1]},#{parts[2]}"
