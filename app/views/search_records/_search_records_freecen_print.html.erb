@@ -1,8 +1,8 @@
 <section>
 
   <% if @dwelling %>
-    <% hdr_labels = FreecenDwelling.dwelling_display_labels %>
-    <% hdr_vals = @dwelling.dwelling_display_values %>
+    <% hdr_labels = FreecenDwelling.dwelling_display_labels(@cen_year,@cen_chapman_code) %>
+    <% hdr_vals = @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code) %>
     <table>
     <% for i in 0..hdr_labels.length-1 %>
       <tr>
@@ -15,7 +15,7 @@
     <table style="border: 1px solid #aaaaaa; border-collapse: collapse;">
       <thead>
 	<tr>
-	  <% FreecenIndividual.individual_display_labels.each do |lbl| %>
+	  <% FreecenIndividual.individual_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
 	  <td style="border: 1px solid #aaaaaa;padding-left:4px;padding-right:4px;">
 	    <b><%= lbl %></b>
 	  </td>
@@ -25,7 +25,7 @@
       <tbody>
 	<% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
 	<tr>
-	  <% individual.individual_display_values.each do |field_val| %>
+	  <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
 	  <td style="border: 1px solid #aaaaaa;">
 	    <%= field_val %>
 	  </td>

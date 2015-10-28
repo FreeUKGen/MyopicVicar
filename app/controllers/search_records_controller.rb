@@ -9,6 +9,7 @@ class SearchRecordsController < ApplicationController
     @dwelling = @individual.freecen_dwelling if @individual
     @cen_year = ' '
     @cen_piece = ' '
+    @cen_chapman_code = ' '
     if @dwelling && @dwelling.freecen1_vld_file
       @dwelling_offset = 0
       @dwelling_number = @dwelling.dwelling_number
@@ -23,6 +24,7 @@ class SearchRecordsController < ApplicationController
       end
       @cen_year = @dwelling.freecen1_vld_file.full_year
       @cen_piece = @dwelling.freecen1_vld_file.piece
+      @cen_chapman_code = @dwelling.freecen1_vld_file.chapman_code
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
@@ -53,6 +55,7 @@ class SearchRecordsController < ApplicationController
     @dwelling = @individual.freecen_dwelling if @individual
     @cen_year = ' '
     @cen_piece = ' '
+    @cen_chapman_code = ' '
     if @dwelling && @dwelling.freecen1_vld_file
       @dwelling_offset = 0
       @dwelling_number = @dwelling.dwelling_number
@@ -67,6 +70,7 @@ class SearchRecordsController < ApplicationController
       end
       @cen_year = @dwelling.freecen1_vld_file.full_year
       @cen_piece = @dwelling.freecen1_vld_file.piece
+      @cen_chapman_code = @dwelling.freecen1_vld_file.chapman_code
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
