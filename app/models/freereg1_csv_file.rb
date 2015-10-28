@@ -914,5 +914,11 @@ class Freereg1CsvFile
       end
       names
     end
+    def add_to_rake_delete_list
+     processing_file = Rails.application.config.delete_list
+      File.open(processing_file, 'a') do |f|
+        f.write("#{self.id},#{self.userid},#{self.file_name}\n")
+      end    
+    end
 
   end

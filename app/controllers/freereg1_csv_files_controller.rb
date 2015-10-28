@@ -110,7 +110,6 @@ class Freereg1CsvFilesController < ApplicationController
     end
     @counties = Array.new
     @counties << session[:selectcounty]
-
     @placenames = places.map{|a| [a.place_name, a.id]}.insert(0, "Select Place")
     @churches = []
     display_info
@@ -144,7 +143,6 @@ class Freereg1CsvFilesController < ApplicationController
     display_info
   end
 
-
   def edit
     #edit the headers for a batch
     load(params[:id])
@@ -173,8 +171,6 @@ class Freereg1CsvFilesController < ApplicationController
     get_places_for_menu_selection
 
   end
-
-
   def update
     #update the headers
     load(params[:id])
@@ -377,6 +373,7 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to :back
       return
     end
+    @freereg1_csv_file.add_to_rake_delete_list
     batch = PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).first
     batch.update_attributes(:file_processed =>false, :file_processed_date => nil) if Freereg1CsvFile.where(:file_name => @freereg1_csv_file.file_name, :userid => @freereg1_csv_file.userid).count >= 1
     @freereg1_csv_file.delete
