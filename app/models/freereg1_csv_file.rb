@@ -130,6 +130,9 @@ class Freereg1CsvFile
     def file_name(name)
       where(:file_name => name)
     end
+    def id(id)
+      where(:id => id)
+    end
   end
 
   def add_lower_case_userid
@@ -280,12 +283,79 @@ class Freereg1CsvFile
     my_days = date_year.to_i*365 + date_month.to_i*30 + date_day.to_i
     my_days
   end
+  def check_batch
+    success = Array.new
+    success[0] = true
+    success[1] = ""
+    batch = self
+    case batch
+    when nil?
+      success[0] = false
+      success[1] = success[1] + "batch #{batch} does not exist"
+    when file_name.blank?
+      success[0] = false
+      success[1] = success[1] + "batch name is missing #{batch} "
+    when userid.blank?
+      success[0] = false
+      success[1] = success[1] + "batch userid is missing #{batch} "
+    when record_type.blank?
+      success[0] = false
+      success[1] = success[1] + "batch record type is missing #{batch} "
+    when freereg1_csv_entries.count == 0
+      success[0] = false
+      success[1] = success[1] + "batch has no entries #{batch} "
+    when register.blank?
+      success[0] = false
+      success[1] = success[1] + "batch has a null register #{batch} "
+    when register.church.blank?
+      success[0] = false
+      success[1] = success[1] + "batch has a null church #{batch} " 
+    when register.church.place.blank?
+      success[0] =  false
+      success[1] = success[1] + "batch has a null church #{batch} " 
+    end
+    success
+  end
+
+  def check_file
+    success = Array.new
+    success[0] = true
+    success[1] = ""
+    Freereg1CsvFile.file_name(self.file_name).userid(self.userid).hint("file_name_1_userid_1_county_1_place_1_church_name_1_register_type_1").each do |batch|
+      case batch
+      when nil?
+        success[0] = false
+        success[1] = success[1] + "file #{batch} does not exist"
+      when file_name.blank?
+        success[0] = false
+        success[1] = success[1] + "file name is missing #{batch} "
+      when userid.blank?
+        success[0] = false
+        success[1] = success[1] + "userid is missing #{batch} "
+      when record_type.blank?
+        success[0] = false
+        success[1] = success[1] + "record type is missing #{batch} "
+      when freereg1_csv_entries.count == 0
+        success[0] = false
+        success[1] = success[1] + "file has no entries #{batch} "
+      when register.blank?
+        success[0] = false
+        success[1] = success[1] + "file has a null register #{batch} "
+      when register.church.blank?
+        success[0] = false
+        success[1] = success[1] + "file has a null church #{batch} " 
+      when register.church.place.blank?
+        success[0] =  false
+        success[1] = success[1] + "file has a null church #{batch} " 
+      end
+    end
+    success
+  end
   def backup_file
     #this makes aback up copy of the file in the attic and creates a new one
-    file = self
-    file.save_to_attic
-    file_location = File.join(Rails.application.config.datafiles,file.userid,file.file_name)
-    file.write_csv_file(file_location)
+    self.save_to_attic
+    file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    self.write_csv_file(file_location)
   end
 
   def write_csv_file(file_location)
@@ -305,46 +375,44 @@ class Freereg1CsvFile
       #eg +LDS,,,,
       csv << ['+LDS'] if file.lds =='yes'
 
-      file_parts.each do |fil|
-        register = fil.register
+      
+        register = file.register
         church = register.church
         place = church.place
-        records = fil.freereg1_csv_entries
+        records = file.freereg1_csv_entries
         records.each do |rec|
           church_name = church.church_name.to_s + " " + register.register_type.to_s
           case
-          when fil.record_type == "ba"
+          when file.record_type == "ba"
 
             csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
                         "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
                         "#{rec.father_occupation}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
             csv << csv_hold
 
-          when fil.record_type == "bu"
+          when file.record_type == "bu"
 
             csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
                         "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
                         "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
             csv << csv_hold
 
-          when fil.record_type == "ma"
+          when file.record_type == "ma"
             csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
                         "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
                         "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
                         "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
                         "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
                         "#{rec.witness1_forename}","#{rec.witness1_surname}","#{rec.witness2_forename}","#{rec.witness2_surname}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if fil.lds =='yes'
+            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
             csv << csv_hold
           end #end case
         end #end records
-      end #file parts
     end #end csv
-
   end #end method
 
 
@@ -553,7 +621,7 @@ class Freereg1CsvFile
         if  batch.locked_by_coordinator
           batch.update_attributes(:locked_by_coordinator => false)
           batch.update_attributes(:locked_by_transcriber => false)
-          
+
         else
           batch.update_attributes(:locked_by_coordinator => true)
           batch.update_attributes(:locked_by_transcriber => false)
@@ -684,7 +752,7 @@ class Freereg1CsvFile
       #now we update the system information
       physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
       if physical_file.present?
-      physical_file.update_userid(new_userid) 
+        physical_file.update_userid(new_userid)
         if message == "No FR1 folder for the old userid" || message == message = "No FR1 folder for the new userid"
           physical_file.update_change(new_userid)
         end
@@ -737,9 +805,9 @@ class Freereg1CsvFile
     #since a file may have many batches we must change them all as we have moved the file
     batches = Freereg1CsvFile.userid(old_userid).file_name(self.file_name).all
     batches.each do |batch|
-      batch.update_entries_userid(new_userid)
-      batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase)
-      batch.update_userids_with_change(new_userid)
+      success = batch.update_entries_userid(new_userid)
+      batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase) if success
+      batch.update_userids_with_change(new_userid) if success
     end
   end
   def update_userids_with_change(new_userid)
@@ -749,9 +817,13 @@ class Freereg1CsvFile
   def update_entries_userid(userid)
     self.freereg1_csv_entries.each do |entry|
       line = entry.line_id
-      line_parts = line.split('.')
-      line_parts[0] = userid
-      line = line_parts.join('.')
+      if line.present?
+        line_parts = line.split('.')
+        line_parts[0] = userid
+        line = line_parts.join('.')
+      else
+        line = (userid + "." + self.file_name + "." + entry.file_line_number).to_s
+      end
       entry.update_attribute(:line_id,line)
     end
     true
@@ -762,10 +834,7 @@ class Freereg1CsvFile
     datemax = FreeregValidations::YEAR_MIN
     datemin = FreeregValidations::YEAR_MAX
     self.freereg1_csv_entries.each do |entry|
-      p entry.inspect if number_of_records == 0
       xx = entry.year
-      p xx.inspect if number_of_records == 0
-
       unless xx.nil?
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
@@ -774,17 +843,12 @@ class Freereg1CsvFile
         bin = 0 if bin < 0
         bin = 49 if bin > 49
         daterange[bin] = daterange[bin] + 1
-        p daterange[bin] if number_of_records == 0
       end
-                 number_of_records =  number_of_records + 1
-
+      number_of_records =  number_of_records + 1
     end
-    p datemin
-    p daterange
     self.update_attributes(:datemin => datemin,:datemax => datemax,:daterange => daterange,:records =>  number_of_records )
     success = true
     success = false if self.errors.any?
-    
     return success
   end
   def calculate_date(param)
@@ -815,7 +879,7 @@ class Freereg1CsvFile
         color = "color:red"
       when !self.processed
         color = "color:orange"
-      when self.error == 0 && !self.locked_by_coordinator && !self.locked_by_transcriber 
+      when self.error == 0 && !self.locked_by_coordinator && !self.locked_by_transcriber
         color ="color:green"
       when self.error == 0 && (self.locked_by_coordinator || self.locked_by_transcriber )
         color = "color:blue"

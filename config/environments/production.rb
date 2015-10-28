@@ -66,7 +66,7 @@ MyopicVicar::Application.configure do
   if config.respond_to?(:action_mailer)
     # config.action_mailer.raise_delivery_errors = false
   end
-
+  config.action_dispatch.ip_spoofing_check = false
   # Enable threaded mode
   # config.threadsafe!
 
@@ -95,7 +95,7 @@ MyopicVicar::Application.configure do
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
   config.github_login = 'FreeUKGenIssues'
   config.github_password = ENV["GITHUB_WORD"]
-  config.github_repo = 'FreeUKGen/FreeUKGenProductIssues'
+  config.github_repo = 'FreeUKGen/FreeUKRegProductIssues'
   config.days_to_retain_search_queries = 90
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?

@@ -22,7 +22,7 @@
               <th class="t10">File name</th>
               <th class="t10" >Loaded</th>
               <th colspan = "2" class="t10">Locked<br> TR SCC</th>
-              <th colspan="8" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show; ED: Edit; DL: Download; ER: Errors; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch; RP: Reprocess the current batch </span></a></th>
+              <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show; ED: Edit; DL: Download; ER: Errors; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
             </tr>
           </thead>
         </table>
@@ -50,8 +50,6 @@
                   <td class="t4"><%= link_to 'DE', remove_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to delete this file? This may take a few minutes if there many records', method: :get   %></td>
                   </td>
                   <td class="t4"><%= link_to 'RL', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?' %>
-                  </td>
-                  <td class="t4"><%= link_to 'RP', reprocess_physical_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to reprocess this file?' %>
                   </td>
                 </tr>
               <% end %>

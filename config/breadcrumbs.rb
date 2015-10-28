@@ -71,11 +71,17 @@ crumb :files  do |file|
  end
 crumb :show_file do |file|
   link "Batch Information", freereg1_csv_file_path(file)
-   if session[:register_id].present?
-    parent :show_register, session[:county], Place.find(session[:place_id]), Church.find(session[:church_id]), Register.find(session[:register_id])
-   else
+  if session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present? && session[:register_id].present?
+    place = Place.id(session[:place_id]).first
+    church = Church.id(session[:church_id]).first
+    register = Register.id(session[:register_id]).first
+    if place.present? && church.present? && register.present?
+      parent :show_register, session[:county], place, church, register
+    end
+  else
     parent :files, file
-   end 
+  end
+ 
 end
 crumb :edit_file do |file|
    link "Editing Batch Information", edit_freereg1_csv_file_path(file)

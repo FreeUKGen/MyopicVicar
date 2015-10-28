@@ -2,9 +2,6 @@
     require "county"
     require 'userid_role'
   skip_before_filter :require_login, only: [:index,:new]
-
-  
-
   def index
       clean_session 
       session[:initial_page] = request.original_url
@@ -25,14 +22,11 @@
       end
       unless  current_refinery_user.userid_detail.active
        flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
-       p session
-       p session[:flash]
-       p session[:flash][:notice]
        redirect_to refinery.logout_path
        return
       end
       @user = current_refinery_user.userid_detail 
-      if @user.person_role == "researcher" || @user.person_role == "transcriber" || @user.person_role == "trainee" || @user.person_role == 'pending' 
+      if @user.person_role == "researcher"  || @user.person_role == 'pending' 
        flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
        redirect_to refinery.logout_path
        return

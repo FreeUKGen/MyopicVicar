@@ -57,9 +57,14 @@ class PhysicalFile
      def userid(id)
       where(:userid => id)
      end
+     def remove_waiting_flag(id,file)
+      batch = PhysicalFile.userid(id).file_name(file).first
+      batch.update_attributes(:waiting_to_be_processed => false, :waiting_date => nil) if batch.present?  
+     end
   end
   
   def add_file(batch)
+    success = true
     case 
     when  batch == "base" || batch == "reprocessing"
       self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
@@ -68,17 +73,23 @@ class PhysicalFile
       change_directory = Rails.application.config.datafiles_changeset
       self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now) 
       filename = File.join(change_directory, self.userid,self.file_name)
-      file_location = File.join(base_directory, self.userid)
-      Dir.mkdir(file_location) unless Dir.exists?(file_location)
-      FileUtils.cp(filename,File.join(file_location,self.file_name ),:verbose => true) 
-      self.update_attributes(:base => true, :base_uploaded_date => Time.now,:file_processed => false)
+      if File.exists?(filename)
+        file_location = File.join(base_directory, self.userid)
+        Dir.mkdir(file_location) unless Dir.exists?(file_location)
+        FileUtils.cp(filename,File.join(file_location,self.file_name ),:verbose => true) 
+        self.update_attributes(:base => true, :base_uploaded_date => Time.now,:file_processed => false)
+      else
+       success = false
+       message = "File does not exist"
+      end
     else 
       p "why here"
     end
     processing_file = Rails.application.config.processing_delta
     File.open(processing_file, 'a') do |f|
-     f.write("#{self.userid}/#{self.file_name}\n")
+    f.write("#{self.userid}/#{self.file_name}\n")
     end
+    return[success,message]
   end
   def file_delete
     file =   Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).first 
