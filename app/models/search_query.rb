@@ -36,6 +36,7 @@ class SearchQuery
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
+  field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
   has_and_belongs_to_many :places, inverse_of: nil
@@ -257,7 +258,11 @@ class SearchQuery
   def name_search_params
     params = Hash.new
     name_params = Hash.new
-    search_type = inclusive ? { "$in" => [SearchRecord::PersonType::FAMILY, SearchRecord::PersonType::PRIMARY ] } : SearchRecord::PersonType::PRIMARY
+    
+    type_array = [SearchRecord::PersonType::PRIMARY]
+    type_array << SearchRecord::PersonType::FAMILY if inclusive
+    type_array << SearchRecord::PersonType::WITNESS if witness
+    search_type = type_array.size > 1 ? { "$in" => type_array } : SearchRecord::PersonType::PRIMARY
     name_params["type"] = search_type
 
     if query_contains_wildcard?

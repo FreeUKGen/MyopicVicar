@@ -150,6 +150,28 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should handle witnesses correctly" do
+    Freereg1CsvEntry.count.should eq(0)
+#
+    file = FREEREG1_CSV_FILES[2]
+    file_record = process_test_file(file)
+    entry = file_record.freereg1_csv_entries.last
+ 
+    record = file[:entries][:last]
+
+    record[:witnesses].each do |witness|        
+      query_params = { :first_name => witness[:first_name],
+                       :last_name => witness[:last_name],
+                       :witness => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+      result.count.should have_at_least(1).items
+      result.should be_in_result(entry)              
+    end
+  end
+
   it "should parse and find dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|

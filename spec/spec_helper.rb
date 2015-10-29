@@ -59,6 +59,7 @@ def process_test_file(file)
   end
 
   FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
+  Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
 
 end
 
@@ -126,8 +127,10 @@ FREEREG1_CSV_FILES = [
     }
    },
   {
-    :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
-    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    # :filename => "/home/benwbrum/dev/clients/freeukgen/scratch/Chd/HRTCALMA.csv",
+    # :basedir => "/home/benwbrum/dev/clients/freeukgen/scratch/",
+   :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
+   :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
@@ -149,7 +152,11 @@ FREEREG1_CSV_FILES = [
         :bride_forename => 'Anne',
         :groom_surname => 'CLARKE',
         :groom_forename => 'Charles',
-        :modern_year => 1837
+        :modern_year => 1837,
+        :witnesses => [
+          { :first_name => 'William', :last_name => 'CLARKE'},
+          { :first_name => 'Mary', :last_name => 'GARRATT'}
+        ]
       }
     }
    },
@@ -212,6 +219,19 @@ FREEREG1_CSV_FILES = [
 
 
 ARTIFICIAL_FILES = [
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  }
+]
+
+EMENDATION_FILES = [
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",

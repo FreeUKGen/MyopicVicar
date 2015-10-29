@@ -274,6 +274,9 @@ class SearchRecord
         if name_hash[:type] == 'primary'
           person_type=PersonType::PRIMARY
         end
+        if name_hash[:type] == 'witness'
+          person_type=PersonType::WITNESS
+        end
         name = search_name(name_hash[:first_name], name_hash[:last_name], person_type)
         search_names << name if name
       end
