@@ -1318,11 +1318,11 @@ class FreeregCsvUpdateProcessor
                                  end #filename loop end
                                  time = 0
                                  time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
-                  p "Created  #{nn} entries at an average time of #{time}ms per record" 
-                  @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
                   
-                  file = @@message_file
                   if filenames.length > 1
+                    p "Created  #{nn} entries at an average time of #{time}ms per record" 
+                    @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
+                    file = @@message_file
                     @@message_file.close 
                     user = UseridDetail.where(userid: "REGManager").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
