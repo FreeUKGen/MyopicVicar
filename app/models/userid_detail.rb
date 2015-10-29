@@ -64,6 +64,9 @@ class UseridDetail
     def userid(userid)
       where(:userid => userid)
     end
+    def id(userid)
+      where(:id => userid)
+    end
   end
 
   def remember_search(search_query)
@@ -279,4 +282,13 @@ class UseridDetail
     end
     count
   end
+  def check_exists_in_refinery
+    refinery_user = Refinery::User.where(:username => self.userid).first
+    if refinery_user.nil?
+      return[false,"There is no refinery entry"] 
+    else
+      return[true] 
+    end
+  end
+
 end #end class
