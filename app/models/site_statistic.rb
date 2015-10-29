@@ -25,10 +25,10 @@ class SiteStatistic
     
     #populate it
     stat.interval_end = last_midnight
-    stat.year = last_midnight.year
-    stat.month = last_midnight.month
-    stat.day = last_midnight.day    
-    
+    target_day = last_midnight - 1.day
+    stat.year = target_day.year
+    stat.month = target_day.month
+    stat.day = target_day.day    
     
     results = SiteStatistic.record_type_counts
     stat.n_records_marriages = results['marriages']
