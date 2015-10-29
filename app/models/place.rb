@@ -85,25 +85,29 @@ class Place
       OPTIONS.invert[system]
     end
   end
-  def self.county(county)
-    where(:county => county)
+  class << self
+    def id(id)
+      where(:id => id)
+    end 
+    def county(county)
+      where(:county => county)
+    end
+    def chapman_code(chapman)
+      where(:chapman_code => chapman)
+    end
+    def place(place)
+      where(:place_name => place)
+    end
+    def not_disabled
+      where(:disabled => "false")
+    end
+    def approved
+      where(:error_flag.ne => "Place name is not approved")
+    end
+    def data_present
+      where(:data_present => true)
+    end
   end
-  def self.chapman_code(chapman)
-    where(:chapman_code => chapman)
-  end
-  def self.place(place)
-    where(:place_name => place)
-  end
-  def self.not_disabled
-    where(:disabled => "false")
-  end
-  def self.approved
-    where(:error_flag.ne => "Place name is not approved")
-  end
-  def self.data_present
-    where(:data_present => true)
-  end
-
 
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location

@@ -148,7 +148,7 @@ class FreeregCsvUpdateProcessor
     "-" => /\-/,
   "/" => /\\/}
   CAPITALIZATION_WORD_EXCEPTIONS = [
-    "a", "an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so",
+    "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr", "or", "on", "of", "so",
   "the", "to", "under","upon","von", "with", "yet", "y"]
 
 
@@ -827,7 +827,7 @@ class FreeregCsvUpdateProcessor
                            @freereg1_csv_file.error = 0
                            BatchError.where(:freereg1_csv_file_id => @freereg1_csv_file._id).all.each do |batch_error|
                              batch_error.delete
-                             sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+                             sleep_time = Rails.application.config.sleep.to_f
                              sleep(sleep_time)
                            end
                            #remove this location from batches with errors
@@ -1122,8 +1122,10 @@ class FreeregCsvUpdateProcessor
                      def self.check_for_replace(filename,force)
                        if !File.exists?(filename)
                           PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                         p  "#{@@userid} #{@@header[:file_name]} file does not exist"
-                         @@message_file.puts "#{@@userid} #{@@header[:file_name]} file does not exist"
+                          message = "#{@@userid} #{@@header[:file_name]} file does not exist"
+                         p  message
+                         @@message_file.puts message
+                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
                          return false
                        end
                        #check to see if we should process the file
@@ -1134,8 +1136,10 @@ class FreeregCsvUpdateProcessor
                        if check_for_userid.nil?
                          #but first we need to check that there is a userid
                          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                         @@message_file.puts "#{@@header[:userid]} does not exit"
-                         puts "#{@@header[:userid]} does not exit"
+                         message = "#{@@header[:userid]} does not exit"
+                         p  message
+                         @@message_file.puts message
+                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                          return false
                        end
 
@@ -1151,22 +1155,28 @@ class FreeregCsvUpdateProcessor
                            return true
                          when @@header[:digest] == check_for_file.digest
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           p  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
-                           @@message_file.puts "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                           message =  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                            p  message
+                           @@message_file.puts message
+                           UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                             PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                            return false
                          when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           @@message_file.puts "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
-                           p "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
+                             message = "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
+                            p  message
+                            @@message_file.puts message
+                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                             PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                            return false
                          when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
-                             @@message_file.puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                             puts "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                              PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                             return false
+                            message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+                            p  message
+                            @@message_file.puts message
+                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            return false
                           else
                                @@update = true
                                return true
@@ -1256,8 +1266,7 @@ class FreeregCsvUpdateProcessor
                               if @success == true  && process == true
                                  #how many records did we process?
                                  n = process_the_data
-                                 #now lets clean up the files and send out messages after a success
-
+                                 #now lets clean up the files and send out messages 
                                  #do we have a record of this physical file
                                    batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
                                    if batch.nil?
@@ -1279,17 +1288,26 @@ class FreeregCsvUpdateProcessor
                                      #only checked for errors so file is not processed into search database
                                      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
                                    end
-                                   #kludge to send email to user if a check for errors or an on-line process
+                                   #kludge to send email to user 
                                    header_errors = 0
                                    header_errors= @@header_error.length unless  @@header_error.nil?
                                    UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                                    nn = nn + n unless n.nil?
                               else
                                      #another kludge to send a message to user that the file did not get processed when the processing failed
-                                     if delta == 'process' || (delta == 'change' && filenames.length == 1 )
-                                       @@message_file.puts "File not processed" if @success == false
-                                        UserMailer.batch_processing_failure(file,@@header[:userid],@@header[:file_name]).deliver
+                                     if (delta == 'change' && filenames.length == 1 )
+                                        @@message_file.puts "File not processed" if @success == false
+                                        @@message_file.close
+                                        file = @@message_file
+                                        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver
+                                        user = UseridDetail.where(userid: "REGManager").first
+                                        UserMailer.update_report_to_freereg_manager(file,user).deliver
                                      end
+                                     if delta == 'process' && process == true
+                                        file = "There was a malfunction in the processing; contact system administration"
+                                        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver                                          
+                                     end
+
                                      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
                               end
                                    #reset for next file
@@ -1300,11 +1318,12 @@ class FreeregCsvUpdateProcessor
                                  end #filename loop end
                                  time = 0
                                  time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
-                  p "Created  #{nn} entries at an average time of #{time}ms per record" 
-                  @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
-                  @@message_file.close 
-                  file = @@message_file
+                  
                   if filenames.length > 1
+                    p "Created  #{nn} entries at an average time of #{time}ms per record" 
+                    @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
+                    file = @@message_file
+                    @@message_file.close 
                     user = UseridDetail.where(userid: "REGManager").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
                     user = UseridDetail.where(userid: "Captainkirk").first
