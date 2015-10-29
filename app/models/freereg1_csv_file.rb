@@ -822,7 +822,7 @@ class Freereg1CsvFile
         line_parts[0] = userid
         line = line_parts.join('.')
       else
-        line = (userid + "." + self.file_name + "." + entry.file_line_number).to_s
+        line = (userid + "." + self.file_name + "." + entry.file_line_number.to_s).to_s
       end
       entry.update_attribute(:line_id,line)
     end
@@ -870,8 +870,8 @@ class Freereg1CsvFile
         bin = 0 if bin < 0
         bin = 49 if bin > 49
         self.daterange[bin] = self.daterange[bin] + 1
-      end
     end
+  end
     def define_colour
       #need to consider storing the processed rather than a look up
       case
