@@ -31,12 +31,12 @@ class Syndicate
     end
     previous_syndicate_coordinator = self.syndicate_coordinator
     parameters[:previous_syndicate_coordinator] = previous_syndicate_coordinator  unless self.syndicate_coordinator == parameters[:syndicate_coordinator]
-    unless self.syndicate_coordinator == parameters[:syndicate_coordinator] 
+    unless self.syndicate_coordinator == parameters[:syndicate_coordinator]
       #change coordinators
       self.remove_syndicate_from_coordinator
       self.downgrade_syndicate_coordinator_person_role
       self.add_syndicate_to_coordinator(parameters[:syndicate_code],parameters[:syndicate_coordinator])
-      self.upgrade_syndicate_coordinator_person_role(parameters[:syndicate_coordinator]) 
+      self.upgrade_syndicate_coordinator_person_role(parameters[:syndicate_coordinator])
     else
       #name change for an existing coordinator
       if  parameters[:changing_name]
@@ -61,7 +61,7 @@ class Syndicate
     @syndicates = Array.new
     syndicates = Syndicate.where(:accepting_transcribers.ne => false).all.order_by(syndicate_code: 1)
     syndicates.each do |syn|
-      @syndicates << syn.syndicate_code unless syn.syndicate_code == "Researcher"
+      @syndicates << syn.syndicate_code
     end
     return @syndicates
   end
@@ -75,11 +75,11 @@ class Syndicate
   end
   def remove_syndicate_from_coordinator
     coordinator = UseridDetail.where(:userid => self.syndicate_coordinator).first
-    unless coordinator.nil? 
-     unless coordinator.syndicate_groups.nil?
-      coordinator.syndicate_groups.delete_if {|code| code == self.syndicate_code} 
-      coordinator.save(:validate => false)
-     end
+    unless coordinator.nil?
+      unless coordinator.syndicate_groups.nil?
+        coordinator.syndicate_groups.delete_if {|code| code == self.syndicate_code}
+        coordinator.save(:validate => false)
+      end
     end
   end
   def add_syndicate_to_coordinator(code,person)
@@ -91,11 +91,11 @@ class Syndicate
 
   def downgrade_syndicate_coordinator_person_role
     coordinator = UseridDetail.where(:userid => self.syndicate_coordinator).first
-    unless coordinator.nil? 
-     unless coordinator.syndicate_groups.nil?
-      coordinator.person_role = 'transcriber' if coordinator.syndicate_groups.length == 0 && coordinator.person_role == 'syndicate_coordinator'
-      coordinator.save(:validate => false)
-     end
+    unless coordinator.nil?
+      unless coordinator.syndicate_groups.nil?
+        coordinator.person_role = 'transcriber' if coordinator.syndicate_groups.length == 0 && coordinator.person_role == 'syndicate_coordinator'
+        coordinator.save(:validate => false)
+      end
     end
   end
 
@@ -105,11 +105,11 @@ class Syndicate
     coordinator.save(:validate => false)
   end
   def self.get_userids_for_syndicate(syndicate)
-     userids = Array.new
-     UseridDetail.syndicate(syndicate).each do |user|
+    userids = Array.new
+    UseridDetail.syndicate(syndicate).each do |user|
       userids << user.userid
-     end 
-     userids   
+    end
+    userids
   end
 
 end

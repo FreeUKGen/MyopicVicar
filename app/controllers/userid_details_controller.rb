@@ -23,7 +23,8 @@ class UseridDetailsController < ApplicationController
     @role = session[:role]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
-    @user.person_role == "data_manager" 
+    @user.person_role == "data_manager"
+    @syndicates = Syndicate.get_syndicates if @user.person_role == "system_administrator"
     @userid = UseridDetail.new
   end
 
@@ -73,10 +74,22 @@ class UseridDetailsController < ApplicationController
 
   def change_password
     load(params[:id])
-    @userid.send_invitation_to_reset_password
-    flash[:notice] = 'An email with instructions to reset the password have been sent'
-    redirect_to refinery.login_path
-    return
+    success = @userid.check_exists_in_refinery
+    if success[0]
+      @userid.send_invitation_to_reset_password
+      flash[:notice] = 'An email with instructions to reset the password have been sent'
+      if @user.userid == @userid.userid
+        redirect_to refinery.logout_path
+        return
+      else
+        redirect_to :back
+        return
+      end
+    else
+      flash[:notice] = "There was a problem with the reset: #{success[1]}"
+      redirect_to :back
+      return
+    end
   end
 
   def general
@@ -299,7 +312,12 @@ class UseridDetailsController < ApplicationController
   def load(userid_id)
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @userid = UseridDetail.find(userid_id)
+    @userid = UseridDetail.id(userid_id).first
+    if @userid.nil?
+      flash[:notice] = 'The userid does not exist'
+      redirect_to :back
+      return
+    end
     session[:userid_id] = userid_id
     @syndicate = session[:syndicate]
     @role = session[:role]

@@ -110,19 +110,33 @@ class PhysicalFilesController < InheritedResources::Base
   def submit_for_processing
     load(params[:id])
     success = @batch.add_file(params[:loc])
-    flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} from #{params[:loc]} has been added to the overnight queue for processing" if success
+    if success[0]
+      flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} from #{params[:loc]} has been added to the overnight queue for processing" if success
+    else
+      flash[:notice] = "There was a problem with the reprocessing: #{success[1]} "
+    end
     redirect_to physical_files_path(:anchor => "#{@batch.id}", :page => "#{ session[:physical_index_page] }")
   end
   def reprocess
     file = Freereg1CsvFile.find(params[:id])
     #we write a new copy of the file from current on-line contents
+    ok_to_proceed = file.check_file
+    if !ok_to_proceed[0] 
+      flash[:notice] =  "There is a problem with the file you are attempting to reprocess; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
+      redirect_to :back and return
+    end
     file.backup_file
     @batch = PhysicalFile.where(:file_name => file.file_name, :userid => file.userid).first
     #add to processing queue and place in change
     success = @batch.add_file("reprocessing")
-    flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
+    if success[0]
+      flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
+    else
+      flash[:notice] = "There was a problem with the reprocessing: #{success[1]} "
+    end
     @batch.save
     redirect_to :back#freereg1_csv_files_path(:anchor => "#{file.id}")
+    return
   end
   def destroy
     load(params[:id])
