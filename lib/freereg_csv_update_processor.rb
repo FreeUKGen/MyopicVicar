@@ -874,7 +874,7 @@ class FreeregCsvUpdateProcessor
                          @total_records.delete_at(ind) unless ind.nil?
                          #Now destroy the unneeded record
 
-                         rec = Freereg1CsvEntry.where(:id =>record).first
+                         rec = Freereg1CsvEntry.where(:id => record).first
                          rec.destroy unless rec.nil?
                          @deleted = @deleted + 1
                        end
