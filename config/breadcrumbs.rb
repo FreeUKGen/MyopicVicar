@@ -52,8 +52,13 @@ crumb :files  do |file|
      parent :county_options, session[:county]
 
    when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
-     unless  session[:place_name].nil?
-       parent :show_place, session[:county], get_place(session[:chapman_code],session[:place_name])
+     unless  session[:place_name].nil?   
+       place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
+       unless place.nil?
+        parent :show_place, session[:county], place
+       else
+        parent :county_options, session[:county]
+       end
      else
        parent :county_options, session[:county]
      end
