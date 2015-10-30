@@ -114,12 +114,8 @@ class Freereg1CsvEntriesController < ApplicationController
     params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry]) 
     #see if we need to recalculate search record
     recreate_search_record = Freereg1CsvEntry.detect_change(params[:freereg1_csv_entry],@freereg1_csv_entry.attributes)
-    #remove empty parameters
-    params[:freereg1_csv_entry] = Freereg1CsvEntry.update_parameters(params[:freereg1_csv_entry],@freereg1_csv_entry)
-
     #update entry
     @freereg1_csv_entry.update_attributes(params[:freereg1_csv_entry])
-
     if @freereg1_csv_entry.errors.any?
       flash[:notice] = 'The update of the record was unsuccessful'
       render :action => 'edit'

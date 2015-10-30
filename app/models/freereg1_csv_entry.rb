@@ -272,10 +272,11 @@ class Freereg1CsvEntry
   end
 
   def self.detect_change(a,b)
-    a = a.delete_if{|k,v| v == ''}
-    b = b.delete_if{|k,v| v.nil?}
-    c = Hash[a.to_a - b.to_a].keys
-    c.each do |field|
+    changes = Hash.new
+    a.each_key do |k|
+      changes[k] = a[k] if a[k] != b[k]
+    end
+    changes.each_key do |field|
       return true if FreeregOptionsConstants::FORCE_SEARCH_RECORD_RECREATE.include?(field)
     end
     return false
