@@ -17,7 +17,7 @@ class UserMailer < ActionMailer::Base
     end
     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") if @userid.active
     mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg processed #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address || cc.nil?
+   # mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg processed #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address || cc.nil?
   end
 
   def batch_processing_failure(message,user,batch)
@@ -34,7 +34,7 @@ class UserMailer < ActionMailer::Base
     end
     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") if @userid.active
     mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless sc.email_address == @userid.email_address 
-    mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address || cc.nil?
+  #  mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address || cc.nil?
   end
 
   def update_report_to_freereg_manager(file,user)
