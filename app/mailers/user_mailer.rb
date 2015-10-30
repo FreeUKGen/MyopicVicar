@@ -9,7 +9,7 @@ class UserMailer < ActionMailer::Base
     syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
     sc = UseridDetail.where(userid: syndicate_coordinator).first
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county_coordinator = County.where(chapman_code: @batch.county).first.county_coordinator
+    county_coordinator = County.where(chapman_code: batch.county).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator).first
     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") if @userid.active
     mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
