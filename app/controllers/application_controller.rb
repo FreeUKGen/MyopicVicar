@@ -215,5 +215,14 @@ def clean_session_for_syndicate
     session.delete(:user_index_page)
     session.delete(:character)
   end
-  
+  def store_location
+   session[:return_to] = request.fullpath
+   p session[:return_to] 
+  end
+
+ 
+  def go_back
+    flash[:notice] = "The document you are trying to access does not exist"
+    render session[:return_to] and  session[:return_to] = nil
+  end  
 end

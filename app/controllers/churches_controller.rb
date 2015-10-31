@@ -135,19 +135,24 @@ class ChurchesController < InheritedResources::Base
   end # end of update
 
   def load(church_id)
-    @first_name = session[:first_name]
-    @church = Church.find(church_id)
-    session[:church_id] = @church._id
-    @church_name = @church.church_name
-    session[:church_name] = @church_name
-    @place_id = @church.place
-    session[:place_id] = @place_id._id
-    @place = Place.find(@place_id)
-    @place_name = @place.place_name
-    session[:place_name] =  @place_name
-    @county = ChapmanCode.has_key(@place.chapman_code)
-    session[:county] = @county
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    store_location   
+    @church = Church.id(church_id).first
+    if @church.nil?
+      go_back
+    else
+      @first_name = session[:first_name]
+      session[:church_id] = @church._id
+      @church_name = @church.church_name
+      session[:church_name] = @church_name
+      @place_id = @church.place
+      session[:place_id] = @place_id._id
+      @place = Place.find(@place_id)
+      @place_name = @place.place_name
+      session[:place_name] =  @place_name
+      @county = ChapmanCode.has_key(@place.chapman_code)
+      session[:county] = @county
+      @user = UseridDetail.where(:userid => session[:userid]).first
+    end
   end
 
   def destroy

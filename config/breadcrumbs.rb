@@ -174,7 +174,7 @@ crumb :relocate_place do |county,place|
    parent :county_places, county, place
 end
 crumb :show_church do |county,place,church|
-  if church.present
+  if church.present?
    link "Church Information", church_path(church)
    parent :show_place, county, place
   else
