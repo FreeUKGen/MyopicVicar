@@ -1141,7 +1141,6 @@ class FreeregCsvUpdateProcessor
                          message = "#{@@header[:userid]} does not exit"
                          p  message
                          @@message_file.puts message
-                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                          return false
                        end
 
