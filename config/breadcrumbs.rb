@@ -189,8 +189,13 @@ crumb :relocate_church do |county,place,church|
    parent :show_church, county, place, church
 end
 crumb :show_register do |county,place,church,register|
+  if register.present?
    link "Register Information", register_path(register)
    parent :show_church, county, place,church
+  else
+    parent :county_options, session[:county] if session[:county].present?
+    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+  end
 end
 crumb :edit_register do |county,place,church,register|
     link "Edit Register Information", edit_register_path(register)
