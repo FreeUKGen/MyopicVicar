@@ -148,8 +148,13 @@ crumb :county_places do |county,place|
     parent :county_options, county
 end
 crumb :show_place do |county,place|
+  if place.present?
    link "Place Information", place_path(place)
     parent :county_places, county, place
+   else
+    parent :county_options, session[:county] if session[:county].present?
+    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+  end
 
 end
 crumb :edit_place do |county,place|
@@ -169,8 +174,13 @@ crumb :relocate_place do |county,place|
    parent :county_places, county, place
 end
 crumb :show_church do |county,place,church|
+  if church.present
    link "Church Information", church_path(church)
    parent :show_place, county, place
+  else
+    parent :county_options, session[:county] if session[:county].present?
+    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+  end
 end
 crumb :edit_church do |county,place,church|
     link "Edit Church Information", edit_church_path(church)
