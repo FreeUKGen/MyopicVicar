@@ -305,9 +305,8 @@ class SearchQuery
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
     regex_string = trimmed.gsub('?', '\w').gsub('*', '.*') #replace glob-style wildcards with regex wildcards
     
-    /^#{regex_string}/
+    begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end
-
 
   def name_not_blank
     if last_name.blank? && !adequate_first_name_criteria? 
@@ -344,6 +343,11 @@ class SearchQuery
     end
   end
 
+  def wildcards_are_valid
+    if first_name && begins_with_wildcard(first_name) && places.count == 0
+      errors.add(:first_name, "A place must be selected if name queries begin with a wildcard")
+    end      
+  end
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
@@ -378,5 +382,5 @@ class SearchQuery
     place = Place.find(place_id)
     place.places_near(radius_factor, place_system)
   end
-
+  
 end

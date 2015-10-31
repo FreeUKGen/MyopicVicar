@@ -139,9 +139,21 @@ class SearchRecord
       end
     else
       # terminate
-      fields << current_field
+      if indexable_value?(params)
+        fields << current_field
+      end
     end
     
+  end
+
+  def self.indexable_value?(param)
+    if param.is_a? Regexp
+      # does this begin with a wildcard?
+
+      param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl 
+    else
+      true
+    end
   end
 
   def comparable_name

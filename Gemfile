@@ -24,7 +24,7 @@ gem 'airbrake'
 gem 'text'
 gem 'json'
 gem 'pry'
-gem 'pry-stack_explorer'
+gem 'pry-byebug'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
 gem 'kaminari'

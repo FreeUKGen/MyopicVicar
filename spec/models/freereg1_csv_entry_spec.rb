@@ -375,6 +375,52 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should handle wildcard performance" do
+    Freereg1CsvEntry.count.should eq(0)
+    Freereg1CsvFile.count.should eq(0)
+    Church.count.should eq(0)
+    Register.count.should eq(0)
+    SearchRecord.count.should eq(0)
+    Place.count.should eq(0)
+
+    process_test_file(FREEREG1_CSV_FILES[1])  # clear cached class variables
+    filespec = FREEREG1_CSV_FILES[2]
+
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry = file_record.freereg1_csv_entries.first
+    search_record = entry.search_record
+    place = search_record.place
+
+    place.should_not eq nil
+    
+    name = search_record.transcript_names.first
+
+    last_name = name["last_name"]
+    first_name = name["first_name"]
+
+    # begins-with wildcard should use name index
+    query_params = { :first_name => name["first_name"],
+                     :last_name => last_name.sub(last_name[2], '?') }
+    query = SearchQuery.new(query_params)
+    query.places << place
+
+    SearchRecord.index_hint(query.search_params).should eq("place_ln_fn")
+     
+    # ends-with wildcard should not use name index (with no place)
+    query_params = { :record_type => RecordType::BAPTISM,
+                     :last_name => last_name.sub(last_name[0], '*') }
+    query = SearchQuery.new(query_params)
+    SearchRecord.index_hint(query.search_params).should_not eq("ln_rt_fn_sd")
+    
+    # ends-with wildcard should require place_id
+    query_params = { :record_type => RecordType::BAPTISM,
+                     :last_name => last_name.sub(last_name[0], '*') }
+    query = SearchQuery.new(query_params)
+    query.save.should eq false
+
+  end
+
 
 
 
