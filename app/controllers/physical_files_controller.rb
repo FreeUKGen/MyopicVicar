@@ -66,7 +66,10 @@ class PhysicalFilesController < InheritedResources::Base
   end
 
   def load(batch)
-    @batch = PhysicalFile.find(batch)
+    @batch = PhysicalFile.id(batch).first
+    if @batch.nil?
+      go_back("physical file")
+    end
   end
 
   def file_not_processed

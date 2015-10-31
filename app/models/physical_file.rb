@@ -26,6 +26,9 @@ class PhysicalFile
   
 
   class << self
+     def id(id)
+       where(:id => id)
+     end
      def file_name(name)
       where(:file_name => name)
      end

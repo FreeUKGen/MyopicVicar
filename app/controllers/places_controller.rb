@@ -151,13 +151,18 @@ class PlacesController < ApplicationController
 
   def load(place_id)
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @place = Place.find(place_id)
-    session[:place_id] = place_id
-    @place_name = @place.place_name
-    session[:place_name] = @place_name
-    @county = ChapmanCode.has_key(@place.chapman_code)
-    session[:county] = @county
-    @first_name = session[:first_name]
+    @place = Place.id(place_id).first
+    if @place.nil?
+      go_back("place")
+    else
+      session[:place_id] = place_id
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      @county = ChapmanCode.has_key(@place.chapman_code)
+      session[:county] = @county
+      @first_name = session[:first_name]
+    end
+  else
 
   end
 

@@ -150,10 +150,15 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def load(entry_id)
-    @freereg1_csv_entry = Freereg1CsvEntry.find(entry_id)
-    session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
-    display_info
+    @freereg1_csv_entry = Freereg1CsvEntry.id(entry_id).first
+    if @freereg1_csv_entry.nil?
+      go_back("entry")
+    else
+      session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
+      display_info
+    end
   end
+  
   def destroy
     load(params[:id])
     freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file

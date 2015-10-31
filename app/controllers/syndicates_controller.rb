@@ -124,10 +124,13 @@ class SyndicatesController < ApplicationController
 
   def load(id)
     @first_name = session[:first_name]
-    @syndicate = Syndicate.find(id)
-    get_user_info_from_userid
+    @syndicate = Syndicate.id(id).first
+    if @syndicate.nil?
+      go_back("syndicate")
+    else
+      get_user_info_from_userid
+    end
   end
-
   def get_userids_and_transcribers
     @user = UseridDetail.where(:userid => session[:userid]).first
     case

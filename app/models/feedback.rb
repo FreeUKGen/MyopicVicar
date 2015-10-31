@@ -19,6 +19,11 @@ class Feedback
 
   before_save :url_check
   after_create :communicate
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
 
   def title_or_body_exist
      errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?

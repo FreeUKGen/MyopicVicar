@@ -314,13 +314,12 @@ class UseridDetailsController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
-      flash[:notice] = 'The userid does not exist'
-      redirect_to :back
-      return
+      go_back("userid")
+    else
+      session[:userid_id] = userid_id
+      @syndicate = session[:syndicate]
+      @role = session[:role]
     end
-    session[:userid_id] = userid_id
-    @syndicate = session[:syndicate]
-    @role = session[:role]
   end
 
   def next_place_to_go_unsuccessful_create
