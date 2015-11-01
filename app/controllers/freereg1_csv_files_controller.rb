@@ -165,7 +165,6 @@ class Freereg1CsvFilesController < ApplicationController
       flash[:notice] = "Cannot select a blank userid" if params[:freereg1_csv_file][:userid].blank?
       redirect_to :action => "change_userid" and return if params[:freereg1_csv_file][:userid].blank?
       success = @freereg1_csv_file.move_file_between_userids(params[:freereg1_csv_file][:userid])
-      p success
       if !success[0]
         flash[:notice] = "The change of userid was unsuccessful: #{success[1]}"
         redirect_to change_userid_freereg1_csv_file_path(@freereg1_csv_file)
