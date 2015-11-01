@@ -4,11 +4,9 @@ class Freereg1CsvEntriesController < ApplicationController
  
   skip_before_filter :require_login, only: [:show]
   def index
-    if params[:page]
-      session[:entry_index_page] = params[:page]
-    end
-    display_info
+   
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
+    display_info
   end
 
   def show
@@ -158,7 +156,7 @@ class Freereg1CsvEntriesController < ApplicationController
       display_info
     end
   end
-  
+
   def destroy
     load(params[:id])
     freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
