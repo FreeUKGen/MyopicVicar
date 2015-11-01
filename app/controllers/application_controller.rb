@@ -141,6 +141,7 @@ class ApplicationController < ActionController::Base
     session.delete(:sorted_by)
     session.delete(:physical_index_page)
     session.delete(:character)
+    session.delete(:edit_userid)
   end
 def clean_session_for_county
     session.delete(:freereg1_csv_file_id) 
@@ -176,6 +177,7 @@ def clean_session_for_county
     session.delete(:entry_index_page)
     session.delete(:files_index_page)
     session.delete(:character)
+     session.delete(:edit_userid)
     
 
 end
@@ -214,6 +216,7 @@ def clean_session_for_syndicate
     session.delete(:files_index_page)
     session.delete(:user_index_page)
     session.delete(:character)
+    session.delete(:edit_userid)
   end
 
  

@@ -259,18 +259,14 @@ crumb :userid_detail do |syndicate,userid_detail|
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
    if session[:my_own]
     parent :root
-   else
-   
-    if session[:role] == "syndicate_coordinator"  || session[:role] == "county_coordinator" || 
-       session[:role] == "country_coordinator" || session[:role] == "volunteer_coordinator" || 
-       session[:role] == "data_manager"
-   
-     parent :userid_details_listing, session[:syndicate],userid_detail 
-    end
-    if  session[:role] == "system_administrator" || session[:role] == "technical"
-    
-      parent :userid_details_listing, "all" ,userid_detail
-    end
+   else 
+    if  session[:edit_userid]
+      syndicate = session[:syndicate]
+      syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
+      parent :userid_details_listing, syndicate,userid_detail 
+    else
+      parent :coordinator_userid_options
+    end 
    end
 end
 
@@ -288,6 +284,10 @@ end
 #manage userids
 crumb :regmanager_userid_options do 
    link "Userid Management Options", options_userid_details_path
+   parent :root
+end
+crumb :coordinator_userid_options do 
+   link "Userid Display Selection", display_userid_details_path
    parent :root
 end
 crumb :rename_userid do |user|

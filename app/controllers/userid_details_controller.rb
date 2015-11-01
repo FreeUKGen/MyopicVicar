@@ -126,22 +126,23 @@ class UseridDetailsController < ApplicationController
   end
 
   def options
-    clean_session
-    clean_session_for_county
-    clean_session_for_syndicate
     session[:return_to] = request.fullpath
     get_user_info_from_userid
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-      return
-    end
+    session[:edit_userid] = true
     @syndicate = 'all'
-    session[:syndicate] = @syndicate
     if @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
       @options= UseridRole::USERID_MANAGER_OPTIONS
     else
       @options= UseridRole::USERID_ACCESS_OPTIONS
     end
+  end
+  def display
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @syndicate = 'all'
+    @options= UseridRole::USERID_ACCESS_OPTIONS
+    session[:edit_userid] = false
+    render :action => "options"
   end
 
   def selection

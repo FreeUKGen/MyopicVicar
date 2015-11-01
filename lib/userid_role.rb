@@ -29,7 +29,7 @@ module UseridRole
     "Manage Country" => "/manage_counties" ,
     "Manage Counties" => "/manage_counties" ,
     "Manage Userids"=> "/userid_details/options" ,
-    "Access Userids" => "/userid_details/options" ,
+    "Access Userids" => "/userid_details/display" ,
     "Syndicate Coordinators" => "/syndicates" ,
     "County Coordinators" => "/counties" ,
     "Country Coordinators" => "/countries" ,
