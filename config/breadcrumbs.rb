@@ -287,7 +287,7 @@ crumb :regmanager_userid_options do
    parent :root
 end
 crumb :coordinator_userid_options do 
-   link "Userid Display Selection", display_userid_details_path
+   link "Profile Display Selection", display_userid_details_path
    parent :root
 end
 crumb :rename_userid do |user|
