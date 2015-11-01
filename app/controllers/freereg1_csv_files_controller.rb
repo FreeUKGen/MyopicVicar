@@ -23,16 +23,8 @@ class Freereg1CsvFilesController < ApplicationController
 
   def show
     #show an individual batch
-    get_user_info_from_userid
-    go_back if params[:id].nil?
     load(params[:id])
-    #TODO check on need for these
-    @county =  session[:county]
-    set_controls
-    display_info
-    @freereg1_csv_file.adjust_for_collection_information
-    @processed = PhysicalFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).first
-    @role = session[:role]
+
 
   end
 
@@ -42,7 +34,6 @@ class Freereg1CsvFilesController < ApplicationController
     session[:selectcountry] = nil
     session[:selectcounty] = nil
     @records = @freereg1_csv_file.freereg1_csv_entries.count
-    set_controls
     max_records = 4000
     max_records = 15000 if @user.person_role == "data_manager"
     max_records = 30000 if  @user.person_role == "system_administrator"
@@ -51,7 +42,6 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to :action => 'show' and return
     end
     session[:records] = @records
-    display_info
     unless  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
       # only senior managers can move betweeen counties and countries; coordinators could loose files
       place = @freereg1_csv_file.register.church.place
@@ -83,10 +73,10 @@ class Freereg1CsvFilesController < ApplicationController
     display_info
   end
   def change_userid
-    get_user_info_from_userid
-    set_locations
+
+
     load(params[:id])
-    display_info
+    set_locations
     @records = @freereg1_csv_file.freereg1_csv_entries.count
     userids = UseridDetail.all.order_by(userid_lower_case: 1)
     @userids = Array.new
@@ -146,10 +136,6 @@ class Freereg1CsvFilesController < ApplicationController
   def edit
     #edit the headers for a batch
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    display_info
-    @county =  session[:county]
     unless session[:error_line].nil?
       #we are dealing with the edit of errors
       @error_message = Array.new
@@ -174,10 +160,6 @@ class Freereg1CsvFilesController < ApplicationController
   def update
     #update the headers
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
     case params[:commit]
     when 'Change Userid'
       flash[:notice] = "Cannot select a blank userid" if params[:freereg1_csv_file][:userid].blank?
@@ -306,11 +288,6 @@ class Freereg1CsvFilesController < ApplicationController
   def error
     #display the errors in a batch
     load(params[:id])
-    display_info
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
     get_errors_for_error_display
   end
 
@@ -336,10 +313,6 @@ class Freereg1CsvFilesController < ApplicationController
   def lock
     #lock/unlock a file
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
     @freereg1_csv_file.lock(session[:my_own])
     flash[:notice] = 'The update of the batch was successful'
     #determine how to return
@@ -392,7 +365,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
     return_location  = @freereg1_csv_file.register
-    if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator 
+    if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator
       flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return
@@ -418,18 +391,25 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def load(file_id)
-    @freereg1_csv_file = Freereg1CsvFile.where(:_id => file_id).first
-    go_back if @freereg1_csv_file.nil?
+    @freereg1_csv_file = Freereg1CsvFile.id(file_id).first
+    if @freereg1_csv_file.blank?
+      go_back("batch")
+    else
+      set_controls
+      display_info
+      get_user_info_from_userid
+      #TODO check on need for these
+      @county =  session[:county]
+      @freereg1_csv_file.adjust_for_collection_information
+      @processed = PhysicalFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).first
+      @role = session[:role]
+    end
   end
-
-
 
   def set_controls
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
   end
-
-
 
   def get_errors_for_error_display
     @errors = @freereg1_csv_file.batch_errors.count
@@ -449,6 +429,7 @@ class Freereg1CsvFilesController < ApplicationController
       end
     end
   end
+
   def display_info
     @freereg1_csv_file_id =   @freereg1_csv_file._id
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
@@ -462,19 +443,13 @@ class Freereg1CsvFilesController < ApplicationController
     @place = @church.place
     @county =  @place.county
     @place_name = @place.place_name
-
   end
+
   def set_locations
     @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
     @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value'
     @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
     @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'
-  end
-
-  def go_back
-    flash[:notice] = "That file does not exist"
-    redirect_to :back
-    return
   end
 
 end
