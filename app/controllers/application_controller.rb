@@ -131,6 +131,7 @@ class ApplicationController < ActionController::Base
     session.delete(:freereg1_csv_file_id) 
     session.delete(:freereg1_csv_file_name) 
     session.delete(:county) 
+    session.delete(:chapman_code) 
     session.delete(:place_name) 
     session.delete(:church_name) 
     session.delete(:sort) 
@@ -187,6 +188,7 @@ def clean_session_for_syndicate
     session.delete(:place_name) 
     session.delete(:church_name) 
     session.delete(:sort) 
+    session.delete(:active) 
     session.delete(:csvfile) 
     session[:my_own] = false
     session.delete(:freereg) 

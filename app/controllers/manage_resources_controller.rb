@@ -14,6 +14,8 @@
 
   def new
       clean_session 
+      clean_session_for_syndicate
+      clean_session_for_county
       session[:initial_page] = request.original_url
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
         flash[:notice] = "You are not currently permitted to access the system "
@@ -63,7 +65,7 @@
   end
 
   def create
-      clean_session
+      
       @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
       session[:userid] = @user.userid
       session[:first_name] = @user.person_forename

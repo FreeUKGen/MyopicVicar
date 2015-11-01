@@ -49,6 +49,7 @@ class UseridDetailsController < ApplicationController
     clean_session
     clean_session_for_county
     clean_session_for_syndicate
+    session[:edit_userid] = true
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
