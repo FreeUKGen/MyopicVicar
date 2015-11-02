@@ -2,7 +2,11 @@
 <div class="container">
 <h1 class="title text--center">Explore Database contents</h1>
 <h2 class=" text--center">Select the County and Place for which you want information</h2>
-
+<% if flash[:notice] %>
+  <div class="weight--semibold text--center" style="color:red"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
 <div class="grid">
   <div style="margin: 0 auto;" class="grid__item three-fifths lap-two-thirds palm-one-whole float--none">
     <p>You will find a wealth of information in these pages about each County, Place, Church and Register that has records in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register.</p>

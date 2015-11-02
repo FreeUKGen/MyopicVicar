@@ -80,12 +80,33 @@ class FreeregContentsController < ApplicationController
   end
 
   def show
+    if params[:id] == "show_place"
+      #we have an error condition
+      flash[:notice] = "No place was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
+        redirect_to :action => :alphabet
+        return
+      else
+       redirect_to :action => :new
+       return
+      end
+    end
      @county = session[:county]
      @character =  session[:character] 
   end
 
   def show_place
-    @place = Place.find(params[:id])
+    @place = Place.id(params[:id]).first
+    if @place.nil?
+       flash[:notice] = "No place was selected while reviewing the content; you will need to start again"
+       if session[:county].present?
+        redirect_to :action => :alphabet
+        return
+      else
+       redirect_to :action => :new
+       return
+      end
+    end
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
