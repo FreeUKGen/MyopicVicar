@@ -39,7 +39,7 @@ class FreeregContentsController < ApplicationController
           end
           @county = session[:county]
           @chapman_code = session[:chapman_code]
-          @character =  session[:character] 
+          @character =  session[:character]
           @coordinator = County.coordinator_name(@chapman_code)
           @places = Places.where(:data_present => true).all.order_by(place_name: 1) if @county == 'all'
           @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)  unless @county == 'all'
@@ -87,30 +87,30 @@ class FreeregContentsController < ApplicationController
         redirect_to :action => :alphabet
         return
       else
-       redirect_to :action => :new
-       return
+        redirect_to :action => :new
+        return
       end
     end
-     @county = session[:county]
-     @character =  session[:character] 
+    @county = session[:county]
+    @character =  session[:character]
   end
 
   def show_place
     @place = Place.id(params[:id]).first
     if @place.nil?
-       flash[:notice] = "No place was selected while reviewing the content; you will need to start again"
-       if session[:county].present?
+      flash[:notice] = "No place was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
         redirect_to :action => :alphabet
         return
       else
-       redirect_to :action => :new
-       return
+        redirect_to :action => :new
+        return
       end
     end
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
-    @character =  session[:character] 
+    @character =  session[:character]
     @country = @place.country
     @place_name = @place.place_name
     @names = @place.get_alternate_place_names
@@ -125,12 +125,22 @@ class FreeregContentsController < ApplicationController
     else
       @page = ""
     end
-    @church = Church.find(params[:id])
+    @church = Church.id(params[:id]).first
+    if @church.nil?
+      flash[:notice] = "No church was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
+        redirect_to :action => :alphabet
+        return
+      else
+        redirect_to :action => :new
+        return
+      end
+    end
     @stats = @church.data_contents
     @place_name = @church.place.place_name
     @place = @church.place
     @county = session[:county]
-    @character =  session[:character] 
+    @character =  session[:character]
     @church_name = @church.church_name
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
@@ -141,11 +151,21 @@ class FreeregContentsController < ApplicationController
     else
       @page = ""
     end
-    @register = Register.find(params[:id])
+    @register = Register.id(params[:id]).first
+    if @register.nil?
+      flash[:notice] = "No register was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
+        redirect_to :action => :alphabet
+        return
+      else
+        redirect_to :action => :new
+        return
+      end
+    end
     @church  = @register.church
     @place = @church.place
     @county = session[:county]
-    @character =  session[:character] 
+    @character =  session[:character]
     @files_id = Array.new
     @place_name = @place.place_name
     session[:register_id] = params[:id]
@@ -167,11 +187,22 @@ class FreeregContentsController < ApplicationController
       redirect_to :action => :new
       return
     end
-    @register = Register.find(session[:register_id])
+    @register = Register.id(session[:register_id]).first
+
+    if @register.nil?
+      flash[:notice] = "No register was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
+        redirect_to :action => :alphabet
+        return
+      else
+        redirect_to :action => :new
+        return
+      end
+    end
     @files_id = session[:files]
     @register_id = session[:register_id]
     @register_name = session[:register_name]
-    @character =  session[:character] 
+    @character =  session[:character]
     individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
     @files = Freereg1CsvFile.combine_files(individual_files)
     @decade = { }
