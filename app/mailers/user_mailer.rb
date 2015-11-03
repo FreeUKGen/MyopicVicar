@@ -16,8 +16,10 @@ class UserMailer < ActionMailer::Base
       cc = UseridDetail.where(userid: county_coordinator).first
     end
     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") if @userid.active
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
-   # mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg processed #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address || cc.nil?
+    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
+    unless cc.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
+      mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Copy of FreeReg processed #{batch}") 
+    end
   end
 
   def batch_processing_failure(message,user,batch)
@@ -33,8 +35,10 @@ class UserMailer < ActionMailer::Base
       cc = UseridDetail.where(userid: county_coordinator).first
     end
     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") if @userid.active
-    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless sc.email_address == @userid.email_address 
-  #  mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "FreeReg failed to process #{batch}") unless cc.email_address == @userid.email_address || cc.email_address == sc.email_address || cc.nil?
+    mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg failed to process #{batch}") unless sc.email_address == @userid.email_address 
+    unless cc.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
+       mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => " Copy of FreeReg failed to process #{batch}") 
+    end
   end
 
   def update_report_to_freereg_manager(file,user)
@@ -101,7 +105,7 @@ class UserMailer < ActionMailer::Base
     reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name
     mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration Completion") unless @coordinator.nil?
-    mail(:to => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeREG Registration Completion") unless reg_manager.nil?
+    mail(:to => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "Copy of FreeREG Registration Completion") unless reg_manager.nil?
   end
 
   def reset_notification(user,z)

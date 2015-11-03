@@ -40,7 +40,7 @@ class Csvfile < CarrierWave::Uploader::Base
         FileUtils.rm(file_location) if File.file?(file_location)
         user =UseridDetail.where(:userid => self.userid).first
         unless user.nil?
-          attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
+          attic_file = AtticFile.new(:name => "#{self.file_name}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
           attic_file.save
         end
       else

@@ -1285,17 +1285,19 @@ class FreeregCsvUpdateProcessor
                                    if @@create_search_records
                                      # we created search records so its in the search database database
                                      batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
+                                   
                                    else
                                      #only checked for errors so file is not processed into search database
                                      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
                                    end
+                                   batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil) if n == 0
                                    #kludge to send email to user 
                                    header_errors = 0
                                    header_errors= @@header_error.length unless  @@header_error.nil?
                                    UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                                    nn = nn + n unless n.nil?
                               else
-                                     #another kludge to send a message to user that the file did not get processed when the processing failed
+                                  #another kludge to send a message to user that the file did not get processed when the processing failed
                                      if (delta == 'change' && filenames.length == 1 )
                                         @@message_file.puts "File not processed" if @success == false
                                         @@message_file.close
