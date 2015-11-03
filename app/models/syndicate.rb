@@ -20,6 +20,12 @@ class Syndicate
   index ({ syndicate_coordinator: 1 })
   index ({ previous_syndicate_coordinator: 1 })
 
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
+
   def  add_lower_case_and_change_userid_fields
     self.syndicate_coordinator_lower_case = self.syndicate_coordinator.downcase
 
