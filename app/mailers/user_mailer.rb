@@ -139,6 +139,7 @@ class UserMailer < ActionMailer::Base
   def copy_to_contact_person(contact)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
+    attachments["screenshot.jpg"] = File.read(@contact.screenshot)
     mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for contacting us (#{appname})")
   end
 
