@@ -122,10 +122,17 @@
 					<span>Check to search names of family members mentioned within records in addition to the names of the main participants.</span>
 				</a>
 			<% end %>
+			<%= f.label :witness do %>
+				<%= f.check_box :witness, { :tabindex => 8 }, "true", "false" %>
+				Witnesses
+				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+					<span>Check to search names of witnesses mentioned within records in addition to the names of the main participants.</span>
+				</a>
+			<% end %>
 		</li>
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<%= f.label :search_nearby_places do %>
-				<%= f.check_box :search_nearby_places, { :tabindex => 8 }, "true", "false" %>
+				<%= f.check_box :search_nearby_places, { :tabindex => 9 }, "true", "false" %>
 			Nearby places
 				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>Check to search places in the vicinity of the selected starting place. (Up to 40 additional places will be included.)</span>
@@ -134,7 +141,7 @@
 		</li>
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<%= f.label :fuzzy do %>
-				<%= f.check_box :fuzzy, { :tabindex => 9 }, "true", "false" %>
+				<%= f.check_box :fuzzy, { :tabindex => 10 }, "true", "false" %>
 				Soundex on Names
 				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>Check to include Soundex equivalent of the name, it is applied to both surname and forename(if entered).</span>

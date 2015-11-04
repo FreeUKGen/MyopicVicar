@@ -150,6 +150,28 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should handle witnesses correctly" do
+    Freereg1CsvEntry.count.should eq(0)
+#
+    file = FREEREG1_CSV_FILES[2]
+    file_record = process_test_file(file)
+    entry = file_record.freereg1_csv_entries.last
+ 
+    record = file[:entries][:last]
+
+    record[:witnesses].each do |witness|        
+      query_params = { :first_name => witness[:first_name],
+                       :last_name => witness[:last_name],
+                       :witness => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+      result.count.should have_at_least(1).items
+      result.should be_in_result(entry)              
+    end
+  end
+
   it "should parse and find dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
@@ -307,7 +329,7 @@ describe Freereg1CsvEntry do
     
   end
 
-  it "should not yet find records by wildcard" do
+  it "should find records by wildcard" do
     filespec = FREEREG1_CSV_FILES[2]
     process_test_file(filespec)
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
@@ -316,16 +338,86 @@ describe Freereg1CsvEntry do
     place = search_record.place
     name = search_record.transcript_names.first
 
-    query_params = { :first_name => name["first_name"],
-                     :last_name => name["last_name"],
-                     :inclusive => true }
-    q = SearchQuery.new(query_params)
-    q.save!(:validate => false)
-    q.search
-    result = q.results
+    last_name = name["last_name"]
+    first_name = name["first_name"]
 
-    result.count.should have_at_least(1).items
-    result.should be_in_result(entry)
+    # surname with ending 
+    [last_name, 
+      "#{last_name}*", 
+        last_name.sub(last_name[2], '?'), 
+        last_name.sub(last_name[2], '*')].each do |name_with_wildcard|
+      query_params = { :first_name => name["first_name"],
+                       :last_name => name_with_wildcard,
+                       :inclusive => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+  
+      result.should have_at_least(1).items
+      result.should be_in_result(entry)
+    end
+
+    [first_name, 
+      "#{first_name}*", 
+      first_name.sub(first_name[2], '?'), 
+      first_name.sub(first_name[2], '*')].each do |name_with_wildcard|
+      query_params = { :first_name => "#{first_name}*",
+                       :last_name => name["last_name"],
+                       :inclusive => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+  
+      result.should have_at_least(1).items
+      result.should be_in_result(entry)
+    end
+  end
+
+  it "should handle wildcard performance" do
+    Freereg1CsvEntry.count.should eq(0)
+    Freereg1CsvFile.count.should eq(0)
+    Church.count.should eq(0)
+    Register.count.should eq(0)
+    SearchRecord.count.should eq(0)
+    Place.count.should eq(0)
+
+    process_test_file(FREEREG1_CSV_FILES[1])  # clear cached class variables
+    filespec = FREEREG1_CSV_FILES[2]
+
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry = file_record.freereg1_csv_entries.first
+    search_record = entry.search_record
+    place = search_record.place
+
+    place.should_not eq nil
+    
+    name = search_record.transcript_names.first
+
+    last_name = name["last_name"]
+    first_name = name["first_name"]
+
+    # begins-with wildcard should use name index
+    query_params = { :first_name => name["first_name"],
+                     :last_name => last_name.sub(last_name[2], '?') }
+    query = SearchQuery.new(query_params)
+    query.places << place
+
+    SearchRecord.index_hint(query.search_params).should eq("place_ln_fn")
+     
+    # ends-with wildcard should not use name index (with no place)
+    query_params = { :record_type => RecordType::BAPTISM,
+                     :last_name => last_name.sub(last_name[0], '*') }
+    query = SearchQuery.new(query_params)
+    SearchRecord.index_hint(query.search_params).should_not eq("ln_rt_fn_sd")
+    
+    # ends-with wildcard should require place_id
+    query_params = { :record_type => RecordType::BAPTISM,
+                     :last_name => last_name.sub(last_name[0], '*') }
+    query = SearchQuery.new(query_params)
+    query.save.should eq false
 
   end
 

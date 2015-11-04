@@ -36,6 +36,7 @@ class SearchQuery
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
+  field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
   has_and_belongs_to_many :places, inverse_of: nil
@@ -257,24 +258,55 @@ class SearchQuery
   def name_search_params
     params = Hash.new
     name_params = Hash.new
-    search_type = inclusive ? { "$in" => [SearchRecord::PersonType::FAMILY, SearchRecord::PersonType::PRIMARY ] } : SearchRecord::PersonType::PRIMARY
+    
+    type_array = [SearchRecord::PersonType::PRIMARY]
+    type_array << SearchRecord::PersonType::FAMILY if inclusive
+    type_array << SearchRecord::PersonType::WITNESS if witness
+    search_type = type_array.size > 1 ? { "$in" => type_array } : SearchRecord::PersonType::PRIMARY
     name_params["type"] = search_type
 
-    if fuzzy
-
-      name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
-      name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
-
-      params["search_soundex"] =  { "$elemMatch" => name_params}
+    if query_contains_wildcard?
+        name_params["first_name"] = wildcard_to_regex(first_name.downcase) if first_name
+        name_params["last_name"] = wildcard_to_regex(last_name.downcase) if last_name
+  
+        params["search_names"] =  { "$elemMatch" => name_params}
+    
     else
-      name_params["first_name"] = first_name.downcase if first_name
-      name_params["last_name"] = last_name.downcase if last_name
-
-      params["search_names"] =  { "$elemMatch" => name_params}
+      if fuzzy
+        name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
+        name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
+  
+        params["search_soundex"] =  { "$elemMatch" => name_params}
+      else
+        name_params["first_name"] = first_name.downcase if first_name
+        name_params["last_name"] = last_name.downcase if last_name
+  
+        params["search_names"] =  { "$elemMatch" => name_params}
+      end      
     end
+    
     params
   end
 
+  WILDCARD = /[?*]/
+
+  def query_contains_wildcard?
+    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)) 
+  end
+  
+
+  def begins_with_wildcard(name_string)
+    name_string.index(WILDCARD) == 0
+  end
+  
+  def wildcard_to_regex(name_string)
+    return name_string unless name_string.match(WILDCARD)
+  
+    trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
+    regex_string = trimmed.gsub('?', '\w').gsub('*', '.*') #replace glob-style wildcards with regex wildcards
+    
+    begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
+  end
 
   def name_not_blank
     if last_name.blank? && !adequate_first_name_criteria? 
@@ -311,6 +343,11 @@ class SearchQuery
     end
   end
 
+  def wildcards_are_valid
+    if first_name && begins_with_wildcard(first_name) && places.count == 0
+      errors.add(:first_name, "A place must be selected if name queries begin with a wildcard")
+    end      
+  end
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
@@ -345,5 +382,5 @@ class SearchQuery
     place = Place.find(place_id)
     place.places_near(radius_factor, place_system)
   end
-
+  
 end

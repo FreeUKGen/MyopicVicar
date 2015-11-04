@@ -55,3 +55,13 @@
   fields:
     first_name: male_relative_forename
     last_name:  relative_surname
+- role: wt
+  type: witness
+  fields:
+    first_name: witness1_forename
+    last_name:  witness1_surname
+- role: wt
+  type: witness
+  fields:
+    first_name: witness2_forename
+    last_name:  witness2_surname

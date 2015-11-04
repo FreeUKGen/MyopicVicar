@@ -29,6 +29,7 @@ module NameRole
   GROOM_MOTHER='gm'
   MALE_RELATIVE='mr'
   FEMALE_RELATIVE='fr'
+  WITNESS='wt'
   
   OPTIONS = {
     'Father' => FATHER,
@@ -42,8 +43,9 @@ module NameRole
     'Baptizee' => BAPTIZEE,
     'Deceased' => BURIED,
     'Female Relative' => FEMALE_RELATIVE,
-    'Male Relative' => MALE_RELATIVE    
+    'Male Relative' => MALE_RELATIVE,
+    'Witness' => WITNESS    
   }    
   
-  ALL_ROLES = [FATHER, MOTHER, HUSBAND, WIFE, GROOM, BRIDE, BRIDE_FATHER, BRIDE_MOTHER, GROOM_FATHER, GROOM_MOTHER]
+  ALL_ROLES = [FATHER, MOTHER, HUSBAND, WIFE, GROOM, BRIDE, BRIDE_FATHER, BRIDE_MOTHER, GROOM_FATHER, GROOM_MOTHER, WITNESS]
 end

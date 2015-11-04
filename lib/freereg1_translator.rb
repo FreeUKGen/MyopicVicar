@@ -89,6 +89,7 @@ module Freereg1Translator
 
   # create transcript names from the entry and mapping configuration  
   def self.transform_names(entry)
+
     names = []
     role_fields_map = begin
       YAML.load(File.open("#{Rails.root}/config/csv_layout.yml"))
@@ -106,6 +107,7 @@ module Freereg1Translator
       
       first_name_key = first_name_keys.detect { |key| entry[key.to_sym] }
       last_name_key = last_name_keys.detect { |key| entry[key.to_sym] }
+      
       if first_name_key && last_name_key # does it have both first and last names?
         extra_name = { :role => role_name, :type => type_name }
         fields_map.each_pair do |standard, original|

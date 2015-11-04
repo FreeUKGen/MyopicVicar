@@ -16,6 +16,7 @@ class SearchRecord
     EMENDOR='e'
     SUPPLEMENT='s'
     SEPARATION='sep'
+    SEPARATION_LAST='sepl'
     USER_ADDITION='u'
   end
 
@@ -139,9 +140,21 @@ class SearchRecord
       end
     else
       # terminate
-      fields << current_field
+      if indexable_value?(params)
+        fields << current_field
+      end
     end
     
+  end
+
+  def self.indexable_value?(param)
+    if param.is_a? Regexp
+      # does this begin with a wildcard?
+
+      param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl 
+    else
+      true
+    end
   end
 
   def comparable_name
@@ -251,6 +264,7 @@ class SearchRecord
 
   def separate_all
     separate_names(self.search_names)
+    separate_last_names(self.search_names)
   end
 
   def separate_names(names_array)
@@ -266,6 +280,22 @@ class SearchRecord
     names_array << separated_names
   end
 
+  def separate_last_names(names_array)
+    separated_names = []
+    names_array.each do |name|
+      tokens = name.last_name.split(/-|\s+/)
+      if tokens.size > 1
+        tokens.each do |token|
+          separated_names << search_name(name.first_name, token, name.type, Source::SEPARATION_LAST) unless is_surname_stopword(token)
+        end
+      end
+    end
+    names_array << separated_names
+  end
+
+  def is_surname_stopword(namepart)
+    ['da','de','del','della','der','des','di','du','la','le','mc','mac','o','of','or','van','von','y'].include?(namepart)
+  end
 
   def populate_search_names
     if transcript_names && transcript_names.size > 0
@@ -273,6 +303,9 @@ class SearchRecord
         person_type=PersonType::FAMILY
         if name_hash[:type] == 'primary'
           person_type=PersonType::PRIMARY
+        end
+        if name_hash[:type] == 'witness'
+          person_type=PersonType::WITNESS
         end
         name = search_name(name_hash[:first_name], name_hash[:last_name], person_type)
         search_names << name if name
