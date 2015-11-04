@@ -17,9 +17,10 @@
 <p>
 <b>Screenshot:</b>
 <% if @contact.screenshot_url %>
-A screenshot was attached
+A screenshot was attached<br>
+<%= image_tag @contact.screenshot_url %>
 <% else %>
 No screenshot attached.
 <% end %>
 </p>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>
