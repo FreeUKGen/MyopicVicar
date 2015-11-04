@@ -134,7 +134,7 @@ class CsvfilesController < ApplicationController
     @people = Array.new
     @people <<  @user.userid
     case
-    when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
+    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
       load_people(@userids)
     when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator'
