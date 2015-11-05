@@ -1,7 +1,8 @@
 <p> Dear <%= @name %>;</p>
 <p>We have received correspondence on a <%= @contact.contact_type %> that has been sent to the coordinator <%=@coordinator%> from <%=@contact.name%> at <%= @contact.email_address%>. </p>
 <p>Copies went to the coordinator and all registered data managers: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
-<p>It has been suggested that the coordinator takes the lead in responding.
+<p>It has been suggested that the coordinator takes the lead in responding.</p>
+<p>
   <b>Content of report:</b>
   <%= @contact.body %>
 </p>
@@ -14,5 +15,14 @@
   <%= @contact.contact_time.strftime("%H:%M on %F") %>
   <% end%>
 </p>
+<p>
+<b>Screenshot:</b>
+<% if @contact.screenshot_url %>
+ A screenshot was attached.
+ <%= link_to("link",@contact.contact_screenshot_url) %><br>
+<% else %>
+No screenshot attached.
+<% end %>
+</p>
 <p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the contact on line if you are logged into the system. </a></p>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

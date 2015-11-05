@@ -11,7 +11,7 @@
 <p><b>Time:</b> <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></p>
 <p><b>Screenshot:</b>
     <% if @contact.screenshot_url %>
-      <%= image_tag @contact.screenshot_url %>
+      <%= link_to("link",@contact.contact_screenshot_url) %><br>
     <% else %>
       No screenshot attached.
     <% end %></p>

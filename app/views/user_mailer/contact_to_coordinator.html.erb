@@ -14,5 +14,14 @@
 <%= @contact.contact_time.strftime("%H:%M on %F") %>
 <% end%>
 </p>
+<p>
+<b>Screenshot:</b>
+  <% if @contact.screenshot_url %>
+    A screenshot was attached.
+    <%= link_to("link",@contact.contact_screenshot_url) %><br>
+  <% else %>
+    No screenshot attached.
+  <% end %>
+</p>
 <p><a href="<%=Rails.application.config.website%>/contacts/<%=@contact._id%>"> You may review the contact on line if you are logged into the system. </a></p>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>
