@@ -125,7 +125,7 @@ def load(id)
    @first_name = session[:first_name]
    @county = County.id(id).first
   if @county.nil?
-    go_back("county")
+    go_back("county",id)
   end
 end
 

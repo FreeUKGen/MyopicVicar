@@ -318,7 +318,7 @@ class UseridDetailsController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
-      go_back("userid")
+      go_back("userid",userid_id)
     else
       session[:userid_id] = userid_id
       @syndicate = session[:syndicate]

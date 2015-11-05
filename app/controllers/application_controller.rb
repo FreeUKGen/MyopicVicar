@@ -222,8 +222,9 @@ def clean_session_for_syndicate
   end
 
  
-  def go_back(type)
+  def go_back(type,record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
+    logger.info "ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path
     return
   end  

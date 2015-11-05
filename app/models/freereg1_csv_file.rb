@@ -28,13 +28,20 @@ class Freereg1CsvFile
 
 
   # Fields correspond to cells in CSV headers
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #These field are there in the entry collection from the original files coming in as CSV file. 
+  #They are NOT USED we use the county and country from the Place collection the church_name from the church collection
+  #and the register information from the register collection
   field :country, type: String
-  field :county, type: String #note in headers this is actually a chapman code
-  field :place, type: String
+  field :county, type: String #note in headers this is actually a Chapman code
+  
   field :church_name, type: String
   field :register_type, type: String
   field :record_type, type: String#, :in => RecordType::ALL_TYPES+[nil]
   validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  field :place, type: String
   field :records, type: String
   field :datemin, type: String
   field :datemax, type: String
@@ -490,17 +497,6 @@ class Freereg1CsvFile
     location = {:register => new_register, :church => new_church, :place => new_place}
   end
 
-  def adjust_for_collection_information
-    # this uses the collection information
-    register = self.register
-    church = register.church
-    place = church.place
-    self[:county] = place.county
-    self[:place] = place.place_name
-    self[:church_name] = church.church_name
-    self[:register_type] = register.register_type
-  end
-
   def date_change(transcription_date,modification_date)
     error = self.error
     if error > 0
@@ -593,14 +589,15 @@ class Freereg1CsvFile
             entry.update_attribute(:freereg1_csv_file_id, batch_id)
           end
           register.freereg1_csv_files.delete(batch)
+          batch.delete
         end
       end
     end
     #TODO need to recompute max, min and range
     unless added_records == 0
-      logger.info "update record ccount #{self.records.to_i} and #{added_records}"
+      logger.info "update record count #{self.records.to_i} and #{added_records}"
       records = self.records.to_i + added_records
-      self.update_attribute(:records, records.to_s)
+      self.update_attributes(:records => records.to_s,:locked_by_coordinator => true )
       logger.info "updated record count #{self.records.to_i} "
     end
     return [false, ""]

@@ -7,7 +7,7 @@ class ContactsController < InheritedResources::Base
   def show
     @contact = Contact.id(params[:id]).first
     if @contact.nil?
-      go_back("contact")
+      go_back("contact",params[:id])
     else
       set_session_parameters_for_record(@contact) if @contact.entry_id.present?
     end

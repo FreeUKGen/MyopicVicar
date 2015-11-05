@@ -126,7 +126,7 @@ class SyndicatesController < ApplicationController
     @first_name = session[:first_name]
     @syndicate = Syndicate.id(id).first
     if @syndicate.nil?
-      go_back("syndicate")
+      go_back("syndicate",id)
     else
       get_user_info_from_userid
     end

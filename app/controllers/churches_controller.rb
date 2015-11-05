@@ -137,7 +137,7 @@ class ChurchesController < InheritedResources::Base
   def load(church_id)
     @church = Church.id(church_id).first
     if @church.nil?
-      go_back("church")
+      go_back("church",church_id)
     else
       @first_name = session[:first_name]
       session[:church_id] = @church._id

@@ -153,7 +153,7 @@ class PlacesController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     @place = Place.id(place_id).first
     if @place.nil?
-      go_back("place")
+      go_back("place",place_id)
     else
       session[:place_id] = place_id
       @place_name = @place.place_name

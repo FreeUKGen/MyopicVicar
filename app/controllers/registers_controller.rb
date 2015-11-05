@@ -146,7 +146,7 @@ class RegistersController < ApplicationController
   def load(register_id)
     @register = Register.id(register_id).first
     if @register.nil?
-      go_back("register")
+      go_back("register",register_id)
     else
       @register_name = RegisterType.display_name(@register.register_type)
       session[:register_id] = register_id

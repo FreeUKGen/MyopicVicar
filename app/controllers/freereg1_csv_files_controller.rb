@@ -24,8 +24,6 @@ class Freereg1CsvFilesController < ApplicationController
   def show
     #show an individual batch
     load(params[:id])
-
-
   end
 
   def relocate
@@ -43,7 +41,7 @@ class Freereg1CsvFilesController < ApplicationController
     end
     session[:records] = @records
     unless  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
-      # only senior managers can move betweeen counties and countries; coordinators could loose files
+      # only senior managers can move between counties and countries; coordinators could loose files
       place = @freereg1_csv_file.register.church.place
       session[:selectcountry] = place.country
       session[:selectcounty] = place.county
@@ -58,6 +56,7 @@ class Freereg1CsvFilesController < ApplicationController
       @counties = Array.new
       @placenames = Array.new
       @churches = Array.new
+
     end
   end
 
@@ -202,6 +201,7 @@ class Freereg1CsvFilesController < ApplicationController
         session[:page] = session[:initial_page]
       end
     when 'Relocate'
+      @freereg1_csv_file
       errors =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
       if errors[0]
         flash[:notice] = errors[1]
@@ -392,14 +392,11 @@ class Freereg1CsvFilesController < ApplicationController
   def load(file_id)
     @freereg1_csv_file = Freereg1CsvFile.id(file_id).first
     if @freereg1_csv_file.blank?
-      go_back("batch")
+      go_back("batch",file_id)
     else
       set_controls
       display_info
       get_user_info_from_userid
-      #TODO check on need for these
-      @county =  session[:county]
-      @freereg1_csv_file.adjust_for_collection_information
       @processed = PhysicalFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).first
       @role = session[:role]
     end
@@ -433,13 +430,20 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file_id =   @freereg1_csv_file._id
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     @register = @freereg1_csv_file.register
+    if @register.blank?
+      go_back("register",@freereg1_csv_file)
+    end
     @file_owner = @freereg1_csv_file.userid
-    #@register_name = @register.register_name
-    #@register_name = @register.alternate_register_name if @register_name.nil?
     @register_name = RegisterType.display_name(@register.register_type)
     @church = @register.church
+    if @church.blank?
+      go_back("church",@register)
+    end
     @church_name = @church.church_name
     @place = @church.place
+    if @place.blank?
+      go_back("place", @church)
+    end
     @county =  @place.county
     @place_name = @place.place_name
   end

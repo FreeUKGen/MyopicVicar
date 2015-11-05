@@ -65,7 +65,7 @@ class CountriesController < InheritedResources::Base
     @first_name = session[:first_name]
     @country = Country.id(id).first
     if @country.nil?
-      go_back("country")
+      go_back("country",id)
     end
   end
 
