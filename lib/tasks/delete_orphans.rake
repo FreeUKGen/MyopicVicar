@@ -16,8 +16,8 @@ task :delete_orphans,[:limit] => [:environment] do |t, args|
   sleep_time_ten_thousand = 10000*(Rails.application.config.sleep.to_f).to_f
   p "starting"
   input_file.each_line  do |line|
-    break if files == args.limit.to_i
     files = files + 1
+    break if files == args.limit.to_i
     line = line.chomp
     p " Starting #{files}  #{line}"
     record_number = 0

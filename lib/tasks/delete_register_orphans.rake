@@ -29,8 +29,9 @@ task :delete_register_orphans,[:limit] => [:environment] do |t, args|
       end
       output_file.puts "#{record_number} records deleted for #{line}"
       puts "#{record_number} records deleted for #{line}"
+      Freereg1CsvFile.id(line).destroy
       total_records = total_records + record_number
-      sleep(sleep_time_two_thousand )
+      sleep(sleep_time_two_thousand ) unless record_number <= 10
   end
   p " #{total_records} records deleted"
   output_file.puts " #{total_records} records deleted"
