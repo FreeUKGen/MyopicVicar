@@ -137,8 +137,7 @@ class Contact
     return nil unless screenshot.present?
     cid=self._id.to_s unless self._id.nil?
     ss=File.basename(screenshot.to_s)
-    MyopicVicar::Application.config.website + "/uploads/contact/screenshot/#{ci\
-d}/#{ss}"
+    MyopicVicar::Application.config.website + "/uploads/contact/screenshot/#{cid}/#{ss}"
   end
 
 end
