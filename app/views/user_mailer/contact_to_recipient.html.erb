@@ -1,7 +1,8 @@
 <p> Dear <%= @name %>;</p>
 <p>We have received correspondence on a <%= @contact.contact_type %> from <%=@contact.name%> at <%= @contact.email_address%>. </p>
 <p>Copies gone to all registered data managers: (<% @ccs.each do |ccs| %><%=ccs%>,<%end%>)</p>
-<p>It has been suggested that the first person in the list takes the lead in responding.
+<p>It has been suggested that the first person in the list takes the lead in responding.</p>
+<p>
 <b>Content of report:</b>
 <%= @contact.body %>
 </p>
