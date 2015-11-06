@@ -11,6 +11,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = session[:sorted_by]
     case
     when session[:my_own]
+      @who =  @first_name  
       @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort])
     when !session[:syndicate].nil? && session[:userid_id].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" )
       @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort])
@@ -72,8 +73,6 @@ class Freereg1CsvFilesController < ApplicationController
     display_info
   end
   def change_userid
-
-
     load(params[:id])
     set_locations
     @records = @freereg1_csv_file.freereg1_csv_entries.count
@@ -220,19 +219,18 @@ class Freereg1CsvFilesController < ApplicationController
     clean_session_for_syndicate
     get_user_info_from_userid
     session[:my_own] = true
-    @freereg1_csv_file = Freereg1CsvFile.new
-    @who =  @first_name
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-      return
-    end
-    @options= UseridRole::FILE_MANAGEMENT_OPTIONS
+    @who =  @first_name  
+    @sorted_by = 'Ordered by most recent'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "uploaded_date DESC"
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC")
+    render :index
   end
 
   def display_my_own_files
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted alphabetically by file name)'
+    @who =  @first_name 
+    @sorted_by = 'Alphabetical file name'
     session[:sort] = "file_name ASC"
     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC")
@@ -240,8 +238,8 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_error_files
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted by number of errors)'
+    @who =  @first_name 
+    @sorted_by = 'Ordered by number of errors'
     session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC")
@@ -249,8 +247,8 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_own_files_by_descending_uploaded_date
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted by descending date of uploading)'
+    @who =  @first_name 
+    @sorted_by = 'Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC")
@@ -258,8 +256,8 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_own_files_by_ascending_uploaded_date
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted by ascending date of uploading)'
+    @who =  @first_name 
+    @sorted_by = 'Oredered by oldest'
     session[:sort] = "uploaded_date ASC"
     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC")
@@ -267,7 +265,7 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_own_files_by_selection
     get_user_info_from_userid
-    @who = @user.userid
+    @who =  @first_name 
     @freereg1_csv_file = Freereg1CsvFile.new
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").all
     @files = Hash.new
@@ -281,8 +279,8 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_own_files_waiting_to_be_processed
     get_user_info_from_userid
-    @who = @user.userid
-    @batches = PhysicalFile.userid(@who).waiting.all.order_by("waiting_date DESC")
+    @who =  @first_name 
+    @batches = PhysicalFile.userid(@userid).waiting.all.order_by("waiting_date DESC")
   end
   def error
     #display the errors in a batch

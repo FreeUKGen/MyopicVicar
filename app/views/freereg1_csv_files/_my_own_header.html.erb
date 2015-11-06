@@ -1,0 +1,7 @@
+<% breadcrumb :my_own_files %>
+<h2 style="text-align: center"> <%=@who%> these are your files</h2>
+<h3 style="text-align: center"> <%=@sorted_by%>: Select a link below changes the order of display</h3>
+<div  style="text-align: center">
+ <%= link_to 'Alphabetical file name', 'selection?option=List by Filename', method: :get , :class => "btn  btn--exsmall" %> <%= link_to 'Oldest' , 'selection?option=List by uploaded date (ascending)', method: :get , :class => "btn  btn--exsmall" %> <%= link_to 'Most Recent' , 'selection?option=List by uploaded date (descending)', method: :get , :class => "btn  btn--exsmall" %> <%= link_to 'Waiting for processing' , 'selection?option=List files waiting to be processed', method: :get , :class => "btn  btn--exsmall" %>
+</div>
+<h4 style="text-align: center"> To replace a file; find the one to replace in the list below and select (click) the RL option on its line. To upload a brand new file. Select the following button <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn  btn--exsmall"%></h4>

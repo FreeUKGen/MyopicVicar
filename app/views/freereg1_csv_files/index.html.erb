@@ -1,5 +1,5 @@
-<% breadcrumb :files %>
-<h3 style="text-align: center"> <%=@who%> <%=@sorted_by%></h3>
+<%= render 'my_own_header' if session[:my_own]%>
+<%= render 'coordinator_header' unless session[:my_own]%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>

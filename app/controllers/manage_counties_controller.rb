@@ -97,9 +97,9 @@ class ManageCountiesController < ApplicationController
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
-    @who = nil
-    @sorted_by = '(Sorted by descending number of errors and then filename)'
-     session[:sorted_by] = @sorted_by
+    @who = @user.person_forename
+    @sorted_by = '; sorted by descending number of errors and then file name'
+    session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by("error DESC, file_name ASC" )
     render 'freereg1_csv_files/index'
@@ -107,12 +107,11 @@ class ManageCountiesController < ApplicationController
   def display_by_filename
     get_user_info_from_userid
     @county = session[:county]
-    @who = nil
-    @sorted_by = '(Sorted alphabetically by file name)'
+   @who = @user.person_forename
+    @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("file_name ASC")
-    render 'freereg1_csv_files/index'
+    redirect_to freereg1_csv_files_path
   end
   def upload_batch
     redirect_to new_csvfile_path
@@ -120,34 +119,31 @@ class ManageCountiesController < ApplicationController
   def display_by_userid_filename
     get_user_info_from_userid
     @county = session[:county]
-    @who = nil
-    @sorted_by = '(Sorted by userid then alphabetically by file name)'
+    @who = @user.person_forename
+    @sorted_by = '; sorted by userid then alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "userid_lower_case ASC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("userid_lower_case ASC, file_name ASC")
-    render 'freereg1_csv_files/index'
+    redirect_to freereg1_csv_files_path
   end
 
   def display_by_descending_uploaded_date
     get_user_info_from_userid
     @county = session[:county]
-    @who = nil
-    @sorted_by = '(Sorted by descending date of uploading)'
+    @who = @user.person_forename
+    @sorted_by = '; sorted by descending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date DESC")
-    render 'freereg1_csv_files/index'
+    redirect_to freereg1_csv_files_path
   end
 
   def display_by_ascending_uploaded_date
     get_user_info_from_userid
     @county = session[:county]
-    @who = nil
-    @sorted_by = '(Sorted by ascending date of uploading)'
+    @who = @user.person_forename
+    @sorted_by = '; sorted by ascending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] ="uploaded_date ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by("uploaded_date ASC")
-    render 'freereg1_csv_files/index'
+    redirect_to freereg1_csv_files_path
   end
 
   def review_a_specific_batch
@@ -172,7 +168,7 @@ class ManageCountiesController < ApplicationController
       redirect_to freereg1_csv_file_path(file)
       return
     else
-      render 'freereg1_csv_files/index'
+     redirect_to freereg1_csv_files_path
     end
   end
   def places
