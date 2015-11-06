@@ -6,8 +6,13 @@ class UserMailer < ActionMailer::Base
     @errors = error
     @headers = headers
     @records = records
-    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
+    syndicate_coordinator = nil
+    sc = nil
+    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
+    unless syndicate_coordinator.nil?
+      syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
+      sc = UseridDetail.where(userid: syndicate_coordinator).first
+    end
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county = County.where(chapman_code: @batch.county).first unless @batch.nil?
     cc = nil
@@ -29,8 +34,13 @@ class UserMailer < ActionMailer::Base
   def batch_processing_failure(message,user,batch)
     @message = message
     @userid = UseridDetail.where(userid: user).first
-    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first.syndicate_coordinator
-    sc = UseridDetail.where(userid: syndicate_coordinator).first
+    syndicate_coordinator = nil
+    sc = nil
+    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
+    unless syndicate_coordinator.nil?
+      syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
+      sc = UseridDetail.where(userid: syndicate_coordinator).first
+    end
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     county = County.where(chapman_code: @batch.county).first unless @batch.nil?
     cc = nil
@@ -38,9 +48,6 @@ class UserMailer < ActionMailer::Base
       county_coordinator = county.county_coordinator
       cc = UseridDetail.where(userid: county_coordinator).first
     end
-    p @userid
-    p sc
-    p cc
     unless @userid.nil? || !@userid.active
       mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") 
     end
