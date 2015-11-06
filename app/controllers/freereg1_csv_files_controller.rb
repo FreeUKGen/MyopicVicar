@@ -44,7 +44,7 @@ class Freereg1CsvFilesController < ApplicationController
       # only senior managers can move between counties and countries; coordinators could loose files
       place = @freereg1_csv_file.register.church.place
       session[:selectcountry] = place.country
-      session[:selectcounty] = place.county
+      session[:selectcounty] = place.chapman_code
       redirect_to :action => 'update_places' and return
     else
       @county =  session[:county]
@@ -95,7 +95,7 @@ class Freereg1CsvFilesController < ApplicationController
       places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     else
       #we are a CC
-      places = Place.county(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+      places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     end
     @counties = Array.new
     @counties << session[:selectcounty]
