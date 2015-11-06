@@ -223,7 +223,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = 'Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").all
     render :index
   end
 
@@ -233,7 +233,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = 'Alphabetical file name'
     session[:sort] = "file_name ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").all
     render :index
   end
   def display_my_error_files
@@ -242,7 +242,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = 'Ordered by number of errors'
     session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).errors.order_by("error DESC, file_name ASC").all
+    
     render :index
   end
   def display_my_own_files_by_descending_uploaded_date
@@ -251,7 +252,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = 'Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").all
     render :index
   end
   def display_my_own_files_by_ascending_uploaded_date
@@ -260,7 +261,7 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = 'Oredered by oldest'
     session[:sort] = "uploaded_date ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").all
     render :index
   end
   def display_my_own_files_by_selection

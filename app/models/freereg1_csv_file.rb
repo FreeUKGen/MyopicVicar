@@ -140,6 +140,9 @@ class Freereg1CsvFile
     def id(id)
       where(:id => id)
     end
+    def errors
+      where(:error.gt => 0)
+    end
   end
 
   def add_lower_case_userid

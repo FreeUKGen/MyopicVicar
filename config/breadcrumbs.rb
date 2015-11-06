@@ -332,7 +332,7 @@ crumb :edit_csvfile do |csvfile,file|
    link "Replace File", edit_csvfile_path
    case 
    when session[:my_own]
-     parent :my_options
+     parent :files, file
    when session[:county]
      parent :files, file
      #parent :county_options, session[:county] 

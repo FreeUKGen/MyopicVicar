@@ -5,9 +5,9 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
   </div>
 <% end %>
-<div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
-<div class="grid__item ">
-  <% unless @freereg1_csv_files.nil? %>
+<% unless @freereg1_csv_files.nil? || @freereg1_csv_files.length == 0%>
+  <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
+  <div class="grid__item ">
     <section class="island ">
       <div style="overflow: hidden;">
         <table class="my-width-min flush--bottom" >
@@ -57,8 +57,8 @@
           </table>
         </div>
       </div>
-    </section>     
+    </section> 
+  </div>    
   <% else%>
-          You have no files
+     <h3 style="text-align: center">  You have no such files</h3>
   <% end%>      
-</div>
