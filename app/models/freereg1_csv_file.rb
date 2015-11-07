@@ -143,6 +143,12 @@ class Freereg1CsvFile
     def errors
       where(:error.gt => 0)
     end
+    def transcriber_lock
+      where(:locked_by_transcriber => true)
+    end
+    def coordinator_lock
+      where(:locked_by_coordinator => true)
+    end
   end
 
   def add_lower_case_userid
