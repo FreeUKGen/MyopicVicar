@@ -201,7 +201,7 @@ class ManageCountiesController < ApplicationController
         @counties << county unless  @counties.include?(county)
       end
     end
-    @counties = @counties.compact
+    @counties = @counties.compact unless @counties.nil?
   end
 
 end

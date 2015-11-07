@@ -17,7 +17,7 @@ class Freereg1CsvFilesController < ApplicationController
       @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort])
     when !session[:syndicate].nil? && !session[:userid_id].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" )
       @freereg1_csv_files = Freereg1CsvFile.userid( UseridDetail.find(session[:userid_id]).userid).order_by(session[:sort])
-    when !session[:county].nil? && (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical")
+    when !session[:county].nil? && (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || @user.person_role == 'data_manager')
       @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort])
     end
   end
