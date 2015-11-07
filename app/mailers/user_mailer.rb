@@ -3,59 +3,63 @@ class UserMailer < ActionMailer::Base
 
   def batch_processing_success(user,batch,records,error,headers)
     @userid = UseridDetail.where(userid: user).first
-    @errors = error
-    @headers = headers
-    @records = records
-    syndicate_coordinator = nil
-    sc = nil
-    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
-    unless syndicate_coordinator.nil?
-      syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
-      sc = UseridDetail.where(userid: syndicate_coordinator).first
-    end
-    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county = County.where(chapman_code: @batch.county).first unless @batch.nil?
-    cc = nil
-    if county.present?
-      county_coordinator = county.county_coordinator
-      cc = UseridDetail.where(userid: county_coordinator).first
-    end
-    unless @userid.nil? || !@userid.active
-     mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{batch}") if @userid.active
-    end
-    unless sc.nil? || @userid.nil? || sc.email_address == @userid.email_address 
-      mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg processed #{batch}") unless sc.email_address == @userid.email_address
-    end
-    unless cc.nil? || sc.nil? || @userid.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
-      mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Copy of FreeReg processed #{batch}") 
+    if @userid.present?
+      @errors = error
+      @headers = headers
+      @records = records
+      syndicate_coordinator = nil
+      sc = nil
+      syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
+      unless syndicate_coordinator.nil?
+        syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
+        sc = UseridDetail.where(userid: syndicate_coordinator).first
+      end
+      @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+      county = County.where(chapman_code: @batch.county).first unless @batch.nil?
+      cc = nil
+      if county.present?
+        county_coordinator = county.county_coordinator
+        cc = UseridDetail.where(userid: county_coordinator).first
+      end
+      unless @userid.nil? || !@userid.active
+       mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{@userid.userid}/#{batch}") 
+      end
+      unless sc.nil? || @userid.nil? || sc.email_address == @userid.email_address 
+        mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg processing by #{@userid.userid}/#{batch}") 
+      end
+      unless cc.nil? || sc.nil? || @userid.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
+        mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Copy of FreeReg processing by #{@userid.userid}/#{batch}") 
+      end
     end
   end
 
   def batch_processing_failure(message,user,batch)
     @message = message
     @userid = UseridDetail.where(userid: user).first
-    syndicate_coordinator = nil
-    sc = nil
-    syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
-    unless syndicate_coordinator.nil?
-      syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
-      sc = UseridDetail.where(userid: syndicate_coordinator).first
-    end
-    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    county = County.where(chapman_code: @batch.county).first unless @batch.nil?
-    cc = nil
-    if county.present?
-      county_coordinator = county.county_coordinator
-      cc = UseridDetail.where(userid: county_coordinator).first
-    end
-    unless @userid.nil? || !@userid.active
-      mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{batch}") 
-    end
-    unless sc.nil? || @userid.nil? || sc.email_address == @userid.email_address 
-      mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg failed to process #{batch}") 
-    end
-    unless cc.nil? || sc.nil? || @userid.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
-       mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => " Copy of FreeReg failed to process #{batch}") 
+    if @userid.present?
+      syndicate_coordinator = nil
+      sc = nil
+      syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
+      unless syndicate_coordinator.nil?
+        syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
+        sc = UseridDetail.where(userid: syndicate_coordinator).first
+      end
+      @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+      county = County.where(chapman_code: @batch.county).first unless @batch.nil?
+      cc = nil
+      if county.present?
+        county_coordinator = county.county_coordinator
+        cc = UseridDetail.where(userid: county_coordinator).first
+      end
+      unless @userid.nil? || !@userid.active
+        mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{@userid.userid}/#{batch}") 
+      end
+      unless sc.nil? || @userid.nil? || sc.email_address == @userid.email_address 
+        mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg failed to process #{@userid.userid}/#{batch}")  
+      end
+      unless cc.nil? || sc.nil? || @userid.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
+         mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => " Copy of FreeReg failed to process #{@userid.userid}/#{batch}")  
+      end
     end
   end
 
