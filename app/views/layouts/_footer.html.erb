@@ -6,7 +6,7 @@
 				<%= number_with_delimiter(@site_stat.n_searches)%> searches were performed on <%= number_with_delimiter(@site_stat.n_records) %> records
         (<%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages and 
         <%= number_with_delimiter(@site_stat.n_records_burials) %> burials)<br>
-				<% if @site_stat.n_records_added && @site_stat.n_records_added > 0 %> 
+				<% if @site_stat.n_records_added  %> 
 					<%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages and 
         <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials) were added
           <% else %>
