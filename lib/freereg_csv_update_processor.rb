@@ -936,8 +936,8 @@ class FreeregCsvUpdateProcessor
 
                        if record_exists.nil?
                          success = create_db_record_for_entry(data_record)
-                         # sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-                         #sleep(sleep_time)
+                         sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+                         sleep(sleep_time)
                        else
                          #check to see if the seach_record is there
 
@@ -955,8 +955,8 @@ class FreeregCsvUpdateProcessor
                        end
                      else
                        success = create_db_record_for_entry(data_record)
-                      #  sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-                      # sleep(sleep_time)
+                       sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+                       sleep(sleep_time)
                      end
 
                      success
