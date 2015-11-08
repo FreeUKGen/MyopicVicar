@@ -936,7 +936,7 @@ class FreeregCsvUpdateProcessor
 
                        if record_exists.nil?
                          success = create_db_record_for_entry(data_record)
-                         sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+                         sleep_time = 5*(Rails.application.config.sleep.to_f).to_f
                          sleep(sleep_time)
                        else
                          #check to see if the seach_record is there
@@ -955,7 +955,7 @@ class FreeregCsvUpdateProcessor
                        end
                      else
                        success = create_db_record_for_entry(data_record)
-                       sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+                       sleep_time = 5*(Rails.application.config.sleep.to_f).to_f
                        sleep(sleep_time)
                      end
 
@@ -1255,7 +1255,7 @@ class FreeregCsvUpdateProcessor
                            nn = 0
                            #now we cycle through the files
                            filenames.each do |filename|
-                             p "Started on the file #{filename}"
+                             p "Started on the file #{filename} at #{Time.now}"
                              @@file_start = Time.new
                              setup_for_new_file(filename)
                              #do we process the file
@@ -1316,7 +1316,7 @@ class FreeregCsvUpdateProcessor
                                    #reset for next file
                                    @success = true
                                    #we pause for a time to allow the slaves to really catch up
-                                   sleep_time = 30 * Rails.application.config.sleep.to_f
+                                   sleep_time = 300 * Rails.application.config.sleep.to_f
                                    sleep(sleep_time) 
                                  end #filename loop end
                                  time = 0
