@@ -90,9 +90,11 @@ class ManageSyndicatesController < ApplicationController
     @county = session[:syndicate]
     @who = @user.person_forename
     @sorted_by = '; sorted by file name ascending'
-     session[:sorted_by] = @sorted_by
-     session[:sort] = "file_name ASC"
-     userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "file_name ASC"
+    p "syndicate"
+    p session
+    userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
     redirect_to freereg1_csv_files_path
   end
   def upload_batch

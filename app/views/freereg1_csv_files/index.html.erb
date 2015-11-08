@@ -22,7 +22,7 @@
               <th class="t10">File name</th>
               <th class="t10" >Loaded</th>
               <th colspan = "2" class="t10">Locked<br> TR SCC</th>
-              <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show; ED: Edit; DL: Download; ER: Errors; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
+              <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
             </tr>
           </thead>
         </table>
@@ -60,5 +60,5 @@
     </section> 
   </div>    
   <% else%>
-     <h3 style="text-align: center">  You have no such files</h3>
+     <h3 style="text-align: center">  No files</h3>
   <% end%>      

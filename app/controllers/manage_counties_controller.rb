@@ -101,8 +101,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending number of errors and then file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by("error DESC, file_name ASC" )
-    render 'freereg1_csv_files/index'
+    redirect_to freereg1_csv_files_path
   end
   def display_by_filename
     get_user_info_from_userid

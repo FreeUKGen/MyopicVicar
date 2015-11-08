@@ -50,11 +50,9 @@ crumb :files  do |file|
      link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}")
     end
      case
-     when session[:role] == "data_manager"
-       parent :county_options, session[:county]
-
-     when !session[:county].nil? && (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical")   
-       unless  session[:place_name].nil?   
+     when session[:county].present? && 
+        (session[:role] == "county_coordinator"  || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "data_manager" )   
+       if  session[:place_name].present?   
          place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
          unless place.nil?
           parent :show_place, session[:county], place
@@ -66,7 +64,7 @@ crumb :files  do |file|
        end
      when session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" 
        parent :userid_details_listing, session[:syndicate] 
-     when !session[:syndicate].nil? && (session[:role] == "county_coordinator" || session[:role] == "datamanager" ||session[:role] == "system_administrator" || session[:role] == "technical") 
+     when session[:syndicate].present? && (session[:role] == "county_coordinator" || session[:role] == "data_manager" ||session[:role] == "system_administrator" || session[:role] == "technical") 
       unless  session[:userid_id].nil?
         parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
       else
@@ -74,6 +72,8 @@ crumb :files  do |file|
       end 
      when session[:role] == "system_administrator" || session[:role] == "technical"
          parent :regmanager_userid_options
+     else
+     
      end
  end
 end
