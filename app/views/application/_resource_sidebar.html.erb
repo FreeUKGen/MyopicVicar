@@ -1,6 +1,6 @@
 
 <% content_for :sidebar do %>
-   <h5 class="beta  text--teal">Your actions</h5>
+   <h5 class="beta  text--teal">Actions</h5>
   <%@roles.each do |role| %>
     <%= button_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn weight--light btn--small" ,method: :get %> 
    <%end%>
