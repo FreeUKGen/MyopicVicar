@@ -297,7 +297,7 @@ class Freereg1CsvFilesController < ApplicationController
   def display_my_own_files_waiting_to_be_processed
     get_user_info_from_userid
     @who =  @first_name
-    @batches = PhysicalFile.userid(@userid).waiting.all.order_by("waiting_date DESC")
+    @batches = PhysicalFile.userid(@user.userid).waiting.all.order_by("waiting_date DESC")
   end
   def error
     #display the errors in a batch
