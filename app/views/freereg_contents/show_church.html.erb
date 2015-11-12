@@ -1,10 +1,15 @@
 <% title "#{@church.church_name} #{@place_name} #{@county} transcriptions" %>
 <div class="container">
   <section class="island ">
-    <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%>  <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn weight--light  btn--small" unless @county.nil?%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @church.place), :class => "btn weight--light  btn--small" %> 
-      <% if @character %>
-        <%= link_to 'Alphabet Selection', alphabet_freereg_content_path, :class => "btn weight--light btn--small "%>
-      <% end %>
+    <div style="text-align: center">
+    <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
+    <% if @character.present? %>
+      <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
+       <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn weight--light btn--small "%>
+    <% else %> 
+      <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%>
+    <% end%>
+    <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
     </div><br>
     <h2 class=" gamma text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> within <%= @county %> </h2>
     <h4 class=" delta text--center">The Church has the following register(s):

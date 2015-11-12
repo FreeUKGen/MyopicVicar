@@ -1,9 +1,13 @@
 <% title "#{@place.place_name} #{@county} transcriptions " %>
 <div class="container">
   <section class="island ">
-    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn weight--light  btn--small" unless @county.nil?%> 
-      <% if @character %>
-        <%= link_to 'Alphabet Selection', alphabet_freereg_content_path, :class => "btn weight--light btn--small "%>
+    <div class="text--center">
+      <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%>    
+      <% if @character.present? %>
+        <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
+        <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn weight--light btn--small "%>
+      <%else%>
+        <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%> 
       <% end %>
     </div> <br>
     <h2 class=" gamma text--center">Transcriptions of <%= @place.place_name %> within <%= @county %> </h2>
@@ -30,9 +34,9 @@
             <%  @names.each do |name| %>
               <tr><td>Other possible place names :</td><td class="weight--semibold" ><%= name %>  </td></tr>
             <%end%>
-          <%end%>
-          <tr><td>Location on map :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
+          <%end%> 
           <tr><td>Notes about the Place :</td><td class="weight--semibold" > <%= @place.place_notes %> </td></tr>
+          <tr><td>Location on map :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
           <tr><td>Last changed:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>
               </tr>
           <tr><td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td></tr>

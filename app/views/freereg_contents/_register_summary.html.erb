@@ -1,0 +1,43 @@
+<div class="table-wrapper">
+      <table  class="table--bordered ">
+        <colgroup >
+          <col >
+          <col >
+          <col >
+          <col >
+          <col class="t30">
+          <col >
+          <col >
+          <col >
+        </colgroup>
+        <thead  >
+          <tr>
+            <th >Record Type</th>
+            <th >Number of records</th>
+            <th >First record</th>
+            <th >Last record</th>
+            <th >Transcriber</th>
+            <th >Transcription date</th>
+            <th >Last changed</th>
+            <th >Link to decadal data</th>       
+          </tr>
+        </thead>
+        <tbody>
+          <% @files.each_pair do |key,file| %>
+            <tr >
+              <% unless file.blank? %>
+                <% value = RecordType.display_name(key) %>
+                <td ><%= value %></td>
+                <td ><%= display_number(file["records"] )%></td>
+                <td ><%= file["datemin"] %></td>
+                <td ><%= file["datemax"] %></td>
+                <td ><%= file["transcriber_name"].join(',').to_s%></td>
+                <td ><%= file["transcription_date"] %></td>
+                <td ><%= file["modification_date"] %></td>
+                <td ><%= link_to "Link", show_decade_freereg_content_path(value)  %></td>
+              <%end%>      
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>

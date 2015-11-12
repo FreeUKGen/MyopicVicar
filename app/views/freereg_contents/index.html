@@ -1,9 +1,9 @@
-<% title "#{@county} Coverage" %>
+<% title "#{@county} Contents" %>
 <div class="grid">
 	<header class="grid__item one-whole">
 		<div class="text--center push-half--bottom">
 			<%= link_to 'County Selection', new_freereg_content_path, :class => "btn weight--light btn--small "%> 
-      <% if  @character  %>
+      <% if @character  %>
         <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
       <% end%>
 		</div>
@@ -31,7 +31,10 @@
 		<p>These Places, Churches and Registers have data records. Click on the name for more information.<br /> The register display provides access to data on the number of records per decade. (Smart-phone users should display with a landscape view)</p>
 	</div>
 </div>	
-
-  <%= render 'show_first_body' %>
+<% if @show_alphabet %>
+  <%= render 'alphabet' %>
+<% else%>
+  <%= render 'show_body' %>
+<% end%>
 
 

@@ -4,7 +4,7 @@
       <ul> 
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
         <li>
-          <%=link_to("Database Contents",main_app.freereg_contents_path)%>
+          <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
         </li>
         <% else%>
         <li>
