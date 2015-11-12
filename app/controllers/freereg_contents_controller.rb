@@ -96,7 +96,7 @@ class FreeregContentsController < ApplicationController
       @stats = @place.data_contents
     else
       flash[:notice] = "None existent place has been selected."
-      redirect_to :new and return
+      redirect_to :action => 'new' and return
     end
   end
 
