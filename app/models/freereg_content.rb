@@ -58,6 +58,12 @@ class FreeregContent
   end
   def self.get_header_information(chapman)
     page = Refinery::CountyPages::CountyPage.where(chapman_code: chapman).first
+    if page
+      raw(page.content)
+    else
+      ""
+    end
+    page
   end
   def self.number_of_records_in_county(chapman)
     files = Freereg1CsvFile.county(chapman).all
