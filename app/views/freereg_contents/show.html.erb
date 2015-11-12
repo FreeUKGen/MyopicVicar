@@ -20,18 +20,19 @@
 			</ul>
 		</div>
 	</div>
-	<div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-		<%= @page %>
-		<hr class="rule">
+  <div class="grid__item two-thirds palm-one-whole ">
+    <%= county_content(@page)%>
+  </div>
+  <div class="grid__item one-whole">
+    <hr class="rule">
   <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
-  <% end %>
-		<p>These Places, Churches and Registers have data records. Click on the name for more information.<br /> The register display provides access to data on the number of records per decade. (Smart-phone users should display with a landscape view)</p>
-	</div>
-</div>	
-
-  <%= render 'show_first_body' %>
+  <% end %>  
+    These Places, Churches and Registers have data records. Click on the name for more information. The 'Registers' display provides access to data on the number of records per decade. (Smart-phone users should display the latter with a landscape view)
+  </div>
+</div>
+<%= render 'show_first_body' %>
 
 

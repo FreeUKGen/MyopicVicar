@@ -1,6 +1,5 @@
 module FreeregContentsHelper
-  def county_content(chapman_code)
-    page = Refinery::CountyPages::CountyPage.where(:chapman_code => @chapman_code).first
+  def county_content(page)
     if page
       raw(page.content)
     else
