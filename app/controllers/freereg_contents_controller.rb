@@ -85,15 +85,19 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_place
+    @character =  session[:character]
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
     @coordinator = County.coordinator_name(@chapman_code)
-    @character =  session[:character]
-    @country = @place.country
-    @place_name = @place.place_name
-    @names = @place.get_alternate_place_names
-    @stats = @place.data_contents
+    if @place.present?
+      @place_name = @place.place_name
+      @names = @place.get_alternate_place_names
+      @stats = @place.data_contents
+    else
+      flash[:notice] = "None existent place has been selected."
+      redirect_to :new and return
+    end
   end
 
   def show_church 
@@ -101,18 +105,19 @@ class FreeregContentsController < ApplicationController
     if @church.nil?
       flash[:notice] = "No church was selected while reviewing the content; you will need to start again"
       if session[:county].present?
-        redirect_to :action => :alphabet
+        redirect_to :index
         return
       else
         redirect_to :action => :new
         return
       end
     end
+    @county = session[:county]
+    @character =  session[:character]
+    @chapman_code = session[:chapman_code]
     @stats = @church.data_contents
     @place_name = @church.place.place_name
     @place = @church.place
-    @county = session[:county]
-    @character =  session[:character]
     @church_name = @church.church_name
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
