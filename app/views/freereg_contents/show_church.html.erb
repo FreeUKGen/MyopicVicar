@@ -1,7 +1,7 @@
 <% title "#{@church.church_name} #{@place_name} #{@county} transcriptions" %>
 <div class="container">
   <section class="island ">
-    <div style="text-align: center">
+    <div style="text-align: center"> 
     <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
     <% if @character.present? %>
       <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>

@@ -84,6 +84,7 @@ class FreeregContentsController < ApplicationController
     return
   end
 
+
   def show_place
     @character =  session[:character]
     @county = session[:county]
@@ -148,5 +149,21 @@ class FreeregContentsController < ApplicationController
     @transcribers = FreeregContent.get_transcribers(@files)
     @decade = FreeregContent.get_decades(@files)
     @register_type = RegisterType.display_name(@register.register_type)
+  end
+
+  def place
+    @place = Place.id(params[:id]).first
+    if @place.present?
+      @character =  nil
+      @county = @place.place_name
+      @chapman_code = @place.chapman_code
+      @coordinator = County.coordinator_name(@chapman_code)
+      @place_name = @place.place_name
+      @names = @place.get_alternate_place_names
+      @stats = @place.data_contents
+    else
+      flash[:notice] = "Non existent place has been selected."
+      redirect_to :back and return
+    end
   end
 end
