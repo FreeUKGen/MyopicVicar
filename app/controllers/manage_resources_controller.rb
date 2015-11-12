@@ -25,13 +25,13 @@
       end
       unless  current_refinery_user.userid_detail.active
       flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
-       current_refinery_user.delete
+       current_refinery_user.delete unless current_refinery_user.nil?
        redirect_to refinery.login_path
        return
       end
       @user = current_refinery_user.userid_detail 
       if @user.person_role == "researcher"  || @user.person_role == 'pending' 
-       current_refinery_user.delete
+       current_refinery_user.delete unless current_refinery_user.nil?
        flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
        redirect_to refinery.login_path
        return
