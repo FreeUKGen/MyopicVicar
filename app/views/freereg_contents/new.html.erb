@@ -1,14 +1,14 @@
 <% title "Transcription County Selection" %>
 <div class="container">
-  <h1 class="title text--center ">Transcription coverage of Counties and Places</h1>
+  <h1 class="title text--center ">County and Place Records</h1>
   <% if flash[:notice] %>
   <div class="weight--semibold text--center" style="color:red"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
   <% end %>
   <div class="grid">
-    <div style="margin: 0 auto;" class="grid__item seven-eighths lap-two-thirds palm-one-whole float--none">
-      <p>These pages contain a wealth of information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register. They contain far more up to date information than we were ever able to provide in the Counties and Parishes Coverage pages in our first version of FreeReg.</p>
+    <div style="margin: 0 auto;" class="grid__item four-fifths lap-four-fifths palm-one-whole float--none">
+      <p>These pages contain information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register. They contain accurate up-to-date information; something we were never able to do with the "Counties and Parishes Coverage" pages of our previous version of FreeReg. If you don't find a Place and Church on these pages it has not yet been transcribed.</p>
       <p> <% if @site_stat %>
         <%= number_with_delimiter(@site_stat.n_searches)%> searches were performed yesterday on <%= number_with_delimiter(@site_stat.n_records) %> records
         (<%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages and
@@ -18,11 +18,9 @@
         <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials) were added
         <% else %>
         No records were added
-        <% end %>
-        
+        <% end %>   
       <% end %></p>
-      <p> If you would like more guidance on finding exactly what you want to know, please consult the <a href="<%=Rails.application.config.website%>/help" title="Researcher Help"> Help</a> page.To get started select a county from the list below. (Note we use the 1831 county boundaries)</p>
-      
+      <p> If you would like more guidance on finding exactly what you want to know, please consult the <a href="<%=Rails.application.config.website%>/help" title="Researcher Help"> Help</a> page.To get started select a county from the list below. (Note we use the 1831 county boundaries)</p>     
     </div>
     <%= form_for @freereg_content do |f| %>
     <li class="text--center " id="freereg_content_chapman_codes_input">
@@ -35,5 +33,5 @@
     </li> <br>
     <p class="text--center"><%= f.submit "Select", :class => "btn weight--light btn--small "%> </p>
     <% end %>
-  </div>
+   </div>
 </div>
