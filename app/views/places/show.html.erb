@@ -88,9 +88,6 @@
           <td>Another reason for changes:</td><td class="weight--semibold"> <%= @place.other_reason_for_change %></td>
         </tr>
         <tr>
-          <td>Date place information last amended:</td><td class="weight--semibold"> <%= @place.u_at.strftime("%d %b %Y") unless  @place.u_at.nil? %></td>
-        </tr>
-        <tr>
           <td>Date when record last amended:</td><td class="weight--semibold"> <%= @place.last_amended %></td>
         </tr>
         <% unless @place.error_flag.nil? %>
