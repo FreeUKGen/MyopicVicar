@@ -86,8 +86,13 @@ class CsvfilesController < ApplicationController
     else
       @user = UseridDetail.where(:userid => session[:userid]).first
       if params[:commit] == 'Process'
-        @csvfile = Csvfile.find(params[:id])
-        range = File.join(@csvfile.userid ,@csvfile.file_name)
+        @csvfile = Csvfile.where(_id: params[:id]).first
+        if @csvfile.nil?
+          flash[:notice] = "There was no file to process; did you perhaps double click or reload the process page?"
+          redirect_to action: :new
+          return
+        end
+        range = File.join(@csvfile.userid,@csvfile.file_name)
         case
         when params[:csvfile][:process]  == "Just check for errors"
           pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]")
