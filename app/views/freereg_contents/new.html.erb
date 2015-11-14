@@ -7,21 +7,29 @@
   </div>
   <% end %>
   <div class="grid">
-    <div style="margin: 0 auto;" class="grid__item four-fifths lap-four-fifths palm-one-whole float--none">
-      <p>These pages contain information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register. They contain accurate up-to-date information; something we were never able to do with the "Counties and Parishes Coverage" pages of our previous version of FreeReg. If you don't find a Place and Church on these pages it has not yet been transcribed.</p>
-      <p> <% if @site_stat %>
-        <%= number_with_delimiter(@site_stat.n_searches)%> searches were performed yesterday on <%= number_with_delimiter(@site_stat.n_records) %> records
-        (<%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages and
-        <%= number_with_delimiter(@site_stat.n_records_burials) %> burials). In the 24 hrs ending at midnight GMT
+    <div  class="grid__item three-fifths lap-two-thirds palm-one-whole">
+      <p>These pages contain information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register.</p> <p>The information is accurate and up-to-date; something we were never able to do with the old &ldquo;Counties and Parishes Coverage&rdquo; pages. If you don't find a Place and Church on these pages, it has not yet been transcribed.</p><p> If you would like more guidance on finding exactly what you want to know, please consult the <a href="<%=Rails.application.config.website%>/help" title="Researcher Help"> Help</a> page.</p><p>To get started select a county from the list below. (We use the 1831 county boundaries)</p>
+   </div>
+      <aside class="grid__item one-third palm-one-whole float--right">
+        <div class="island island--blue">
+           
+     <% if @site_stat %>
+         <p ><%= number_with_delimiter(@site_stat.n_searches)%> searches were performed yesterday on <%= number_with_delimiter(@site_stat.n_records) %> records
+        </p>
+          <ul class="push--left">
+            <li><%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms</li>
+            <li><%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages </li>
+            <li><%= number_with_delimiter(@site_stat.n_records_burials) %> burials</li>
+          </ul> In the 24 hrs ending at midnight GMT
         <% if @site_stat.n_records_added  %>
-        <%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms, <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages and
-        <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials) were added
+          <p>In the 24 hrs ending at midnight GMT we added &mdash; <%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms; <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages; and <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials</p>
         <% else %>
-        No records were added
-        <% end %>   
-      <% end %></p>
-      <p> If you would like more guidance on finding exactly what you want to know, please consult the <a href="<%=Rails.application.config.website%>/help" title="Researcher Help"> Help</a> page.To get started select a county from the list below. (Note we use the 1831 county boundaries)</p>     
-    </div>
+        <p>No records were added</p>
+        <% end %> 
+      <% end %></div></aside>
+        
+    </div> 
+    <div class="grid">
     <%= form_for @freereg_content do |f| %>
     <li class="text--center " id="freereg_content_chapman_codes_input">
       <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
@@ -33,5 +41,5 @@
     </li> <br>
     <p class="text--center"><%= f.submit "Select", :class => "btn weight--light btn--small "%> </p>
     <% end %>
-   </div>
+ </div> 
 </div>
