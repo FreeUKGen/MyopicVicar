@@ -7,7 +7,7 @@ task :extract_userids_passwords_for_image_server,[:limit] => [:environment] do |
   record_number = 0
   records = UseridDetail.count
   UseridDetail.no_timeout.each do |user|
-  output_file.puts "#{user.userid}:[FreeREG]#{user.password}"
+    output_file.puts "#{user.userid}:[FreeREG]#{user.password}" if user.userid.present? && user.password.present?
   end
   elapse = Time.now - start
   puts "Output #{records} userids to #{ file_for_warning_messages} at #{Time.now} in #{elapse} seconds"
