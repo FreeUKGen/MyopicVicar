@@ -24,7 +24,7 @@ You are changing <%= @records%> records so it may take some time.
    <%= f.input :church_name, { :as => :select,:label => "Select church from the list",:include_blank => false, :required => true, :collection => @churches, :size => 15,:input_html => {'onchange' =>'location.href= "/freereg1_csv_files/update_registers?church_id=" + this.value'}  } %>
   
   <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
-  :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
+  :required => true, :collection => RegisterType::APPROVED_OPTIONS, :size => 15 }%>
  
   <%= f.action :submit, :as => :input, :label => 'Relocate'   %>
   <% end %>
