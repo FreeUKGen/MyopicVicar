@@ -9,6 +9,7 @@ class FreeregCsvUpdateProcessor
   require "#{Rails.root}/app/models/freereg1_csv_file"
   require "#{Rails.root}/app/models/freereg1_csv_entry"
   require "record_type"
+  require "register_type"
   require 'digest/md5'
   require 'get_files'
   require "#{Rails.root}/app/models/userid_detail"
@@ -38,7 +39,6 @@ class FreeregCsvUpdateProcessor
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_FEMALE_SEX = ["F","FF","FFF","FM","F.","FEMALE","DAUGHTER","WIFE","DAUGHTER OF","DAU", "DAU OF"]
   VALID_REGISTER_TYPES = /\A[AaBbDdEeMmOoTtPpUu\(][AaBbDdEeHhTtPpTtXxRrWw]?[KkIiTtXxRrWw]?'?[Ss]? ?[\)]?\z/
-  VALID_REGISTER_TYPE = ["AT", "BT", "PR", "PH", "EX", "TR", "DW", "DT", "PT", "MI"]
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
   CHURCH_WORD_EXPANSIONS =  {
     'Albans' => 'Alban',
@@ -252,7 +252,7 @@ class FreeregCsvUpdateProcessor
                    register_words[-1] = register_words[-1].gsub(/\(?\)?'?"?[Ss]?/, '')
                    register_words[-1] = Unicode::upcase(register_words[-1])
 
-                   if TergisterType::OPTIONS.values.include?(register_words[-1])
+                   if RegisterType::OPTIONS.values.include?(register_words[-1])
                      # check that it is a valid code
                      @register_type = register_words[-1]
                      n = n - 1
