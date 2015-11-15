@@ -363,6 +363,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file.add_to_rake_delete_list
     batch = PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).first
     batch.update_attributes(:file_processed =>false, :file_processed_date => nil) if Freereg1CsvFile.where(:file_name => @freereg1_csv_file.file_name, :userid => @freereg1_csv_file.userid).count >= 1
+    @freereg1_csv_file.save_to_attic
     @freereg1_csv_file.delete
     flash[:notice] = 'The removal of the batch entry was successful'
     if session[:my_own]
