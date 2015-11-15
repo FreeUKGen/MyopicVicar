@@ -21,7 +21,7 @@
             <li><%= number_with_delimiter(@site_stat.n_records_burials) %> burials</li>
           </ul> 
           <% if @site_stat.n_records_added  %>
-            <p>In the 24 hrs ending at midnight GMT we added &mdash; <%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms; <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages; and <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials</p>
+            <p>In the 24 hrs ending at midnight GMT we added <%= number_with_delimiter(@site_stat.n_records_added) %> records &mdash; <%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms; <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages; and <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials</p>
           <% else %>
             <p>No records were added</p>
           <% end %>
