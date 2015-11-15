@@ -95,8 +95,10 @@ class FreeregContent
     end
     place_names
   end
-  def self.check_how_to_proceed(parameter)  
-    if parameter[:place].present? && parameter[:character].present?
+  def self.check_how_to_proceed(parameter) 
+    if parameter.nil?
+     proceed = "no option"
+    elsif parameter[:place].present? && parameter[:character].present?
       proceed = "dual"
     elsif parameter[:place].present?
       proceed = "place" 
