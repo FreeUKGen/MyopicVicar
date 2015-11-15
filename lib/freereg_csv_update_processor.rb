@@ -905,9 +905,10 @@ class FreeregCsvUpdateProcessor
                      counter = 0
                      @total_records.each do |record|
                        counter = counter + 1
-                       Freereg1CsvEntry.find(record).destroy
-                        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time)
+                       actual_record = Freereg1CsvEntry.id(record).first
+                       actual_record.destroy unless actual_record.nil?
+                       sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+                       sleep(sleep_time) unless actual_record.nil?
                      end
                      p "Deleted #{counter} records in deleted locations"
                      @batches_with_errors.each do |batch|
@@ -918,12 +919,14 @@ class FreeregCsvUpdateProcessor
                        end
                      end
                      @locations.each do |location|
-                       loc = Freereg1CsvFile.find(location)
-                       puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-                       @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
-                       loc.destroy
-                        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time)
+                       loc = Freereg1CsvFile.id(location).first
+                       if loc.present?
+                         puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
+                         @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
+                         loc.destroy 
+                         sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+                         sleep(sleep_time)
+                      end
                      end
                    end
 
