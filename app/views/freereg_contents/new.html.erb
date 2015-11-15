@@ -31,7 +31,7 @@
   </div>
   <div class="grid">
     <%= form_for @freereg_content do |f| %>
-      <li class="text--center " id="freereg_content_chapman_codes_input">
+      <li class="grid__item  one-whole text--center " id="freereg_content_chapman_codes_input">
         <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
         <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6" tabindex="5">
