@@ -2,44 +2,44 @@
 <div class="container">
   <h1 class="title text--center ">County and Place Records</h1>
   <% if flash[:notice] %>
-  <div class="weight--semibold text--center" style="color:red"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
+    <div class="weight--semibold text--center" style="color:red"><br>
+      <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
   <% end %>
   <div class="grid">
     <div  class="grid__item three-fifths lap-two-thirds palm-one-whole">
       <p>These pages contain information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register.</p> <p>The information is accurate and up-to-date; something we were never able to do with the old &ldquo;Counties and Parishes Coverage&rdquo; pages. If you don't find a Place and Church on these pages, it has not yet been transcribed.</p><p> If you would like more guidance on finding exactly what you want to know, please consult the <a href="<%=Rails.application.config.website%>/help" title="Researcher Help"> Help</a> page.</p><p>To get started select a county from the list below. (We use the 1831 county boundaries)</p>
-   </div>
-      <aside class="grid__item one-third palm-one-whole float--right">
-        <div class="island island--blue">
-           
-     <% if @site_stat %>
-         <p ><%= number_with_delimiter(@site_stat.n_searches)%> searches were performed yesterday on <%= number_with_delimiter(@site_stat.n_records) %> records
-        </p>
+    </div>
+    <aside class="grid__item one-third palm-one-whole float--right">
+      <div class="island island--blue">       
+        <% if @site_stat %>
+          <p ><%= number_with_delimiter(@site_stat.n_searches)%> searches were performed yesterday on <%= number_with_delimiter(@site_stat.n_records) %> records
+          </p>
           <ul class="push--left">
             <li><%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms</li>
             <li><%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages </li>
             <li><%= number_with_delimiter(@site_stat.n_records_burials) %> burials</li>
-          </ul> In the 24 hrs ending at midnight GMT
-        <% if @site_stat.n_records_added  %>
-          <p>In the 24 hrs ending at midnight GMT we added &mdash; <%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms; <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages; and <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials</p>
-        <% else %>
-        <p>No records were added</p>
-        <% end %> 
-      <% end %></div></aside>
-        
-    </div> 
-    <div class="grid">
+          </ul> 
+          <% if @site_stat.n_records_added  %>
+            <p>In the 24 hrs ending at midnight GMT we added &mdash; <%= number_with_delimiter(@site_stat.n_records_added) %> records  (<%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms; <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages; and <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials</p>
+          <% else %>
+            <p>No records were added</p>
+          <% end %>
+        <% end %>
+      </div>
+    </aside> 
+  </div>
+  <div class="grid">
     <%= form_for @freereg_content do |f| %>
-    <li class="text--center " id="freereg_content_chapman_codes_input">
-      <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
-      <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-      <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6" tabindex="5">
-        <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
-        <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-      </select>
-    </li> <br>
-    <p class="text--center"><%= f.submit "Select", :class => "btn weight--light btn--small "%> </p>
+      <li class="text--center " id="freereg_content_chapman_codes_input">
+        <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
+        <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+        <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6" tabindex="5">
+          <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
+          <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+        </select>
+      </li> <br>
+      <p class="text--center"><%= f.submit "Select", :class => "btn weight--light btn--small "%> </p>
     <% end %>
- </div> 
+  </div>
 </div>
