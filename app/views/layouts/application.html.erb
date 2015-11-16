@@ -83,10 +83,10 @@
         
         <% if content_for? :sidebar %>
         <div class="grid">
-          <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+          <div class="grid__item  four-fifths  lap-three-fifths  palm-one-whole ">
             <%= yield %>
           </div>
-          <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+          <div class="grid__item  one-fifth  lap-two-fifths  palm-one-whole  push-half--top float--right">
             <%= yield :sidebar %>
           </div>
         </div>
@@ -99,7 +99,7 @@
           <% problem_button_options.each_pair do |name, value| %>
           <%= hidden_field_tag(name, value)%>
           <% end %>
-          <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
+          <input type="submit" value="Report a Problem"  class = "btn weight--light btn--small"/>
           <% end %>
         </div>
         <% end %>
@@ -129,7 +129,7 @@
     duration: 300,
     fontColor: '#FFFFFF', // font color for disclosure panel
     fontSize: '18px', // font size for disclosure panel
-    backgroundColor: '#000000', // background color of disclosure panel
+    backgroundColor: '#4A993E', // background color of disclosure panel
     backgroundOpacity: '95', // opacity of disclosure panel
     linkColor: '#E02424' // link color in disclosure panel
     });

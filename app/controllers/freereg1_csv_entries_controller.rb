@@ -4,11 +4,9 @@ class Freereg1CsvEntriesController < ApplicationController
  
   skip_before_filter :require_login, only: [:show]
   def index
-    if params[:page]
-      session[:entry_index_page] = params[:page]
-    end
     display_info
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
+    
   end
 
   def show
@@ -150,10 +148,15 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def load(entry_id)
-    @freereg1_csv_entry = Freereg1CsvEntry.find(entry_id)
-    session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
-    display_info
+    @freereg1_csv_entry = Freereg1CsvEntry.id(entry_id).first
+    if @freereg1_csv_entry.nil?
+      go_back("entry",entry_id)
+    else
+      session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
+      display_info
+    end
   end
+
   def destroy
     load(params[:id])
     freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
@@ -168,24 +171,28 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def display_info
     if @freereg1_csv_entry.nil?
-      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @freereg1_csv_file = Freereg1CsvFile.id(session[:freereg1_csv_file_id]).first
     else
       @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
     end
-    @freereg1_csv_file_id =  @freereg1_csv_file._id
-    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
-    @file_owner = @freereg1_csv_file.userid
-    @register = @freereg1_csv_file.register
-    #@register_name = @register.register_name
-    #@register_name = @register.alternate_register_name if @register_name.nil?
-    @register_name = RegisterType.display_name(@register.register_type)
-    @church = @register.church #id?
-    @church_name = @church.church_name
-    @place = @church.place #id?
-    @county =  @place.county
-    @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+    if @freereg1_csv_file.nil?
+        go_back("entries",@freereg1_csv_entry)
+    else  
+      @freereg1_csv_file_id =  @freereg1_csv_file.id
+      @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+      @file_owner = @freereg1_csv_file.userid
+      @register = @freereg1_csv_file.register
+      #@register_name = @register.register_name
+      #@register_name = @register.alternate_register_name if @register_name.nil?
+      @register_name = RegisterType.display_name(@register.register_type)
+      @church = @register.church #id?
+      @church_name = @church.church_name
+      @place = @church.place #id?
+      @county =  @place.county
+      @place_name = @place.place_name
+      @first_name = session[:first_name]
+      @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+    end
   end
   def get_year(param)
     case param[:record_type]

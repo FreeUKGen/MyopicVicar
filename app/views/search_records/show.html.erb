@@ -1,7 +1,7 @@
 <% title "Record Details #{@search_record.freereg1_csv_entry.id}" %>
 <section  >
   
-  <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small" unless @previous_record.nil?%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" %> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  btn--small"%> </p>
+  <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" %> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
 </section>
 <section>
   <% if @search_record.freereg1_csv_entry %>
@@ -18,7 +18,7 @@
           <h2>Offline Transcriptions</h2>
           <% end %>
           <h3>FreeReg <%= record_type(@entry)   %> entry on <%=Time.now.strftime("%d %b %Y")%></h3>
-          <h4> For information about this place follow the link to <%= link_to(@search_record.place.place_name, show_place_freereg_content_path(@search_record.place)) %></h4>
+          <h4> For information about this place follow the link to <%= link_to(@search_record.place.place_name, place_freereg_content_path(@search_record.place)) %></h4>
           <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query) %> it to our data manager.</h5>
         </td>
       </tr>

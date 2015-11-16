@@ -131,6 +131,7 @@ class ApplicationController < ActionController::Base
     session.delete(:freereg1_csv_file_id) 
     session.delete(:freereg1_csv_file_name) 
     session.delete(:county) 
+    session.delete(:chapman_code) 
     session.delete(:place_name) 
     session.delete(:church_name) 
     session.delete(:sort) 
@@ -141,6 +142,7 @@ class ApplicationController < ActionController::Base
     session.delete(:sorted_by)
     session.delete(:physical_index_page)
     session.delete(:character)
+    session.delete(:edit_userid)
   end
 def clean_session_for_county
     session.delete(:freereg1_csv_file_id) 
@@ -176,6 +178,7 @@ def clean_session_for_county
     session.delete(:entry_index_page)
     session.delete(:files_index_page)
     session.delete(:character)
+     session.delete(:edit_userid)
     
 
 end
@@ -185,6 +188,7 @@ def clean_session_for_syndicate
     session.delete(:place_name) 
     session.delete(:church_name) 
     session.delete(:sort) 
+    session.delete(:active) 
     session.delete(:csvfile) 
     session[:my_own] = false
     session.delete(:freereg) 
@@ -214,6 +218,14 @@ def clean_session_for_syndicate
     session.delete(:files_index_page)
     session.delete(:user_index_page)
     session.delete(:character)
+    session.delete(:edit_userid)
   end
-  
+
+ 
+  def go_back(type,record)
+    flash[:notice] = "The #{type} document you are trying to access does not exist."
+    logger.info "ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end  
 end

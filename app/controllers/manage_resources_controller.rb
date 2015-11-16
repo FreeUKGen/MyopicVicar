@@ -14,21 +14,26 @@
 
   def new
       clean_session 
+      clean_session_for_syndicate
+      clean_session_for_county
       session[:initial_page] = request.original_url
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
+        current_refinery_user.delete unless current_refinery_user.nil?
         flash[:notice] = "You are not currently permitted to access the system "
-        redirect_to refinery.logout_path
+        redirect_to refinery.login_path
         return
       end
       unless  current_refinery_user.userid_detail.active
-       flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
-       redirect_to refinery.logout_path
+      flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
+       current_refinery_user.delete unless current_refinery_user.nil?
+       redirect_to refinery.login_path
        return
       end
       @user = current_refinery_user.userid_detail 
       if @user.person_role == "researcher"  || @user.person_role == 'pending' 
+       current_refinery_user.delete unless current_refinery_user.nil?
        flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
-       redirect_to refinery.logout_path
+       redirect_to refinery.login_path
        return
       end
 
@@ -63,7 +68,7 @@
   end
 
   def create
-      clean_session
+      
       @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
       session[:userid] = @user.userid
       session[:first_name] = @user.person_forename

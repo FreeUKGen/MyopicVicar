@@ -1,84 +1,20 @@
 <% title "#{@register.register_type} #{@church} #{@place_name} #{@county} transcriptions" %>
 <div class="container">
   <section class="island ">
-    <div class="text--center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>    <%= link_to 'County', freereg_content_path(@county), method: :get, :class => "btn  btn--small" unless @county.nil?%> <%= link_to 'Place for this Church', show_place_freereg_content_path(@place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> 
-      <% if @character %>
-        <%= link_to 'Alphabet Selection', alphabet_freereg_content_path, :class => "btn btn--small "%>
-      <% end %>
+  <div class="text--center">
+    <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
+    <% if @character.present? %>
+      <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
+      <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn weight--light btn--small "%>
+    <% else %> 
+     <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%>
+    <% end%>
+    <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
+    <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn weight--light  btn--small" %>     
     </div><br>
-    <h4 class=" gamma text--center">Transcriptions of the <%= RegisterType.display_name(@register.register_type) %> register for <%= @church %> of <%= @place_name %> within <%= @county %>  </h4>
-
-    <table  class="table--bordered ">
-      <colgroup >
-        <col class="t20">
-        <col class="t30 weight--semibold">
-      </colgroup>
-      <thead  >
-        <tr>
-          <th >Field</th>
-          <th >Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Status</td>        <td class="weight--semibold"><%= add_blank(@register.status) %></td></tr>
-        <tr><td>Source</td>        <td class="weight--semibold"><%= add_blank(@register.source) %></td></tr>
-        <tr><td>Credit these people/organizations for this register transcription</td> <td class="weight--semibold"><%= add_blank(credit(@register)) %></td></tr>
-        <tr><td>Also credit these additional people/organizations</td> <td class="weight--semibold"><%= add_blank(credit_files(@files))   %></td></tr>
-        <tr><td>Notes</td> <td class="weight--semibold"><%= add_blank(@register.register_notes) %></td></tr>
-        <tr><td>Last changed</td>  <td class="weight--semibold"><%= @register.last_amended %></td></tr>
-        <tr><td>First official year for Register</td>    <td class="weight--semibold"><%= add_blank(@register.minimum_year_for_register)  %></td></tr>
-        <tr><td>Last official year for Register</td><td class="weight--semibold"><%= add_blank(@register.maximum_year_for_register) %>
-          </td></tr>
-      </tbody>
-    </table>
+    <h4 class=" delta text--center">Number of transcriptions in <%= @register_type %> registers for <%= @church_name %> of <%= @place_name %> within <%= @county %>  </h4>
+    <p class=" delta text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+    <%= render 'decade' %>
+    <%= render 'register_information' %>
   </section>
 </div>
-<div class="container">
-  <section class="island ">
-    <h4 class=" gamma text--center">Summary of transcribed records</h4>
-    <p class=" text--magenta text--center">Follow any of the links in the table below to see the decades for which data has been transcribed.</p>
-    <div class="table-wrapper">
-      <table  class="table--bordered ">
-        <colgroup >
-          <col >
-          <col >
-          <col >
-          <col >
-          <col class="t30">
-          <col >
-          <col >
-          <col >
-        </colgroup>
-        <thead  >
-          <tr>
-            <th >Record Type</th>
-            <th >Number of records</th>
-            <th >First record</th>
-            <th >Last record</th>
-            <th >Transcriber</th>
-            <th >Transcription date</th>
-            <th >Last changed</th>
-            <th >Link to decadal data</th>       
-          </tr>
-        </thead>
-        <tbody>
-          <% @files.each_pair do |key,file| %>
-            <tr >
-              <% unless file.blank? %>
-                <% value = RecordType.display_name(key) %>
-                <td ><%= value %></td>
-                <td ><%= display_number(file["records"] )%></td>
-                <td ><%= file["datemin"] %></td>
-                <td ><%= file["datemax"] %></td>
-                <td ><%= file["transcriber_name"].join(',').to_s%></td>
-                <td ><%= file["transcription_date"] %></td>
-                <td ><%= file["modification_date"] %></td>
-                <td ><%= link_to "Link", show_decade_freereg_content_path(value)  %></td>
-              <%end%>      
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </section>
-  </div>

@@ -5,8 +5,12 @@ class ContactsController < InheritedResources::Base
     @contacts = Contact.all.order_by(contact_time: -1).page(params[:page])
   end
   def show
-    @contact = Contact.find(params[:id])
-    set_session_parameters_for_record(@contact) if @contact.entry_id.present?
+    @contact = Contact.id(params[:id]).first
+    if @contact.nil?
+      go_back("contact",params[:id])
+    else
+      set_session_parameters_for_record(@contact) if @contact.entry_id.present?
+    end
   end
 
   def new

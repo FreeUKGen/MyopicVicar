@@ -122,8 +122,11 @@ def show
 end
 
 def load(id)
- @first_name = session[:first_name]
- @county = County.find(id)
+   @first_name = session[:first_name]
+   @county = County.id(id).first
+  if @county.nil?
+    go_back("county",id)
+  end
 end
 
 def get_userids_and_transcribers

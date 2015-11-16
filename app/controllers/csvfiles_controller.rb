@@ -86,8 +86,13 @@ class CsvfilesController < ApplicationController
     else
       @user = UseridDetail.where(:userid => session[:userid]).first
       if params[:commit] == 'Process'
-        @csvfile = Csvfile.find(params[:id])
-        range = File.join(@csvfile.userid ,@csvfile.file_name)
+        @csvfile = Csvfile.where(_id: params[:id]).first
+        if @csvfile.nil?
+          flash[:notice] = "There was no file to process; did you perhaps double click or reload the process page?"
+          redirect_to action: :new
+          return
+        end
+        range = File.join(@csvfile.userid,@csvfile.file_name)
         case
         when params[:csvfile][:process]  == "Just check for errors"
           pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]")
@@ -134,7 +139,7 @@ class CsvfilesController < ApplicationController
     @people = Array.new
     @people <<  @user.userid
     case
-    when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
+    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
       load_people(@userids)
     when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator'

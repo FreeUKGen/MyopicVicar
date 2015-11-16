@@ -11,7 +11,10 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def csvfile_already_exists
     errors.add(:file_name, "A file of that name already exists. You cannot upload a file with the same name. You must replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.exists?
+    errors.add(:file_name,  "The file you are replacing is locked.") if Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists? ||
+    Freereg1CsvFile.userid(self.userid).file_name(self.file_name).coordinator_lock.exists?
   end
+  
   def create_batch_unless_exists
     batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).exists?
     unless batch
@@ -40,7 +43,7 @@ class Csvfile < CarrierWave::Uploader::Base
         FileUtils.rm(file_location) if File.file?(file_location)
         user =UseridDetail.where(:userid => self.userid).first
         unless user.nil?
-          attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
+          attic_file = AtticFile.new(:name => "#{self.file_name}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
           attic_file.save
         end
       else

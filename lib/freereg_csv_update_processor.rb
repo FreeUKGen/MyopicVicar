@@ -905,9 +905,10 @@ class FreeregCsvUpdateProcessor
                      counter = 0
                      @total_records.each do |record|
                        counter = counter + 1
-                       Freereg1CsvEntry.find(record).destroy
-                        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time)
+                       actual_record = Freereg1CsvEntry.id(record).first
+                       actual_record.destroy unless actual_record.nil?
+                       sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+                       sleep(sleep_time) unless actual_record.nil?
                      end
                      p "Deleted #{counter} records in deleted locations"
                      @batches_with_errors.each do |batch|
@@ -918,12 +919,14 @@ class FreeregCsvUpdateProcessor
                        end
                      end
                      @locations.each do |location|
-                       loc = Freereg1CsvFile.find(location)
-                       puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-                       @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
-                       loc.destroy
-                        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time)
+                       loc = Freereg1CsvFile.id(location).first
+                       if loc.present?
+                         puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
+                         @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
+                         loc.destroy 
+                         sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+                         sleep(sleep_time)
+                      end
                      end
                    end
 
@@ -936,8 +939,8 @@ class FreeregCsvUpdateProcessor
 
                        if record_exists.nil?
                          success = create_db_record_for_entry(data_record)
-                         # sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-                         #sleep(sleep_time)
+                         sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+                         sleep(sleep_time)
                        else
                          #check to see if the seach_record is there
 
@@ -955,8 +958,8 @@ class FreeregCsvUpdateProcessor
                        end
                      else
                        success = create_db_record_for_entry(data_record)
-                      #  sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-                      # sleep(sleep_time)
+                       sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+                       sleep(sleep_time)
                      end
 
                      success
@@ -1141,7 +1144,6 @@ class FreeregCsvUpdateProcessor
                          message = "#{@@header[:userid]} does not exit"
                          p  message
                          @@message_file.puts message
-                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
                          return false
                        end
 
@@ -1256,7 +1258,7 @@ class FreeregCsvUpdateProcessor
                            nn = 0
                            #now we cycle through the files
                            filenames.each do |filename|
-                             p "Started on the file #{filename}"
+                             p "Started on the file #{filename} at #{Time.now}"
                              @@file_start = Time.new
                              setup_for_new_file(filename)
                              #do we process the file
@@ -1286,17 +1288,19 @@ class FreeregCsvUpdateProcessor
                                    if @@create_search_records
                                      # we created search records so its in the search database database
                                      batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
+                                   
                                    else
                                      #only checked for errors so file is not processed into search database
                                      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
                                    end
+                                   batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil) if n == 0
                                    #kludge to send email to user 
                                    header_errors = 0
                                    header_errors= @@header_error.length unless  @@header_error.nil?
                                    UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
                                    nn = nn + n unless n.nil?
                               else
-                                     #another kludge to send a message to user that the file did not get processed when the processing failed
+                                  #another kludge to send a message to user that the file did not get processed when the processing failed
                                      if (delta == 'change' && filenames.length == 1 )
                                         @@message_file.puts "File not processed" if @success == false
                                         @@message_file.close
@@ -1315,7 +1319,7 @@ class FreeregCsvUpdateProcessor
                                    #reset for next file
                                    @success = true
                                    #we pause for a time to allow the slaves to really catch up
-                                   sleep_time = 30 * Rails.application.config.sleep.to_f
+                                   sleep_time = 1000 * Rails.application.config.sleep.to_f
                                    sleep(sleep_time) 
                                  end #filename loop end
                                  time = 0

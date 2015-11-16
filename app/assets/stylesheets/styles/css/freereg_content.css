@@ -371,3 +371,6 @@ dl.table-display
 .t13 {
   width: 13%;
 }
+.table--data--bold{
+   font: 12px/1.5 bold sans-serif;
+}

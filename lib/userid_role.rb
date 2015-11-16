@@ -1,16 +1,17 @@
 module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
-            'volunteer_coordinator','data_manager', 'technical','system_administrator']
+            'volunteer_coordinator','data_manager', 'technical','system_administrator', 'contacts_coordinator']
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
     'trainee' => [ "Profile", "Batches","Roadmap"],
     'pending' => [ "Profile"],
     'transcriber' => [  "Profile", "Batches","Roadmap"],
     'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Roadmap"],
-    'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Userids","Contacts","Roadmap"],
-    'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Userids","Contacts","Roadmap"],
+    'contacts_coordinator'=> [ "Profile", "Batches", "Feedback", "Contacts"],
+    'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Profiles","Contacts","Roadmap"],
+    'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Profiles","Contacts","Roadmap"],
     'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts","Roadmap"],
-    'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties",  "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
+    'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
                          "Feedback", "Contacts", "System Documentation" ],
     'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "Site Statistics",
                       "System Documentation" ,"Logout"],
@@ -29,7 +30,7 @@ module UseridRole
     "Manage Country" => "/manage_counties" ,
     "Manage Counties" => "/manage_counties" ,
     "Manage Userids"=> "/userid_details/options" ,
-    "Access Userids" => "/userid_details/options" ,
+    "Access Profiles" => "/userid_details/display" ,
     "Syndicate Coordinators" => "/syndicates" ,
     "County Coordinators" => "/counties" ,
     "Country Coordinators" => "/countries" ,

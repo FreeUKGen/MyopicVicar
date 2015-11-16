@@ -49,6 +49,7 @@ class UseridDetailsController < ApplicationController
     clean_session
     clean_session_for_county
     clean_session_for_syndicate
+    session[:edit_userid] = true
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
@@ -126,22 +127,25 @@ class UseridDetailsController < ApplicationController
   end
 
   def options
-    clean_session
-    clean_session_for_county
-    clean_session_for_syndicate
     session[:return_to] = request.fullpath
     get_user_info_from_userid
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-      return
-    end
+    session[:edit_userid] = true
     @syndicate = 'all'
-    session[:syndicate] = @syndicate
+    session[:syndicate] =  @syndicate
     if @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
       @options= UseridRole::USERID_MANAGER_OPTIONS
     else
       @options= UseridRole::USERID_ACCESS_OPTIONS
     end
+  end
+  def display
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @syndicate = 'all'
+    session[:syndicate] =  @syndicate
+    @options= UseridRole::USERID_ACCESS_OPTIONS
+    session[:edit_userid] = false
+    render :action => "options"
   end
 
   def selection
@@ -314,13 +318,12 @@ class UseridDetailsController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
-      flash[:notice] = 'The userid does not exist'
-      redirect_to :back
-      return
+      go_back("userid",userid_id)
+    else
+      session[:userid_id] = userid_id
+      @syndicate = session[:syndicate]
+      @role = session[:role]
     end
-    session[:userid_id] = userid_id
-    @syndicate = session[:syndicate]
-    @role = session[:role]
   end
 
   def next_place_to_go_unsuccessful_create

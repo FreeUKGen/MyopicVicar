@@ -35,7 +35,7 @@ FORCE_SEARCH_RECORD_RECREATE = [
   "witness2_forename", 
   "witness2_surname"
  ]
-ALPHABET = ['A',"B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+ALPHABET = ["A-C","D-F","G-I","J-L","M-N","O-Q","R-T","U-Z"]
 ALPHABET_SELECTION_LIST = ["CAM","CON","DUR","ESS","GLA","KEN","LAN","LIN","MDX","NBL","NFK","NTH","NTT","SOM","SRY","STS","WRY"]
 
  MAX_RECORDS_COORDINATOR = 4000

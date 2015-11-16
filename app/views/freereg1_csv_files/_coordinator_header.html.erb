@@ -1,0 +1,6 @@
+<% breadcrumb :files %>
+<% if session[:syndicate].present? %>
+  <h3 style="text-align: center"> Syndicate Files for  <%= session[:syndicate]%><%=@sorted_by%></h3>
+<% elsif session[:county].present? %>
+  <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
+<% end%>

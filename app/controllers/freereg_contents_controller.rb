@@ -4,202 +4,166 @@ class FreeregContentsController < ApplicationController
   skip_before_filter :require_login
 
   def index
-    redirect_to :action => :new
+    session[:character] = nil
+    @show_alphabet = FreeregContent.determine_if_selection_needed(session[:chapman_code])
+    @page = FreeregContent.get_header_information(session[:chapman_code])
+    @coordinator = County.coordinator_name(session[:chapman_code])
+    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+    if !@show_alphabet
+      @places = FreeregContent.get_records_for_display(session[:chapman_code])
+    else
+      @freereg_content = FreeregContent.new
+      @options = FreeregOptionsConstants::ALPHABET
+      @places = FreeregContent.get_places_for_display(session[:chapman_code])
+    end
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    @character = session[:character]
   end
 
   def new
     session[:character] = nil
+    session[:county] = nil
+    session[:chapman_code] = nil
     @freereg_content = FreeregContent.new
     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
 
   def create
-    if params[:freereg_content][:place_ids].blank?
-      params[:freereg_content][:place_ids] = ""
-    end
-    @freereg_content = FreeregContent.new(params[:freereg_content].delete_if{|k,v| v.blank? })
-    @county = params[:freereg_content][:chapman_codes][1]
-    place = params[:freereg_content][:place_ids]
-    session[:chapman_code] = @county
-    if  @freereg_content.save
-      @county = ChapmanCode.name_from_code(@county)
-      session[:county] = @county
-
-      if place.present?
-        redirect_to show_place_freereg_content_path(place)
+    case params[:commit]
+    when "Select"
+      @freereg_content = FreeregContent.new(params[:freereg_content])
+      @chapman_code = params[:freereg_content][:chapman_codes][1]
+      session[:chapman_code] = @chapman_code
+      if  @freereg_content.save
+        @county = ChapmanCode.name_from_code(@chapman_code)
+        session[:county] = @county
+        redirect_to freereg_contents_path
         return
       else
-        if FreeregOptionsConstants::ALPHABET_SELECTION_LIST.include?(session[:chapman_code])
-          redirect_to :action => "alphabet"
-        else
-          if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
-            @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
-          else
-            @page = ""
-          end
-          @county = session[:county]
-          @chapman_code = session[:chapman_code]
-          @character =  session[:character] 
-          @coordinator = County.coordinator_name(@chapman_code)
-          @places = Places.where(:data_present => true).all.order_by(place_name: 1) if @county == 'all'
-          @places = Place.where(:chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)  unless @county == 'all'
-          session[:page] = request.original_url
-          session[:county_id]  = params[:id]
-          @records = number_of_records_in_county(@county)
-          render :action => 'show'
-          return
-        end
+        @freereg_content.chapman_codes = []
+        @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+        render :new
       end
-    else
-      @freereg_content.chapman_codes = []
-      @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
-      render :new
+    when "Select One Option"
+      proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
+      case proceed
+       when "dual"
+        flash[:notice] = "Only a place or a character can be selected not both"
+        redirect_to :back and return
+      when "no option"
+        flash[:notice] = "You must select either a place or a character"
+        redirect_to :back and return
+      when "place"   
+        redirect_to freereg_content_path(params[:freereg_content][:place]) and return
+      when "character"
+        session[:character] = params[:freereg_content][:character]
+        redirect_to action: :select_places and return
+      end
     end
   end
-  def alphabet
-    @freereg_content = FreeregContent.new
-    @options = FreeregOptionsConstants::ALPHABET
+  def show
     @county = session[:county]
-    @location = 'location.href= "/freereg_contents/select_places?character=" + this.value'
+    @chapman_code = session[:chapman_code]
+    @character = session[:character]  
+    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
+    @page = FreeregContent.get_header_information(session[:chapman_code])
+    @coordinator = County.coordinator_name(session[:chapman_code])
+    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
   end
+  
   def select_places
-    @character = params[:character]
-    session[:character] = @character
-    if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
-      @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
-    else
-      @page = ""
-    end
+    @character = session[:character]  
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @coordinator = County.coordinator_name(@chapman_code)
-    @places = Place.county(@county).any_of({:place_name => Regexp.new("^"+@character+"+") }).data_present.all.order_by(place_name: 1)
-    @records = number_of_records_in_county(@county)
-    render :action => 'show'
+    @page = FreeregContent.get_header_information(session[:chapman_code])
+    @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+    render :action => 'index'
     return
   end
 
-  def show
-     @county = session[:county]
-     @character =  session[:character] 
-  end
 
   def show_place
-    @place = Place.find(params[:id])
+    @character =  session[:character]
     @county = session[:county]
     @chapman_code = session[:chapman_code]
+    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
     @coordinator = County.coordinator_name(@chapman_code)
-    @character =  session[:character] 
-    @country = @place.country
-    @place_name = @place.place_name
-    @names = @place.get_alternate_place_names
-    @stats = @place.data_contents
-    session[:place] = @place_name
-    session[:place_id] = @place._id
+    if @place.present?
+      @place_name = @place.place_name
+      @names = @place.get_alternate_place_names
+      @stats = @place.data_contents
+    else
+      flash[:notice] = "None existent place has been selected."
+      redirect_to :action => 'new' and return
+    end
   end
 
-  def show_church
-    if @page = Refinery::Page.where(:slug => 'dap-place-index-text').exists?
-      @page = Refinery::Page.where(:slug => 'dap-place-index-text').first.parts.first.body.html_safe
-    else
-      @page = ""
+  def show_church 
+    @church = Church.id(params[:id]).first
+    if @church.nil?
+      flash[:notice] = "No church was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
+        redirect_to :index
+        return
+      else
+        redirect_to :action => :new
+        return
+      end
     end
-    @church = Church.find(params[:id])
+    @county = session[:county]
+    @character =  session[:character]
+    @chapman_code = session[:chapman_code]
     @stats = @church.data_contents
     @place_name = @church.place.place_name
     @place = @church.place
-    @county = session[:county]
-    @character =  session[:character] 
     @church_name = @church.church_name
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
 
-  def show_register
-    if @page = Refinery::Page.where(:slug => 'register-sidebar-text').exists?
-      @page = Refinery::Page.where(:slug => 'register-sidebar-text').first.parts.first.body.html_safe
-    else
-      @page = ""
+  def show_register 
+    @register = Register.id(params[:id]).first
+    if @register.nil?
+      flash[:notice] = "No register was selected while reviewing the content; you will need to start again"
+      if session[:county].present?
+        redirect_to :action => :alphabet
+        return
+      else
+        redirect_to :action => :new
+        return
+      end
     end
-    @register = Register.find(params[:id])
     @church  = @register.church
     @place = @church.place
     @county = session[:county]
-    @character =  session[:character] 
+    @character =  session[:character]
     @files_id = Array.new
     @place_name = @place.place_name
-    session[:register_id] = params[:id]
     @register_name = @register.register_name
     @register_name = @register.alternate_register_name if @register_name.nil?
-    session[:register_name] = @register_name
-    @church = @church.church_name
+    @church_name = @church.church_name
     individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
     @files = Freereg1CsvFile.combine_files(individual_files)
-    session[:county] = @county
-    session[:church_name] = @church
-    session[:place_name] = @place_name
-    session[:place_id] = @place._id
+    @transcribers = FreeregContent.get_transcribers(@files)
+    @decade = FreeregContent.get_decades(@files)
+    @register_type = RegisterType.display_name(@register.register_type)
   end
 
-  def show_decade
-    if session[:register_id].nil?
-      #trap bots
-      redirect_to :action => :new
-      return
+  def place
+    @place = Place.id(params[:id]).first
+    if @place.present?
+      @character =  nil
+      @county = @place.place_name
+      @chapman_code = @place.chapman_code
+      @coordinator = County.coordinator_name(@chapman_code)
+      @place_name = @place.place_name
+      @names = @place.get_alternate_place_names
+      @stats = @place.data_contents
+    else
+      flash[:notice] = "Non existent place has been selected."
+      redirect_to :back and return
     end
-    @register = Register.find(session[:register_id])
-    @files_id = session[:files]
-    @register_id = session[:register_id]
-    @register_name = session[:register_name]
-    @character =  session[:character] 
-    individual_files = Freereg1CsvFile.where(:register_id => @register_id).order_by(:record_types.asc, :start_year.asc).all
-    @files = Freereg1CsvFile.combine_files(individual_files)
-    @decade = { }
-    max = 1
-    @files.each_pair do |key,my_file|
-      @decade[key] = my_file["daterange"]
-      if @decade[key]
-        if my_file["daterange"].length > max
-          max = my_file["daterange"].length
-        end
-      end
-    end
-    @decade["ba"] = Array.new(max, 0) unless @decade["ba"]
-    @decade["bu"] = Array.new(max, 0) unless @decade["bu"]
-    @decade["ma"] = Array.new(max, 0) unless @decade["ma"]
-    @record_type = params[:id]
-    @place = Place.find(session[:place_id])
-    @church = session[:church_name]
-    @place_name = session[:place_name]
-    @county = session[:county]
-    @RType = RegisterType.display_name(@register.register_type)
   end
-
-  def remove_countries_from_parenthetical_codes
-  end
-  def number_of_records_in_county(county)
-    chapman = ChapmanCode.values_at(county)
-    files = Freereg1CsvFile.county(chapman).all
-    record = Array.new
-    records = 0
-    records_ma = 0
-    records_ba = 0
-    records_bu = 0
-    files.each do |file|
-      records = records.to_i + file.records.to_i unless file.records.nil?
-      case file.record_type
-      when "ba"
-        records_ba = records_ba + file.records.to_i unless file.records.nil?
-      when "ma"
-        records_ma = records_ma + file.records.to_i unless file.records.nil?
-      when "bu"
-        records_bu = records_bu + file.records.to_i unless file.records.nil?
-      end
-    end
-    record[0] = records
-    record[1] = records_ba
-    record[2] = records_bu
-    record[3] = records_ma
-    record
-  end
-
 end

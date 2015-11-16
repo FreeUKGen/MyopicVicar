@@ -108,6 +108,11 @@ class Freereg1CsvEntry
   index({line_id:1})
 
   validate :errors_in_fields
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
 
   def extract_year(date_string)
     if date_string && md = date_string.match(/(\d\d\d\d)/)

@@ -1,5 +1,5 @@
 <% breadcrumb :physical_files%>
-<p style="text-align: center"><b>Listing of physical files <%= @sorted_by%> for <%= @person %></b></p>
+<h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @person %></h2>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
 	<%= flash[:notice] %> <br>
@@ -20,7 +20,7 @@
 				<th >Delete File and Entries</th>
 			</tr>
 			<% if @batches.nil? %>
-			There are none
+			 <p style="text-align: center">There are no files waiting to be processed</p>
 			<% else %>
 			<% @batches.each do |batch| %>
 			<tr id="<%=batch.id%>">

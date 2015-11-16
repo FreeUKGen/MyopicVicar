@@ -1,7 +1,7 @@
 <% breadcrumb :county_places,  @county%>
 <h3 style="text-align: center"><b><%=session[:active_place]%> Places for <%= @county  %></b>.</h3>
 <%  if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager' %>
-  <div style="float:left;">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  btn--small  float--left"%> </div>
+  <div style="float:left;">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  weight--light btn--small  float--left"%> </div>
 <% end%>
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>

@@ -1,4 +1,5 @@
- <% breadcrumb :regmanager_userid_options %>  
+ <% breadcrumb :regmanager_userid_options if session[:edit_userid]%> 
+ <% breadcrumb :coordinator_userid_options unless session[:edit_userid]%>  
 <div id="notice" style="color:red"><br>
 <% if flash[:notice] %>
  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -6,7 +7,7 @@
 </div>
 <div >
 <%@options.each do |option| %>
-    <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%> <br>
+    <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn weight--light btn--small"%> <br>
  <%end%>
 </div>
 

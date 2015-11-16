@@ -2,7 +2,7 @@ class Freereg1CsvFilesController < ApplicationController
   require 'chapman_code'
   require 'freereg_options_constants'
   def index
-    #the common listing entry by syndicatep
+    #the common listing entry by syndicates
     @register = session[:register_id]
     get_user_info_from_userid
     @county =  session[:county] unless session[:county].nil?
@@ -11,29 +11,36 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = session[:sorted_by]
     case
     when session[:my_own]
-      @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort])
-    when !session[:syndicate].nil? && session[:userid_id].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" )
-      @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).order_by(session[:sort])
-    when !session[:syndicate].nil? && !session[:userid_id].nil? && (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" )
-      @freereg1_csv_files = Freereg1CsvFile.userid( UseridDetail.find(session[:userid_id]).userid).order_by(session[:sort])
-    when !session[:county].nil? && (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical")
-      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).order_by(session[:sort])
+      @who =  @first_name
+      @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all
+    when session[:syndicate].present? && session[:userid_id].blank? &&
+        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" ||
+         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || @user.person_role == 'data_manager') &&
+        session[:sorted_by] == '; sorted by descending number of errors and then file name'
+      userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
+      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).gt(error: 0).order_by(session[:sort]).all
+    when session[:syndicate].present? && session[:userid_id].blank? &&
+        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" ||
+         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || @user.person_role == 'data_manager')
+      userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
+      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all
+    when session[:syndicate].present? && session[:userid_id].present? &&
+        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" ||
+         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || @user.person_role == 'data_manager')
+      @freereg1_csv_files = Freereg1CsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all
+    when session[:county].present? &&
+        (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" ||
+         session[:role] == "technical" || @user.person_role == 'data_manager') && session[:sorted_by] == '; sorted by descending number of errors and then file name'
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all
+    when session[:county].present? &&
+        (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || @user.person_role == 'data_manager')
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all
     end
   end
 
   def show
     #show an individual batch
-    get_user_info_from_userid
-    go_back if params[:id].nil?
     load(params[:id])
-    #TODO check on need for these
-    @county =  session[:county]
-    set_controls
-    display_info
-    @freereg1_csv_file.adjust_for_collection_information
-    @processed = PhysicalFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).first
-    @role = session[:role]
-
   end
 
   def relocate
@@ -42,7 +49,6 @@ class Freereg1CsvFilesController < ApplicationController
     session[:selectcountry] = nil
     session[:selectcounty] = nil
     @records = @freereg1_csv_file.freereg1_csv_entries.count
-    set_controls
     max_records = 4000
     max_records = 15000 if @user.person_role == "data_manager"
     max_records = 30000 if  @user.person_role == "system_administrator"
@@ -51,12 +57,11 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to :action => 'show' and return
     end
     session[:records] = @records
-    display_info
     unless  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
-      # only senior managers can move betweeen counties and countries; coordinators could loose files
+      # only senior managers can move between counties and countries; coordinators could loose files
       place = @freereg1_csv_file.register.church.place
       session[:selectcountry] = place.country
-      session[:selectcounty] = place.county
+      session[:selectcounty] = place.chapman_code
       redirect_to :action => 'update_places' and return
     else
       @county =  session[:county]
@@ -68,6 +73,7 @@ class Freereg1CsvFilesController < ApplicationController
       @counties = Array.new
       @placenames = Array.new
       @churches = Array.new
+
     end
   end
 
@@ -83,10 +89,8 @@ class Freereg1CsvFilesController < ApplicationController
     display_info
   end
   def change_userid
-    get_user_info_from_userid
-    set_locations
     load(params[:id])
-    display_info
+    set_locations
     @records = @freereg1_csv_file.freereg1_csv_entries.count
     userids = UseridDetail.all.order_by(userid_lower_case: 1)
     @userids = Array.new
@@ -106,7 +110,7 @@ class Freereg1CsvFilesController < ApplicationController
       places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     else
       #we are a CC
-      places = Place.county(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+      places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     end
     @counties = Array.new
     @counties << session[:selectcounty]
@@ -146,10 +150,6 @@ class Freereg1CsvFilesController < ApplicationController
   def edit
     #edit the headers for a batch
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    display_info
-    @county =  session[:county]
     unless session[:error_line].nil?
       #we are dealing with the edit of errors
       @error_message = Array.new
@@ -174,16 +174,11 @@ class Freereg1CsvFilesController < ApplicationController
   def update
     #update the headers
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
     case params[:commit]
     when 'Change Userid'
       flash[:notice] = "Cannot select a blank userid" if params[:freereg1_csv_file][:userid].blank?
       redirect_to :action => "change_userid" and return if params[:freereg1_csv_file][:userid].blank?
       success = @freereg1_csv_file.move_file_between_userids(params[:freereg1_csv_file][:userid])
-      p success
       if !success[0]
         flash[:notice] = "The change of userid was unsuccessful: #{success[1]}"
         redirect_to change_userid_freereg1_csv_file_path(@freereg1_csv_file)
@@ -221,6 +216,7 @@ class Freereg1CsvFilesController < ApplicationController
         session[:page] = session[:initial_page]
       end
     when 'Relocate'
+      @freereg1_csv_file
       errors =  Freereg1CsvFile.update_location(@freereg1_csv_file,params[:freereg1_csv_file],session[:my_own])
       if errors[0]
         flash[:notice] = errors[1]
@@ -239,54 +235,54 @@ class Freereg1CsvFilesController < ApplicationController
     clean_session_for_syndicate
     get_user_info_from_userid
     session[:my_own] = true
-    @freereg1_csv_file = Freereg1CsvFile.new
     @who =  @first_name
-    if session[:userid].nil?
-      redirect_to '/', notice: "You are not authorised to use these facilities"
-      return
-    end
-    @options= UseridRole::FILE_MANAGEMENT_OPTIONS
+    @sorted_by = 'Ordered by most recent'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "uploaded_date DESC"
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").all
+    render :index
   end
 
   def display_my_own_files
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted alphabetically by file name)'
+    @who =  @first_name
+    @sorted_by = 'Alphabetical by file name'
     session[:sort] = "file_name ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").all
     render :index
   end
   def display_my_error_files
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted by number of errors)'
+    @who =  @first_name
+    @sorted_by = 'Ordered by number of errors'
     session[:sorted_by] = @sorted_by
     session[:sort] = "error DESC, file_name ASC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("error DESC, file_name ASC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).errors.order_by("error DESC, file_name ASC").all
+
     render :index
   end
   def display_my_own_files_by_descending_uploaded_date
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted by descending date of uploading)'
+    @who =  @first_name
+    @sorted_by = 'Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date DESC").all
     render :index
   end
   def display_my_own_files_by_ascending_uploaded_date
     get_user_info_from_userid
-    @who = @user.userid
-    @sorted_by = '(Sorted by ascending date of uploading)'
+    @who =  @first_name
+    @sorted_by = 'Ordered by oldest'
     session[:sort] = "uploaded_date ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC")
+    @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("uploaded_date ASC").all
     render :index
   end
   def display_my_own_files_by_selection
     get_user_info_from_userid
-    @who = @user.userid
+    @who =  @first_name
     @freereg1_csv_file = Freereg1CsvFile.new
     @freereg1_csv_files = Freereg1CsvFile.userid(@user.userid).order_by("file_name ASC").all
     @files = Hash.new
@@ -300,17 +296,12 @@ class Freereg1CsvFilesController < ApplicationController
   end
   def display_my_own_files_waiting_to_be_processed
     get_user_info_from_userid
-    @who = @user.userid
-    @batches = PhysicalFile.userid(@who).waiting.all.order_by("waiting_date DESC")
+    @who =  @first_name
+    @batches = PhysicalFile.userid(@user.userid).waiting.all.order_by("waiting_date DESC")
   end
   def error
     #display the errors in a batch
     load(params[:id])
-    display_info
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
     get_errors_for_error_display
   end
 
@@ -336,10 +327,6 @@ class Freereg1CsvFilesController < ApplicationController
   def lock
     #lock/unlock a file
     load(params[:id])
-    set_controls
-    get_user_info_from_userid
-    @county =  session[:county]
-    @role = session[:role]
     @freereg1_csv_file.lock(session[:my_own])
     flash[:notice] = 'The update of the batch was successful'
     #determine how to return
@@ -376,6 +363,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file.add_to_rake_delete_list
     batch = PhysicalFile.userid(@freereg1_csv_file.userid).file_name(@freereg1_csv_file.file_name).first
     batch.update_attributes(:file_processed =>false, :file_processed_date => nil) if Freereg1CsvFile.where(:file_name => @freereg1_csv_file.file_name, :userid => @freereg1_csv_file.userid).count >= 1
+    @freereg1_csv_file.save_to_attic
     @freereg1_csv_file.delete
     flash[:notice] = 'The removal of the batch entry was successful'
     if session[:my_own]
@@ -392,7 +380,7 @@ class Freereg1CsvFilesController < ApplicationController
     load(params[:id])
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
     return_location  = @freereg1_csv_file.register
-    if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator 
+    if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator
       flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
       redirect_to :back
       return
@@ -418,18 +406,22 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def load(file_id)
-    @freereg1_csv_file = Freereg1CsvFile.where(:_id => file_id).first
-    go_back if @freereg1_csv_file.nil?
+    @freereg1_csv_file = Freereg1CsvFile.id(file_id).first
+    if @freereg1_csv_file.blank?
+      go_back("batch",file_id)
+    else
+      set_controls
+      display_info
+      get_user_info_from_userid
+      @processed = PhysicalFile.where(:userid => @freereg1_csv_file.userid, :file_name => @freereg1_csv_file.file_name).first
+      @role = session[:role]
+    end
   end
-
-
 
   def set_controls
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     session[:freereg1_csv_file_id] =  @freereg1_csv_file._id
   end
-
-
 
   def get_errors_for_error_display
     @errors = @freereg1_csv_file.batch_errors.count
@@ -449,32 +441,34 @@ class Freereg1CsvFilesController < ApplicationController
       end
     end
   end
+
   def display_info
     @freereg1_csv_file_id =   @freereg1_csv_file._id
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     @register = @freereg1_csv_file.register
+    if @register.blank?
+      go_back("register",@freereg1_csv_file)
+    end
     @file_owner = @freereg1_csv_file.userid
-    #@register_name = @register.register_name
-    #@register_name = @register.alternate_register_name if @register_name.nil?
     @register_name = RegisterType.display_name(@register.register_type)
     @church = @register.church
+    if @church.blank?
+      go_back("church",@register)
+    end
     @church_name = @church.church_name
     @place = @church.place
+    if @place.blank?
+      go_back("place", @church)
+    end
     @county =  @place.county
     @place_name = @place.place_name
-
   end
+
   def set_locations
     @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
     @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value'
     @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
     @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'
-  end
-
-  def go_back
-    flash[:notice] = "That file does not exist"
-    redirect_to :back
-    return
   end
 
 end

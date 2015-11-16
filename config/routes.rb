@@ -93,6 +93,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/select', :to =>'userid_details#select', :as => :select_userid_details
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
+  get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/:id/rename(.:format)', :to =>'userid_details#rename', :as => :rename_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
@@ -129,9 +130,8 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/:id/show_place(.:format)', :to => 'freereg_contents#show_place', :as => :show_place_freereg_content
   get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church_freereg_content
   get 'freereg_contents/:id/show_register(.:format)', :to => 'freereg_contents#show_register', :as => :show_register_freereg_content
-  get 'freereg_contents/:id/show_decade(.:format)', :to => 'freereg_contents#show_decade', :as => :show_decade_freereg_content
+  get 'freereg_contents/:id/place(.:format)', :to => 'freereg_contents#place', :as => :place_freereg_content
   get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
-  get 'freereg_contents/alphabet', :to => 'freereg_contents#alphabet', :as => :alphabet_freereg_content
   resources :freereg_contents
 
 

@@ -1,8 +1,8 @@
 <% breadcrumb :show_place,  @county, @place%>
 
-<div style="text-align: center"> <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn  btn--small"%>
+<div style="text-align: center"> <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  weight--light btn--small" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn weight--light  btn--small"%>
   <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator'%>
-<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>   <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependants!' }, :class => "btn  btn--small" %> <%= link_to 'Fill County and Country fields', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"%>
+<%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn weight--light  btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn weight--light  btn--small" %>   <%= link_to 'Destroy Place', place_path(@place), method: :delete, data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependants!' }, :class => "btn weight--light  btn--small" %> <%= link_to 'Fill County and Country fields', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn weight--light  btn--small"%>
  <% end%>
 </div>
 <div style="clear:both;"> </div>
@@ -15,7 +15,7 @@
   <section class="island ">
     <h4 style="text-align: center">The Place has the following Church(es)
           <% @place.churches.order_by(church_name: 1).each do |church| %>
-      <%= link_to church.church_name, church_path(church), :class => "btn  btn--small"  %>
+      <%= link_to church.church_name, church_path(church), :class => "btn weight--light  btn--small"  %>
       <% end %></h4>
     <div class="grid__item  ">
     <table class="table--bordered table--data " >
@@ -42,7 +42,7 @@
         <% end%>       
       
       <tr>
-        <td>Genuki page :</td><td ><%= link_to('Location', @place.genuki_url, :class => "btn  btn--small",:target => "_blank") unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
+        <td>Genuki page :</td><td ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small",:target => "_blank") unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td> </tr>
         
         
         <tr>
@@ -86,9 +86,6 @@
         </tr>
         <tr>
           <td>Another reason for changes:</td><td class="weight--semibold"> <%= @place.other_reason_for_change %></td>
-        </tr>
-        <tr>
-          <td>Date place information last amended:</td><td class="weight--semibold"> <%= @place.u_at.strftime("%d %b %Y") unless  @place.u_at.nil? %></td>
         </tr>
         <tr>
           <td>Date when record last amended:</td><td class="weight--semibold"> <%= @place.last_amended %></td>

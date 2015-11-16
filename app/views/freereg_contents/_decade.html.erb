@@ -1,25 +1,16 @@
-<% title "Decade for #{@RType} #{@church} #{@place_name} #{@county} transcriptions" %>
-  <section class="island " >
-    <div style="text-align: center"><%= link_to 'County/Place Selection', freereg_contents_path, method: :get, :class => "btn  btn--small"%>  <%= link_to 'County', freereg_content_path(@county ), method: :get, :class => "btn  btn--small" unless @county.nil?%> <%= link_to 'Place for this Church', show_place_freereg_content_path( @place), :class => "btn  btn--small" %> <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn  btn--small" %> <%= link_to 'Register', show_register_freereg_content_path( @register), :class => "btn  btn--small" %>
-      <% if @character %>
-        <%= link_to 'Alphabet Selection', alphabet_freereg_content_path, :class => "btn btn--small "%>
-      <% end %>
-    </div><br>
-    <h2 class=" gamma text--center">Records by decade of the <%= @RType %> Registers for <%= @church %> of <%= @place_name %> within <%= @county %> </h2>
-    <p class="text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
-  </section>  
-  <div class="container">  
+<div class="container">  
   <section class="island " > 
-    <table class="table--bordered " >
+   <div class="table-wrapper">
+    <table class="table--bordered table--data" >
       <colgroup >
-      <col class=t30>
-      <col >
-      <col >
-      <col >
-      <col >
+        <col class="t15">
+        <col class="t25">
+        <col class="t25">
+        <col class="t25 ">
+        <col class="t10">
       </colgroup>
       <thead >
-        <tr>
+        <tr style="font-size: 20px; font-weight: bold">
           <th>Period</th>
           <th>Baptisms</th>
           <th>Marriages</th>
@@ -27,7 +18,14 @@
           <th>Total</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody >
+        <tr style="font-size: 16px; font-weight: bold">
+          <td>Transcribed by</td>
+          <td ><%= @transcribers[0] %></td>
+          <td ><%= @transcribers[1] %></td>
+          <td ><%= @transcribers[2] %></td>
+          <td><%= ""%></td>
+        </tr>
         <% decade_start = 1530%>
         <% decade_end = 1539%>
         <% current_index = 0 %>
@@ -82,5 +80,6 @@
         <% end %>
       </tbody>
     </table>
+  </div>
 </section>
 </div>

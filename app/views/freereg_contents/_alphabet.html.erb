@@ -1,0 +1,25 @@
+<div class="grid">
+ <%= semantic_form_for @freereg_content do |f| %>
+    <li class="grid__item  one-third  palm-one-whole" id="freereg_content_place_input">
+      <label class=" label" for="freereg_content_place">
+        Specific Place
+      </label>
+      <select id="freereg_content_place" name="freereg_content[place]" class="select" size="4" tabindex="6">
+        <%  @places.each do | value| %>
+            <option name="<%= value %>"><%= value %></option>
+        <% end %>
+      </select>
+    </li>
+    <%= f.action :submit, :as => :input,  :label => 'Select One Option' ,:button_html => { :class => "btn weight--light btn--small " },:wrapper_html => { :class => "grid__item  one-third text--center" }  %>
+    <li class="grid__item  one-third  palm-one-whole" id="freereg_content_character_input">
+      <label class=" label" for="freereg_content_character">
+       Letter range
+      </label>
+      <select id="freereg_content_character" name="freereg_content[character]" class="select" size="4" tabindex="6">
+        <%  @options.each do |value| %>
+            <option name="<%= value %>"><%= value %></option>
+        <% end %>
+      </select>
+    </li>   
+  <% end %>
+</div>
