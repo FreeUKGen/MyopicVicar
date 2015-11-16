@@ -7,29 +7,39 @@ class UserMailer < ActionMailer::Base
       @errors = error
       @headers = headers
       @records = records
+      emails = Array.new
+      unless @userid.nil? || !@userid.active
+        user_email_with_name = %("#{@userid.person_forename}" #{@userid.email_address})     
+        emails <<  user_email_with_name  
+      end
       syndicate_coordinator = nil
-      sc = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
-      unless syndicate_coordinator.nil?
+      if syndicate_coordinator.present?
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator).first
+        if sc.present?
+          sc_email_with_name = %("#{sc.person_forename}" #{sc.email_address})
+          emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
+        end
       end
       @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
       county = County.where(chapman_code: @batch.county).first unless @batch.nil?
-      cc = nil
       if county.present?
         county_coordinator = county.county_coordinator
         cc = UseridDetail.where(userid: county_coordinator).first
+        if cc.present?
+          cc_email_with_name = %("#{cc.person_forename}" #{cc.email_address})
+          emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
+        end
       end
-      unless @userid.nil? || !@userid.active
-       mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg processed #{@userid.userid}/#{batch}") 
-      end
-      unless sc.nil? || @userid.nil? || sc.email_address == @userid.email_address 
-        mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg processing by #{@userid.userid}/#{batch}") 
-      end
-      unless cc.nil? || sc.nil? || @userid.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
-        mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => "Copy of FreeReg processing by #{@userid.userid}/#{batch}") 
-      end
+      if emails.length == 1
+         mail(:to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+      elsif emails.length == 2
+        mail(:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+      elsif emails.length == 3
+        first_mail = emails.shift
+        mail(:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}") 
+      end 
     end
   end
 
@@ -37,29 +47,39 @@ class UserMailer < ActionMailer::Base
     @message = message
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
+      emails = Array.new
+      unless @userid.nil? || !@userid.active
+        user_email_with_name = %("#{@userid.person_forename}" #{@userid.email_address})     
+        emails <<  user_email_with_name  
+      end
       syndicate_coordinator = nil
-      sc = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
-      unless syndicate_coordinator.nil?
+      if syndicate_coordinator.present?
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator).first
+        if sc.present?
+          sc_email_with_name = %("#{sc.person_forename}" #{sc.email_address})
+          emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
+        end
       end
       @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
       county = County.where(chapman_code: @batch.county).first unless @batch.nil?
-      cc = nil
       if county.present?
         county_coordinator = county.county_coordinator
         cc = UseridDetail.where(userid: county_coordinator).first
+        if cc.present?
+          cc_email_with_name = %("#{cc.person_forename}" #{cc.email_address})
+          emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
+        end
       end
-      unless @userid.nil? || !@userid.active
-        mail(:to => "#{@userid.person_forename} <#{@userid.email_address}>", :subject => "FreeReg failed to process #{@userid.userid}/#{batch}") 
-      end
-      unless sc.nil? || @userid.nil? || sc.email_address == @userid.email_address 
-        mail(:to => "#{sc.person_forename} <#{sc.email_address}>", :subject => "Copy of FreeReg failed to process #{@userid.userid}/#{batch}")  
-      end
-      unless cc.nil? || sc.nil? || @userid.nil? || cc.email_address == @userid.email_address || cc.email_address == sc.email_address
-         mail(:to => "#{cc.person_forename} <#{cc.email_address}>", :subject => " Copy of FreeReg failed to process #{@userid.userid}/#{batch}")  
-      end
+      if emails.length == 1
+         mail(:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+      elsif emails.length == 2
+        mail(:to => emails[0], :cc => emails[1],:subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+      elsif emails.length == 3
+        first_mail = emails.shift
+        mail(:to => first_mail, :cc => emails,:subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+      end 
     end
   end
 
@@ -125,9 +145,10 @@ class UserMailer < ActionMailer::Base
   def notification_of_registration_completion(user)
     @user = user
     reg_manager = UseridDetail.userid("REGManager").first
-    get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Registration Completion") unless @coordinator.nil?
-    mail(:to => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "Copy of FreeREG Registration Completion") unless reg_manager.nil?
+    get_coordinator_name 
+    if Time.now - 5.days <= @user.c_at
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeREG Registration Completion") 
+    end
   end
 
   def reset_notification(user,z)
