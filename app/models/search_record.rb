@@ -16,6 +16,7 @@ class SearchRecord
     EMENDOR='e'
     SUPPLEMENT='s'
     SEPARATION='sep'
+    SEPARATION_LAST='sepl'
     USER_ADDITION='u'
   end
 
@@ -263,6 +264,7 @@ class SearchRecord
 
   def separate_all
     separate_names(self.search_names)
+    separate_last_names(self.search_names)
   end
 
   def separate_names(names_array)
@@ -278,6 +280,22 @@ class SearchRecord
     names_array << separated_names
   end
 
+  def separate_last_names(names_array)
+    separated_names = []
+    names_array.each do |name|
+      tokens = name.last_name.split(/-|\s+/)
+      if tokens.size > 1
+        tokens.each do |token|
+          separated_names << search_name(name.first_name, token, name.type, Source::SEPARATION_LAST) unless is_surname_stopword(token)
+        end
+      end
+    end
+    names_array << separated_names
+  end
+
+  def is_surname_stopword(namepart)
+    ['da','de','del','della','der','des','di','du','la','le','mc','mac','o','of','or','van','von','y'].include?(namepart)
+  end
 
   def populate_search_names
     if transcript_names && transcript_names.size > 0
