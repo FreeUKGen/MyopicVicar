@@ -9,7 +9,7 @@ class UserMailer < ActionMailer::Base
       @records = records
       emails = Array.new
       unless @userid.nil? || !@userid.active
-        user_email_with_name = %("#{@userid.person_forename}" #{@userid.email_address})     
+        user_email_with_name =  @userid.email_address    
         emails <<  user_email_with_name  
       end
       syndicate_coordinator = nil
@@ -18,7 +18,7 @@ class UserMailer < ActionMailer::Base
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator).first
         if sc.present?
-          sc_email_with_name = %("#{sc.person_forename}" #{sc.email_address})
+          sc_email_with_name =  sc.email_address
           emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
         end
       end
@@ -28,7 +28,7 @@ class UserMailer < ActionMailer::Base
         county_coordinator = county.county_coordinator
         cc = UseridDetail.where(userid: county_coordinator).first
         if cc.present?
-          cc_email_with_name = %("#{cc.person_forename}" #{cc.email_address})
+          cc_email_with_name =  cc.email_address
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
         end
       end
@@ -49,7 +49,7 @@ class UserMailer < ActionMailer::Base
     if @userid.present?
       emails = Array.new
       unless @userid.nil? || !@userid.active
-        user_email_with_name = %("#{@userid.person_forename}" #{@userid.email_address})     
+        user_email_with_name = @userid.email_address    
         emails <<  user_email_with_name  
       end
       syndicate_coordinator = nil
@@ -58,7 +58,7 @@ class UserMailer < ActionMailer::Base
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator).first
         if sc.present?
-          sc_email_with_name = %("#{sc.person_forename}" #{sc.email_address})
+          sc_email_with_name = sc.email_address
           emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
         end
       end
@@ -68,17 +68,17 @@ class UserMailer < ActionMailer::Base
         county_coordinator = county.county_coordinator
         cc = UseridDetail.where(userid: county_coordinator).first
         if cc.present?
-          cc_email_with_name = %("#{cc.person_forename}" #{cc.email_address})
+          cc_email_with_name = cc.email_address
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
         end
       end
       if emails.length == 1
          mail(:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
       elsif emails.length == 2
-        mail(:to => emails[0], :cc => emails[1],:subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+        mail(:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:to => first_mail, :cc => emails,:subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+        mail(:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
       end 
     end
   end
