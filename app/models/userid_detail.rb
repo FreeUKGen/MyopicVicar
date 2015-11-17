@@ -154,6 +154,7 @@ class UseridDetail
   end
 
   def save_to_attic
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     #to-do unix permissions
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
@@ -268,6 +269,7 @@ class UseridDetail
     refinery_user = Refinery::User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
   def has_files?

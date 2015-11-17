@@ -125,4 +125,35 @@ module UseridRole
 
   SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
 
+# Remove options for functionality that is not implemented for FreeCen yet
+  if MyopicVicar::Application.config.template_set == 'freecen'
+    OPTIONS.each do |role,opts|
+      if opts.include?('Batches')
+        opts.delete("Batches")
+      end
+      if opts.include?('Access Attic')
+        opts.delete("Access Attic")
+      end
+      if opts.include?('Physical Files')
+        opts.delete("Physical Files")
+      end
+    end
+    self.send(:remove_const, :FILE_MANAGEMENT_OPTIONS)
+    FILE_MANAGEMENT_OPTIONS = []
+    COUNTY_MANAGEMENT_OPTIONS.reverse_each do |val|
+      unless val.downcase().index("batch").nil?
+        COUNTY_MANAGEMENT_OPTIONS.delete(val)
+      end
+    end
+
+    SYNDICATE_MANAGEMENT_OPTIONS.reverse_each do |val|
+      unless val.downcase().index("batch").nil?
+        SYNDICATE_MANAGEMENT_OPTIONS.delete(val)
+      end
+    end
+
+    self.send(:remove_const, :PHYSICAL_FILES_OPTIONS)
+    PHYSICAL_FILES_OPTIONS = []
+  end
+
 end
