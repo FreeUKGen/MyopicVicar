@@ -178,16 +178,16 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     bcc = UseridDetail.where(:userid => 'REGManager').limit(1).first
     ccs << bcc.email_address
-    mail(:from => "freereg_contact@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us")
+    mail(:from => "freereg_contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us")
   end
   def volunteer(contact,ccs)
     @contact = contact
-    mail(:from => "freereg_contact@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for volunteering")
+    mail(:from => "freereg_contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for volunteering")
   end
 
   def website(contact,ccs)
     @contact = contact  
-    mail(:from => "freereg_contact@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
+    mail(:from => "freereg_contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
   end
 
   def contact_to_recipient(contact,person,ccs)
