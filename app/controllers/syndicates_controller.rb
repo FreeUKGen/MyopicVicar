@@ -156,7 +156,7 @@ class SyndicatesController < ApplicationController
       @syndicate.remove_syndicate_from_coordinator
       @syndicate.downgrade_syndicate_coordinator_person_role
       @syndicate.destroy
-      flash[:notice] = 'The deletion of the Register was successful'
+      flash[:notice] = 'The deletion of the Syndicate was successful'
       redirect_to syndicates_path
     end
   end
