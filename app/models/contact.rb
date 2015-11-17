@@ -37,28 +37,30 @@ class Contact
   end
 
   def communicate
-    UserMailer.copy_to_contact_person(self).deliver
+   
     case 
     when  self.contact_type == 'Website Problem'
       self.github_issue
     when self.contact_type == 'Data Problem'
+      UserMailer.copy_to_contact_person(self).deliver
       data_manager_issue(self)
     when self.contact_type == 'Volunteer'
       volunteering_issue(self) 
-    else
-      general_issue(self)
+    when self.contact_type == 'Question' || self.contact_type == "Thank you"
+      ccs = Array.new
+      UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+        ccs << person.email_address unless person.nil?
+      end
+      UserMailer.contact(self,ccs).deliver
     end
   end
 
   def github_issue
     ccs = Array.new
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-       ccs << person.person_forename
-      end
-
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      UserMailer.contact_to_freereg_manager(self,person,ccs).deliver
-      end
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+     ccs << person.email_address
+    end
+    UserMailer.website(self,ccs).deliver
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_login
@@ -82,16 +84,6 @@ class Contact
     "#{contact_type} (#{name})"
   end
 
-  def general_issue(contact)
-    ccs = Array.new
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-       ccs << person.person_forename
-      end
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-    UserMailer.contact_to_freereg_manager(contact,person,ccs).deliver
-    end
-  end
-
   def data_manager_issue(contact)
     ccs = Array.new
     coordinator = contact.get_coordinator if contact.record_id.present?
@@ -108,14 +100,11 @@ class Contact
   def volunteering_issue(contact)
     ccs = Array.new
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
-       ccs << person.person_forename
+       ccs << person.email_address
     end
      manager = UseridDetail.where(:userid => 'REGManager').first
-      ccs << manager.person_forename
-    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |volunteer|
-     UserMailer.contact_to_volunteer(contact,volunteer,ccs).deliver
-    end
-     UserMailer.contact_to_volunteer(contact,manager,ccs).deliver
+     ccs << manager.email_address
+     UserMailer.volunteer(contact,ccs).deliver
   end
 
   def get_coordinator
