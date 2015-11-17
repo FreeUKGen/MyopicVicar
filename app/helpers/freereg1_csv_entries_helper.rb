@@ -1,2 +1,2 @@
-module Freereg1CsvEntriesHelper
+module Freereg1CsvEntriesHelper 
 end

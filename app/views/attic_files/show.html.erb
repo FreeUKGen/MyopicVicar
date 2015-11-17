@@ -1,28 +1,23 @@
 <p style="text-align: center"><b>Listing of attic batches for : <%= @user%></b>
 <% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-</div>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
 <% end %>
-
 <div id="main"style="color:black">
-  <table  class="table--bordered   table--data">
-    <tr>
-
-      <th style="width:23%">Batch Name</th>
-      <th style="width:23">Date put into Attic</th>
-      <th style="width:23%">Download</th>
-      <th style="width:23%">Delete</th>
-    </tr>
-
-    <% @files.each do |file| %>
-    <tr id="<%=file.id%>">
-     <td > <%= file.name %>  </td>
-     <td > <%= file.date_created %>  </td>   
-     <td><%= link_to 'Download', download_attic_file_path(file, :userid => @user), method: :get, :class => "btn  btn--small"  %></td><td><%= button_to 'Delete', attic_file_path(file), method: :delete , :class => "btn  btn--small", data: { confirm: 'Are you sure?' }  %>
-   </tr>
-   <% end %>
-
- </table>
+    <table  class="table--bordered   table--data">
+      <tr>
+        <th style="width:23%">Batch Name</th>
+        <th style="width:23">Date put into Attic</th>
+        <th style="width:23%">Download</th>
+        <th style="width:23%">Delete</th>
+      </tr>
+      <% @files.each do |file| %>
+        <tr id="<%=file.id%>">
+          <td > <%= file.name %>  </td>
+          <td > <%= file.date_created %>  </td>
+          <td><%= link_to 'Download', download_attic_file_path(file, :userid => @user), method: :get, :class => "btn weight--light  btn--small"  %></td><td><%= button_to 'Delete', attic_file_path(file), method: :delete , :class => "btn weight--light btn--small", data: { confirm: 'Are you sure?' }  %>
+        </tr>
+      <% end %>
+    </table>
 </div>
-

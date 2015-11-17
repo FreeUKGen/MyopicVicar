@@ -43,19 +43,22 @@ MyopicVicar::Application.routes.draw do
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
-  get 'physical_files/processed_but_no_file_for_specific_userid', :to =>'physical_files#processed_but_no_file_for_specific_userid', :as => :processed_but_no_file_for_specific_userid_physical_files
+  
   get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
-  get 'physical_files/files_not_processed_specific_userid', :to => 'physical_files#files_not_processed_specific_userid', :as => :files_not_processed_specific_userid_physical_files
-  get 'physical_files/userid', :to =>'physical_files#userid', :as => :userid_physical_files
-  get 'physical_files/processed_but_no_file', :to =>'physical_files#processed_but_no_file', :as => :processed_but_no_file_physical_files
+  get 'physical_files/processed_but_no_files', :to =>'physical_files#processed_but_no_files', :as => :processed_but_no_files_physical_files
+  get 'physical_files/processed_but_no_file_in_fr1', :to =>'physical_files#processed_but_no_file_in_fr1', :as => :processed_but_no_file_in_fr1_physical_files
+  get 'physical_files/processed_but_no_file_in_fr2', :to =>'physical_files#processed_but_no_file_in_fr2', :as => :processed_but_no_file_in_fr2_physical_files
   get 'physical_files/file_not_processed', :to =>'physical_files#file_not_processed', :as => :file_not_processed_physical_files
   get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
   get 'physical_files/:id/submit_for_processing(.:format)',  :to => 'physical_files#submit_for_processing', :as => :submit_for_processing_physical_file
   get 'physical_files/:id/reprocess(.:format)',  :to => 'physical_files#reprocess', :as => :reprocess_physical_file
-  get 'physical_files/select_file', :to => 'physical_files#select_file', :as => :select_file_physical_files
+  get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
+  get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   resources :physical_files
 
   resources :search_statistics
+
+  resources :site_statistics
 
 
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
@@ -82,6 +85,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint 
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint 
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
+  get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   resources :manage_syndicates   
   
   resources :csvfiles
@@ -113,6 +117,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/select', :to =>'userid_details#select', :as => :select_userid_details
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
+  get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/:id/rename(.:format)', :to =>'userid_details#rename', :as => :rename_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
@@ -146,11 +151,11 @@ MyopicVicar::Application.routes.draw do
   resources :alias_place_churches
 
   get 'freereg_contents/:id/show(.:format)', :to => 'freereg_contents#show', :as => :show_freereg_content
-  get 'freereg_contents/:id/show_place(.:format)', :to => 'freereg_contents#show_place', :as => :show_place
-  get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church
-  get 'freereg_contents/:id/show_register(.:format)', :to => 'freereg_contents#show_register', :as => :show_register
-  get 'freereg_contents/:id/show_decade(.:format)', :to => 'freereg_contents#show_decade', :as => :show_decade
-  
+  get 'freereg_contents/:id/show_place(.:format)', :to => 'freereg_contents#show_place', :as => :show_place_freereg_content
+  get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church_freereg_content
+  get 'freereg_contents/:id/show_register(.:format)', :to => 'freereg_contents#show_register', :as => :show_register_freereg_content
+  get 'freereg_contents/:id/place(.:format)', :to => 'freereg_contents#place', :as => :place_freereg_content
+  get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
   resources :freereg_contents
 
 
@@ -182,8 +187,8 @@ MyopicVicar::Application.routes.draw do
   post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
-
-   get 'freereg1_csv_files/update_counties', :to => 'freereg1_csv_files#update_counties', :as => :update_counties
+  get 'freereg1_csv_files/:id/change_userid', :to => 'freereg1_csv_files#change_userid', :as => :change_userid_freereg1_csv_file
+  get 'freereg1_csv_files/update_counties', :to => 'freereg1_csv_files#update_counties', :as => :update_counties
   get 'freereg1_csv_files/update_places', :to => 'freereg1_csv_files#update_places', :as => :update_places
   get 'freereg1_csv_files/update_churches', :to => 'freereg1_csv_files#update_churches', :as => :update_churches
   get 'freereg1_csv_files/update_registers', :to => 'freereg1_csv_files#update_registers', :as => :update_registers
@@ -199,6 +204,7 @@ MyopicVicar::Application.routes.draw do
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_descending_uploaded_date', constraints: MyFilesDescendingUploadConstraint 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint 
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', constraints: MyFilesWaitingConstraint 
     resources :freereg1_csv_files
 
   resources :emendation_types

@@ -1,22 +1,21 @@
+<% title "Search Query" %>
 <% unless @page.nil?%>
-<div style="color:red">
-   <%= @page%>
-   </div>
+  <div class="weight--semibold">
+    <%= @page%>
+  </div>
 <% end%>
 <% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-</div>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
 <% end %>
 <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-<h1 class="title text--center">Search our Parish Registers</h1>
+  <h1 class="title text--center">Search our Parish Registers</h1>
 <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-<h1 class="title text--center">Search our Census Records</h1>
+  <h1 class="title text--center">Search our Census Records</h1>
 <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-<h1 class="title text--center">Search our Birth/Marriage/Death Records</h1>
+  <h1 class="title text--center">Search our Birth/Marriage/Death Records</h1>
 <% end %>
 <%= render app_specific_partial('form') %>
-
-
 
 

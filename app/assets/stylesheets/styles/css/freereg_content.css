@@ -282,12 +282,9 @@ label.collection_check_boxes {
 
 /* ----- Override selection field width ----- */
 
-#register_register_type, #place_country, #place_county , #userid_detail_syndicate, #userid_detail_person_role, 
-#userid_detail_skill_level, #csvfile_userid,#csvfile_process
-{
-   padding: 16px;
-    width: 350px !important; 
-    
+.overide_selection_field_width{
+  padding: 16px;
+    width: 350px !important;  
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
 .simple_form_position{margin-left: 420px}
@@ -303,5 +300,77 @@ label.collection_check_boxes {
 
 /* Used for spam trap
 -------------------------------------------------*/
-div#badstyling { display: inline; }
-div#betterstyling { display: none; visibility: hidden; }
+.betterstyling { display: none; visibility: hidden; } 
+
+.scrollable {
+    overflow: auto;
+    height: 400px;  
+}
+
+h1#body_content_title {
+        border-bottom: 1px solid #999;
+        font-size: 3.33333rem;
+        font-weight: lighter;
+        line-height: 1.2;
+        padding-bottom: 14px;
+}
+table.my-width{
+  width:1000;
+}
+
+table.my-width-min{
+  width:980;
+}
+dl.table-display
+{
+  float: left;
+  width: auto;
+  margin: 1em 0;
+  padding: 0;
+  border-bottom: 1px solid #999;
+}
+  
+.table-display dt
+{
+  clear: left;
+  float: left;
+  width: 30%;
+  margin: 0;
+  padding: 5px;
+  border-top: 1px solid #999;
+  font-weight: bold;
+}
+  
+.table-display dd
+{
+  float: left;
+  width: 70%;
+  margin: 0;
+  padding: 5px;
+  border-top: 1px solid #999;
+}
+.just--left td{
+  text-align: left  !important; 
+  padding:6px;
+}
+.t3 {
+  width: 3%;
+}
+.t4 {
+  width: 4%;
+}
+.t7 {
+  width: 7%;
+}
+.t9 {
+  width: 9%;
+}
+.t12 {
+  width: 12%;
+}
+.t13 {
+  width: 13%;
+}
+.table--data--bold{
+   font: 12px/1.5 bold sans-serif;
+}

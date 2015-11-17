@@ -2,7 +2,7 @@
 <section class="island  island--light">
   <div class="grid">
     <div style="text-align: center">
-      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  btn--small "%> <%= link_to " Send password change request", change_password_userid_detail_path(@userid), method: :get, :class => "btn  btn--small " %>
+      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  weight--light btn--small "%> <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are about to reset your own password; if you proceed an email will be sent to you and you will be logged out. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %>
       
     </div>
     <div style="clear:both;"> </div>

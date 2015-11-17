@@ -1,5 +1,5 @@
 <% breadcrumb :syndicate_options,  @syndicate%>
-<div class="island  island--light">
+<div class="island ">
 <h3 style="text-align: center"><%= @first_name%> how would you like to process <%= @syndicate%>? Select one of the following options.<h3>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -7,7 +7,7 @@
     </div>
    <% end %>  
 <%@options.each do |option| %>
-    <%= link_to option, UseridRole::SYNDICATE_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%> 
+    <%= link_to option, UseridRole::SYNDICATE_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn weight--light btn--small"%> 
     <br>
   <%end%>
 </div>

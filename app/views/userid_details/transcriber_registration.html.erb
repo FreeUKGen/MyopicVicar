@@ -1,10 +1,22 @@
-<h4 class="title text--center">Transcriber Registration</h4>
-<div class="weight--semibold text--center" style="color:red">
- Please note that this page is here in preparation for opening FR2 to transcribers. It is possible to register BUT there is no ability for transcribers to load their work into FR2 yet. You may review the list of syndicates accepting volunteers in the list below BUT to actually register and submit work for inclusion in both FR1 and FR2 you must still register on original site at <p><a title="register" href="http://www.freereg.org.uk/cgi/AddUser.pl" class="btn">Original Registration on FR1</a>
+<% title "Transcriber Registration" %>
+<h1 class="title ">Transcriber Registration</h1>
+<div class="grid">
+        <aside class="grid__item one-third palm-one-whole float--right">
+                <a href="/contacts/new" class="banner banner--blue">
+                        <h3 class="banner__title">Questions? Data?</h3>
+                        <p class="banner__body">For more information, or if you have some data to contribute, please <b>Contact Us</b>, selecting the Volunteer option in that form.</p>
+                </a>
+        </aside>
+        <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+                <p>Thank you for considering joining FreeReg as a transcriber. If you wish to join one of our existing teams of transcribers (we call them syndicates) then fill in this form with your details: we will not share these with any outside organisation.</p>
+                <p>Select a team from the list below of those "Syndicates seeking volunteers". </p>
+                <p>After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste the link into you browser address window). You must respond to the email <b>within 24 hours</b>. If you have not received it within a few minutes please check your spam folder.</p>
+                <hr class="rule">
+        </div>
 </div>
 <% if flash[:notice] %>
   <div class="weight--semibold text--center" style="color:red"><br/>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br/>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br/>
   </div>
 <% end %>
 <% if @userid.errors.any? %>
@@ -15,136 +27,114 @@
     <% end %>
   </ul>
   <%@userid.errors.clear%>
-<% end %>
-<p>
-  <b>
-    After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window)
-    WITHIN 24HRS.
-  </b></p>
-
-<%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
-  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Your Forename
-      <a href="#" class="bottom_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Provide your forename for when we contact you</span>
-      </a>
-    </label>
-    <% if @userid.person_forename.nil? %>
-      <input name="userid_detail[person_forename]" type="text" class="text-input" placeholder="Mandatory" >
-    <% else %>
-      <input name="userid_detail[person_forename]" type="text" class="text-input" value="<%=@userid.person_forename%>">
-    <% end %>
-  </li>
-  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Your Surname
-      <a href="#" class="bottom_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Provide your surname for when we contact you</span>
-      </a>
-    </label>
-    <% if @userid.person_surname.nil? %>
-      <input name="userid_detail[person_surname]" type="text" class="text-input" placeholder="Mandatory" >
-    <% else %>
-      <input name="userid_detail[person_surname]" type="text" class="text-input" value="<%=@userid.person_surname%>">
-    <% end %>
-  </li>
-  <li class="grid__item  one-third  palm-one-whole" id="email_address_input">
-    <label class="label" for="email_address">Your email address
-      <a href="#" class="bottom_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Enter your email address so we can contact you; it will not be made public</span>
-      </a>
-    </label>
-    <% if @userid.email_address.nil? %>
-      <input name="userid_detail[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
-    <% else%>
-      <input name="userid_detail[email_address]" type="text" class="text-input" value="<%=@userid.email_address%>">
-    <% end%>
-  </li>
-  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Identifier
-      <a href="#" class="right_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>
-          Provide us with a unique identification.
-          This will be used by the system to identify you at all times.
-          It must only contain alphabetic characters and numbers; it must NOT
-          contain any special characters or spaces. It can be of any length.
-          Avoid using just your forename as it likely to have already been taken.
-        </span>
-      </a>
-    </label>
-    <% if @userid.userid.nil? %>
-      <input name="userid_detail[userid]" type="text" class="text-input" placeholder="Mandatory" >
-    <% else %>
-      <input name="userid_detail[userid]" type="text" class="text-input" value="<%=@userid.userid%>">
-    <% end %>
-  </li>
-  <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Location
-      <a href="#" class="right_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Indicate the country you live in</span>
-      </a>
-    </label>
-    <% if @userid.address.nil? %>
-      <input name="userid_detail[address]" type="text" class="text-input" placeholder="Optional" >
-    <% else %>
-      <input name="userid_detail[address]" type="text" class="text-input" value="<%= @userid.address %>">
-    <% end %>
-  </li>
+<% end %>  
+<div class= "grid">
+  <%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
     <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">Your Telephone Number
-      <a href="#" class="right_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Provide your telephone number in case our coordinator wishes to call you.</span>
-      </a>
-    </label>
-    <% if @userid.telephone_number.nil? %>
-      <input name="userid_detail[telephone_number]" type="text" class="text-input" placeholder="Optional" >
-    <% else %>
-      <input name="userid_detail[telephone_number]" type="text" class="text-input" value="<%= @userid.telephone_number %>">
-    <% end %>
-  </li>
-  <li class="grid__item  one-half  palm-one-whole" id="syndicate_input">
-    <label class="label" for="syndicate">Syndicates currently looking for volunteers
-      <a href="#" class="right_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>
-          Select the syndicate with which you would like to work.
-          If you are in doubt select the England group and you will be reassigned depending upon your interests.
-        </span>
-      </a>
-    </label>
-    <select id="syndicate" name="userid_detail[syndicate]" class="select" required="required" size="5">
-      <% @syndicates.each do |value| %>
-        <% if value == @userid.syndicate %>
-          <option value="<%=value%>" selected="selected" ><%=value%></option>
-        <% else %>
-          <option value="<%=value%>" ><%=value%></option>
-        <% end %>
+      <label class="label" for="name">Your Forename
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>Provide your forename for when we contact you</span>
+        </a>
+      </label>
+      <% if @userid.person_forename.nil? %>
+        <input name="userid_detail[person_forename]" type="text" class="text-input" placeholder="Mandatory" >
+      <% else %>
+        <input name="userid_detail[person_forename]" type="text" class="text-input" value="<%=@userid.person_forename%>">
       <% end %>
-    </select>
-  </li>
-  <li class="grid__item  one-half palm-one-whole" id="transcriber_input">
-    <label class="label" for="transcription_agreement">
-      Review our <%= link_to 'participation agreement', "../contributing-to-the-freereg-project/free-uk-genealogy-transcriber-agreement"%> and confirm your acceptance.
-      <a href="#" class="left_tooltip">
-        <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
-        <span>Please indicate that you accept the transcriber agreement.</span>
-      </a>
-    </label>
-    <%= f.label :transcription_agreement do %>
-      <%= f.check_box :transcription_agreement, {}, "true", "false" %>
-      Agree
-    <% end %>
-  </li>
-<%= f.action :submit,
-      :as => :input,
-      :label => 'Register Transcriber',
-      :button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
-      :wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
-
-
-<% end %>
+    </li>
+    <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+      <label class="label" for="name">Your Surname
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>Provide your surname for when we contact you</span>
+        </a>
+      </label>
+      <% if @userid.person_surname.nil? %>
+        <input name="userid_detail[person_surname]" type="text" class="text-input" placeholder="Mandatory" >
+      <% else %>
+        <input name="userid_detail[person_surname]" type="text" class="text-input" value="<%=@userid.person_surname%>">
+      <% end %>
+    </li>
+    <li class="grid__item  one-third  palm-one-whole" id="email_address_input">
+      <label class="label" for="email_address">Your email address
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>Enter your email address so we can contact you; it will not be made public</span>
+        </a>
+      </label>
+      <% if @userid.email_address.nil? %>
+        <input name="userid_detail[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+      <% else%>
+        <input name="userid_detail[email_address]" type="text" class="text-input" value="<%=@userid.email_address%>">
+      <% end%>
+    </li>
+    <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+      <label class="label" for="name">User name (UserID)
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>
+            Provide us with a unique identification.
+            This will be used by the system to identify you at all times.
+            It must only contain alphabetic characters and numbers; it must NOT
+            contain any special characters or spaces. It can be of any length.
+            Avoid using just your forename as it likely to have already been taken.
+          </span>
+        </a>
+      </label>
+      <% if @userid.userid.nil? %>
+        <input name="userid_detail[userid]" type="text" class="text-input" placeholder="Mandatory" >
+      <% else %>
+        <input name="userid_detail[userid]" type="text" class="text-input" value="<%=@userid.userid%>">
+      <% end %>
+    </li>
+    <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+      <label class="label" for="name">Location
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>Indicate the country you live in. Since our coordinators are in all parts of the world knowing your location helps us should we need to contact you.</span>
+        </a>
+      </label>
+      <% if @userid.address.nil? %>
+        <input name="userid_detail[address]" type="text" class="text-input" placeholder="Optional" >
+      <% else %>
+        <input name="userid_detail[address]" type="text" class="text-input" value="<%= @userid.address %>">
+      <% end %>
+    </li>
+    <li class="grid__item  one-quarter  palm-one-whole" id="name_input">
+      <label class="label" for="name">Your Telephone Number
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>(Please include the country code if outside of the UK). We only use this in the event our coordinator needs to talk with you.</span>
+        </a>
+      </label>
+      <% if @userid.telephone_number.nil? %>
+        <input name="userid_detail[telephone_number]" type="text" class="text-input" placeholder="Optional" >
+      <% else %>
+        <input name="userid_detail[telephone_number]" type="text" class="text-input" value="<%= @userid.telephone_number %>">
+      <% end %>
+    </li>
+    <li class="grid__item  one-half  palm-one-whole" id="syndicate_input">
+      <label class="label" for="syndicate">Syndicates seeking volunteers
+        <a href="#" class="bottom_tooltip">
+          <img alt="Information" height="16" src="/assets/refinery/icons/information.png">
+          <span>
+            Select the syndicate with which you would like to work.
+            If you are in doubt select the England group and you will be reassigned depending upon your interests.
+          </span>
+        </a>
+      </label>
+      <select id="syndicate" name="userid_detail[syndicate]" class="select" required="required" size="5">
+        <% @syndicates.each do |value| %>
+          <% if value == @userid.syndicate %>
+            <option value="<%=value%>" selected="selected" ><%=value%></option>
+          <% else %>
+            <option value="<%=value%>" ><%=value%></option>
+          <% end %>
+        <% end %>
+      </select>
+    </li>
+    <%= f.action :submit,:as => :input,:label => 'Register Transcriber',:button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
+    :wrapper_html => { :class => "grid__item  one-quarter " }  %>
+  <% end %>
+</div>

@@ -1,63 +1,38 @@
-<h2 class="beta  text--teal"> <%= @county  %> General Information: County Coordinator: <%= @coordinator  %></h2>
-<%= county_content(@chapman_code) %>
-<h4 class="beta  text--teal">Data Base Contents: <%= Rails.application.config.dataset_date%></h4>
-
-<div class="table-wrapper">
- These Places, Churches and Registers have data records. Click on the name for more information (including quantity and period covered).
- <div class="grid">
-  <%= paginate @places  %>
-  <table  class="grid__item two-thirds table--bordered t50">
-   <colgroup >
-   <col class="t15">
-   <col class="t15">
-   <col class="t15">
-   <col class="t15">
- </colgroup>
- <thead >
-  <tr>  
-    <th>Place</th>
-    <th>Churches </th>
-    <th>Registers</th>
-    <th>Record last amended</th>  
-  </tr>
-</thead>
-
-<tbody>
-   <% old_place_name = nil %>
-  <% @places.order_by(place_name: 1).each do |place| %>
-   <% old_church_name = nil %>
-  <% place.churches.order_by(church: 1).each do |church| %>
-  <% church.registers.order_by(register_type: 1).each do |register| %>
-  <% session[:placeid] = place.id%>
-  <tr style= "color:black" id="<%=place.id%>"> 
-    <% if place.place_name != old_place_name %>
-      <td > <%= link_to(place.place_name, show_place_path(place)) %> </td>
-      <% old_place_name = place.place_name %>
-    <% else %>
-       <td> </td>
-    <% end%>
-    <% if church.church_name != old_church_name %>
-      <td > <%= link_to(church.church_name, show_church_path(church)) %> </td>
-      <% old_church_name = church.church_name %>
-    <% else %>
-     <td> </td>
-    <% end%>
-    <td > <% registertype = RegisterType.display_name(register.register_type)%>
-      <%= link_to(registertype, show_register_path(register)) %></td>
-      <td > <%= register.last_amended %> </td>
-    </tr>
-    <% end%>
-    <% end%>
-    <% end %>
-  </tbody>
-</table>
-
-
-<div  class="grid__item one-quarter float_right">
-  <h5 class="beta  text--teal">What is a Register</h5>
-  <%= @page %>
+<% title "#{@county} Coverage" %>
+<div class="grid">
+	<header class="grid__item one-whole">
+		<div class="text--center push-half--bottom">
+			<%= link_to 'County Selection', new_freereg_content_path, :class => "btn weight--light btn--small "%> 
+      <% if  @character  %>
+        <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
+      <% end%>
+		</div>
+		<h1 class="title  text--center"> <%= @county %> General Information</h1>
+		<h2 class="text--center">Coordinator: <%= @coordinator %> </h2>
+	</header>
+	<div class="grid__item one-third palm-one-whole float--right ">
+		<div class="island island--blue push-half--top">
+      <strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
+			<ul>
+				<li><%= display_number(@records[1])%> baptisms</li>
+				<li><%=display_number(@records[2])%> burials</li>
+				<li><%= display_number(@records[3])%> marriages</li>
+			</ul>
+		</div>
+	</div>
+  <div class="grid__item two-thirds palm-one-whole ">
+    <%= county_content(@page)%>
+  </div>
+  <div class="grid__item one-whole">
+    <hr class="rule">
+  <% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+  <% end %>  
+    <p>These Places, Churches and Registers have data records. Click on the name for more information. The 'Registers' display includes to data on the number of records per decade. (Smart-phone users should display the latter with a landscape view)</p>
+  </div>
 </div>
-</div>
-
+<%= render 'show_first_body' %>
 
 

@@ -45,10 +45,10 @@ MyopicVicar::Application.configure do
   # config.force_ssl = true
 
   # See everything in the log (default is :info)
-  # config.log_level = :debug
+   #config.log_level = :warn
 
   # Prepend all log lines with the following tags
-  # config.log_tags = [ :subdomain, :uuid ]
+   #config.log_tags = [ :subdomain, :uuid ]
 
   # Use a different logger for distributed setups
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
@@ -66,7 +66,7 @@ MyopicVicar::Application.configure do
   if config.respond_to?(:action_mailer)
     # config.action_mailer.raise_delivery_errors = false
   end
-
+  config.action_dispatch.ip_spoofing_check = false
   # Enable threaded mode
   # config.threadsafe!
 
@@ -99,5 +99,5 @@ MyopicVicar::Application.configure do
   config.days_to_retain_search_queries = 90
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
-
+  config.delete_list = MyopicVicar::MongoConfig['delete_list']
 end

@@ -24,6 +24,11 @@ class Contact
 
   before_save :url_check
   after_create :communicate
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
 
   def url_check
 

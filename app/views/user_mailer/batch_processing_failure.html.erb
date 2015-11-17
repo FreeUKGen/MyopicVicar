@@ -1,8 +1,11 @@
 
 
-<p><%= @userid.person_forename %>,</p>
+<p><%= @userid.person_forename %>:</p>
 
-<p>The file that you submitted for processing failed to process. Please contact your coordinator for further  information if you do not understand the information in the attached log.</p>
+<p>The file submitted failed to process. The reason: <br><%= @message %> <br>
+
+
+If you do not understand the reason please ask your coordinator for assistance.</p>
 
 <p> The FreeREG Team</p>
 

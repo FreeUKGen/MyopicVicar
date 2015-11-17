@@ -3,7 +3,6 @@ class RegistersController < ApplicationController
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
 
   def show
-    get_user_info_from_userid
     load(params[:id])
   end
 
@@ -20,23 +19,37 @@ class RegistersController < ApplicationController
   def edit
     load(params[:id])
     get_user_info_from_userid
+    if @register.nil?
+      flash[:notice] = 'Attempting to edit a non_esxistent register'
+      redirect_to :back
+      return
+    end
   end
   def rename
     get_user_info_from_userid
     load(params[:id])
-    @records = 0
-    @register.freereg1_csv_files.each do |file|
-    @records = @records + file.freereg1_csv_entries.count
+    unless @register.nil?
+      @records = @register.records
+    end
+    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
+    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if @user.person_role == "data_manager"
+    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  @user.person_role == "system_administrator"
+    if @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line rename'
+      redirect_to :action => 'show' and return
     end
   end
   def relocate
     load(params[:id])
-    @records = @register.records
-    time = @records * Rails.application.config.sleep.to_f
-    if time >= 180
-      flash[:notice] = "There are too many records (#{records}) for an on_line update. Please change the file and reload."
-      redirect_to :back
-      return
+    unless @register.nil?
+      @records = @register.records
+    end
+    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
+    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if @user.person_role == "data_manager"
+    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  @user.person_role == "system_administrator"
+    if @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
+      redirect_to :action => 'show' and return
     end
     @register.display_info
     get_user_info_from_userid
@@ -46,16 +59,23 @@ class RegistersController < ApplicationController
   end
 
   def merge
-
     load(params[:id])
-    errors = @register.merge_registers
-    if errors[0]  then
-      flash[:notice] = "Merge unsuccessful; #{errors[1]}"
+    unless @register.nil?
+      success = @register.merge_registers
+    else
+      success = Array.new
+      success[0] = false
+      success[1] = "Non-existent register"
+    end
+    if success[0]
+      flash[:notice] = 'The merge of the Register was successful'
+      redirect_to register_path(@register)
+      return
+    else
+      flash[:notice] = "Merge unsuccessful; #{success[1]}"
       render :action => 'show'
       return
     end
-    flash[:notice] = 'The merge of the Register was successful'
-    redirect_to register_path(@register)
   end
 
   def create
@@ -91,6 +111,10 @@ class RegistersController < ApplicationController
   def update
     load(params[:id])
     case
+    when @register.nil?
+      flash[:notice] = 'Trying to update a non-existent register'
+      redirect_to :back
+      return
     when params[:commit] == 'Submit'
       @register.update_attributes(params[:register])
       if @register.errors.any?  then
@@ -120,20 +144,24 @@ class RegistersController < ApplicationController
 
 
   def load(register_id)
-    @register = Register.find(register_id)
-    @register_name = RegisterType.display_name(@register.register_type)
-    session[:register_id] = register_id
-    session[:register_name] = @register_name
-    @church = @register.church
-    @church_name = @church.church_name
-    session[:church_name] = @church_name
-    session[:church_id] = @church.id
-    @place = @church.place
-    session[:place_id] = @place.id
-    @county =  session[:county]
-    @place_name = @place.place_name
-    session[:place_name] = @place_name
-    get_user_info_from_userid
+    @register = Register.id(register_id).first
+    if @register.nil?
+      go_back("register",register_id)
+    else
+      @register_name = RegisterType.display_name(@register.register_type)
+      session[:register_id] = register_id
+      session[:register_name] = @register_name
+      @church = @register.church
+      @church_name = @church.church_name
+      session[:church_name] = @church_name
+      session[:church_id] = @church.id
+      @place = @church.place
+      session[:place_id] = @place.id
+      @county =  session[:county]
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      get_user_info_from_userid
+    end
   end
 
   def destroy

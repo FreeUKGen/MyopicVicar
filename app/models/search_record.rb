@@ -74,6 +74,20 @@ class SearchRecord
     "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
     "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
   }
+    class << self
+     def marriages
+      where(:record_type => "ma")
+     end
+     def baptisms
+      where(:record_type => "ba")
+     end
+     def burials
+      where(:record_type => "bu")
+     end
+     def record_id(id)
+       where(:id => id)
+     end
+  end
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
