@@ -187,7 +187,7 @@ class UserMailer < ActionMailer::Base
 
   def website(contact,ccs)
     @contact = contact  
-    mail(:from => "freereg_contact@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:bcc => ccs, :subject => "Thank you for reporting a Website problem")
+    mail(:from => "freereg_contact@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
   end
 
   def contact_to_recipient(contact,person,ccs)
