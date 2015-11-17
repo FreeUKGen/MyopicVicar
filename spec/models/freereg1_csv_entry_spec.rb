@@ -307,6 +307,29 @@ describe Freereg1CsvEntry do
     
   end
 
+  it "should not yet find records by wildcard" do
+    filespec = FREEREG1_CSV_FILES[2]
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry = file_record.freereg1_csv_entries.first
+    search_record = entry.search_record
+    place = search_record.place
+    name = search_record.transcript_names.first
+
+    query_params = { :first_name => name["first_name"],
+                     :last_name => name["last_name"],
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+  end
+
+
 
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)

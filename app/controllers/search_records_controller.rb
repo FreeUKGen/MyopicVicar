@@ -3,6 +3,12 @@ class SearchRecordsController < ApplicationController
   skip_before_filter :require_login
   def show
     @page_number = params[:page_number].to_i
+    if params[:id].nil?
+      redirect_to new_search_query_path
+      return
+    end
+
+
     @search_record = SearchRecord.find(params[:id])
     @entry = @search_record.freereg1_csv_entry
     @individual = @search_record.freecen_individual
@@ -29,10 +35,12 @@ class SearchRecordsController < ApplicationController
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
     end
-    if params[:search_id].nil?
+    if params[:search_id].nil? || @search_record.nil?
+       flash[:notice] = "Prior records no longer exist"
       redirect_to new_search_query_path
       return
     end
+    @entry = @search_record.freereg1_csv_entry
     begin
       @search_query = SearchQuery.find(params[:search_id])
       @previous_record = @search_query.previous_record(params[:id])

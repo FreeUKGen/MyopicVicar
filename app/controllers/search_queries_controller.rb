@@ -7,25 +7,22 @@ class SearchQueriesController < ApplicationController
     redirect_to :action => :new
   end
 
-
   def new
     if @page = Refinery::Page.where(:slug => 'message').exists?
-       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
+      @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
     else
       @page = nil
     end
     if params[:search_id]
-      begin
-        old_query = SearchQuery.find(params[:search_id])
+      old_query = SearchQuery.search_id(params[:search_id]).first
+      if old_query.present?
         @search_query = SearchQuery.new(old_query.attributes)
-      rescue Mongoid::Errors::DocumentNotFound
-        log_possible_host_change
+      else
         @search_query = SearchQuery.new
       end
     else
       @search_query = SearchQuery.new
     end
-
   end
 
 
@@ -57,22 +54,26 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
-    @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
-    @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
-    if @search_query["chapman_codes"][1].eql?("YKS")
-      @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
-    end
-    if @search_query["chapman_codes"][1].eql?("CHI")
-      @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
-    end
-    @search_query.session_id = request.session_options[:id]
+    if params[:search_query].present? && params[:search_query][:region].blank?
+      @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+      @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
+      @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
+      if @search_query["chapman_codes"][1].eql?("YKS")
+        @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
+      end
+      if @search_query["chapman_codes"][1].eql?("CHI")
+        @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+      end
+      @search_query.session_id = request.session_options[:id]
 
-    if  @search_query.save
-      @search_results = @search_query.search
-      redirect_to search_query_path(@search_query)
+      if  @search_query.save
+        @search_results = @search_query.search
+        redirect_to search_query_path(@search_query)
+      else
+        render :new
+      end
     else
-     render :new
+      render :new
     end
   end
 
@@ -98,7 +99,7 @@ class SearchQueriesController < ApplicationController
     @end_day = @start_day
     @start_time = @start_day.beginning_of_day.utc
     @end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param).page(params[:page])
+    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param)
   end
 
   def report_for_session
@@ -107,7 +108,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page])
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
   end
 
 
@@ -133,21 +134,36 @@ class SearchQueriesController < ApplicationController
       old_query.order_asc = true
     end
     old_query.save!
-#    old_query.new_order(old_query)
+    #    old_query.new_order(old_query)
     redirect_to search_query_path(old_query)
   end
 
   def show
-    begin
-      @search_query = SearchQuery.find(params[:id])
-      @search_results =   @search_query.results
-    rescue Mongoid::Errors::DocumentNotFound
-      log_possible_host_change
-      redirect_to new_search_query_path
+    if params[:id].present?
+      @search_query = SearchQuery.where(:id => params[:id]).first
+    else
+      logger.warn("SEARCH_ERROR:nil parameter condition occurred")
+      go_back
+      return
     end
-
+    if @search_query.present?
+      @search_results =   @search_query.results
+    else
+      logger.warn("SEARCH_ERROR:search query no longer present")
+      go_back
+      return
+    end
+    if @search_results.nil? || @search_query.result_count.nil?
+      logger.warn("SEARCH_ERROR:search results no longer present")
+      go_back
+      return
+    end
   end
-
+  def go_back
+    flash[:notice] = "We found it impossible to complete your search as submitted, please rephrase"
+    redirect_to new_search_query_path
+    return
+  end
 
 
   def edit
@@ -155,13 +171,13 @@ class SearchQueriesController < ApplicationController
 
   end
   def update
-     @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+    @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
     @search_query.session_id = request.session_options[:id]
 
     if  @search_query.save
       redirect_to search_query_path(@search_query)
     else
-     render :edit
+      render :edit
     end
 
   end

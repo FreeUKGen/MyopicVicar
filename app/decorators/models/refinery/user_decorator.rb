@@ -35,6 +35,7 @@ Refinery::User.class_eval do
       userid.password = self.encrypted_password
       userid.save!
       userid.write_userid_file
+      
       UserMailer.notification_of_registration_completion(userid).deliver 
     end
   end

@@ -9,9 +9,9 @@ class PlaceCache
     county_response = {"" => []}
     
     if(inspect_churches)
-      places = Place.includes(:churches).where(:chapman_code => county).asc(:place_name)
+      places = Place.where(:chapman_code => county).asc(:place_name)
       places.each do |place|
-        if place.churches.count > 0 && place.data_present?
+        if place.churches.exists? && place.search_records.exists?
           county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
         end
       end
@@ -29,7 +29,6 @@ class PlaceCache
 
   def self.refresh_all(inspect_churches = true)
     destroy_all
-
     ChapmanCode::values.each do |chapman_code|
       refresh(inspect_churches, chapman_code)
     end

@@ -38,7 +38,7 @@ class UseridDetail
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
-  
+
   attr_protected
   #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
 
@@ -46,7 +46,7 @@ class UseridDetail
   has_many :freereg1_csv_files
   has_many :attic_files
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
-                        :skill_level,:transcription_agreement
+    :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
@@ -63,6 +63,9 @@ class UseridDetail
     end
     def userid(userid)
       where(:userid => userid)
+    end
+    def id(userid)
+      where(:id => userid)
     end
   end
 
@@ -217,16 +220,16 @@ class UseridDetail
     self.password_confirmation = password
   end
 
-  def self.get_userids_for_display(syndicate,page)
-   @userids  = UseridDetail.all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
-   @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
-   @userids
+  def self.get_userids_for_display(syndicate)
+    @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
   end
 
-  def self.get_active_userids_for_display(syndicate,page)
-     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1).page(page) if syndicate == 'all'
-     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1).page(page) unless syndicate == 'all'
-     @userids
+  def self.get_active_userids_for_display(syndicate)
+    @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
   end
 
   def self.get_userids_for_selection(syndicate)
@@ -243,7 +246,7 @@ class UseridDetail
     users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
     @userids = Array.new
-      @userids << ''
+    @userids << ''
     users.each do |user|
       @userids << user.email_address
     end
@@ -252,8 +255,8 @@ class UseridDetail
   def self.get_names_for_selection(syndicate)
     users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
-      @userids = Array.new
-      @userids << ''
+    @userids = Array.new
+    @userids << ''
     users.each do |user|
       name = ""
       name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
@@ -277,8 +280,16 @@ class UseridDetail
     count = 0
     self.freereg1_csv_files.each do |file|
       count = count + file.freereg1_csv_entries.count
-    end  
-    count  
+    end
+    count
+  end
+  def check_exists_in_refinery
+    refinery_user = Refinery::User.where(:username => self.userid).first
+    if refinery_user.nil?
+      return[false,"There is no refinery entry"] 
+    else
+      return[true] 
+    end
   end
 
 end #end class

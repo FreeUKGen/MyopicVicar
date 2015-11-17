@@ -996,7 +996,7 @@ end
       return true
     else
       #file is in the database
-      if (check_for_file.locked_by_transcriber == 'true' || check_for_file.locked_by_coordinator == 'true') then
+      if (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator) then
         #do not process if coordinator has locked
         p "#{@@header[:file_name]} has been locked by either yourself or the coordinator"
          

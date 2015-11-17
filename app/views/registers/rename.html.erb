@@ -1,19 +1,20 @@
 <% breadcrumb :rename_register,  @county, @place, @church, @register%>
 <p style="text-align: center">Changing the Register Type from <b><%= @register_type %></b> for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 </p>
- <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes. <b>Please wait for the process to complete.</b></p>
-
-  <% if flash[:notice] %>
- <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
- </div>
- <% end %>
+<p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes. <b>Please wait for the process to complete.</b></p>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<%if @register.nil? %>
+  <p> There is no register with that document number. If you are concerned please consult the system administrators</p>
+<% end%>
 <section class="island  island--light">
-<div class= "grid">
-<%= simple_form_for(@register) do |f| %>
-<%= f.input :register_type, :include_blank => false, :required => true, :collection => RegisterType::OPTIONS, :input_html => {:class => "text-input", :size => 2  }, :label => "Type of Register :"%>
- <%= f.button :submit,  'Rename' %>
- <% end %>
- </div>
- </section>
-  
+  <div class= "grid">
+    <%= simple_form_for(@register) do |f| %>
+    <%= f.input :register_type, :include_blank => false, :required => true, :collection => RegisterType::OPTIONS, :input_html => {:class => "text-input", :size => 2  }, :label => "Type of Register :"%>
+    <%= f.button :submit,  'Rename' %>
+    <% end %>
+  </div>
+</section>

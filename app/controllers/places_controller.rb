@@ -6,20 +6,14 @@ class PlacesController < ApplicationController
 
 
   def index
-    if params[:page]
-    session[:place_index_page] = params[:page]
-    end
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     if session[:active_place] == 'Active'
-      @places = Array.new
-      Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).each do |place|
-        @places << place if place.churches.exists?
-      end
-      @places = Kaminari.paginate_array(@places).page(params[:page])
+      @places = Place.where( :chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)
+     
     else
-      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(params[:page])
+       @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)     
     end
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -157,14 +151,17 @@ class PlacesController < ApplicationController
 
   def load(place_id)
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @place = Place.find(place_id)
-    session[:place_id] = place_id
-    @place_name = @place.place_name
-    session[:place_name] = @place_name
-    @county = ChapmanCode.has_key(@place.chapman_code)
-    session[:county] = @county
-    @first_name = session[:first_name]
-
+    @place = Place.id(place_id).first
+    if @place.nil?
+      go_back("place",place_id)
+    else
+      session[:place_id] = place_id
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      @county = ChapmanCode.has_key(@place.chapman_code)
+      session[:county] = @county
+      @first_name = session[:first_name]
+    end
   end
 
   def destroy

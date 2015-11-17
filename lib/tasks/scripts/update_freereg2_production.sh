@@ -17,7 +17,7 @@ fail() {
 trap fail ERR
 
 DATA_ROOT=/raid/freereg2
-FREEREG2=${DATA_ROOT}/users
+FREEREG2=${DATA_ROOT}/freereg1/users
 FREEREG2_DELTA=${DATA_ROOT}/log
 ROOT=/home/apache/hosts/freereg2/production
 LOG_DIR=${DATA_ROOT}/log
@@ -42,12 +42,16 @@ trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
 cd ${ROOT}
 trace "doing rsync of freereg1 data into freereg2"
-sudo -u webserv rsync  -avz  --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
+sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
 trace "update of the database2"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,process] --trace
 trace "delete of entries and records for removed batches"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
+trace "write the REG_users file for the image servers"
+sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
+trace "delete entries and records for removed files"
+sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
 trace "re enable searches"
 sudo /root/bin/searchctl.sh enable
 trace "finished"

@@ -9,9 +9,9 @@
       <% if controller.action_name == 'new' || controller.action_name == 'create'%>
           <%# This option is only for data manager%> 
           <%= f.input :country, :label => "Select the Country",:include_blank => false,
-          :required => true, :collection => @countries ,:input_html => {  :class => " simple_form_bgcolour simple_form_position",:size => 4 }%>
+          :required => true, :collection => @countries ,:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 4 }%>
            <%= f.input :county,:label => "Select the County",:include_blank => false,
-          :required => true, :collection => @counties,:input_html => {  :class => "simple_form_bgcolour simple_form_position",:size => 10 } %>
+          :required => true, :collection => @counties,:input_html => {  :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 10 } %>
           <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <% end %>
       <%= f.simple_fields_for :alternateplacenames do |alternate| %>

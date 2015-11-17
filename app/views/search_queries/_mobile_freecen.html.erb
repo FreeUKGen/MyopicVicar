@@ -1,4 +1,3 @@
-
   <div class="table-wrapper">
 
     <% @search_results.each do |search_record| %>
@@ -20,9 +19,9 @@
               <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
               <% if  name['type'] == 'primary' %>
               <% if i > 0 %>
-              <br/>
+                <br/>
               <% end%>
-              <%= "#{name['first_name']} #{name['last_name']} " %>
+                <%= "#{name['first_name']} #{name['last_name']} " %>
               <% end %>
               <% end%>
             </td>
@@ -68,18 +67,12 @@
         <td>
           <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
           <% if session[:viewed] %>
-          <i>
+            <i>
           <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
-          </i>
-          <% end %>
-        </td>
-      </tr>
-    </tbody >
-  </table>
-  
-  <% end %>
-  
-  
-</div>
-
-
+            </i>
+          <% end %></dd>
+      </dl>
+      <hr>
+    </div>
+  <% end%>
+</section>

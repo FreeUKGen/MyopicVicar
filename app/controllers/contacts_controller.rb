@@ -5,13 +5,17 @@ class ContactsController < InheritedResources::Base
     @contacts = Contact.all.order_by(contact_time: -1).page(params[:page])
   end
   def show
-    @contact = Contact.find(params[:id])
-    set_session_parameters_for_record(@contact) if @contact.entry_id.present?
+    @contact = Contact.id(params[:id]).first
+    if @contact.nil?
+      go_back("contact",params[:id])
+    else
+      set_session_parameters_for_record(@contact) if @contact.entry_id.present?
+    end
   end
 
   def new
     @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES 
+    @options = FreeregOptionsConstants::ISSUES
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
   end
@@ -69,10 +73,12 @@ class ContactsController < InheritedResources::Base
   def set_session_parameters_for_record(contact)
     file_id = Freereg1CsvEntry.find(contact.entry_id).freereg1_csv_file
     file = Freereg1CsvFile.find(file_id)
+    church = file.register.church
+    place = church.place
     session[:freereg1_csv_file_id] = file._id
     session[:freereg1_csv_file_name] = file.file_name
-    session[:place_name] = file.place
-    session[:church_name] = file.church_name
-    session[:county] = file.county
+    session[:place_name] = place.place_name
+    session[:church_name] = church.church_name
+    session[:county] = place.county
   end
 end

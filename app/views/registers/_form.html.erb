@@ -2,7 +2,7 @@
 <div class="grid">
 <%= simple_form_for @register do |f| %>
  <% if controller.action_name == 'new' %>
-<%= f.input :register_type, :include_blank => true, :required => true, :collection => RegisterType::OPTIONS, :input_html => { :size => 10, :class => "grid__item  one-quarter "}%>
+<%= f.input :register_type, :include_blank => true, :required => true, :collection => RegisterType::OPTIONS, :input_html => { :size => 10, :class => "grid__item  one-quarter overide_selection_field_width"}%>
   <% end %>
   <%= f.input :quality,:label => "Quality of the Register images",:input_html => { :size => 40 } %>
   <%= f.input :source, :label => "Source of the Register images",:input_html => { :size => 40 } %>
@@ -10,6 +10,7 @@
   <%= f.input :status,  :label => "Status or transcriptions", :hint =>"Underway/Finished",:input_html => { :size => 40 } %>
    <%= f.input :minimum_year_for_register, :label => "First permitted year",:input_html => { :size => 10 } %>
   <%= f.input :maximum_year_for_register, :label => "Last permitted year",:input_html => { :size => 10 } %>
+   <%= f.input :credit, :label => "Give credit to the following",:input_html => { :size => 40 } %>
   <%= f.input :register_notes, :label => "Notes about Register",as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes"}%>
   <%= f.input :last_amended,:label => "Last date when data for the place was updated", :hint =>"System generated ",:input_html => { :disabled => true, :size => 30  }%>
    <%= f.button :submit, 'Submit'   %>

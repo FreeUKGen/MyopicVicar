@@ -1,11 +1,11 @@
 <div class="site__header__nav  offcanvas__secondary">
   <div class="site__header__nav__inner">
-    <nav class="main-nav" role="navigation">
+    <nav class="main-nav" >
       <ul> 
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
         <li>
 	  <% if false %>
-          <%=link_to("Database Contents",main_app.freereg_contents_path)%>
+          <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
 	  <% end %>
         </li>
         <% else%>
@@ -40,13 +40,12 @@
         <li>
           <%= link_to "Donate", "/donate" %>
         </li>
-        <%if controller_name.nil?  || (controller_name == 'search_queries' && action_name == 'new' )  %>
         <li>
 	  <% if false %>
           <%= link_to "Members", refinery.login_path%>
 	  <% end %>
         </li>
-        <% end %>
+       
         <li>
 	  <% if false %>
           <%= link_to "Help", "/help" %>
@@ -57,6 +56,7 @@
     </nav>
     <nav class="social-links">
       <ul>
+        <li><a href="http://www.freeukgenealogy.org.uk/blog/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
         <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
         <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
         <li><a href="https://plus.google.com/u/0/101103546429519430016/about" target="_blank"><i class="icon__googleplus" aria-hidden="true"></i><span class="accessibility">Google+</span></a></li>

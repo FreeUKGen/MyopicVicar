@@ -1,6 +1,13 @@
 require 'chapman_code'
 namespace :foo do
 
+  desc "Correct the witness records"
+  task :correct_witness_records,[:limit,:range] => :environment do |t, args|
+  require 'correct_witness_records'
+    CorrectWitnessRecords.process(args.limit,args.range)
+  end
+
+
   desc "Initialize the Physical files collection"
   task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
   require 'load_physical_file_records'
@@ -73,6 +80,7 @@ namespace :foo do
     require "feedback"
     require "search_query"
     require "attic_file"
+    require "physical_file"
     puts "Freereg build indexes."
     Country.create_indexes()
     County.create_indexes()
@@ -89,6 +97,7 @@ namespace :foo do
     AtticFile.create_indexes()
     Freereg1CsvEntry.create_indexes()
     SearchRecord.create_indexes()
+    PhysicalFile.create_indexes()
     puts "Indexes complete."
   end
 
