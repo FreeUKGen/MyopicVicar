@@ -31,7 +31,7 @@
     <table class="table--bordered " style="background-color:#ffffff;">
       <thead>
 	<tr>
-	  <% FreecenDwelling.dwelling_display_labels.each do |lbl| %>
+	  <% FreecenDwelling.dwelling_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
 	  <td>
 	    <%= lbl %>
 	  </td>
@@ -41,7 +41,7 @@
       <tbody>
 	<tr>
 	  <%# @search_record.place.place_name --- moved to models/freecen_dwelling (see "*TODO*") %>
-	  <% @dwelling.dwelling_display_values.each do |field_val| %>
+	  <% @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
 	  <td>
 	    <%= field_val %>
 	  </td>
@@ -53,7 +53,7 @@
     <table class="table--bordered " style="background-color:#ffffff;">
       <thead>
 	<tr>
-	  <% FreecenIndividual.individual_display_labels.each do |lbl| %>
+	  <% FreecenIndividual.individual_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
 	  <td>
 	    <%= lbl %>
 	  </td>
@@ -63,7 +63,7 @@
       <tbody>
 	<% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
 	<tr>
-	  <% individual.individual_display_values.each do |field_val| %>
+	  <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
 	  <td>
 	    <%= field_val %>
 	  </td>
@@ -72,7 +72,7 @@
 	<% end %>
       </tbody>
     </table>
-    <% end %>
+  <% end %>
 
 
 
@@ -153,11 +153,11 @@
       </tr>
       <% @search_record.ordered_display_fields.each do |field| %>
       <% if @search_record[field] %>
-      <tr>
-        <td><%= field.gsub('_',' ').capitalize %></td>
-        <td><%= @search_record[field] %></td>
-      </tr>
-      <% end %>
+        <tr>
+          <td><%= field.gsub('_',' ').capitalize %></td>
+          <td><%= @search_record[field] %></td>
+        </tr>
+        <% end %>
       <% end %>
     </tbody>
   </table>
