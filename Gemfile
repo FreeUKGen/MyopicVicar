@@ -33,7 +33,7 @@ gem "gretel"
 gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
 gem 'bourbon', '~> 2.1'
-
+gem 'mail-logger'
 gem 'activeadmin-mongoid'
 gem 'devise'
 gem 'devise-encryptable'

@@ -2,7 +2,7 @@ class ContactsController < InheritedResources::Base
   require 'freereg_options_constants'
   skip_before_filter :require_login, only: [:new, :report_error, :create]
   def index
-    @contacts = Contact.all.order_by(contact_time: -1).page(params[:page])
+    @contacts = Contact.all.order_by(contact_time: -1)
   end
   def show
     @contact = Contact.id(params[:id]).first
