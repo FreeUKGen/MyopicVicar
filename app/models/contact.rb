@@ -84,7 +84,6 @@ class Contact
     "#{contact_type} (#{name})"
   end
 
-<<<<<<< HEAD
   def general_issue(contact)
     ccs = Array.new
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
@@ -95,8 +94,6 @@ class Contact
     end
   end
   
-=======
->>>>>>> master
   def data_manager_issue(contact)
     ccs = Array.new
     coordinator = contact.get_coordinator if contact.record_id.present?
@@ -115,7 +112,6 @@ class Contact
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
        ccs << person.email_address
     end
-<<<<<<< HEAD
     if MyopicVicar::Application.config.template_set == 'freereg'
       manager = UseridDetail.where(:userid => 'REGManager').first
     elsif MyopicVicar::Application.config.template_set == 'freecen'
@@ -128,11 +124,6 @@ class Contact
      UserMailer.contact_to_volunteer(contact,volunteer,ccs).deliver
     end
     UserMailer.contact_to_volunteer(contact,manager,ccs).deliver unless manager.nil?
-=======
-     manager = UseridDetail.where(:userid => 'REGManager').first
-     ccs << manager.email_address
-     UserMailer.volunteer(contact,ccs).deliver
->>>>>>> master
   end
 
   def get_coordinator
