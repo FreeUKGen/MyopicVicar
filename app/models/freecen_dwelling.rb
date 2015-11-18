@@ -22,11 +22,11 @@ class FreecenDwelling
     next_id = nil
     numDwellings = self.freecen1_vld_file.freecen_dwellings.length
     idx = self.dwelling_number
-    if idx > 0
+    if idx && idx > 0
       prev_dwel = self.freecen1_vld_file.freecen_dwellings.where(dwelling_number: idx - 1).only(:FreecenDwelling_id).first
       prev_id = prev_dwel[:_id] unless prev_dwel.nil?
     end
-    if idx < numDwellings - 1
+    if idx && idx < numDwellings - 1
       next_dwel = self.freecen1_vld_file.freecen_dwellings.where(dwelling_number: idx + 1).only(:FreecenDwelling_id).first
       next_id = next_dwel[:_id] unless next_dwel.nil?
     end
