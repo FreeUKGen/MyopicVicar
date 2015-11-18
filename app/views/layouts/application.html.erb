@@ -140,12 +140,15 @@
     $(document).ready(function() {
     $.cookiesDirective({
     privacyPolicyUri:  "/about/cookie-policy",
-    duration: 300,
     fontColor: '#FFFFFF', // font color for disclosure panel
     fontSize: '18px', // font size for disclosure panel
     backgroundColor: '#4A993E', // background color of disclosure panel
     backgroundOpacity: '95', // opacity of disclosure panel
-    linkColor: '#E02424' // link color in disclosure panel
+    linkColor: '#E02424', // link color in disclosure panel
+    <% if MyopicVicar::Application.config.template_set == 'freecen' %>
+      linkColor: '#ffff00', // link color in disclosure panel
+    <% end %>
+    duration: 300
     });
     });
     </script>
