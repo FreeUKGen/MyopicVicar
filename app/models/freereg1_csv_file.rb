@@ -18,7 +18,6 @@ class Freereg1CsvFile
   include Mongoid::Document
   include Mongoid::Timestamps
   require "#{Rails.root}/app/uploaders/csvfile_uploader"
-  require 'record_type'
   require 'name_role'
   require 'chapman_code'
   require 'userid_role'

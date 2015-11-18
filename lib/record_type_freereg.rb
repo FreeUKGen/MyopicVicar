@@ -13,7 +13,6 @@
 # limitations under the License.
 # 
 module RecordType
-
   BURIAL='bu'
   MARRIAGE='ma'
   BAPTISM='ba'
@@ -30,5 +29,4 @@ module RecordType
     # binding.pry
     OPTIONS.key(value)
   end
-
 end

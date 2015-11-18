@@ -20,7 +20,6 @@ class ApplicationController < ActionController::Base
   before_filter :require_cookie_directive
   before_filter :load_last_stat
 
-  require 'record_type'
   require 'name_role'
   require 'chapman_code'
   require 'userid_role'

@@ -100,4 +100,9 @@ MyopicVicar::Application.configure do
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
+  
+  if true # overwrite the module loaded in applicaiion.rb
+    require 'record_type_freereg'
+  end
+
 end
