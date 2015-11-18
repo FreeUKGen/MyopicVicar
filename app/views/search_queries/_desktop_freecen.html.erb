@@ -12,7 +12,7 @@
         </colgroup>
         <thead  >
           <th>
-            <%= link_to('Individuals', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
+            <%= link_to('Individual', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
             <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
           </th>
           <th>
@@ -25,7 +25,7 @@
           </th>
           <th>
             <%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
-            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Place in which event was recorded. Click heading to sort by the location</span></a>
           </th>
 
           <th>Detail<br>
@@ -48,6 +48,7 @@
               <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%>
             </td>
             <td>
+	      <%# search_record.place.county %>
               <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
             </td>
 			<td>
