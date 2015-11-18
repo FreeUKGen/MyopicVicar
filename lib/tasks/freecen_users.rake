@@ -86,17 +86,20 @@ task :initialize_freecen_counties_and_coords => [:environment] do
     County.all.each do |cty|
       cty.delete
     end
-    #puts "emptying countries collection"
-    #Country.all.each do |ctry|
-    #  ctry.delete
-    #end
+    puts "emptying countries collection"
+    Country.all.each do |ctry|
+      ctry.delete
+    end
     puts "build counties from lib/chapman_code.rb, setting coord to CENManager"
     ChapmanCode::CODES.each do |cntry,codes|
       puts "country=#{cntry}"
+      country_counties = []
       codes.each do |cname,ccode|
         puts "  county=#{cname} (#{ccode})"
         County.create(chapman_code: ccode, county_coordinator: "CENManager", county_coordinator_lower_case: "cenmanager", county_description: cname, county_notes: "")
+	country_counties << ccode
       end
+      Country.create(country_code: cntry, country_coordinator: "CENManager", counties_included: country_counties, country_coordinator_lower_case: "cenmanager")
     end
   else
     puts "Probably a wise choice."
@@ -120,7 +123,7 @@ task :save_freecen_counties, [:out_json] => :environment do |t, args|
 end
 
 task :load_freecen_counties, [:in_json] => :environment do |t, args|
-  if !args[:in_json].nil? && && File.exists?(args[:in_json])
+  if !args[:in_json].nil? && File.exists?(args[:in_json])
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
     puts "emptying the counties collection"

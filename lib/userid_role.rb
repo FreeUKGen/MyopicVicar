@@ -137,6 +137,9 @@ module UseridRole
       if opts.include?('Physical Files')
         opts.delete("Physical Files")
       end
+      if opts.include?('Manage Counties')
+        opts.delete("Manage Counties")
+      end
     end
     self.send(:remove_const, :FILE_MANAGEMENT_OPTIONS)
     FILE_MANAGEMENT_OPTIONS = []

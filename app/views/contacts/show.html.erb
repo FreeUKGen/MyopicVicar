@@ -20,8 +20,15 @@
           <th  class="caps">Value</th>
         </tr>
         <tr>
-          <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
+          <td>Type of Contact: </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
         </tr>
+	<tr>
+	  <td>County to Contact:</td><td class="weight--semibold">
+	    <% if @contact.contact_county %>
+	      <%= @contact.contact_county %>
+	    <% else %>
+	      (no county specified)
+	    <% end %>
         <tr>
           <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
         </tr>
