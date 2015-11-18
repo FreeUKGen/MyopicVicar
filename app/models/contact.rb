@@ -17,6 +17,7 @@ class Contact
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
+  field :contact_county, type: String
   validates_presence_of :name, :email_address
   validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
 

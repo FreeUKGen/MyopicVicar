@@ -26,6 +26,9 @@ class ContactsController < InheritedResources::Base
       session.delete(:flash)
       @contact.session_data = session
       @contact.previous_page_url= request.env['HTTP_REFERER']
+      if @contact.contact_county == 'nil'
+        @contact.contact_county = nil
+      end
       if @contact.save
         flash[:notice] = "Thank you for contacting us!"
         if @contact.query
