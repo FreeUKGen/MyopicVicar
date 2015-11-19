@@ -33,12 +33,12 @@ class UserMailer < ActionMailer::Base
         end
       end
       if emails.length == 1
-         mail(:from => "freereg_processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+         mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
       elsif emails.length == 2
-        mail(:from => "freereg_processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:from => "freereg_processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}") 
+        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}") 
       end 
     end
   end
@@ -178,16 +178,20 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     bcc = UseridDetail.where(:userid => 'REGManager').limit(1).first
     ccs << bcc.email_address
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us. Contact reference #{@contact.identifier}")
+  end
+   def copy_to_contact_person(contact)
+    @contact = contact
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for contacting us. Contact reference #{@contact.identifier}")
   end
   def volunteer(contact,ccs)
     @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for volunteering")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for volunteering. Contact reference #{@contact.identifier}")
   end
 
   def website(contact,ccs)
     @contact = contact  
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem. Contact reference #{@contact.identifier}")
   end
 
   def contact_to_recipient(contact,person,ccs)
