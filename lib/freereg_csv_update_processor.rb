@@ -814,6 +814,8 @@ class FreeregCsvUpdateProcessor
                          @freereg1_csv_file = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid],
                                                                     :county => @@header[:county], :place => @@header[:place], :church_name => @@header[:church_name], :register_type => @@header[:register_type],
                                                                     :record_type => @@header[:record_type]).first
+                         @@logger.warn("UPLOAD_DIAGNOSTIC")
+                         @@logger.warn(@freereg1_csv_file)
                          if @freereg1_csv_file.nil?
                            @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                            p "No records in the original batch for this location"
@@ -919,14 +921,12 @@ class FreeregCsvUpdateProcessor
                        end
                      end
                      @locations.each do |location|
-                       loc = Freereg1CsvFile.id(location).first
-                       if loc.present?
-                         puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-                         @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
-                         loc.destroy 
-                         sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                         sleep(sleep_time)
-                      end
+                       loc = Freereg1CsvFile.find(location)
+                       puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
+                       @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
+                       loc.destroy
+                        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+                       sleep(sleep_time)
                      end
                    end
 
@@ -935,7 +935,9 @@ class FreeregCsvUpdateProcessor
                        entry = Freereg1CsvEntry.new(data_record)
                        new_digest = entry.cal_digest
                        record_exists = nil
-                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @records.empty?
+                      @@logger.warn("UPLOAD_DIAGNOSTIC: #{@freereg1_csv_file.id} #{new_digest}")
+                      @@logger.warn(entry.inspect)
+                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file.id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @records.empty?
 
                        if record_exists.nil?
                          success = create_db_record_for_entry(data_record)
@@ -1225,6 +1227,7 @@ class FreeregCsvUpdateProcessor
 
                          def self.process(range,type,delta)
                            #this is the basic processing
+                           @@logger = ActiveRecord::Base.logger
                            recreate = 'add'
                            @@create_search_records = false
                            @@create_search_records = true if type == "search_records" || type == "create_search_records"
