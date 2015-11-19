@@ -17,7 +17,7 @@ class Freereg1CsvEntry
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'freereg_validations'
-
+  require 'record_type'
   require 'freereg_options_constants'
   require 'multiple_witness'
 

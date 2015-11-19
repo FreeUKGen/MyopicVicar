@@ -7,7 +7,7 @@ class FreeregCsvProcessor
   require "unicode"
   require 'chapman_code'
   require "#{Rails.root}/app/models/freereg1_csv_file"
-  require "record_type_freereg"
+  require "record_type"
   require 'digest/md5'
   require 'get_files'
   require "#{Rails.root}/app/models/userid_detail"

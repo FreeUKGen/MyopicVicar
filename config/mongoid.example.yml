@@ -34,10 +34,11 @@ development:
     default:
       # Defines the name of the default database that Mongoid can connect to.
       # (required).
-      database:
+      database: myopic_vicar_development
       # Provides the hosts the default session can connect to. Must be an array
       # of host:port pairs. (required)
-      hosts:
+      hosts: 
+        - localhost:27017
       options:
         # Change whether the session persists in safe mode by default.
         # (default: false)
@@ -109,12 +110,17 @@ development:
     # use_utc: false
 test:
   sessions:
+    ############################
+    # Used by spec tests
+    ############################    
     default:
-      database:
-      hosts:
+      database: myopic_vicar_test
+      hosts: 
+        - localhost:27017
       options:
-        consistency:
-        # In the test environment we lower the retries and retry interval to
-        # low amounts for fast failures.
-        max_retries:
-        retry_interval:
+    local_writable:
+      database: writable_development
+      hosts:
+        - localhost:27017
+      options:
+  options:

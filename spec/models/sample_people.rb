@@ -1,3 +1,4 @@
+require 'record_type'
 module SamplePeople
   
   def self.primary_name(person)

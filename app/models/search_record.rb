@@ -1,5 +1,5 @@
 require 'name_role'
-
+require 'record_type'
 require 'emendor'
 require 'freereg1_translator'
 require 'date_parser'
