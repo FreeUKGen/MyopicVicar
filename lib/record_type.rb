@@ -18,17 +18,37 @@ module RecordType
   MARRIAGE='ma'
   BAPTISM='ba'
 
-  OPTIONS = {
+
+  def self.all_types
+    if true #MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+      ALL_FREEREG_TYPES
+    else
+      []
+    end
+  end
+  
+  def self.options
+    if true #MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+      FREEREG_OPTIONS
+    else
+      []
+    end
+  end
+  
+  def self.display_name(value)
+    # binding.pry
+    self.options.key(value)
+  end
+
+  ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM]
+
+private
+  FREEREG_OPTIONS = {
     'Baptism' => BAPTISM,
     'Marriage' => MARRIAGE,
     'Burial' => BURIAL
   }    
   
-  ALL_TYPES = [BURIAL, MARRIAGE, BAPTISM]
-  
-  def self.display_name(value)
-    # binding.pry
-    OPTIONS.key(value)
-  end
+
 
 end
