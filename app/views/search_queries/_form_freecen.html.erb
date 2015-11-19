@@ -96,6 +96,22 @@
 			</select>
 		</li>
 		<% end %>
+		<li class="grid__item  one-fifth  palm-one-whole optional" id="search_query_record_type_input">
+			<label class=" label" for="search_query_record_type">
+				Census year
+				<a href="#" class="top_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small>
+			</label>
+			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]"  tabindex="6">
+				<option value=""></option>
+				<% RecordType.options.each_pair do |name, value| %>
+			      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
+			    		<option value="<%= value %>" selected="selected"> <%= name %></option>
+                  <%else%>
+							<option value="<%= value %>"><%= name %></option>
+                  <% end %>
+			    <% end %>
+			</select>
+		</li>
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<%= f.label :fuzzy do %>
 				<%= f.check_box :fuzzy, { :tabindex => 9 }, "true", "false" %>

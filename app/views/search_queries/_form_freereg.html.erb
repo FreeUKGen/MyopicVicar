@@ -102,7 +102,7 @@
 			</label>
 			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]"  tabindex="6">
 				<option value=""></option>
-				<% RecordType::OPTIONS.each_pair do |name, value| %>
+				<% RecordType.options.each_pair do |name, value| %>
 		      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
 		    		<option value="<%= value %>" selected="selected"> <%= name %></option>
 		    	<%else%>
