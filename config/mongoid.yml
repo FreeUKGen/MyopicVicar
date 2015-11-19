@@ -1,14 +1,43 @@
 development:
   # Configure available database sessions. (required)
   sessions:
-    # Defines the default session. (required)
+    ################################
+    # F2-specific notes:
+    ################################
+    # F2 uses two different Mongoid connections to MongoDB in order to
+    # support scaling the system through spinning up several  search-only 
+    # app servers which run against replicas of the F2 data, while
+    # administrative/coordinator/transcriber functions run against the
+    # main F2 database.  
+    #
+    # This means that two kinds of database configurations need to be
+    # supported: search-only and admin
+    #
+    # Because searches write to the search_queries collection in order
+    # to track performance, support pagination, etc. they need to connect
+    # to a local, non-replicated mongodb instance to store that data, in
+    # addition to connecting to a local mongodb instance that is part of
+    # the replica set for R/O searche logic.  
+    # 
+    # By contrast, the admin features should write directly to the primary
+    # MongoDB server connected to the replica set.  To reduce confusion,
+    # they should also have a local MongoDB instance for their search_queries
+    # collection
+    #
+    #####################
+    # Default Connection
+    #####################
+    # This should be the MongoDB instance connected to the replica set, for
+    # shared F2 data.  This  which will be the PRIMARY instance
+    # instance on admin servers, and the replicated copy for search-only
+    # servers
     default:
       # Defines the name of the default database that Mongoid can connect to.
       # (required).
-      database: myopic_vicar_development_kirk
+      database: myopic_vicar_development
       # Provides the hosts the default session can connect to. Must be an array
       # of host:port pairs. (required)
-      hosts:
+      hosts: 
         - localhost:27017
       options:
         # Change whether the session persists in safe mode by default.
@@ -27,6 +56,19 @@ development:
         # The time in seconds that Moped should wait before retrying an
         # operation on failure. (default: 1)
         # retry_interval: 1
+    ############################
+    # Local Writable Connection
+    ############################
+    # local_writable This should be the local MongoDB, writable instance, which 
+    # only be used for persisting search query information.  This connection name
+    # should match that used in app/models/search_query.rb, line 3, which specifies
+    #   store_in session: "local_writable"
+    # thus setting up a collection-specific database connection for the app to use.
+    local_writable:
+      database: writable_development
+      hosts:
+        - localhost:27017
+      options:
   # Configure Mongoid specific options. (optional)
   options:
     # Configuration for whether or not to allow access to fields that do
@@ -34,7 +76,7 @@ development:
     # allow_dynamic_fields: true
 
     # Enable the identity map, needed for eager loading. (default: false)
-     identity_map_enabled: false
+     identity_map_enabled:
 
     # Includes the root model name in json serialization. (default: false)
     # include_root_in_json: false
@@ -69,12 +111,11 @@ development:
 test:
   sessions:
     default:
-      database: myopic_vicar_test
+      database:
       hosts:
-        - localhost:27017
       options:
-        consistency: :strong
+        consistency:
         # In the test environment we lower the retries and retry interval to
         # low amounts for fast failures.
-        max_retries: 1
-        retry_interval: 0
+        max_retries:
+        retry_interval:
