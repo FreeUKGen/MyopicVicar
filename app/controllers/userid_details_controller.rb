@@ -41,7 +41,7 @@ class UseridDetailsController < ApplicationController
     end
     session[:return_to] = request.fullpath
     get_user_info_from_userid
-    @userids = UseridDetail.get_userids_for_display('all',params[:page])
+    @userids = UseridDetail.get_userids_for_display('all')
     render "index"
   end
 
@@ -154,7 +154,7 @@ class UseridDetailsController < ApplicationController
     @userid = @user
     case
     when params[:option] == 'Browse userids'
-      @userids = UseridDetail.get_userids_for_display('all',params[:page])
+      @userids = UseridDetail.get_userids_for_display('all')
       @syndicate = 'all'
       render "index"
       return
