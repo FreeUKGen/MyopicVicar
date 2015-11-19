@@ -85,16 +85,6 @@ class Contact
     "#{contact_type} (#{name})"
   end
 
-  def general_issue(contact)
-    ccs = Array.new
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      ccs << person.person_forename
-    end
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      UserMailer.contact_to_freexxx_manager(contact,person,ccs).deliver
-    end
-  end
-  
   def data_manager_issue(contact)
     ccs = Array.new
     coordinator = contact.get_coordinator if contact.record_id.present?
