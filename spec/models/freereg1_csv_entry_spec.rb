@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'record_type'
 require 'freereg_csv_processor'
 require 'pp'
 
@@ -23,7 +24,6 @@ describe Freereg1CsvEntry do
 
 
   before(:each) do
-    binding.pry
     FreeregCsvProcessor::delete_all
     Place.delete_all
     Church.delete_all
@@ -107,7 +107,6 @@ describe Freereg1CsvEntry do
   end
 
   it "should create search records for burials" do
-    binding.pry
     Freereg1CsvEntry.count.should eq(0)
     FREEREG1_CSV_FILES.each_with_index do |file, index|
       next unless file[:type] == RecordType::BURIAL

@@ -96,9 +96,4 @@ module MyopicVicar
       end
     end # end config.before_configuration
   end
-
-  # load this here and over-write it in the environment-specific initializers  
-  require 'record_type_freereg'
-
 end
-
