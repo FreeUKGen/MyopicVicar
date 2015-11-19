@@ -172,6 +172,8 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mail-logger (0.0.4)
+      mail
     meta_search (1.1.3)
       actionpack (~> 3.1)
       activerecord (~> 3.1)
@@ -180,6 +182,10 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.0)
+    mobileesp_converted (0.2.3)
+    mobvious (0.3.2)
+      mobileesp_converted (~> 0.2.0)
+      rack (>= 1.1.0)
     mongoid (3.1.6)
       activemodel (~> 3.2)
       moped (~> 1.4)
@@ -299,7 +305,6 @@ GEM
       refinerycms-core (= 2.1.2)
     responders (1.0.0)
       railties (>= 3.2, < 5)
-    rmagick (2.13.2)
     routing-filter (0.3.1)
       actionpack
     rspec-core (2.14.8)
@@ -378,7 +383,9 @@ DEPENDENCIES
   kaminari
   libv8 (~> 3.16.14.7)
   listen
+  mail-logger
   meta_search (>= 1.1.0.pre)
+  mobvious
   mongoid (~> 3.1)
   moped (~> 1)
   mysql2 (= 0.3.12)
@@ -394,7 +401,6 @@ DEPENDENCIES
   refinerycms (~> 2.1.1)
   refinerycms-authentication (~> 2.1.1)
   refinerycms-county_pages!
-  rmagick (= 2.13.2)
   rspec-rails
   rubyzip (~> 0.9.9)
   sass-rails (~> 3.2.3)
