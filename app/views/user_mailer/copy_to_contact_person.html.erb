@@ -1,0 +1,21 @@
+<p> Dear <%= @contact.name %>;</p>
+<p>Thank you for your correspondence at <%= @contact.contact_time.strftime("%H:%M on %F") %>. Please quote this time and date in any subsequent communication with us on the subject.</p> It has been forwarded to a member of the team for action. 
+<p>The following is the information you submitted.
+</p>
+<p>
+<b>Type:</b>
+<%= @contact.contact_type %>
+</p>
+<p>
+<b>Body:</b>
+<%= @contact.body %>
+</p>
+<p>
+<b>Screenshot:</b>
+<% if @contact.screenshot_url %>
+A screenshot was attached
+<% else %>
+No screenshot attached.
+<% end %>
+</p>
+<p> The FreeREG Team</p>
