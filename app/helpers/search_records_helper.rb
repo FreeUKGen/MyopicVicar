@@ -1,3 +1,5 @@
+require 'active_support/core_ext/integer/inflections'
+
 module SearchRecordsHelper
 
   def dwelling_offset_message(offset)
