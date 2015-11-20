@@ -29,7 +29,7 @@ describe Freecen1VldFile do
   it "should transform a dwelling with search records" do
     dwelling = FreecenDwelling.first
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_dwelling(dwelling, 'DUR')
+    translator.translate_dwelling(dwelling, 'DUR', dwelling.freecen1_vld_file.full_year)
     SearchRecord.count.should eq dwelling.freecen_individuals.count     
   end
 
@@ -37,7 +37,7 @@ describe Freecen1VldFile do
     [Freecen::Uninhabited::BUILDING, Freecen::Uninhabited::FAMILY_AWAY_VISITING, Freecen::Uninhabited::UNOCCUPIED].each do |flag|
       unoccupied_dwelling = FreecenDwelling.where(:uninhabited_flag => flag).first
       translator = Freecen::Freecen1VldTranslator.new
-      translator.translate_dwelling(unoccupied_dwelling, 'DUR')
+      translator.translate_dwelling(unoccupied_dwelling, 'DUR', unoccupied_dwelling.freecen1_vld_file.full_year)
       SearchRecord.count.should eq 0
     end    
   end
@@ -45,7 +45,7 @@ describe Freecen1VldFile do
   it "should find records by name" do
     dwelling = FreecenDwelling.last
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_dwelling(dwelling, 'DUR')
+    translator.translate_dwelling(dwelling, 'DUR', dwelling.freecen1_vld_file.full_year)
 
     dwelling.freecen_individuals.each do |individual|
       query_params = { :first_name => individual.forenames,
@@ -62,7 +62,7 @@ describe Freecen1VldFile do
   it "should find records by name and county" do
     dwelling = FreecenDwelling.last
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_dwelling(dwelling, 'DUR')
+    translator.translate_dwelling(dwelling, 'DUR', dwelling.freecen1_vld_file.full_year)
 
     dwelling.freecen_individuals.each do |individual|
       query_params = { :first_name => individual.forenames,
