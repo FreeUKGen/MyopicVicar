@@ -88,7 +88,7 @@ class CsvfilesController < ApplicationController
       if params[:commit] == 'Process'
         @csvfile = Csvfile.where(_id: params[:id]).first
         if @csvfile.nil?
-          flash[:notice] = "There was no file to process; did you perhaps double click or reload the process page?"
+          flash[:notice] = "There was no file to process; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
           redirect_to action: :new
           return
         end
@@ -99,6 +99,12 @@ class CsvfilesController < ApplicationController
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when params[:csvfile][:process]  == "Process tonight"
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+          if batch.nil?
+            flash[:notice] = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
+            logger.warn("CSV_FAILURE: No file for #{session[:userid]}")
+            redirect_to action: :new
+            return
+          end
           batch.add_file("base")
           flash[:notice] =  "The file has been placed in the queue for overnight processing"
         when params[:csvfile][:process]  == "As soon as you can"
