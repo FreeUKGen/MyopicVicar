@@ -814,8 +814,7 @@ class FreeregCsvUpdateProcessor
                          @freereg1_csv_file = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid],
                                                                     :county => @@header[:county], :place => @@header[:place], :church_name => @@header[:church_name], :register_type => @@header[:register_type],
                                                                     :record_type => @@header[:record_type]).first
-                         @@logger.warn("UPLOAD_DIAGNOSTIC")
-                         @@logger.warn(@freereg1_csv_file)
+                         
                          if @freereg1_csv_file.nil?
                            @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                            p "No records in the original batch for this location"
@@ -935,10 +934,7 @@ class FreeregCsvUpdateProcessor
                        entry = Freereg1CsvEntry.new(data_record)
                        new_digest = entry.cal_digest
                        record_exists = nil
-                      @@logger.warn("UPLOAD_DIAGNOSTIC: #{@freereg1_csv_file.id} #{new_digest}")
-                      @@logger.warn(entry.inspect)
-                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file.id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @records.empty?
-
+                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file.id, :record_digest => new_digest).only(:id).first unless @records.empty?
                        if record_exists.nil?
                          success = create_db_record_for_entry(data_record)
                          sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
