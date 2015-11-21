@@ -14,6 +14,8 @@ class FreeregCsvUpdateProcessor
   require "#{Rails.root}/app/models/userid_detail"
   require 'freereg_validations'
   CONTAINS_PERIOD = /\./
+  HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
+  BOM = /ï»¿/
   DATEMAX = 2020
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
@@ -315,13 +317,18 @@ class FreeregCsvUpdateProcessor
              #get a line of data
              def self.get_line_of_data
                @csvdata = @@array_of_data_lines[@@number_of_line]
+               #get rid of any BOM
                raise FreeREGEnd,  "End of file" if @csvdata.nil?
+               p "striping BOM" if @@number_of_line == 0
+               p  @csvdata[0].inspect if @@number_of_line == 0
+               @csvdata[0].gsub!(/ï»¿/, '')
+               p  @csvdata[0].inspect if @@number_of_line == 0
                @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
                raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
                @first_character = "?"
                @first_character = @csvdata[0].slice(0) unless  @csvdata[0].nil?
                @line_type = "Data"
-               @line_type = "Header" if (@first_character == '+' || @first_character ==  '#')
+               @line_type = "Header" if (@first_character == '+' || @first_character ==  '#') || @csvdata[0] =~ HEADER_DETECTION
                number_of_fields = @csvdata.length
                number_empty = 1
                @csvdata.each do |l|
@@ -335,7 +342,7 @@ class FreeregCsvUpdateProcessor
              #process the header line 1
              # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
              def self.process_header_line_one
-               raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
+               raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] =~ HEADER_DETECTION) 
                # BWB: temporarily commenting out to test db interface
                #   address = EmailVeracity::Address.new(@csvdata[1])
                #   raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
