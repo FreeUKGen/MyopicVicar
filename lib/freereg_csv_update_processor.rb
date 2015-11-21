@@ -1161,7 +1161,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                            @@message_file.puts message
                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
                            return false
                          when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                            #file in database is same or more recent than we we are attempting to reload so do not process
@@ -1169,7 +1170,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                             @@message_file.puts message
                             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
                            return false
                          when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
@@ -1177,7 +1179,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                             @@message_file.puts message
                             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
                             return false
                           else
                                @@update = true

@@ -26,23 +26,23 @@ class CsvfilesController < ApplicationController
     @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
     @csvfile.file_name = @csvfile.csvfile.identifier
     if params[:commit] == "Replace"
-      #on a replace make sure its the same file_name
-      if session[:file_name] == @csvfile.file_name
-        #set up to allow the file save to occur in check_for_existing_place
-        batch = PhysicalFile.where(userid: @csvfile.userid, file_name: @csvfile.file_name).first
-        unless batch.nil?
-          batch.update_attributes(:base => true,:file_processed => false)
-        else
-          batch = PhysicalFile.new(:base => true,:file_processed => false, :userid =>@csvfile.userid , :file_name => @csvfile.file_name)
-          batch.save
-        end
-      else
+      name_ok = @csvfile.check_name(session[:file_name])
+      if !name_ok
         flash[:notice] = 'The file you are replacing must have the same name'
         session.delete(:file_name)
         redirect_to :back
         return
+      else
+        setup = @csvfile.setup_batch
+        if !setup[0]
+          flash[:notice] = 
+          session.delete(:file_name)
+          redirect_to :back
+          return
+        else
+          batch = setup[1]   
+        end
       end
-      session.delete(:file_name)
     end
     #lets check for existing file, save if required
     proceed = @csvfile.check_for_existing_unprocessed_file
@@ -102,12 +102,21 @@ class CsvfilesController < ApplicationController
           if batch.nil?
             flash[:notice] = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
             logger.warn("CSV_FAILURE: No file for #{session[:userid]}")
+            @csvfile.delete
             redirect_to action: :new
             return
           end
           batch.add_file("base")
           flash[:notice] =  "The file has been placed in the queue for overnight processing"
         when params[:csvfile][:process]  == "As soon as you can"
+          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
+          if batch.present?
+            flash[:notice] = "Your file is currently waiting to be processed. It cannot be processed this way now"
+            logger.warn("CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
+            @csvfile.delete
+            redirect_to action: :new
+            return
+          end
           pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
         else

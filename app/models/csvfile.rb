@@ -10,9 +10,29 @@ class Csvfile < CarrierWave::Uploader::Base
   mount_uploader :csvfile, CsvfileUploader
 
   def csvfile_already_exists
-    errors.add(:file_name, "A file of that name already exists. You cannot upload a file with the same name. You must replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.exists?
+    errors.add(:file_name, "A processed file of that name already exists. You cannot upload a file with the same name. You must replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.exists?
     errors.add(:file_name,  "The file you are replacing is locked.") if Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists? ||
     Freereg1CsvFile.userid(self.userid).file_name(self.file_name).coordinator_lock.exists?
+  end
+  def check_name(name)
+    decision = false
+    decision = true if self.file_name == name
+    decision
+  end
+  def setup_batch
+    ok = true
+    batch_entries = PhysicalFile.where(userid: self.userid, file_name: self.file_name).count
+    if batch_entries == 0
+      batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
+      batch.save     
+    elsif batch_entries == 1
+     batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
+     batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+    else
+     batch = "Too many batch entries. Have your coordinator contact system administration with this message, date and time"
+     ok = false
+    end
+    return[ok,batch]
   end
   
   def create_batch_unless_exists
@@ -31,7 +51,9 @@ class Csvfile < CarrierWave::Uploader::Base
   def check_for_existing_unprocessed_file
     process = false
     batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true,:file_processed => false).first
-    unless batch.nil?
+    if batch.nil?
+      process = true
+    else
       file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
       if File.file?(file_location)
         newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
@@ -47,12 +69,9 @@ class Csvfile < CarrierWave::Uploader::Base
           attic_file.save
         end
       else
-        p "file does not exist"
+        p "There is no file to put into the attic"
       end
-      batch.destroy
-      process = true
-    else
-      process = true
+      process = true      
     end
     process
   end

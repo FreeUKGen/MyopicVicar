@@ -64,6 +64,10 @@ class PhysicalFile
       batch = PhysicalFile.userid(id).file_name(file).first
       batch.update_attributes(:waiting_to_be_processed => false, :waiting_date => nil) if batch.present?  
      end
+     def add_processed_flag(id,file)
+      batch = PhysicalFile.userid(id).file_name(file).first
+      batch.update_attributes(:file_processed => true) if batch.present?  
+     end
   end
   
   def add_file(batch)
