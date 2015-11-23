@@ -288,9 +288,7 @@ class Freereg1CsvEntry
   end
 
   def self.update_parameters(params,entry)
-
     #clean up old null entries
-
     params = params.delete_if{|k,v| v == ''}
     return params
   end
@@ -303,6 +301,41 @@ class Freereg1CsvEntry
     self.search_record = nil
     record.destroy unless record.nil?
     self.transform_search_record
+  end
+  def same_location(record,file)
+    success = true
+    register = file.register
+    if register.present?
+      #looks like we have an existing file
+      church = register.church
+      if church.present?
+        place = church.place
+        if place.present?
+          #jackpot
+          type = register.register_type
+          church_name = church.church_name
+          place_name = place.place_name
+        else
+          #no place
+          success = false
+        end
+      else
+       #ops no church
+       success = false
+      end
+    else
+     #no register
+     success = false
+    end
+    if success
+      success = false
+      success = true if self.register_type == type && self.church_name == church_name && self.place
+      #can continue with check
+    end
+    success
+  end
+  def update_location(record,file)
+    self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])  
   end
 
 

@@ -257,7 +257,7 @@ class Freereg1CsvFile
         attic_file.save
       end
     else
-      p "file does not exist"
+      p "Nothing to save to attic"
     end
   end
 
