@@ -35,7 +35,7 @@ class CsvfilesController < ApplicationController
       else
         setup = @csvfile.setup_batch
         if !setup[0]
-          flash[:notice] = 
+          flash[:notice] = setup[1]
           session.delete(:file_name)
           redirect_to :back
           return
@@ -45,9 +45,9 @@ class CsvfilesController < ApplicationController
       end
     end
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_unprocessed_file
+    proceed = @csvfile.check_for_existing_processed_file
     @csvfile.save if proceed
-    if @csvfile.errors.any? || !proceed
+    if @csvfile.errors.any? 
       flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
       get_userids_and_transcribers
       redirect_to :back

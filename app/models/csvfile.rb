@@ -48,12 +48,10 @@ class Csvfile < CarrierWave::Uploader::Base
     unit = 0.001
     processing_time = (size.to_i*unit).to_i
   end
-  def check_for_existing_unprocessed_file
-    process = false
-    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true,:file_processed => false).first
-    if batch.nil?
-      process = true
-    else
+  def check_for_existing_file
+    process = true
+    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true).first
+    if batch.present?  
       file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
       if File.file?(file_location)
         newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
@@ -70,8 +68,7 @@ class Csvfile < CarrierWave::Uploader::Base
         end
       else
         p "There is no file to put into the attic"
-      end
-      process = true      
+      end     
     end
     process
   end
