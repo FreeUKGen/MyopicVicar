@@ -24,7 +24,7 @@
         return
       end
       unless  current_refinery_user.userid_detail.active
-      flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
+      flash[:notice] = "You are not active, if you believe this to be a mistake please contact your coordinator"
        current_refinery_user.delete unless current_refinery_user.nil?
        redirect_to refinery.login_path
        return
