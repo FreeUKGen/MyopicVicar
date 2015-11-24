@@ -18,7 +18,7 @@
       clean_session_for_county
       session[:initial_page] = request.original_url
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
-        flash[:notice] = "You are not currently permitted to access the system "
+        flash[:notice] = "You are not currently registered with FreeReg "
         current_refinery_user.delete unless current_refinery_user.nil?  
         redirect_to refinery.login_path
         return
