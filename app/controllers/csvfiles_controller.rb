@@ -45,7 +45,7 @@ class CsvfilesController < ApplicationController
       end
     end
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_processed_file
+    proceed = @csvfile.check_for_existing_file
     @csvfile.save if proceed
     if @csvfile.errors.any? 
       flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
