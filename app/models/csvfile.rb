@@ -10,7 +10,7 @@ class Csvfile < CarrierWave::Uploader::Base
   mount_uploader :csvfile, CsvfileUploader
 
   def csvfile_already_exists
-    errors.add(:file_name, "A processed file of that name already exists. You cannot upload a file with the same name. You must replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.exists?
+    errors.add(:file_name, "A processed file of that name already exists. You cannot upload a file with the same name. You must replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.first.present?
     errors.add(:file_name,  "The file you are replacing is locked.") if Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists? ||
     Freereg1CsvFile.userid(self.userid).file_name(self.file_name).coordinator_lock.exists?
   end
