@@ -18,8 +18,8 @@
       clean_session_for_county
       session[:initial_page] = request.original_url
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
-        current_refinery_user.delete unless current_refinery_user.nil?
         flash[:notice] = "You are not currently permitted to access the system "
+        current_refinery_user.delete unless current_refinery_user.nil?  
         redirect_to refinery.login_path
         return
       end
@@ -31,15 +31,15 @@
       end
       @user = current_refinery_user.userid_detail 
       if @user.person_role == "researcher"  || @user.person_role == 'pending' 
-       current_refinery_user.delete unless current_refinery_user.nil?
        flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
+       current_refinery_user.delete unless current_refinery_user.nil? 
        redirect_to refinery.login_path
        return
       end
       if !Rails.application.config.member_open
         unless @user.person_role == "system_administrator"  || @user.person_role == 'technical' 
-          current_refinery_user.delete unless current_refinery_user.nil?
           flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
+          current_refinery_user.delete unless current_refinery_user.nil?
           redirect_to refinery.login_path
           return
         end
