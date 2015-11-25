@@ -36,14 +36,7 @@
        redirect_to refinery.login_path
        return
       end
-      if !Rails.application.config.member_open
-        unless @user.person_role == "system_administrator"  || @user.person_role == 'technical' 
-          flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
-          current_refinery_user.delete unless current_refinery_user.nil?
-          redirect_to refinery.login_path
-          return
-        end
-      end
+      
 
       cookies.signed[:Administrator] = Rails.application.config.github_password
      
