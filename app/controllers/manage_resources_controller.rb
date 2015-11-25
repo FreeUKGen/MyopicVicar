@@ -20,6 +20,7 @@
        logger.warn("DUMP: Rails.application.config.member_open #{Rails.application.config.member_open}")
         logger.warn("DUMP: current_refinery_user #{current_refinery_user}")
         logger.warn("DUMP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
+      
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
         flash[:notice] = "You are not currently registered with FreeReg "
         current_refinery_user.delete unless current_refinery_user.nil?  
@@ -42,7 +43,7 @@
     
       
 
-      cookies.signed[:Administrator] = Rails.application.config.github_password
+     
      
 
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
