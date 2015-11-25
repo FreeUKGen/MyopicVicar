@@ -36,6 +36,7 @@
        redirect_to refinery.login_path
        return
       end
+      logger.warn("DUMP: Rails.application.config.member_open #{Rails.application.config.member_open}")
       
 
       cookies.signed[:Administrator] = Rails.application.config.github_password
