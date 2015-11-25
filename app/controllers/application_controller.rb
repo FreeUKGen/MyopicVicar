@@ -65,6 +65,8 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_password
+    logger.warn("APP: current_refinery_user #{current_refinery_user}")
+    logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
     @user = current_refinery_user.userid_detail
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
