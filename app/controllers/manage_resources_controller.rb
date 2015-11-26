@@ -17,35 +17,33 @@
       clean_session_for_syndicate
       clean_session_for_county
       session[:initial_page] = request.original_url
+       logger.warn("DUMP: Rails.application.config.member_open #{Rails.application.config.member_open}")
+        logger.warn("DUMP: current_refinery_user #{current_refinery_user}")
+        logger.warn("DUMP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
+      
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
-        current_refinery_user.delete unless current_refinery_user.nil?
-        flash[:notice] = "You are not currently permitted to access the system "
+        flash[:notice] = "You are not currently registered with FreeReg "
+        current_refinery_user.delete unless current_refinery_user.nil?  
         redirect_to refinery.login_path
         return
       end
       unless  current_refinery_user.userid_detail.active
-      flash[:notice] = "You are not active if you believe this to be a mistake please contact your coordinator"
+      flash[:notice] = "You are not active, if you believe this to be a mistake please contact your coordinator"
        current_refinery_user.delete unless current_refinery_user.nil?
        redirect_to refinery.login_path
        return
       end
       @user = current_refinery_user.userid_detail 
       if @user.person_role == "researcher"  || @user.person_role == 'pending' 
-       current_refinery_user.delete unless current_refinery_user.nil?
        flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
+       current_refinery_user.delete unless current_refinery_user.nil? 
        redirect_to refinery.login_path
        return
       end
-      if !Rails.application.config.member_open
-        unless @user.person_role == "system_administrator"  || @user.person_role == 'technical' 
-          current_refinery_user.delete unless current_refinery_user.nil?
-          flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
-          redirect_to refinery.login_path
-          return
-        end
-      end
+    
+      
 
-      cookies.signed[:Administrator] = Rails.application.config.github_password
+     
      
 
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
