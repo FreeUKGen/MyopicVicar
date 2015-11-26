@@ -1164,7 +1164,7 @@ class FreeregCsvUpdateProcessor
                            return true
                          when @@header[:digest] == check_for_file.digest
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           message =  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                           message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
                             p  message
                            @@message_file.puts message
                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
