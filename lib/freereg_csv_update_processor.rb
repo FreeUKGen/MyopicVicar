@@ -787,6 +787,8 @@ def self.process_register_headers
   @all_error_batches_hash = Hash.new
   @batches_with_errors = Array.new
   @locations = Array.new
+  p "start"
+  p @@update
   if @@update
     # Need to get all the records for this file regardless of location
     @freereg1_csv_files = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid]).all
@@ -802,6 +804,7 @@ def self.process_register_headers
       end                  
     end
     p "There are #{@locations.length} locations and #{@all_records_hash.length} existing records for this file"
+    p @all_records_hash.inspect
   end
   @@list_of_registers.each do |place_key,head_value|
     #deal with a location. Firstly deal with the batch entry
@@ -826,12 +829,14 @@ def self.process_register_headers
        ind = @locations.find_index( @freereg1_csv_file._id)
        @locations.delete_at(ind) unless ind.nil?
      end
+     p @freereg1_csv_file
     else
       # not in update mode
       @freereg1_csv_file = Freereg1CsvFile.new(@@header)
     end
     #locate the batch in a register
     @freereg1_csv_file.update_register
+    p @freereg1_csv_file
     @not_updated = 0
     @deleted = 0
     #write the data records for this place/church
@@ -841,13 +846,16 @@ def self.process_register_headers
        datarecord[:church_name] = head_value[:church_name]
        datarecord[:register_type] = head_value[:register_type]
        datarecord[:record_type] = head_value[:record_type]
-       #puts "Data record #{datakey} \n #{datarecord} \n"
+       puts "Data record #{datakey} \n #{datarecord} \n"
        success = check_and_create_db_record_for_entry(datarecord,@freereg1_csv_file)
-       if success == "nochange"
-           @not_updated = @not_updated + 1
-       elsif success == "change" || success == "new"
+       p "success after check and create"
+       p success
+       if success.nil? || success == "change" || success == "new" 
            #ok to proceed
+       elsif success == "nochange"
+            @not_updated = @not_updated + 1
        else 
+         p "error"
          #deal with batch error
            batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
            batch_error.freereg1_csv_file = @freereg1_csv_file
@@ -881,6 +889,8 @@ def self.process_register_headers
   end #end @@list
   #clean out old locations
   counter = 0
+  p "about to clear hash"
+  p @all_records_hash
   @all_records_hash.each_key do |record|
     counter = counter + 1
     actual_record = Freereg1CsvEntry.id(record).first
@@ -888,7 +898,8 @@ def self.process_register_headers
     sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
     sleep(sleep_time) unless actual_record.nil?
   end
-  p "Deleted #{counter} records in deleted locations"
+  p "Deleted #{counter} remaining entries and records"
+  p "deleting #{@locations.length} locations" unless @locations.empty?
   @locations.each do |location|
     loc = Freereg1CsvFile.find(location)
     puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
@@ -901,64 +912,75 @@ end
 
 def self.check_and_create_db_record_for_entry(data_record,file_for_record)
   if @@update
-  entry = Freereg1CsvEntry.new(data_record)
-  new_digest = entry.cal_digest
-  #p "digest"
-  #p new_digest.inspect
-  if @all_records_hash.has_value?(new_digest)
-    #we have an existing record but may be for different location
-    #p "existing record"
-    existing_record = Freereg1CsvEntry.id(@all_records_hash.key(new_digest)).first
-    #p existing_record.inspect
-    if existing_record.same_location(data_record,file_for_record)
-      #p "same location"
-      #record location is OK
-      if existing_record.search_record.present?
-        # search record and entry are OK
-        success = "nochange" 
-        #p success 
+    entry = Freereg1CsvEntry.new(data_record)
+    new_digest = entry.cal_digest
+    #p "digest"
+    #p new_digest.inspect
+    if @all_records_hash.has_value?(new_digest)
+      #we have an existing record but may be for different location
+      p "existing record"
+      existing_record = Freereg1CsvEntry.id(@all_records_hash.key(new_digest)).first
+      p existing_record.inspect
+      if existing_record.same_location(existing_record,file_for_record)
+        p "same location"
+        #record location is OK
+        if existing_record.search_record.present?
+          # search record and entry are OK
+          success = "nochange" 
+          #p success 
+        else
+          success = "change"
+          #need to create search record as one does not exist
+          #p "creating search as not there"
+          existing_record.transform_search_record if  @@create_search_records == true 
+        end
       else
         success = "change"
-        #need to create search record as one does not exist
-        #p "creating search as not there"
-        existing_record.transform_search_record if  @@create_search_records == true 
-
+        p "changing location"
+        #change of location
+        #update location of record
+        record = existing_record.search_record
+        existing_record.update_location(data_record,file_for_record)
+        
+          if  record.present?
+            p "updating record"
+             p record.inspect
+            # need to update search record  with location
+            record.update_location(data_record,file_for_record)
+            p "updated record"
+            p record.inspect
+          else
+            #need to create search record as one does not exist
+            p "created record"
+            existing_record.transform_search_record if  @@create_search_records == true
+            p existing_record.search_record
+          end
       end
+      #we need to eliminate this record from hash
+      @all_records_hash.delete(@all_records_hash.key(new_digest))
+       p "dropping hash entry"
+       p @all_records_hash.inspect
     else
-      success = "change"
-      #p "changing location"
-      #change of location
-      #update location of record
-      record = existing_record.search_record
-      existing_record.update_location(data_record,file_for_record)
-      #p existing_record.inspect
-        if  record.present?
-           #p record.inspect
-          # need to update search record  with location
-          record.update_location(data_record,file_for_record)
-          #p "updated record"
-          #p record.inspect
-        else
-          #need to create search record as one does not exist
-          #p "created record"
-          existing_record.transform_search_record if  @@create_search_records == true
-          #p existing_record.search_record
-        end
+      success = "new"
+      #new entry and record
+      p "creating new entry"
+      success = create_db_record_for_entry(data_record)
+      p "new"
+      p success
+      sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+      sleep(sleep_time)
     end
-   #we need to eliminate this record from hash
-   @all_records_hash.delete(@all_records_hash.key(new_digest))
-  # p "dropping hash entry"
-  # p @all_records_hash.inspect
   else
     success = "new"
-    #new entry and record
-   # p "creating new entry"
-    success = create_db_record_for_entry(data_record)
-    sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-    sleep(sleep_time)
+      #new entry and record
+      p "creating new entry"
+      success = create_db_record_for_entry(data_record)
+      p "new"
+      p success
+      sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+      sleep(sleep_time)
   end
   success
-  end
 end
 
 def self.create_db_record_for_entry(data_record)
@@ -977,6 +999,8 @@ def self.create_db_record_for_entry(data_record)
  else
    entry.transform_search_record if  @@create_search_records == true
    success = "new"
+   p "new search record"
+    p success
  end
 # p entry.search_record
  success
