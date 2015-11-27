@@ -288,9 +288,7 @@ class Freereg1CsvEntry
   end
 
   def self.update_parameters(params,entry)
-
     #clean up old null entries
-
     params = params.delete_if{|k,v| v == ''}
     return params
   end
@@ -303,6 +301,28 @@ class Freereg1CsvEntry
     self.search_record = nil
     record.destroy unless record.nil?
     self.transform_search_record
+  end
+  def same_location(record,file)
+    success = true
+    record_id = record.freereg1_csv_file_id
+    file_id = file.id
+    p "checking location"
+    p record_id
+    p file_id
+    if record_id == file_id
+      success = true
+    else
+      success = false
+    end  
+    success
+  end
+  def update_location(record,file)
+    p "updating location"
+    p record
+    p file
+    p self
+    self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])  
+    p self
   end
 
 
@@ -547,6 +567,10 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleandate(self.baptism_date)
         errors.add(:baptism_date, "Invalid date")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.birth_date_less_than_baptism_date(self.birth_date,self.baptism_date)
+        errors.add(:birth_date, "Birth date is more recent than baptism date")
         self.error_flag = "true"
       end
       unless FreeregValidations.cleantext(self.person_abode)
