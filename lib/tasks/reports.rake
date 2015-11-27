@@ -7,6 +7,14 @@ namespace :reports do
      puts "Task complete."
    end
   end
+  desc "Report on Register Types"
+   task :extract_information_on_register_types, [:limit] => [:environment] do |t, args|
+   require 'extract_information_on_register_types' 
+   Mongoid.unit_of_work(disable: :all) do
+     ExtractInformationOnRegisterTypes.process(args.limit) 
+     puts "Task complete."
+   end
+  end
   desc "Multiple batches for a file"
    task :multiple_batches, [:limit] => [:environment] do |t, args|
    require 'multiple_batches' 

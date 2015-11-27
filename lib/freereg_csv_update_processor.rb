@@ -15,6 +15,8 @@ class FreeregCsvUpdateProcessor
   require "#{Rails.root}/app/models/userid_detail"
   require 'freereg_validations'
   CONTAINS_PERIOD = /\./
+  HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
+  BOM = /ï»¿/
   DATEMAX = 2020
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
@@ -316,13 +318,18 @@ class FreeregCsvUpdateProcessor
              #get a line of data
              def self.get_line_of_data
                @csvdata = @@array_of_data_lines[@@number_of_line]
+               #get rid of any BOM
                raise FreeREGEnd,  "End of file" if @csvdata.nil?
+               p "striping BOM" if @@number_of_line == 0
+               p  @csvdata[0].inspect if @@number_of_line == 0
+               @csvdata[0].gsub!(/ï»¿/, '')
+               p  @csvdata[0].inspect if @@number_of_line == 0
                @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
                raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
                @first_character = "?"
                @first_character = @csvdata[0].slice(0) unless  @csvdata[0].nil?
                @line_type = "Data"
-               @line_type = "Header" if (@first_character == '+' || @first_character ==  '#')
+               @line_type = "Header" if (@first_character == '+' || @first_character ==  '#') || @csvdata[0] =~ HEADER_DETECTION
                number_of_fields = @csvdata.length
                number_empty = 1
                @csvdata.each do |l|
@@ -336,7 +343,7 @@ class FreeregCsvUpdateProcessor
              #process the header line 1
              # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
              def self.process_header_line_one
-               raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
+               raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] =~ HEADER_DETECTION) 
                # BWB: temporarily commenting out to test db interface
                #   address = EmailVeracity::Address.new(@csvdata[1])
                #   raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
@@ -815,6 +822,7 @@ class FreeregCsvUpdateProcessor
                          @freereg1_csv_file = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid],
                                                                     :county => @@header[:county], :place => @@header[:place], :church_name => @@header[:church_name], :register_type => @@header[:register_type],
                                                                     :record_type => @@header[:record_type]).first
+                         
                          if @freereg1_csv_file.nil?
                            @freereg1_csv_file = Freereg1CsvFile.new(@@header)
                            p "No records in the original batch for this location"
@@ -906,9 +914,10 @@ class FreeregCsvUpdateProcessor
                      counter = 0
                      @total_records.each do |record|
                        counter = counter + 1
-                       Freereg1CsvEntry.find(record).destroy
-                        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time)
+                       actual_record = Freereg1CsvEntry.id(record).first
+                       actual_record.destroy unless actual_record.nil?
+                       sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+                       sleep(sleep_time) unless actual_record.nil?
                      end
                      p "Deleted #{counter} records in deleted locations"
                      @batches_with_errors.each do |batch|
@@ -933,8 +942,7 @@ class FreeregCsvUpdateProcessor
                        entry = Freereg1CsvEntry.new(data_record)
                        new_digest = entry.cal_digest
                        record_exists = nil
-                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @records.empty?
-
+                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file.id, :record_digest => new_digest).only(:id).first unless @records.empty?
                        if record_exists.nil?
                          success = create_db_record_for_entry(data_record)
                          sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
@@ -1157,11 +1165,12 @@ class FreeregCsvUpdateProcessor
                            return true
                          when @@header[:digest] == check_for_file.digest
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           message =  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                           message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
                             p  message
                            @@message_file.puts message
                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
                            return false
                          when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                            #file in database is same or more recent than we we are attempting to reload so do not process
@@ -1169,7 +1178,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                             @@message_file.puts message
                             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
                            return false
                          when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
@@ -1177,7 +1187,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                             @@message_file.puts message
                             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
                             return false
                           else
                                @@update = true
@@ -1223,6 +1234,7 @@ class FreeregCsvUpdateProcessor
 
                          def self.process(range,type,delta)
                            #this is the basic processing
+                           @@logger = ActiveRecord::Base.logger
                            recreate = 'add'
                            @@create_search_records = false
                            @@create_search_records = true if type == "search_records" || type == "create_search_records"

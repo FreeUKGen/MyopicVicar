@@ -55,7 +55,13 @@ module Freereg1CsvFilesHelper
     end
     value    
   end
+  def base_uploaded_date(file)
+    file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
+  end
 
+  def waiting_date(file)
+    file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
+  end
 
 
 

@@ -1,5 +1,5 @@
 task :extract_userids_passwords_for_image_server,[:limit] => [:environment] do |t, args|
-  file_for_warning_messages = "#{Rails.root}/tmp/REG_users"
+  file_for_warning_messages = "#{Rails.root}/log/REG_users"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   output_file = File.new(file_for_warning_messages, "w")
   start = Time.now

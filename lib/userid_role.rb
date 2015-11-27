@@ -14,7 +14,7 @@ module UseridRole
     'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
                          "Feedback", "Contacts", "System Documentation" ],
     'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "Site Statistics",
-                      "System Documentation" ,"Logout"],
+                      "System Documentation","Access Profiles"],
     'system_administrator' =>[  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators",
                                 "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Site Statistics","Search Performance",
                                 "Feedback", "Contacts", "System Documentation" ]

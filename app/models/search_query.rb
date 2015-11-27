@@ -31,7 +31,7 @@ class SearchQuery
   field :role, type: String#, :required => false
   validates_inclusion_of :role, :in => NameRole::ALL_ROLES+[nil]
   field :record_type, type: String#, :required => false
-  validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
+  validates_inclusion_of :record_type, :in => RecordType.all_types+[nil]
   field :chapman_codes, type: Array, default: []#, :required => false
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
@@ -52,6 +52,7 @@ class SearchQuery
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
   field :region, type: String #bot honeypot
+  field :search_index, type: String
   belongs_to :userid_detail
 
   embeds_one :search_result
@@ -62,6 +63,8 @@ class SearchQuery
   validate :county_is_valid
   before_validation :clean_blanks
 
+  index({ c_at: 1})
+
   class << self
      def search_id(name)
       where(:id => name)
@@ -69,7 +72,8 @@ class SearchQuery
   end
 
   def search
-    records = SearchRecord.collection.find(search_params).hint(SearchRecord.index_hint(search_params)).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    search_index = SearchRecord.index_hint(search_params)
+    records = SearchRecord.collection.find(search_params).hint(search_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
 
     search_record_array = Array.new
     n = 0
@@ -81,6 +85,7 @@ class SearchQuery
     self.search_result =  SearchResult.new(records: search_record_array)
     self.result_count = search_record_array.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
+    self.search_index = search_index
     self.save
   end
 
