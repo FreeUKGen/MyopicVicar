@@ -78,7 +78,7 @@ class UseridDetailsController < ApplicationController
     success = @userid.check_exists_in_refinery
     if success[0]
       @userid.send_invitation_to_reset_password
-      flash[:notice] = 'An email with instructions to reset the password have been sent'
+      flash[:notice] = 'An email with instructions to reset the password has been sent'
       if @user.userid == @userid.userid
         redirect_to refinery.logout_path
         return
