@@ -41,12 +41,12 @@ fi
 trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
 cd ${ROOT}
-
+trace "write the REG_users file for the image servers"
+sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
+trace "process the uploads"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,process] --trace
 trace "delete of entries and records for removed batches"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_entries_records_for_removed_batches --trace
-trace "write the REG_users file for the image servers"
-sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
 trace "delete entries and records for removed files"
 sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
 trace "doing rsync of freereg1 data into freereg2"
