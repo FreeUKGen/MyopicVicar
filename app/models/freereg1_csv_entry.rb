@@ -306,9 +306,9 @@ class Freereg1CsvEntry
     success = true
     record_id = record.freereg1_csv_file_id
     file_id = file.id
-    p "checking location"
-    p record_id
-    p file_id
+    #p "checking location"
+    #p record_id
+    #p file_id
     if record_id == file_id
       success = true
     else
@@ -317,12 +317,12 @@ class Freereg1CsvEntry
     success
   end
   def update_location(record,file)
-    p "updating location"
-    p record
-    p file
-    p self
+    #p "updating location"
+    #p record
+    #p file
+    #p self
     self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])  
-    p self
+    #p self
   end
 
 

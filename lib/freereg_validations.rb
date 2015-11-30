@@ -208,9 +208,9 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
 
   def FreeregValidations.birth_date_less_than_baptism_date(birth,baptism)
     
-    birth_days = Freereg1CsvFile.convert_date(birth)
+    birth_days = Freereg1CsvFile.convert_date(birth) 
     baptism_days = Freereg1CsvFile.convert_date(baptism)
-    if birth_days < baptism_days
+    if birth_days < baptism_days || birth.nil? || baptism.nil?
       return true
     else 
       return false
