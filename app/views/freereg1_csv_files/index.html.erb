@@ -13,13 +13,18 @@
         <table class="my-width-min flush--bottom" >
           <thead >
             <tr>
-              <th class="t10">Place</th>
-              <th class="t10">Church</th>
+              <th class="t12">File</th>
+              <th class="t8">Cty</th>
+              <th class="t12">Place</th>
+              <% if session[:my_own]%>
+               <th class="t20">Church</th>
+              <% else%>
+               <th class="t10">Church</th>
+              <% end%>
               <th class="t5">Reg</th>
               <% unless session[:my_own]%>
-                <th class="t10">UserID</th>
-              <% end%>
-              <th class="t10">File name</th>
+                <th class="t8">UserID</th>
+              <% end%>           
               <th class="t10" >Loaded</th>
               <th colspan = "2" class="t10">Locked<br> TR SCC</th>
               <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
@@ -31,13 +36,14 @@
             <tbody >      
               <% @freereg1_csv_files.each do |freereg1_csv_file| %>
                 <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
-                  <td class="t10"><%= place_name(freereg1_csv_file) %></td>
-                  <td class="t10"><%= church_name(freereg1_csv_file) %></td>
+                  <td class="t12"><%= file_name(freereg1_csv_file)%></td>
+                  <td class="t5"><%= chapman(freereg1_csv_file) %></td>
+                  <td class="t8"><%= place_name(freereg1_csv_file) %></td>
+                  <td class="t8"><%= church_name(freereg1_csv_file) %></td>
                   <td class="t3"><%= register_type(freereg1_csv_file) %></td>
                   <% unless session[:my_own]%>
-                    <td class="t15"><%= freereg1_csv_file.userid %></td>
-                  <% end%>
-                  <td class="t10"><%= file_name(freereg1_csv_file)%></td>
+                    <td class="t10"><%= freereg1_csv_file.userid %></td>
+                  <% end %>
                   <td class="t9"><%= uploaded_date(freereg1_csv_file)%></td>        
                   <td class="t3"><%= locked_by_transcriber(freereg1_csv_file)%></td>
                   <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>

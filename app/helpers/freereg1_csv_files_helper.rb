@@ -18,6 +18,12 @@ module Freereg1CsvFilesHelper
     place = get_place_object(church) 
     county_name = place.county unless place.blank?
   end
+  def chapman(file)
+    register = get_register_object(file)
+    church = get_church_object(register)
+    place = get_place_object(church) 
+    place_name = place.chapman_code unless place.blank?
+  end
   def place_name(file)
     register = get_register_object(file)
     church = get_church_object(register)
