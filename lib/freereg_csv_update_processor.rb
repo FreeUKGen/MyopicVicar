@@ -1099,6 +1099,7 @@ end
                    end #end of method
 
                    def self.recode_windows_1252_to_utf8(string)
+                    string.gsub(/[\u0081\u008D\u008F\u0090\u009D]/,"")
                      string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
                      force_encoding('Windows-1252').encode('utf-8') }
                    end
