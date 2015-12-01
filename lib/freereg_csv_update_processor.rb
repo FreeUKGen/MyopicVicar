@@ -794,11 +794,7 @@ def self.process_register_headers
     @freereg1_csv_files = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid]).all
     @freereg1_csv_files.each do |batch|                      
       @locations << batch._id
-      if batch.error >= 1
-        BatchError.where(:_id => batch).all.each do |batch_error|
-         batch_error.delete
-        end
-      end
+      batch.batch_errors.delete_all
       batch.freereg1_csv_entries.each do |entry|
         @all_records_hash[entry.id] = entry.record_digest
       end                  
