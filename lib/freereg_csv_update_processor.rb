@@ -259,8 +259,8 @@ class FreeregCsvUpdateProcessor
                      @register_type = register_words[-1]
                      n = n - 1
                      @register_type = "DT" if @register_type == "DW"
-                     @register_type = "PT" if @register_type == "PH"
-                     @register_type = "OT" if @register_type == "TR"
+                     @register_type = "PH" if @register_type == "PT"
+                     @register_type = "TR" if @register_type == "OT"
                    else
                      @register_type = ""
                      return true
@@ -601,9 +601,7 @@ class FreeregCsvUpdateProcessor
                      raise FreeREGError, "Empty data line"  if @csvdata[0].nil?
                      raise FreeREGError,"The county code #{ @csvdata[0]} is invalid and rejected or you have a blank record line " unless  ChapmanCode::values.include?(@csvdata[0]) &&
                        !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(@csvdata[0]))
-
-                     # do we validate the Place field?
-                     raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
+                     raise FreeREGError, "Place field #{@csvdata[1]} is correctly formatted" unless validregister(@csvdata[1],"Place")
                      if @@place.nil? || @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase != @@place
                        place = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved", :disabled => 'false').first
                        if place.nil?
