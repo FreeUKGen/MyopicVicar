@@ -204,11 +204,7 @@ module FreeregValidations
   end
 
   def FreeregValidations.birth_date_less_than_baptism_date(birth,baptism)
-    p "birth"
-    p birth
-    p baptism
     return true if birth.nil? || birth =~ VALID_UCF || birth =~ WILD_CHARACTER || baptism.nil? || baptism =~ VALID_UCF || baptism =~ WILD_CHARACTER
-    p "testing"
     birth_days = Freereg1CsvFile.convert_date(birth) 
     baptism_days = Freereg1CsvFile.convert_date(baptism)
     if birth_days <= baptism_days 
