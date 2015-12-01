@@ -33,7 +33,12 @@
       <% unless (field == 'line_id' && !current_refinery_user) %>
       <tr>
         <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
+
+        <% if field == "register_type" %>
+         <td class="weight--semibold"><%= RegisterType.display_name(@entry[field]) %></td>
+        <%else%>
         <td class="weight--semibold"><%= @entry[field] %></td>
+        <%end%>
       </tr>
       <% end %>
       <% end %>

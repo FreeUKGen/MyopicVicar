@@ -35,7 +35,7 @@ include Mongoid::Document
     places = Place.all
 
   	places.each do |my_entry|
-      if my_entry.master_place_lat.nil? && my_entry.master_place_lon.nil? 
+      if (my_entry.master_place_lat.nil? && my_entry.master_place_lon.nil?) && my_entry.approved 
   	  record_number = record_number + 1
   	  puts "\" #{my_entry.place_name}\", #{my_entry.chapman_code}, no location" 
         churches = Church.where(:place_id => my_entry.id).all

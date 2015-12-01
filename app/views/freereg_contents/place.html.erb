@@ -4,7 +4,7 @@
     <div class="text--center">
       <%= link_to 'Back to Search Record', :back, :class => "btn weight--light  btn--small"%>  
     </div> <br>
-    <h2 class=" gamma text--center"><%= @place.place_name %> within <%= @county %> </h2>
+    <h2 class=" gamma text--center"><%= @place.place_name %> within <%= @place.county %> </h2>
     <h4 class=" delta text--center">The Place has the following Church(es):
     <% @place.churches.order_by(church_name: 1).each do |church| %>
       <%=  church.church_name   %>; 

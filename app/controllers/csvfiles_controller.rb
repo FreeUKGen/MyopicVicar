@@ -168,6 +168,10 @@ class CsvfilesController < ApplicationController
   def download
     @role = session[:role]
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    if  @freereg1_csv_file.nil?
+      flash[:notice] =  "There is no batch to download."
+      redirect_to :back and return
+    end
     errors =  @freereg1_csv_file.check_file
     if errors[0]
       log_messenger("BATCH_ERRORS #{errors[1]}")

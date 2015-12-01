@@ -1,9 +1,6 @@
 module FreeregValidations
    require "unicode"
 
-OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  
-	"Phillimore's Transcripts" => "PH",  "Dwellies Transcripts" => "DW", "Extract of a Register" => "EX", 
-	"Memorial Inscription" => "MI"}
   VALID_UCF = /[\}\{\?\*\_\]\[\,\-]/
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
   VALID_NUMERIC  = /[\p{N}]/u
@@ -13,10 +10,10 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
   VALID_AGE_TYPE2 = /^(\d{1,2})([hdwmy\*\[\]\-\_\?])/
   VALID_AGE_TYPE2A = /^(\d{1,2})(years)/
-   VALID_AGE_TYPE2B = /^(\d{1,2})(months)/
-    VALID_AGE_TYPE2C = /^(\d{1,2})(days)/
-    VALID_AGE_TYPE2D = /^(\d{1,2})(weeks)/
-    VALID_AGE_TYPE2E = /^(\d{1,2})(hours)/
+  VALID_AGE_TYPE2B = /^(\d{1,2})(months)/
+  VALID_AGE_TYPE2C = /^(\d{1,2})(days)/
+  VALID_AGE_TYPE2D = /^(\d{1,2})(weeks)/
+  VALID_AGE_TYPE2E = /^(\d{1,2})(hours)/
   VALID_AGE_TYPE3 =  /^(\d{1,2})([hdwmy\*\[\]\-\_\?])(\d{1,2})([hdwmy\*\[\]\-\_\?])/
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
@@ -207,10 +204,10 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
   end
 
   def FreeregValidations.birth_date_less_than_baptism_date(birth,baptism)
-    
-    birth_days = Freereg1CsvFile.convert_date(birth)
+    return true if birth.nil? || birth =~ VALID_UCF || birth =~ WILD_CHARACTER || baptism.nil? || baptism =~ VALID_UCF || baptism =~ WILD_CHARACTER
+    birth_days = Freereg1CsvFile.convert_date(birth) 
     baptism_days = Freereg1CsvFile.convert_date(baptism)
-    if birth_days < baptism_days
+    if birth_days <= baptism_days 
       return true
     else 
       return false
