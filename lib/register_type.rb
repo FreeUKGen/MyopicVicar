@@ -2,7 +2,7 @@ module RegisterType
 
 UNSPECIFIED = "Unspecified"
 
-OPTIONS = {"Parish Register" => "PR", "Other Transcript" => 'TR', "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  
+OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  
 	"Phillimore's Transcripts" => "PH",  "Dwelly's Transcripts" => "DW", "Extract of a Register" => "EX", 
 	"Memorial Inscription" => "MI", UNSPECIFIED => " "}
 
