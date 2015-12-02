@@ -69,7 +69,6 @@ class Csvfile < CarrierWave::Uploader::Base
       else
         p "There is no file to put into the attic"
       end 
-      batch.destroy    
     end
     process
   end
