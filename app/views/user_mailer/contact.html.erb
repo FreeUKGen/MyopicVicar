@@ -6,6 +6,12 @@
 <b>Type:</b>
 <%= @contact.contact_type %>
 </p>
+<% if @contact.contact_county %>
+<p>
+<b>County:</b>
+<%= ChapmanCode::name_from_code(@contact.contact_county) + '(' + @contact.contact_county + ')' %>
+</p>
+<% end %>
 <p>
 <b>Body:</b>
 <%= @contact.body %>
@@ -18,4 +24,4 @@ A screenshot was attached
 No screenshot attached.
 <% end %>
 </p>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

@@ -3,9 +3,9 @@
 <p> Dear <%= @coordinator.person_forename %>; (Coordinator for technical people)</p>
 
 
-<p>A user <%= @user.person_forename%>  <%= @user.person_surname %> with an email address of <%= @user.email_address %> has registered with FreeREG to undertake technical work. His userid is <b><%= @user.userid %>.</b> </p>
-<p>The Registrant has have been sent a link to confirm their email address and to register a password. You should receive confirmation of that final step in the registration processas soon as they have actioned that link.</p>
+<p>A user <%= @user.person_forename%>  <%= @user.person_surname %> with an email address of <%= @user.email_address %> has registered with <%= MyopicVicar::Application.config.freexxx_display_name %> to undertake technical work. Their userid is <b><%= @user.userid %>.</b> </p>
+<p>The Registrant has been sent a link to confirm their email address and to register a password. You should receive confirmation of that final step in the registration process as soon as they have actioned that link.</p>
 <p> The following information was submitted for your consideration</p><p> <%= @user.skill_notes%></p>
 
 
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

@@ -3,11 +3,11 @@
 <p> Dear <%= @user.person_forename %>;</p>
 <p>Welcome. </p>
 
-<p>To register as a researcher with FreeREG with a userid of <b><%= @user.userid %>.</b> You need to follow the link below or paste a copy into your browser address window to set your password to something only you know.
+<p>To register as a researcher with <%= MyopicVicar::Application.config.freexxx_display_name %> with a userid of <b><%= @user.userid %>.</b> You need to follow the link below or paste a copy into your browser address window to set your password to something only you know.
 </p>
 
 <p><a href="<%=Rails.application.config.website%>/refinery/users/password/edit?initial=true&reset_password_token=<%= @user_token %>"> <%=Rails.application.config.website%>/refinery/users/password/edit?initial=true&reset_password_token=<%= @user_token %> </a></p>
-<p> After setting the password you will be able to log into the server and access transcriber tools for FreeREG for the first time.
+<p> After setting the password you will be able to log into the server and access researcher tools for <%= MyopicVicar::Application.config.freexxx_display_name %> for the first time.
 
 <p> <b>Go to the following link to login to the server. </b> We suggest you bookmark (save into favourites) this page</p>
 
@@ -17,4 +17,4 @@
 <% unless @coordinator.nil? %>
 <p> <%= @coordinator.person_forename %>  <%= @coordinator.person_surname %> at <%= @coordinator.email_address%></p>
 <%end%>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

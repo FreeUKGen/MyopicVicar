@@ -10,7 +10,7 @@ module SearchRecordsHelper
       bef_aft = 'before'
       offset = 0 - offset
     end
-    msg = '(' + ordinalize(offset) + ' dwelling ' + bef_aft + ' the current search result)'
+    msg = '(' + offset.ordinalize + ' dwelling ' + bef_aft + ' the current search result)'
     msg
   end
 

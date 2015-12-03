@@ -6,6 +6,12 @@
 <b>Type:</b>
 <%= @contact.contact_type %>
 </p>
+<% if @contact.contact_county %>
+<p>
+<b>County:</b>
+<%= ChapmanCode::name_from_code(@contact.contact_county) + '(' + @contact.contact_county + ')' %>
+</p>
+<% end %>
 <p>
 <b>Body:</b>
 <%= @contact.body %>
