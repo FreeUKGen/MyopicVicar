@@ -423,7 +423,7 @@ class FreeregCsvUpdateProcessor
                      process_header_line_two_block
 
                      else
-                       raise FreeREGError, "Header_Error,I did not know enough about your data format to extract transciber information at header line 2"
+                       raise FreeREGError, "Header_Error,I did not know enough about your data format to extract transcriber information at header line 2"
 
                      end
 
