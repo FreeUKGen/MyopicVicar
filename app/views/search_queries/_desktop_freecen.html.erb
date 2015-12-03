@@ -16,8 +16,12 @@
             <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
           </th>
           <th>
-            <%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
-            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a>
+            <%= link_to('Birth Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Approximate birth year. Click heading to sort by the date</span></a>
+          </th>
+          <th>
+            <%= link_to('Census Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Census Year.  Click heading to sort by the cencus year</span></a>
           </th>
           <th>
             <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
@@ -45,7 +49,10 @@
             </td>
             
             <td>
-              <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%>
+              <%= search_record.transcript_dates.first.gsub(/\D.*/, '') %>
+            </td>
+            <td>
+              <%= search_record.record_type %>
             </td>
             <td>
 	      <%# search_record.place.county %>
