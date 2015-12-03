@@ -10,7 +10,7 @@ module Freereg1CsvFilesHelper
   end
   def register_type(file)
     register = get_register_object(file)
-    register_type = register.register_type unless register.blank?
+    register_type = RegisterType.display_name(register.register_type) unless register.blank?
   end
   def county_name(file)
     register = get_register_object(file)

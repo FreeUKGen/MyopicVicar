@@ -7,7 +7,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
 	"Memorial Inscription" => "MI", "Unspecified" => " ","Phillimore's Transcript" => "PT", "Dwelly's Transcript" => "DT",
    "Other Transcript" => "OT", "Unknown" => "UK", "Other Register" => "OR"}
 APPROVED_OPTIONS ={ "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  "Dwelly's Transcript" => "DT","Extract of a Register" => "EX", 
-  "Memorial Inscription" => "MI", "Parish Register" => "PR", "Phillimore's Transcript" => "PT", "Other Register" => "OR", "Other Transcript" => "OT",
+  "Memorial Inscription" => "MI", "Parish Register" => "PR", "Phillimore's Transcript" => "PT", "Transcript" => "TR" ,"Other Register" => "OR",
    "Unknown" => "UK"}
 
   def self.display_name(value)

@@ -13,7 +13,7 @@
 <section class="island  island--light">
   <div class= "grid">
     <%= simple_form_for(@register) do |f| %>
-    <%= f.input :register_type, :include_blank => false, :required => true, :collection => RegisterType::APPROVED_OPTIONS, :input_html => {:class => "text-input", :size => 2  }, :label => "Type of Register :"%>
+    <%= f.input :register_type, :include_blank => false, :required => true, :collection => RegisterType::APPROVED_OPTIONS, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2  }, :label => "Type of Register :"%>
     <%= f.button :submit,  'Rename' %>
     <% end %>
   </div>

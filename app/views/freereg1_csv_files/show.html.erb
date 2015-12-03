@@ -44,7 +44,7 @@
           <td>Register type</td><td class="weight--semibold"><%= register_type(@freereg1_csv_file) %></td>
         </tr>
         <tr>
-          <td>Record type </td><td class="weight--semibold">  <%= @freereg1_csv_file.record_type %> </td>
+          <td>Record type </td><td class="weight--semibold">  <%= RecordType::display_name(@freereg1_csv_file.record_type) %> </td>
         </tr>
         <tr>
           <td>Number of records </td> <td class="weight--semibold"> <%= @freereg1_csv_file.records %> </td>
