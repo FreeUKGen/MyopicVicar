@@ -49,7 +49,7 @@
             </td>
             
             <td>
-              <%= search_record.transcript_dates.first.gsub(/\D.*/, '') %>
+              <%= format_freecen_birth_year(search_record.transcript_dates.first, search_record.record_type) %>
             </td>
             <td>
               <%= search_record.record_type %>
