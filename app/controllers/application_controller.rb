@@ -30,31 +30,30 @@ class ApplicationController < ActionController::Base
   def load_last_stat
     @site_stat = SiteStatistic.last
   end
+
   private
 
   def check_for_mobile
     session[:mobile_override] = true if mobile_device?
   end
+
   def require_cookie_directive
     if cookies[:cookiesDirective].blank?
      flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
      redirect_to main_app.new_search_query_path
     end  
-  end
-  
+  end  
+
+  helper_method :mobile_device?
   def mobile_device?
    # Season this regexp to taste. I prefer to treat iPad as non-mobile.
    request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
   end
 
-  helper_method :mobile_device?
-
   helper_method :device_type  
   def device_type  
       request.env['mobvious.device_type']
-  end  
-
-
+  end 
 
   def require_login
     if session[:userid].nil?
@@ -72,6 +71,7 @@ class ApplicationController < ActionController::Base
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
   end
+
   def  get_user_info_from_userid
      if session[:userid].nil?
         if current_refinery_user.nil?
@@ -89,6 +89,7 @@ class ApplicationController < ActionController::Base
      @manager = manager?(@user)
      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
+
   def  get_user_info(userid,name)
     #old version for compatibility
     @userid = userid
@@ -97,13 +98,11 @@ class ApplicationController < ActionController::Base
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
-
   def manager?(user)
     #sets the manager flag status
     a = true
     a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'data_manager' || user.person_role == 'technical')
   end
-
 
   def log_possible_host_change
     log_message = "PHC WARNING: browser may have jumped across servers mid-session!\n"
@@ -118,10 +117,12 @@ class ApplicationController < ActionController::Base
     
     logger.warn(log_message)    
   end
+
   def log_messenger(message)
     log_message = message
     logger.warn(log_message) 
-  end   
+  end  
+
   def get_places_for_menu_selection
     placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = Array.new
@@ -147,7 +148,8 @@ class ApplicationController < ActionController::Base
     session.delete(:character)
     session.delete(:edit_userid)
   end
-def clean_session_for_county
+
+  def clean_session_for_county
     session.delete(:freereg1_csv_file_id) 
     session.delete(:freereg1_csv_file_name) 
     session.delete(:place_name) 
@@ -182,10 +184,9 @@ def clean_session_for_county
     session.delete(:files_index_page)
     session.delete(:character)
      session.delete(:edit_userid)
-    
+   end
 
-end
-def clean_session_for_syndicate
+  def clean_session_for_syndicate
     session.delete(:freereg1_csv_file_id) 
     session.delete(:freereg1_csv_file_name) 
     session.delete(:place_name) 
@@ -224,11 +225,11 @@ def clean_session_for_syndicate
     session.delete(:edit_userid)
   end
 
- 
   def go_back(type,record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
     logger.info "ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path
     return
   end  
+  
 end

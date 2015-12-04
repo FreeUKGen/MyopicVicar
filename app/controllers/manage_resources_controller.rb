@@ -17,10 +17,8 @@
       clean_session_for_syndicate
       clean_session_for_county
       session[:initial_page] = request.original_url
-       logger.warn("DUMP: Rails.application.config.member_open #{Rails.application.config.member_open}")
-        logger.warn("DUMP: current_refinery_user #{current_refinery_user}")
-        logger.warn("DUMP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
-      
+  # the applications controller has set the administration cookie to ensure that this is processed on the master server  
+  #we do not accept  
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
         flash[:notice] = "You are not currently registered with FreeReg "
         current_refinery_user.delete unless current_refinery_user.nil?  
@@ -40,11 +38,15 @@
        redirect_to refinery.login_path
        return
       end
-    
-      
-
-     
-     
+      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      if !Rails.application.config.member_open
+        unless @user.person_role == "system_administrator"  || @user.person_role == 'technical' 
+          current_refinery_user.delete unless current_refinery_user.nil?
+          flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
+          redirect_to refinery.login_path
+          return
+        end
+      end     
 
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
