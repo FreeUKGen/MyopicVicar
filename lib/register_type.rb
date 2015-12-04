@@ -3,11 +3,11 @@ module RegisterType
 UNSPECIFIED = "Unspecified"
 
 OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  
-	"Phillimore's Transcripts (Original)" => "PH",  "Dwelly's Transcripts (Original)" => "DW", "Extract of a Register" => "EX", 
-	"Memorial Inscription" => "MI", "Unspecified" => " ","Phillimore's Transcript" => "PT", "Dwelly's Transcript" => "DT",
+	"Phillimore's Transcripts" => "PH",  "Dwelly's Transcripts" => "DW", "Extract of a Register" => "EX", 
+	"Memorial Inscription" => "MI", "Unspecified" => " ","Phillimore's Transcript (New)" => "PT", "Dwelly's Transcript (New)" => "DT",
    "Other Transcript" => "OT", "Unknown" => "UK", "Other Register" => "OR"}
-APPROVED_OPTIONS ={ "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  "Dwelly's Transcript" => "DT","Extract of a Register" => "EX", 
-  "Memorial Inscription" => "MI", "Parish Register" => "PR", "Phillimore's Transcript" => "PT", "Transcript" => "TR" ,"Other Register" => "OR",
+APPROVED_OPTIONS ={ "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  "Dwelly's Transcripts" => "DW","Extract of a Register" => "EX", 
+  "Memorial Inscription" => "MI", "Parish Register" => "PR", "Phillimore's Transcripts" => "PH", "Transcript" => "TR" ,"Other Register" => "OR",
    "Unknown" => "UK"}
 
   def self.display_name(value)
