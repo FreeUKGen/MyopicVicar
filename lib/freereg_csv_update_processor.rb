@@ -258,7 +258,7 @@ class FreeregCsvUpdateProcessor
                      # check that it is a valid code
                      @register_type = register_words[-1]
                      n = n - 1
-                     @register_type = "DT" if @register_type == "DW"
+                     @register_type = "DW" if @register_type == "DT"
                      @register_type = "PH" if @register_type == "PT"
                      @register_type = "TR" if @register_type == "OT"
                    else
