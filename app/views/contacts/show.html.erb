@@ -23,14 +23,18 @@
           <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
         </tr>
         <tr>
+          <td>Identification : </td> <td class="weight--semibold"> <%= @contact.identifier %>  </td>
+        </tr>
+        <tr>
           <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
         </tr>
         <tr>
-          <td>Name of Contactor:</td> <td class="weight--semibold"><%= @contact.name %></td>
+          <td>Name of Contact person:</td> <td class="weight--semibold"><%= @contact.name %></td>
         </tr>
         <tr>
-          <td>Email address of Contactor :</td><td class="weight--semibold"><%= @contact.email_address %> </td>
+          <td>Email address of Contact person :</td><td class="weight--semibold"><%= @contact.email_address %> </td>
         </tr>
+
         <% if @contact.contact_type = 'Data Problem' &&  @contact.entry_id.present?%>
         <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
         <% end%>

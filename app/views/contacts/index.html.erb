@@ -17,16 +17,20 @@
         <table class="table--bordered  ">
           <tr>
             <th>Name</th>
+            <th>email</th>  
             <th>Type</th>
             <th>Posted</th>
+            <th>Identification</th>
             <th>Action</th>
             <th>Action</th>
           </tr>
           <% @contacts.each do |feedback| %>
           <tr>
             <td><%= feedback.name %></td>
+            <td><%= feedback.email_address %></td>
             <td><%= feedback.contact_type %></td>
             <td><%= feedback.contact_time.strftime("%H:%M on %F") unless feedback.contact_time.nil?%></td>
+             <td><%= feedback.identifier  unless feedback.identifier.nil?%>
             <td><%= button_to 'Show', contact_path(feedback),  method: :get%></td>
             <td><%= button_to 'Destroy contact', contact_path(feedback), method: :delete, data: { confirm: 'Are you sure you want to delete this contact' } %></td>
           </tr>
