@@ -19,7 +19,7 @@ class Feedback
 
   validate :title_or_body_exist
 
-  before_save :url_check, :add_identifier, :github_issue; :add_email
+  before_create :url_check, :add_identifier, :github_issue; :add_email
   after_create :communicate
   class << self
     def id(id)
@@ -68,7 +68,6 @@ class Feedback
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info("APP: #{response}")
       self.github_issue_url = response[:html_url]
-      self.save!
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
