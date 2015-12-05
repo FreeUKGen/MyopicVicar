@@ -19,6 +19,11 @@ class Feedback
 
   before_save :url_check
   after_create :communicate
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
 
   def title_or_body_exist
      errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
@@ -50,8 +55,6 @@ class Feedback
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
-      p 'response from git hub'
-      p response
       self.github_issue_url = response[:html_url]
       self.save!
     else

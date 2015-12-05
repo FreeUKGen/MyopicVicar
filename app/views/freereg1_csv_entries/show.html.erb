@@ -1,9 +1,9 @@
-<p style="text-align: center">Showing <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<% breadcrumb :show_record,  @freereg1_csv_entry,  @freereg1_csv_file%>
+<p style="text-align: center">Showing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 <% unless session[:userid].nil?%>
-<div  style="text-align: center"> <%= link_to 'Batch',  freereg1_csv_file_path(@freereg1_csv_entry.freereg1_csv_file), method: :get, :class => "btn  btn--small"  %>  <%= link_to 'Create new entry', new_freereg1_csv_entry_path, method: :get , :class => "btn  btn--small"  %> <%= link_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get, :class => "btn  btn--small"  %> <%= link_to 'Listing of all Records in this Batch',  freereg1_csv_entries_path, method: :get, :class => "btn  btn--small"  %>  <%= link_to 'Listing of all Error Records in this Batch', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn  btn--small" %> <%= button_to 'Destroy', freereg1_csv_entry_path(@freereg1_csv_file), confirm: 'Are you sure?', method: :delete , :class => "btn  btn--small"  %></div>
+<div  style="text-align: center">  <%= link_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry), method: :get, :class => "btn weight--light  btn--small"  %> <%= link_to 'Destroy', freereg1_csv_entry_path(@freereg1_csv_entry), confirm: 'Are you sure?', method: :delete , :class => "btn  weight--light btn--small"  %></div>
 <div style="clear:both;"> </div><br>
 <% end %>
-
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
@@ -11,9 +11,9 @@
 <% end %>
 <div class="grid">
   <section class="island ">
-    <div class="grid__item two-thirds ">
-    <% case %>
-    <% when @freereg1_csv_file.record_type == "ba" %>
+    <div class="grid__item ">
+      <% case %>
+      <% when @freereg1_csv_file.record_type == "ba" %>
       <table   class="table--bordered  table--data">
         <colgroup >
         <col class=t40>
@@ -23,226 +23,227 @@
           <th class="caps">Field</th>
           <th  class="caps">Value</th>
         </tr>
-    <tr>
-      <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
-    </tr><tr>
-    <td> Baptism date </td><td > <%= @freereg1_csv_entry.baptism_date %> </td>
-  </tr>
-  <tr>
-    <td>Birth date</td><td > <%= @freereg1_csv_entry.birth_date %></td>
-  </tr>
-  <tr>
-    <td>Forename of the person baptised</td><td ><%= @freereg1_csv_entry.person_forename %></td>
-  </tr>
-  <tr>
-    <td>Sex of the person baptised</td><td > <%= @freereg1_csv_entry.person_sex %> </td>
-  </tr>
-  <tr>
-    <td>Forename of the father </td> <td>   <%= @freereg1_csv_entry.father_forename %> </td>
-  </tr>
-  <tr>
-    <td>Surname of the father </td><td >  <%= @freereg1_csv_entry.father_surname %> </td>
-  </tr>
-  <tr>
-    <td>Forename of the mother</td><td >   <%= @freereg1_csv_entry.mother_forename %></td>
-  </tr>
-  <tr>
-    <td>Surname of the mother</td><td > <%= @freereg1_csv_entry.mother_surname %></td>
-  </tr>
-  <tr>
-    <td>Occupation of the father</td><td >  <%= @freereg1_csv_entry.father_occupation %> </td>
-  </tr>
-  <tr>
-    <td>Abode of the person</td><td >   <%= @freereg1_csv_entry.person_abode %></td>
-  </tr>
-  <tr>
-    <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>
-  </tr>
-  <tr>
-    <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
-  </tr>
-  <tr>
-    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.file_line_number %> </td>
-  </tr>
-  
-  <% if @freereg1_csv_entry.error_flag == 'true' %>
-  <tr style= "color:blue">
-    <% else%>
-    <tr style= "color:black">
-      <% end%>
-      <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td>
-    </tr>
-    <tr style= "color:black">
-    </tr>
-  </table>
-  <% when @freereg1_csv_file.record_type == "ma" %>
-  <table   class="table--bordered  table--data">
-        <colgroup >
-        <col class=t40>
-        <col class=t60>
-        </colgroup>
         <tr>
-          <th class="caps">Field</th>
-          <th  class="caps">Value</th>
+          <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
         </tr>
-    <tr>
-      <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
-    </tr>
-    <tr>
-      <td>Date of the marriage</td><td > <%= @freereg1_csv_entry.marriage_date %></td>
-    </tr>
-    <tr>
-      <td>Forename of the bride </td><td >  <%= @freereg1_csv_entry.bride_forename %> </td>
-    </tr>
-    <tr>
-      <td>Surname of the bride</td><td > <%= @freereg1_csv_entry.bride_surname %></td>
-    </tr>
-    <tr>
-      <td>Age of the bride</td><td > <%= @freereg1_csv_entry.bride_age %></td>
-    </tr>
-    <tr>
-      <td>Abode of the bride</td><td > <%= @freereg1_csv_entry.bride_abode %> </td>
-    </tr>
-    <tr>
-      <td>Occupation of the bride </td> <td>   <%= @freereg1_csv_entry.bride_occupation %> </td>
-    </tr>
-    <tr>
-      <td>Condition of the bride </td><td >  <%= @freereg1_csv_entry.bride_condition %></td>
-    </tr>
-    <tr>
-      <td>Parish of the bride</td><td >   <%= @freereg1_csv_entry.bride_parish %></td>
-    </tr>
-    <tr>
-      <td>Forename of the bride's father</td><td >  <%= @freereg1_csv_entry.bride_father_forename %></td>
-    </tr>
-    <tr>
-      <td>Surname of the bride's father</td><td >  <%= @freereg1_csv_entry.bride_father_surname %> </td>
-    </tr>
-    <tr>
-      <td>Occupation of the bride's father</td><td >   <%= @freereg1_csv_entry.bride_father_occupation %></td>
-    </tr>
-    <tr>
-      <td>Forename of the groom</td><td > <%= @freereg1_csv_entry.groom_surname %></td>
-    </tr>
-    <tr>
-      <td>Surname of the groom</td><td > <%= @freereg1_csv_entry.groom_surname %></td>
-    </tr>
-    <tr>
-      <td>Age of the groom</td><td > <%= @freereg1_csv_entry.groom_age %></td>
-    </tr>
-    <tr>
-      <td>Abode of the groom</td><td > <%= @freereg1_csv_entry.groom_abode %> </td>
-    </tr>
-    <tr>
-      <td>Occupation of the groom </td> <td>   <%= @freereg1_csv_entry.groom_occupation %> </td>
-    </tr>
-    <tr>
-      <td>Condition of the groom </td><td >  <%= @freereg1_csv_entry.groom_condition %></td>
-    </tr>
-    <tr>
-      <td>Parish of the groom</td><td >   <%= @freereg1_csv_entry.groom_parish %></td>
-    </tr>
-    <tr>
-      <td>Forename of the groom's father</td><td >  <%= @freereg1_csv_entry.groom_father_forename %></td>
-    </tr>
-    <tr>
-      <td>Suranme of the groom's father</td><td >  <%= @freereg1_csv_entry.groom_father_surname %> </td>
-    </tr>
-    <tr>
-      <td>Occupation of the groom's father</td><td >   <%= @freereg1_csv_entry.groom_father_occupation %></td>
-    </tr>
-    <tr>
-      <% if @forenames%>
-      <% i = 0 %>
-      <% while i < @forenames.length %>
-      <td>Forename for witness</td><td >  <%=  @forenames[i] %></td>
-    </tr>
-    <td>Surname for witness</td><td > <%=  @surnames[i] %></td>
-  </tr>
-  <% i = i + 1 %>
-  <% end%>
-  <% end%>
-  
-  <tr>
-    <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>
-  </tr>
-  <tr>
-    <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
-  </tr>
-  <tr>
-    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>
-  </tr>
-  <% if @freereg1_csv_entry.error_flag == 'true' %>
-  <tr style= "color:blue">
-    <%else%>
-    <tr style= "color:black">
-      <% end%>
-      <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td>
-    </tr>
-    <tr style= "color:black">
-    </tr>
-  </table>
-  
-  <% when @freereg1_csv_file.record_type == "bu"%>
-   <table   class="table--bordered  table--data">
-        <colgroup >
-        <col class=t40>
-        <col class=t60>
-        </colgroup>
         <tr>
-          <th class="caps">Field</th>
-          <th  class="caps">Value</th>
+          <td>Birth date</td><td > <%= @freereg1_csv_entry.birth_date %></td>
         </tr>
-    <tr>
-      <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
-    </tr><tr>
-    <td> Burial date </td><td > <%= @freereg1_csv_entry.burial_date %> </td>
-  </tr>
-  <tr>
-    <td>Forename of the person buried</td><td ><%= @freereg1_csv_entry.burial_person_forename %></td>
-  </tr>
-  <tr>
-    <td>Surname of the person buried</td><td > <%= @freereg1_csv_entry.burial_person_surname %> </td>
-  </tr>
-  <tr>
-    <td>Forename of the female relative </td> <td>    <%= @freereg1_csv_entry.female_relative_forename %></td>
-  </tr>
-  <tr>
-    <td>Surname of the relative </td><td >   <%= @freereg1_csv_entry.relative_surname %> </td>
-  </tr>
-  <tr>
-    <td>Forename of the male relative</td><td >   <%= @freereg1_csv_entry.male_relative_forename %></td>
-  </tr>
-  <tr>
-    <td>Age of person buried</td><td >  <%= @freereg1_csv_entry.person_age %></td>
-  </tr>
-  <tr>
-    <td>Relationship with a person</td><td > <%= @freereg1_csv_entry.relationship %> </td>
-  </tr>
-  <tr>
-    <td>Abode of the person buried</td><td >  <%= @freereg1_csv_entry.burial_person_abode %></td>
-  </tr>
-  <tr>
-    <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>
-  </tr>
-  <tr>
-    <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
-  </tr>
-  <tr>
-    <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>
-  </tr>
-  <% if @freereg1_csv_entry.error_flag == 'true' %>
-  <tr style= "color:blue">
-    <%else%>
-    <tr style= "color:black">
-      <%end%>
-      <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td>
-    </tr>
-    <tr style= "color:black">
-    </tr>
-  </table>
-  <% end%>
-  </div>
-</section>
-</div>
-<br>
+        <tr>
+          <td> Baptism date </td><td > <%= @freereg1_csv_entry.baptism_date %> </td>
+        </tr>
+        
+        <tr>
+          <td>Forename of the person baptised</td><td ><%= @freereg1_csv_entry.person_forename %></td>
+        </tr>
+        <tr>
+          <td>Sex of the person baptised</td><td > <%= @freereg1_csv_entry.person_sex %> </td>
+        </tr>
+        <tr>
+          <td>Forename of the father </td> <td>   <%= @freereg1_csv_entry.father_forename %> </td>
+        </tr>
+        <tr>
+          <td>Surname of the father </td><td >  <%= @freereg1_csv_entry.father_surname %> </td>
+        </tr>
+        <tr>
+          <td>Forename of the mother</td><td >   <%= @freereg1_csv_entry.mother_forename %></td>
+        </tr>
+        <tr>
+          <td>Surname of the mother</td><td > <%= @freereg1_csv_entry.mother_surname %></td>
+        </tr>
+        <tr>
+          <td>Occupation of the father</td><td >  <%= @freereg1_csv_entry.father_occupation %> </td>
+        </tr>
+        <tr>
+          <td>Abode of the person</td><td >   <%= @freereg1_csv_entry.person_abode %></td>
+        </tr>
+        <tr>
+          <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>
+        </tr>
+        <tr>
+          <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
+        </tr>
+        <tr>
+          <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.file_line_number %> </td>
+        </tr>
+        
+        <% if @freereg1_csv_entry.error_flag == 'true' %>
+        <tr style= "color:blue">
+          <% else%>
+          <tr style= "color:black">
+            <% end%>
+            <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td>
+          </tr>
+          <tr style= "color:black">
+          </tr>
+        </table>
+        <% when @freereg1_csv_file.record_type == "ma" %>
+        <table   class="table--bordered  table--data">
+          <colgroup >
+          <col class=t40>
+          <col class=t60>
+          </colgroup>
+          <tr>
+            <th class="caps">Field</th>
+            <th  class="caps">Value</th>
+          </tr>
+          <tr>
+            <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
+          </tr>
+          <tr>
+            <td>Date of the marriage</td><td > <%= @freereg1_csv_entry.marriage_date %></td>
+          </tr>
+          <tr>
+            <td>Forename of the bride </td><td >  <%= @freereg1_csv_entry.bride_forename %> </td>
+          </tr>
+          <tr>
+            <td>Surname of the bride</td><td > <%= @freereg1_csv_entry.bride_surname %></td>
+          </tr>
+          <tr>
+            <td>Age of the bride</td><td > <%= @freereg1_csv_entry.bride_age %></td>
+          </tr>
+          <tr>
+            <td>Abode of the bride</td><td > <%= @freereg1_csv_entry.bride_abode %> </td>
+          </tr>
+          <tr>
+            <td>Occupation of the bride </td> <td>   <%= @freereg1_csv_entry.bride_occupation %> </td>
+          </tr>
+          <tr>
+            <td>Condition of the bride </td><td >  <%= @freereg1_csv_entry.bride_condition %></td>
+          </tr>
+          <tr>
+            <td>Parish of the bride</td><td >   <%= @freereg1_csv_entry.bride_parish %></td>
+          </tr>
+          <tr>
+            <td>Forename of the bride's father</td><td >  <%= @freereg1_csv_entry.bride_father_forename %></td>
+          </tr>
+          <tr>
+            <td>Surname of the bride's father</td><td >  <%= @freereg1_csv_entry.bride_father_surname %> </td>
+          </tr>
+          <tr>
+            <td>Occupation of the bride's father</td><td >   <%= @freereg1_csv_entry.bride_father_occupation %></td>
+          </tr>
+          <tr>
+            <td>Forename of the groom</td><td > <%= @freereg1_csv_entry.groom_forename %></td>
+          </tr>
+          <tr>
+            <td>Surname of the groom</td><td > <%= @freereg1_csv_entry.groom_surname %></td>
+          </tr>
+          <tr>
+            <td>Age of the groom</td><td > <%= @freereg1_csv_entry.groom_age %></td>
+          </tr>
+          <tr>
+            <td>Abode of the groom</td><td > <%= @freereg1_csv_entry.groom_abode %> </td>
+          </tr>
+          <tr>
+            <td>Occupation of the groom </td> <td>   <%= @freereg1_csv_entry.groom_occupation %> </td>
+          </tr>
+          <tr>
+            <td>Condition of the groom </td><td >  <%= @freereg1_csv_entry.groom_condition %></td>
+          </tr>
+          <tr>
+            <td>Parish of the groom</td><td >   <%= @freereg1_csv_entry.groom_parish %></td>
+          </tr>
+          <tr>
+            <td>Forename of the groom's father</td><td >  <%= @freereg1_csv_entry.groom_father_forename %></td>
+          </tr>
+          <tr>
+            <td>Suranme of the groom's father</td><td >  <%= @freereg1_csv_entry.groom_father_surname %> </td>
+          </tr>
+          <tr>
+            <td>Occupation of the groom's father</td><td >   <%= @freereg1_csv_entry.groom_father_occupation %></td>
+          </tr>
+          
+          <%  @freereg1_csv_entry.multiple_witnesses.each do |witness|%>
+          <tr>
+            <td>Forename for witness</td><td >  <%=  witness.witness_forename %></td>
+          </tr>
+          <tr>
+            <td>Surname for witness</td><td > <%= witness.witness_surname %></td>
+          </tr>
+          
+          <% end%>
+          
+          <tr>
+            <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>
+          </tr>
+          <tr>
+            <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
+          </tr>
+          <tr>
+            <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>
+          </tr>
+          <% if @freereg1_csv_entry.error_flag == 'true' %>
+          <tr style= "color:blue">
+            <%else%>
+            <tr style= "color:black">
+              <% end%>
+              <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td>
+            </tr>
+            <tr style= "color:black">
+            </tr>
+          </table>
+          
+          <% when @freereg1_csv_file.record_type == "bu"%>
+          <table   class="table--bordered  table--data">
+            <colgroup >
+            <col class=t40>
+            <col class=t60>
+            </colgroup>
+            <tr>
+              <th class="caps">Field</th>
+              <th  class="caps">Value</th>
+            </tr>
+            <tr>
+              <td>Register entry number </td> <td>   <%= @freereg1_csv_entry.register_entry_number %> </td>
+            </tr><tr>
+            <td> Burial date </td><td > <%= @freereg1_csv_entry.burial_date %> </td>
+          </tr>
+          <tr>
+            <td>Forename of the person buried</td><td ><%= @freereg1_csv_entry.burial_person_forename %></td>
+          </tr>
+          <tr>
+            <td>Surname of the person buried</td><td > <%= @freereg1_csv_entry.burial_person_surname %> </td>
+          </tr>
+          <tr>
+            <td>Forename of the female relative </td> <td>    <%= @freereg1_csv_entry.female_relative_forename %></td>
+          </tr>
+          <tr>
+            <td>Surname of the relative </td><td >   <%= @freereg1_csv_entry.relative_surname %> </td>
+          </tr>
+          <tr>
+            <td>Forename of the male relative</td><td >   <%= @freereg1_csv_entry.male_relative_forename %></td>
+          </tr>
+          <tr>
+            <td>Age of person buried</td><td >  <%= @freereg1_csv_entry.person_age %></td>
+          </tr>
+          <tr>
+            <td>Relationship with a person</td><td > <%= @freereg1_csv_entry.relationship %> </td>
+          </tr>
+          <tr>
+            <td>Abode of the person buried</td><td >  <%= @freereg1_csv_entry.burial_person_abode %></td>
+          </tr>
+          <tr>
+            <td>Notes from register</td><td >  <%= @freereg1_csv_entry.notes %></td>
+          </tr>
+          <tr>
+            <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
+          </tr>
+          <tr>
+            <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>
+          </tr>
+          <% if @freereg1_csv_entry.error_flag == 'true' %>
+          <tr style= "color:blue">
+            <%else%>
+            <tr style= "color:black">
+              <%end%>
+              <td >Error in record</td><td >  <%= @freereg1_csv_entry.error_flag %> </td>
+            </tr>
+            <tr style= "color:black">
+            </tr>
+          </table>
+          <% end%>
+        </div>
+      </section>
+    </div>
+    <br>

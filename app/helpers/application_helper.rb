@@ -121,6 +121,16 @@ module ApplicationHelper
       HTML
     end
     banner.html_safe
+  end 
+  def title(title = nil)
+    if title.present?
+      content_for :title, title
+    else
+      content_for?(:title) ? "FreeReg" + ' | ' + content_for(:title) : "FreeReg"
+    end
+  end
+  def display_number(num)
+    number_with_delimiter(num, :delimiter => ',')
   end
 
 end

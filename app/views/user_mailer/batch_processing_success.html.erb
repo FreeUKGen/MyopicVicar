@@ -1,8 +1,8 @@
 
 
-<p><%= @user.person_forename %>,</p>
+<p><%= @userid.person_forename %>,</p>
 
-<p>The batch that you submitted for processing has been completed successfully!</p>
+<p>The file submitted for processing has been completed. We processed <%= @records%> records and there were <%= @errors%> data errors and <%= @headers%> header errors. If there were any errors you will need to review the on-line information for this file to see the details.</p>
 
-<p><%= link_to "Review details", freereg1_csv_file_path(@batch), method: :get %></p>
+<p> The FreeREG Team</p>
 

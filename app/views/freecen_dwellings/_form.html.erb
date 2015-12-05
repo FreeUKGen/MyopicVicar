@@ -1,0 +1,23 @@
+<%= simple_form_for(@freecen_dwelling) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :deleted_flag %>
+    <%= f.input :dwelling_number %>
+    <%= f.input :civil_parish %>
+    <%= f.input :ecclesiastical_parish %>
+    <%= f.input :enumeration_district %>
+    <%= f.input :folio_number %>
+    <%= f.input :page_number %>
+    <%= f.input :schedule_number %>
+    <%= f.input :house_number %>
+    <%= f.input :house_or_street_name %>
+    <%= f.input :uninhabited_flag %>
+    <%= f.input :unoccupied_notes %>
+    <%= f.association :freecen1_vld_file %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

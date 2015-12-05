@@ -11,6 +11,7 @@ class SyndicatesController < ApplicationController
   end
 
   def new
+    
     get_user_info_from_userid
     @syndicate = Syndicate.new
     get_userids_and_transcribers
@@ -123,10 +124,13 @@ class SyndicatesController < ApplicationController
 
   def load(id)
     @first_name = session[:first_name]
-    @syndicate = Syndicate.find(id)
-    get_user_info_from_userid
+    @syndicate = Syndicate.id(id).first
+    if @syndicate.nil?
+      go_back("syndicate",id)
+    else
+      get_user_info_from_userid
+    end
   end
-
   def get_userids_and_transcribers
     @user = UseridDetail.where(:userid => session[:userid]).first
     case
@@ -156,7 +160,7 @@ class SyndicatesController < ApplicationController
       @syndicate.remove_syndicate_from_coordinator
       @syndicate.downgrade_syndicate_coordinator_person_role
       @syndicate.destroy
-      flash[:notice] = 'The deletion of the Register was successful'
+      flash[:notice] = 'The deletion of the Syndicate was successful'
       redirect_to syndicates_path
     end
   end

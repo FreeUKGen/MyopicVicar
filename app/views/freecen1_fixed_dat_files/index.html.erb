@@ -1,0 +1,29 @@
+<h1>Listing freecen1_fixed_dat_files</h1>
+
+<table>
+  <tr>
+    <th>Filename</th>
+    <th>Dirname</th>
+    <th>Year</th>
+    <th>Chapman code</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freecen1_fixed_dat_files.each do |freecen1_fixed_dat_file| %>
+  <tr>
+    <td><%= freecen1_fixed_dat_file.filename %></td>
+    <td><%= freecen1_fixed_dat_file.dirname %></td>
+    <td><%= freecen1_fixed_dat_file.year %></td>
+    <td><%= freecen1_fixed_dat_file.chapman_code %></td>
+    <td><%= link_to 'Show', freecen1_fixed_dat_file %></td>
+    <td><%= link_to 'Edit', edit_freecen1_fixed_dat_file_path(freecen1_fixed_dat_file) %></td>
+    <td><%= link_to 'Destroy', freecen1_fixed_dat_file, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freecen1 fixed dat file', new_freecen1_fixed_dat_file_path %>

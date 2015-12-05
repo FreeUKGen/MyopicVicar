@@ -37,12 +37,7 @@
               :wrapper_html => 
               { :class => "grid__item  one-whole  palm-one-whole" 
               }%>
-  <%= f.input :register_notes, :label => "Notes about Register :",
-              :input_html =>
-               { :size => 60 , :class => "text-input"},
-              :wrapper_html => 
-              { :class => "grid__item  one-whole  palm-one-whole" 
-              }%>
+  
   <%= f.input :status,  :label => "Status or transcriptions (i.e. Underway/Finished etc :",
               :input_html =>
               {  :size => 60, :class => "text-input"},
@@ -61,6 +56,12 @@
                :wrapper_html => 
               { :class => "grid__item  one-whole  palm-one-whole" 
               } %>
+  <%= f.input :register_notes, :label => "Notes about Register :",
+              :input_html =>
+               { :size => 60 , :class => "text-input"},
+              :wrapper_html => 
+              { :class => "grid__item  one-whole  palm-one-whole" 
+              }%>            
   <%= f.input :last_amended,:label => "System generated date of last amended record :",
               :input_html => 
               { :disabled => true, :size => 20 ,:class => "text-input"},

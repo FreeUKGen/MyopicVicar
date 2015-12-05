@@ -5,16 +5,16 @@
    <% end %>  
      
     <div >
-    <%= semantic_form_for @csvfile, html: { multipart: true } do |f| %>
+    <%= simple_form_for @csvfile, html: { :multipart => true ,:class => "grid"} do |f| %>
 
   
 
-     <%= f.input :csvfile, :label => "Please select your file to upload  :" %><br>
+     <%= f.input :csvfile, :label => "Please select your file to upload" %><br>
 
       <%= f.input :userid, {:as => :select,  :collection => @people,:include_blank => false,:label => "Please select userid for whom file is to be loaded  :", :size => 5} if session[:manager]  %><br>
      <%= f.input :wait, {:as => :select,  :collection => [true,false],:include_blank => false,:label => "Do you wish to wait for file to be processed  (You may have to wait a few minutes if selecting true):", :size => 5}   %><br>
     
-     <%= f.submit "Upload" %>
+    <%= f.button :submit, 'Upload'   %>
      <% end %>
     </div>
    

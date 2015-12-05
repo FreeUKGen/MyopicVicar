@@ -23,7 +23,6 @@ class AtticFilesController < InheritedResources::Base
   def destroy
      file = AtticFile.find(params[:id])
      user = file.userid_detail.userid
-     p user
      file.destroy
      flash[:notice] = 'The destruction of the file was successful'
      redirect_to attic_file_path(user)

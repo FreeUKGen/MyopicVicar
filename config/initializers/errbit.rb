@@ -5,4 +5,5 @@ Airbrake.configure do |config|
   config.host    = ERRBIT["host"]
   config.port    = ERRBIT["port"]
   config.secure  = config.port == ERRBIT["secure"]
+  config.ignore_only  = []
 end

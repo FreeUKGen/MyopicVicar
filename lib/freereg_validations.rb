@@ -90,15 +90,13 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
           'Juvenis' => 'Minor'}
 
 
-def FreeregValidations.cleantext(field)
+  def FreeregValidations.cleantext(field)
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
      return true if field =~ VALID_TEXT
-       return true  
-     
-   
+       return true     
   end
-def FreeregValidations.cleanname(field)
+  def FreeregValidations.cleanname(field)
  
      #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
@@ -119,7 +117,7 @@ def FreeregValidations.cleanname(field)
   # check that the age is in one of several acceptable formats - infant
   # 1d (day), 2w (week), 3m (month), 2y5m (2 years, 5 months), or - for 'no age'
   # max 30d, 30w, 30m and 150y
-def FreeregValidations.cleanage(field)
+  def FreeregValidations.cleanage(field)
 
      #the planning team requested this code be deactivated for burials
     return true if field.nil? || field.empty?
@@ -166,13 +164,12 @@ def FreeregValidations.cleanage(field)
         
         else
               return false
-         end
-         
+        end      
   end
 
 
 
- def  FreeregValidations.cleansex(field)
+  def  FreeregValidations.cleansex(field)
   
       return false unless FreeregValidations.cleanname(field)
     case
@@ -197,11 +194,11 @@ def FreeregValidations.cleanage(field)
             
         else
           return false
-      end
+    end
   end
 
 
- def FreeregValidations.cleancondition(field)
+  def FreeregValidations.cleancondition(field)
     return true if field.nil? || field.empty?
      field = field.capitalize
      field = VALID_MARRIAGE_CONDITIONS[field] if VALID_MARRIAGE_CONDITIONS.has_key?(field)
@@ -210,11 +207,12 @@ def FreeregValidations.cleanage(field)
   end
 
   def FreeregValidations.cleandate(field)
+    
      return true if field.nil? || field.empty?
      return false unless FreeregValidations.cleannumeric(field)
-       
       a = field.split(" ")
       case
+       
       when a.length == 3
         #work with  dd mmm yyyy/y
         #firstly deal with the dd and allow the wild character
@@ -223,54 +221,63 @@ def FreeregValidations.cleanage(field)
         #deal with the month allowing for the wild character
         return false unless (VALID_MONTH.include?(Unicode::upcase(a[1])) || a[1].to_s =~ WILD_CHARACTER)
           #deal with the year and split year
-          if a[2].length >4 then
-            #deal with the split year
-           
-              a[2]= a[2][0..-(a[2].length-3)]
-           
-          end
-              #deal with the yyyy and permit the wild character
-             return true if a[2] =~ WILD_CHARACTER
-              return false  unless (a[2].to_s =~ VALID_YEAR)
-              unless a[2].nil?
-                return false if a[2].to_i > YEAR_MAX || YEAR_MIN > a[2].to_i
-              end
-              return true
-         
+          check = FreeregValidations.check_year(a[2])
+          return check
      
       when a.length == 2
          #deal with dates that are mmm yyyy firstly the mmm then the split year
-         return true if a[0].to_s =~ WILD_CHARACTER || a[1].to_s =~ WILD_CHARACTER
-         if VALID_MONTH.include?(Unicode::upcase(a[0])) 
-           if a[1].length >4 then
-              a[1]= a[1][0..-(a[1].length-3)]
-           end
-            
-           return false  unless (a[1].to_s =~ VALID_YEAR)
-           unless a[1].nil?
-                 return false if a[1].to_i > YEAR_MAX || YEAR_MIN > a[1].to_i
-           end
-              return true
-         end
-             return false
-       
-       when a.length == 1
+         return false unless VALID_MONTH.include?(Unicode::upcase(a[0])) || a[0].to_s =~ WILD_CHARACTER
+         check = FreeregValidations.check_year(a[1])
+         return check       
+      when a.length == 1
           #deal with dates that are year only
-            if a[0].length >4 then
-             a[0]= a[0][0..-(a[0].length-3)]
-            end
-             return true if a[0] =~ WILD_CHARACTER
-              return false  unless (a[0].to_s =~ VALID_YEAR )
-              unless a[0].nil?
-               return false if a[0].to_i > YEAR_MAX || YEAR_MIN > a[0].to_i
-              end
-              return true
-        end
-          
-   end
+          check = FreeregValidations.check_year(a[0])
+          return check
+      else
+       p "unknown date format"
+        return false
+      end
+
+  end
+
+  def self.check_year(a)
+    return true if a =~ WILD_CHARACTER
+    characters =[]
+    characters = a.split("")
+    if characters.length == 4 #deal with the yyyy and permit the wild character
+     
+      return false  unless (a.to_s =~ VALID_YEAR)
+      unless a.nil?
+          return false if a.to_i > YEAR_MAX || YEAR_MIN > a.to_i
+      end
+      return true
+    end
+    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] = "/" ) 
+      #deal with the split year
+      year = characters
+      last = 2
+      last = 3 if characters.length == 7
+      last = 4 if characters.length == 8 
+      last = 5 if characters.length == 9
+      year = characters.reverse.drop(last).reverse.join
+      ext = characters.drop(5).join
+      return true if year =~ WILD_CHARACTER
+      return false  unless (year.to_s =~ VALID_YEAR)
+      return false if year.to_i > YEAR_MAX || 1753 < year.to_i
+      return false if ext.to_i < 0 || ext.to_i > 1753
+      return true
+    else 
+        p  "greater than 9 digits and character position 5 was not / "
+     return false
+    end
+      p "less than 4 and greater than 9"
+    return false      
+  end
+         
   def FreeregValidations.year_extract(field)
-   if (field.nil? || field.empty?)
+   if field.blank?
       year = nil
+      return
      else
       a = field.split(" ")
       case 

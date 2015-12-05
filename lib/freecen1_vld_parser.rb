@@ -37,7 +37,7 @@ module Freecen
         entry.civil_parish = hash[:parish]
         entry.ecclesiastical_parish = hash[:ecc_parish]
   
-        entry.household_number = hash[:hh]
+        entry.dwelling_number = hash[:hh]
         entry.sequence_in_household = hash[:seq_in_household]
   
         entry.enumeration_district = "#{hash[:enum_n]}#{hash[:enum_a]}"
@@ -60,8 +60,6 @@ module Freecen
         entry.disability = hash[:dis]
         entry.language = hash[:language]
         entry.notes = hash[:notes]
-  
-        entry.entry_number = hash[:hh]
   
         entry.attributes.delete_if { |key,value| value.blank? }
         entry.freecen1_vld_file = file

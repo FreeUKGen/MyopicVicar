@@ -1,124 +1,48 @@
 
-<%= semantic_form_for @userid, :html => { :class => "grid"} do |f| %>
-<%if session[:type] == "add"%>
+<%= simple_form_for @userid, :html => { :class => "grid"} do |f| %>
+<% role_lbl = "Role in " + MyopicVicar::Application.config.freexxx_display_name + ":" %>
   
-<%= f.input :userid,:label => "The UserID itself:",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :syndicate,
-               { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true, :collection => @syndicates, :size => 15,
-              :input_html => { :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%>
-<%else%>
-<%if session[:my_own]%>
-<%= f.input :userid, :label => "The UserId itself:",
-              :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :syndicate,:label => "Syndicate :",
-              :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%else%>
-<%= f.input :userid, :label => "The UserId itself:",
-              :input_html =>
-              { :size => 40 ,  :disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :syndicate,
-              { :as => :select, :label => "Syndicates :",:include_blank => false, :required => true, :collection => @syndicates, :size => 15,
-              :input_html => { :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%>
-<%end%>
-<%end%>
-<%= f.input :person_forename,:label => "Forename :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :person_surname,:label => "Surname :",
-              :input_html =>
-              { :size => 40,  :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :email_address,:label => "Email :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :address,:label => "Physical location :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%unless @user.person_role == 'researcher' %>
-<%= f.input :telephone_number,:label => "Telephone :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :fiche_reader,
-              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Has a Fiche Reader :", :size => 5,
-              :input_html => {  :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%>
-<%= f.input :transcription_agreement,
-              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Transcription agreement accepted:", :size => 5,
-              :input_html => {  :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%>
-<% unless session[:my_own] %>
-<%= f.input :active,
-              {:as => :select, :collection => [true,false],:include_blank => false,:label => "Active :", :size => 5,
-              :input_html => { :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%>
-<%= f.input :disabled_date,:label => "Date made inactive :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :disabled_reason,:label => "Reason for making inactive :",
-              :input_html =>
-              { :size => 40 , :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :skill_level,
-              {:as => :select, :collection => UseridRole::SKILLS, :include_blank => false,:label => "Person's transcription level skill :", :size => 8,
-              :input_html => {  :class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%> 
-<%end%>
-<%= f.input :last_upload,:label => "Date of last upload :",
-              :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%= f.input :sign_up_date,:label => "Date signed up :",
-              :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<%if (@user.person_role == 'system_administrator' || (@user.person_role == 'technical' && @user.active)) && !session[:my_own]%>
-<%= f.input :person_role,
-              {:as => :select, :collection => UseridRole::VALUES, :include_blank => false,:label => "Person's role in FreeREG :", :size => 8,
-              :input_html => {:class => "select" }, 
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
-              }%> 
-<%else%>
-<%= f.input :person_role,:label => "Role in Freereg :",
-              :input_html =>
-              { :size => 40 ,:disabled => true, :class => "text-input"},
-              :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
-              }%>
-<% end %>
-<%= f.action :submit, :as => :input, :label => 'Submit' %>
-<% end %>
-<% end %>
-</section>
+<p style="text-align: center">Required fields are show with an *</p>
+  <% if controller.action_name == 'new' || controller.action_name == 'create'%>
+    <%= f.input :userid,:label => "UserID",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
+    <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => role_lbl, :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+    <% else%>
+        <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => "  simple_form_position", :size => 2}, :hint => "You can only create a Userid in your own syndicate"%>
+         <%= f.input :person_role,:label => role_lbl,:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
+    <% end%>
+  <% else%>
+    <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
+    <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
+      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => role_lbl, :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+    <% else%>
+        <%= f.input :syndicate, :label => "Syndicate",:input_html => { :size => 40, :disabled => true }%>
+         <%= f.input :person_role,:label => role_lbl,:input_html => { :size => 40, :disabled => true }%>
+    <% end%>
+  <% end%>
+  <%= f.input :person_forename,:label => "Forename", :required => true, :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <%= f.input :person_surname,:label => "Surname", :required => true,:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
+  <%= f.input :email_address,:label => "Email", :required => true,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+
+  <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <% unless @user.person_role == 'researcher' %>
+    <%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
+    <%= f.input :transcription_agreement, :as => :boolean,:label => "Transcription agreement accepted?"%>
+    <% unless session[:my_own] %>           
+      <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 4},:selected => "Learning" %>
+      <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active"%>
+      <%= f.input :disabled_reason,:hint => "If you are changing to inactive put in a reason",:label => "Reason for making inactive",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
+      <% unless @userid.active %> 
+        <%= f.input :disabled_date,:label => "Date made inactive", :input_html => { :size => 30, :disabled => true}%>
+      <% end%>
+    <% end%>
+    <% unless MyopicVicar::Application.config.template_set == 'freecen' %>
+      <%= f.input :last_upload,:label => "Date of last upload", :input_html => { :size => 30, :disabled => true }%>
+    <% end %>
+    <%= f.input :sign_up_date,:label => "Date signed up", :input_html => { :size => 30, :disabled => true }%>
+  <% end %>
+  <%= f.button :submit, 'Update'   %>
+  <% end %>

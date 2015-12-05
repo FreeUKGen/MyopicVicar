@@ -1,0 +1,97 @@
+<% breadcrumb :my_own_userid_detail, @userid %>
+<section class="island  island--light">
+  <div class="grid">
+    <div style="text-align: center">
+      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  weight--light btn--small "%> <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are about to reset your own password; if you proceed an email will be sent to you and you will be logged out. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %>
+      
+    </div>
+    <div style="clear:both;"> </div>
+    <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+      <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+    <% end %>
+    <table  class="table--bordered   palm-one-whole " >
+      <tr>
+        <th >Field</th>
+        <th class="caps">Value</th>
+      </tr>
+      <tr>
+        <td>Forename:</td><td > <%= @userid.person_forename %>  </td>
+      </tr><tr>
+      <td>Surname:</td><td > <%= @userid.person_surname %>  </td>
+    </tr>
+    <tr>
+      <td>Email:</td><td > <%= @userid.email_address   %> </td>
+    </tr>
+    <tr>
+      <td>Physical Location:</td><td > <%= @userid.address  %>  </td>
+    </tr>
+    <tr>
+      <%unless @userid.sign_up_date.nil?%>
+      <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
+      <% end%>
+    </tr>
+    <% unless @userid.person_role == 'researcher'%>
+    <tr>
+      <td>Telephone number:</td><td > <%= @userid.telephone_number %>  </td>
+    </tr>
+    <tr>
+      <td>Fiche reader:</td><td > <%=@userid.fiche_reader%>  </td>
+    </tr>
+    <tr>
+      <td>Syndicate:</td><td > <%=@userid.syndicate %>  </td>
+    </tr>
+    <tr>
+      <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>
+    </tr>
+    <tr>
+      <td>Transcription agreement accepted:</td><td > <%= @userid.transcription_agreement%>  </td>
+    </tr>
+    <% unless MyopicVicar::Application.config.template_set == 'freecen' %>
+    <tr>
+     <% unless @userid.last_upload.nil?%>
+      <td>Last upload:</td><td > <%= @userid.last_upload.strftime("%d %b %Y") %>  </td>
+    <% end %>
+    </tr>
+    <tr>
+      <td>Number of files loaded:</td><td > <%= @userid.freereg1_csv_files.count  %> </td>
+    </tr>
+    <tr>
+      <td>Number of records loaded:</td><td ><%=@userid.compute_records%>  </td>
+    </tr>
+    <% end %>
+    <tr>
+      <td>Role in <%= MyopicVicar::Application.config.freexxx_display_name %>:</td><td > <%=@userid.person_role%>  </td>
+    </tr>
+    
+  <tr>
+    <% unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
+    <td>Counties coordinated:</td><td > <%=@userid.county_groups %>   </td>
+  </tr>
+  <% end%>
+  <tr>
+    <% unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
+    <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
+  </tr>
+  <% end%>
+  <tr>
+    <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>
+  </tr>
+  <% unless  @userid.active %>
+  <tr>
+    <% unless @userid.disabled_date.nil?%>
+    <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
+    <% end%>
+  </tr>
+  <tr>
+    <td>Reason for making inactive:</td><td > <%=@userid.disabled_reason %>  </td>
+  </tr>
+  <% end%>
+  <% end%>
+  
+</table><br>
+</div>
+<div class="grid__item  one-third  palm-one-whole ">
+<%= render "resource_sidebar" %>
+</div>

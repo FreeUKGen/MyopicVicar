@@ -1,8 +1,7 @@
 class Freecen1VldEntry
   include Mongoid::Document
-  field :entry_number, type: Integer
   field :deleted_flag, type: Boolean
-  field :household_number, type: Integer
+  field :dwelling_number, type: Integer
   field :sequence_in_household, type: Integer
   field :civil_parish, type: String
   field :ecclesiastical_parish, type: String

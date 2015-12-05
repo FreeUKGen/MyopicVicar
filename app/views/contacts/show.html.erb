@@ -20,8 +20,15 @@
           <th  class="caps">Value</th>
         </tr>
         <tr>
-          <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
+          <td>Type of Contact: </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
         </tr>
+	<tr>
+	  <td>County to Contact:</td><td class="weight--semibold">
+	    <% if @contact.contact_county %>
+	      <%= @contact.contact_county %>
+	    <% else %>
+	      (no county specified)
+	    <% end %>
         <tr>
           <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
         </tr>
@@ -40,15 +47,7 @@
         <tr>
           <td>Session ID:</td><td class="weight--semibold"> <%= @contact.session_id %> </td>
         </tr>
-        <tr>
-          <td>View: </td><td class="weight--semibold"><%= link_to("search queries for this session", search_query_report_path(:contact_id => @contact, :session_id => @contact.session_id)) %></td>
-        </tr>
-        <tr>
-          <td>Problem page url:</td><td class="weight--semibold">   <%= link_to @contact.problem_page_url, @contact.problem_page_url %></td>
-        </tr>
-        <tr>
-          <td>Previous page url:</td><td class="weight--semibold"><%= link_to @contact.previous_page_url, @contact.previous_page_url %></td>
-        </tr>
+        
         <tr>
           <td>Github Issue:</td><td class="weight--semibold">
           <% if @contact.github_issue_url %>

@@ -1,6 +1,20 @@
 require 'chapman_code'
 namespace :foo do
 
+  desc "Correct the witness records"
+  task :correct_witness_records,[:limit,:range] => :environment do |t, args|
+  require 'correct_witness_records'
+    CorrectWitnessRecords.process(args.limit,args.range)
+  end
+
+
+  desc "Initialize the Physical files collection"
+  task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
+  require 'load_physical_file_records'
+    LoadPhysicalFileRecords.process(args.limit,args.range)
+    PhysicalFile.create_indexes()
+  end
+
   desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
@@ -13,7 +27,15 @@ namespace :foo do
       puts "Completed Checking #{limit} Search records"
     end
   end
+ desc "Correct missing modified_place_names list"
+   task :missing_modified_place_names, [:limit] => [:environment] do |t, args|
+   require 'missing_modified_place_names' 
+   Mongoid.unit_of_work(disable: :all) do
+     MissingModifiedPlaceNames.process(args.limit)
 
+     puts "Task complete."
+   end
+  end
  
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
@@ -58,6 +80,7 @@ namespace :foo do
     require "feedback"
     require "search_query"
     require "attic_file"
+    require "physical_file"
     puts "Freereg build indexes."
     Country.create_indexes()
     County.create_indexes()
@@ -74,6 +97,7 @@ namespace :foo do
     AtticFile.create_indexes()
     Freereg1CsvEntry.create_indexes()
     SearchRecord.create_indexes()
+    PhysicalFile.create_indexes()
     puts "Indexes complete."
   end
 
@@ -157,8 +181,12 @@ namespace :foo do
 
 
   desc "Refresh the places cache"
-  task :refresh_places_cache => [:environment] do |t,args|
-    PlaceCache.refresh_all
+  task :refresh_places_cache, [:inspect_churches] => [:environment] do |t,args|
+    if args[:inspect_churches]
+      PlaceCache.refresh_all(args.inspect_churches == "true")
+    else
+      PlaceCache.refresh_all
+    end
   end
 
 

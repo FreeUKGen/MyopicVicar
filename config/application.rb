@@ -59,6 +59,8 @@ module MyopicVicar
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
+    config.middleware.use Mobvious::Manager
+
     # Use SQL instead of Active Record's schema dumper when creating the database.
     # This is necessary if your schema can't be completely dumped by the schema dumper,
     # like if you have constraints or database-specific column types
@@ -70,6 +72,18 @@ module MyopicVicar
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
 
+    # set config.template_set before asset directories are selected
+    config.template_set = TemplateSet::FREECEN
+
+    #set config.freexxx_display_name based on the template_set
+    if config.template_set == TemplateSet::FREECEN
+      config.freexxx_display_name = "FreeCen"
+    elsif config.template_set == TemplateSet::FREEREG
+      config.freexxx_display_name = "FreeReg"
+    elsif config.template_set == TemplateSet::FREEBMD
+      config.freexxx_display_name = "FreeBMD"
+    end
+
     # Enable the asset pipeline
     config.assets.enabled = true
 
@@ -78,15 +92,12 @@ module MyopicVicar
 
     # make the designer's fonts available for the stylesheets
     config.assets.paths << Rails.root.join('app', 'assets') 
-     
+    config.assets.paths << Rails.root.join("app", "assets", "fonts")
     
     config.generators do |g|
       g.orm :active_record
     end
 
-    
-    config.template_set = TemplateSet::FREECEN
-    
     config.before_configuration do
       env_file = Rails.root.join("config", 'application.yml').to_s
 

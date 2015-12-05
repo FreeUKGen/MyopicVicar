@@ -10,63 +10,61 @@ class PlacesController < ApplicationController
     @chapman_code = session[:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     if session[:active_place] == 'Active'
-      @places = Array.new
-      Place.where( :chapman_code => @chapman_code).all.order_by( place_name: 1).each do |place|
-        @places << place if place.churches.exists?
-      end
-      @places = Kaminari.paginate_array(@places).page(params[:page])
+      @places = Place.where( :chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)
+     
     else
-      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by( place_name: 1).page(params[:page])
+       @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)     
     end
-
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
     session[:page] = request.original_url
   end
 
-  def relocate
-    load(params[:id])
-    get_places_counties_and_contries
-  end
-
   def show
     load(params[:id])
-    @places = Place.where( :chapman_code => @chapman_code,  :disabled.ne => "true" ).all.order_by( place_name: 1)
-    session[:parameters] = params
-    @names = @place.get_alternate_place_names
+    
 
   end
 
   def edit
     load(params[:id])
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @place_name = Place.find(session[:place_id]).place_name
-     @county = session[:county]
-    session[:type] = 'edit'
+    @place.alternateplacenames.build
+    @county = session[:county]
+ 
 
   end
   def rename
     get_user_info_from_userid
     load(params[:id])
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @county = session[:county]
+    @records = @place.search_records.count
 
+  end
+
+  def approve
+    session[:return_to] = request.referer
+    get_user_info_from_userid
+    load(params[:id])
+    @place.approve
+    flash[:notice] = "Unapproved flag removed; Don't forget you now need to update the Grid Ref as well as check that county and country fields are set."
+    redirect_to place_path(@place)
   end
 
   def relocate
     get_user_info_from_userid
     load(params[:id])
     @county = session[:county]
-    get_places_counties_and_contries
+    get_places_counties_and_countries
+    @records = @place.search_records.count
+
   end
 
   def merge
     load(params[:id])
-    p 'merging into'
-    p @place
     errors = @place.merge_places
-    p @place
-    p errors
     if errors[0]  then
       flash[:notice] = "Place Merge unsuccessful; #{errors[1]}"
       render :action => 'show'
@@ -78,10 +76,12 @@ class PlacesController < ApplicationController
 
 
   def new
-    get_places_counties_and_contries
+    get_places_counties_and_countries
     @place = Place.new
     get_user_info_from_userid
-    session[:type] = 'new'
+    @place.alternateplacenames.build
+    @county = session[:county]
+   
   end
 
   def create
@@ -91,34 +91,28 @@ class PlacesController < ApplicationController
     @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     #use the lat/lon if present if not calculate from the grid reference
     @place.add_location_if_not_present
-    @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name] == ''
     @place.save
     if @place.errors.any?
       #we have errors on the creation
       flash[:notice] = 'The addition to Place Name was unsuccessful'
-      get_places_counties_and_contries
-      @place_name = Place.find(session[:place_id]).place_name
+      @county = session[:county]
+      get_places_counties_and_countries
+      @place_name = @place.place_name unless @place.nil?
       render :new
     else
       #we are clean on the addition
       flash[:notice] = 'The addition to Place Name was successful'
-      redirect_to places_path
+      redirect_to place_path(@place)
     end
   end
 
   def update
     load(params[:id])
-    case
+   case
     when params[:commit] == 'Submit'
-      p 'editing place'
-      p params
-      p @place
       @place.save_to_original
-      p @place
-      @place.alternateplacenames_attributes = [{:alternate_name => params[:place][:alternateplacename][:alternate_name]}] unless params[:place][:alternateplacename][:alternate_name].blank?
-      @place.alternateplacenames_attributes = params[:place][:alternateplacenames_attributes] unless params[:place][:alternateplacenames_attributes].nil?
+      @place.adjust_location_before_applying(params,session)
       @place.update_attributes(params[:place])
-      p @place
       if @place.errors.any?  then
         flash[:notice] = 'The update of the Place was unsuccessful'
         render :action => 'edit'
@@ -128,11 +122,7 @@ class PlacesController < ApplicationController
       redirect_to place_path(@place)
       return
     when params[:commit] == 'Rename'
-      p 'renaming place'
-      p @place
       errors = @place.change_name(params[:place])
-      p @place
-      p errors
       if errors[0]  then
         flash[:notice] = "Place rename unsuccessful; #{errors[1]}"
         render :action => 'rename'
@@ -142,39 +132,36 @@ class PlacesController < ApplicationController
       redirect_to place_path(@place)
       return
     when params[:commit] == 'Relocate'
-      p 'relocating place'
-      p @place
       errors = @place.relocate_place(params[:place])
-      p @place
-      p errors
       if errors[0]  then
-        flash[:notice] = "Place relocation unsuccessful; #{errors[1]}"
+        flash[:notice] = "Place filling unsuccessful; #{errors[1]}"
         render :action => 'show'
         return
       end
-      flash[:notice] = "The relocation of the Place was successful. \n PLEASE CHECK YOU STILL HAVE THE CORRECT LOCATION INFORMATION"
+      flash[:notice] = "The filling of the county country information was successful."
       redirect_to place_path(@place)
       return
     else
       #we should never get here but just in case
-      flash[:notice] = 'The change to the Church was unsuccessful'
+      flash[:notice] = 'The change to the Place was unsuccessful'
       redirect_to place_path(@place)
-
-    end
-
+   end
   end
 
 
   def load(place_id)
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @place = Place.find(place_id)
-    session[:place_id] = place_id
-    @place_name = @place.place_name
-    session[:place_name] = @place_name
-    @county = ChapmanCode.has_key(@place.chapman_code)
-    session[:county] = @county
-    @first_name = session[:first_name]
-
+    @place = Place.id(place_id).first
+    if @place.nil?
+      go_back("place",place_id)
+    else
+      session[:place_id] = place_id
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      @county = ChapmanCode.has_key(@place.chapman_code)
+      session[:county] = @county
+      @first_name = session[:first_name]
+    end
   end
 
   def destroy
@@ -182,7 +169,7 @@ class PlacesController < ApplicationController
     unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
       unless @place.churches.count == 0
         flash[:notice] = 'The Place cannot be disabled because there were Dependant churches; please remove them first'
-        redirect_to places_path
+        redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
         return
       end
     end
@@ -190,19 +177,19 @@ class PlacesController < ApplicationController
     if @place.errors.any? then
       @place.errors
       flash[:notice] = "The disabling of the place was unsuccessful #{@place.errors.messages}"
+      redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
+      return
     end
      flash[:notice] = 'The disabling of the place was successful'
-    redirect_to places_path
+    redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
   end
 
-  def get_places_counties_and_contries
+  def get_places_counties_and_countries
     @countries = Array.new
-    Country.all.each do |country|
+    Country.all.order_by(country_code: 1).each do |country|
       @countries << country.country_code
     end
-    @countries.insert(0,'England')
     @counties = ChapmanCode.keys
-    @counties.insert(0,@county)
     placenames = Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = Array.new
     placenames.each do |placename|
@@ -240,15 +227,16 @@ class PlacesController < ApplicationController
     end
   end
   def for_freereg_content_form
-    chapman_codes = params[:freereg_content][:chapman_codes]
+    unless params[:freereg_content].nil?
+      chapman_codes = params[:freereg_content][:chapman_codes]
+      county_response = ""
+      county_places = PlaceCache.in(:chapman_code => chapman_codes)
+      county_places.each { |pc| county_response << pc.places_json }
 
-    county_places = PlaceCache.in(:chapman_code => chapman_codes)
-    county_response = ""
-    county_places.each { |pc| county_response << pc.places_json }
-
-    respond_to do |format|
-      format.json do
-        render :json => county_response
+      respond_to do |format|
+        format.json do
+          render :json => county_response
+        end
       end
     end
   end

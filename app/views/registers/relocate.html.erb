@@ -1,0 +1,23 @@
+<% breadcrumb :relocate_register,  @register%>
+<p style="text-align: center"><b><b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+ 
+</div>
+ <% end %>
+<section class="island  island--light">
+<p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>
+You are changing <%= @records%> so it may take some time.
+  <%= semantic_form_for @registers,:html => { :class =>  "grid"} do |f| %>
+  
+  <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
+  :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
+  <%= f.input :church_name, :input_html => { :size => 30 }%>
+  <%= f.input :place,{ :as => :select,:label => "Select place name from the list of Approved Names",:include_blank => false,
+  :required => true, :collection => @placenames, :size => 15 } %>
+  <%= f.action :submit, :as => :input, :label => 'Relocate'   %>
+  <% end %>
+
+  </section>

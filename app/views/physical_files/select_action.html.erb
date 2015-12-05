@@ -1,0 +1,16 @@
+<% breadcrumb :physical_files_options%>
+<div class="island  island--light">
+<h3 style="text-align: center"><%= @first_name%> how would you like to process the Physical Files Collection? Select one of the following options.<h3>
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+<% @options.each do |option| %>
+    <%= link_to option, UseridRole::PHYSICAL_FILES_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn weight--light btn--small"%> 
+    <br>
+  <% end%>
+</div>
+
+<%= render "resource_sidebar" %> 
+

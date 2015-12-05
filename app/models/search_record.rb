@@ -9,8 +9,8 @@ class SearchRecord
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
 
-  before_save :transform
-
+  #before_save :transform
+  before_create :transform
   module Source
     TRANSCRIPT='transcript'
     EMENDOR='e'
@@ -74,6 +74,20 @@ class SearchRecord
     "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
     "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
   }
+    class << self
+     def marriages
+      where(:record_type => "ma")
+     end
+     def baptisms
+      where(:record_type => "ba")
+     end
+     def burials
+      where(:record_type => "bu")
+     end
+     def record_id(id)
+       where(:id => id)
+     end
+  end
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
@@ -144,19 +158,21 @@ class SearchRecord
   end
 
   def format_location
-   
-    place_name = self.place.place_name unless self.place.nil? # should not be nil but!
     location_array = []
-  
+    register_type = ''
+    church_name = ''
     if self.freereg1_csv_entry
-      place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place.place_name if self.place.nil?
-      church_name = self.freereg1_csv_entry.church_name
-      register_type = RegisterType.display_name(self.freereg1_csv_entry.register_type)
-      
+      register = self.freereg1_csv_entry.freereg1_csv_file.register
+      register_type = ''
+      register_type = RegisterType.display_name(register.register_type) unless register.nil? # should not be nil but!
+      church = register.church
+      church_name = church.church_name unless church.nil? # should not be nil but!
+      place_name = self.place.place_name unless self.place.nil? # should not be nil but!
       location_array << "#{place_name} (#{church_name})"
-      location_array << "[#{register_type}]"
-    else
-      location_array << "#{place_name} (#{church_name})"
+      location_array << " [#{register_type}]"
+    else # freecen
+      place_name = self.place.place_name unless self.place.nil?
+      location_array << "#{place_name}"
     end
 
     location_array
@@ -184,7 +200,6 @@ class SearchRecord
     end
     order
   end
-
 
   def transform
     populate_search_from_transcript
@@ -217,7 +232,8 @@ class SearchRecord
 
   def create_soundex
     search_names.each do |name|
-      search_soundex << soundex_name_type_triple(name)
+      sdx = soundex_name_type_triple(name)
+      search_soundex << sdx unless sdx[:first_name].nil? || sdx[:last_name].nil?
     end
   end
 

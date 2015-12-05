@@ -1,77 +1,70 @@
+<% title "About Search Results" %>
 <section class="island  ">
   <div class="grid">
-
-<h2>About This Query</h2>
-<div id="nav">
-	<ul>
-	  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small  float--right" %>
-		<%= link_to "New Search", new_search_query_path, :class => "btn  btn--small  float--right" %>
-		<%= link_to "Back", search_query_path(@search_query ), :class => "btn  btn--small  float--right"%>
-	</ul>
-</div>
-
-<p>How did your query match against the FreeREG database?</p>
-
-<h3>Name</h3>
-
-<p>
-	Search Criteria: <br>
-	<b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>,
-	<b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
-	<b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
-</p>
-<p>
-	Search Logic:
-	<% if @search_query.first_name %>
-		Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalization)
-		<% if @search_query.fuzzy %>
-			and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
-		<% end %>.
-		<% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
-		<% if emendations && emendations.size > 0 %>
-			In addition, match records whose first name is
-			<b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
-		<% end %>
-	<% end %>
-	<% if @search_query.last_name %>
-		<br />Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)
-		<% if @search_query.fuzzy %>
-			and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
-		<% end %>
-	<% end %>
-</p>
-
-<h3>Date</h3>
-<p>
-	<% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
-		Search Criteria:
-		<% if @search_query.start_year %>
-			<b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
-		<% end %>
-
-		<% if @search_query.end_year %>
-			<b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>.
-		<% end %>
-	<% else %>
-		<i>No date criteria specified.</i>
-	<% end %>
-</p>
-<% if @search_query.start_year.present? || @search_query.end_year.present? %>
-	<p>
-		Search Logic:<br>
-		Records with dates
-    <% if @search_query.start_year.present? %>
-      <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
-      <% if @search_query.end_year.present? %>
-        and dates
+    <div class="text--center">
+      
+      <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small " %>
+      <%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small  " %>
+      <%= link_to "Back", search_query_path(@search_query ), :class => "btn weight--light  btn--small  "%>
+    </div>
+    <h2>About This Query: </h2>
+    <h3>Name</h3>
+    <p>
+      Search Criteria:
+      <b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>,
+      <b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
+      <b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
+      <br> <br>
+      
+      Search Logic:
+      <% if @search_query.first_name %>
+      Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalization)
+      <% if @search_query.fuzzy %>
+      and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
+      <% end %>.
+      <% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
+      <% if emendations && emendations.size > 0 %>
+      In addition, match records whose first name is
+      <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
       <% end %>
+      <% end %>
+      <% if @search_query.last_name %>
+      Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)
+      <% if @search_query.fuzzy %>
+      and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
+      <% end %>
+      <% end %>
+    </p>
+    <h3>Date</h3>
+    <% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
+      Search Criteria:
+      <% if @search_query.start_year %>
+        <b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
+      <% end %>
+      <% if @search_query.end_year %>
+        <b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>.
+      <% end %>
+    <% else %>
+      <i>No date criteria specified.</i>
     <% end %>
-    <% if @search_query.end_year.present? %>
-      <i><b>before <%= format_end_date(@search_query.end_year) %></i></b> (New Style).
+    <br>
+    <% if @search_query.start_year.present? || @search_query.end_year.present? %>
+        Search Logic:<br>
+        Records with dates
+        <% if @search_query.start_year.present? %>
+          <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
+            <% if @search_query.end_year.present? %>
+            and dates
+            <% end %>
+        <% end %>
+        <% if @search_query.end_year.present? %>
+          <i><b>before <%= format_end_date(@search_query.end_year) %></b></i> (New Style).
+        <% end %>
     <% end %>
 	</p>
 <% end %>
 
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
 <h3>Records</h3>
 
 <% if @search_query.record_type %>
@@ -80,6 +73,7 @@
  All three record types, Baptisms, Burials and Marriages were included.
  <%end%>
 </p>
+<% end %>
 
 <h3>Location</h3>
 

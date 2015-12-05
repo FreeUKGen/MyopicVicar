@@ -1,68 +1,50 @@
-<h4 class="text--center">The database contained the following Church in <%= @place_name %> of <%= @county %>. </h4>
- <div style="text-align: center"><%= link_to 'Back to County/Place Selection', freereg_contents_path, :class => "btn  btn--small"%> 
-<%= link_to 'Back to Place for this Church', show_place_path( @church.place), :class => "btn  btn--small" %>
-    <br></div>
-<div class="grid">
+<% title "#{@church.church_name} #{@place_name} #{@county} transcriptions" %>
+<div class="container">
   <section class="island ">
-
- <table  class="grid__item two-thirds table--bordered t50">
-<colgroup >
-     <col class="t20">
-   <col class="t30 weight--semibold">
- </colgroup>
-   <thead  >
-  <tr>    
-    <th >Field</th>
-    <th >Value</th>
-  </tr>
-</thead>
-  <tbody>
-  <tr> 
-   <td>Church name :</td><td class="weight--semibold" > <%= @church.church_name %></td>
-  </tr>
-  
-   <% if @names%>
-     <%  @names.each do |name| %>
-         <% unless name == ''%> 
-           <tr><td>Other possible church names :</td><td class="weight--semibold" ><%= name %>  </td>  </tr>
-         <%end%>
-     <%end%>
-   <%end%>
-   
-   <tr>
-   <td>Denomination of the Church :</td><td class="weight--semibold" ><%= @church.denomination %></td>   
-   </tr>
-  <tr>
-          <td>The Church Website :</td><td class="weight--semibold"><%= @church.website %></td>
-        </tr>
-   <tr>
-   <td>Notes about the Church :</td><td class="weight--semibold" > <%= @church.church_notes %> </td>   
-   </tr>
-    <tr>
-   <td>Record last amended:</td><td class="weight--semibold" > <%= @church.last_amended %></td>   
-   </tr>
-   <tr>
-         <td>Number of records:</td><td class="weight--semibold" > <%= @stats[0] %></td>   
-       </tr>
-        <tr>
-         <td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td>   
-       </tr>
-       <tr>
-         <td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td>   
-       </tr>
- </tbody>      
-</table>  
-
-
-<div  class="grid__item one-quarter float_right">
-<h4 style="text-align: center">There are transcriptions for the following register(s).</h4>
-<table class="table--bordered ">
-<% @registers.each do |register| %>
-  <tr> 
-    <td class="weight--semibold"><%= link_to(RegisterType.display_name(register.register_type), show_register_path(register)) %> </td> 
-  </tr>
-<% end %>
-</table>
- <p class="micro">  <%= @page %> </p>
-</section>
+    <div style="text-align: center"> 
+    <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
+    <% if @character.present? %>
+      <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
+       <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn weight--light btn--small "%>
+    <% else %> 
+      <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%>
+    <% end%>
+    <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
+    </div><br>
+    <h2 class=" gamma text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> within <%= @county %> </h2>
+    <h4 class=" delta text--center">The Church has the following register(s):
+    <% @registers.each do |register| %>
+      <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn weight--light  btn--small") %>
+    <% end %></h4>
+    <div class="table-wrapper">
+      <table  class=" table--bordered ">
+        <colgroup >
+          <col class="t20">
+          <col class="t30 weight--semibold">
+        </colgroup>
+        <thead  >
+          <tr>
+            <th >Field</th>
+            <th >Value</th>
+          </tr>
+        </thead>
+        <tbody>    
+          <% if @names%>
+            <%  @names.each do |name| %>
+              <% unless name == ''%>
+                <tr><td>Other possible church names :</td><td class="weight--semibold" ><%= name %>  </td>  </tr>
+              <%end%>
+            <%end%>
+          <%end%>      
+          <tr><td>Denomination of the Church :</td><td class="weight--semibold" ><%= add_blank(@church.denomination) %></td></tr>
+          <tr><td>The Church Website :</td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
+          <tr><td>Notes about the Church :</td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
+          <tr><td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
+          <tr><td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td></tr>
+          <tr><td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td></tr>
+          <tr><td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>

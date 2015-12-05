@@ -1,4 +1,4 @@
-<header class="site__header" role="banner">
+<header class="site__header" >
   <div class="container">
     <div class="banner-horz">
       <%= display_banner %>
@@ -7,9 +7,19 @@
       <span>Menu</span>
       <i class="icon__cancel" aria-hidden="true"></i>
     </button>
-    <%= link_to root_url, class: "site__header__logo  icon__freereg" do %>
-      <h1 class="accessibility">FreeReg</h1>
+    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+      <%= link_to root_url, class: "site__header__logo  icon__freereg" do %>
+        <h1 class="accessibility">FreeReg</h1>
+      <% end %>
+    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+      <%= link_to root_url, class: "site__header__logo  icon__freecen" do %>
+        <h1 class="accessibility">FreeCen</h1>
+      <% end %>
+    <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+      <%= link_to root_url, class: "site__header__logo  icon__freebmd" do %>
+        <h1 class="accessibility">FreeBMD</h1>
+      <% end %>
     <% end %>
-    <a href="http://www.freeukgenealogy.org.uk/" class="site__header__freeukgen-logo  icon__freeukgen__project--dark"><span class="accessibility">A project by FreeUKGenealogy</span></a>
+      <a href="http://www.freeukgenealogy.org.uk/" class="site__header__freeukgen-logo  icon__freeukgen__project--dark"><span class="accessibility">A project by FreeUKGenealogy</span></a>
   </div>
 </header>

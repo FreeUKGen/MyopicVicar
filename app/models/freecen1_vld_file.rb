@@ -1,7 +1,7 @@
 class Freecen1VldFile
   include Mongoid::Document
   has_many :freecen1_vld_entries
-  has_many :freecen_households
+  has_many :freecen_dwellings
   
   field :file_name, type: String
   field :dir_name, type: String
@@ -10,4 +10,8 @@ class Freecen1VldFile
   field :full_year, type: String
   field :piece, type: String
   field :series, type: String
+  
+  def chapman_code
+    self.dir_name
+  end
 end

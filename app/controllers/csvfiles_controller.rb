@@ -1,176 +1,180 @@
-class CsvfilesController < InheritedResources::Base
-  require 'freereg_csv_processor'
-def index
-   if session[:userid].nil?
-    redirect_to '/', notice: "You are not authorised to use these facilities"
-   end
-end
+class CsvfilesController < ApplicationController
 
-def new
-  if session[:userid].nil?
-    redirect_to '/', notice: "You are not authorised to use these facilities"
+  require 'freereg_csv_update_processor'
+  require 'digest/md5'
+
+  def new
+    #get @userid
+    get_user_info_from_userid
+    #Lets create for the user and change later
+    @csvfile  = Csvfile.new(:userid  => session[:userid])
+    #get @people
+    get_userids_and_transcribers
   end
-  @user = UseridDetail.where(:userid => session[:userid]).first
-  @first_name = session[:first_name]	
-  @userid = session[:userid]	
-  @csvfile  = Csvfile.new(:userid  => session[:userid])
-  get_user_info_from_userid
-  get_userids_and_transcribers
-  @role = session[:role]
-end
 
-def create
-  @user = UseridDetail.where(:userid => session[:userid]).first
-  @first_name = session[:first_name]  
-  @csvfile  = Csvfile.new(params[:csvfile])
-  @csvfile[:freereg1_csv_file_id] = session[:freereg] 
-  session[:freereg]  = nil
-  session[:csvfile] = @csvfile._id
-  @csvfile[:userid] = session[:userid]
-  @csvfile[:userid] = params[:csvfile][:userid] unless params[:csvfile][:userid].nil?
-  @csvfile.file_name = @csvfile.csvfile.identifier
-  case
-    when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Replace'
-      Freereg1CsvFile.destroy_all(:userid => @csvfile[:userid], :file_name =>@csvfile.file_name)
-    when File.exists?("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}") &&  params[:commit] == 'Upload'
-      if Freereg1CsvFile.where(userid: @csvfile[:userid], file_name: @csvfile.file_name).first.nil?
-        FileUtils.rm("#{File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)}")
-      else
-        flash[:notice] = 'The file already exists; if you wish to replace it use the Replace option'
-        redirect_to new_manage_resource_path
-        return
-      end #if
-  end #case
-  @csvfile.save
-
-  if @csvfile.errors.any?
-    flash[:notice] = 'The upload of the file was unsuccessful'
-    file_for_warning_messages = "log/freereg_messages.log"
-    @@message_file = File.new(file_for_warning_messages, "a")
-    @@message_file.puts " File #{@csvfile.file_name} uploaded unsuccessfully at #{Time.new} for #{@csvfile[:userid]}"
-    render 'edit'
-    return 
-  end #errors
-  @user = UseridDetail.where(:userid => session[:userid]).first
-  flash[:notice] = 'The upload of the file was successful'
-  file_for_warning_messages = "log/freereg_messages.log"
-  @message_file = File.new(file_for_warning_messages, "a")
-  @message_file.puts " File #{@csvfile.file_name} uploaded successfully at #{Time.new} for #{@csvfile[:userid]}"
-  place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
-  size = (File.size("#{place}"))
-  unit = 0.0002
-  @processing_time = (size.to_i*unit).to_i 
-  render 'process' 
-end #method
-
-def edit
-
-  #code to move existing file to attic
-  @user = UseridDetail.where(:userid => session[:userid]).first
-  @first_name = session[:first_name]  
-  @userid = session[:userid]  
-  @csvfile  = Csvfile.new(:userid  => session[:userid])
-  @file = Freereg1CsvFile.find(params[:id])
-  if @file.locked_by_transcriber == 'true' ||  @file.locked_by_coordinator == 'true'
-    flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock' 
-    redirect_to :back 
-    return
-  end
-  @csvfile.file_name = @file.file_name
-  @person = @file.userid
-  session[:freereg]  = params[:id]
-  @file = @csvfile.file_name 
-  @role = session[:role]
-  get_userids_and_transcribers
-
-end
-
-def update
-  @user = UseridDetail.where(:userid => session[:userid]).first
-  if params[:commit] == 'Process'
-    @csvfile = Csvfile.find(session[:csvfile])
-    @place  = @csvfile.file_name
-    range = File.join(@csvfile[:userid] ,@csvfile.file_name)
-    place = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
-    size = (File.size("#{place}"))
-    unit = 0.0002
-    processing_time = (size.to_i*unit).to_i       
-    start = Time.now
-    if params[:csvfile][:process]  == "Not waiting" || processing_time > 15
-      pid1 = Kernel.spawn("rake build:process_freereg1_individual_csv[#{@csvfile[:userid]},#{@csvfile.file_name}]") 
-      processing_time = 3*processing_time
-      flash[:notice] =  "The csv file #{@place} is being processed into the database. Check your files status after at least #{processing_time} seconds."
-      @csvfile.delete
-          #  Process.waitall if params[:csvfile][:process]  == 'Now'
-           # endtime = Time.now - start
-    else
-           success = FreeregCsvProcessor.process("recreate",'create_search_records',range)
-           process_time = Time.now - start
-           if success
-            flash[:notice] =  "The csv file #{@place} has been processed into the database."
-           else
-            flash[:notice] =  "The csv file #{@place} was not processed into the database."
-            file = File.join(Rails.application.config.datafiles,@csvfile[:userid],@csvfile.file_name)
-            if File.exists?(file)
-              File.delete(file)
-            end #exists
-           end #if success
-    end #if waiting
-    @csvfile.delete
-    if session[:my_own]
-      redirect_to my_own_freereg1_csv_file_path
+  def create
+    # There can be two types of creation firstly for an Upload of a new file and secondly from the Replacement of an exiting file.
+    #processing is slightly different depending upon the type
+    if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
+      flash[:notice] = 'You must select a file'
+      redirect_to :back
       return
-    end #session
-    redirect_to freereg1_csv_files_path
-    return 
-  end  #commit
-end
+    end
+    get_user_info_from_userid
+    @csvfile  = Csvfile.new(params[:csvfile])
+    #if the process does not have a userid then the process has been initiated by the user on his own batches
+    @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
+    @csvfile.file_name = @csvfile.csvfile.identifier
+    if params[:commit] == "Replace"
+      #on a replace make sure its the same file_name
+      if session[:file_name] == @csvfile.file_name
+        #set up to allow the file save to occur in check_for_existing_place
+        batch = PhysicalFile.where(userid: @csvfile.userid, file_name: @csvfile.file_name).first
+        unless batch.nil?
+          batch.update_attributes(:base => true,:file_processed => false)
+        else
+          batch = PhysicalFile.new(:base => true,:file_processed => false, :userid =>@csvfile.userid , :file_name => @csvfile.file_name)
+          batch.save
+        end
+      else
+        flash[:notice] = 'The file you are replacing must have the same name'
+        session.delete(:file_name)
+        redirect_to :back
+        return
+      end
+      session.delete(:file_name)
+    end
+    #lets check for existing file, save if required
+    proceed = @csvfile.check_for_existing_unprocessed_file
+    @csvfile.save if proceed
+    if @csvfile.errors.any? || !proceed
+      flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
+      get_userids_and_transcribers
+      redirect_to :back
+      return
+    end #errors
+    batch = @csvfile.create_batch_unless_exists
+    @processing_time = @csvfile.estimate_time
+    flash[:notice] = 'The upload of the file was successful'
+    render 'process'
+  end #method
 
+  def edit
+    #code to move existing file to attic
+    get_user_info_from_userid
+    @file = Freereg1CsvFile.find(params[:id])
+    @person = @file.userid
+    @file_name = @file.file_name
+    #there can be multiple batches only one of which might be locked
+    Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
+      if file.locked_by_transcriber ||  file.locked_by_coordinator
+        flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
+        redirect_to :back
+        return
+      end
+    end
+    @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
+    session[:file_name] =  @file_name
+    get_userids_and_transcribers
+  end
 
-
-
-def delete
-
-  @role = session[:role]
-  @csvfile  = Csvfile.new(:userid  => session[:userid])
-  freefile = Freereg1CsvFile.find(params[:id])
-  @csvfile.file_name = freefile.file_name
-  @csvfile.freereg1_csv_file_id = freefile._id
-  @csvfile.save_to_attic
-  @csvfile.delete
-  redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}"),notice: "The csv file #{freefile.file_name} has been deleted."
-end
-
-def get_userids_and_transcribers
- @user = UseridDetail.where(:userid => session[:userid]).first
- syndicate = @user.syndicate
- syndicate = session[:syndicate] unless session[:syndicate].nil?
- @people =Array.new  
- @people <<  @person 
-
- case
- when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
-  @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator' 
-  @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) 
-else
-  @userids = @user
-  end #end case
-  unless session[:my_own] 
-
-    @userids.each do |ids|
-      @people << ids.userid
+  def update
+    if params[:id].nil?
+      flash[:notice] = "There was no file to process"
+      redirect_to :back
+      return
+    else
+      @user = UseridDetail.where(:userid => session[:userid]).first
+      if params[:commit] == 'Process'
+        @csvfile = Csvfile.where(_id: params[:id]).first
+        if @csvfile.nil?
+          flash[:notice] = "There was no file to process; did you perhaps double click or reload the process page?"
+          redirect_to action: :new
+          return
+        end
+        range = File.join(@csvfile.userid,@csvfile.file_name)
+        case
+        when params[:csvfile][:process]  == "Just check for errors"
+          pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]")
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
+        when params[:csvfile][:process]  == "Process tonight"
+          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+          batch.add_file("base")
+          flash[:notice] =  "The file has been placed in the queue for overnight processing"
+        when params[:csvfile][:process]  == "As soon as you can"
+          pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
+        else
+        end #case
+        @csvfile.delete
+        if session[:my_own]
+          redirect_to my_own_freereg1_csv_file_path
+          return
+        end #session
+        unless session[:freereg1_csv_file_id].nil?
+          redirect_to freereg1_csv_files_path(:anchor => "#{session[:freereg1_csv_file_id]}")
+          return
+        else
+          redirect_to freereg1_csv_files_path
+          return
+        end
+      end  #commit
     end
   end
-  
-end
 
-def download
- @role = session[:role]
- @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
- my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
- send_file( my_file, :filename => @freereg1_csv_file.file_name)
- 
-end
+  def delete
+    @role = session[:role]
+    @csvfile  = Csvfile.new(:userid  => session[:userid])
+    freefile = Freereg1CsvFile.find(params[:id])
+    @csvfile.file_name = freefile.file_name
+    @csvfile.freereg1_csv_file_id = freefile._id
+    @csvfile.save_to_attic
+    @csvfile.delete
+    redirect_to my_own_freereg1_csv_file_path(:anchor =>"#{session[:freereg1_csv_file_id]}"),notice: "The csv file #{freefile.file_name} has been deleted."
+  end
 
+  def get_userids_and_transcribers
+    syndicate = @user.syndicate
+    syndicate = session[:syndicate] unless session[:syndicate].nil?
+    @people = Array.new
+    @people <<  @user.userid
+    case
+    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
+      @userids = UseridDetail.all.order_by(userid_lower_case: 1)
+      load_people(@userids)
+    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator'
+      @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)
+      load_people(@userids)
+    else
+      @userids = @user
+    end #end case
+  end
+
+  def download
+    @role = session[:role]
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    errors =  @freereg1_csv_file.check_file
+    if errors[0]
+      log_messenger("BATCH_ERRORS #{errors[1]}")
+    end
+    ok_to_proceed = @freereg1_csv_file.check_batch
+    if !ok_to_proceed[0] 
+      flash[:notice] =  "There is a problem with the batch you are attempting to download; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
+      redirect_to :back and return
+    end
+    @freereg1_csv_file.backup_file
+    my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)   
+    if File.file?(my_file)
+      send_file( my_file, :filename => @freereg1_csv_file.file_name)
+      @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
+    end 
+    @freereg1_csv_file.update_attributes(:locked_by_coordinator => false,:locked_by_transcriber => false)
+    flash[:notice] =  "The file has been downloaded to your computer"
+  end
+
+  def load_people(userids)
+    userids.each do |ids|
+       @people << ids.userid
+    end
+  end
 end

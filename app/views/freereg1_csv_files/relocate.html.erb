@@ -1,5 +1,5 @@
 <% breadcrumb :relocate_file,  @freereg1_csv_file%>
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<p style="text-align: center"><b><%= @freereg1_csv_file_name %> (<%= @file_owner %>)in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
@@ -9,15 +9,23 @@
  <% end %>
 <section class="island  island--light">
 <p><b>You may change the following parameters but do so with care as they will change where the batch is located </b></p>
-<p style="color:red">Please note if you are relocating the batch by changing the place/church names or register type of a large numer of records the processing time could be several minutes. <b>Please wait for the process to complete.</b></p>
-
+You are changing <%= @records%> records so it may take some time.
   <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
+ <% if  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'%>
+  <%= f.input :country,{ :as => :select,:label => "Select country",:include_blank => false,
+  :required => true, :collection => @countries, :size => 15,:input_html => {'onchange' =>'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'}  } %>
+  <%= f.input :county,{ :as => :select,:label => "Select county",:include_blank => false,
+  :required => true, :collection => @counties, :size => 15,:input_html => {'onchange' =>'location.href= "/freereg1_csv_files/update_places?county=" + this.value'}  } %>
+
+
+ <% end %>
+  <%= f.input :place,{ :as => :select,:label => "Select place name from the list of Approved Names",:include_blank => false,
+  :required => true, :collection => @placenames, :size => 15,:input_html => {'onchange' =>'location.href= "/freereg1_csv_files/update_churches?place_id=" + this.value'}  } %>
+   <%= f.input :church_name, { :as => :select,:label => "Select church from the list",:include_blank => false, :required => true, :collection => @churches, :size => 15,:input_html => {'onchange' =>'location.href= "/freereg1_csv_files/update_registers?church_id=" + this.value'}  } %>
   
   <%= f.input :register_type, { :as => :select,:label => "Type of Register :",:include_blank => false,
   :required => true, :collection => RegisterType::OPTIONS, :size => 15 }%>
-  <%= f.input :church_name, :input_html => { :size => 30 }%>
-  <%= f.input :place,{ :as => :select,:label => "Select place name from the list of Approved Names",:include_blank => false,
-  :required => true, :collection => @placenames, :size => 15 } %>
+ 
   <%= f.action :submit, :as => :input, :label => 'Relocate'   %>
   <% end %>
 

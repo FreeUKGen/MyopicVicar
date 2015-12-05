@@ -1,68 +1,69 @@
-<h4 class="title text--center">You are reporting an error on a data record</h4>
-<% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %>  
-<% if @contact.errors.any? %>
-<div id="error_explanation">
-  <h2><%= pluralize(@contact.errors.count, "error") %> prohibited your contact from being submitted:</h2>
-  <ul class="validation-list">
-    <% @contact.errors.full_messages.each do |msg| %>
-    <li class="validation-list__error"><%= msg %></li>
-    <% end %>
-  </ul>
-</div>
-<% end %>
-<section class="island  island--light ">
-<%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
-<%= f.hidden_field :query %>
-<%= f.hidden_field :contact_type %>
-<%= f.hidden_field :contact_time %>
-<%= f.hidden_field :record_id %>
-<%= f.hidden_field :entry_id %>
-<%= f.hidden_field :line_id %>
-<%= f.hidden_field :previous_page_url %>
-
-  <li  class="grid__item  one-quarter  palm-one-whole" id="name_input">
-    <label class="label" for="name">
-      <a href="#" class="top_tooltip">Your name<span>Please provide a name for when we contact you; it will not be made public</span></a>
-    </label>
-    <% if @contact.name.nil? %>
-    <input name="contact[name]" type="text" class="text-input" placeholder="Mandatory" required="required" >
-    <% else %>
-    <input name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
-    <% end %>
-  </li>
-  <li  class="grid__item  one-third  palm-one-whole" id="email_address_input">
-    <label class="label" for="email_address">
-      <a href="#" class="top_tooltip">Your email address<span>Please enter your email address so we can contact you; it will not be made public</span>
-      </a>
-    </label>
-    <% if @contact.email_address.nil? %>
-    <input name="contact[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
-    <% else%>
-    <input name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
-    <% end%>
-  </li>
-  
-  <li class="grid__item  one-whole  palm-one-whole">
-    <label><a href="#" class="left_tooltip">Description<span>Please enter your reasons for commenting on the record entry</span></a></label>
-    <% if @contact.body.nil? %>
-    <textarea name="contact[body]" cols="80" rows="10">Enter text here...</textarea>
-    <% else%>
-    <textarea name="contact[body]" cols="80" rows="10" ><%=@contact.body%></textarea>
-    <% end%>
-  </li>
-  <li class="grid__item  one-third  palm-one-whole">
-    <label><a href="#" class="left_tooltip">Screenshot or image<span>Please select any image you believe supports your comment</span></a></label>
-    <input name="contact[screenshot]" type="file" >
-  </li>
-  <div id="betterstyling">
-    <p>Please add your name again: </p><input type="text" name="contact[contact_name]">
+<div class="grid">
+  <h1 class="title">Data Problem Report</h4>
+  <% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
-  <%= f.action :submit, :as  => :input, :label => 'Report Error' ,
-  :button_html => { :class => "btn btn--small" },
-  :wrapper_html => { :class => "grid__item  one-third text--left" }  %>
   <% end %>
-</section>
+  <% if @contact.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@contact.errors.count, "error") %> prohibited your contact from being submitted:</h2>
+        <ul class="validation-list">
+          <% @contact.errors.full_messages.each do |msg| %>
+          <li class="validation-list__error"><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+  <% end %>
+  <div style="margin: 0 auto;" class="grid__item  four-fifths " >
+    <p >We are sorry that you feel the transcription may be in error. Please tell us why you believe we have misinterpreted the original record. We will adjust the record if, upon review of the original, we agree with your interpretation. <br><b>Please be aware we do not adjust transcriptions based upon sources of information other than the original register.</b></p>
+  </div>
+  </div>
+  <div class="grid">
+  <div class="island  island--light ">
+      <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
+      <%= f.hidden_field :query %>
+      <%= f.hidden_field :contact_type %>
+      <%= f.hidden_field :contact_time %>
+      <%= f.hidden_field :record_id %>
+      <%= f.hidden_field :entry_id %>
+      <%= f.hidden_field :line_id %>
+      <%= f.hidden_field :previous_page_url %>
+      <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="name_input">
+        <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please provide a name for when we contact you; it will not be made public</span></a>
+        </label>
+      <% if @contact.name.nil? %>
+        <input name="contact[name]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+      <% else %>
+        <input name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
+      <% end %>
+      </li>
+      <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="email_address_input">
+         <label class="label" for="email_address">Your email address <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please enter your email address so we can contact you; it will not be made public</span></a></label>
+      <% if @contact.email_address.nil? %>
+        <input name="contact[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+      <% else%>
+        <input name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
+      <% end%>
+      </li>
+      
+    <li class="grid__item  one-third  palm-one-whole  push--bottom">
+      <label>Screenshot or image <span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select any supporting images (jpg, jpeg or gif only)</span></a></label>
+        <input name="contact[screenshot]" type="file" >
+      </li>
+      <br>
+    <li class="grid__item  two-thirds  palm-one-whole  push--bottom">
+      <label>Description <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please enter your reasons for commenting on the record entry</span></a></label>
+      <% if @contact.body.nil? %>
+      <textarea name="contact[body]"  style="width: 100%;"  rows="6"></textarea>
+      <% else%>
+      <textarea name="contact[body]"   style="width: 100%;" rows="6" ><%=@contact.body%></textarea>
+      <% end%>
+    </li>
+    <%= f.action :submit, :as  => :input, :label => 'Report Error' , :button_html => { :class => "btn  " }, :wrapper_html => { :class => "grid__item  one-third text--left " }  %>
+    <div class="betterstyling">
+      <p>Please add your name again: </p><input type="text" name="contact[contact_name]">
+    </div>
+    <% end %>
+  </div>
+</div>

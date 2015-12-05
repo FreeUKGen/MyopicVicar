@@ -17,6 +17,8 @@ class Contact
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
+  field :contact_county, type: String
+  field :identifier, type: String
   validates_presence_of :name, :email_address
   validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
 
@@ -24,6 +26,11 @@ class Contact
 
   before_save :url_check
   after_create :communicate
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
 
   def url_check
 
@@ -32,18 +39,30 @@ class Contact
   end
 
   def communicate
-    UserMailer.copy_to_contact_person(self).deliver
+   
     case 
     when  self.contact_type == 'Website Problem'
-      github_issue
+      self.github_issue
     when self.contact_type == 'Data Problem'
-      data_manager_issue
-    else
-      general_issue
+      UserMailer.copy_to_contact_person(self).deliver
+      data_manager_issue(self)
+    when self.contact_type == 'Volunteer'
+      volunteering_issue(self) 
+    when self.contact_type == 'Question' || self.contact_type == "Thank you"
+      ccs = Array.new
+      UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+        ccs << person.email_address unless person.nil?
+      end
+      UserMailer.contact(self,ccs).deliver
     end
   end
 
   def github_issue
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+     ccs << person.email_address
+    end
+    UserMailer.website(self,ccs).deliver
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_login
@@ -51,8 +70,7 @@ class Contact
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
-      p response
-      self.github_issue_url=response[:html_url]
+      self.github_issue_url = response[:html_url]
       self.save!
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
@@ -67,24 +85,40 @@ class Contact
     "#{contact_type} (#{name})"
   end
 
-  def general_issue
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-    UserMailer.contact_to_freereg_manager(self,person).deliver
+  def data_manager_issue(contact)
+    ccs = Array.new
+    coordinator = contact.get_coordinator if contact.record_id.present?
+    ccs << coordinator.person_forename if contact.record_id.present? && coordinator.present?
+    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
+      ccs << person.person_forename
     end
-  end
-
-  def data_manager_issue
-    p "contact"
-    p self
-    coordinator = self.get_coordinator if self.record_id.present?
-    UserMailer.contact_to_coordinator(self,coordinator).deliver if coordinator.present?
+    UserMailer.contact_to_coordinator(contact,coordinator,ccs).deliver if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
-    UserMailer.contact_to_recipient(self,data_manager).deliver unless coordinator.present?
-    UserMailer.contact_to_data_manager(self,data_manager,coordinator).deliver if coordinator.present?
+      UserMailer.contact_to_recipient(contact,data_manager,ccs).deliver unless coordinator.present?
+      UserMailer.contact_to_data_manager(contact,data_manager,ccs).deliver if coordinator.present?
     end
-
   end
+  def volunteering_issue(contact)
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
+       ccs << person.email_address
+    end
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      manager = UseridDetail.where(:userid => 'REGManager').first
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      manager = UseridDetail.where(:userid => 'CENManager').first
+    else
+      manager = nil
+    end
+    ccs << manager.person_forename unless manager.nil?
+    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |volunteer|
+     UserMailer.contact_to_volunteer(contact,volunteer,ccs).deliver
+    end
+    UserMailer.contact_to_volunteer(contact,manager,ccs).deliver unless manager.nil?
+  end
+
   def get_coordinator
+    return nil if MyopicVicar::Application.config.template_set == 'freecen'
     entry = SearchRecord.find(self.record_id).freereg1_csv_entry
     record = Freereg1CsvEntry.find(entry)
     file = record.freereg1_csv_file
@@ -98,6 +132,11 @@ class Contact
     issue_body
   end
 
-
+  def contact_screenshot_url
+    return nil unless screenshot.present?
+    cid=self._id.to_s unless self._id.nil?
+    ss=File.basename(screenshot.to_s)
+    MyopicVicar::Application.config.website + "/uploads/contact/screenshot/#{cid}/#{ss}"
+  end
 
 end

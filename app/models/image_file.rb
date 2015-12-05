@@ -13,7 +13,7 @@
 # limitations under the License.
 # 
 class ImageFile
-  require 'RMagick'
+  #require 'RMagick'
   include Mongoid::Document
   include Mongoid::Timestamps
 

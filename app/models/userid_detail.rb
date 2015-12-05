@@ -20,8 +20,8 @@ class UseridDetail
   field :previous_syndicate, type: String
   field :active, type: Boolean
   field :last_upload, type: DateTime
-  field :number_of_files, type: Integer, default: 0
-  field :number_of_records, type: Integer, default: 0
+  field :number_of_files, type: Integer, default: 0 # not being used for display
+  field :number_of_records, type: Integer, default: 0 # not being used for display
   field :sign_up_date, type: DateTime
   field :disabled_date, type: DateTime
   field :disabled_reason, type: String
@@ -31,21 +31,22 @@ class UseridDetail
   field :country_groups, type: Array
   field :digest, type: String, default: nil
   field :skill_notes, type: String
-  field :transcription_agreement, type: Boolean
-  field :technical_agreement, type: Boolean
-  field :research_agreement, type: Boolean
+  field :transcription_agreement, type: Boolean, default: false
+  field :technical_agreement, type: Boolean, default: false
+  field :research_agreement, type: Boolean, default: false
 
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
-  scope :syndicate, ->(syndicate) { where(:syndicate => syndicate) }
+
   attr_protected
   #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
 
   has_many :search_queries
   has_many :freereg1_csv_files
   has_many :attic_files
-  validates_presence_of :email_address, :person_role
+  validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
+    :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
@@ -54,23 +55,37 @@ class UseridDetail
 
   after_create :save_to_refinery
   after_update :update_refinery
-
   before_destroy :delete_refinery_user_and_userid_folder
 
-
+  class << self
+    def syndicate(syndicate)
+      where(:syndicate => syndicate)
+    end
+    def userid(userid)
+      where(:userid => userid)
+    end
+    def id(userid)
+      where(:id => userid)
+    end
+  end
 
   def remember_search(search_query)
     self.search_queries << search_query
   end
 
   def write_userid_file
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    Dir.mkdir(details_dir)  unless Dir.exists?(details_dir)
+    change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
+    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
+    Dir.mkdir(change_details_dir)  unless Dir.exist?(change_details_dir)
     details_file = File.join(details_dir,".uDetails")
+    change_details_file = File.join(change_details_dir,".uDetails")
     if File.file?(details_file)
       save_to_attic
     end
+    #we do not need a udetails file in the change set
     details = File.new(details_file, "w")
     details.puts "Surname:#{user.person_surname}"
     details.puts "UserID:#{user.userid}"
@@ -139,6 +154,7 @@ class UseridDetail
   end
 
   def save_to_attic
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     #to-do unix permissions
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
@@ -153,10 +169,6 @@ class UseridDetail
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
     errors.add(:userid, "Refinery User Already exits") if Refinery::User.where(:username => self[:userid]).exists?
-    unless self[:transcription_agreement].nil? # deals with off line updating
-      errors.add(:transcription_agreement, "Must be accepted") unless self[:transcription_agreement] == true
-    end
-
     errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
   end
@@ -188,8 +200,9 @@ class UseridDetail
     UserMailer.notification_of_technical_registration(self).deliver
   end
 
-  def add_fields(type)
-    self.userid = self.userid.strip
+  def add_fields(type,syndicate)
+    self.syndicate = syndicate if self.syndicate.nil?
+    self.userid = self.userid.strip unless self.userid.nil?
     self.sign_up_date =  DateTime.now
     self.active = true
     case
@@ -208,24 +221,16 @@ class UseridDetail
     self.password_confirmation = password
   end
 
-  def self.get_userids_for_display(syndicate,page)
-    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids = Array.new
-    users.each do |user|
-      @userids << user
-    end
-    @userids = Kaminari.paginate_array(@userids).page(page)
+  def self.get_userids_for_display(syndicate)
+    @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
   end
 
-  def self.get_active_userids_for_display(syndicate,page)
-    users = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids = Array.new
-    users.each do |user|
-      @userids << user
-    end
-    @userids = Kaminari.paginate_array(@userids).page(page)
+  def self.get_active_userids_for_display(syndicate)
+    @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
   end
 
   def self.get_userids_for_selection(syndicate)
@@ -242,6 +247,7 @@ class UseridDetail
     users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
     @userids = Array.new
+    @userids << ''
     users.each do |user|
       @userids << user.email_address
     end
@@ -251,6 +257,7 @@ class UseridDetail
     users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
     @userids = Array.new
+    @userids << ''
     users.each do |user|
       name = ""
       name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
@@ -262,12 +269,29 @@ class UseridDetail
     refinery_user = Refinery::User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
   def has_files?
     value = false
     value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
     value
+  end
+
+  def compute_records
+    count = 0
+    self.freereg1_csv_files.each do |file|
+      count = count + file.freereg1_csv_entries.count
+    end
+    count
+  end
+  def check_exists_in_refinery
+    refinery_user = Refinery::User.where(:username => self.userid).first
+    if refinery_user.nil?
+      return[false,"There is no refinery entry"] 
+    else
+      return[true] 
+    end
   end
 
 end #end class

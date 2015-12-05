@@ -19,7 +19,11 @@ class County
   index ({ county_coordinator_lower_case: 1})
   index ({ chapman_code: 1, county_coordinator_lower_case: 1 })
   index ({ chapman_code: 1, previous_county_coordinator: 1 })
-
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
 
 
   def update_fields_before_applying(parameters)
@@ -66,7 +70,7 @@ class County
       if coordinator_id.nil?
         coordinator_name = nil
       else
-       coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
+        coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
       end
     end
     coordinator_name

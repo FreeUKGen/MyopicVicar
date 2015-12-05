@@ -1,5 +1,5 @@
 <% breadcrumb :error_records,  @freereg1_csv_file%>
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %> in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<p style="text-align: center"><b><%= @freereg1_csv_file_name %> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
 
 <% if @errors == 0 %>
    <p  style="text-align: center" %><b>There are no errors in this batch </b></p>
@@ -25,7 +25,7 @@
            <td><%= line.error_message %></td>
            <td><%= line.record_type %></td>
            <td><%= line.data_line %></td>
-           <td><%= link_to 'Edit', error_freereg1_csv_entry_path(line), :class => "btn  btn--small" %></td>
+           <td><%= link_to 'Edit', error_freereg1_csv_entry_path(line), :class => "btn weight--light  btn--small" %></td>
        </tr>
        <%end%>
      </table>
@@ -67,7 +67,7 @@
          <%session[:error_line] = line.record_number%>
          <td><%= line.error_message %></td>
          <td><%= line.data_line %></td>
-         <td><%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file), :class => "btn  btn--small" %></td>
+         <td><%= link_to 'Edit', edit_freereg1_csv_file_path(@freereg1_csv_file), :class => "btn weight--light  btn--small" %></td>
       </tr>
       <%end%>
    </table>
