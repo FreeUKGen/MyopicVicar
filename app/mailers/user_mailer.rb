@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: "freereg-contacts@freereg.org.uk"
+  default from: "reg-web@freereg.org.uk"
 
   def batch_processing_success(user,batch,records,error,headers)
     @userid = UseridDetail.where(userid: user).first
