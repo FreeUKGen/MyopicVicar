@@ -174,19 +174,24 @@ class UserMailer < ActionMailer::Base
     @user_token = refinery_user.reset_password_token
   end
 
-  def contact(contact,ccs)
+  def enhancement(contact,ccs)
     @contact = contact
-    bcc = UseridDetail.where(:userid => 'REGManager').limit(1).first
-    ccs << bcc.email_address
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us. Contact reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested Enhancement. Contact reference #{@contact.identifier}")
   end
-   def copy_to_contact_person(contact)
+
+  def general(contact,ccs)
     @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for contacting us. Contact reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the General Comment. Contact reference #{@contact.identifier}")
   end
+
+  def genealogy(contact,css)
+    @contact = contact
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for Genealogical Question. Contact reference #{@contact.identifier}")
+  end
+
   def volunteer(contact,ccs)
     @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for volunteering. Contact reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Contact reference #{@contact.identifier}")
   end
 
   def website(contact,ccs)
@@ -194,29 +199,33 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem. Contact reference #{@contact.identifier}")
   end
 
-  def contact_to_recipient(contact,person,ccs)
+  def feedback(contact,ccs,file)
+    p "mailing"
+    @contact = contact 
+    @user = UseridDetail.userid(@contact.user_id).first
+
+     attachments["screenshot.jpg"] = {:mime_type => 'image/jpeg',
+                                   :content => file }
+    
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your Feedback. Contact reference #{@contact.identifier}")
+  end
+
+  def publicity(contact,ccs)
     @ccs = ccs
     @contact = contact
-    @name = person.person_forename
-    @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a FreeREG Contact")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Contact reference #{@contact.identifier}")
   end
  
+  def datamanger_data_question(contact,ccs)
+    @contact = contact
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Contact reference #{@contact.identifier}")
+  end
 
-  def contact_to_data_manager(contact,person,ccs)
-    @ccs = ccs
+  def coordinator_data_question(contact,ccs)
     @contact = contact
-    @name = person.person_forename
-    @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a FreeREG Contact")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Contact reference #{@contact.identifier}")
   end
-  def contact_to_coordinator(contact,person,ccs)
-    @ccs = ccs
-    @contact = contact
-    @name = person.person_forename
-    @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report from a Contact")
-  end
+
   def send_change_of_syndicate_notification_to_sc(user)
     @user = user
     get_coordinator_name

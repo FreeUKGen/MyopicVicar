@@ -19,6 +19,7 @@ class FeedbacksController < InheritedResources::Base
       return
     end
     flash.notice = "Thank you for your feedback!"
+    @feedback.communicate
     redirect_to @feedback.problem_page_url
   end
 

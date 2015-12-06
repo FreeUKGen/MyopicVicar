@@ -1,23 +1,34 @@
 module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
-            'volunteer_coordinator','data_manager', 'technical','system_administrator', 'contacts_coordinator']
+            'volunteer_coordinator','data_manager', 'technical','system_administrator', 'contacts_coordinator','project_manager','executive_director',
+            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator']
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
     'trainee' => [ "Profile", "Batches","Roadmap"],
     'pending' => [ "Profile"],
     'transcriber' => [  "Profile", "Batches","Roadmap"],
     'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Roadmap"],
-    'contacts_coordinator'=> [ "Profile", "Batches", "Feedback", "Contacts"],
+    'contacts_coordinator'=> [ "Profile", "Batches", "Feedback", "Contacts", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Profiles","Contacts","Roadmap"],
     'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Profiles","Contacts","Roadmap"],
     'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts","Roadmap"],
     'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
-                         "Feedback", "Contacts", "System Documentation" ],
+                         "Feedback", "Contacts", "System Documentation","Roadmap" ],
     'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "Site Statistics",
-                      "System Documentation","Access Profiles"],
+                      "System Documentation","Access Profiles","Roadmap"],
     'system_administrator' =>[  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators",
                                 "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Site Statistics","Search Performance",
-                                "Feedback", "Contacts", "System Documentation" ]
+                                "Feedback", "Contacts", "System Documentation","Roadmap" ],
+    'project_manager' =>[  "Profile", "Batches", "Manage Userids", "RefineryCMS", "Site Statistics","Search Performance",
+                                "Feedback", "Contacts", "System Documentation","Roadmap" ],                          
+    'executive_director' =>[  "Profile", "Batches", "Manage Userids", "Syndicate Coordinators",
+                                "County Coordinators", "Country Coordinators","RefineryCMS", "Site Statistics","Search Performance",
+                                "Feedback", "Contacts", "System Documentation","Roadmap" ], 
+    'publicity_coordinator'=> [ "Profile", "Batches",  "Contacts", "System Documentation" ,"Roadmap"],                              
+    'genealogy_coordinator'=> [ "Profile", "Batches", "Contacts", "System Documentation" ,"Roadmap"],
+    'documentation_coordinator' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Profiles", "RefineryCMS",
+                         "Feedback", "Contacts", "System Documentation","Roadmap" ],
+    'engagement_coordinator' => [  "Profile", "Batches", "Access Profiles", "RefineryCMS", "Contacts", "System Documentation","Roadmap" ]  
   }
 
   OPTIONS_TRANSLATION = {

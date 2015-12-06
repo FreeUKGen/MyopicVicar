@@ -24,7 +24,7 @@ class Contact
 
   mount_uploader :screenshot, ScreenshotUploader
 
-  before_save :url_check, :add_identifier
+  before_create :url_check, :add_identifier
   after_create :communicate
   class << self
     def id(id)
@@ -45,27 +45,107 @@ class Contact
   def communicate
     case 
       when  self.contact_type == 'Website Problem'
-        self.github_issue
-      when self.contact_type == 'Data Problem'
-        UserMailer.copy_to_contact_person(self).deliver
-        data_manager_issue(self)
-      when self.contact_type == 'Volunteer'
-        volunteering_issue(self) 
-      when self.contact_type == 'Question' || self.contact_type == "Thank you"
-        ccs = Array.new
-        UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
-          ccs << person.email_address unless person.nil?
-        end
-        UserMailer.contact(self,ccs).deliver
+        self.communicate_website_problem
+      when self.contact_type == 'Data Question'
+        self.communicate_data_question
+      when self.contact_type == 'Volunteering Question'
+        self.communicate_volunteering 
+      when self.contact_type == 'General Comment' 
+        self.communicate_general
+      when self.contact_type == "Thank you"
+        self.communicate_publicity
+      when self.contact_type == 'Genealogical Question'
+        self.communicate_genealogical_question 
+      when self.contact_type == 'Enhancement Suggestion' 
+        self.communicate_enhancement_suggestion
+      else
+        self.communicate_general
     end
   end
 
-  def github_issue
+  
+  def communicate_website_problem
     ccs = Array.new
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-     ccs << person.email_address
+      ccs << person.email_address
     end
-    UserMailer.website(self,ccs).deliver
+    cc = UseridDetail.where(:person_role => 'project_manager').first
+    ccs << cc.email_address unless cc.nil?
+    UserMailer.website(self,ccs).deliver    
+  end 
+
+  def communicate_data_question
+    ccs = Array.new
+    coordinator = contact.get_coordinator if self.record_id.present?
+    ccs << coordinator.person_forename if self.record_id.present?
+    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
+       ccs << person.person_forename
+    end
+    UserMailer.coordinator_data_question(self,ccs).deliver if coordinator.present?
+    UserMailer.datamanger_data_question(self,ccs).deliver unless coordinator.present?
+  end
+
+  def communicate_publicity
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'publicity_coordinator').all.each do |person|
+      ccs << person.email_address
+    end
+    cc = UseridDetail.where(:person_role => 'executive_director').first
+    ccs << cc.email_address unless cc.nil?
+    UserMailer.publicity(self,ccs).deliver     
+  end
+
+  def communicate_genealogical_question
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'genealogy_coordinator').all.each do |person|
+      ccs << person.email_address
+    end
+    UseridDetail.where(:person_role => 'contact_coordinator').all.each do |person|
+      ccs << person.email_address
+    end
+    UserMailer.genealogy(self,ccs).deliver        
+  end
+
+  def communicate_enhancement_suggestion
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'project_manager').all.each do |person|
+      ccs << person.email_address
+    end
+    cc = UseridDetail.userid('REGManager').first unless cc.nil?
+    ccs << cc.email_address
+    UserMailer.enhancement(self,ccs).deliver 
+  end
+
+  def communicate_volunteering
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
+      ccs << person.email_address
+    end
+    UseridDetail.where(:person_role => 'engagement_coordinator').all.each do |person|
+      ccs << person.email_address
+    end
+    cc = UseridDetail.where(:userid => 'REGManager').first unless cc.nil?
+    ccs << cc.email_address
+    UserMailer.volunteer(self,ccs).deliver
+  end
+
+  def communicate_general
+    ccs = Array.new
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+      ccs << person.email_address unless person.nil?
+    end
+    UserMailer.contact(self,ccs).deliver   
+  end
+
+  def get_coordinator
+    entry = SearchRecord.find(self.record_id).freereg1_csv_entry
+    record = Freereg1CsvEntry.find(entry)
+    file = record.freereg1_csv_file
+    county = file.county #this is chapman code
+    coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+  end
+
+  def github_issue  
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_login
@@ -74,8 +154,7 @@ class Contact
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
       self.github_issue_url = response[:html_url]
-      self.save!
-      
+     
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
@@ -89,43 +168,9 @@ class Contact
     "#{contact_type} (#{name})"
   end
 
-  def data_manager_issue(contact)
-    ccs = Array.new
-    coordinator = contact.get_coordinator if contact.record_id.present?
-    ccs << coordinator.person_forename if contact.record_id.present?
-    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
-       ccs << person.person_forename
-    end
-    UserMailer.contact_to_coordinator(contact,coordinator,ccs).deliver if coordinator.present?
-    UseridDetail.where(:person_role => 'data_manager').all.each do |data_manager|
-    UserMailer.contact_to_recipient(contact,data_manager,ccs).deliver unless coordinator.present?
-    UserMailer.contact_to_data_manager(contact,data_manager,ccs).deliver if coordinator.present?
-    end
-  end
-  def volunteering_issue(contact)
-    ccs = Array.new
-    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
-       ccs << person.email_address
-    end
-     manager = UseridDetail.where(:userid => 'REGManager').first
-     ccs << manager.email_address
-     UserMailer.volunteer(contact,ccs).deliver
-  end
-
-  def get_coordinator
-    entry = SearchRecord.find(self.record_id).freereg1_csv_entry
-    record = Freereg1CsvEntry.find(entry)
-    file = record.freereg1_csv_file
-    county = file.county #this is chapman code
-    coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
-  end
-
-
   def issue_body
     issue_body = ApplicationController.new.render_to_string(:partial => 'contacts/github_issue_body.txt', :locals => {:feedback => self})
     issue_body
   end
-
-
 
 end
