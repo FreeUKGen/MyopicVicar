@@ -24,7 +24,7 @@ class Contact
 
   mount_uploader :screenshot, ScreenshotUploader
 
-  before_save :url_check, :add_identifier
+  before_save :url_check
   after_create :communicate
   class << self
     def id(id)
@@ -33,30 +33,27 @@ class Contact
   end
 
   def url_check
+
     self.problem_page_url = "unknown" if self.problem_page_url.nil?
     self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end
 
-  def add_identifier
-    set = Random.new(123456789)
-    self.identifier = set.rand(10000000)  
-  end
-
   def communicate
+   
     case 
-      when  self.contact_type == 'Website Problem'
-        self.github_issue
-      when self.contact_type == 'Data Problem'
-        UserMailer.copy_to_contact_person(self).deliver
-        data_manager_issue(self)
-      when self.contact_type == 'Volunteer'
-        volunteering_issue(self) 
-      when self.contact_type == 'Question' || self.contact_type == "Thank you"
-        ccs = Array.new
-        UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
-          ccs << person.email_address unless person.nil?
-        end
-        UserMailer.contact(self,ccs).deliver
+    when  self.contact_type == 'Website Problem'
+      self.github_issue
+    when self.contact_type == 'Data Problem'
+      UserMailer.copy_to_contact_person(self).deliver
+      data_manager_issue(self)
+    when self.contact_type == 'Volunteer'
+      volunteering_issue(self) 
+    when self.contact_type == 'Question' || self.contact_type == "Thank you"
+      ccs = Array.new
+      UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+        ccs << person.email_address unless person.nil?
+      end
+      UserMailer.contact(self,ccs).deliver
     end
   end
 
