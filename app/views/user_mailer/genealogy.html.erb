@@ -1,17 +1,10 @@
 <p> Dear <%= @contact.name %>;</p>
-<p>Thank you for your correspondence at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.indentifier %> in any subsequent communication with us on this matter.</p> Your correspondence has been forwarded to a member of the team for action. 
+<p>Thank you for your correspondence at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p> Your correspondence has been forwarded to a member of the team for action. 
 <p>The following is the information you submitted.
 </p>
-<b>Genealogical Question:</b>
-<%= @contact.body %>
-</p>
-<p>
-<b>Screenshot:</b>
-<% if @contact.screenshot_url %>
-<%= image_tag @contact.screenshot_url %>
-<% else %>
-No screenshot attached.
-<% end %>
-</p>
-
+<b>Genealogical Question:</b></p>
+<p>  <%= @contact.body %></p>
+<% if @contact.screenshot_url.present?%>
+ <p>An image is attached</p>
+<% end%>
 <p> The FreeREG Team</p>

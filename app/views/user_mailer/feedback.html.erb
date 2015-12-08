@@ -1,12 +1,10 @@
 <p> Dear <%= @user.person_forename %>;</p>
 <p>Thank you for your feedback at <%= @contact.feedback_time.strftime("%H:%M on %F") unless @contact.feedback_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p> <p>Your correspondence has been forwarded to a member of the team for action.</p>
 <p>The following is the information you submitted.</p>
-<p>
-<b>Feedback:<%= @contact.title %></b>
-
-</p>
-<p>
-<%= @contact.body %>
-</p>
-
+<p> <b>Feedback:<%= @contact.title %></b></p>
+<p> <b>Comment: </b> </p>
+<p>  <%= @contact.body %></p>
+<% if @contact.screenshot_url.present?%>
+ <p>An image is attached</p>
+<% end%>
 <p> The FreeREG Team</p>

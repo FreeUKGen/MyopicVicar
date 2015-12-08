@@ -20,7 +20,7 @@ class Feedback
 
   validate :title_or_body_exist
 
-  before_create :url_check, :add_identifier,:add_email
+  before_create :url_check, :add_identifier, :add_email
  
   class << self
     def id(id)
@@ -38,9 +38,8 @@ class Feedback
     self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end
 
-   def add_identifier
-   
-    self.identifier = Time.now.to_i - Time.gm(2015).to_i  
+  def add_identifier
+     self.identifier = Time.now.to_i - Time.gm(2015).to_i  
   end
   def add_email
     reporter = UseridDetail.userid(self.user_id).first
@@ -59,8 +58,8 @@ class Feedback
     end
     cc = UseridDetail.where(:person_role => 'project_manager').first
     ccs << cc.email_address unless cc.nil?
-    file = self.screenshot.path
-    UserMailer.feedback(self,ccs,file).deliver    
+    
+    UserMailer.feedback(self,ccs).deliver    
   end 
 
   def github_issue

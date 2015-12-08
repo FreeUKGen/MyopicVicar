@@ -18,14 +18,14 @@ class Contact
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
   field :identifier, type: String
-  
+
   validates_presence_of :name, :email_address
   validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
 
   mount_uploader :screenshot, ScreenshotUploader
 
   before_create :url_check, :add_identifier
-  after_create :communicate
+
   class << self
     def id(id)
       where(:id => id)
@@ -38,32 +38,32 @@ class Contact
   end
 
   def add_identifier
-    set = Random.new(123456789)
-    self.identifier = set.rand(10000000)  
+    self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
 
   def communicate
-    case 
-      when  self.contact_type == 'Website Problem'
-        self.communicate_website_problem
-      when self.contact_type == 'Data Question'
-        self.communicate_data_question
-      when self.contact_type == 'Volunteering Question'
-        self.communicate_volunteering 
-      when self.contact_type == 'General Comment' 
-        self.communicate_general
-      when self.contact_type == "Thank you"
-        self.communicate_publicity
-      when self.contact_type == 'Genealogical Question'
-        self.communicate_genealogical_question 
-      when self.contact_type == 'Enhancement Suggestion' 
-        self.communicate_enhancement_suggestion
-      else
-        self.communicate_general
+    case
+    when  self.contact_type == 'Website Problem'
+      self.communicate_website_problem
+    when self.contact_type == 'Data Question'
+      self.communicate_data_question
+    when self.contact_type == 'Data Problem'
+      self.communicate_data_question
+    when self.contact_type == 'Volunteering Question'
+      self.communicate_volunteering
+    when self.contact_type == 'General Comment'
+      self.communicate_general
+    when self.contact_type == "Thank you"
+      self.communicate_publicity
+    when self.contact_type == 'Genealogical Question'
+      self.communicate_genealogical_question
+    when self.contact_type == 'Enhancement Suggestion'
+      self.communicate_enhancement_suggestion
+    else
+      self.communicate_general
     end
   end
 
-  
   def communicate_website_problem
     ccs = Array.new
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
@@ -71,19 +71,27 @@ class Contact
     end
     cc = UseridDetail.where(:person_role => 'project_manager').first
     ccs << cc.email_address unless cc.nil?
-    UserMailer.website(self,ccs).deliver    
-  end 
+    UserMailer.website(self,ccs).deliver
+  end
 
   def communicate_data_question
     ccs = Array.new
-    coordinator = contact.get_coordinator if self.record_id.present?
+    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
+      ccs << person.person_forename
+    end
+    UserMailer.datamanger_data_question(self,ccs).deliver
+  end
+
+  def communicate_data_problem
+    ccs = Array.new
+    coordinator = self.get_coordinator if self.record_id.present?
     ccs << coordinator.person_forename if self.record_id.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
-       ccs << person.person_forename
+      ccs << person.person_forename
     end
-    UserMailer.coordinator_data_question(self,ccs).deliver if coordinator.present?
-    UserMailer.datamanger_data_question(self,ccs).deliver unless coordinator.present?
+    UserMailer.coordinator_data_problem(self,ccs).deliver
   end
+
 
   def communicate_publicity
     ccs = Array.new
@@ -92,7 +100,7 @@ class Contact
     end
     cc = UseridDetail.where(:person_role => 'executive_director').first
     ccs << cc.email_address unless cc.nil?
-    UserMailer.publicity(self,ccs).deliver     
+    UserMailer.publicity(self,ccs).deliver
   end
 
   def communicate_genealogical_question
@@ -103,7 +111,7 @@ class Contact
     UseridDetail.where(:person_role => 'contact_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    UserMailer.genealogy(self,ccs).deliver        
+    UserMailer.genealogy(self,ccs).deliver
   end
 
   def communicate_enhancement_suggestion
@@ -111,9 +119,9 @@ class Contact
     UseridDetail.where(:person_role => 'project_manager').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.userid('REGManager').first unless cc.nil?
-    ccs << cc.email_address
-    UserMailer.enhancement(self,ccs).deliver 
+    cc = UseridDetail.userid('REGManager').first
+    ccs << cc.email_address unless cc.nil?
+    UserMailer.enhancement(self,ccs).deliver
   end
 
   def communicate_volunteering
@@ -124,8 +132,8 @@ class Contact
     UseridDetail.where(:person_role => 'engagement_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:userid => 'REGManager').first unless cc.nil?
-    ccs << cc.email_address
+    cc = UseridDetail.where(:userid => 'REGManager').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.volunteer(self,ccs).deliver
   end
 
@@ -134,7 +142,7 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address unless person.nil?
     end
-    UserMailer.contact(self,ccs).deliver   
+    UserMailer.general(self,ccs).deliver
   end
 
   def get_coordinator
@@ -145,7 +153,7 @@ class Contact
     coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
   end
 
-  def github_issue  
+  def github_issue
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_login
@@ -154,7 +162,7 @@ class Contact
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
       self.github_issue_url = response[:html_url]
-     
+
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end

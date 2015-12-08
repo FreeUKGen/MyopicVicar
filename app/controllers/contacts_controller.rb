@@ -28,6 +28,7 @@ class ContactsController < InheritedResources::Base
       @contact.previous_page_url= request.env['HTTP_REFERER']
       if @contact.save
         flash[:notice] = "Thank you for contacting us!"
+        @contact.communicate
         if @contact.query
           redirect_to search_query_path(@contact.query, :anchor => "#{@contact.record_id}")
           return
@@ -80,5 +81,10 @@ class ContactsController < InheritedResources::Base
     session[:place_name] = place.place_name
     session[:church_name] = church.church_name
     session[:county] = place.county
+  end
+
+  def message
+    
+    
   end
 end

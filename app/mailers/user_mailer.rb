@@ -156,6 +156,76 @@ class UserMailer < ActionMailer::Base
     invitation_to_reset_password(user)
   end
 
+  def enhancement(contact,ccs)
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested Enhancement. Reference #{@contact.identifier}")
+  end
+
+  def general(contact,ccs)
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the General Comment. Reference #{@contact.identifier}")
+  end
+
+  def genealogy(contact,css)
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for Genealogical Question. Reference #{@contact.identifier}")
+  end
+
+  def volunteer(contact,ccs)
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Reference #{@contact.identifier}")
+  end
+
+  def website(contact,ccs)
+    @contact = contact 
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem. Reference #{@contact.identifier}")
+  end
+
+  def feedback(contact,ccs)
+    @contact = contact 
+    @user = UseridDetail.userid(@contact.user_id).first
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your Feedback. Reference #{@contact.identifier}")
+  end
+
+  def publicity(contact,ccs)
+    @ccs = ccs
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
+  end
+ 
+  def datamanger_data_question(contact,ccs)
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Reference #{@contact.identifier}")
+  end
+
+  def coordinator_data_question(contact,ccs)
+    @contact = contact
+    get_attachment
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+  end
+
+  def send_change_of_syndicate_notification_to_sc(user)
+    @user = user
+    get_coordinator_name
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg Change of Syndicate") unless @coordinator.blank?
+  end
+
+  def get_attachment
+    if @contact.screenshot_url.present?
+      @image = File.basename(@contact.screenshot.path)
+      @file = "#{Rails.root}/public" + @contact.screenshot_url
+      attachments[@image] = File.binread(@file)
+    end
+  end
+
   def get_coordinator_name
     coordinator = Syndicate.where(:syndicate_code => @user.syndicate).first
     if coordinator.nil?
@@ -174,61 +244,4 @@ class UserMailer < ActionMailer::Base
     @user_token = refinery_user.reset_password_token
   end
 
-  def enhancement(contact,ccs)
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested Enhancement. Contact reference #{@contact.identifier}")
-  end
-
-  def general(contact,ccs)
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the General Comment. Contact reference #{@contact.identifier}")
-  end
-
-  def genealogy(contact,css)
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for Genealogical Question. Contact reference #{@contact.identifier}")
-  end
-
-  def volunteer(contact,ccs)
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Contact reference #{@contact.identifier}")
-  end
-
-  def website(contact,ccs)
-    @contact = contact  
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem. Contact reference #{@contact.identifier}")
-  end
-
-  def feedback(contact,ccs,file)
-    p "mailing"
-    @contact = contact 
-    @user = UseridDetail.userid(@contact.user_id).first
-
-     attachments["screenshot.jpg"] = {:mime_type => 'image/jpeg',
-                                   :content => file }
-    
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your Feedback. Contact reference #{@contact.identifier}")
-  end
-
-  def publicity(contact,ccs)
-    @ccs = ccs
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Contact reference #{@contact.identifier}")
-  end
- 
-  def datamanger_data_question(contact,ccs)
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Contact reference #{@contact.identifier}")
-  end
-
-  def coordinator_data_question(contact,ccs)
-    @contact = contact
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Contact reference #{@contact.identifier}")
-  end
-
-  def send_change_of_syndicate_notification_to_sc(user)
-    @user = user
-    get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG2 Change of Syndicate") unless @coordinator.blank?
-  end
 end

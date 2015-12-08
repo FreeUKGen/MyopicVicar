@@ -13,6 +13,8 @@ class FeedbacksController < InheritedResources::Base
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
     @feedback.session_data = session
+    p "creating"
+    p @feedback
     @feedback.save
     if @feedback.errors.any?
       render :action => 'new'
