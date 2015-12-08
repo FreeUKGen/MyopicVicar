@@ -64,6 +64,7 @@ class Contact
     end
   end
 
+
   def communicate_website_problem
     ccs = Array.new
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
