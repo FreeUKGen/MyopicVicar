@@ -5,6 +5,7 @@ class Feedback
   field :body, type: String
   field :feedback_time, type: DateTime
   field :user_id, type: String
+  field :name, type: String
   field :email_address, type: String
   field :session_id, type: String
   field :problem_page_url, type: String
@@ -44,6 +45,7 @@ class Feedback
   def add_email
     reporter = UseridDetail.userid(self.user_id).first
     self.email_address = reporter.email_address unless reporter.nil?
+    self.name = reporter.person_forename unless reporter.nil?
   end
 
   module FeedbackType

@@ -1,49 +1,43 @@
-
-
 <h1 class="title text--center">List of all feedback reports</h1>
-
-  <% unless Feedback.github_enabled %>
-    <div id="error_explanation">
-      <h2>Github integration is not enabled</h2>
-    </div>
-  <% end %>
-
-<% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
- <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
-<% end %>  
-
- <section class="island  island--light " >
- <div class="table-wrapper"> 
- <div class="grid"> 
-  <div class="grid__item one-whole" >
-
-<table class="table--bordered table--data" >
-  <tr>
-    <th>Title</th>
-    <th>Date</th>
-    <th>User</th>
-    <th>email</th>
-    <th>Identifier</th> 
-    <th >Action</th>
-  </tr>
-
-<% @feedbacks.each do |feedback| %>
-  <tr>
-    <td><%= feedback.title %></td>
-    <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>
-    <td><%= feedback.user_id %></td>
-    <td><%= feedback.email_address %></td>
-    <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
-    <td><%= link_to 'Show', feedback_path(feedback), :class => "btn weight--light  btn--small", method: :get%> 
-    <%= link_to 'Destroy', feedback_path(feedback), :class => "btn weight--light  btn--small",method: :delete, data: { confirm: 'Are you sure you want to delete this feedback' } %></td>
- </tr>
+<% unless Feedback.github_enabled %>
+  <div id="error_explanation">
+    <h2>Github integration is not enabled</h2>
+  </div>
 <% end %>
-</table>
-</div>
-</div>
-</div>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<section class="island  island--light " >
+  <div class="table-wrapper">
+    <div class="grid">
+      <div class="grid__item one-whole" >
+        <table class="table--bordered table--data" >
+          <tr>
+            <th class="t15">Title</th>
+            <th class="t15">Userid</th>
+            <th class="t10">Name</th>
+            <th class="t20">email</th>
+            <th class="t10">Date</th>
+            <th class="t10">Identifier</th>
+            <th class="t20">Action</th>
+          </tr>
+          <% @feedbacks.each do |feedback| %>
+          <tr>
+            <td><%= feedback.title %></td>
+            <td><%= feedback.user_id %></td>
+            <td><%= feedback.name %></td>
+            <td><%= feedback.email_address %></td>
+            <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>
+            <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
+            <td><%= link_to 'Show', feedback_path(feedback), :class => "btn weight--light  btn--small", method: :get%>
+            <%= link_to 'Destroy', feedback_path(feedback), :class => "btn weight--light  btn--small",method: :delete, data: { confirm: 'Are you sure you want to delete this feedback' } %></td>
+          </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
 </section>
 <br />
-

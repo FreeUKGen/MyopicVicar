@@ -72,6 +72,8 @@ class Contact
     end
     cc = UseridDetail.where(:person_role => 'project_manager').first
     ccs << cc.email_address unless cc.nil?
+    cc = UseridDetail.where(:person_role => 'executive_director').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.website(self,ccs).deliver
   end
 
@@ -80,6 +82,8 @@ class Contact
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
       ccs << person.person_forename
     end
+    cc = UseridDetail.where(:userid => 'REGManager').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.datamanger_data_question(self,ccs).deliver
   end
 
@@ -90,6 +94,8 @@ class Contact
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
       ccs << person.person_forename
     end
+    cc = UseridDetail.where(:userid => 'REGManager').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.coordinator_data_problem(self,ccs).deliver
   end
 
@@ -100,6 +106,8 @@ class Contact
       ccs << person.email_address
     end
     cc = UseridDetail.where(:person_role => 'executive_director').first
+    ccs << cc.email_address unless cc.nil?
+    cc = UseridDetail.where(:userid => 'REGManager').first
     ccs << cc.email_address unless cc.nil?
     UserMailer.publicity(self,ccs).deliver
   end
@@ -112,6 +120,8 @@ class Contact
     UseridDetail.where(:person_role => 'contact_coordinator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:userid => 'REGManager').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.genealogy(self,ccs).deliver
   end
 
@@ -143,6 +153,8 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address unless person.nil?
     end
+    cc = UseridDetail.where(:userid => 'REGManager').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.general(self,ccs).deliver
   end
 
