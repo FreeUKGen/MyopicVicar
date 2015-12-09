@@ -33,12 +33,12 @@ class UserMailer < ActionMailer::Base
         end
       end
       if emails.length == 1
-         mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+         mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
       elsif emails.length == 2
-        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}") 
+        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}") 
       end 
     end
   end
@@ -72,13 +72,14 @@ class UserMailer < ActionMailer::Base
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
         end
       end
+     
       if emails.length == 1
-         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       elsif emails.length == 2
-        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       end 
     end
   end
@@ -87,59 +88,59 @@ class UserMailer < ActionMailer::Base
     attachments["report.log"] = File.read(file)
     @person_forename = user.person_forename
     @email_address = user.email_address
-    mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeREG Update processing report")
+    mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
   end
 
   def invitation_to_register_transcriber(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREG Registration")
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeReg registration")
   end
 
   def invitation_to_register_researcher(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREG Registration")
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREeg registration")
   end
 
   def invitation_to_register_technical(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeREG Registration")
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete FreeReg registration")
   end
 
   def invitation_to_reset_password(user)
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password Reset for FreeREG ")
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password reset for FreeReg ")
   end
 
   def notification_of_transcriber_creation(user)
     @user = user
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Userid Creation") unless @coordinator.nil?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg userid creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
     @user = user
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Transcriber Registration") unless @coordinator.nil?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
     @user = user
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Research Registration") unless @coordinator.nil?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg research registration") unless @coordinator.nil?
   end
 
   def notification_of_technical_registration(user)
     @user = user
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeREG Technical Registration notification") unless @coordinator.nil?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg technical registration notification") unless @coordinator.nil?
   end
 
   def notification_of_registration_completion(user)
@@ -147,7 +148,7 @@ class UserMailer < ActionMailer::Base
     reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name 
     if Time.now - 5.days <= @user.c_at
-      mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeREG Registration Completion") 
+      mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg registration completion") 
     end
   end
 
@@ -159,19 +160,19 @@ class UserMailer < ActionMailer::Base
   def enhancement(contact,ccs)
     @contact = contact
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested Enhancement. Reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested enhancement. Reference #{@contact.identifier}")
   end
 
   def general(contact,ccs)
     @contact = contact
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the General Comment. Reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
   end
 
   def genealogy(contact,css)
     @contact = contact
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for Genealogical Question. Reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
   end
 
   def volunteer(contact,ccs)
@@ -183,14 +184,14 @@ class UserMailer < ActionMailer::Base
   def website(contact,ccs)
     @contact = contact 
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem. Reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
   end
 
   def feedback(contact,ccs)
     @contact = contact 
     @user = UseridDetail.userid(@contact.user_id).first
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your Feedback. Reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
   end
 
   def publicity(contact,ccs)
@@ -215,7 +216,7 @@ class UserMailer < ActionMailer::Base
   def send_change_of_syndicate_notification_to_sc(user)
     @user = user
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg Change of Syndicate") unless @coordinator.blank?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of syndicate") unless @coordinator.blank?
   end
 
   def get_attachment

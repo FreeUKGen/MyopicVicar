@@ -40,6 +40,13 @@ MyopicVicar::Application.routes.draw do
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   resources :feedbacks
 
+
+
+ 
+  get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts 
+  get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts 
+  get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts 
+  get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts 
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
   resources :contacts

@@ -5,9 +5,6 @@
 <p>
   <%= @contact.body %>
 </p>
-<% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-<p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
-<% end%>
 <p>
 <% if @contact.screenshot_url.present?%>
  <p>An image is attached</p>

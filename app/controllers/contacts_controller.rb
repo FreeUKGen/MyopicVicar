@@ -4,6 +4,7 @@ class ContactsController < InheritedResources::Base
   def index
     @contacts = Contact.all.order_by(contact_time: -1)
   end
+
   def show
     @contact = Contact.id(params[:id]).first
     if @contact.nil?
@@ -11,6 +12,36 @@ class ContactsController < InheritedResources::Base
     else
       set_session_parameters_for_record(@contact) if @contact.entry_id.present?
     end
+  end
+
+  def list_by_name
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(name: 1)
+    render :index
+  end
+
+  def list_by_identifier
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(identifier: 1)
+    render :index
+  end
+
+  def list_by_date
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(contact_time: 1)
+    render :index
+  end
+
+  def select_by_identifier
+    get_user_info_from_userid
+    @options = Hash.new
+    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
+      @options[contact.identifier] = contact.id
+    end
+    @contact = Contact.new
+    @location = 'location.href= "/contacts/" + this.value'
+    @prompt = 'Select Identifier'
+    render '_form_for_selection'
   end
 
   def new
