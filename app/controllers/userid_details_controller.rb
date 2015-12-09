@@ -258,11 +258,12 @@ class UseridDetailsController < ApplicationController
 
   def update
     load(params[:id])
-    success = true
+    success = Array.new
+    success[0] = true
     case 
       when params[:commit] == "Rename" 
-        success = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
-        success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success
+        success[0] = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
+        success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success[0]
       when params[:commit] == "Disable"
         params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
         params[:userid_detail][:active]  = false
@@ -275,13 +276,13 @@ class UseridDetailsController < ApplicationController
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
-    if !@userid.errors.any? || success
+    if !@userid.errors.any? && success[0]
      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
      flash[:notice] = 'The update of the profile was successful'
      redirect_to userid_detail_path(@userid)
      return
     else
-      flash[:notice] = "The update of the profile was unsuccessful #{success[1]}"
+      flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       render :action => 'edit'
       return
