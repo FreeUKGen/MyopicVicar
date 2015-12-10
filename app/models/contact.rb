@@ -5,6 +5,7 @@ class Contact
   field :contact_time, type: DateTime
   field :name, type: String
   field :email_address, type: String
+  field :county, type: String
   field :session_id, type: String
   field :problem_page_url, type: String
   field :previous_page_url, type: String

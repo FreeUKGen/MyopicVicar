@@ -2,8 +2,16 @@ class ContactsController < InheritedResources::Base
   require 'freereg_options_constants'
   skip_before_filter :require_login, only: [:new, :report_error, :create]
   def index
+    get_user_info_from_userid
+    if @roles.include?('county_coordinator')
+      @county = @user.county_groups
+      @contacts = Contact.any_of({:county => @county}).all.order_by(contact_time: -1)  
+      render :county_index
+      return
+    end
     @contacts = Contact.all.order_by(contact_time: -1)
   end
+
 
   def show
     @contact = Contact.id(params[:id]).first
@@ -93,6 +101,7 @@ class ContactsController < InheritedResources::Base
     @contact.record_id = params[:id]
     @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
     @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
+    @contact.county = @freereg1_csv_entry.freereg1_csv_file.register.church.place.county
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 

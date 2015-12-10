@@ -340,6 +340,20 @@ crumb :edit_csvfile do |csvfile,file|
     parent :syndicate_options, session[:syndicate]
   end
 end
+#Feedback
+
+crumb :feedback_form do
+  parent :root
+end
+crumb :feedbacks do
+  link "Feedbacks", feedbacks_path
+  parent :root
+end
+crumb :show_feedback do |feedback|
+  link "Show Feedback", feedback_path(feedback)
+  parent :feedbacks
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path
