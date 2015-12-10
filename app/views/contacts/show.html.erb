@@ -36,7 +36,9 @@
         </tr>
 
         <% if @contact.contact_type = 'Data Problem' &&  @contact.entry_id.present?%>
+        <tr><td>Record :</td><td class="weight--semibold"> <%= @contact.line_id %> </td></tr>
         <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
+        <tr><td>County :</td><td class="weight--semibold"> <%= @contact.county %> </td></tr>
         <% end%>
         <tr>
           <td>Explanation:</td><td class="weight--semibold"><%= @contact.body %></td>

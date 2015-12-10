@@ -84,20 +84,22 @@ class Contact
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
       ccs << person.person_forename
     end
-    cc = UseridDetail.where(:userid => 'REGManager').first
-    ccs << cc.email_address unless cc.nil?
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.datamanger_data_question(self,ccs).deliver
   end
 
   def communicate_data_problem
     ccs = Array.new
     coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.person_forename if self.record_id.present?
+    ccs << coordinator.email_address if self.record_id.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
       ccs << person.person_forename
     end
-    cc = UseridDetail.where(:userid => 'REGManager').first
-    ccs << cc.email_address unless cc.nil?
+   UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.coordinator_data_problem(self,ccs).deliver
   end
 
@@ -109,8 +111,9 @@ class Contact
     end
     cc = UseridDetail.where(:person_role => 'executive_director').first
     ccs << cc.email_address unless cc.nil?
-    cc = UseridDetail.where(:userid => 'REGManager').first
-    ccs << cc.email_address unless cc.nil?
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.publicity(self,ccs).deliver
   end
 
@@ -122,8 +125,9 @@ class Contact
     UseridDetail.where(:person_role => 'contact_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:userid => 'REGManager').first
-    ccs << cc.email_address unless cc.nil?
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.genealogy(self,ccs).deliver
   end
 
@@ -132,8 +136,9 @@ class Contact
     UseridDetail.where(:person_role => 'project_manager').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.userid('REGManager').first
-    ccs << cc.email_address unless cc.nil?
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.enhancement(self,ccs).deliver
   end
 
@@ -145,8 +150,9 @@ class Contact
     UseridDetail.where(:person_role => 'engagement_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:userid => 'REGManager').first
-    ccs << cc.email_address unless cc.nil?
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.volunteer(self,ccs).deliver
   end
 
@@ -155,8 +161,9 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address unless person.nil?
     end
-    cc = UseridDetail.where(:userid => 'REGManager').first
-    ccs << cc.email_address unless cc.nil?
+    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      ccs << person.email_address
+    end
     UserMailer.general(self,ccs).deliver
   end
 
@@ -177,7 +184,7 @@ class Contact
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
       self.github_issue_url = response[:html_url]
-
+      self.github_comment_url = response[:comment_url]
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end

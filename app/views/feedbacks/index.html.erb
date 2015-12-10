@@ -1,5 +1,5 @@
 <% breadcrumb :feedbacks%>
-<h1 class="title text--center">List of all feedback reports</h1>
+<h2 class=" text--center">List of all feedback reports</h2>
 <p style="text-align: center"><%= link_to 'List by Name', list_by_name_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_feedbacks_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Userid' , list_by_userid_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %></p>
 <% unless Feedback.github_enabled %>
   <div id="error_explanation">

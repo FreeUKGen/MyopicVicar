@@ -51,10 +51,9 @@ class FeedbacksController < InheritedResources::Base
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
     @feedback.session_data = session
-    p "creating"
-    p @feedback
     @feedback.save
     if @feedback.errors.any?
+       flash.notice = "There was a problem reporting your feedback!"
       render :action => 'new'
       return
     end
@@ -73,6 +72,6 @@ class FeedbacksController < InheritedResources::Base
     @feedback = Feedback.find(params[:id])
     @feedback.github_issue
     flash.notice = "Issue created on Github."
-    show
+    redirect_to feedback_path(@feedback.id)
   end
 end

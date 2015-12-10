@@ -34,8 +34,8 @@ class County
         @old_userid = UseridDetail.where(:userid => previous_county_coordinator).first
         if @old_userid.county_groups.length == 1
           unless  (@old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
-            @old_userid.person_role = 'transcriber'  if @old_userid.syndicate_groups.length == 0
-            @old_userid.person_role = 'syndicate_coordinator' if @old_userid.syndicate_groups.length >= 1
+            @old_userid.person_role = 'transcriber'  if @old_userid.syndicate_groups.nil?
+            @old_userid.person_role = 'syndicate_coordinator' if @old_userid.syndicate_groups.present? && @old_userid.syndicate_groups.length >= 1
           end # role
         end #length
         @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
