@@ -1,6 +1,6 @@
 <% breadcrumb :contacts %>
 <h1 class="title text--center">List of all contacts</h1>
-<%= link_to 'List by Userid', list_by_name_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_contacts_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %>
+<p style="text-align: center"><%= link_to 'List by Name', list_by_name_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_contacts_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Contact Type' , list_by_type_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %></p>
 <% unless Contact.github_enabled %>
 <div id="error_explanation">
   <h2>Github integration is not enabled</h2>

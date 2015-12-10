@@ -22,9 +22,16 @@ class ContactsController < InheritedResources::Base
 
   def list_by_identifier
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(identifier: 1)
+    @contacts = Contact.all.order_by(identifier: -1)
     render :index
   end
+
+  def list_by_type
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(contact_type: 1)
+    render :index
+  end
+
 
   def list_by_date
     get_user_info_from_userid

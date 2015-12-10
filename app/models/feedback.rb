@@ -16,6 +16,7 @@ class Feedback
   field :session_data, type: Hash
   field :screenshot, type: String
   field :identifier, type: String
+  attr_accessor :action
 
   mount_uploader :screenshot, ScreenshotUploader
 

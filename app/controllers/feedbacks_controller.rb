@@ -4,6 +4,44 @@ class FeedbacksController < InheritedResources::Base
     @feedbacks = Feedback.all.order_by(feedback_time: -1)
   end
 
+   def list_by_name
+    get_user_info_from_userid
+    @feedbacks = Feedback.all.order_by(name: 1)
+    render :index
+  end
+
+  def list_by_identifier
+    get_user_info_from_userid
+    @feedbacks = Feedback.all.order_by(identifier: -1)
+    render :index
+  end
+
+  def list_by_userid
+    get_user_info_from_userid
+    @feedbacks = Feedback.all.order_by(user_id: 1)
+    render :index
+  end
+
+
+  def list_by_date
+    get_user_info_from_userid
+    @feedbacks = Feedback.all.order_by(feedback_time: 1)
+    render :index
+  end
+
+  def select_by_identifier
+    get_user_info_from_userid
+    @options = Hash.new
+    @feedbacks = Feedback.all.order_by(identifier: -1).each do |contact|
+      @options[contact.identifier] = contact.id
+    end
+    @feedback = Feedback.new
+    @location = 'location.href= "/feedbacks/" + this.value'
+    @prompt = 'Select Identifier'
+    render '_form_for_selection'
+  end
+
+
   def new
     @feedback = Feedback.new(params)
   end
