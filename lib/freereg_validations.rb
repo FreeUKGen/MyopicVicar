@@ -260,7 +260,7 @@ module FreeregValidations
       end
       return true
     end
-    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] = "/" ) 
+    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] == "/" ) 
       #deal with the split year
       year = characters
       last = 2
