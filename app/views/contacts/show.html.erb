@@ -47,25 +47,26 @@
           <td>Session ID:</td><td class="weight--semibold"> <%= @contact.session_id %> </td>
         </tr>
         
-        <tr>
-          <td>Github Issue:</td><td class="weight--semibold">
+        
           <% if @contact.github_issue_url %>
-          <%= link_to @contact.github_issue_url, @contact.github_issue_url  %>
+            <tr><td>Github Issue:</td><td class="weight--semibold"> <%= link_to @contact.github_issue_url, @contact.github_issue_url  %></td></tr>
+            <tr><td>Github Number:</td><td class="weight--semibold"> <%= @contact.github_number  %></td></tr>
+            <tr><td>Make Github Comment:</td><td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td></tr>
           <% else %>
-          <% if Contact.github_enabled %>
-          <span  style="float:left;">
-          <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>
-          </span>
-          <% else %>
-          Github integration is not set up on this site yet.
+            <% if Contact.github_enabled %>
+              <tr><span  style="float:left;">
+              <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>
+              </span></tr>
+            <% else %>
+              <tr>Github integration is not set up on this site yet.</tr>
+            <% end %>
           <% end %>
-        <% end %></td></tr>
       </table>
       <b>Screenshot:</b>
       <% if @contact.screenshot_url %>
-      <%= image_tag @contact.screenshot_url %>
+        <%= image_tag @contact.screenshot_url %>
       <% else %>
-      No screenshot attached.
+        No screenshot attached.
       <% end %>
     </div>
   </section>

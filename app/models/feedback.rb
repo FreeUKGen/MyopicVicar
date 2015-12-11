@@ -13,6 +13,7 @@ class Feedback
   field :feedback_type, type: String
   field :github_issue_url, type: String
   field :github_comment_url, type: String
+  field :github_number, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
   field :identifier, type: String
@@ -75,8 +76,7 @@ class Feedback
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info("APP: #{response}")
       logger.info(response.inspect)
-      self.github_issue_url = response[:html_url]
-      self.github_comment_url = response[:comment_url]
+      self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comment_url], github.number => response[:number])
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
@@ -87,7 +87,7 @@ class Feedback
   end
 
   def issue_title
-    "#{title} (#{user_id})"
+   "#{identifier} #{contact_type} (#{name})"
   end
 
   def issue_body

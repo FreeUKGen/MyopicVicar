@@ -11,6 +11,8 @@ class Contact
   field :previous_page_url, type: String
   field :contact_type, type: String
   field :github_issue_url, type: String
+  field :github_comment_url, type: String
+  field :github_number, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
   field :record_id, type: String
@@ -136,6 +138,8 @@ class Contact
     UseridDetail.where(:person_role => 'project_manager').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'executive_director').first
+    ccs << cc.email_address unless cc.nil?
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
@@ -183,8 +187,7 @@ class Contact
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
-      self.github_issue_url = response[:html_url]
-      self.github_comment_url = response[:comment_url]
+      self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comment_url], github.number => response[:number])
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
@@ -195,7 +198,7 @@ class Contact
   end
 
   def issue_title
-    "#{contact_type} (#{name})"
+    "#{identifier} #{contact_type} (#{name})"
   end
 
   def issue_body
