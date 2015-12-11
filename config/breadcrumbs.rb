@@ -282,16 +282,7 @@ crumb :userid_detail do |syndicate,userid_detail|
 end
 
 
-#manage contacts
-crumb :contacts do
-  link "Contacts", contacts_path
-  parent :root
-end
-#manage contacts
-crumb :show_contact do |contact|
-  link "Show Contact", contact_path(contact)
-  parent :contacts
-end
+
 #manage userids
 crumb :regmanager_userid_options do
   link "Userid Management Options", options_userid_details_path
@@ -352,6 +343,24 @@ end
 crumb :show_feedback do |feedback|
   link "Show Feedback", feedback_path(feedback)
   parent :feedbacks
+end
+crumb :edit_feedback do |feedback|
+  link "Edit Feedback", edit_feedback_path(feedback)
+  parent :show_feedback, feedback
+end
+#manage contacts
+crumb :contacts do
+  link "Contacts", contacts_path
+  parent :root
+end
+#manage contacts
+crumb :show_contact do |contact|
+  link "Show Contact", contact_path(contact)
+  parent :contacts
+end
+crumb :edit_contact do |contact|
+  link "Edit Contact", edit_contact_path(contact)
+  parent :show_contact, contact
 end
 
 

@@ -33,8 +33,8 @@
             <td><%= feedback.email_address %></td>
             <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>
             <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
-            <td><%= link_to 'Show', feedback_path(feedback), :class => "btn weight--light  btn--small", method: :get%>
-            <%= link_to 'Destroy', feedback_path(feedback), :class => "btn weight--light  btn--small",method: :delete, data: { confirm: 'Are you sure you want to delete this feedback' } %></td>
+            <td><%= link_to 'SH', feedback_path(feedback), :class => "btn weight--light  btn--small", method: :get%> <%= link_to 'ED', edit_feedback_path(feedback), :class => "btn weight--light  btn--small", method: :get,data: { confirm: 'Are you sure you want to edit this feedback' } %> 
+            <%= link_to 'DES', feedback_path(feedback), :class => "btn weight--light  btn--small",method: :delete, data: { confirm: 'Are you sure you want to delete this feedback' } %></td>
           </tr>
           <% end %>
         </table>

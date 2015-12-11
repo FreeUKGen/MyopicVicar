@@ -22,7 +22,6 @@ class FeedbacksController < InheritedResources::Base
     render :index
   end
 
-
   def list_by_date
     get_user_info_from_userid
     @feedbacks = Feedback.all.order_by(feedback_time: 1)
@@ -40,7 +39,16 @@ class FeedbacksController < InheritedResources::Base
     @prompt = 'Select Identifier'
     render '_form_for_selection'
   end
-
+ 
+  def edit
+    load(params[:id])   
+  end
+  
+  def update
+    load(params[:id])
+    @feedback.update_attributes(params[:feedback])
+    redirect_to :action => 'show'
+  end
 
   def new
     @feedback = Feedback.new(params)
@@ -69,9 +77,23 @@ class FeedbacksController < InheritedResources::Base
   end
 
   def convert_to_issue
-    @feedback = Feedback.find(params[:id])
-    @feedback.github_issue
-    flash.notice = "Issue created on Github."
-    redirect_to feedback_path(@feedback.id)
+    @feedback = load(params[:id])
+    if @feedback.github_issue_url.blank?
+      @feedback.github_issue
+      flash.notice = "Issue created on Github."
+      redirect_to feedback_path(@feedback.id)
+      return
+    else
+      flash.notice = "Issue has already been created on Github."
+      redirect_to :show
+      return
+    end 
+  end
+
+  def load(feedback)
+    @feedback = Feedback.id(feedback).first
+    if @feedback.blank?
+      go_back("feedback",feedback)
+    end   
   end
 end

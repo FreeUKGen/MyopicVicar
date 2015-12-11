@@ -11,6 +11,10 @@ class ContactsController < InheritedResources::Base
     end  
   end
 
+  def edit
+    
+  end
+
 
   def show
     @contact = Contact.id(params[:id]).first
@@ -92,6 +96,17 @@ class ContactsController < InheritedResources::Base
       return
     end
   end
+
+  def edit
+    load(params[:id])   
+  end
+  
+  def update
+    load(params[:id])
+    @contact.update_attributes(params[:contact])
+    redirect_to :action => 'show'
+  end
+
   def report_error
     @contact = Contact.new
     @contact.contact_time = Time.now
@@ -111,10 +126,18 @@ class ContactsController < InheritedResources::Base
   end
 
   def convert_to_issue
-    @contact = Contact.find(params[:id])
-    @contact.github_issue
-    flash.notice = "Issue created on Github."
-    redirect_to contact_path(@contact.id)
+    @contact = load(params[:id])
+    if @contact.github_issue_url.blank?
+      @contact.github_issue
+      flash.notice = "Issue created on Github."
+      redirect_to contact_path(@contact.id)
+      return
+    else
+      flash.notice = "Issue has already been created on Github."
+      redirect_to :show
+      return
+    end 
+
   end
 
   def set_session_parameters_for_record(contact)
@@ -132,5 +155,12 @@ class ContactsController < InheritedResources::Base
   def message
     
     
+  end
+
+  def load(contact)
+    @contact = Contact.id(contact).first
+    if @contact.blank?
+      go_back("contact",contact)
+    end   
   end
 end
