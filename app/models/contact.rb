@@ -187,7 +187,7 @@ class Contact
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
       logger.info(response)
-      self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comment_url], github.number => response[:number])
+      self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comment_url], :github_number => response[:number])
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end
