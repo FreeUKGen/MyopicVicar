@@ -94,6 +94,7 @@ class FeedbacksController < InheritedResources::Base
     @feedback = Feedback.id(feedback).first
     if @feedback.blank?
       go_back("feedback",feedback)
-    end   
+    end 
+    @feedback 
   end
 end

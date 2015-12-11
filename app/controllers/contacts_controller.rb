@@ -11,11 +11,6 @@ class ContactsController < InheritedResources::Base
     end  
   end
 
-  def edit
-    
-  end
-
-
   def show
     @contact = Contact.id(params[:id]).first
     if @contact.nil?
@@ -161,6 +156,7 @@ class ContactsController < InheritedResources::Base
     @contact = Contact.id(contact).first
     if @contact.blank?
       go_back("contact",contact)
-    end   
+    end  
+    @contact 
   end
 end
