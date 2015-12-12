@@ -37,6 +37,7 @@ class Contact
   end
 
   def url_check
+
     self.problem_page_url = "unknown" if self.problem_page_url.nil?
     self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end

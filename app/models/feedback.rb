@@ -44,6 +44,7 @@ class Feedback
   def add_identifier
      self.identifier = Time.now.to_i - Time.gm(2015).to_i  
   end
+
   def add_email
     reporter = UseridDetail.userid(self.user_id).first
     self.email_address = reporter.email_address unless reporter.nil?
@@ -55,7 +56,7 @@ class Feedback
     # To be added: contact form and other problems
   end
 
- def communicate
+  def communicate
     ccs = Array.new
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
