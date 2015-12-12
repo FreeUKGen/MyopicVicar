@@ -569,10 +569,11 @@ class Freereg1CsvEntry
         errors.add(:baptism_date, "Invalid date")
         self.error_flag = "true"
       end
-      unless FreeregValidations.birth_date_less_than_baptism_date(self.birth_date,self.baptism_date)
-        errors.add(:birth_date, "Birth date is more recent than baptism date")
-        self.error_flag = "true"
-      end
+      #following is disabled until check is improved
+      #unless FreeregValidations.birth_date_less_than_baptism_date(self.birth_date,self.baptism_date)
+        #errors.add(:birth_date, "Birth date is more recent than baptism date")
+        #self.error_flag = "true"
+     # end
       unless FreeregValidations.cleantext(self.person_abode)
         errors.add(:person_abode, "Invalid characters")
         self.error_flag = "true"
