@@ -1,7 +1,12 @@
 <% breadcrumb :show_feedback, @feedback %>
 
-<p id="notice"><%= notice %></p>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
 
+<p><b>Reference: <%= @feedback.identifier %>  </b></p>
 <p>
   <b>Title:</b>
   <%= @feedback.title %>
