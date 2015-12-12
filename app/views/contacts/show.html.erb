@@ -23,7 +23,7 @@
           <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
         </tr>
         <tr>
-        <td>Reference : </td> <td class="weight--semibold"> <%= @contact.indentifier %>  </td>
+        <td>Reference : </td> <td class="weight--semibold"> <%= @contact.identifier %>  </td>
         </tr>
         <tr>
           <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
