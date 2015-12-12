@@ -41,7 +41,12 @@ class FeedbacksController < InheritedResources::Base
   end
  
   def edit
-    load(params[:id])   
+    load(params[:id]) 
+    if @feeback.github_issue_url.present?
+      flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
+      redirect_to :action => 'show'
+      return
+    end    
   end
   
   def update
