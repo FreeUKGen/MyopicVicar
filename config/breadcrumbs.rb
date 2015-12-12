@@ -34,6 +34,8 @@ crumb :create_userid_detail do |userid_detail|
   end
 end
 
+
+
 #File
 crumb :my_own_files do
   link "Your Batches", my_own_freereg1_csv_file_path
@@ -295,6 +297,10 @@ end
 crumb :rename_userid do |user|
   link "Rename Userid", rename_userid_details_path
   parent :userid_detail, user.syndicate,user
+end
+crumb :role_listing do 
+  link "Role Listing"
+  parent :regmanager_userid_options 
 end
 
 #Physical Files

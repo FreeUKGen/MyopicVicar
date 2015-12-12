@@ -73,6 +73,22 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates
   end
 
+  def person_roles
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @userid = UseridDetail.new
+    @options = UseridRole::VALUES
+    @prompt = 'Select Role?'
+    @location = 'location.href= "role?role=" + this.value'
+  end
+
+  def role
+    p params
+    @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1) 
+    @syndicate = " #{params[:role]}"
+    @sorted_by = " lower case userid"
+  end
+
   def change_password
     load(params[:id])
     success = @userid.check_exists_in_refinery
@@ -227,7 +243,7 @@ class UseridDetailsController < ApplicationController
           if params[:page]
             session[:user_index_page] = params[:page]
           end
-          @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page])
+          @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all
           render 'index'
           return
         end
@@ -309,7 +325,7 @@ class UseridDetailsController < ApplicationController
     unless @userid.active 
       @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
       flash[:notice] = "Userid re-activated"
-       redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
+       redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
     end
     session[:type] = "disable"
   end

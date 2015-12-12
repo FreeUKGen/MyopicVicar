@@ -57,7 +57,7 @@ module UseridRole
     "Roadmap" => "../system-documents/development-roadmap",
     "Logout" => "/refinery/logout"
   }
-  USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname/forename"]
+  USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select Role","Select specific surname/forename"]
   USERID_ACCESS_OPTIONS = ["Select specific email","Select specific userid", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
@@ -66,7 +66,8 @@ module UseridRole
     "Create userid"=> "/userid_details/selection?option=Create userid",
     "Select specific email" =>  "/userid_details/selection?option=Select specific email",
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
-    "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename"
+    "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
+    "Select Role" => "/userid_details/person_roles"
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]

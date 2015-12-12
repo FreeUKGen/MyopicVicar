@@ -34,7 +34,7 @@ class UseridDetail
   field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
-
+  attr_accessor :action
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
@@ -66,6 +66,9 @@ class UseridDetail
     end
     def id(userid)
       where(:id => userid)
+    end
+    def role(role)
+      where(:person_role => role)
     end
   end
 

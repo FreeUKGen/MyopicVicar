@@ -92,6 +92,8 @@ MyopicVicar::Application.routes.draw do
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
 
+  get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail 
+  get 'userid_details/person_roles', :to =>'userid_details#person_roles', :as => :person_roles_userid_detail 
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail 
   get 'userid_details/researcher_registration', :to =>'userid_details#researcher_registration', :as => :researcher_registration_userid_detail 
   get 'userid_details/transcriber_registration', :to =>'userid_details#transcriber_registration', :as => :transcriber_registration_userid_detail 
