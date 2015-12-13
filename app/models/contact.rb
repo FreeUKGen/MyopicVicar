@@ -53,7 +53,7 @@ class Contact
     when self.contact_type == 'Data Question'
       self.communicate_data_question
     when self.contact_type == 'Data Problem'
-      self.communicate_data_question
+      self.communicate_data_problem
     when self.contact_type == 'Volunteering Question'
       self.communicate_volunteering
     when self.contact_type == 'General Comment'
@@ -85,7 +85,7 @@ class Contact
   def communicate_data_question
     ccs = Array.new
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
-      ccs << person.person_forename
+      ccs << person.email_address
     end
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
@@ -98,7 +98,7 @@ class Contact
     coordinator = self.get_coordinator if self.record_id.present?
     ccs << coordinator.email_address if self.record_id.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
-      ccs << person.person_forename
+      ccs << person.email_address
     end
    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
