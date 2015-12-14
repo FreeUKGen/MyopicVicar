@@ -1,7 +1,7 @@
 module FreeregValidations
    require "unicode"
 
-  VALID_UCF = /[\}\{\?\*\_\]\[\,\-]/
+  VALID_UCF = /[\}\{\?\*\_\]\[\,]/
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
   VALID_NUMERIC  = /[\p{N}]/u
   VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/u
@@ -249,7 +249,7 @@ module FreeregValidations
   end
 
   def self.check_year(a)
-    return true if a =~ WILD_CHARACTER
+    return true if a =~ VALID_UCF
     characters =[]
     characters = a.split("")
     if characters.length == 4 #deal with the yyyy and permit the wild character
@@ -260,7 +260,7 @@ module FreeregValidations
       end
       return true
     end
-    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] = "/" ) 
+    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] == "/" ) 
       #deal with the split year
       year = characters
       last = 2
@@ -269,7 +269,6 @@ module FreeregValidations
       last = 5 if characters.length == 9
       year = characters.reverse.drop(last).reverse.join
       ext = characters.drop(5).join
-      return true if year =~ WILD_CHARACTER
       return false  unless (year.to_s =~ VALID_YEAR)
       return false if year.to_i > YEAR_MAX || 1753 < year.to_i
       return false if ext.to_i < 0 || ext.to_i > 1753

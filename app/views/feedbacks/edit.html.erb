@@ -1,6 +1,19 @@
-<h1>Editing feedback</h1>
+<% breadcrumb :edit_feedback,  @feedback%>
+<h4 style="text-align: center">Editing feedback entry <%= @feedback.identifier %></h4>
 
-<%= render 'form' %>
+<% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %> <br>
+    </div>
+   <% end %>
 
-<%= link_to 'Show', @feedback %> |
-<%= link_to 'Back', feedbacks_path %>
+<%= simple_form_for  @feedback   do |f| %>
+
+<%= f.input :title,  :label => "Title ", :input_html => { :size => 42, :placeholder => @feedback.title} %>
+
+
+<%= f.input :body, :label => "Comments ",as: :text, :input_html => { :rows => 5, :columns =>40 , :placeholder => @feedback.body} %>
+
+ <%= f.button :submit, 'Submit'   %>
+  
+<% end %>

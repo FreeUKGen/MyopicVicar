@@ -31,7 +31,7 @@ Please wait for selection boxes to fill after selecting the preceding option.
   
   <%= f.input :register_type, { :as => :select,:label => "Select Type of Register :",:include_blank => false, :required => true, :collection => RegisterType::APPROVED_OPTIONS, :size => 15 }%>
  
-  <%= f.action :submit, :as => :input, :label => 'Relocate'   %>
+  <%= f.action :submit, :as => :input, :label => 'Relocate'  ,:button_html => { :class => "btn " } %>
   <% end %>
 
   </section>

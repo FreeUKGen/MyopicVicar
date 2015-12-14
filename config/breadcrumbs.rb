@@ -34,6 +34,8 @@ crumb :create_userid_detail do |userid_detail|
   end
 end
 
+
+
 #File
 crumb :my_own_files do
   link "Your Batches", my_own_freereg1_csv_file_path
@@ -282,16 +284,7 @@ crumb :userid_detail do |syndicate,userid_detail|
 end
 
 
-#manage contacts
-crumb :contacts do
-  link "Contacts", contacts_path
-  parent :root
-end
-#manage contacts
-crumb :show_contact do |contact|
-  link "Show Contact", contact_path(contact)
-  parent :contacts
-end
+
 #manage userids
 crumb :regmanager_userid_options do
   link "Userid Management Options", options_userid_details_path
@@ -304,6 +297,10 @@ end
 crumb :rename_userid do |user|
   link "Rename Userid", rename_userid_details_path
   parent :userid_detail, user.syndicate,user
+end
+crumb :role_listing do 
+  link "Role Listing"
+  parent :regmanager_userid_options 
 end
 
 #Physical Files
@@ -340,6 +337,38 @@ crumb :edit_csvfile do |csvfile,file|
     parent :syndicate_options, session[:syndicate]
   end
 end
+#Feedback
+
+crumb :feedback_form do
+  parent :root
+end
+crumb :feedbacks do
+  link "Feedbacks", feedbacks_path
+  parent :root
+end
+crumb :show_feedback do |feedback|
+  link "Show Feedback", feedback_path(feedback)
+  parent :feedbacks
+end
+crumb :edit_feedback do |feedback|
+  link "Edit Feedback", edit_feedback_path(feedback)
+  parent :show_feedback, feedback
+end
+#manage contacts
+crumb :contacts do
+  link "Contacts", contacts_path
+  parent :root
+end
+#manage contacts
+crumb :show_contact do |contact|
+  link "Show Contact", contact_path(contact)
+  parent :contacts
+end
+crumb :edit_contact do |contact|
+  link "Edit Contact", edit_contact_path(contact)
+  parent :show_contact, contact
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path

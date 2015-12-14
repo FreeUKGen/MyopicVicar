@@ -93,15 +93,17 @@
         <% else %>
         <%= yield %>
         <% end %>
-        <% if current_refinery_user %>
-        <div  style="float:left;">
-          <%= form_tag(problem_url, :method=>:get) do %>
-          <% problem_button_options.each_pair do |name, value| %>
-          <%= hidden_field_tag(name, value)%>
+        <% if current_refinery_user 
+          unless controller_name == 'feedbacks' || controller_name == 'contacts'   %>
+            <div  style="float:left;">
+              <%= form_tag(problem_url, :method=>:get) do %>
+                <% problem_button_options.each_pair do |name, value| %>
+                <%= hidden_field_tag(name, value)%>
+              <% end %>
+              <input type="submit" value="Report a Problem"  class = "btn weight--light btn--small"/>
+              <% end %>
+            </div>
           <% end %>
-          <input type="submit" value="Report a Problem"  class = "btn weight--light btn--small"/>
-          <% end %>
-        </div>
         <% end %>
       </div>
       </main>

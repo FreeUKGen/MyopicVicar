@@ -36,10 +36,21 @@ MyopicVicar::Application.routes.draw do
 
   resources :site_statistics
 
-
+  get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
+  get 'feedbacks/list_by_name',  :to => 'feedbacks#list_by_name', :as => :list_by_name_feedbacks 
+  get 'feedbacks/list_by_date',  :to => 'feedbacks#list_by_date', :as => :list_by_date_feedbacks 
+  get 'feedbacks/list_by_identifier',  :to => 'feedbacks#list_by_identifier', :as => :list_by_identifier_feedbacks 
+  get 'feedbacks/select_by_identifier',  :to => 'feedbacks#select_by_identifier', :as => :select_by_identifier_feedbacks 
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   resources :feedbacks
 
+
+
+  get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
+  get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts 
+  get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts 
+  get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts 
+  get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts 
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
   resources :contacts
@@ -81,6 +92,8 @@ MyopicVicar::Application.routes.draw do
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
 
+  get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail 
+  get 'userid_details/person_roles', :to =>'userid_details#person_roles', :as => :person_roles_userid_detail 
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail 
   get 'userid_details/researcher_registration', :to =>'userid_details#researcher_registration', :as => :researcher_registration_userid_detail 
   get 'userid_details/transcriber_registration', :to =>'userid_details#transcriber_registration', :as => :transcriber_registration_userid_detail 

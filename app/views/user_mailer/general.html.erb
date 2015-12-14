@@ -2,12 +2,8 @@
 <p>Thank you for your correspondence at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p> <p>Your correspondence has been forwarded to a member of the team for action.</p>
 <p>The following is the information you submitted.</p>
 <p>
-<b>Problem with Website:</b>
-
-</p>
-<p>
-<%= @contact.body %>
-</p>
+<b>General Comment:</b></p>
+<p>  <%= @contact.body %></p>
 <% if @contact.screenshot_url.present?%>
  <p>An image is attached</p>
 <% end%>
