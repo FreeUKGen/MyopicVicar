@@ -1,6 +1,6 @@
 
 
-<p> Dear <%= @coordinator.person_forename %>; (Coordinator for researchers)</p>
+<p> Dear <%= @coordinator.person_forename unless @coordinator.nil? %>; (Coordinator for researchers)</p>
 
 
 <p>A user <%= @user.person_forename%>  <%= @user.person_surname %> with an email address of <%= @user.email_address%>has registered with <%= MyopicVicar::Application.config.freexxx_display_name %> as a researcher using an userid of <b><%= @user.userid %>.</b> </p>

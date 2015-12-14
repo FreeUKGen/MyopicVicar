@@ -1,8 +1,8 @@
 class UserMailer < ActionMailer::Base
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "reg-web@freereg.org.uk"
+    default from: "freereg-contacts@freereg.org.uk"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "cen-web@freecen.org.uk"
+    default from: "freecen-contacts@freecen.org.uk"
   end
 
   def batch_processing_success(user,batch,records,error,headers)
@@ -37,12 +37,12 @@ class UserMailer < ActionMailer::Base
         end
       end
       if emails.length == 1
-         mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+         mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
       elsif emails.length == 2
-        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeREG at #{Time.now}") 
+        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}") 
       end 
     end
   end
@@ -76,13 +76,14 @@ class UserMailer < ActionMailer::Base
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
         end
       end
+     
       if emails.length == 1
-         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       elsif emails.length == 2
-        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeREG at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       end 
     end
   end
@@ -91,7 +92,7 @@ class UserMailer < ActionMailer::Base
     attachments["report.log"] = File.read(file)
     @person_forename = user.person_forename
     @email_address = user.email_address
-    mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeREG Update processing report")
+    mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
   end
 
   def invitation_to_register_transcriber(user)
@@ -130,28 +131,28 @@ class UserMailer < ActionMailer::Base
     appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Userid Creation") unless @coordinator.nil?
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Transcriber Registration") unless @coordinator.nil?
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Research Registration") unless @coordinator.nil?
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
   end
 
   def notification_of_technical_registration(user)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} Technical Registration notification") unless @coordinator.nil?
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} technical registration notification") unless @coordinator.nil?
   end
 
   def notification_of_registration_completion(user)
@@ -165,7 +166,16 @@ class UserMailer < ActionMailer::Base
     end
     get_coordinator_name
     if Time.now - 5.days <= @user.c_at
-      mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} Registration Completion")
+      subj = "#{appname} registration completion"
+      if @coordinator.nil?
+        to_email = "#{manager.person_forename} <#{manager.email_address}>" unless manager.nil?
+        cc_email = nil
+        subj = "NO COORDINATOR!" + subj
+      else
+        to_email = "#{@coordinator.person_forename} <#{@coordinator.email_address}>"
+        cc_email = "#{manager.person_forename} <#{manager.email_address}>" unless manager.nil?
+      end
+      mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => to_email, :cc => cc_email, :subject => subj) unless to_email.nil?
     end
   end
 
@@ -173,6 +183,87 @@ class UserMailer < ActionMailer::Base
     user = UseridDetail.find(user.userid_detail_id)
     invitation_to_reset_password(user)
   end
+
+  def enhancement(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested enhancement. Reference #{@contact.identifier}")
+  end
+
+  def general(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
+  end
+
+  def genealogy(contact,css)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
+  end
+
+  def volunteer(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Reference #{@contact.identifier}")
+  end
+
+  def website(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact 
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
+  end
+
+  def feedback(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact 
+    @user = UseridDetail.userid(@contact.user_id).first
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
+  end
+
+  def publicity(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @ccs = ccs
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
+  end
+ 
+  def datamanger_data_question(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Reference #{@contact.identifier}")
+  end
+
+  def coordinator_data_problem(contact,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @contact = contact
+    get_attachment
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+  end
+
+  def send_change_of_syndicate_notification_to_sc(user)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @user = user
+    get_coordinator_name
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
+  end
+
+  def get_attachment
+    if @contact.screenshot_url.present?
+      @image = File.basename(@contact.screenshot.path)
+      @file = "#{Rails.root}/public" + @contact.screenshot_url
+      attachments[@image] = File.binread(@file)
+    end
+  end
+
 
   def get_coordinator_name
     @coordinator = nil
@@ -191,75 +282,72 @@ class UserMailer < ActionMailer::Base
     @user_token = refinery_user.reset_password_token
   end
 
-  def contact(contact,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @contact = contact
-    if MyopicVicar::Application.config.template_set == 'freereg'
-      bcc = UseridDetail.where(:userid => 'REGManager').limit(1).first
-    elsif MyopicVicar::Application.config.template_set == 'freecen'
-      bcc = UseridDetail.where(:userid => 'CENManager').limit(1).first
-    end
-    ccs << bcc.email_address
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us (#{appname})")
-  end
 
-  def copy_to_contact_person(contact)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @contact = contact
-    if @contact.screenshot_url
-      atitle = File.basename(@contact.screenshot.path)
-      if File.size(@contact.screenshot.current_path) < 10000000 #only if < 10MB
-        attachments[atitle] = File.read(@contact.screenshot.current_path)
-      end
-    end
-    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for contacting us (#{appname})")
-  end
+# the following are from before pulling Kirk's latest re-write
+#  def contact(contact,ccs)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @contact = contact
+#    if MyopicVicar::Application.config.template_set == 'freereg'
+#      bcc = UseridDetail.where(:userid => 'REGManager').limit(1).first
+#    elsif MyopicVicar::Application.config.template_set == 'freecen'
+#      bcc = UseridDetail.where(:userid => 'CENManager').limit(1).first
+#    end
+#    ccs << bcc.email_address
+#    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us (#{appname})")
+#  end
 
-  def volunteer(contact,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @contact = contact
-  end
+#  def copy_to_contact_person(contact)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @contact = contact
+#    if @contact.screenshot_url
+#      atitle = File.basename(@contact.screenshot.path)
+#      if File.size(@contact.screenshot.current_path) < 10000000 #only if < 10MB
+#        attachments[atitle] = File.read(@contact.screenshot.current_path)
+#      end
+#    end
+#    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for contacting us (#{appname})")
+#  end
 
-  def website(contact,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @contact = contact  
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
-  end
+#  def volunteer(contact,ccs)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @contact = contact
+#  end
 
-  def contact_to_recipient(contact,person,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @ccs = ccs
-    @contact = contact
-    @name = person.person_forename
-    @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
-  end
+#  def website(contact,ccs)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @contact = contact  
+#    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
+#  end
+
+#  def contact_to_recipient(contact,person,ccs)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @ccs = ccs
+#    @contact = contact
+#    @name = person.person_forename
+#    @email_address = person.email_address
+#    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
+#  end
  
 
-  def contact_to_data_manager(contact,person,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @ccs = ccs
-    @contact = contact
-    @name = person.person_forename
-    @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
-  end
-  def contact_to_coordinator(contact,person,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @ccs = ccs
-    @contact = contact
-    @name = person.person_forename
-    @email_address = person.email_address
-    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report from a #{appname} contact")
-  end
-  def send_change_of_syndicate_notification_to_sc(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @user = user
-    get_coordinator_name
-    mail(:from => "#{appname}-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname}2 Change of Syndicate") unless @coordinator.blank?
-  end
+#  def contact_to_data_manager(contact,person,ccs)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @ccs = ccs
+#    @contact = contact
+#    @name = person.person_forename
+#    @email_address = person.email_address
+#    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
+#  end
+#  def contact_to_coordinator(contact,person,ccs)
+#    appname = MyopicVicar::Application.config.freexxx_display_name
+#    @ccs = ccs
+#    @contact = contact
+#    @name = person.person_forename
+#    @email_address = person.email_address
+#    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report from a #{appname} contact")
+#  end
   
   def appname
     MyopicVicar::Application.config.freexxx_display_name
   end
+
 end
