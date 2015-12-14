@@ -1,39 +1,43 @@
 class MissingPlaceFields
-
-
-
-  require 'chapman_code'
-  require 'church'
-  require 'register'
-  require 'freereg1_csv_file'
-  require 'freereg1_csv_entry'
-
   require "place"
-  include Mongoid::Document
 
   def self.process(limit)
-
-    file_for_warning_messages = "log/missing_place_fields.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
-    message_file = File.new(file_for_warning_messages, "w")
-    limit = limit.to_i
-    puts "checking places for missing county fields in the place collection"
-    message_file.puts "Place Name,Chapman Code,County,Original Country,Country,Original Country"
+    file_for_warning_messages = "#{Rails.root}/log/missing_place_fields.log"
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+    output_file = File.new(file_for_warning_messages, "w")
+    start = Time.now
+    output_file.puts start
     record_number = 0
-    number = Place.count
-    Place.all.each do |my_entry|
-      if my_entry.county.nil? && my_entry.disabled == 'false' && my_entry.error_flag != "Place name is not approved"
-        record_number = record_number + 1
-        message_file.puts "\" #{my_entry.place_name}\", #{my_entry.chapman_code}, #{my_entry.county}, #{my_entry.original_county},  no location"
-        county = ChapmanCode.name_from_code(my_entry.chapman_code)
-        my_entry.update_attributes(:county => county)
-        if my_entry.errors.any?
-          p "Error updating #{my_entry.place_name}"
-          p my_entry.errors.messages
-        end
-      end #place
+    errors = 0
+    Place.no_timeout.each do |place|
+      record_number = record_number + 1
+      break if record_number == limit.to_i
+      if place.genuki_url.blank? && place.disabled == 'false' 
+        errors = errors + 1
+         output_file.puts ("#{place.id}, #{place.chapman_code}, #{place.place_name}, no genuki"  )
+      end
+      if place.county.blank? && place.disabled == 'false' 
+        errors = errors + 1
+         output_file.puts ("#{place.id}, #{place.chapman_code}, #{place.place_name}, county added"  )
+         county = ChapmanCode.name_from_code(place.chapman_code)
+         place.update_attributes(:county => county)
+      end
+      if place.chapman_code.blank? && place.disabled == 'false' 
+        errors = errors + 1
+         output_file.puts ("#{place.id}, #{place.chapman_code}, #{place.place_name}, no chapman code"  )
+      end
+      if (place.latitude.nil? && place.longitude.nil?) && place.disabled == 'false'  
+        errors = errors + 1
+        output_file.puts ("#{place.id}, #{place.chapman_code}, #{place.place_name}, no location coordinates"  )
+      end
 
     end
-    puts "There were #{record_number} missing locations in #{number} places searched"
+    puts " #{errors} errors" 
+    output_file.puts " #{errors} errors"    
+    output_file.puts Time.now 
+    elapse = Time.now - start
+    output_file.puts elapse
+    output_file.close
+    p "finished"
   end
 end

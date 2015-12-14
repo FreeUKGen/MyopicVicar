@@ -148,9 +148,9 @@ class RegistersController < ApplicationController
     if @register.nil?
       go_back("register",register_id)
     else
-      @register_name = RegisterType.display_name(@register.register_type)
+      @register_type = RegisterType.display_name(@register.register_type)
       session[:register_id] = register_id
-      session[:register_name] = @register_name
+      session[:register_name] = @register_type
       @church = @register.church
       @church_name = @church.church_name
       session[:church_name] = @church_name

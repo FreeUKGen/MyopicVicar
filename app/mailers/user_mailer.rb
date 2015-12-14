@@ -108,7 +108,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete #{appname} Registration")
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete #{appname} registration")
   end
 
   def invitation_to_register_technical(user)
@@ -116,7 +116,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete #{appname} Registration")
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Invitation to complete #{appname} registration")
   end
 
   def invitation_to_reset_password(user)
@@ -124,7 +124,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     get_coordinator_name
     get_token
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password Reset for #{appname} ")
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password reset for #{appname} ")
   end
 
   def notification_of_transcriber_creation(user)
@@ -247,6 +247,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     get_attachment
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+
   end
 
   def send_change_of_syndicate_notification_to_sc(user)
@@ -263,7 +264,6 @@ class UserMailer < ActionMailer::Base
       attachments[@image] = File.binread(@file)
     end
   end
-
 
   def get_coordinator_name
     @coordinator = nil
@@ -348,6 +348,15 @@ class UserMailer < ActionMailer::Base
   
   def appname
     MyopicVicar::Application.config.freexxx_display_name
+  end
+
+
+  def get_token
+    refinery_user = Refinery::User.where(:username => @user.userid).first
+    refinery_user.reset_password_token = Refinery::User.reset_password_token
+    refinery_user.reset_password_sent_at = Time.now
+    refinery_user.save!
+    @user_token = refinery_user.reset_password_token
   end
 
 end

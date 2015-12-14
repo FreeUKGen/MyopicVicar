@@ -1,10 +1,7 @@
 module FreeregValidations
    require "unicode"
 
-OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transcripts" => "AT", "Bishop's Transcripts" => "BT",  
-	"Phillimore's Transcripts" => "PH",  "Dwellies Transcripts" => "DW", "Extract of a Register" => "EX", 
-	"Memorial Inscription" => "MI"}
-  VALID_UCF = /[\}\{\?\*\_\]\[\,\-]/
+  VALID_UCF = /[\}\{\?\*\_\]\[\,]/
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
   VALID_NUMERIC  = /[\p{N}]/u
   VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/u
@@ -13,10 +10,10 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
   VALID_AGE_TYPE2 = /^(\d{1,2})([hdwmy\*\[\]\-\_\?])/
   VALID_AGE_TYPE2A = /^(\d{1,2})(years)/
-   VALID_AGE_TYPE2B = /^(\d{1,2})(months)/
-    VALID_AGE_TYPE2C = /^(\d{1,2})(days)/
-    VALID_AGE_TYPE2D = /^(\d{1,2})(weeks)/
-    VALID_AGE_TYPE2E = /^(\d{1,2})(hours)/
+  VALID_AGE_TYPE2B = /^(\d{1,2})(months)/
+  VALID_AGE_TYPE2C = /^(\d{1,2})(days)/
+  VALID_AGE_TYPE2D = /^(\d{1,2})(weeks)/
+  VALID_AGE_TYPE2E = /^(\d{1,2})(hours)/
   VALID_AGE_TYPE3 =  /^(\d{1,2})([hdwmy\*\[\]\-\_\?])(\d{1,2})([hdwmy\*\[\]\-\_\?])/
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
@@ -206,6 +203,17 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
       return false
   end
 
+  def FreeregValidations.birth_date_less_than_baptism_date(birth,baptism)
+    return true if birth.nil? || birth =~ VALID_UCF || birth =~ WILD_CHARACTER || baptism.nil? || baptism =~ VALID_UCF || baptism =~ WILD_CHARACTER
+    birth_days = Freereg1CsvFile.convert_date(birth) 
+    baptism_days = Freereg1CsvFile.convert_date(baptism)
+    if birth_days <= baptism_days 
+      return true
+    else 
+      return false
+    end   
+  end
+
   def FreeregValidations.cleandate(field)
     
      return true if field.nil? || field.empty?
@@ -241,7 +249,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
   end
 
   def self.check_year(a)
-    return true if a =~ WILD_CHARACTER
+    return true if a =~ VALID_UCF
     characters =[]
     characters = a.split("")
     if characters.length == 4 #deal with the yyyy and permit the wild character
@@ -252,7 +260,7 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
       end
       return true
     end
-    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] = "/" ) 
+    if ((characters.length >= 6 && characters.length <= 9)  && characters[4] == "/" ) 
       #deal with the split year
       year = characters
       last = 2
@@ -261,7 +269,6 @@ OPTIONS = {"Parish Register" => "PR", "Transcript" => 'TR', "Archdeacon's Transc
       last = 5 if characters.length == 9
       year = characters.reverse.drop(last).reverse.join
       ext = characters.drop(5).join
-      return true if year =~ WILD_CHARACTER
       return false  unless (year.to_s =~ VALID_YEAR)
       return false if year.to_i > YEAR_MAX || 1753 < year.to_i
       return false if ext.to_i < 0 || ext.to_i > 1753

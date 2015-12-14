@@ -150,7 +150,7 @@ describe Freecen1VldFile do
 
   it "should find records by name and record type" do
     YEAR_VLD_FILES.each_pair do |record_type, filename|
-      print "    },\n    #{record_type} => {\n"
+#      print "    },\n    #{record_type} => {\n"
       clean_database
       process_file(filename)
       dwelling = FreecenDwelling.last
@@ -175,7 +175,7 @@ describe Freecen1VldFile do
         if seen[individual.age_unit] == nil || seen[individual.age_unit] < 5
           seen[individual.age_unit] = 0 if seen[individual.age_unit] == nil
           seen[individual.age_unit] = seen[individual.age_unit] + 1
-          print "      #{i} => #{record_type}, # #{individual.age} #{individual.age_unit}\n"
+#          print "      #{i} => #{record_type}, # #{individual.age} #{individual.age_unit}\n"
         end
       end
     end
@@ -202,7 +202,7 @@ describe Freecen1VldFile do
         q.search
         result = q.results
  
-        print "#{record_type} #{index}\n"
+ #       print "#{record_type} #{index}\n"
         result.should have_at_least(1).items        
         SearchRecord.delete_all
       end

@@ -32,7 +32,6 @@
     <% end %>
   </div>
 </section>
-
       <% if @search_results.size == 0 %>
 
         <p>No results found. This could be because there are no transcriptions for the Places you were searching; review our <%= link_to "Database Contents" , "/freereg_contents" %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/tips-for-searching-the-database" %> for advice on how to get the most out of your searches. </p>
@@ -44,7 +43,6 @@
         <% end %>
 
       <% end%>
-     
 <br>
 <% if @search_query.result_count > 5 %>
 <div class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>

@@ -127,7 +127,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
       @freereg1_csv_file.save
       @freereg1_csv_file.calculate_distribution
-      flash[:notice] = 'The change in entry contents was successful, the file is now locked against an upload'
+      flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
       render :action => 'show'
     end
   end

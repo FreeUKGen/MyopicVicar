@@ -100,4 +100,5 @@ MyopicVicar::Application.configure do
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
+  config.member_open = MyopicVicar::MongoConfig['member_open']
 end

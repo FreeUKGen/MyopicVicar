@@ -21,7 +21,7 @@
     
     <td><%= register.start_year %></td>
     <td><%= register.end_year %></td>
-    <td><%= register.register_type %></td>
+    <td><%= RegisterType.display_name(register.register_type) %></td>
     <td><%= register.status %></td>
     <td><%= register.transcribers %></td>
     <td><%= register.file_name %></td> 
