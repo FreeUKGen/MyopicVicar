@@ -201,7 +201,7 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
   end
  
-  def datamanger_data_question(contact,ccs)
+  def datamanager_data_question(contact,ccs)
     @contact = contact
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Reference #{@contact.identifier}")
