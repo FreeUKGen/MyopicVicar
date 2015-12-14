@@ -1,10 +1,16 @@
 <p> Dear <%= @contact.name %>;</p>
-<p>Thank you for your suggested enhancement at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p> <p>Your correspondence has been forwarded to a member of the team for action.</p>
+<p>Thank you for your suggested enhancement<%= @contact.contact_time.strftime(" at %H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p> <p>Your correspondence has been forwarded to a member of the team for action.</p>
 <p>The following is the information you submitted.</p>
+<% if @contact.contact_county.present? %>
+<p>
+<b>County:</b>
+<%= ChapmanCode::name_from_code(@contact.contact_county) + '(' + @contact.contact_county + ')' %>
+</p>
+<% end %>
 <p>
 <b>Suggested Enhancement:</b></p>
 <p>  <%= @contact.body %></p>
 <% if @contact.screenshot_url.present?%>
  <p>An image is attached</p>
 <% end%>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

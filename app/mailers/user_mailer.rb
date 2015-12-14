@@ -235,7 +235,7 @@ class UserMailer < ActionMailer::Base
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
   end
  
-  def datamanger_data_question(contact,ccs)
+  def datamanager_data_question(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
     get_attachment
