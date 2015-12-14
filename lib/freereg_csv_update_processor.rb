@@ -9,11 +9,14 @@ class FreeregCsvUpdateProcessor
   require "#{Rails.root}/app/models/freereg1_csv_file"
   require "#{Rails.root}/app/models/freereg1_csv_entry"
   require "record_type"
+  require "register_type"
   require 'digest/md5'
   require 'get_files'
   require "#{Rails.root}/app/models/userid_detail"
   require 'freereg_validations'
   CONTAINS_PERIOD = /\./
+  HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
+  BOM = /ï»¿/
   DATEMAX = 2020
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
@@ -37,8 +40,7 @@ class FreeregCsvUpdateProcessor
   UNCERTAIN_SEX = ["?", "-", "*","_","??"]
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_FEMALE_SEX = ["F","FF","FFF","FM","F.","FEMALE","DAUGHTER","WIFE","DAUGHTER OF","DAU", "DAU OF"]
-  VALID_REGISTER_TYPES = /\A[AaBbDdEeTtPp\(][AaBbDdEeHhTtPpTtXxRrWw]?[TtXxRrWw]?'?[Ss]? ?[\)]?\z/
-  VALID_REGISTER_TYPE = ["AT", "BT", "PR", "PH", "EX", "TR", "DW", "DT", "PT", "MI"]
+  VALID_REGISTER_TYPES = /\A[AaBbDdEeMmOoTtPpUu\(][AaBbDdEeHhTtPpTtXxRrWw]?[KkIiTtXxRrWw]?'?[Ss]? ?[\)]?\z/
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
   CHURCH_WORD_EXPANSIONS =  {
     'Albans' => 'Alban',
@@ -252,12 +254,13 @@ class FreeregCsvUpdateProcessor
                    register_words[-1] = register_words[-1].gsub(/\(?\)?'?"?[Ss]?/, '')
                    register_words[-1] = Unicode::upcase(register_words[-1])
 
-                   if VALID_REGISTER_TYPE.include?(register_words[-1])
+                   if RegisterType::OPTIONS.values.include?(register_words[-1])
                      # check that it is a valid code
                      @register_type = register_words[-1]
                      n = n - 1
                      @register_type = "DW" if @register_type == "DT"
                      @register_type = "PH" if @register_type == "PT"
+                     @register_type = "TR" if @register_type == "OT"
                    else
                      @register_type = ""
                      return true
@@ -315,13 +318,16 @@ class FreeregCsvUpdateProcessor
              #get a line of data
              def self.get_line_of_data
                @csvdata = @@array_of_data_lines[@@number_of_line]
+               #get rid of any BOM
                raise FreeREGEnd,  "End of file" if @csvdata.nil?
+               #stripped BOM
+               @csvdata[0].gsub!(/ï»¿/, '') unless @csvdata[0].nil?
                @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
                raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
                @first_character = "?"
                @first_character = @csvdata[0].slice(0) unless  @csvdata[0].nil?
                @line_type = "Data"
-               @line_type = "Header" if (@first_character == '+' || @first_character ==  '#')
+               @line_type = "Header" if (@first_character == '+' || @first_character ==  '#') || @csvdata[0] =~ HEADER_DETECTION
                number_of_fields = @csvdata.length
                number_empty = 1
                @csvdata.each do |l|
@@ -335,7 +341,7 @@ class FreeregCsvUpdateProcessor
              #process the header line 1
              # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
              def self.process_header_line_one
-               raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless ((@csvdata[0] == "+INFO") || (@csvdata[0] == "#NAME?"))
+               raise FreeREGError,  "Header_Error,First line of file does not start with +INFO it has #{@csvdata[0]}" unless (@csvdata[0] =~ HEADER_DETECTION) 
                # BWB: temporarily commenting out to test db interface
                #   address = EmailVeracity::Address.new(@csvdata[1])
                #   raise FreeREGError,  "Invalid email address #{@csvdata[1]} in first line of header" unless address.valid?
@@ -417,7 +423,7 @@ class FreeregCsvUpdateProcessor
                      process_header_line_two_block
 
                      else
-                       raise FreeREGError, "Header_Error,I did not know enough about your data format to extract transciber information at header line 2"
+                       raise FreeREGError, "Header_Error,I did not know enough about your data format to extract transcriber information at header line 2"
 
                      end
 
@@ -595,9 +601,7 @@ class FreeregCsvUpdateProcessor
                      raise FreeREGError, "Empty data line"  if @csvdata[0].nil?
                      raise FreeREGError,"The county code #{ @csvdata[0]} is invalid and rejected or you have a blank record line " unless  ChapmanCode::values.include?(@csvdata[0]) &&
                        !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(@csvdata[0]))
-
-                     # do we validate the Place field?
-                     raise FreeREGError, "Place field #{@csvdata[1]} is correctly formated" unless validregister(@csvdata[1],"Place")
+                     raise FreeREGError, "Place field #{@csvdata[1]} is correctly formatted" unless validregister(@csvdata[1],"Place")
                      if @@place.nil? || @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase != @@place
                        place = Place.where(:chapman_code => @csvdata[0],:modified_place_name => @csvdata[1].gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase, :error_flag.ne => "Place name is not approved", :disabled => 'false').first
                        if place.nil?
@@ -662,95 +666,93 @@ class FreeregCsvUpdateProcessor
                      @@data_hold[@@place_register_key].store(number,data_record)
 
                    end
-                   #process the marriage data columns
+#process the marriage data columns
 
-                   def self.process_marriage_data_records(n)
-                     data_record = Hash.new
-                     data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
-                     data_record[:file_line_number] = n
+def self.process_marriage_data_records(n)
+   data_record = Hash.new
+   data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
+   data_record[:file_line_number] = n
 
-                     data_record[:register_entry_number] = @csvdata[3]
+   data_record[:register_entry_number] = @csvdata[3]
 
-                     data_record[:marriage_date] = @csvdata[4]
-                     data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
-                     datestat(data_record[:year]) unless data_record[:year].nil?
-                     data_record[:groom_forename] = @csvdata[5]
-                     data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
-                     data_record[:groom_surname] = @csvdata[6]  if @csvdata[6].nil?
-                     data_record[:groom_age] = @csvdata[7]
-                     data_record[:groom_parish] = @csvdata[8]
-                     #    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleancondition(9)
-                     data_record[:groom_condition] = @csvdata[9]
-                     data_record[:groom_occupation] = @csvdata[10]
-                     data_record[:groom_abode] = @csvdata[11]
-                     data_record[:bride_forename] = @csvdata[12]
-                     data_record[:bride_surname] = Unicode::upcase(@csvdata[13]) unless @csvdata[13].nil?
-                     data_record[:bride_surname] = @csvdata[13] if @csvdata[13].nil?
-                     data_record[:bride_age] = @csvdata[14]
-                     data_record[:bride_parish] = @csvdata[15]
-                     #    raise FreeREGError, "The bride's condition #{@csvdata[16]} contains unknown condition in line #{n}" unless cleancondition(16)
-                     data_record[:bride_condition] = @csvdata[16]
-                     data_record[:bride_occupation] = @csvdata[17]
-                     data_record[:bride_abode] = @csvdata[18]
-                     data_record[:groom_father_forename] = @csvdata[19]
-                     data_record[:groom_father_surname] = Unicode::upcase(@csvdata[20]) unless @csvdata[20].nil?
-                     data_record[:groom_father_surname] = @csvdata[20] if @csvdata[20].nil?
-                     data_record[:groom_father_occupation] = @csvdata[21]
-                     data_record[:bride_father_forename] = @csvdata[22]
-                     data_record[:bride_father_surname] = Unicode::upcase(@csvdata[23]) unless @csvdata[23].nil?
-                     data_record[:bride_father_surname] = @csvdata[23] if @csvdata[23].nil?
-                     data_record[:bride_father_occupation] = @csvdata[24]
-                     data_record[:witness1_forename] = @csvdata[25]
-                     data_record[:witness1_surname] = Unicode::upcase(@csvdata[26]) unless @csvdata[26].nil?
-                     data_record[:witness1_surname] = @csvdata[26] if @csvdata[26].nil?
-                     data_record[:witness2_forename] = @csvdata[27]
-                     data_record[:witness2_surname] = Unicode::upcase(@csvdata[28]) unless @csvdata[28].nil?
-                     data_record[:witness2_surname] = @csvdata[28] if @csvdata[28].nil?
-                     data_record[:notes] = @csvdata[29]
+   data_record[:marriage_date] = @csvdata[4]
+   data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
+   datestat(data_record[:year]) unless data_record[:year].nil?
+   data_record[:groom_forename] = @csvdata[5]
+   data_record[:groom_surname] = Unicode::upcase(@csvdata[6]) unless @csvdata[6].nil?
+   data_record[:groom_surname] = @csvdata[6]  if @csvdata[6].nil?
+   data_record[:groom_age] = @csvdata[7]
+   data_record[:groom_parish] = @csvdata[8]
+   #    raise FreeREGError, "The groom's condition #{@csvdata[9]} contains unknown condition #{@csvdata[9]} in line #{n}" unless cleancondition(9)
+   data_record[:groom_condition] = @csvdata[9]
+   data_record[:groom_occupation] = @csvdata[10]
+   data_record[:groom_abode] = @csvdata[11]
+   data_record[:bride_forename] = @csvdata[12]
+   data_record[:bride_surname] = Unicode::upcase(@csvdata[13]) unless @csvdata[13].nil?
+   data_record[:bride_surname] = @csvdata[13] if @csvdata[13].nil?
+   data_record[:bride_age] = @csvdata[14]
+   data_record[:bride_parish] = @csvdata[15]
+   #    raise FreeREGError, "The bride's condition #{@csvdata[16]} contains unknown condition in line #{n}" unless cleancondition(16)
+   data_record[:bride_condition] = @csvdata[16]
+   data_record[:bride_occupation] = @csvdata[17]
+   data_record[:bride_abode] = @csvdata[18]
+   data_record[:groom_father_forename] = @csvdata[19]
+   data_record[:groom_father_surname] = Unicode::upcase(@csvdata[20]) unless @csvdata[20].nil?
+   data_record[:groom_father_surname] = @csvdata[20] if @csvdata[20].nil?
+   data_record[:groom_father_occupation] = @csvdata[21]
+   data_record[:bride_father_forename] = @csvdata[22]
+   data_record[:bride_father_surname] = Unicode::upcase(@csvdata[23]) unless @csvdata[23].nil?
+   data_record[:bride_father_surname] = @csvdata[23] if @csvdata[23].nil?
+   data_record[:bride_father_occupation] = @csvdata[24]
+   data_record[:witness1_forename] = @csvdata[25]
+   data_record[:witness1_surname] = Unicode::upcase(@csvdata[26]) unless @csvdata[26].nil?
+   data_record[:witness1_surname] = @csvdata[26] if @csvdata[26].nil?
+   data_record[:witness2_forename] = @csvdata[27]
+   data_record[:witness2_surname] = Unicode::upcase(@csvdata[28]) unless @csvdata[28].nil?
+   data_record[:witness2_surname] = @csvdata[28] if @csvdata[28].nil?
+   data_record[:notes] = @csvdata[29]
 
-                     number = @@list_of_registers[@@place_register_key].fetch(:records)
-                     number = number + 1
-                     @@list_of_registers[@@place_register_key].store(:records,number)
+   number = @@list_of_registers[@@place_register_key].fetch(:records)
+   number = number + 1
+   @@list_of_registers[@@place_register_key].store(:records,number)
 
-                     if @@header[:lds] == "yes"  then
-                       data_record[:film] = @csvdata[30]
-                       data_record[:film_number] = @csvdata[31]
-                     end
-                     @@data_hold[@@place_register_key].store(number,data_record)
-                   end
+   if @@header[:lds] == "yes"  then
+     data_record[:film] = @csvdata[30]
+     data_record[:film_number] = @csvdata[31]
+   end
+   @@data_hold[@@place_register_key].store(number,data_record)
+end
 
                    #process the burial data columns
-                   def self.process_burial_data_records(n)
-                     data_record = Hash.new
-                     data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
-                     data_record[:file_line_number] = n
-                     data_record[:register_entry_number] = @csvdata[3]
-                     data_record[:burial_date] = @csvdata[4]
-                     data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
-                     datestat(data_record[:year]) unless data_record[:year].nil?
-                     data_record[:burial_person_forename] = @csvdata[5]
-                     data_record[:relationship] = @csvdata[6]
-                     data_record[:male_relative_forename] = @csvdata[7]
-                     data_record[:female_relative_forename] = @csvdata[8]
-                     data_record[:relative_surname] = Unicode::upcase(@csvdata[9]) unless @csvdata[9].nil?
-                     data_record[:relative_surname] = @csvdata[9] if @csvdata[9].nil?
-                     data_record[:burial_person_surname] = Unicode::upcase(@csvdata[10])  unless @csvdata[10].nil?
-                     data_record[:burial_person_surname] = @csvdata[10]  if @csvdata[10].nil?
-                     data_record[:person_age] = @csvdata[11]
-                     data_record[:burial_person_abode] = @csvdata[12]
-                     data_record[:notes] = @csvdata[13]
+def self.process_burial_data_records(n)
+ data_record = Hash.new
+ data_record[:line_id] = @@userid + "." + File.basename(@@filename.upcase) + "." + n.to_s
+ data_record[:file_line_number] = n
+ data_record[:register_entry_number] = @csvdata[3]
+ data_record[:burial_date] = @csvdata[4]
+ data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
+ datestat(data_record[:year]) unless data_record[:year].nil?
+ data_record[:burial_person_forename] = @csvdata[5]
+ data_record[:relationship] = @csvdata[6]
+ data_record[:male_relative_forename] = @csvdata[7]
+ data_record[:female_relative_forename] = @csvdata[8]
+ data_record[:relative_surname] = Unicode::upcase(@csvdata[9]) unless @csvdata[9].nil?
+ data_record[:relative_surname] = @csvdata[9] if @csvdata[9].nil?
+ data_record[:burial_person_surname] = Unicode::upcase(@csvdata[10])  unless @csvdata[10].nil?
+ data_record[:burial_person_surname] = @csvdata[10]  if @csvdata[10].nil?
+ data_record[:person_age] = @csvdata[11]
+ data_record[:burial_person_abode] = @csvdata[12]
+ data_record[:notes] = @csvdata[13]
+ number = @@list_of_registers[@@place_register_key].fetch(:records)
+ number = number + 1
+ @@list_of_registers[@@place_register_key].store(:records,number)
 
-
-                     number = @@list_of_registers[@@place_register_key].fetch(:records)
-                     number = number + 1
-                     @@list_of_registers[@@place_register_key].store(:records,number)
-
-                     if @@header[:lds] == "yes"  then
-                       data_record[:film] = @csvdata[14]
-                       data_record[:film_number] = @csvdata[15]
-                     end
-                     @@data_hold[@@place_register_key].store(number,data_record)
-                   end
+ if @@header[:lds] == "yes"  then
+   data_record[:film] = @csvdata[14]
+   data_record[:film_number] = @csvdata[15]
+ end
+ @@data_hold[@@place_register_key].store(number,data_record)
+end
 
                    #          def self.delete_all
                    #           Freereg1CsvEntry.delete_all
@@ -759,229 +761,249 @@ class FreeregCsvUpdateProcessor
                    #         end
                    #process the first 4 columns of the data record
                    # County, Place, Church, Reg #
-                   def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
-                     #this code is needed to permit multiple places and churches in a single batch in any order
-                     @@datemax = DATEMIN
-                     @@datemin = DATEMAX
-                     @@daterange = Array.new(50){|i| i * 0 }
-                     @number_of_records = 0
+def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
+   #this code is needed to permit multiple places and churches in a single batch in any order
+   @@datemax = DATEMIN
+   @@datemin = DATEMAX
+   @@daterange = Array.new(50){|i| i * 0 }
+   @number_of_records = 0
+   @@list_of_registers[place_register_key] = Hash.new
+   @@data_hold[place_register_key] = Hash.new
+   @@list_of_registers[place_register_key].store(:county,data_record[:county])
+   @@list_of_registers[place_register_key].store(:place,data_record[:place])
+   @@list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
+   @@list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
+   @@list_of_registers[place_register_key].store(:record_type,data_record[:record_type])
+   @@list_of_registers[place_register_key].store(:alternate_register_name,data_record[:alternate_register_name])
+   @@list_of_registers[place_register_key].store(:records,@number_of_records)
+   @@list_of_registers[place_register_key].store(:datemax,@@datemax)
+   @@list_of_registers[place_register_key].store(:datemin,@@datemin)
+   @@list_of_registers[place_register_key].store(:daterange,@@daterange)
+end
 
-                     @@list_of_registers[place_register_key] = Hash.new
-                     @@data_hold[place_register_key] = Hash.new
-                     @@list_of_registers[place_register_key].store(:county,data_record[:county])
-                     @@list_of_registers[place_register_key].store(:place,data_record[:place])
-                     @@list_of_registers[place_register_key].store(:church_name,data_record[:church_name])
-                     @@list_of_registers[place_register_key].store(:register_type,data_record[:register_type])
-                     @@list_of_registers[place_register_key].store(:record_type,data_record[:record_type])
-                     @@list_of_registers[place_register_key].store(:alternate_register_name,data_record[:alternate_register_name])
-                     @@list_of_registers[place_register_key].store(:records,@number_of_records)
-                     @@list_of_registers[place_register_key].store(:datemax,@@datemax)
-                     @@list_of_registers[place_register_key].store(:datemin,@@datemin)
-                     @@list_of_registers[place_register_key].store(:daterange,@@daterange)
+def self.process_register_headers  
+  @all_records_hash = Hash.new
+  @all_error_batches_hash = Hash.new
+  @batches_with_errors = Array.new
+  @locations = Array.new
+  #p "start"
+  #p @@update
+  if @@update
+    # Need to get all the records for this file regardless of location
+    @freereg1_csv_files = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid]).all
+    @freereg1_csv_files.each do |batch|                      
+      @locations << batch._id
+      batch.batch_errors.delete_all
+      batch.freereg1_csv_entries.each do |entry|
+        @all_records_hash[entry.id] = entry.record_digest
+      end                  
+    end
+    p "There are #{@locations.length} locations and #{@all_records_hash.length} existing records for this file"
+    #p @all_records_hash.inspect
+  end
+  @@list_of_registers.each do |place_key,head_value|
+    #deal with a location. Firstly deal with the batch entry
+    @batch_errors = 0
+    @@header.merge!(head_value)
+    #p "Processing #{@@header[:records]} records for this location"    
+    if @@update
+      #lets get the file
+      @freereg1_csv_file = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid],
+                                                :county => @@header[:county], :place => @@header[:place], :church_name => @@header[:church_name], :register_type => @@header[:register_type],
+                                                :record_type => @@header[:record_type]).first
+     
+     if @freereg1_csv_file.nil?
+       @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+       p "No records in the original batch for this location"
+     else
+       p "#{@freereg1_csv_file.records} in the original batch for this location"
+       #This adds in record count and range etc
+       @freereg1_csv_file.update_attributes(@@header)      
+       #remove batch errors for this location
+       @freereg1_csv_file.error = 0
+       #remove this location from the total locations
+       ind = @locations.find_index( @freereg1_csv_file._id)
+       @locations.delete_at(ind) unless ind.nil?
+     end
+     #p @freereg1_csv_file
+    else
+      # not in update mode
+      @freereg1_csv_file = Freereg1CsvFile.new(@@header)
+    end
+    #locate the batch in a register
+    @freereg1_csv_file.update_register
+    #p @freereg1_csv_file
+    @not_updated = 0
+    @deleted = 0
+    @batch_errors = 0
+    #write the data records for this place/church
+    @@data_hold[place_key].each do |datakey,datarecord|
+       datarecord[:county] = head_value[:county]
+       datarecord[:place] = head_value[:place]
+       datarecord[:church_name] = head_value[:church_name]
+       datarecord[:register_type] = head_value[:register_type]
+       datarecord[:record_type] = head_value[:record_type]
+       #puts "Data record #{datakey} \n #{datarecord} \n"
+       success = check_and_create_db_record_for_entry(datarecord,@freereg1_csv_file)
+       #p "success after check and create"
+       #p success
+       if success.nil? || success == "change" || success == "new" 
+           #ok to proceed
+       elsif success == "nochange"
+            @not_updated = @not_updated + 1
+       else 
+         #p "error"
+         #deal with batch error
+           batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
+           batch_error.freereg1_csv_file = @freereg1_csv_file
+           batch_error.save
+           @@number_of_error_messages = @@number_of_error_messages + 1
+           @batch_errors = @batch_errors + 1
+       end #end success  no change                       
+    end #end @@data_hold
+    #we have finished with the records for that location
+    #record header errors
+    errors = @batch_errors
+    unless @@header_error.nil?
+      @@header_error.each do |error_key,error_value|
+        batch_error = BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data])
+        batch_error.freereg1_csv_file = @freereg1_csv_file
+        errors = errors + 1
+        batch_error.save
+      end #end header errors
+    end # #header error nil
 
-                   end
+    @freereg1_csv_file.update_attribute(:processed, false) if !@@create_search_records
+    @freereg1_csv_file.update_attributes(:processed => true, :processed_date => Time.now) if @@create_search_records
+    @freereg1_csv_file.update_attribute(:error, errors)
+    @freereg1_csv_file.save
+    header_errors = 0
+    header_errors = @@header_error.length unless  @@header_error.nil?
+    puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@batch_errors} data errors "
+    @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@batch_errors} data errors"
+    if @freereg1_csv_file.register.church.place.error_flag == "Place name is not approved"
+       @@message_file.puts "Place name is unapproved"
+    end
+    #reset ready for next batch
+    #@@number_of_error_messages = 0
+    #@@header_error = nil
+  end #end @@list
+  #clean out old locations
+  counter = 0
+  #p "about to clear hash"
+  #p @all_records_hash
+  @all_records_hash.each_key do |record|
+    counter = counter + 1
+    actual_record = Freereg1CsvEntry.id(record).first
+    actual_record.destroy unless actual_record.nil?
+    sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+    sleep(sleep_time) unless actual_record.nil?
+  end
+  p "Deleted #{counter} remaining entries and records"
+  p "deleting #{@locations.length} locations" unless @locations.empty?
+  @locations.each do |location|
+    loc = Freereg1CsvFile.find(location)
+    puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
+    @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
+    loc.delete
+ end
+end
 
-                   def self.process_register_headers
-                     @total_records = Array.new
-                     @batches_with_errors = Array.new
-                     @locations = Array.new
-                     if @@update
-                       # Need to get all the records for this batch regardless of location
-                       @freereg1_csv_files = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid]).all
-                       @freereg1_csv_files.each do |batch|
-                         @locations << batch._id
-                         if batch.error >= 1
-                           @batches_with_errors << batch._id
-                         end
-                         Freereg1CsvEntry.where(:freereg1_csv_file_id => batch._id).only(:id).each  do |record|
-                           @total_records << record.id
-                         end
-                       end
-                       p "There are #{@locations.length} locations and #{@total_records.length} existing records for this batch"
+def self.check_and_create_db_record_for_entry(data_record,file_for_record)
+  if @@update
+    entry = Freereg1CsvEntry.new(data_record)
+    new_digest = entry.cal_digest
+    #p "digest"
+    #p new_digest.inspect
+    if @all_records_hash.has_value?(new_digest)
+      #we have an existing record but may be for different location
+      #p "existing record"
+      existing_record = Freereg1CsvEntry.id(@all_records_hash.key(new_digest)).first
+      #p existing_record.inspect
+      if existing_record.same_location(existing_record,file_for_record)
+        #p "same location"
+        #record location is OK
+        if existing_record.search_record.present?
+          # search record and entry are OK
+          success = "nochange" 
+          #p success 
+        else
+          success = "change"
+          #need to create search record as one does not exist
+          #p "creating search as not there"
+          existing_record.transform_search_record if  @@create_search_records == true 
+        end
+      else
+        
+        #p "changing location"
+        #change of location
+        #update location of record
+        record = existing_record.search_record
+        existing_record.update_location(data_record,file_for_record)
+        
+          if  record.present?
+            success = "nochange" 
+            #p "updating record"
+             #p record.inspect
+            # need to update search record  with location
+            record.update_location(data_record,file_for_record)
+            #p "updated record"
+            #p record.inspect
+          else
+            success = "change"
+            #need to create search record as one does not exist
+            #p "created record"
+            existing_record.transform_search_record if  @@create_search_records == true
+            #p existing_record.search_record
+          end
+      end
+      #we need to eliminate this record from hash
+      @all_records_hash.delete(@all_records_hash.key(new_digest))
+       #p "dropping hash entry"
+       #p @all_records_hash.inspect
+    else
+      success = "new"
+      #new entry and record
+      #p "creating new entry"
+      success = create_db_record_for_entry(data_record)
+      #p "new"
+      #p success
+      sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+      sleep(sleep_time)
+    end
+  else
+    success = "new"
+      #new entry and record
+      #p "creating new entry"
+      success = create_db_record_for_entry(data_record)
+      #p "new"
+      #p success
+      sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+      sleep(sleep_time)
+  end
+  success
+end
 
-                     end
-
-
-                     @@list_of_registers.each do |place_key,head_value|
-                       @@header.merge!(head_value)
-                       @time_start = Time.new
-                       time_inc = @time_start - @@file_start
-                       p "Processing #{@@header[:records]} records for this location"
-                       @records = Array.new
-
-                       #puts "header #{head} \n"
-                       if @@update
-                         @freereg1_csv_file = Freereg1CsvFile.where(:file_name => @@header[:file_name], :userid => @@header[:userid],
-                                                                    :county => @@header[:county], :place => @@header[:place], :church_name => @@header[:church_name], :register_type => @@header[:register_type],
-                                                                    :record_type => @@header[:record_type]).first
-                         if @freereg1_csv_file.nil?
-                           @freereg1_csv_file = Freereg1CsvFile.new(@@header)
-                           p "No records in the original batch for this location"
-                         else
-                           p "#{@freereg1_csv_file.records} in the original batch for this location"
-                           @freereg1_csv_file.update_attributes(@@header)
-                           Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id).only(:id).each  do |record|
-                             @records << record.id
-                           end
-                           #remove batch errors for this location
-                           @freereg1_csv_file.error = 0
-                           BatchError.where(:freereg1_csv_file_id => @freereg1_csv_file._id).all.each do |batch_error|
-                             batch_error.delete
-                             sleep_time = Rails.application.config.sleep.to_f
-                             sleep(sleep_time)
-                           end
-                           #remove this location from batches with errors
-                           ind = @batches_with_errors.find_index( @freereg1_csv_file._id)
-                           @batches_with_errors.delete_at(ind) unless ind.nil?
-                           #remove this location from the total locations
-                           ind = @locations.find_index( @freereg1_csv_file._id)
-                           @locations.delete_at(ind) unless ind.nil?
-                         end
-                       else
-                         # not in update mode
-                         @freereg1_csv_file = Freereg1CsvFile.new(@@header)
-                       end
-                       @time_process_record_start = Time.new
-                       time_inc = @time_process_record_start - @time_start
-                       @freereg1_csv_file.update_register
-                       @not_updated = 0
-                       @deleted = 0
-                       #write the data records for this place/church
-                       @@data_hold[place_key].each do |datakey,datarecord|
-                         datarecord[:county] = head_value[:county]
-                         datarecord[:place] = head_value[:place]
-                         datarecord[:church_name] = head_value[:church_name]
-                         datarecord[:register_type] = head_value[:register_type]
-                         datarecord[:record_type] = head_value[:record_type]
-                         #puts "Data record #{datakey} \n #{datarecord} \n"
-                         success = check_and_create_db_record_for_entry(datarecord)
-                         unless  success.nil?
-                           if success == "nochange"
-                             @not_updated = @not_updated + 1
-                           else
-                             batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: @freereg1_csv_file.record_type, data_line: datarecord)
-                             batch_error.freereg1_csv_file = @freereg1_csv_file
-                             batch_error.save
-                             @@number_of_error_messages = @@number_of_error_messages + 1
-                           end #end success  no change
-                         end #end success nil
-                       end #end @@data_hold
-                       @time_process_record_end = Time.new
-                       time_inc = @time_process_record_end - @time_process_record_start
-                       @records.each do |record|
-                         #clean out total records for this record
-                         ind = @total_records.find_index(record)
-                         @total_records.delete_at(ind) unless ind.nil?
-                         #Now destroy the unneeded record
-
-                         rec = Freereg1CsvEntry.where(:id => record).first
-                         rec.destroy unless rec.nil?
-                         @deleted = @deleted + 1
-                       end
-                       unless @@header_error.nil?
-                         @@header_error.each do |error_key,error_value|
-                           batch_error = BatchError.new(error_type: 'Header_Error', record_number: error_value[:line],error_message: error_value[:error],data_line: error_value[:data])
-                           batch_error.freereg1_csv_file = @freereg1_csv_file
-                           batch_error.save
-                         end #end header errors
-                       end # #header error nil
-                       @freereg1_csv_file.update_attribute(:processed, false) if !@@create_search_records
-                       @freereg1_csv_file.update_attribute(:processed_date, Time.now) if @@create_search_records
-                       @freereg1_csv_file.update_attribute(:error, @@number_of_error_messages)
-                       @freereg1_csv_file.save
-                       header_errors = 0
-                       header_errors = @@header_error.length unless  @@header_error.nil?
-                       puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors "
-                       @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@@number_of_error_messages} data errors"
-
-                       if @freereg1_csv_file.register.church.place.error_flag == "Place name is not approved"
-                         @@message_file.puts "Place name is unapproved"
-                       end
-
-                       @@number_of_error_messages = 0
-                       @@header_error = nil
-                     end #end @@list
-                     #clean out old locations
-                     counter = 0
-                     @total_records.each do |record|
-                       counter = counter + 1
-                       actual_record = Freereg1CsvEntry.id(record).first
-                       actual_record.destroy unless actual_record.nil?
-                       sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time) unless actual_record.nil?
-                     end
-                     p "Deleted #{counter} records in deleted locations"
-                     @batches_with_errors.each do |batch|
-                       BatchError.where(:_id => batch).all.each do |batch_error|
-                         batch_error.delete
-                         sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                         sleep(sleep_time)
-                       end
-                     end
-                     @locations.each do |location|
-                       loc = Freereg1CsvFile.id(location).first
-                       if loc.present?
-                         puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-                         @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
-                         loc.destroy 
-                         sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-                         sleep(sleep_time)
-                      end
-                     end
-                   end
-
-                   def self.check_and_create_db_record_for_entry(data_record)
-                     if @@update
-                       entry = Freereg1CsvEntry.new(data_record)
-                       new_digest = entry.cal_digest
-                       record_exists = nil
-                       record_exists = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file._id, :record_digest => new_digest).hint("freereg1_csv_file_id_1_record_digest_1").only(:id).first unless @records.empty?
-
-                       if record_exists.nil?
-                         success = create_db_record_for_entry(data_record)
-                         sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-                         sleep(sleep_time)
-                       else
-                         #check to see if the seach_record is there
-
-                         if record_exists.search_record.nil?
-                           record = Freereg1CsvEntry.find(record_exists.id)
-                           record.transform_search_record if  @@create_search_records == true
-                         end
-                         success = "nochange"
-                         #remove from this location
-                         ind = @records.find_index(record_exists._id)
-                         @records.delete_at(ind) unless ind.nil?
-                         #remove from all locations
-                         ind = @total_records.find_index(record_exists._id)
-                         @total_records.delete_at(ind) unless ind.nil?
-                       end
-                     else
-                       success = create_db_record_for_entry(data_record)
-                       sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-                       sleep(sleep_time)
-                     end
-
-                     success
-                   end
-
-                   def self.create_db_record_for_entry(data_record)
-                     # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
-                     entry = Freereg1CsvEntry.new(data_record)
-                     if data_record[:record_type] == "ma"
-                       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
-                       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
-                     end
-                     entry.freereg1_csv_file = @freereg1_csv_file
-                     entry.save
-                     if entry.errors.any?
-                       success = entry.errors.messages
-                     else
-                       entry.transform_search_record if  @@create_search_records == true
-                       success = nil
-                     end
-                     success
-                   end
+def self.create_db_record_for_entry(data_record)
+ # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
+ entry = Freereg1CsvEntry.new(data_record)
+ if data_record[:record_type] == "ma"
+   entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
+   entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+ end
+ entry.freereg1_csv_file = @freereg1_csv_file
+# p "creating entry"
+ entry.save
+# p entry
+ if entry.errors.any?
+   success = entry.errors.messages
+ else
+   entry.transform_search_record if  @@create_search_records == true
+   success = "new"
+ end
+# p entry.search_record
+ success
+end
 
                    def self.process_the_data
                      #we do this here so that the logfile is only deleted if we actually process the file!
@@ -1075,6 +1097,7 @@ class FreeregCsvUpdateProcessor
                    end #end of method
 
                    def self.recode_windows_1252_to_utf8(string)
+                    string.gsub(/[\u0081\u008D\u008F\u0090\u009D]/,"")
                      string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
                      force_encoding('Windows-1252').encode('utf-8') }
                    end
@@ -1159,11 +1182,12 @@ class FreeregCsvUpdateProcessor
                            return true
                          when @@header[:digest] == check_for_file.digest
                            #file in database is same or more recent than we we are attempting to reload so do not process
-                           message =  "#{@@userid} #{@@header[:file_name]} digest has not changed since last build"
+                           message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
                             p  message
                            @@message_file.puts message
                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
                            return false
                          when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
                            #file in database is same or more recent than we we are attempting to reload so do not process
@@ -1171,7 +1195,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                             @@message_file.puts message
                             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
                            return false
                          when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
                            #do not process if coordinator has locked
@@ -1179,7 +1204,8 @@ class FreeregCsvUpdateProcessor
                             p  message
                             @@message_file.puts message
                             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
                             return false
                           else
                                @@update = true
@@ -1225,6 +1251,7 @@ class FreeregCsvUpdateProcessor
 
                          def self.process(range,type,delta)
                            #this is the basic processing
+                           @@logger = ActiveRecord::Base.logger
                            recreate = 'add'
                            @@create_search_records = false
                            @@create_search_records = true if type == "search_records" || type == "create_search_records"
@@ -1270,38 +1297,47 @@ class FreeregCsvUpdateProcessor
                               if @success == true  && process == true
                                  #how many records did we process?
                                  n = process_the_data
-                                 #now lets clean up the files and send out messages 
-                                 #do we have a record of this physical file
-                                   batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
-                                   if batch.nil?
-                                     #file did not come in through FR2 so its unknown
-                                     batch = PhysicalFile.new(:userid => @@header[:userid], :file_name => @@header[:file_name],:change => true, :change_uploaded_date => Time.now)
-                                     batch.save
-                                   end
-                                   if delta == "delta"
-                                     file_location = File.join(base_directory, @@header[:userid])
-                                     Dir.mkdir(file_location) unless Dir.exists?(file_location)
-                                     p "copying file to freereg2 base"
-                                     FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true)
-                                     batch.update_attributes( :base => true, :base_uploaded_date => Time.now)
-                                   end
-                                   if @@create_search_records
-                                     # we created search records so its in the search database database
-                                     batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
-                                   
-                                   else
-                                     #only checked for errors so file is not processed into search database
-                                     batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
-                                   end
-                                   batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil) if n == 0
-                                   #kludge to send email to user 
-                                   header_errors = 0
-                                   header_errors= @@header_error.length unless  @@header_error.nil?
-                                   UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,@@number_of_error_messages, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
-                                   nn = nn + n unless n.nil?
+                                 if n == 0
+                                  #lets deal with a null file
+                                  UserMailer.batch_processing_failure("there were no valid records, possibly because each record had an invalid county or place name",@@header[:userid],@@header[:file_name]).deliver 
+                                  batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
+                                  batch.destroy unless batch.nil?
+                                 else
+                                   #now lets clean up the files and send out messages 
+                                   #do we have a record of this physical file
+                                     batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
+                                     if batch.nil?
+                                       #file did not come in through FR2 so its unknown
+                                       batch = PhysicalFile.new(:userid => @@header[:userid], :file_name => @@header[:file_name],:change => true, :change_uploaded_date => Time.now)
+                                       batch.save
+                                     end
+                                     if delta == "delta"
+                                       file_location = File.join(base_directory, @@header[:userid])
+                                       Dir.mkdir(file_location) unless Dir.exists?(file_location)
+                                       p "copying file to freereg2 base"
+                                       FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true)
+                                       batch.update_attributes( :base => true, :base_uploaded_date => Time.now)
+                                     end
+                                     if @@create_search_records
+                                       # we created search records so its in the search database database
+                                       batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
+                                     
+                                     else
+                                       #only checked for errors so file is not processed into search database
+                                       batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
+                                     end
+                                     batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil) if n == 0
+                                     #kludge to send email to user 
+                                     header_errors = 0
+                                     header_errors= @@header_error.length unless  @@header_error.nil?
+                                     batch_errors = @@number_of_error_messages - header_errors
+                                     batch_errors = 0 if batch_errors <= 0
+                                     UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,batch_errors, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
+                                     nn = nn + n unless n.nil?
+                                 end
                               else
                                   #another kludge to send a message to user that the file did not get processed when the processing failed
-                                     if (delta == 'change' && filenames.length == 1 )
+                                     if (delta == 'change' && filenames.length == 1 && process == true)
                                         @@message_file.puts "File not processed" if @success == false
                                         @@message_file.close
                                         file = @@message_file

@@ -2,8 +2,15 @@ class ContactsController < InheritedResources::Base
   require 'freereg_options_constants'
   skip_before_filter :require_login, only: [:new, :report_error, :create]
   def index
-    @contacts = Contact.all.order_by(contact_time: -1).page(params[:page])
+    get_user_info_from_userid
+    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
+      @county = @user.county_groups
+      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
+    else
+      @contacts = Contact.all.order_by(contact_time: -1)
+    end  
   end
+
   def show
     @contact = Contact.id(params[:id]).first
     if @contact.nil?
@@ -11,6 +18,43 @@ class ContactsController < InheritedResources::Base
     else
       set_session_parameters_for_record(@contact) if @contact.entry_id.present?
     end
+  end
+
+  def list_by_name
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(name: 1)
+    render :index
+  end
+
+  def list_by_identifier
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(identifier: -1)
+    render :index
+  end
+
+  def list_by_type
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(contact_type: 1)
+    render :index
+  end
+
+
+  def list_by_date
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(contact_time: 1)
+    render :index
+  end
+
+  def select_by_identifier
+    get_user_info_from_userid
+    @options = Hash.new
+    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
+      @options[contact.identifier] = contact.id
+    end
+    @contact = Contact.new
+    @location = 'location.href= "/contacts/" + this.value'
+    @prompt = 'Select Identifier'
+    render '_form_for_selection'
   end
 
   def new
@@ -28,6 +72,7 @@ class ContactsController < InheritedResources::Base
       @contact.previous_page_url= request.env['HTTP_REFERER']
       if @contact.save
         flash[:notice] = "Thank you for contacting us!"
+        @contact.communicate
         if @contact.query
           redirect_to search_query_path(@contact.query, :anchor => "#{@contact.record_id}")
           return
@@ -46,6 +91,22 @@ class ContactsController < InheritedResources::Base
       return
     end
   end
+
+  def edit
+    load(params[:id]) 
+    if @contact.github_issue_url.present?
+      flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
+      redirect_to :action => 'show'
+      return
+    end  
+  end
+  
+  def update
+    load(params[:id])
+    @contact.update_attributes(params[:contact])
+    redirect_to :action => 'show'
+  end
+
   def report_error
     @contact = Contact.new
     @contact.contact_time = Time.now
@@ -54,6 +115,7 @@ class ContactsController < InheritedResources::Base
     @contact.record_id = params[:id]
     @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
     @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
+    @contact.county = @freereg1_csv_entry.freereg1_csv_file.register.church.place.chapman_code
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 
@@ -64,10 +126,18 @@ class ContactsController < InheritedResources::Base
   end
 
   def convert_to_issue
-    @contact = Contact.find(params[:id])
-    @contact.github_issue
-    flash.notice = "Issue created on Github."
-    redirect_to contact_path(@contact.id)
+    @contact = load(params[:id])
+    if @contact.github_issue_url.blank?
+      @contact.github_issue
+      flash.notice = "Issue created on Github."
+      redirect_to contact_path(@contact.id)
+      return
+    else
+      flash.notice = "Issue has already been created on Github."
+      redirect_to :show
+      return
+    end 
+
   end
 
   def set_session_parameters_for_record(contact)
@@ -80,5 +150,18 @@ class ContactsController < InheritedResources::Base
     session[:place_name] = place.place_name
     session[:church_name] = church.church_name
     session[:county] = place.county
+  end
+
+  def message
+    
+    
+  end
+
+  def load(contact)
+    @contact = Contact.id(contact).first
+    if @contact.blank?
+      go_back("contact",contact)
+    end  
+    @contact 
   end
 end

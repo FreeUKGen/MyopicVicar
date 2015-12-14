@@ -257,7 +257,7 @@ class Place
       church.registers.each do |register|
         location_names =[]
         location_names << "#{place_name} (#{church.church_name})"
-        location_names  << " [#{register.register_type}]"
+        location_names  << " [#{RegisterType.display_name(register.register_type)}]"
         register.freereg1_csv_files.each do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?

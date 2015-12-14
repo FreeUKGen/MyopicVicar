@@ -13,7 +13,7 @@ class FreeregContent
   field :place_ids, type: String
   attr_accessor :character
   attr_accessible :chapman_codes
-  validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
+  validates_inclusion_of :record_type, :in => RecordType::ALL_FREEREG_TYPES+[nil]
   validate :county_is_valid
 
   before_validation :clean_blanks

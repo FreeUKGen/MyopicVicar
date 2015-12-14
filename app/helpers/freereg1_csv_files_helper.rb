@@ -10,13 +10,19 @@ module Freereg1CsvFilesHelper
   end
   def register_type(file)
     register = get_register_object(file)
-    register_type = register.register_type unless register.blank?
+    register_type = RegisterType.display_name(register.register_type) unless register.blank?
   end
   def county_name(file)
     register = get_register_object(file)
     church = get_church_object(register)
     place = get_place_object(church) 
     county_name = place.county unless place.blank?
+  end
+  def chapman(file)
+    register = get_register_object(file)
+    church = get_church_object(register)
+    place = get_place_object(church) 
+    place_name = place.chapman_code unless place.blank?
   end
   def place_name(file)
     register = get_register_object(file)
@@ -55,7 +61,13 @@ module Freereg1CsvFilesHelper
     end
     value    
   end
+  def base_uploaded_date(file)
+    file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
+  end
 
+  def waiting_date(file)
+    file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
+  end
 
 
 

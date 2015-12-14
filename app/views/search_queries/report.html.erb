@@ -57,6 +57,9 @@
 			<th>
 				<%= link_to("Results Found", search_query_report_path(:feedback_id => @feedback, :order => "result_count")) %>
 			</th>
+      <th>
+       Index used 
+      </th>
 		<% else %>
 			<th>
 				<%= link_to("Run Time (ms)", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "runtime")) %>
@@ -67,6 +70,9 @@
 			<th>
 				<%= link_to("Results Found", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "result_count")) %>
 			</th>
+      <th>
+        Index used 
+      </th>
 		<% end %>
 		<th>&nbsp;</th>
 	</thead>
@@ -81,6 +87,7 @@
 	 			<td><b><%= query.runtime %></b></td>
 	 			<td><%= query.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
 	 			<td><%= query.result_count %></td>
+        <td><%= query.search_index %></td>
 		 		<td>
 		 			<%= button_to("Analyze", analyze_search_query_path(query), :method=>:post)%>
 		 		</td>

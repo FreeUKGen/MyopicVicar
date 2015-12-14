@@ -32,8 +32,8 @@
       <% if @entry[field] %>
       <% unless (field == 'line_id' && !current_refinery_user) %>
       <tr>
-        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
-        <td class="weight--semibold"><%= @entry[field] %></td>
+        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>     
+         <td class="weight--semibold"><%= @entry[field] %></td>
       </tr>
       <% end %>
       <% end %>

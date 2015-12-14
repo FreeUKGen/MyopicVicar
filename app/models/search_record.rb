@@ -117,6 +117,19 @@ class SearchRecord
     end
     best_score
   end
+  def update_location(entry,file)
+    place = file.register.church.place
+    location_names =[]
+    place_name = entry[:place]
+    church_name = entry[:church_name]
+    register_type = RegisterType.display_name(entry[:register_type])
+    location_names << "#{place_name} (#{church_name})"
+    location_names  << " [#{register_type}]"
+    self.update_attribute(:location_names, location_names)
+    if self.place_id != place.id
+          self.update_attribute(:place_id, place.id)
+    end    
+  end
 
   def self.fields_from_params(search_params)
     fields = []

@@ -38,7 +38,7 @@ class Freereg1CsvFile
   field :church_name, type: String
   field :register_type, type: String
   field :record_type, type: String#, :in => RecordType::ALL_TYPES+[nil]
-  validates_inclusion_of :record_type, :in => RecordType::ALL_TYPES+[nil]
+  validates_inclusion_of :record_type, :in => RecordType::ALL_FREEREG_TYPES+[nil]
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   field :place, type: String
@@ -257,7 +257,7 @@ class Freereg1CsvFile
         attic_file.save
       end
     else
-      p "file does not exist"
+      p "Nothing to save to attic"
     end
   end
 

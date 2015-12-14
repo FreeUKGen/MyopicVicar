@@ -41,7 +41,7 @@ class UseridDetailsController < ApplicationController
     end
     session[:return_to] = request.fullpath
     get_user_info_from_userid
-    @userids = UseridDetail.get_userids_for_display('all',params[:page])
+    @userids = UseridDetail.get_userids_for_display('all')
     render "index"
   end
 
@@ -73,12 +73,28 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates
   end
 
+  def person_roles
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @userid = UseridDetail.new
+    @options = UseridRole::VALUES
+    @prompt = 'Select Role?'
+    @location = 'location.href= "role?role=" + this.value'
+  end
+
+  def role
+    p params
+    @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1) 
+    @syndicate = " #{params[:role]}"
+    @sorted_by = " lower case userid"
+  end
+
   def change_password
     load(params[:id])
     success = @userid.check_exists_in_refinery
     if success[0]
       @userid.send_invitation_to_reset_password
-      flash[:notice] = 'An email with instructions to reset the password have been sent'
+      flash[:notice] = 'An email with instructions to reset the password has been sent'
       if @user.userid == @userid.userid
         redirect_to refinery.logout_path
         return
@@ -154,7 +170,7 @@ class UseridDetailsController < ApplicationController
     @userid = @user
     case
     when params[:option] == 'Browse userids'
-      @userids = UseridDetail.get_userids_for_display('all',params[:page])
+      @userids = UseridDetail.get_userids_for_display('all')
       @syndicate = 'all'
       render "index"
       return
@@ -227,7 +243,7 @@ class UseridDetailsController < ApplicationController
           if params[:page]
             session[:user_index_page] = params[:page]
           end
-          @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all.page(params[:page])
+          @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all
           render 'index'
           return
         end
@@ -258,11 +274,12 @@ class UseridDetailsController < ApplicationController
 
   def update
     load(params[:id])
-    success = true
+    success = Array.new
+    success[0] = true
     case 
       when params[:commit] == "Rename" 
-        success = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
-        success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success
+        success[0] = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
+        success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success[0]
       when params[:commit] == "Disable"
         params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
         params[:userid_detail][:active]  = false
@@ -275,13 +292,13 @@ class UseridDetailsController < ApplicationController
     @userid.update_attributes(params[:userid_detail])
     @userid.write_userid_file
     @userid.save_to_refinery
-    if !@userid.errors.any? || success
+    if !@userid.errors.any? && success[0]
      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
      flash[:notice] = 'The update of the profile was successful'
      redirect_to userid_detail_path(@userid)
      return
     else
-      flash[:notice] = "The update of the profile was unsuccessful #{success[1]}"
+      flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       render :action => 'edit'
       return
@@ -308,7 +325,7 @@ class UseridDetailsController < ApplicationController
     unless @userid.active 
       @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
       flash[:notice] = "Userid re-activated"
-       redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
+       redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
     end
     session[:type] = "disable"
   end

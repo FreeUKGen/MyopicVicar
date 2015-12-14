@@ -7,6 +7,14 @@ namespace :reports do
      puts "Task complete."
    end
   end
+  desc "Report on Register Types"
+   task :extract_information_on_register_types, [:limit] => [:environment] do |t, args|
+   require 'extract_information_on_register_types' 
+   Mongoid.unit_of_work(disable: :all) do
+     ExtractInformationOnRegisterTypes.process(args.limit) 
+     puts "Task complete."
+   end
+  end
   desc "Multiple batches for a file"
    task :multiple_batches, [:limit] => [:environment] do |t, args|
    require 'multiple_batches' 
@@ -24,20 +32,6 @@ namespace :reports do
    end
   end
 
-	
-desc "Create a missing locations list"
- task :missing_locations, [:limit] => [:environment] do |t, args|
- require 'missing_locations' 
- 
-  Mongoid.unit_of_work(disable: :all) do
-   
-     
-          MissingLocations.process(args.limit) 
-          
-     
-    puts "Task complete."
-   end
-  end
 desc "Create a database content report"
  task :database_contents, [:limit,:type] => [:environment] do |t, args|
  require 'database_contents' 
@@ -81,17 +75,14 @@ desc "Create a report of files loaded by people"
 
   end
 
-  desc "Create a report of Places with missing county and country"
- # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
- #valid options for type are rebuild, replace, add
+  desc "Create a report of Places with missing fields location, genuki, county and country"
+ 
  task :missing_place_fields, [:limit] => [:environment] do |t, args|
  require 'missing_place_fields' 
  
   Mongoid.unit_of_work(disable: :all) do
-   
-     
-          MissingPlaceFields.process(args.limit) 
-          
+       
+          MissingPlaceFields.process(args.limit)        
      
     puts "Task complete."
    end
