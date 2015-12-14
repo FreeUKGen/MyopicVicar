@@ -91,7 +91,7 @@ class Contact
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
-    UserMailer.datamanger_data_question(self,ccs).deliver
+    UserMailer.datamanager_data_question(self,ccs).deliver
   end
 
   def communicate_data_problem
