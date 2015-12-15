@@ -18,7 +18,7 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<label>
 				Surname
-				<a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name. If no surname is entered you MUST enter a County, Forename and a Record Type</span>
 				</a>
 			</label>
@@ -31,7 +31,7 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<label>
 				Forename(s)
-				<a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>The forename can be upper or lower case, abbreviations and Latin versions of name will be included automatically</span>
 				</a>
 			</label>
@@ -44,7 +44,7 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<label>
 				First year
-				<a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>The first year for which records are to be included</span>
 				</a>
 			</label>
@@ -57,7 +57,7 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<label>
 				Last year
-				<a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>The last year for which records are to be included</span>
 				</a>
 			</label>
@@ -71,7 +71,7 @@
 			<input name="search_query[chapman_codes][]" type="hidden" value="" >
 			<label class=" label" for="search_query_chapman_codes">
 				County
-				<a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>These are the county boundaries as specified in 1831. Note if multiple counties are selected, all places within those counties will be searched.</span>
 				</a><small class="additional">Select one to three (hold Ctrl for multiple)</small>
 			</label>
@@ -87,7 +87,7 @@
 		<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
 			<label class=" label" for="search_query_place_ids">
 				Place
-				<a href="#" class="left_tooltip"><<%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="left_tooltip" onclick="return false;"><<%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>This form fills when a SINGLE county is selected. Select a single place or leave blank for ALL the places in a county. Search Nearby Places below adds additional places nearby your selection</span>
 				</a><small class="additional">Select nothing or one place</small>
 			</label>
@@ -99,7 +99,7 @@
 		<li class="grid__item  one-fifth  palm-one-whole optional" id="search_query_record_type_input">
 			<label class=" label" for="search_query_record_type">
 				Census year
-				<a href="#" class="top_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small>
+				<a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The records can be Baptisms, Burials or Marriages. Leave blank to select all</span></a><small class="additional">Select one or none</small>
 			</label>
 			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]"  tabindex="6">
 				<option value=""></option>
@@ -116,7 +116,7 @@
 			<%= f.label :fuzzy do %>
 				<%= f.check_box :fuzzy, { :tabindex => 9 }, "true", "false" %>
 				Soundex on Names
-				<a href="#" class="top_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+				<a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>Check to include Soundex equivalent of the name, it is applied to both surname and forename(if entered).</span>
 				</a>
 			<% end %>
