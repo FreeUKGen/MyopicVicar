@@ -88,7 +88,7 @@ class Feedback
   end
 
   def issue_title
-   "#{identifier} #{feedback_type} (#{name})"
+   "#{identifier} #{title} (#{name})"
   end
 
   def issue_body
