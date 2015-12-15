@@ -79,7 +79,7 @@ class FreeregContentsController < ApplicationController
     @coordinator = County.coordinator_name(@chapman_code)
     @page = FreeregContent.get_header_information(session[:chapman_code])
     @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
-    p @olaces
+    #p @places
     @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
     render :action => 'index'
     return

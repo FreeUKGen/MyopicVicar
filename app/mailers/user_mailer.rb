@@ -202,7 +202,7 @@ class UserMailer < ActionMailer::Base
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
     get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
   end
 
   def volunteer(contact,ccs)
