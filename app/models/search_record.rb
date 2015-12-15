@@ -252,7 +252,8 @@ class SearchRecord
 
   def create_soundex
     search_names.each do |name|
-      search_soundex << soundex_name_type_triple(name)
+      sdx = soundex_name_type_triple(name)
+      search_soundex << sdx unless sdx[:first_name].nil? || sdx[:last_name].nil?
     end
   end
 
