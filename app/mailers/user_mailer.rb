@@ -172,7 +172,7 @@ class UserMailer < ActionMailer::Base
   def genealogy(contact,css)
     @contact = contact
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",   :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
   end
 
   def volunteer(contact,ccs)
