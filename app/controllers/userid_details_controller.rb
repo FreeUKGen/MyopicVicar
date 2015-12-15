@@ -279,7 +279,9 @@ class UseridDetailsController < ApplicationController
     case 
       when params[:commit] == "Rename" 
         success[0] = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
+      if MyopicVicar::Application.config.template_set != 'freecen'
         success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success[0]
+      end
       when params[:commit] == "Disable"
         params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
         params[:userid_detail][:active]  = false
@@ -312,7 +314,9 @@ class UseridDetailsController < ApplicationController
       flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
       next_place_to_go_unsuccessful_update
     else
-      Freereg1CsvFile.delete_userid(@userid.userid)
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        Freereg1CsvFile.delete_userid(@userid.userid)
+      end
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
       redirect_to :action => 'options'
