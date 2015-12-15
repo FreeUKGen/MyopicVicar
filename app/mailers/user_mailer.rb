@@ -224,7 +224,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact 
     @user = UseridDetail.userid(@contact.user_id).first
     get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
+    mail(:from => "#{appname.downcase}-feedback@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
   end
 
   def publicity(contact,ccs)
