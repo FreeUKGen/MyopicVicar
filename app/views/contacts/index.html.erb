@@ -35,8 +35,8 @@
             <td><%= feedback.name %></td>
             <td><%= feedback.email_address %></td>
             <td><%= feedback.contact_type %>
- 	      <% if feedback.contact_county %>
-	       (<%= feedback.contact_county %>)
+ 	      <% if feedback.selected_county %>
+	       (<%= feedback.selected_county %>)
 	      <% end %>
 	    </td>
             <td><%= feedback.county %></td>

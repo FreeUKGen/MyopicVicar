@@ -27,8 +27,8 @@
         </tr>
 	<tr>
 	  <td>County to Contact:</td><td class="weight--semibold">
-	    <% if @contact.contact_county %>
-	      <%= @contact.contact_county %>
+	    <% if @contact.selected_county %>
+	      <%= @contact.selected_county %>
 	    <% else %>
 	      (no county specified)
 	    <% end %>

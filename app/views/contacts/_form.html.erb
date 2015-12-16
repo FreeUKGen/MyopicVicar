@@ -63,7 +63,7 @@
   <li class="grid__item  one-half  palm-one-whole">
     <label>Contact a specific county (Optional) <a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>If you wish to contact a coordinator for one specific county, please select the county here.</span></a></label>
     <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-    <select class="select" id="contact_county" name="contact[contact_county]"  size="5">
+    <select class="select" id="selected_county" name="contact[selected_county]"  size="5">
       <option value="nil">No specific county</option>
       <%= grouped_options_for_select(grouped_options) %>
     </select>

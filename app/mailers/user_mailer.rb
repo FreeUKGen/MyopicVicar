@@ -198,7 +198,7 @@ class UserMailer < ActionMailer::Base
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
   end
 
-  def genealogy(contact,css)
+  def genealogy(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
     get_attachment
@@ -281,82 +281,9 @@ class UserMailer < ActionMailer::Base
     refinery_user.save!
     @user_token = refinery_user.reset_password_token
   end
-
-
-# the following are from before pulling Kirk's latest re-write
-#  def contact(contact,ccs)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @contact = contact
-#    if MyopicVicar::Application.config.template_set == 'freereg'
-#      bcc = UseridDetail.where(:userid => 'REGManager').limit(1).first
-#    elsif MyopicVicar::Application.config.template_set == 'freecen'
-#      bcc = UseridDetail.where(:userid => 'CENManager').limit(1).first
-#    end
-#    ccs << bcc.email_address
-#    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for contacting us (#{appname})")
-#  end
-
-#  def copy_to_contact_person(contact)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @contact = contact
-#    if @contact.screenshot_url
-#      atitle = File.basename(@contact.screenshot.path)
-#      if File.size(@contact.screenshot.current_path) < 10000000 #only if < 10MB
-#        attachments[atitle] = File.read(@contact.screenshot.current_path)
-#      end
-#    end
-#    mail(:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for contacting us (#{appname})")
-#  end
-
-#  def volunteer(contact,ccs)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @contact = contact
-#  end
-
-#  def website(contact,ccs)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @contact = contact  
-#    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a Website problem")
-#  end
-
-#  def contact_to_recipient(contact,person,ccs)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @ccs = ccs
-#    @contact = contact
-#    @name = person.person_forename
-#    @email_address = person.email_address
-#    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
-#  end
- 
-
-#  def contact_to_data_manager(contact,person,ccs)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @ccs = ccs
-#    @contact = contact
-#    @name = person.person_forename
-#    @email_address = person.email_address
-#    mail(:to => "#{@name} <#{@email_address}>", :subject => "Copy of a #{appname} Contact")
-#  end
-#  def contact_to_coordinator(contact,person,ccs)
-#    appname = MyopicVicar::Application.config.freexxx_display_name
-#    @ccs = ccs
-#    @contact = contact
-#    @name = person.person_forename
-#    @email_address = person.email_address
-#    mail(:to => "#{@name} <#{@email_address}>", :subject => "Data Error Report from a #{appname} contact")
-#  end
   
   def appname
     MyopicVicar::Application.config.freexxx_display_name
-  end
-
-
-  def get_token
-    refinery_user = Refinery::User.where(:username => @user.userid).first
-    refinery_user.reset_password_token = Refinery::User.reset_password_token
-    refinery_user.reset_password_sent_at = Time.now
-    refinery_user.save!
-    @user_token = refinery_user.reset_password_token
   end
 
 end
