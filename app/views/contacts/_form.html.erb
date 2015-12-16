@@ -47,7 +47,7 @@
   </li>
   <li  class="grid__item  one-third  palm-one-whole push--bottom" id="contact_type_input">
     <label class="label" for="contact_type">
-      Nature of contact <a href="#" class="left_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please select the type of contact you are making so we may refer it to the correct person. <b>Data problems are best reported from the specific record from your search</b></span></a></label>
+      Nature of contact <a href="#" class="left_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please select the type of contact you are making so we may refer it to the correct person. <b>Data problems are best reported from the specific record from your search by clicking the 'report problem' button (only available if you are logged in)</b></span></a></label>
     <select id="contact_type" name="contact[contact_type]" class="select" required="required" size="7">
     <% @options.each do |value| %>
       <% if value == @contact.contact_type %>
