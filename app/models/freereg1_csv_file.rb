@@ -861,7 +861,7 @@ class Freereg1CsvFile
     case
       when self.record_type == 'ba'
         date = param[:freereg1_csv_entry][:baptism_date]  
-        date = param[:freereg1_csv_entry][:birth_date] if param[:freereg1_csv_entry][:baptism_date].nil?
+        date = param[:freereg1_csv_entry][:birth_date] if param[:freereg1_csv_entry][:baptism_date].nil? 
       when self.record_type == 'ma'
         date = param[:freereg1_csv_entry][:marriage_date]
       when self.record_type == 'bu'

@@ -147,6 +147,7 @@ class ApplicationController < ActionController::Base
     session.delete(:physical_index_page)
     session.delete(:character)
     session.delete(:edit_userid)
+    session.delete(:record)
   end
 
   def clean_session_for_county

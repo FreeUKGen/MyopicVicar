@@ -113,8 +113,8 @@ MyopicVicar::Application.routes.draw do
 
 
 
-  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint 
-  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint 
+  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_manage_counties 
+  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_manage_counties 
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint 
   get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint 
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
@@ -128,7 +128,8 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get 'manage_counties/select', :to =>'manage_counties#select', :as => :select_manage_counties
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
-   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
+  get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
+  get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties  
   resources :manage_counties
 
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
@@ -171,9 +172,8 @@ MyopicVicar::Application.routes.draw do
   resources :church_names
 
   resources :toponyms
+  
   get 'freereg1_csv_entries/:id/error(.:format)', :to => 'freereg1_csv_entries#error', :as => :error_freereg1_csv_entry
-  get 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#select_page', :as => :select_page_freereg1_csv_entry
-  post 'freereg1_csv_entries/select_page', :to => 'freereg1_csv_entries#selected_page', :as => :selected_page_freereg1_csv_entry
   resources :freereg1_csv_entries
 
   get 'freereg1_csv_files/:id/change_userid', :to => 'freereg1_csv_files#change_userid', :as => :change_userid_freereg1_csv_file
