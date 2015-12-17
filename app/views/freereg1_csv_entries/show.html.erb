@@ -64,6 +64,12 @@
           <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
         </tr>
         <tr>
+          <td>Film</td><td >  <%= @freereg1_csv_entry.film %> </td>
+        </tr>
+        <tr>
+          <td>Film number</td><td >  <%= @freereg1_csv_entry.film_number %> </td>
+        </tr>
+        <tr>
           <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.file_line_number %> </td>
         </tr>
         
@@ -171,6 +177,12 @@
             <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
           </tr>
           <tr>
+            <td>Film</td><td >  <%= @freereg1_csv_entry.film %> </td>
+          </tr>
+          <tr>
+            <td>Film number</td><td >  <%= @freereg1_csv_entry.film_number %> </td>
+          </tr>
+          <tr>
             <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>
           </tr>
           <% if @freereg1_csv_entry.error_flag == 'true' %>
@@ -228,6 +240,12 @@
           </tr>
           <tr>
             <td>Notes about the transcription</td><td >  <%= @freereg1_csv_entry.notes_from_transcriber %> </td>
+          </tr>
+          <tr>
+            <td>Film</td><td >  <%= @freereg1_csv_entry.film %> </td>
+          </tr>
+          <tr>
+            <td>Film number</td><td >  <%= @freereg1_csv_entry.film_number %> </td>
           </tr>
           <tr>
             <td>Line number in batch</td><td >  <%= @freereg1_csv_entry.line_id %> </td>
