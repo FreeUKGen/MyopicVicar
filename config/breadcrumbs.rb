@@ -121,7 +121,7 @@ end
 
 #record or entry
 crumb :show_records do |file|
-  link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}", :page => "#{session[:entry_index_page]}")
+  link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}")
   parent :show_file, file
 end
 crumb :new_record do |entry,file|
@@ -148,25 +148,47 @@ end
 
 #manage county
 crumb :county_options do |county|
-  link "County Options(#{county})", select_action_manage_counties_path("?county=#{county}")
+  link "County Options(#{county})", select_action_manage_counties_path(:county => "#{county}")
   parent :root
 end
-crumb :county_places do |county,place|
-  case
-  when place.nil?
-    link "Places", places_path
-  when !place.nil?
-    link "Places", places_path(:anchor => "#{place.id}", :page => "#{session[:place_index_page]}")
-  end
+crumb :place_range_options do |county,active|
+  if session[:active]
+    link "Range Selection", selection_manage_counties_path(:option =>'Work with Active Places')  
+  else
+     link "Range Selection", selection_manage_counties_path(:option =>'Work with All Places') 
+  end 
   parent :county_options, county
 end
-crumb :show_place do |county,place|
-  if place.present?
-    link "Place Information", place_path(place)
-    parent :county_places, county, place
+
+crumb :places do |county,place|
+  case
+    when session[:character].present?
+      link "Places", place_range_manage_counties_path
+    when place.blank?
+      link "Places", places_path
+    when place.present?
+      link "Places", places_path(:anchor => "session[place.id]")
+  end
+  if session[:character].present?
+    parent :place_range_options, county,session[:active]
   else
-    parent :county_options, session[:county] if session[:county].present?
-    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+    parent :county_options, county
+  end
+end
+ 
+crumb :places_range do |county,place|
+link "Places", places_path
+ parent :place_range_options, county,session[:active]
+end
+
+crumb :show_place do |county,place|
+  link "Place Information", place_path(place)
+  case 
+    when session[:select_place] || place.blank?
+      parent :county_options, session[:county] if session[:county].present?
+      parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+    when place.present?    
+      parent :places, county, place  
   end
 
 end

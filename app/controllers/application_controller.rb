@@ -147,6 +147,7 @@ class ApplicationController < ActionController::Base
     session.delete(:physical_index_page)
     session.delete(:character)
     session.delete(:edit_userid)
+    
   end
 
   def clean_session_for_county
@@ -183,7 +184,10 @@ class ApplicationController < ActionController::Base
     session.delete(:entry_index_page)
     session.delete(:files_index_page)
     session.delete(:character)
-     session.delete(:edit_userid)
+    session.delete(:show_alphabet)
+    session.delete(:edit_userid)
+    session.delete(:record)
+    session.delete(:select_place)
    end
 
   def clean_session_for_syndicate
@@ -222,7 +226,10 @@ class ApplicationController < ActionController::Base
     session.delete(:files_index_page)
     session.delete(:user_index_page)
     session.delete(:character)
+    session.delete(:show_alphabet)
     session.delete(:edit_userid)
+    session.delete(:record)
+    session.delete(:select_place)
   end
 
   def go_back(type,record)

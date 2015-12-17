@@ -14,7 +14,7 @@ class ManageSyndicatesController < ApplicationController
     session[:page] = request.original_url
     get_user_info_from_userid
     get_syndicates_for_selection
-    number_of_syndicates = @syndicates.length
+    number_of_syndicates = @syndicates.length unless @syndicates.nil?
     if number_of_syndicates == 0
       flash[:notice] = 'You do not have any syndicates to manage'
       redirect_to new_manage_resource_path
@@ -146,7 +146,8 @@ class ManageSyndicatesController < ApplicationController
   end
 
   def get_syndicates_for_selection
-    all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager"
+    all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager" ||
+     @user.person_role == "documentation_manager"
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
     synd = Array.new
