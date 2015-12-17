@@ -51,37 +51,33 @@ class FreeregContent
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
   end
-  def self.determine_if_selection_needed(chapman)
-    result = false
-    result = true if FreeregOptionsConstants::ALPHABET_SELECTION_LIST.include?(chapman)
-    result
+  def self.determine_if_selection_needed(chapman,alphabet)
+    number = 0
+    if alphabet.blank? 
+      county = County.chapman_code(chapman).first
+      number = county.total_records.to_i
+      p chapman
+      p number
+      number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
+       p number 
+      number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
+    else
+      number = alphabet
+    end
+    number
+    
   end
   def self.get_header_information(chapman)
     page = Refinery::CountyPages::CountyPage.where(chapman_code: chapman).first
     page
   end
   def self.number_of_records_in_county(chapman)
-    files = Freereg1CsvFile.county(chapman).all
+    county = County.chapman_code(chapman).first
     record = Array.new
-    records = 0
-    records_ma = 0
-    records_ba = 0
-    records_bu = 0
-    files.each do |file|
-      records = records.to_i + file.records.to_i unless file.records.nil?
-      case file.record_type
-      when "ba"
-        records_ba = records_ba + file.records.to_i unless file.records.nil?
-      when "ma"
-        records_ma = records_ma + file.records.to_i unless file.records.nil?
-      when "bu"
-        records_bu = records_bu + file.records.to_i unless file.records.nil?
-      end
-    end
-    record[0] = records
-    record[1] = records_ba
-    record[2] = records_bu
-    record[3] = records_ma
+    record[0] = county.total_records
+    record[1] = county.baptism_records
+    record[2] = county.burial_records
+    record[3] = county.marriage_records
     record
   end
   def self.get_records_for_display(chapman)
