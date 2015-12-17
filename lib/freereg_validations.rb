@@ -295,11 +295,11 @@ module FreeregValidations
       when a.length == 1
          year = a[0]
       end #end case
-         if year.length >4
-            year= year[0..-(year.length-3)]
+         if year.present? && year.length >4
+            year = year[0..-(year.length-3)]
          end #end if     
     end #end if  
-     year = nil if year.to_s =~ WILD_CHARACTER
+     year = nil if year.to_s =~ VALID_UCF
      year
   end
   def FreeregValidations.place_exists(field)
