@@ -10,6 +10,11 @@ class County
   field :county_coordinator_lower_case,  type: String
   field :county_description, type: String
   field :county_notes, type: String
+  field :files, type: String
+  field :total_records, type: String
+  field :baptism_records, type: String
+  field :burail_records, type: String
+  field :marriage_records, type: String
 
   before_save :add_lower_case_and_change_userid_fields
 
@@ -22,6 +27,10 @@ class County
   class << self
     def id(id)
       where(:id => id)
+    end
+
+    def chapman_code(chapman)
+      where(:chapman_code => chapman)
     end
   end
 
@@ -74,5 +83,33 @@ class County
       end
     end
     coordinator_name
+  end
+  
+  def self.records(chapman)
+    files = Freereg1CsvFile.county(chapman).all
+    record = Array.new
+    records = 0
+    records_ma = 0
+    records_ba = 0
+    records_bu = 0
+    number_files = 0
+    files.each do |file|
+      records = records.to_i + file.records.to_i unless file.records.nil?
+      case file.record_type
+      when "ba"
+        records_ba = records_ba + file.records.to_i unless file.records.nil?
+      when "ma"
+        records_ma = records_ma + file.records.to_i unless file.records.nil?
+      when "bu"
+        records_bu = records_bu + file.records.to_i unless file.records.nil?
+      end
+    end
+    number_files = files.length unless files.blank?
+    record[0] = records
+    record[1] = records_ba
+    record[2] = records_bu
+    record[3] = records_ma
+    record[4] = number_files
+    record  
   end
 end

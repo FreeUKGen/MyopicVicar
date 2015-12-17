@@ -8,10 +8,12 @@ class ManageCounty
     #if alphabet is present we have already been through
     number = 0
     if alphabet.blank? 
-      Place.chapman_code(chapman).each do |place|
-        number = number + place.search_records.count 
-      end
+      county = County.chapman_code(chapman).first
+      number = county.total_records.to_i
+      p chapman
+      p number
       number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
+       p number 
       number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
     else
       number = alphabet
