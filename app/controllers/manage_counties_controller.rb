@@ -3,6 +3,7 @@ class ManageCountiesController < ApplicationController
   def index
     redirect_to :action => 'new'
   end
+
   def new
     #get county to be used
     clean_session_for_county
@@ -28,12 +29,15 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Please select one'
     @manage_county = ManageCounty.new
   end
+
   def show
     redirect_to :action => 'new'
   end
+
   def selection
     redirect_to :action => 'new'
   end
+
   def create
     if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
       flash[:notice] = 'You did not selected anything'
@@ -44,8 +48,6 @@ class ManageCountiesController < ApplicationController
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
     redirect_to :action => 'select_action'
-    p "create"
-    p session
     return
   end
 
@@ -55,16 +57,22 @@ class ManageCountiesController < ApplicationController
     @county =  session[:county]
     @manage_county = ManageCounty.new
     @options= UseridRole::COUNTY_MANAGEMENT_OPTIONS
-    p "selecting action"
-    p session
     @prompt = 'Select Action?'
   end
 
   def work_all_places
-    p "work all places"
-    p session
     get_user_info_from_userid
     session[:active_place] = false
+    work_places_core
+  end
+
+  def work_with_active_places
+    get_user_info_from_userid
+    session[:active_place] = true
+    work_places_core
+  end
+
+  def work_places_core
     show_alphabet = ManageCounty.files(session[:chapman_code],session[:show_alphabet])
     if show_alphabet == 0
       redirect_to places_path
@@ -81,10 +89,9 @@ class ManageCountiesController < ApplicationController
       return
     end
   end
+
   def place_range
-    p "place_range"
-    p session
-    session[:character]  = params[:params]
+    session[:character]  = params[:params] unless params[:params].blank?
     @character = session[:character]
     @county = session[:county]
     get_user_info_from_userid
@@ -96,14 +103,9 @@ class ManageCountiesController < ApplicationController
     end
   end
 
-  def work_with_active_places
-    get_user_info_from_userid
-    session[:active_place] = true
-    redirect_to places_path
-    return
-  end
   def work_with_specific_place
     get_user_info_from_userid
+    session[:select_place] = true
     @manage_county = ManageCounty.new
     @county = session[:county]
     @places = Array.new
@@ -115,8 +117,10 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Select Place'
     render '_form_for_selection'
   end
+
   def places_with_unapproved_names
     get_user_info_from_userid
+    session[:select_place] = true
     @manage_county = ManageCounty.new
     @county = session[:county]
     @places = Array.new
@@ -128,6 +132,7 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Select Place'
     render '_form_for_selection'
   end
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
@@ -137,6 +142,7 @@ class ManageCountiesController < ApplicationController
     session[:sort] = "error DESC, file_name ASC"
     redirect_to freereg1_csv_files_path
   end
+
   def display_by_filename
     get_user_info_from_userid
     @county = session[:county]
@@ -146,9 +152,11 @@ class ManageCountiesController < ApplicationController
     session[:sort] = "file_name ASC"
     redirect_to freereg1_csv_files_path
   end
+
   def upload_batch
     redirect_to new_csvfile_path
   end
+
   def display_by_userid_filename
     get_user_info_from_userid
     @county = session[:county]
@@ -192,6 +200,7 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Select batch'
     render '_form_for_selection'
   end
+
   def files
     get_user_info_from_userid
     @county = session[:county]
@@ -204,6 +213,7 @@ class ManageCountiesController < ApplicationController
       redirect_to freereg1_csv_files_path
     end
   end
+
   def places
     get_user_info_from_userid
     @county = session[:county]

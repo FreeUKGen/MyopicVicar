@@ -162,10 +162,12 @@ end
 
 crumb :places do |county,place|
   case
-  when place.nil?
-    link "Places", places_path
-  when !place.nil?
-    link "Places", places_path(:anchor => "session[place.id]")
+    when session[:character].present?
+      link "Places", place_range_manage_counties_path
+    when place.blank?
+      link "Places", places_path
+    when place.present?
+      link "Places", places_path(:anchor => "session[place.id]")
   end
   if session[:character].present?
     parent :place_range_options, county,session[:active]
@@ -176,17 +178,17 @@ end
  
 crumb :places_range do |county,place|
 link "Places", places_path
-
  parent :place_range_options, county,session[:active]
 end
 
 crumb :show_place do |county,place|
-  if place.present?
-    link "Place Information", place_path(place)
-    parent :places, county, place
-  else
-    parent :county_options, session[:county] if session[:county].present?
-    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+  link "Place Information", place_path(place)
+  case 
+    when session[:select_place] || place.blank?
+      parent :county_options, session[:county] if session[:county].present?
+      parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+    when place.present?    
+      parent :places, county, place  
   end
 
 end
