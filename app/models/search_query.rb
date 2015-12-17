@@ -62,6 +62,8 @@ class SearchQuery
   validate :date_range_is_valid
   validate :radius_is_valid
   validate :county_is_valid
+  validate :wildcard_is_appropriate
+  
   before_validation :clean_blanks
 
   index({ c_at: 1})
@@ -321,6 +323,23 @@ class SearchQuery
   
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0
+  end
+
+  def wildcard_is_appropriate
+    # allow promiscuous wildcards if place is defined
+    if query_contains_wildcard?
+      if place_search?
+        # place_id is an adequate index -- all is well; do nothing
+      else
+        if last_name.match(WILDCARD)
+          if last_name.index(WILDCARD) < 3
+            errors.add(:last_name, "Three letters must precede any wildcard in a surname unless a specific place is also chosen.")
+          end
+        else
+          # wildcard is in first name only -- no worries
+        end
+      end
+    end
   end
 
   def county_is_valid
