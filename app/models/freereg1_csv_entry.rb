@@ -159,8 +159,8 @@ class Freereg1CsvEntry
     string = string + self.father_occupation.strip + "occupation" unless self.father_occupation.nil?
     string = string + self.person_abode.strip + "abode" unless self.person_abode.nil?
     string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.file.nil?
-    string = string + self.film_number.strip + "film_number" unless self.file_number.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
   end
   def create_marriage_string
@@ -189,8 +189,8 @@ class Freereg1CsvEntry
     string = string + self.witness2_forename.strip + "witness2" unless self.witness2_forename.nil?
     string = string + self.witness2_surname.strip + "witness2surname" unless self.witness2_surname.nil?
     string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.file.nil?
-    string = string + self.film_number.strip + "film_number" unless self.file_number.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
 
   end
@@ -206,8 +206,8 @@ class Freereg1CsvEntry
     string = string + self.person_sex.strip unless self.person_sex.nil?
     string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
     string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.file.nil?
-    string = string + self.film_number.strip + "film_number" unless self.file_number.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
   end
   def hex_to_base64_digest(hexdigest)
