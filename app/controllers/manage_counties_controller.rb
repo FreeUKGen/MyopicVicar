@@ -73,7 +73,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def work_places_core
-    show_alphabet = ManageCounty.files(session[:chapman_code],session[:show_alphabet])
+    show_alphabet = ManageCounty.records(session[:chapman_code],session[:show_alphabet])
     if show_alphabet == 0
       redirect_to places_path
       return
@@ -152,6 +152,29 @@ class ManageCountiesController < ApplicationController
     session[:sort] = "file_name ASC"
     redirect_to freereg1_csv_files_path
   end
+
+  def files_core
+    show_alphabet = ManageCounty.files(session[:chapman_code],session[:show_alphabet])
+    if show_alphabet == 0
+      redirect_to places_path
+      return
+    else
+      @active = session[:active_place]
+      @manage_county = ManageCounty.new
+      @county = session[:county]
+      session[:show_alphabet] = show_alphabet
+      @options = FreeregOptionsConstants::ALPHABETS[show_alphabet]
+      @location = 'location.href= "/manage_counties/place_range?params=" + this.value'
+      @prompt = 'Select Place Range'
+      render '_form_for_range_selection'
+      return
+    end
+  end
+
+
+
+
+
 
   def upload_batch
     redirect_to new_csvfile_path
