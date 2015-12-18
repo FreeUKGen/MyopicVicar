@@ -129,7 +129,8 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/select', :to =>'manage_counties#select', :as => :select_manage_counties
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
-  get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties  
+  get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties 
+  get 'manage_counties/file_range', :to =>'manage_counties#file_range', :as => :file_range_manage_counties 
   resources :manage_counties
 
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
