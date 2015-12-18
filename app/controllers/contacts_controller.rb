@@ -116,10 +116,22 @@ class ContactsController < InheritedResources::Base
     @contact.contact_type = 'Data Problem'
     @contact.query = params[:query]
     @contact.record_id = params[:id]
-    @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
-    @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
-    @contact.county = @freereg1_csv_entry.freereg1_csv_file.register.church.place.chapman_code
-    @contact.line_id  = @freereg1_csv_entry.line_id
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
+      @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
+      @contact.county = @freereg1_csv_entry.freereg1_csv_file.register.church.place.chapman_code
+      @contact.line_id  = @freereg1_csv_entry.line_id
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      rec = SearchRecord.where("id" => @contact.record_id).first
+      unless rec.nil?
+        p rec
+        @contact.entry_id = 'freecen'
+        fc_ind = rec.freecen_individual_id if rec.freecen_individual_id.present?
+        fc_ind = rec.freecen_individual._id unless rec.freecen_individual.nil?
+        @contact.fc_individual_id = fc_ind.to_s unless fc_ind.nil?
+        @contact.county = rec.chapman_code
+      end
+    end
   end
 
   def delete
@@ -144,15 +156,17 @@ class ContactsController < InheritedResources::Base
   end
 
   def set_session_parameters_for_record(contact)
-    file_id = Freereg1CsvEntry.find(contact.entry_id).freereg1_csv_file
-    file = Freereg1CsvFile.find(file_id)
-    church = file.register.church
-    place = church.place
-    session[:freereg1_csv_file_id] = file._id
-    session[:freereg1_csv_file_name] = file.file_name
-    session[:place_name] = place.place_name
-    session[:church_name] = church.church_name
-    session[:county] = place.county
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      file_id = Freereg1CsvEntry.find(contact.entry_id).freereg1_csv_file
+      file = Freereg1CsvFile.find(file_id)
+      church = file.register.church
+      place = church.place
+      session[:freereg1_csv_file_id] = file._id
+      session[:freereg1_csv_file_name] = file.file_name
+      session[:place_name] = place.place_name
+      session[:church_name] = church.church_name
+      session[:county] = place.county
+    end
   end
 
   def message
