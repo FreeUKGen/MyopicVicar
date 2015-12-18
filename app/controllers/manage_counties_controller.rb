@@ -150,19 +150,14 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
-    redirect_to freereg1_csv_files_path
+    files_core
+    #redirect_to freereg1_csv_files_path
   end
 
   def files_core
     show_alphabet = ManageCounty.files(session[:chapman_code],session[:show_alphabet])
     if show_alphabet == 0
-     get_user_info_from_userid
-    @county = session[:county]
-    @who = @user.person_forename
-    @sorted_by = '; sorted alphabetically by file name'
-    session[:sorted_by] = @sorted_by
-    session[:sort] = "file_name ASC"
-    redirect_to freereg1_csv_files_path
+      redirect_to freereg1_csv_files_path
       return
     else
       @manage_county = ManageCounty.new
@@ -171,7 +166,7 @@ class ManageCountiesController < ApplicationController
       @options = FreeregOptionsConstants::ALPHABETS[show_alphabet]
       @location = 'location.href= "/manage_counties/file_range?params=" + this.value'
       @prompt = 'Select Place Range'
-      render '_form_for_file_range_selection'
+      render '_form_for_range_selection'
       return
     end
   end
