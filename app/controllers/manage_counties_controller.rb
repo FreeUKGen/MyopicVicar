@@ -73,7 +73,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def work_places_core
-    show_alphabet = ManageCounty.files(session[:chapman_code],session[:show_alphabet])
+    show_alphabet = ManageCounty.records(session[:chapman_code],session[:show_alphabet])
     if show_alphabet == 0
       redirect_to places_path
       return
@@ -151,6 +151,7 @@ class ManageCountiesController < ApplicationController
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
     redirect_to freereg1_csv_files_path
+   
   end
 
   def upload_batch
@@ -174,7 +175,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    redirect_to freereg1_csv_files_path
+   redirect_to freereg1_csv_files_path
   end
 
   def display_by_ascending_uploaded_date
