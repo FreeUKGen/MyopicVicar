@@ -798,6 +798,7 @@ def self.process_register_headers
         @all_records_hash[entry.id] = entry.record_digest
       end                  
     end
+    @locations.uniq
     p "There are #{@locations.length} locations and #{@all_records_hash.length} existing records for this file"
     #p @all_records_hash.inspect
   end
