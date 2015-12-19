@@ -198,15 +198,15 @@ crumb :edit_place do |county,place|
 end
 crumb :create_place do |county,place|
   link "Create New Place", new_place_path
-  parent :county_places, county, place
+  parent :places, county, place
 end
 crumb :rename_place do |county,place|
   link "Rename Place", rename_place_path
-  parent :county_places, county, place
+  parent :places, county, place
 end
 crumb :relocate_place do |county,place|
   link "Relocate Place", relocate_place_path
-  parent :county_places, county, place
+  parent :places, county, place
 end
 crumb :show_church do |county,place,church|
   if church.present?
