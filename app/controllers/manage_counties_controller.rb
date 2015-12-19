@@ -150,38 +150,9 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
-    files_core
-    #redirect_to freereg1_csv_files_path
+    redirect_to freereg1_csv_files_path
+   
   end
-
-  def files_core
-    show_alphabet = ManageCounty.files(session[:chapman_code],session[:show_alphabet])
-    if show_alphabet == 0
-      redirect_to freereg1_csv_files_path
-      return
-    else
-      @manage_county = ManageCounty.new
-      @county = session[:county]
-      session[:show_alphabet] = show_alphabet
-      @options = FreeregOptionsConstants::ALPHABETS[show_alphabet]
-      @location = 'location.href= "/manage_counties/file_range?params=" + this.value'
-      @prompt = 'Select Place Range'
-      render '_form_for_range_selection'
-      return
-    end
-  end
-  
-  def file_range
-    session[:character]  = params[:params] unless params[:params].blank?
-    @character = session[:character]
-    @county = session[:county]
-    get_user_info_from_userid
-    @freereg1_csv_files = Freereg1CsvFile.county(@county).any_of({:file_name => Regexp.new("^...["+@character+"]") }).all.order_by(file_name: 1)  
-  end
-
-
-
-
 
   def upload_batch
     redirect_to new_csvfile_path
@@ -204,7 +175,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    redirect_to freereg1_csv_files_path
+   redirect_to freereg1_csv_files_path
   end
 
   def display_by_ascending_uploaded_date
