@@ -5,21 +5,26 @@ class FreeregContentsController < ApplicationController
 
   def index
     session[:character] = nil
-    @show_alphabet = FreeregContent.determine_if_selection_needed(session[:chapman_code],session[:character])
-    @page = FreeregContent.get_header_information(session[:chapman_code])
-    @coordinator = County.coordinator_name(session[:chapman_code])
-    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
-    if @show_alphabet == 0
-      @places = FreeregContent.get_records_for_display(session[:chapman_code])
+    if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
+      @show_alphabet = FreeregContent.determine_if_selection_needed(session[:chapman_code],session[:character])
+      @page = FreeregContent.get_header_information(session[:chapman_code])
+      @coordinator = County.coordinator_name(session[:chapman_code])
+      @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+      if @show_alphabet == 0
+        @places = FreeregContent.get_records_for_display(session[:chapman_code])
+      else
+        @freereg_content = FreeregContent.new
+        @options = FreeregOptionsConstants::ALPHABETS[@show_alphabet]
+        @places = FreeregContent.get_places_for_display(session[:chapman_code])
+      end
+      session[:show_alphabet] = @show_alphabet
+      @county = session[:county]
+      @chapman_code = session[:chapman_code]
+      @character = session[:character]
     else
-      @freereg_content = FreeregContent.new
-      @options = FreeregOptionsConstants::ALPHABETS[@show_alphabet]
-      @places = FreeregContent.get_places_for_display(session[:chapman_code])
+      flash[:notice] = "You have not selected a county"
+      redirect_to :action => :new
     end
-    session[:show_alphabet] = @show_alphabet
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    @character = session[:character]
   end
 
   def new
@@ -66,11 +71,16 @@ class FreeregContentsController < ApplicationController
   def show
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-    @character = session[:character]  
-    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
-    @page = FreeregContent.get_header_information(session[:chapman_code])
-    @coordinator = County.coordinator_name(session[:chapman_code])
-    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+    @character = session[:character] 
+    if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
+      @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
+      @page = FreeregContent.get_header_information(session[:chapman_code])
+      @coordinator = County.coordinator_name(session[:chapman_code])
+      @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+    else
+      flash[:notice] = "You have not selected a county"
+      redirect_to :action => :new
+    end
   end
   
   def select_places
