@@ -1148,107 +1148,106 @@ end
                        return success
                      end #method end
 
-                     def self.check_for_replace(filename,force)
-                       if !File.exists?(filename)
-                          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                          message = "#{@@userid} #{@@header[:file_name]} file does not exist"
-                         p  message
-                         @@message_file.puts message
-                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
-                         return false
-                       end
-                       #check to see if we should process the file
-                       check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
-                                                                :userid => @@header[:userid]}).first
-                       check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
+def self.check_for_replace(filename,force)
+  if !File.exists?(filename)
+      #make sure file actually exists
+      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+      message = "#{@@userid} #{@@header[:file_name]} file does not exist"
+     p  message
+     @@message_file.puts message
+     UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
+     return false
+  end
 
-                       if check_for_userid.nil?
-                         #but first we need to check that there is a userid
-                         PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                         message = "#{@@header[:userid]} does not exit"
-                         p  message
-                         @@message_file.puts message
-                         return false
-                       end
+  #check to see if we should process the file
+  check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
+  if check_for_userid.nil?
+   #but first we need to check that there is a userid to receive the file
+   PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+   message = "#{@@header[:userid]} does not exit"
+   p  message
+   @@message_file.puts message
+   return false
+  end
 
-                       if check_for_file.nil?
-                         #if file not there then need to create
-                         return true
-                       else
-                         #file is in the database so lets test to see if we process
-                         case
-                         when force
-                           @@update = true
-                           #process file regardless
-                           return true
-                         when @@header[:digest] == check_for_file.digest
-                           #file in database is same or more recent than we we are attempting to reload so do not process
-                           message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
-                            p  message
-                           @@message_file.puts message
-                           UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
-                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
-                           return false
-                         when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
-                           #file in database is same or more recent than we we are attempting to reload so do not process
-                             message = "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
-                            p  message
-                            @@message_file.puts message
-                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
-                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
-                           return false
-                         when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
-                           #do not process if coordinator has locked
-                            message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                            p  message
-                            @@message_file.puts message
-                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
-                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
-                            return false
-                          else
-                               @@update = true
-                               return true
-                          end
-                           end #check_for_file loop end
+  check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name], :userid => @@header[:userid]}).first
+  if check_for_file.nil?
+   #if file not there then need to create
+   return true
+  else
+   #file is in the database so lets test to see if we process
+    case
+       when force
+         @@update = true
+         #process file regardless
+         return true
+       #when @@header[:digest] == check_for_file.digest
+         #file in database is same as the one we are attempting to reload so do not process
+        # message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
+        #  p  message
+        # @@message_file.puts message
+        # UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+        #  PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+        # PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
+        # return false
+       when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
+         #file in database is same or more recent than we we are attempting to reload so do not process
+           message = "#{@@userid} #{@@header[:file_name]} is older than the one in the system"
+          p  message
+          @@message_file.puts message
+          UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+          PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
+         return false
+       when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
+         #do not process if coordinator has locked
+          message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+          p  message
+          @@message_file.puts message
+          UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+          PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
+          return false
+      else
+         @@update = true
+         return true
+    end
+  end #check_for_file loop end
+end #method end
 
-                         end #method end
-
-                         def self.setup_for_new_file(filename)
-                           # turn off domain checks -- some of these email accounts may no longer work and that's okay
-                           #initializes variables
-                           #gets information on the file to be processed
-                           @@update = false
-                           #@@place is used to hold the last place name processed for this file
-                           @@place = nil
-                           @@header = Hash.new
-                           @csvdata = Array.new
-                           @@list_of_registers = Hash.new()
-                           @@header_error = Hash.new()
-                           @@system_error = Hash.new()
-                           @@data_hold = Hash.new
-                           @data_record = Hash.new
-                           @@array_of_data_lines = Array.new {Array.new}
-                           @@charset = "iso-8859-1"
-                           @@file = filename
-                           standalone_filename = File.basename(filename)
-                           @@filename = standalone_filename
-                           full_dirname = File.dirname(filename)
-                           parent_dirname = File.dirname(full_dirname)
-                           user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
-                           @@userid = user_dirname
-                           @@header[:digest] = Digest::MD5.file(filename).hexdigest if File.exists?(filename)
-                           #delete any user log file for errors we put it in the same directory as the csv file came from
-                           @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-                           File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)
-                           @@header[:file_name] = standalone_filename #do not capitalize filenames
-                           @@header[:userid] = user_dirname
-                           @@uploaded_date = Time.now
-                           @@uploaded_date = File.mtime(filename) if File.exists?(filename)
-                           @@header[:uploaded_date] = @@uploaded_date
-                         end
+def self.setup_for_new_file(filename)
+   # turn off domain checks -- some of these email accounts may no longer work and that's okay
+   #initializes variables
+   #gets information on the file to be processed
+   @@update = false
+   #@@place is used to hold the last place name processed for this file
+   @@place = nil
+   @@header = Hash.new
+   @csvdata = Array.new
+   @@list_of_registers = Hash.new()
+   @@header_error = Hash.new()
+   @@system_error = Hash.new()
+   @@data_hold = Hash.new
+   @data_record = Hash.new
+   @@array_of_data_lines = Array.new {Array.new}
+   @@charset = "iso-8859-1"
+   @@file = filename
+   standalone_filename = File.basename(filename)
+   @@filename = standalone_filename
+   full_dirname = File.dirname(filename)
+   parent_dirname = File.dirname(full_dirname)
+   user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+   @@userid = user_dirname
+   @@header[:digest] = Digest::MD5.file(filename).hexdigest if File.exists?(filename)
+   #delete any user log file for errors we put it in the same directory as the csv file came from
+   @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
+   File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)
+   @@header[:file_name] = standalone_filename #do not capitalize filenames
+   @@header[:userid] = user_dirname
+   @@uploaded_date = Time.now
+   @@uploaded_date = File.mtime(filename) if File.exists?(filename)
+   @@header[:uploaded_date] = @@uploaded_date
+end
 
                          def self.process(range,type,delta)
                            #this is the basic processing
