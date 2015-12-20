@@ -13,11 +13,17 @@ class ContactsController < InheritedResources::Base
 
   def show
     @contact = Contact.id(params[:id]).first
-    if @contact.nil?
-      go_back("contact",params[:id])
+    if @contact.present?
+      if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
+        file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
+        set_session_parameters_for_record(file)
+      else
+        set_nil_session_parameters
+      end
     else
-      set_session_parameters_for_record(@contact) if @contact.entry_id.present?
+      go_back("contact",params[:id])
     end
+    
   end
 
   def list_by_name
@@ -140,9 +146,7 @@ class ContactsController < InheritedResources::Base
 
   end
 
-  def set_session_parameters_for_record(contact)
-    file_id = Freereg1CsvEntry.find(contact.entry_id).freereg1_csv_file
-    file = Freereg1CsvFile.find(file_id)
+  def set_session_parameters_for_record(file)
     church = file.register.church
     place = church.place
     session[:freereg1_csv_file_id] = file._id
@@ -152,9 +156,12 @@ class ContactsController < InheritedResources::Base
     session[:county] = place.county
   end
 
-  def message
-    
-    
+  def  set_nil_session_parameters
+    session[:freereg1_csv_file_id] = nil
+    session[:freereg1_csv_file_name] = nil
+    session[:place_name] = nil
+    session[:church_name] = nil
+    session[:county] = nil
   end
 
   def load(contact)
