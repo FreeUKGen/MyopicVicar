@@ -74,6 +74,7 @@ class ManageCountiesController < ApplicationController
 
   def work_places_core
     show_alphabet = ManageCounty.records(session[:chapman_code],session[:show_alphabet])
+    session[:show_alphabet] = show_alphabet
     if show_alphabet == 0
       redirect_to places_path
       return
@@ -91,15 +92,21 @@ class ManageCountiesController < ApplicationController
   end
 
   def place_range
-    session[:character]  = params[:params] unless params[:params].blank?
-    @character = session[:character]
-    @county = session[:county]
-    get_user_info_from_userid
-    @active = session[:active_place]
-    if session[:active_place]
-      @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+    if params[:params].present?
+      session[:character]  = params[:params] 
+      @character = session[:character]
+      @county = session[:county]
+      get_user_info_from_userid
+      @active = session[:active_place]
+      if session[:active_place]
+        @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+      else
+        @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.all.order_by(place_name: 1)
+      end
     else
-      @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.all.order_by(place_name: 1)
+      flash[:notice] = 'You did not make a range selection'
+       redirect_to :action => 'select_action'
+      return
     end
   end
 
