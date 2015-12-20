@@ -42,7 +42,6 @@ crumb :my_own_files do
 end
 
 crumb :files  do |file|
-  p 
   if session[:my_own].present?
     link "Your Batches", my_own_freereg1_csv_file_path
     parent :root
