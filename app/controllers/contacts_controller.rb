@@ -22,8 +22,7 @@ class ContactsController < InheritedResources::Base
       end
     else
       go_back("contact",params[:id])
-    end
-    
+    end   
   end
 
   def list_by_name
@@ -99,18 +98,27 @@ class ContactsController < InheritedResources::Base
   end
 
   def edit
-    load(params[:id]) 
-    if @contact.github_issue_url.present?
-      flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
-      redirect_to :action => 'show'
-      return
-    end  
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      if @contact.github_issue_url.present?
+        flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
+        redirect_to :action => 'show'
+        return
+      end
+    else
+      go_back("contact",params[:id])
+    end   
   end
   
   def update
-    load(params[:id])
-    @contact.update_attributes(params[:contact])
-    redirect_to :action => 'show'
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      @contact.update_attributes(params[:contact])
+      redirect_to :action => 'show'
+      return
+    else
+      go_back("contact",params[:id])
+    end  
   end
 
   def report_error
@@ -126,24 +134,33 @@ class ContactsController < InheritedResources::Base
   end
 
   def delete
-    Contact.find(params[:id]).destroy
-    flash.notice = "Contact destroyed"
-    redirect_to :action => 'index'
+   @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      @contact.destroy
+      flash.notice = "Contact destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("contact",params[:id])
+    end      
   end
 
   def convert_to_issue
-    @contact = load(params[:id])
-    if @contact.github_issue_url.blank?
-      @contact.github_issue
-      flash.notice = "Issue created on Github."
-      redirect_to contact_path(@contact.id)
-      return
+   @contact = Contact.id(params[:id]).first
+    if @contact.present?  
+      if @contact.github_issue_url.blank?
+        @contact.github_issue
+        flash.notice = "Issue created on Github."
+        redirect_to contact_path(@contact.id)
+        return
+      else
+        flash.notice = "Issue has already been created on Github."
+        redirect_to :show
+        return
+      end 
     else
-      flash.notice = "Issue has already been created on Github."
-      redirect_to :show
-      return
-    end 
-
+      go_back("contact",params[:id])
+    end  
   end
 
   def set_session_parameters_for_record(file)
