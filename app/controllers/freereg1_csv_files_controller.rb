@@ -36,6 +36,7 @@ class Freereg1CsvFilesController < ApplicationController
         (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || @user.person_role == 'data_manager')
       @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     end
+    session[:current_page] = @freereg1_csv_files.current_page
   end
 
   def show

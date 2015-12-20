@@ -187,7 +187,8 @@ class ApplicationController < ActionController::Base
     session.delete(:show_alphabet)
     session.delete(:edit_userid)
     session.delete(:record)
-    session.delete(:select_place)
+    session.delete(:current_page)
+
    end
 
   def clean_session_for_syndicate
@@ -230,6 +231,7 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_userid)
     session.delete(:record)
     session.delete(:select_place)
+     session.delete(:current_page)
   end
 
   def go_back(type,record)

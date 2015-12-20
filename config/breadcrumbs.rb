@@ -42,6 +42,7 @@ crumb :my_own_files do
 end
 
 crumb :files  do |file|
+  p 
   if session[:my_own].present?
     link "Your Batches", my_own_freereg1_csv_file_path
     parent :root
@@ -49,7 +50,8 @@ crumb :files  do |file|
     if file.nil?
       link "List of Batches", freereg1_csv_files_path
     else
-      link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}")
+      link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}",  :page => "#{session[:current_page]}")
+
     end
     case
     when session[:county].present? &&
