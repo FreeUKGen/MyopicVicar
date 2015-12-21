@@ -136,7 +136,7 @@ class ContactsController < InheritedResources::Base
               if ent.freecen1_vld_file.present?
                 vldfname = ent.freecen1_vld_file.file_name
               end
-              @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.household_number.to_s unless  ent.household_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
+              @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.dwelling_number.to_s unless  ent.dwelling_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
             end #ent.present
           end # @contact.entry_id.present?
         end # fc_ind.present    
