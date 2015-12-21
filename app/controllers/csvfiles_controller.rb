@@ -124,7 +124,7 @@ class CsvfilesController < ApplicationController
             return
           end
           pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
-          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."    
         else
         end #case
         @csvfile.delete
