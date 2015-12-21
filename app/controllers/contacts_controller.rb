@@ -124,14 +124,24 @@ class ContactsController < InheritedResources::Base
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       rec = SearchRecord.where("id" => @contact.record_id).first
       unless rec.nil?
-        p rec
-        @contact.entry_id = 'freecen'
-        fc_ind = rec.freecen_individual_id if rec.freecen_individual_id.present?
-        fc_ind = rec.freecen_individual._id unless rec.freecen_individual.nil?
-        @contact.fc_individual_id = fc_ind.to_s unless fc_ind.nil?
+        ind_id = rec.freecen_individual_id if rec.freecen_individual_id.present?
+        @contact.fc_individual_id = ind_id.to_s unless ind_id.nil?
         @contact.county = rec.chapman_code
-      end
-    end
+        fc_ind = FreecenIndividual.where("id" => ind_id).first if ind_id.present?
+        if fc_ind.present?
+          @contact.entry_id = fc_ind.freecen1_vld_entry_id.to_s unless fc_ind.freecen1_vld_entry_id.nil?
+          if @contact.entry_id.present?
+            ent = Freecen1VldEntry.where("id" => @contact.entry_id).first
+            if ent.present?
+              if ent.freecen1_vld_file.present?
+                vldfname = ent.freecen1_vld_file.file_name
+              end
+              @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.household_number.to_s unless  ent.household_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
+            end #ent.present
+          end # @contact.entry_id.present?
+        end # fc_ind.present    
+      end # unless rec.nil?
+    end # elsif freecen
   end
 
   def delete
