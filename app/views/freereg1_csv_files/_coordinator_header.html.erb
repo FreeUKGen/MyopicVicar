@@ -4,3 +4,8 @@
 <% elsif session[:county].present? %>
   <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
 <% end%>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>

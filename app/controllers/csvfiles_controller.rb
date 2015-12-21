@@ -61,21 +61,27 @@ class CsvfilesController < ApplicationController
 
   def edit
     #code to move existing file to attic
-    get_user_info_from_userid
-    @file = Freereg1CsvFile.find(params[:id])
-    @person = @file.userid
-    @file_name = @file.file_name
-    #there can be multiple batches only one of which might be locked
-    Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
-      if file.locked_by_transcriber ||  file.locked_by_coordinator
-        flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
-        redirect_to :back
-        return
+    @file = Freereg1CsvFile.id(params[:id]).first
+    if @file.present?
+      get_user_info_from_userid
+      @person = @file.userid
+      @file_name = @file.file_name
+      #there can be multiple batches only one of which might be locked
+      Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
+        if file.locked_by_transcriber ||  file.locked_by_coordinator
+          flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
+          redirect_to :back
+          return
+        end
       end
+      @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
+      session[:file_name] =  @file_name
+      get_userids_and_transcribers
+    else
+      flash[:notice] = "There was no file to replace"
+      redirect_to :back
+      return
     end
-    @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
-    session[:file_name] =  @file_name
-    get_userids_and_transcribers
   end
 
   def update

@@ -1,10 +1,10 @@
-<%= render 'my_own_header' if session[:my_own]%>
-<%= render 'coordinator_header' unless session[:my_own]%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
   </div>
 <% end %>
+<%= render 'my_own_header' if session[:my_own]%>
+<%= render 'coordinator_header' unless session[:my_own]%>
 <% unless @freereg1_csv_files.nil? || @freereg1_csv_files.length == 0%>
 <%= paginate @freereg1_csv_files %>
   <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>

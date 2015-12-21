@@ -29,6 +29,11 @@ class Freereg1CsvEntriesController < ApplicationController
       display_info
       session[:error_id] = params[:id]
       set_up_error_display
+      if @freereg1_csv_file.nil?
+        flash[:notice] = "The error appears to have become disconnected from it file. Contact system administration"
+        redirect_to :action => 'show'
+        return
+      end
     else
       go_back("error",params[:id])
     end

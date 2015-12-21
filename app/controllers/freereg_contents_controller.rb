@@ -69,17 +69,29 @@ class FreeregContentsController < ApplicationController
     end
   end
   def show
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    @character = session[:character] 
-    if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
-      @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
-      @page = FreeregContent.get_header_information(session[:chapman_code])
-      @coordinator = County.coordinator_name(session[:chapman_code])
-      @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+    if params[:id].present?
+      @county = session[:county]
+      @chapman_code = session[:chapman_code]
+      @character = session[:character] 
+      if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
+        @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
+        @page = FreeregContent.get_header_information(session[:chapman_code])
+        @coordinator = County.coordinator_name(session[:chapman_code])
+        @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+        if @place.blank?
+          flash[:notice] = "You appear to have selected an invalid place"
+          redirect_to :action => :new
+          return
+        end
+      else
+        flash[:notice] = "You have not selected a county"
+        redirect_to :action => :new
+        return
+      end
     else
-      flash[:notice] = "You have not selected a county"
+      flash[:notice] = "You do not appear to have selected a place"
       redirect_to :action => :new
+      return
     end
   end
   

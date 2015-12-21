@@ -188,12 +188,12 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
   get 'freereg1_csv_files/my_own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
   get 'freereg1_csv_files/:id/by_userid',  :to => 'freereg1_csv_files#by_userid', :as => :by_userid_freereg1_csv_file
-  get 'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_error_files', constraints: ErrorsNameConstraint
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files', constraints: MyFilesAlphabeticalConstraint
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_descending_uploaded_date', constraints: MyFilesDescendingUploadConstraint 
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint 
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint 
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', constraints: MyFilesWaitingConstraint 
+  get 'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_error_files', constraints: ErrorsNameConstraint, :as => :selection_freereg1_csv_file
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files', constraints: MyFilesAlphabeticalConstraint, :as => :selection_freereg1_csv_file
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_descending_uploaded_date', constraints: MyFilesDescendingUploadConstraint, :as => :selection_freereg1_csv_file 
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint, :as => :selection_freereg1_csv_file 
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint, :as => :selection_freereg1_csv_file 
+  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', constraints: MyFilesWaitingConstraint, :as => :selection_freereg1_csv_file 
     resources :freereg1_csv_files
 
   resources :emendation_types
