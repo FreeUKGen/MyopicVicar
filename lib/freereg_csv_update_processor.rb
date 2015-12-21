@@ -640,9 +640,9 @@ class FreeregCsvUpdateProcessor
                      data_record[:file_line_number] = n
                      data_record[:register_entry_number] = @csvdata[3]
                      data_record[:birth_date] = @csvdata[4]
-                     data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
                      data_record[:baptism_date] = @csvdata[5]
-                     data_record[:year] = FreeregValidations.year_extract(@csvdata[5]) if data_record[:year].nil?
+                     data_record[:year] = FreeregValidations.year_extract(@csvdata[5])
+                     data_record[:year] = FreeregValidations.year_extract(@csvdata[4]) if FreeregValidations.year_extract(@csvdata[5]).nil?
                      datestat(data_record[:year]) unless data_record[:year].nil?
                      data_record[:person_forename] = @csvdata[6]
                      data_record[:person_sex] = cleansex(@csvdata[7])
