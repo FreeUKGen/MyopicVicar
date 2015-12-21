@@ -41,6 +41,8 @@ fi
 trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
 cd ${ROOT}
+trace "Get the list of files waiting to be processed"
+sudo -u webserv bundle exec rake RAILS_ENV=production build:get_waiting_file_list --trace
 trace "write the REG_users file for the image servers"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
 trace "process the uploads"

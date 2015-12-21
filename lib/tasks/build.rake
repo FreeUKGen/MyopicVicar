@@ -502,14 +502,8 @@ namespace :build do
     db = Mongoid.sessions[:default][:database]
     hosts = Mongoid.sessions[:default][:hosts]
     host = hosts[0]
-    p "using database #{db} on host #{host}"
-    
+    p "using database #{db} on host #{host}"  
       FreeregCsvUpdateProcessor.process(args.range,args.type,args.delta)
-    if args.delta == "process"
-      delta = Rails.application.config.processing_delta
-      File.delete(delta) if File.file?(delta)
-      p "deleted processing delta"
-    end
   end
   task :get_waiting_file_list => [:environment] do 
       # base = 1 uses the change files directory and base = 2 uses the actual files directory
