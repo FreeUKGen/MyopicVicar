@@ -92,10 +92,6 @@ class PhysicalFile
     else 
       p "why here"
     end
-    processing_file = Rails.application.config.processing_delta
-    File.open(processing_file, 'a') do |f|
-    f.write("#{self.userid}/#{self.file_name}\n")
-    end
     return[success,message]
   end
   def file_delete
