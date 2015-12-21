@@ -511,6 +511,18 @@ namespace :build do
       p "deleted processing delta"
     end
   end
+  task :get_waiting_file_list => [:environment] do 
+      # base = 1 uses the change files directory and base = 2 uses the actual files directory
+    require 'get_waiting_file_list'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.sessions[:default][:database]
+    p db
+    host = Mongoid.sessions[:default][:hosts].first
+    p host 
+      GetWaitingFileList.process   
+  end
+
 
     task :delete_entries_records_for_removed_batches => [:environment] do |t,args|
       # base = 1 uses the change files directory and base = 2 uses the actual files directory
