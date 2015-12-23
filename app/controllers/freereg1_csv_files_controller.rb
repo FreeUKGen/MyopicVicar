@@ -14,29 +14,30 @@ class Freereg1CsvFilesController < ApplicationController
       @who =  @first_name
       @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when session[:syndicate].present? && session[:userid_id].blank? &&
-        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" ||
-         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || @user.person_role == 'data_manager') &&
+        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
+         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator") &&
         session[:sorted_by] == '; sorted by descending number of errors and then file name'
       userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
       @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when session[:syndicate].present? && session[:userid_id].blank? &&
-        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" ||
-         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || @user.person_role == 'data_manager')
+        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
+         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator")
       userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
       @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when session[:syndicate].present? && session[:userid_id].present? &&
-        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" ||
-         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || @user.person_role == 'data_manager')
+        (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
+         session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator")
       @freereg1_csv_files = Freereg1CsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when session[:county].present? &&
-        (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" ||
-         session[:role] == "technical" || @user.person_role == 'data_manager') && session[:sorted_by] == '; sorted by descending number of errors and then file name'
+        (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "country_coordinator" ||
+         session[:role] == "technical" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator") && session[:sorted_by] == '; sorted by descending number of errors and then file name'
       @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when session[:county].present? &&
-        (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || @user.person_role == 'data_manager')
+        (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == 'data_manager' || 
+         session[:role] == "country_coordinator" || session[:role] == "documentation_coordinator")
       @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     end
-    session[:current_page] = @freereg1_csv_files.current_page
+    session[:current_page] = @freereg1_csv_files.current_page unless @freereg1_csv_files.nil?
   end
 
   def show
