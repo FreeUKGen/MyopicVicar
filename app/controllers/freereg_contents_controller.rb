@@ -56,10 +56,10 @@ class FreeregContentsController < ApplicationController
       case proceed
        when "dual"
         flash[:notice] = "Only a place or a character can be selected not both"
-        redirect_to :back and return
+        redirect_to freereg_contents_path and return
       when "no option"
         flash[:notice] = "You must select either a place or a character"
-        redirect_to :back and return
+        redirect_to freereg_contents_path and return
       when "place"   
         redirect_to freereg_content_path(params[:freereg_content][:place]) and return
       when "character"
