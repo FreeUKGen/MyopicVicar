@@ -171,32 +171,6 @@ class CsvfilesController < ApplicationController
     end #end case
   end
 
-  def download
-    @role = session[:role]
-    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
-    if  @freereg1_csv_file.nil?
-      flash[:notice] =  "There is no batch to download."
-      redirect_to :back and return
-    end
-    errors =  @freereg1_csv_file.check_file
-    if errors[0]
-      log_messenger("BATCH_ERRORS #{errors[1]}")
-    end
-    ok_to_proceed = @freereg1_csv_file.check_batch
-    if !ok_to_proceed[0] 
-      flash[:notice] =  "There is a problem with the batch you are attempting to download; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
-      redirect_to :back and return
-    end
-    @freereg1_csv_file.backup_file
-    my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)   
-    if File.file?(my_file)
-      send_file( my_file, :filename => @freereg1_csv_file.file_name)
-      @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
-    end 
-    @freereg1_csv_file.update_attributes(:locked_by_coordinator => false,:locked_by_transcriber => false)
-    flash[:notice] =  "The file has been downloaded to your computer"
-  end
-
   def load_people(userids)
     userids.each do |ids|
        @people << ids.userid

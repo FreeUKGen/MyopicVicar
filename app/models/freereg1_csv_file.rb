@@ -614,32 +614,46 @@ class Freereg1CsvFile
 
   def lock(type)
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+    set_transciber_lock = !self.locked_by_transcriber
+    set_coordinator_lock = !self.locked_by_coordinator
     batches.each do |batch|
       if  type
-        if  batch.locked_by_transcriber
-          batch.update_attributes(:locked_by_transcriber => false)
-        else
-          batch.update_attributes(:locked_by_transcriber => true)
-
-        end
+        #transcriber is changing their lock
+          batch.update_attributes(:locked_by_transcriber => set_transciber_lock)
       else
-
-        if  batch.locked_by_coordinator
-          batch.update_attributes(:locked_by_coordinator => false)
-          batch.update_attributes(:locked_by_transcriber => false)
-
-        else
-          batch.update_attributes(:locked_by_coordinator => true)
-          batch.update_attributes(:locked_by_transcriber => false)
-        end
+        #coordinator is changing locks
+          batch.update_attributes(:locked_by_coordinator => set_coordinator_lock)
+          batch.update_attributes(:locked_by_transcriber => false) unless set_coordinator_lock
       end
     end
   end
+
+  def lock_all(type)
+    batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+    batches.each do |batch|
+      if  type
+        #transcriber is changing their lock
+          batch.update_attributes(:locked_by_transcriber => true)
+      else
+        #coordinator is changing locks
+          batch.update_attributes(:locked_by_coordinator => true)         
+      end
+    end
+  end
+
   def force_unlock
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
     batches.each do |batch|
       batch.update_attributes(:locked_by_coordinator => false)
       batch.update_attributes(:locked_by_transcriber => false)
+    end
+  end
+
+  def check_locking_and_set(param,sess)
+    if sess[:my_own]
+      self.update_attributes(:locked_by_transcriber => true)
+    else
+      self.update_attributes(:locked_by_coordinator => true)
     end
   end
 
@@ -664,13 +678,7 @@ class Freereg1CsvFile
     old_place_id = Church.find(church_id).place_id
   end
 
-  def check_locking_and_set(param,sess)
-    if sess[:my_own]
-      self.update_attributes(:locked_by_transcriber => true)
-    else
-      self.update_attributes(:locked_by_coordinator => true)
-    end
-  end
+  
   def self.change_userid(id,old_userid, new_userid)
     success = true
     @message = ""

@@ -194,7 +194,8 @@ MyopicVicar::Application.routes.draw do
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint, :as => :selection_freereg1_csv_file 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint, :as => :selection_freereg1_csv_file 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', constraints: MyFilesWaitingConstraint, :as => :selection_freereg1_csv_file 
-    resources :freereg1_csv_files
+  get  'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
+  resources :freereg1_csv_files
 
   resources :emendation_types
 
