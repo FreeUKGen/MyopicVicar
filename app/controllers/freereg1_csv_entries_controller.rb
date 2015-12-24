@@ -73,12 +73,12 @@ class Freereg1CsvEntriesController < ApplicationController
       flash[:notice] = 'The creation of the record was unsuccessful'
       display_info
       render :action => 'error'
+      return
     else
       @freereg1_csv_entry.transform_search_record
       @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
-      @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
-      @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
+      @freereg1_csv_file.lock_all(session[:my_own])
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
 
       if session[:error_id].nil?
@@ -147,7 +147,7 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_file.save
         @freereg1_csv_file.calculate_distribution
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
-        render :action => 'show'
+        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry) 
       end
     else
       go_back("entry",params[:id])
