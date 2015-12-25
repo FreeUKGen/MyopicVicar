@@ -74,19 +74,7 @@ class SearchQuery
   def search
     search_index = SearchRecord.index_hint(search_params)
     records = SearchRecord.collection.find(search_params).hint(search_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-
-    search_record_array = Array.new
-    n = 0
-    records.each do |rec|
-      n = n + 1
-      search_record_array << rec["_id"].to_s
-      break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    end
-    self.search_result =  SearchResult.new(records: search_record_array)
-    self.result_count = search_record_array.length
-    self.runtime = (Time.now.utc - self.updated_at) * 1000
-    self.search_index = search_index
-    self.save
+    self.persist_results(records,search_index)
   end
 
   def fetch_records
@@ -100,7 +88,7 @@ class SearchQuery
     @search_results    
   end
 
-  def persist_results(results)
+  def persist_results(results,index)
     # finally extract the records IDs and persist them
     records = Array.new
     results.each do |rec|
@@ -108,8 +96,9 @@ class SearchQuery
     end
     self.search_result =  SearchResult.new(records: records)
     self.result_count = records.length
-    self.save
-        
+    self.runtime = (Time.now.utc - self.updated_at) * 1000
+    self.search_index = index
+    self.save      
   end
 
   def compare_name(x,y)
@@ -185,7 +174,7 @@ class SearchQuery
   def results
     records = fetch_records
     sort_results(records) unless records.nil?
-    persist_results(records) unless records.nil? 
+    #persist_results(records) unless records.nil? 
     records
   end
 

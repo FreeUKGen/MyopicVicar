@@ -16,7 +16,7 @@ class SearchRecordsController < ApplicationController
     end
     @entry = @search_record.freereg1_csv_entry
     begin
-      @search_query = SearchQuery.find(params[:search_id])
+      @search_query = SearchQuery.find(params[:search_id])    
       @previous_record = @search_query.previous_record(params[:id])
       @next_record = @search_query.next_record(params[:id])
     rescue Mongoid::Errors::DocumentNotFound
@@ -26,7 +26,11 @@ class SearchRecordsController < ApplicationController
     end
     @entry.display_fields
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
-    session[:viewed] << params[:id] unless  session[:viewed].length >= 10
+    @search_result = @search_query.search_result
+    @viewed_records = @search_result.viewed_records
+    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+    @search_result.update_attribute(:viewed_records, @viewed_records)
+    #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end
 
   def show_print_version
@@ -53,6 +57,4 @@ class SearchRecordsController < ApplicationController
   def viewed
     session[:viewed] ||= []
   end
-
-
 end
