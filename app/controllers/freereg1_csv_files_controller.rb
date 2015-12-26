@@ -170,19 +170,10 @@ class Freereg1CsvFilesController < ApplicationController
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
       unless session[:error_line].nil?
+        flash[:notice] = "Header and Place name errors can only be corrected by correcting the file and either replacing or uploading a new file"
         #we are dealing with the edit of errors
-        @error_message = Array.new
-        @content = Array.new
-        session[:error_id] = Array.new
-        #this need clean up
-        @n = 0
-        @freereg1_csv_file.batch_errors.where(:freereg1_csv_file_id => params[:id], :error_type => 'Header_Error' ).all.each do |error|
-          @error_message[@n] = error.error_message
-          @content[@n] = error.data_line
-          session[:error_id][@n] = error
-          @n = @n + 1
-          session[:header_errors] = @n
-        end
+        redirect_to :action => 'show'
+        return
       end
       #we are correcting the header
       #session role is used to control return navigation options
@@ -226,7 +217,8 @@ class Freereg1CsvFilesController < ApplicationController
             #lets remove the header errors
             @freereg1_csv_file.error =  @freereg1_csv_file.error - session[:header_errors]
             session[:error_id].each do |id|
-              @freereg1_csv_file.batch_errors.delete( id)
+              error = BatchError.id(id).first
+              @freereg1_csv_file.batch_errors.delete( error)
             end
             @freereg1_csv_file.save
             #clean out the session variables
