@@ -18,7 +18,7 @@
     <section class="island ">
       <h5 style="text-align: center">The Register has the following Batches   
       <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
-      <%= link_to("#{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+      <%= link_to("#{file_name.userid} (#{file_name.file_name} (#{file_name.datemin}-#{file_name.datemax}) )",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
       <% end %></h5>
       <div class="grid__item ">
         <table   class="table--bordered  table--data">
