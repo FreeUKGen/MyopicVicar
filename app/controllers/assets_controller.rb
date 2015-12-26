@@ -13,4 +13,12 @@
 # limitations under the License.
 # 
 class AssetsController < ApplicationController
+  def show
+    flash[:notice] = "There are no assets for #{params[:id]}"
+    redirect_to main_app.new_manage_resource_path
+  end
+   def index
+    flash[:notice] = "There are no assets for #{params[:id]}"
+    redirect_to main_app.new_manage_resource_path
+  end
 end
