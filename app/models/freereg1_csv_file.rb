@@ -131,6 +131,9 @@ class Freereg1CsvFile
     def county(name)
       where(:county => name)
     end
+    def record_type(name)
+      where(:record_type => name)
+    end
     def userid(name)
       where(:userid => name)
     end

@@ -16,10 +16,23 @@
 <% else%>
   <div class="grid">
     <section class="island ">
-      <h5 style="text-align: center">The Register has the following Batches   
-      <% @register.freereg1_csv_files.order_by(file_name: 1).each do |file_name| %>
-      <%= link_to("#{file_name.userid} (#{file_name.file_name} (#{file_name.datemin}-#{file_name.datemax}) )",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
-      <% end %></h5>
+      <h5 style="text-align: center">The Register has the following Batches:<br>
+      <% if @register.freereg1_csv_files.record_type("ba").count >= 1%> Baptisms:<br>
+          <% @register.freereg1_csv_files.record_type("ba").order_by(record_type: 1,datemin: 1).each do |file_name| %>  
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+          <% end %>
+      <% end %><br>
+      <% if @register.freereg1_csv_files.record_type("bu").count >= 1%>Burials:<br>
+          <% @register.freereg1_csv_files.record_type("bu").order_by(record_type: 1,datemin: 1).each do |file_name| %>     
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+          <% end %>
+      <% end %><br>
+      <% if @register.freereg1_csv_files.record_type("ma").count >= 1%>Marriages:<br>
+        <% @register.freereg1_csv_files.record_type("ma").order_by(record_type: 1,datemin: 1).each do |file_name| %>
+           <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+        <% end %>
+      <% end %>
+      </h5>
       <div class="grid__item ">
         <table   class="table--bordered  table--data">
           <colgroup >
