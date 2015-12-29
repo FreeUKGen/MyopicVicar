@@ -146,15 +146,12 @@
     
 		<%= f.action :submit,
 			:as => :button,
-			:label => 'Search ',
-			:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff"},
-			:wrapper_html => { :class => "grid__item  one-quarter text--center " }  %><br> Your search is working while the wheel spins after clicking on the Search button. Please wait for it to complete. 
+			:label => 'Search',
+			:button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
+			:wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
 	  <% end %>
 	<% end %>
 </section>
-<script type="text/javascript">
-      Ladda.bind( 'button[type=submit]' );
-</script>
 
 <script type="text/javascript" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
