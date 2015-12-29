@@ -36,8 +36,9 @@ class FreeregContentsController < ApplicationController
   end
 
   def create
-    case params[:commit]
-    when "Select"
+    p params
+    case 
+    when params[:commit] == "Select"
       @freereg_content = FreeregContent.new(params[:freereg_content])
       @chapman_code = params[:freereg_content][:chapman_codes][1]
       session[:chapman_code] = @chapman_code
@@ -51,7 +52,7 @@ class FreeregContentsController < ApplicationController
         @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
         render :new
       end
-    when "Select One Option"
+    when params[:action] == "create"
       proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
       case proceed
        when "dual"
