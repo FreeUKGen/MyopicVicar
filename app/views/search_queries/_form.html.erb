@@ -146,9 +146,10 @@
     
 		<%= f.action :submit,
 			:as => :button,
-			:label => 'Search',
-			:button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
-			:wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+
+			:label => 'Search ',
+			:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff"},
+			:wrapper_html => { :class => "grid__item  one-quarter text--center " }  %><br> Please do not restart the search once it is working as this will actually slow the process.
 	  <% end %>
 	<% end %>
 </section>
