@@ -36,8 +36,9 @@ class FreeregContentsController < ApplicationController
   end
 
   def create
-    case params[:commit]
-    when "Select"
+
+    case 
+    when params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
       @freereg_content = FreeregContent.new(params[:freereg_content])
       @chapman_code = params[:freereg_content][:chapman_codes][1]
       session[:chapman_code] = @chapman_code
