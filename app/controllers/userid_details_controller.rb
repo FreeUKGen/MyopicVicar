@@ -83,7 +83,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def role
-    p params
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = " lower case userid"

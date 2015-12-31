@@ -121,7 +121,6 @@ class FreeregContent
     transcriber[0]= files["ba"]["transcriber_name"].join(', ').to_s  if files["ba"].present?
     transcriber[1]= files["ma"]["transcriber_name"].join(', ').to_s  if files["ma"].present?          
     transcriber[2]= files["bu"]["transcriber_name"].join(', ').to_s  if files["bu"].present?
-    p transcriber
     transcriber
   end
 end

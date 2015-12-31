@@ -36,7 +36,6 @@ class FreeregContentsController < ApplicationController
   end
 
   def create
-
     case 
     when params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
       @freereg_content = FreeregContent.new(params[:freereg_content])
@@ -52,7 +51,7 @@ class FreeregContentsController < ApplicationController
         @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
         render :new
       end
-    when "Select One Option"
+    when params[:action] == "create"
       proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
       case proceed
        when "dual"
@@ -104,7 +103,6 @@ class FreeregContentsController < ApplicationController
     @coordinator = County.coordinator_name(@chapman_code)
     @page = FreeregContent.get_header_information(session[:chapman_code])
     @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
-    p @places
     @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
     render  '_show_body'
     return

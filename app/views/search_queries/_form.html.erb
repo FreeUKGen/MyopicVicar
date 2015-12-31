@@ -153,7 +153,9 @@
 	  <% end %>
 	<% end %>
 </section>
-
+<script type="text/javascript">
+      Ladda.bind( 'button[type=submit]' );
+</script>
 <script type="text/javascript" >
 	<% if @search_query && @search_query.chapman_codes.size > 0 %>
 		var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;

@@ -190,7 +190,6 @@ class Contact
       logger.info("APP: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
-      p self
     else
       logger.error("Tried to create an issue, but Github integration is not enabled!")
     end

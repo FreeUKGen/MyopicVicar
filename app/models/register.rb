@@ -133,7 +133,6 @@ class Register
     register_type = RegisterType.display_name(self.register_type)
     location_names << "#{place_name} (#{church_name})"
     location_names  << " [#{register_type}]"
-    p location_names
     self.freereg1_csv_files.no_timeout.each do |file|
       file.freereg1_csv_entries.no_timeout.each do |entry|
         if entry.search_record.nil?
@@ -146,8 +145,6 @@ class Register
   end
 
   def change_type(type)
-    p "register"
-    p type
     unless self.register_type == type
       self.update_attributes(:register_type => type, :alternate_register_name =>  self.church.church_name.to_s + " " + type.to_s )
     end
