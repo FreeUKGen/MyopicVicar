@@ -142,25 +142,25 @@ class SearchQueriesController < ApplicationController
     if params[:id].present?
       @search_query = SearchQuery.where(:id => params[:id]).first
     else
-      logger.warn("SEARCH_ERROR:nil parameter condition occurred")
+      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
       go_back
       return
     end
     if @search_query.present?
       @search_results =   @search_query.results
     else
-      logger.warn("SEARCH_ERROR:search query no longer present")
+      logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
       go_back
       return
     end
     if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("SEARCH_ERROR:search results no longer present")
+      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
       go_back
       return
     end
   end
   def go_back
-    flash[:notice] = "We found it impossible to complete your search as submitted, please rephrase"
+    flash[:notice] = "We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page"
     redirect_to new_search_query_path
     return
   end

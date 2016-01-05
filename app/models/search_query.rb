@@ -75,13 +75,19 @@ class SearchQuery
     search_index = SearchRecord.index_hint(search_params)
     records = SearchRecord.collection.find(search_params).hint(search_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records,search_index)
+    records
   end
 
   def fetch_records
     return @search_results if @search_results
     if self.search_result.present?
       records = self.search_result.records
-      @search_results = SearchRecord.find(records)
+      begin
+        @search_results = SearchRecord.find(records)
+      rescue Mongoid::Errors::DocumentNotFound
+        logger.warn("FREEREG:SEARCH_ERROR:search record in search results went missing")
+        @search_results = nil
+      end
     else
       @search_results = nil
     end
@@ -98,7 +104,7 @@ class SearchQuery
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.search_index = index
-    self.save      
+    self.save  
   end
 
   def compare_name(x,y)

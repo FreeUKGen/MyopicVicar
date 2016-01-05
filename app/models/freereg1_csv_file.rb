@@ -538,17 +538,17 @@ class Freereg1CsvFile
     self.update_number_of_files
     register = self.register
     if register.nil?
-      logger.warn("#{self.id} does not belong to a register ")
+      logger.warn("FREEREG:#{self.id} does not belong to a register ")
       return
     else
       church = register.church
       if church.nil?
-        logger.warn( "#{register.id} does not belong to a church ")
+        logger.warn( "FREEREG:#{register.id} does not belong to a church ")
         return
       else
         place = church.place
         if place.nil?
-          logger.warn( "#{church.id} does not belong to a place ")
+          logger.warn( "FREEREG:#{church.id} does not belong to a place ")
           return
         else
           Place.recalculate_last_amended_date(place)

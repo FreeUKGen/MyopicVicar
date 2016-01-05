@@ -107,7 +107,7 @@ class CsvfilesController < ApplicationController
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
           if batch.nil?
             flash[:notice] = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
-            logger.warn("CSV_FAILURE: No file for #{session[:userid]}")
+            logger.warn("FREEREG:CSV_FAILURE: No file for #{session[:userid]}")
             @csvfile.delete
             redirect_to action: :new
             return
@@ -118,7 +118,7 @@ class CsvfilesController < ApplicationController
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
           if batch.present?
             flash[:notice] = "Your file is currently waiting to be processed. It cannot be processed this way now"
-            logger.warn("CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
+            logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
             @csvfile.delete
             redirect_to action: :new
             return
