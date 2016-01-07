@@ -35,6 +35,7 @@ module ChapmanCode
       hash.delete("'Out of County'")
       hash.delete("'Overseas British'")
       hash.delete("'Overseas Foreign'")
+      hash.delete("'Scottish Shipping'")
     end
     
     hash
@@ -225,7 +226,8 @@ module ChapmanCode
        'England and Wales Shipping' => 'EWS',
        'Out of County' => 'OUC',
        'Overseas British' => 'OVB',
-       'Overseas Foreign' => 'OVF'}
+       'Overseas Foreign' => 'OVF',
+       'Scottish Shipping' => 'SCS'}
   }
 
   private
