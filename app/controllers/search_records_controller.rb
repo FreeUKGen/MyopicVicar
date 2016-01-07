@@ -29,7 +29,7 @@ class SearchRecordsController < ApplicationController
         @dwelling_number = @dwelling.dwelling_number
       end
       @cen_year = @dwelling.freecen1_vld_file.full_year
-      @cen_piece = @dwelling.freecen1_vld_file.piece
+      @cen_piece = @dwelling.freecen1_vld_file.piece.to_s
       @cen_chapman_code = @dwelling.freecen1_vld_file.chapman_code
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]
@@ -77,7 +77,7 @@ class SearchRecordsController < ApplicationController
         @dwelling_number = @dwelling.dwelling_number
       end
       @cen_year = @dwelling.freecen1_vld_file.full_year
-      @cen_piece = @dwelling.freecen1_vld_file.piece
+      @cen_piece = @dwelling.freecen1_vld_file.piece.to_s
       @cen_chapman_code = @dwelling.freecen1_vld_file.chapman_code
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]

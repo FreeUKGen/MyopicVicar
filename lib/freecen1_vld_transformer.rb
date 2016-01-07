@@ -49,14 +49,25 @@ module Freecen
     
     def check_and_get_place(dwelling, chapman_code)
       chapman_code = dwelling.freecen1_vld_file.chapman_code
-      place_name = dwelling.civil_parish
-      place = Place.where(:chapman_code => chapman_code, :place_name => dwelling.civil_parish).first
+      if false # this block disabled (uses civil_parish as place)
+        place_name = dwelling.civil_parish
+        place = Place.where(:chapman_code => chapman_code, :place_name => dwelling.civil_parish).first
       
-      if nil == place
-        place = Place.create!(:chapman_code => chapman_code, :place_name => dwelling.civil_parish, :latitude => 50, :longitude => 0)
+        if nil == place
+          place = Place.create!(:chapman_code => chapman_code, :place_name => dwelling.civil_parish, :latitude => 50, :longitude => 0)
+        end
+        return place
+      else # use DAT file places as before
+        piece_number = dwelling.freecen1_vld_file.piece
+        chapman_code = dwelling.freecen1_vld_file.chapman_code
+
+        piece = FreecenPiece.where(:chapman_code => chapman_code, :piece_number => piece_number).first
+        
+        unless piece
+          raise "No FreecenPiece found for chapman code #{chapman_code} and piece number #{piece_number}. year=#{dwelling.freecen1_vld_file.full_year} dir=#{dwelling.freecen1_vld_file.dir_name} file=#{dwelling.freecen1_vld_file.file_name}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county.\n"
+        end
+        return piece.place
       end
-            
-      place
     end
   end
 end

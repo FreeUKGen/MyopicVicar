@@ -22,7 +22,7 @@ namespace :freecen do
   desc "Process legacy FreeCEN1 VLD files"
   task :process_freecen1_vld, [:filename] => [:environment] do |t, args| 
     if Dir.exist? args.filename
-      Dir.glob(File.join(args.filename, '*.[Vv][Ll][Dd]')).each do |filename|
+      Dir.glob(File.join(args.filename, '*.[Vv][Ll][Dd]')).sort_by{|f| f.downcase}.each do |filename|
         process_file(filename)  
       end
     else

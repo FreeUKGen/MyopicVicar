@@ -76,7 +76,7 @@ module Freecen
       centype = filename[0,2]
           # if (uc($centype) eq "HO") {
       centype.upcase!
-      if "HO" == centype
+      if "HO" == centype #HO = England & Wales, 1841 & 1851
             
               # #process EW 1841-1851
               # $year = 1 if (substr($file,2,1) == 4 ||substr($file,2,1) == 1); 
@@ -93,7 +93,7 @@ module Freecen
         series = "ENW"
         
           # } elsif (uc($centype) eq "HS") {
-      elsif "HS" == centype
+      elsif "HS" == centype #HS = Scotland, 1841 & 1851
         
               # #process SC 1841-1851
               # $year = 1 if substr($file,2,1) == 4;
@@ -108,7 +108,7 @@ module Freecen
         sctpar = filename[3,2] # what is this used for?
         series = "SCT"
           # } elsif (uc($centype) eq "RG") {
-      elsif "RG" == centype
+      elsif "RG" == centype #RG = England & Wales, 1861 onwards
         
               # #process EW 1861-1891
         year_stub = filename[2,2]
@@ -129,7 +129,7 @@ module Freecen
               # $piece = substr($file,4,4);
         piece = filename[4,4]
           # } elsif (uc($centype) eq "RS") {
-      elsif "RS" == centype
+      elsif "RS" == centype #RS = Scotland, 1861 onwards
               # #process SC 1861-1891
         year_stub = filename[2,1]
               # $year = 3 if substr($file,2,1) == 6;
@@ -169,7 +169,7 @@ module Freecen
           
       full_year = year*10 + 1831
       
-      {:full_year => full_year, :raw_year => year, :piece => piece, :series => series, :census_type => centype }
+      {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype }
     end
     
     VLD_RECORD_LENGTH = 299
