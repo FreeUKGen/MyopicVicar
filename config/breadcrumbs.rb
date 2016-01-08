@@ -153,7 +153,7 @@ crumb :county_options do |county|
   parent :root
 end
 crumb :place_range_options do |county,active|
-  if session[:active]
+  if session[:active_place]
     link "Range Selection", selection_manage_counties_path(:option =>'Work with Active Places')  
   else
      link "Range Selection", selection_manage_counties_path(:option =>'Work with All Places') 
