@@ -120,7 +120,7 @@ module UseridRole
     'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
   }
   PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no Files','Processed but no File in FR1','Processed but no File in FR2','Browse Files' ,
-                             'Waiting to be processed','Files for Specific Userid' ]
+                             'Waiting to be processed','Files for Specific Userid']
 
   PHYSICAL_FILES_OPTIONS_TRANSLATION ={
     'Browse Files' => "/physical_files/all_files",
@@ -129,7 +129,7 @@ module UseridRole
     'Processed but no File in FR1' => '/physical_files/processed_but_no_file_in_fr1',
     'Processed but no Files' => '/physical_files/processed_but_no_files',
     'Waiting to be processed' => '/physical_files/waiting_to_be_processed',
-    'Files for Specific Userid' => '/physical_files/files_for_specific_userid',
+    'Files for Specific Userid' => '/physical_files/files_for_specific_userid'
   }
 
 

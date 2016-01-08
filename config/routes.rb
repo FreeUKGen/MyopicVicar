@@ -19,7 +19,7 @@ MyopicVicar::Application.routes.draw do
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
-  
+  get 'physical_files/files_for_county', :to =>'physical_files#files_for_county', :as => :files_for_county_physical_files
   get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
   get 'physical_files/processed_but_no_files', :to =>'physical_files#processed_but_no_files', :as => :processed_but_no_files_physical_files
   get 'physical_files/processed_but_no_file_in_fr1', :to =>'physical_files#processed_but_no_file_in_fr1', :as => :processed_but_no_file_in_fr1_physical_files
@@ -30,6 +30,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/:id/reprocess(.:format)',  :to => 'physical_files#reprocess', :as => :reprocess_physical_file
   get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
+  get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
   resources :physical_files
 
   resources :search_statistics

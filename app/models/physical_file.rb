@@ -14,8 +14,7 @@ class PhysicalFile
  field :waiting_to_be_processed, type: Boolean, default: false
  field :waiting_date, type: DateTime
  attr_accessor :type
-
- 
+ attr_accessor :county
  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, base: 1, base_uploaded_date: 1})
  index ({ userid: 1, file_name: 1, file_processed: 1, file_processed_date: 1})
@@ -69,7 +68,8 @@ class PhysicalFile
       batch.update_attributes(:file_processed => true) if batch.present?  
      end
   end
-  
+
+
   def add_file(batch)
     success = true
     case 

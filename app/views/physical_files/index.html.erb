@@ -12,11 +12,13 @@
 			<tr >
 				<th>Userid</th>
 				<th >File Name</th>
+        <th >Syndicate</th>
 				<th >loaded into FR2</th>
 				<th> Copied from FR1 </th>
 				<th >Last Processed into Database</th>
         <th >Waiting Date</th>
-				<th >Process file</th>
+        <th >Process file</th>
+        <th >Download</th>
 				<th >Delete File and Entries</th>
 			</tr>
 			<% if @batches.nil? %>
@@ -30,12 +32,15 @@
 				<% else %>
 				<td > <%= batch.file_name  %>  </td>
 				<% end %>
+        <td > <%= syndicate(batch)%>  </td>
 				<td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base && !batch.base_uploaded_date.nil? %>  </td>
 				<td > <%= batch.change_uploaded_date.strftime("%d %b %Y") if batch.change && !batch.change_uploaded_date.nil? %>  </td>
 				<td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed && !batch.file_processed_date.nil?%>  </td>
         <td > <%= batch.waiting_date.strftime("%d %b %Y") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
 				<td><%= link_to 'FR1', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "change"})  ,method: :get  %>
 				<%= link_to 'FR2', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+        <td><%= link_to 'FR1', download_physical_file_path(batch,   :params=> {:loc => "FR1"})  ,method: :get  %>
+        <%= link_to 'FR2', download_physical_file_path(batch,   :params=> {:loc => "FR2"})  ,method: :get  %></td>
 				<td><%= link_to 'Delete', physical_file_path(batch), data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
 				<% end %>
 				<% end %>
