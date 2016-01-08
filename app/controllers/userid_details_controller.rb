@@ -352,13 +352,13 @@ class UseridDetailsController < ApplicationController
     when  params[:commit] == "Submit"
       @user = UseridDetail.where(userid:  session[:userid]).first
       render :action => 'new' and return
-    when session[:type] == 'researcher_registration'
+    when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
-    when session[:type] == 'transcriber_registration'
+    when params[:commit] == 'Register Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       render :action => 'transcriber_registration' and return
-    when session[:type] == 'technical_registration'
+    when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
       @user = UseridDetail.where(userid:  session[:userid]).first
