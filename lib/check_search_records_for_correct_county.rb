@@ -15,9 +15,12 @@ class CheckSearchRecordsForCorrectCounty
     file_number = 0
     incorrect_files = 0
     incorrect_records = 0
+    files = Freereg1CsvFile.count
+    p files
     Freereg1CsvFile.no_timeout.each do |my_file|
       file_number = file_number + 1
       break if file_number == limit
+      break if file_number == files
       file_ok = my_file.check_county
       if !file_ok[0]
         incorrect_files = incorrect_files + 1
@@ -32,5 +35,8 @@ class CheckSearchRecordsForCorrectCounty
       end
     end
     puts "checked #{file_number} files there were #{incorrect_files} incorrect files and #{incorrect_records} incorrect search records"
+    message_file.close 
+    return
   end
+
 end
