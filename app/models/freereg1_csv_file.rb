@@ -442,6 +442,8 @@ class Freereg1CsvFile
     end
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].blank?
+    update_county = true
+    update_county = false if  param[:county] == old_location[:place].chapman_code
     new_location = file.new_location(param)
     file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
                            :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
@@ -468,7 +470,8 @@ class Freereg1CsvFile
         logger.info "search record missing for entry #{entry._id}"
       else
         record = entry.search_record
-        record.update_attribute(:location_names, location_names)
+        record.update_attributes(:location_names => location_names, :chapman_code => new_location[:county])
+        
         if record.place_id != new_location[:place]._id
           record.update_attribute(:place_id, new_location[:place]._id)
         end
@@ -506,7 +509,7 @@ class Freereg1CsvFile
     new_church.save
     new_place.churches << new_church unless new_place._id == new_church.place_id
     new_place.save
-    location = {:register => new_register, :church => new_church, :place => new_place}
+    location = {:register => new_register, :church => new_church, :place => new_place, :county =>param[:county]}
   end
 
   def date_change(transcription_date,modification_date)
@@ -937,5 +940,76 @@ class Freereg1CsvFile
         f.write("#{self.id},#{self.userid},#{self.file_name}\n")
       end    
     end
+    def check_county
+      p "file check"
+      p self.file_name
+      check = false
+      register = self.register
+      return check if register.nil?
+      church = register.church 
+      return check if church.nil?
+      place = church.place 
+      return check if place.nil?
+      if place.place_name != self.place
+        p place.place_name
+        p self.place
+      end
+      if church.church_name != self.church_name
+        p church.church_name
+        p self.church_name
+      end
+      if register.register_type != self.register_type
+        p register.register_type
+        p self.register_type
+      end
+      if place.chapman_code != self.county
+        p place.chapman_code
+        p self.county
+      end
+
+      check = true if place.place_name == self.place && church.church_name == self.church_name && 
+        register.register_type == self.register_type && place.chapman_code == self.county
+      check
+    end
+    def check_search_record_location_and_county
+    p "search_record check"
+    p self.file_name
+    check = false
+    entry = self.freereg1_csv_entries.first
+    p entry
+    return check if entry.nil?
+    record = entry.search_record
+    p record
+    return check if record.nil?
+    register = self.register
+    return check if register.nil?
+    church = register.church
+    return check if church.nil?
+    place = church.place
+    return check if place.nil?
+    location = record.location_names
+    chapman = record.chapman_code
+    register_type = " [#{RegisterType.display_name(entry[:register_type])}]"
+    record_location_names = "#{place.place_name} (#{church.church_name})"
+    p "something to check"
+    if register_type.strip != location[1].strip
+      p register_type
+      p location[1]
+    end 
+
+    if record_location_names != location[0]
+      p record_location_names
+      p location[0]
+    end 
+
+    if place.chapman_code != chapman
+      p place.chapman_code
+      p chapman
+    end
+
+   
+    check = true if register_type == location[1] && record_location_names == location[0] && place.chapman_code == chapman
+    check
+  end
 
   end
