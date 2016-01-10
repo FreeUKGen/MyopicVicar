@@ -361,6 +361,6 @@ class SearchRecord
 
   def self.delete_freereg1_csv_entries
     SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
-
   end
+  
 end

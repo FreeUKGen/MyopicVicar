@@ -6,6 +6,13 @@ namespace :foo do
     CheckRefineryEntries.process(args.limit,args.fix)
   end
 
+  desc "Check refinery users are complete, setting fix to fix will add it"
+  task :check_search_records_for_correct_county,[:limit,:fix] => :environment do |t, args|
+  require 'check_search_records_for_correct_county'
+    CheckSearchRecordsForCorrectCounty.process(args.limit,args.fix)
+  end
+
+
   desc "Correct the witness records"
   task :correct_witness_records,[:limit,:range] => :environment do |t, args|
   require 'correct_witness_records'
