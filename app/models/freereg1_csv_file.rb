@@ -940,76 +940,91 @@ class Freereg1CsvFile
         f.write("#{self.id},#{self.userid},#{self.file_name}\n")
       end    
     end
-    def check_county
-      p "file check"
-      p self.file_name
-      check = false
+    def check_county     
+      check = false    
       register = self.register
-      return check if register.nil?
-      church = register.church 
-      return check if church.nil?
+      if register.nil?
+        reason = "No register"
+        return [check,reason] 
+      end
+      church = register.church
+      if church.nil?
+        reason = "No church"
+        return [check,reason] 
+      end 
       place = church.place 
-      return check if place.nil?
+      if place.nil?
+        reason = "No place"
+        return [check,reason] 
+      end 
       if place.place_name != self.place
-        p place.place_name
-        p self.place
+        reason = "place name"
       end
       if church.church_name != self.church_name
-        p church.church_name
-        p self.church_name
+        reason =   reason +  ",church name"   if  reason.present? 
+        reason = "church name" if  reason.blank? 
       end
       if register.register_type != self.register_type
-        p register.register_type
-        p self.register_type
+        reason =   reason +  ", register type"   if  reason.present? 
+        reason = "register type" if  reason.blank? 
       end
       if place.chapman_code != self.county
-        p place.chapman_code
-        p self.county
+        reason = reason +  ", county" if  reason.present? 
+        reason = "county" if  reason.blank? 
       end
-
       check = true if place.place_name == self.place && church.church_name == self.church_name && 
         register.register_type == self.register_type && place.chapman_code == self.county
-      check
+      reason = ""  if place.place_name == self.place && church.church_name == self.church_name && 
+        register.register_type == self.register_type && place.chapman_code == self.county
+      return [check,reason]
     end
-    def check_search_record_location_and_county
-    p "search_record check"
-    p self.file_name
+    
+    def check_search_record_location_and_county 
     check = false
     entry = self.freereg1_csv_entries.first
-    p entry
-    return check if entry.nil?
+    if entry.nil?
+      reason = "No entries"
+      return [check,reason] 
+    end
     record = entry.search_record
-    p record
-    return check if record.nil?
+    if record.nil?
+      reason = "No search record"
+      return [check,reason] 
+    end
     register = self.register
-    return check if register.nil?
+    if register.nil?
+      reason = "No register"
+      return [check,reason] 
+    end
     church = register.church
-    return check if church.nil?
+    if church.nil?
+      reason = "No church"
+      return [check,reason] 
+    end 
     place = church.place
-    return check if place.nil?
+    if place.nil?
+      reason = "No place"
+      return [check,reason] 
+    end 
     location = record.location_names
     chapman = record.chapman_code
     register_type = " [#{RegisterType.display_name(entry[:register_type])}]"
-    record_location_names = "#{place.place_name} (#{church.church_name})"
-    p "something to check"
+    record_location_names = "#{place.place_name} (#{church.church_name})"  
+    if record_location_names != location
+      reason = "location"
+    end 
     if register_type.strip != location[1].strip
-      p register_type
-      p location[1]
+      reason =   reason +  ", register type"   if  reason.present? 
+      reason = "register type" if  reason.blank? 
     end 
-
-    if record_location_names != location[0]
-      p record_location_names
-      p location[0]
-    end 
-
     if place.chapman_code != chapman
-      p place.chapman_code
-      p chapman
-    end
+      reason = reason +  ", county" if  reason.present? 
+      reason = "county" if  reason.blank? 
+    end 
 
-   
     check = true if register_type == location[1] && record_location_names == location[0] && place.chapman_code == chapman
-    check
+    reason = "" if register_type == location[1] && record_location_names == location[0] && place.chapman_code == chapman
+    return [check,reason] 
   end
 
   end

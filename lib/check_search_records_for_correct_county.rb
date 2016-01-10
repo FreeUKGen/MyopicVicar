@@ -19,16 +19,16 @@ class CheckSearchRecordsForCorrectCounty
       file_number = file_number + 1
       break if file_number == limit
       file_ok = my_file.check_county
-      if !file_ok
+      if !file_ok[0]
         incorrect_files = incorrect_files + 1
-        message_file.puts " #{my_file.file_name},#{my_file.county},#{my_file.place},#{my_file.church_name},#{my_file.register_type}"
+        message_file.puts "File,#{my_file.userid}, #{my_file.file_name},#{my_file.county},#{my_file.place},#{my_file.church_name},#{my_file.register_type}, #{file_ok[1]}"
         #message_file.puts my_entry
       end
       record_ok = true
       record_ok = my_file.check_search_record_location_and_county 
-      if !record_ok
+      if !record_ok[0]
         incorrect_records = incorrect_records + my_file.freereg1_csv_entries.count
-        message_file.puts " #{my_file.file_name} has #{my_file.freereg1_csv_entries.count} with incorrect location"
+        message_file.puts "Record,#{my_file.userid},#{my_file.file_name},has ,#{my_file.freereg1_csv_entries.count}, #{record_ok[1]}"
       end
     end
     puts "checked #{file_number} files there were #{incorrect_files} incorrect files and #{incorrect_records} incorrect search records"
