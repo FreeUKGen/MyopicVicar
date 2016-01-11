@@ -11,7 +11,8 @@ class CheckSearchRecordsForCorrectCounty
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
     limit = limit.to_i
-    puts "checking #{limit} documents for incorrect county in the search records collection with #{fix}"
+    puts "Checking #{limit} documents for incorrect county in the search records collection with #{fix}"
+    message_file.puts "Checking #{limit} documents for incorrect county in the search records collection with #{fix}"
     file_number = 0
     incorrect_files = 0
     incorrect_records = 0
@@ -20,6 +21,7 @@ class CheckSearchRecordsForCorrectCounty
     number_processed = 0 
     files = Freereg1CsvFile.count
     p "Total files: #{files}"
+    start = Time.now
     Freereg1CsvFile.each do |my_file|
       processing = processing + 1
       number_processed = number_processed + 1
@@ -37,8 +39,12 @@ class CheckSearchRecordsForCorrectCounty
         incorrect_records = incorrect_records + my_file.freereg1_csv_entries.count
         message_file.puts "Record,#{my_file.userid},#{my_file.file_name},has ,#{my_file.freereg1_csv_entries.count}, #{record_ok[1]}"
       end
-      p number_processed  if processing == 100
-      processing = 0 if processing == 100
+      if processing == 100
+        processed_time = Time.now
+        processing_time = (processed_time - start)*1000/number_processed 
+        p  "#{number_processed} processed at a rate of #{processing_time} ms/file"
+        processing = 0 
+      end
       if fix == "fix" &&  !file_ok[0]
         if file_ok[1] == "No register" || file_ok[1] == "No church" || file_ok[1] == "No place" 
           message_file.puts "Unable to fix File,#{my_file.userid}, #{my_file.file_name}"

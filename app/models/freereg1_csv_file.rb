@@ -972,11 +972,9 @@ class Freereg1CsvFile
         reason = "#{place.chapman_code},#{self.county}," + reason if  reason.present? 
         reason = "#{place.chapman_code},#{self.county}" if  reason.blank? 
       end
-      check = true if place.place_name == self.place && church.church_name == self.church_name && 
-        register.register_type == self.register_type && place.chapman_code == self.county
-      reason = ""  if place.place_name == self.place && church.church_name == self.church_name && 
-        register.register_type == self.register_type && place.chapman_code == self.county
-         p "#{check} #{reason}" if !check
+      check = true if reason.blank? 
+      reason = ""  if reason.blank? 
+         p "#{check} #{reason} " if !check
       return [check,reason]
     end
 
@@ -1031,8 +1029,6 @@ class Freereg1CsvFile
     return [check,reason] 
   end
   def correct_file_location_fields
-    p "correcting file"
-    p self
     register = self.register
     church = register.church
     place = church.place 
@@ -1040,12 +1036,9 @@ class Freereg1CsvFile
     church_name = church.church_name 
     chapman = place.chapman_code
     self.update_attributes(:place => place_name, :church_name => church_name, :register_type => register.register_type, :county => chapman)   
-    p self
   end
 
   def correct_record_location_fields
-    p "correcting records"
-    p self
     fixed = 0
     register = self.register
     church = register.church
@@ -1057,16 +1050,13 @@ class Freereg1CsvFile
     location_names =[]
     location_names << "#{place_name} (#{church_name})"
     location_names  << " [#{register_type}]"
-    p "#{self.userid}, #{self.file_name} corrected to #{location_names} and #{chapman}, #{self.freereg1_csv_entries.count}"
     self.freereg1_csv_entries.all.no_timeout.each do |entry|
       record = entry.search_record
       entry.update_attribute(:register_type,register.register_type)
       if record.present?
        fixed = fixed + 1
-       p record if fixed == 1 
        record.update_attributes(:location_names => location_names, :chapman_code => chapman)
        record.update_attribute(:place_id, place._id) if record.place_id != place._id
-       p record if fixed == 1 
        sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)   
       else
