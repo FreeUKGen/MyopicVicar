@@ -261,7 +261,7 @@ class Place
         register.freereg1_csv_files.each do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}"
+              logger.info "FREEREG:search record missing for entry #{entry._id}"
             else
               entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
             end
@@ -287,7 +287,7 @@ class Place
         register.freereg1_csv_files do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}"
+              logger.info "FREEREG:search record missing for entry #{entry._id}"
             else
               entry.search_record.update_attribute(:chapman_code, self.chapman_code)
             end

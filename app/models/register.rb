@@ -136,7 +136,7 @@ class Register
     self.freereg1_csv_files.no_timeout.each do |file|
       file.freereg1_csv_entries.no_timeout.each do |entry|
         if entry.search_record.nil?
-          logger.info "search record missing for entry #{entry._id}"
+          logger.info "FREEREG:search record missing for entry #{entry._id}"
         else
           entry.search_record.update_attribute(:location_names, location_names)
         end

@@ -467,7 +467,7 @@ class Freereg1CsvFile
     location_names  << " [#{register_type}]"
     self.freereg1_csv_entries.each do |entry|
       if entry.search_record.nil?
-        logger.info "search record missing for entry #{entry._id}"
+        logger.info "FREEREG:search record missing for entry #{entry._id}"
       else
         record = entry.search_record
         record.update_attributes(:location_names => location_names, :chapman_code => new_location[:county])
@@ -610,10 +610,10 @@ class Freereg1CsvFile
     end
     #TODO need to recompute max, min and range
     unless added_records == 0
-      logger.info "update record count #{self.records.to_i} and #{added_records}"
+      logger.info "FREEREG:update record count #{self.records.to_i} and #{added_records}"
       records = self.records.to_i + added_records
       self.update_attributes(:records => records.to_s,:locked_by_coordinator => true )
-      logger.info "updated record count #{self.records.to_i} "
+      logger.info "FREEREG:updated record count #{self.records.to_i} "
     end
     return [false, ""]
   end
@@ -958,27 +958,28 @@ class Freereg1CsvFile
         return [check,reason] 
       end 
       if place.place_name != self.place
-        reason = "place name"
+        reason = "#{place.place_name}, #{self.place}"
       end
       if church.church_name != self.church_name
-        reason =   reason +  ",church name"   if  reason.present? 
-        reason = "church name" if  reason.blank? 
+        reason = "#{church.church_name},#{self.church_name}," + reason   if  reason.present? 
+        reason = "#{church.church_name},#{self.church_name}" if  reason.blank? 
       end
       if register.register_type != self.register_type
-        reason =   reason +  ", register type"   if  reason.present? 
-        reason = "register type" if  reason.blank? 
+        reason =   "#{register.register_type},#{self.register_type}," + reason  if  reason.present? 
+        reason = "#{register.register_type},#{self.register_type}" if  reason.blank? 
       end
       if place.chapman_code != self.county
-        reason = reason +  ", county" if  reason.present? 
-        reason = "county" if  reason.blank? 
+        reason = "#{place.chapman_code},#{self.county}," + reason if  reason.present? 
+        reason = "#{place.chapman_code},#{self.county}" if  reason.blank? 
       end
       check = true if place.place_name == self.place && church.church_name == self.church_name && 
         register.register_type == self.register_type && place.chapman_code == self.county
       reason = ""  if place.place_name == self.place && church.church_name == self.church_name && 
         register.register_type == self.register_type && place.chapman_code == self.county
+         p "#{check} #{reason}" if !check
       return [check,reason]
     end
-    
+
     def check_search_record_location_and_county 
     check = false
     entry = self.freereg1_csv_entries.first
@@ -1008,23 +1009,70 @@ class Freereg1CsvFile
     end 
     location = record.location_names
     chapman = record.chapman_code
-    register_type = " [#{RegisterType.display_name(entry[:register_type])}]"
-    record_location_names = "#{place.place_name} (#{church.church_name})"  
-    if record_location_names != location
-      reason = "location"
+    register_type = RegisterType.display_name(register.register_type)
+    record_location_names = []
+    record_location_names << "#{place.place_name} (#{church.church_name})" 
+    record_location_names << " [#{register_type}]"
+    unless record_location_names[0].strip == location[0].strip 
+      reason = "#{record_location_names[0]}, #{location[0]}"      
     end 
-    if register_type.strip != location[1].strip
-      reason =   reason +  ", register type"   if  reason.present? 
-      reason = "register type" if  reason.blank? 
+     unless record_location_names[1].strip == location[1].strip 
+      reason = "#{record_location_names[1]}, #{location[1]}," + reason if  reason.present? 
+      reason = "#{record_location_names[1]}, #{location[1]}" if  reason.blank?  
     end 
     if place.chapman_code != chapman
-      reason = reason +  ", county" if  reason.present? 
-      reason = "county" if  reason.blank? 
+      reason = "#{place.chapman_code}, #{chapman}," + reason if  reason.present? 
+      reason = "#{place.chapman_code}, #{chapman}" if  reason.blank? 
     end 
 
-    check = true if register_type == location[1] && record_location_names == location[0] && place.chapman_code == chapman
-    reason = "" if register_type == location[1] && record_location_names == location[0] && place.chapman_code == chapman
+    check = true if reason.blank? 
+    reason = "" if reason.blank? 
+    p "#{check} #{reason}" if !check
     return [check,reason] 
   end
-
+  def correct_file_location_fields
+    p "correcting file"
+    p self
+    register = self.register
+    church = register.church
+    place = church.place 
+    place_name = place.place_name
+    church_name = church.church_name 
+    chapman = place.chapman_code
+    self.update_attributes(:place => place_name, :church_name => church_name, :register_type => register.register_type, :county => chapman)   
+    p self
   end
+
+  def correct_record_location_fields
+    p "correcting records"
+    p self
+    fixed = 0
+    register = self.register
+    church = register.church
+    place = church.place 
+    place_name = place.place_name
+    church_name = church.church_name 
+    chapman = place.chapman_code
+    register_type = RegisterType.display_name(register.register_type)
+    location_names =[]
+    location_names << "#{place_name} (#{church_name})"
+    location_names  << " [#{register_type}]"
+    p "#{self.userid}, #{self.file_name} corrected to #{location_names} and #{chapman}, #{self.freereg1_csv_entries.count}"
+    self.freereg1_csv_entries.all.no_timeout.each do |entry|
+      record = entry.search_record
+      entry.update_attribute(:register_type,register.register_type)
+      if record.present?
+       fixed = fixed + 1
+       p record if fixed == 1 
+       record.update_attributes(:location_names => location_names, :chapman_code => chapman)
+       record.update_attribute(:place_id, place._id) if record.place_id != place._id
+       p record if fixed == 1 
+       sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+       sleep(sleep_time)   
+      else
+       logger.info "FREEREG:search record missing for entry #{entry._id}"  
+      end
+    end
+    fixed
+  end
+end
