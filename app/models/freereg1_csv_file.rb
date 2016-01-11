@@ -980,7 +980,12 @@ class Freereg1CsvFile
 
     def check_search_record_location_and_county 
     check = false
-    entry = self.freereg1_csv_entries.first
+    entry_ids = self.freereg1_csv_entry_ids
+    if entry_ids[0].nil?
+      reason = "No entries"
+      return [check,reason] 
+    end
+    entry = Freereg1CsvEntry.find(entry_ids[0])
     if entry.nil?
       reason = "No entries"
       return [check,reason] 
@@ -1057,7 +1062,7 @@ class Freereg1CsvFile
        fixed = fixed + 1
        record.update_attributes(:location_names => location_names, :chapman_code => chapman)
        record.update_attribute(:place_id, place._id) if record.place_id != place._id
-       sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
+       sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)   
       else
        logger.info "FREEREG:search record missing for entry #{entry._id}"  

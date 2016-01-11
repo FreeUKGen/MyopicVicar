@@ -22,8 +22,7 @@ class CheckSearchRecordsForCorrectCounty
     files = Freereg1CsvFile.count
     p "Total files: #{files}"
     start = Time.now
-    files = Freereg1CsvFile.all
-    files.each do |my_file|
+    Freereg1CsvFile.each do |my_file|
       processing = processing + 1
       number_processed = number_processed + 1
       file_number = file_number + 1
@@ -35,7 +34,11 @@ class CheckSearchRecordsForCorrectCounty
         message_file.puts "File,#{my_file.userid}, #{my_file.file_name},#{my_file.county},#{my_file.place},#{my_file.church_name},#{my_file.register_type}, #{file_ok[1]}"
         #message_file.puts my_entry
       end
-      
+      record_ok = my_file.check_search_record_location_and_county 
+      if !record_ok[0]
+        incorrect_records = incorrect_records + my_file.freereg1_csv_entries.count
+        message_file.puts "Record,#{my_file.userid},#{my_file.file_name},has ,#{my_file.freereg1_csv_entries.count}, #{record_ok[1]}"
+      end
       if processing == 100
         processed_time = Time.now
         processing_time = (processed_time - start)*1000/number_processed 
@@ -50,6 +53,17 @@ class CheckSearchRecordsForCorrectCounty
           my_file.correct_file_location_fields
           message_file.puts "Fixed File,#{my_file.userid}, #{my_file.file_name}"
           p "Fixed File,#{my_file.userid}, #{my_file.file_name}"
+        end
+      end
+      if fix == "fix" &&  !record_ok[0]
+        if file_ok[1] == "No register" || file_ok[1] == "No church" || file_ok[1] == "No place" || record_ok[1] == "No entries" || record_ok[1] == "No search record"
+          message_file.puts "Unable to fix Records,#{my_file.userid}, #{my_file.file_name}, #{file_ok[1]}, #{record_ok[1]},unable to fix"
+          p "Unable to fix Records,#{my_file.userid}, #{my_file.file_name}, #{file_ok[1]}, #{record_ok[1]}"
+        else 
+          fixed = my_file.correct_record_location_fields
+          fixed_records = fixed_records + fixed
+          message_file.puts "Fixed,#{my_file.userid}, #{my_file.file_name}, #{fixed},entries and records"
+          p "Fixed Records,#{my_file.userid}, #{my_file.file_name},#{fixed},entries and records"
         end
       end
       

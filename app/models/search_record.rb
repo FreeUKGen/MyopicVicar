@@ -29,7 +29,6 @@ class SearchRecord
   belongs_to :freereg1_csv_entry, index: true
   belongs_to :place
 
-
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
 
   #denormalized fields
