@@ -20,7 +20,7 @@ class CheckSearchRecordsForCorrectCounty
     number_processed = 0 
     files = Freereg1CsvFile.count
     p "Total files: #{files}"
-    Freereg1CsvFile.no_timeout.each do |my_file|
+    Freereg1CsvFile.each do |my_file|
       processing = processing + 1
       number_processed = number_processed + 1
       file_number = file_number + 1
@@ -37,8 +37,8 @@ class CheckSearchRecordsForCorrectCounty
         incorrect_records = incorrect_records + my_file.freereg1_csv_entries.count
         message_file.puts "Record,#{my_file.userid},#{my_file.file_name},has ,#{my_file.freereg1_csv_entries.count}, #{record_ok[1]}"
       end
-      p number_processed  if processing == 1000
-      processing = 0 if processing == 1000
+      p number_processed  if processing == 100
+      processing = 0 if processing == 100
       if fix == "fix" &&  !file_ok[0]
         if file_ok[1] == "No register" || file_ok[1] == "No church" || file_ok[1] == "No place" 
           message_file.puts "Unable to fix File,#{my_file.userid}, #{my_file.file_name}"
@@ -60,8 +60,6 @@ class CheckSearchRecordsForCorrectCounty
           p "Fixed Records,#{my_file.userid}, #{my_file.file_name},#{fixed},entries and records"
         end
       end
-
-
     end
     puts "checked #{file_number} files there were #{incorrect_files} incorrect files and #{incorrect_records} incorrect search records and #{fixed_records} were fixed"
     message_file.close 
