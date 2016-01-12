@@ -63,7 +63,7 @@ class Freereg1CsvEntriesController < ApplicationController
     place = church.place
     @freereg1_csv_entry.church_name = church.church_name
     @freereg1_csv_entry.place = place.place_name
-    @freereg1_csv_entry.county = place.county
+    @freereg1_csv_entry.county = place.chapman_code
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
     @freereg1_csv_file.calculate_distribution
