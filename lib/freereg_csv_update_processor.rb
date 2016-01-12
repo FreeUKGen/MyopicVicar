@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class FreeregCsvUpdateProcessor
   #coding: utf-8
 
@@ -16,7 +17,7 @@ class FreeregCsvUpdateProcessor
   require 'freereg_validations'
   CONTAINS_PERIOD = /\./
   HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
-  BOM = /ï»¿/
+  #BOM = /ï»¿/
   DATEMAX = 2020
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
@@ -318,10 +319,7 @@ class FreeregCsvUpdateProcessor
              #get a line of data
              def self.get_line_of_data
                @csvdata = @@array_of_data_lines[@@number_of_line]
-               #get rid of any BOM
                raise FreeREGEnd,  "End of file" if @csvdata.nil?
-               #stripped BOM
-               @csvdata[0].gsub!(/ï»¿/, '') unless @csvdata[0].nil?
                @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
                raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
                @first_character = "?"
@@ -1097,56 +1095,104 @@ end
                      return n
                    end #end of method
 
-                   def self.recode_windows_1252_to_utf8(string)
-                    string.gsub(/[\u0081\u008D\u008F\u0090\u009D]/,"")
-                     string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
-                     force_encoding('Windows-1252').encode('utf-8') }
-                   end
+                   #def self.recode_windows_1252_to_utf8(string)
+                   # string.gsub(/[\u0081\u008D\u008F\u0090\u009D]/,"")
+                   #  string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
+                   #  force_encoding('Windows-1252').encode('utf-8') }
+                   #end
 
                    def self.slurp_the_csv_file(filename)
 
                      begin
+                       # check for BOM before trying to parse first line as CSV
+                       # (otherwise it parses incorrectly when BOM present.)
+                       # If BOM found, assume corresponding unicode encoding
+                       # unless the user specifies something else in column 5
+                       firstline_unparsed = File.open(filename, :encoding => "ASCII-8BIT") {|f| f.readline}
+                       if firstline_unparsed.present?
+                         if firstline_unparsed[0].ord==0xEF && firstline_unparsed[1].ord==0xBB && firstline_unparsed[2].ord==0xBF
+                           #p "BOM found on first line for UTF-8"
+                           firstline_unparsed = File.open(filename, :encoding => "UTF-8") {|f| f.readline}
+                           code_set = 'UTF-8'
+                         elsif firstline_unparsed[0].ord==0xFF && firstline_unparsed[1].ord==0xFE
+                           #p "BOM found on first line for UTF-16LE"
+                           firstline_unparsed = File.open(filename, :encoding => "UTF-16LE") {|f| f.readline}
+                           code_set = 'UTF-16LE'
+                         elsif firstline_unparsed[0].ord==0xFE && firstline_unparsed[1].ord==0xFF
+                           #p "BOM found on first line for UTF-16BE"
+                           firstline_unparsed = File.open(filename, :encoding => "UTF-16BE") {|f| f.readline}
+                           code_set = 'UTF-16BE'
+                         #else
+                         #  p "no BOM found"
+                         end
+                       end
+                       
                        # normalise line endings
                        # get character set
-                       #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+                       @@slurp_fail_reason = "CSV parse failure on first line"
+                       first_data_line = CSV.parse_line(firstline_unparsed)
+                       @@slurp_fail_reason = nil # no exception thrown
 
-                       first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
-                       code_set =  first_data_line[5].strip if first_data_line[0] == "+INFO" && !first_data_line[5].nil?
+                       if (first_data_line[0] == "+INFO" || first_data_line[0][1..-1] == "+INFO") && !first_data_line[5].nil?
+                         code_set_specified_in_csv = first_data_line[5].strip
+                         unless code_set.nil? || code_set == code_set_specified_in_csv
+                           @@message_file.puts "#{code_set} BOM ignored due to #{code_set_specified_in_csv} in col 5 of CSV"
+                         end
+                         code_set = code_set_specified_in_csv
+                       end
                        #set Characterset default
-
+                       
                        code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
-                       #code_set = code_set.gsub(/\s+/, ' ').strip
-                       #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-                       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
+                       #Deal with the cp437 code which is IBM437 in ruby
+                       code_set = "IBM437" if (code_set == "cp437" || code_set == "CP437")
+                       #Deal with the macintosh instruction in freereg1
                        code_set = "macRoman" if (code_set.downcase == "macintosh")
+                       #fix UTF-8 if un-hyphenated or incorrect case
+                       code_set = "UTF-8" if (code_set.upcase == "UTF8")
                        code_set = code_set.upcase if code_set.length == 5 || code_set.length == 6
                        @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set)
                        code_set = "Windows-1252" unless Encoding.name_list.include?(code_set)
+                       #p "code_set is #{code_set} after adjustments"
                        #if we have valid new character set; use it and change the file encoding
                        @@charset = Encoding.find(code_set)
+                       @@slurp_fail_reason = "either the processor failed to read the file or failed to convert to UTF-8 from character set #{code_set}" + (code_set_specified_in_csv.nil? ? " (assumed because none specified in column 5 of CSV file)." : " (specified in column 5 of CSV file as #{code_set_specified_in_csv}).") + " Please verify that the proper character set is specified. If it is, there may be unsupported characters in the file."
                        xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
-                       xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
-                       #now get all the data
-                       @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+                       @@slurp_fail_reason = nil # no exception thrown
 
-                       @@header [:characterset] = code_set
+                       #if we have undefined characters, we know we don't
+                       #actually have Windows-1252. If we force that encoding,
+                       #we risk putting incorrect characters into the database.
+                       #Better to fail and fix the description in column 5
+                       #xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
 
-                       success = true
+                       #(should always be valid if read didn't throw exception)
+                       if xxx.valid_encoding?
+                         #now get all the data
+                         @@slurp_fail_reason="the CSV parser failed. The CSV file might not be formatted correctly"
+                         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+                         @@slurp_fail_reason=nil # no exception thrown
+                         @@header [:characterset] = code_set
+                         success = true
+                       else #this shouldn't happen
+                         @@slurp_fail_reason ="invalid characters for encoding" 
+                         success = false
+                       end
                        #we rescue when for some reason the slurp barfs
                      rescue => e
-
+                         #p "rescue block entered " + (@@slurp_fail_reason.nil? ? "" : @@slurp_fail_reason)
                        @@message_file.puts "#{@@userid}\t#{@@filename} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*"
+                       @@message_file.puts @@slurp_fail_reason if @@slurp_fail_reason.present?
                        @@message_file.puts e.message
                        @@message_file.puts e.backtrace.inspect
                        success = false
 
                      else
                        raise FreeREGError,  "System_Error,Empty file" if @@array_of_data_lines.nil?
-                       ensure
-                         #we ensure that processing keeps going by dropping out through the bottom
-                       end #begin end
-                       return success
-                     end #method end
+                     ensure
+                       #we ensure that processing keeps going by dropping out through the bottom
+                     end #begin end
+                     return success
+                   end #method end
 
 def self.check_for_replace(filename,force)
   if !File.exists?(filename)
@@ -1341,7 +1387,11 @@ end
                                         @@message_file.puts "File not processed" if @success == false
                                         @@message_file.close
                                         file = @@message_file
-                                        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver
+                                        user_msg = file
+                                        if @@slurp_fail_reason.present?
+                                          user_msg = @@slurp_fail_reason + file.to_s
+                                        end
+                                        UserMailer.batch_processing_failure( user_msg,@@header[:userid],@@header[:file_name]).deliver
                                         user = UseridDetail.where(userid: "REGManager").first
                                         UserMailer.update_report_to_freereg_manager(file,user).deliver
                                      end
