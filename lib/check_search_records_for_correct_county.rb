@@ -22,7 +22,7 @@ class CheckSearchRecordsForCorrectCounty
     files = Freereg1CsvFile.count
     p "Total files: #{files}"
     start = Time.now
-    Freereg1CsvFile.each do |my_file|
+    Freereg1CsvFile.no_timeout.each do |my_file|
       processing = processing + 1
       number_processed = number_processed + 1
       file_number = file_number + 1

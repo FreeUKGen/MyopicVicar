@@ -1020,8 +1020,10 @@ class Freereg1CsvFile
       reason = "#{record_location_names[0]}, #{location[0]}"      
     end 
      unless record_location_names[1].strip == location[1].strip 
-      reason = "#{record_location_names[1]}, #{location[1]}," + reason if  reason.present? 
-      reason = "#{record_location_names[1]}, #{location[1]}" if  reason.blank?  
+      unless record_location_names[1].strip == "[Unspecified]"
+        reason = "#{record_location_names[1]}, #{location[1]}," + reason if  reason.present? 
+        reason = "#{record_location_names[1]}, #{location[1]}" if  reason.blank? 
+      end 
     end 
     if place.chapman_code != chapman
       reason = "#{place.chapman_code}, #{chapman}," + reason if  reason.present? 
