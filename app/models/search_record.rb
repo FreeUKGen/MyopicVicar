@@ -85,6 +85,9 @@ class SearchRecord
      def record_id(id)
        where(:id => id)
      end
+     def chapman_code(code)
+       where(:chapman_code => code)
+     end
   end
 
   INDEXES.each_pair do |name,fields|
