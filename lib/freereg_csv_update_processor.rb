@@ -1293,6 +1293,7 @@ def self.setup_for_new_file(filename)
    @@uploaded_date = Time.now
    @@uploaded_date = File.mtime(filename) if File.exists?(filename)
    @@header[:uploaded_date] = @@uploaded_date
+   @@slurp_fail_reason = nil
 end
 
                          def self.process(range,type,delta)
