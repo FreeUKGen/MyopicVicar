@@ -62,6 +62,6 @@ desc "Check search record locations are correct, setting fix to fix will correct
         end
       end   
     end
-    puts "checked #{file_number} files there were #{incorrect_files} incorrect files and #{incorrect_records} incorrect search records and #{fixed_records} were fixed"
+    puts "checked #{file_number} files there were #{incorrect_records} incorrect search records and #{fixed_records} were fixed"
     message_file.close 
 end

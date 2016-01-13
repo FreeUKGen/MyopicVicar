@@ -50,6 +50,6 @@ desc "Check freereg1_csv_file locations records are correct, setting fix to fix 
         end
       end      
     end
-    puts "checked #{file_number} files there were #{incorrect_files} incorrect files and #{incorrect_records} incorrect search records and #{fixed_records} were fixed"
+    puts "checked #{file_number} files there were #{incorrect_files} incorrect files "
     message_file.close 
   end
