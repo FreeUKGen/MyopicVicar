@@ -163,7 +163,7 @@ end
 
 crumb :places do |county,place|
   case
-    when session[:character].present?
+    when session[:character].present? 
       link "Places", place_range_manage_counties_path
     when place.blank?
       link "Places", places_path
