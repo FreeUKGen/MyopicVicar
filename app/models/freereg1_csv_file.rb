@@ -454,6 +454,7 @@ class Freereg1CsvFile
       file.update_attribute(:locked_by_coordinator, true)
     end
     new_location[:place].update_attribute(:data_present, true)
+    new_location[:place].recalculate_last_amended_date
     file.propogate_file_location_change(new_location)
     PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
     return[false,""]
@@ -465,10 +466,11 @@ class Freereg1CsvFile
     register_type = RegisterType.display_name(new_location[:register].register_type)
     location_names << "#{place_name} (#{church_name})"
     location_names  << " [#{register_type}]"
-    self.freereg1_csv_entries.each do |entry|
+    self.freereg1_csv_entries.no_timeout.each do |entry|
       if entry.search_record.nil?
         logger.info "FREEREG:search record missing for entry #{entry._id}"
       else
+        entry.update_attributes(:place => place_name, :church_name => church_name)
         record = entry.search_record
         record.update_attributes(:location_names => location_names, :chapman_code => new_location[:county])
         
@@ -554,7 +556,7 @@ class Freereg1CsvFile
           logger.warn( "FREEREG:#{church.id} does not belong to a place ")
           return
         else
-          Place.recalculate_last_amended_date(place)
+          place.recalculate_last_amended_date
         end
       end
     end
@@ -565,7 +567,7 @@ class Freereg1CsvFile
     return if register.nil?
     church = register.church
     place = church.place
-    Place.recalculate_last_amended_date(place)
+    place.recalculate_last_amended_date
   end
 
 
