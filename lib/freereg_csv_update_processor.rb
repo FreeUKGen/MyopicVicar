@@ -1127,31 +1127,7 @@ end
                            else
                              csvtxt=csvtxt.encode('utf-8', :undef => :replace)
                            end
-                         #elsif csvtxt[0].ord==0xFF && csvtxt[1].ord==0xFE
-                         #  p "UTF-16LE BOM found"
-                         #  csvtxt = csvtxt[2..-1]#remove BOM
-                         #  code_set = 'UTF-16LE'
-                         #  csvtxt.force_encoding(code_set)
-                         #  if !csvtxt.valid_encoding?
-                         #    code_set = nil
-                         #    csvtxt.force_encoding('ASCII-8BIT')
-                         #  else
-                         #    csvtxt=csvtxt.encode('utf-8', :undef => :replace)
-                         #  end
-                         #elsif csvtxt[0].ord==0xFE && csvtxt[1].ord==0xFF
-                         #  p "UTF-16BE BOM found"
-                         #  csvtxt = csvtxt[2..-1]#remove BOM
-                         #  code_set = 'UTF-16BE'
-                         #  csvtxt.force_encoding(code_set)
-                         #  if !csvtxt.valid_encoding?
-                         #    code_set = nil
-                         #    csvtxt.force_encoding('ASCII-8BIT')
-                         #  else
-                         #    csvtxt=csvtxt.encode('utf-8', :undef => :replace)
-                         #  end
-                         #else
-                         #  p "no BOM found"
-                         #end
+                         end
                        end
                        
                        # parse first csv line to get encoding (if any) in col 5
