@@ -76,7 +76,7 @@
          fixed = fixed + 1
          record.update_attributes(:location_names => location_names, :chapman_code => chapman)
          record.update_attribute(:place_id, place._id) if record.place_id != place._id
-         sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+         sleep_time = (Rails.application.config.sleep.to_f).to_f
          sleep(sleep_time)   
         else
          logger.info "FREEREG:search record missing for entry #{entry._id}"  
