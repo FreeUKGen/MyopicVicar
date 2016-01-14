@@ -79,7 +79,7 @@
          sleep_time = (Rails.application.config.sleep.to_f).to_f
          sleep(sleep_time)   
         else
-         logger.info "FREEREG:search record missing for entry #{entry._id}"  
+         p "FREEREG:search record missing for entry #{entry._id}"  
         end
       end
       fixed
