@@ -1104,84 +1104,125 @@ end
                    def self.slurp_the_csv_file(filename)
 
                      begin
-                       # check for BOM before trying to parse first line as CSV
-                       # (otherwise it parses incorrectly when BOM present.)
-                       # If BOM found, assume corresponding unicode encoding
-                       # unless the user specifies something else in column 5
-                       firstline_unparsed = File.open(filename, :encoding => "ASCII-8BIT") {|f| f.readline}
-                       if firstline_unparsed.present?
-                         if firstline_unparsed[0].ord==0xEF && firstline_unparsed[1].ord==0xBB && firstline_unparsed[2].ord==0xBF
-                           #p "BOM found on first line for UTF-8"
-                           firstline_unparsed = File.open(filename, :encoding => "UTF-8") {|f| f.readline}
+                       #read entire .csv as binary text (no encoding/conversion)
+                       csvtxt = File.open(filename, "rb", :encoding => "ASCII-8BIT:ASCII-8BIT"){|f| f.read}
+
+                       #check for BOM and if found, assume corresponding
+                       # unicode encoding (unless invalid sequences found),
+                       # regardless of what user specified in column 5 since it
+                       # may have been edited and saved as unicode by coord 
+                       # without updating col 5 to reflect the new encoding.
+                       if !csvtxt.nil? && csvtxt.length > 2
+                         if csvtxt[0].ord==0xEF && csvtxt[1].ord==0xBB && csvtxt[2].ord==0xBF
+                           #p "UTF-8 BOM found"
+                           csvtxt = csvtxt[3..-1]#remove BOM
                            code_set = 'UTF-8'
-                         elsif firstline_unparsed[0].ord==0xFF && firstline_unparsed[1].ord==0xFE
-                           #p "BOM found on first line for UTF-16LE"
-                           firstline_unparsed = File.open(filename, :encoding => "UTF-16LE") {|f| f.readline}
-                           code_set = 'UTF-16LE'
-                         elsif firstline_unparsed[0].ord==0xFE && firstline_unparsed[1].ord==0xFF
-                           #p "BOM found on first line for UTF-16BE"
-                           firstline_unparsed = File.open(filename, :encoding => "UTF-16BE") {|f| f.readline}
-                           code_set = 'UTF-16BE'
+                           csvtxt.force_encoding(code_set)
+                           if !csvtxt.valid_encoding?
+                             #not really a UTF-8 file. probably was edited in
+                             #software that added BOM to beginning without
+                             #properly transcoding existing characters to UTF-8
+                             code_set = nil
+                             csvtxt.force_encoding('ASCII-8BIT')
+                           else
+                             csvtxt=csvtxt.encode('utf-8', :undef => :replace)
+                           end
+                         #elsif csvtxt[0].ord==0xFF && csvtxt[1].ord==0xFE
+                         #  p "UTF-16LE BOM found"
+                         #  csvtxt = csvtxt[2..-1]#remove BOM
+                         #  code_set = 'UTF-16LE'
+                         #  csvtxt.force_encoding(code_set)
+                         #  if !csvtxt.valid_encoding?
+                         #    code_set = nil
+                         #    csvtxt.force_encoding('ASCII-8BIT')
+                         #  else
+                         #    csvtxt=csvtxt.encode('utf-8', :undef => :replace)
+                         #  end
+                         #elsif csvtxt[0].ord==0xFE && csvtxt[1].ord==0xFF
+                         #  p "UTF-16BE BOM found"
+                         #  csvtxt = csvtxt[2..-1]#remove BOM
+                         #  code_set = 'UTF-16BE'
+                         #  csvtxt.force_encoding(code_set)
+                         #  if !csvtxt.valid_encoding?
+                         #    code_set = nil
+                         #    csvtxt.force_encoding('ASCII-8BIT')
+                         #  else
+                         #    csvtxt=csvtxt.encode('utf-8', :undef => :replace)
+                         #  end
                          #else
                          #  p "no BOM found"
-                         end
+                         #end
                        end
                        
-                       # normalise line endings
-                       # get character set
+                       # parse first csv line to get encoding (if any) in col 5
                        @@slurp_fail_reason = "CSV parse failure on first line"
-                       first_data_line = CSV.parse_line(firstline_unparsed)
+                       first_data_line = CSV.parse_line(csvtxt)
                        @@slurp_fail_reason = nil # no exception thrown
-
-                       if (first_data_line[0] == "+INFO" || first_data_line[0][1..-1] == "+INFO") && !first_data_line[5].nil?
+                       code_set_specified_in_csv = nil
+                       if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
                          code_set_specified_in_csv = first_data_line[5].strip
-                         unless code_set.nil? || code_set == code_set_specified_in_csv
-                           @@message_file.puts "#{code_set} BOM ignored due to #{code_set_specified_in_csv} in col 5 of CSV"
+                         if !code_set.nil? && code_set != code_set_specified_in_csv
+                           @@message_file.puts "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
+                         else
+                           code_set = code_set_specified_in_csv
                          end
-                         code_set = code_set_specified_in_csv
                        end
-                       #set Characterset default
-                       
+
+                       if code_set.nil? || code_set.empty? || code_set=="chset"
+                         #if it looks like valid UTF-8 and we know it isn't
+                         #Windows-1252 because of undefined characters, then
+                         #default to UTF-8 instead of Windows-1252
+                         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
+                             csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
+                             csvtxt.index(0x9D.chr)
+                           #p 'undefined Windows-1252 chars, try UTF-8 default'
+                           csvtxt.force_encoding('UTF-8')
+                           code_set = 'UTF-8' if csvtxt.valid_encoding?
+                           csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
+                         end
+                       end
+                       #default to Windows-1252
                        code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
+                       code_set = "UTF-8" if (code_set.upcase == "UTF8")
                        #Deal with the cp437 code which is IBM437 in ruby
-                       code_set = "IBM437" if (code_set == "cp437" || code_set == "CP437")
+                       code_set = "IBM437" if (code_set.upcase == "CP437")
                        #Deal with the macintosh instruction in freereg1
                        code_set = "macRoman" if (code_set.downcase == "macintosh")
-                       #fix UTF-8 if un-hyphenated or incorrect case
-                       code_set = "UTF-8" if (code_set.upcase == "UTF8")
                        code_set = code_set.upcase if code_set.length == 5 || code_set.length == 6
                        @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set)
                        code_set = "Windows-1252" unless Encoding.name_list.include?(code_set)
+
                        #p "code_set is #{code_set} after adjustments"
                        #if we have valid new character set; use it and change the file encoding
                        @@charset = Encoding.find(code_set)
-                       @@slurp_fail_reason = "either the processor failed to read the file or failed to convert to UTF-8 from character set #{code_set}" + (code_set_specified_in_csv.nil? ? " (assumed because none specified in column 5 of CSV file)." : " (specified in column 5 of CSV file as #{code_set_specified_in_csv}).") + " Please verify that the proper character set is specified. If it is, there may be unsupported characters in the file."
-                       xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
-                       @@slurp_fail_reason = nil # no exception thrown
-
-                       #if we have undefined characters, we know we don't
-                       #actually have Windows-1252. If we force that encoding,
-                       #we risk putting incorrect characters into the database.
-                       #Better to fail and fix the description in column 5
-                       #xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
-
-                       #(should always be valid if read didn't throw exception)
-                       if xxx.valid_encoding?
-                         #now get all the data
-                         @@slurp_fail_reason="the CSV parser failed. The CSV file might not be formatted correctly"
-                         @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
-                         @@slurp_fail_reason=nil # no exception thrown
-                         @@header [:characterset] = code_set
-                         success = true
-                       else #this shouldn't happen
-                         @@slurp_fail_reason ="invalid characters for encoding" 
-                         success = false
+                       # convert to UTF-8 if we didn't already. If our
+                       # preference is to fail when invalid characters or
+                       # undefined characters are found (so we can fix the
+                       # file or specified encoding) instead of silently
+                       # replacing bad characters with the undefined character
+                       # symbol, the two replacement options can be removed
+                       unless csvtxt.encoding == 'UTF-8'
+                         csvtxt.force_encoding(code_set)
+                         @@slurp_fail_reason = "the processor failed to convert to UTF-8 from character set #{code_set}" + (code_set_specified_in_csv.nil? ? " (assumed because none specified in column 5 of CSV file)." : " (specified in column 5 of CSV file as #{code_set_specified_in_csv}).") + " Please verify that the proper character set is specified. If it is, there may be unsupported characters in the file."
+                         csvtxt = csvtxt.encode('UTF-8', invalid: :replace, undef: :replace)
+                         @@slurp_fail_reason = nil # no exception thrown
                        end
+
+                       # normalise line endings
+                       xxx = csvtxt.gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
+
+                       #now get all the data
+                       @@slurp_fail_reason="the CSV parser failed. The CSV file might not be formatted correctly"
+                       @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+                       @@slurp_fail_reason=nil # no exception thrown
+                       @@header [:characterset] = code_set
+                       success = true
                        #we rescue when for some reason the slurp barfs
                      rescue => e
                          #p "rescue block entered " + (@@slurp_fail_reason.nil? ? "" : @@slurp_fail_reason)
+                       p "csv slurp rescue " + (e.message)
                        @@message_file.puts "#{@@userid}\t#{@@filename} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*"
-                       @@message_file.puts @@slurp_fail_reason if @@slurp_fail_reason.present?
+                       @@message_file.puts @@slurp_fail_reason if !@@slurp_fail_reason.nil?
                        @@message_file.puts e.message
                        @@message_file.puts e.backtrace.inspect
                        success = false
@@ -1389,7 +1430,7 @@ end
                                         @@message_file.close
                                         file = @@message_file
                                         user_msg = file
-                                        if @@slurp_fail_reason.present?
+                                        if !@@slurp_fail_reason.nil?
                                           user_msg = @@slurp_fail_reason + file.to_s
                                         end
                                         UserMailer.batch_processing_failure( user_msg,@@header[:userid],@@header[:file_name]).deliver
