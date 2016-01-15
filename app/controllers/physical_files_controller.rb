@@ -175,12 +175,12 @@ class PhysicalFilesController < InheritedResources::Base
         flash[:notice] = "Downloaded"
       else
         flash[:notice] =  "There is a problem with the file you are attempting to download"
-        redirect_to :back 
+        redirect_to :action => :index 
         return 
       end     
     else
       flash[:notice] =  "There is a problem with the file you are attempting to download. Contact a system administrator if you are concerned." 
-      redirect_to :back 
+       redirect_to :action => :index 
       return 
     end 
   end
