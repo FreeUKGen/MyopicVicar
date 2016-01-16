@@ -92,7 +92,7 @@ class ContactsController < InheritedResources::Base
         return
       end
     else
-      redirect_to @contact.previous_page_url
+      redirect_to :action => 'new'
       return
     end
   end
