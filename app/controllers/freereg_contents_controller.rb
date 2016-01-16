@@ -101,12 +101,18 @@ class FreeregContentsController < ApplicationController
     @show_alphabet = session[:show_alphabet]
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-    @coordinator = County.coordinator_name(@chapman_code)
-    @page = FreeregContent.get_header_information(session[:chapman_code])
-    @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
-    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
-    render  '_show_body'
-    return
+    if @chapman_code.present? &&  @county.present? && @character.present?
+      @coordinator = County.coordinator_name(@chapman_code)
+      @page = FreeregContent.get_header_information(@chapman_code)
+      @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+      @records = FreeregContent.number_of_records_in_county(@chapman_code)
+      render  '_show_body'
+      return
+    else
+      flash[:notice] = "Problem with your selection."
+      redirect_to :action => 'new' and return
+    end
+
   end
 
 
