@@ -367,6 +367,7 @@ class Freereg1CsvFile
         success[0] =  false
         success[1] = success[1] + "file has a null church #{batch} " 
       end
+      return success if !success[0]
     end
     success
   end
