@@ -4,7 +4,14 @@ module Freecen
     def process_vld_file(filename)
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename)
-      
+
+      # do not persist if piece not found. raise exception so we can notify
+      # person loading the files that either the PARMS.DAT or .VLD file needs
+      # to be fixed
+      chapman_code = File.basename(File.dirname(filename))
+      if nil == FreecenPiece.where(:chapman_code => chapman_code, :piece_number => file_record[:piece]).first
+        raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]}. year=#{file_record[:full_year]} file=#{filename}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county if it hasn't been run, verify that the PARMS.DAT file is correct, verify that the .VLD file is in the correct directory and named correctly.\n"
+      end
       persist_to_database(filename, file_record, entry_records)
     end
   
