@@ -1,0 +1,51 @@
+<% if @message.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@message.errors.count, "error") %> prohibited your message from being submitted:</h2>
+    <ul class="validation-list">
+      <% @message.errors.full_messages.each do |msg| %>
+      <li class="validation-list__error"><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div class= "grid">
+  <section class="island  island--light ">
+<%= semantic_form_for(@message, :html => {:multipart => true } ) do |f| %>
+  <%= f.hidden_field :message_time %>
+  <%= f.hidden_field :userid %>  
+  <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="subject_input" >
+    <label class="label" for="subject">Subject </label>
+  <% if @message.subject.nil? %>
+    <input name="message[subject]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+  <% else %>
+    <input name="message[subject]" type="text" class="text-input" value="<%=@message.subject%>">
+  <% end %>
+  </li>
+  
+  <li class="grid__item  one-third  palm-one-whole push--bottom">
+    <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select the image you wish to upload (txt, html, htm, log or rtf only)</span></a></label>
+    <input name="message[attachment]" type="file" >
+  </li>
+  <li class="grid__item  one-third  palm-one-whole push--bottom">
+    <label>Image Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select the image you wish to upload (jpg, gif)</span></a></label>
+    <input name="message[images]" type="file" >
+  </li>
+  
+  <li class="grid__item  one-whole  palm-one-whole push--bottom">
+    <label>Message<a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >You shouls include a salutation at the start</span></a></label>
+    <% if @message.body.nil? %>
+      <textarea name="message[body]"  style="width: 100%;"  rows="8" ></textarea>
+    <% else%>
+      <textarea name="message[body]"  style="width: 100%;"  rows="8" ><%=@message.body%></textarea>
+    <% end%>
+  </li>
+  <%= f.action :submit, :as => :input,  :label => 'Submit' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %> 
+  
+<% end %>
+</section>
+</div>

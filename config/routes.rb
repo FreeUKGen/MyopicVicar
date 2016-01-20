@@ -14,6 +14,14 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+  get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
+  get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
+  get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages 
+  get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages 
+  get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
+  get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
+  resources :messages
+
    get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
    get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file

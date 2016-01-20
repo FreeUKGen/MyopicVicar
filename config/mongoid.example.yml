@@ -56,6 +56,64 @@ development:
         # The time in seconds that Moped should wait before retrying an
         # operation on failure. (default: 1)
         # retry_interval: 1
+production:
+  # Configure available database sessions. (required)
+  sessions:
+    ################################
+    # F2-specific notes:
+    ################################
+    # F2 uses two different Mongoid connections to MongoDB in order to
+    # support scaling the system through spinning up several  search-only 
+    # app servers which run against replicas of the F2 data, while
+    # administrative/coordinator/transcriber functions run against the
+    # main F2 database.  
+    #
+    # This means that two kinds of database configurations need to be
+    # supported: search-only and admin
+    #
+    # Because searches write to the search_queries collection in order
+    # to track performance, support pagination, etc. they need to connect
+    # to a local, non-replicated mongodb instance to store that data, in
+    # addition to connecting to a local mongodb instance that is part of
+    # the replica set for R/O searche logic.  
+    # 
+    # By contrast, the admin features should write directly to the primary
+    # MongoDB server connected to the replica set.  To reduce confusion,
+    # they should also have a local MongoDB instance for their search_queries
+    # collection
+    #
+    #####################
+    # Default Connection
+    #####################
+    # This should be the MongoDB instance connected to the replica set, for
+    # shared F2 data.  This  which will be the PRIMARY instance
+    # instance on admin servers, and the replicated copy for search-only
+    # servers
+    default:
+      # Defines the name of the default database that Mongoid can connect to.
+      # (required).
+      database: myopic_vicar_production_20150223
+      # Provides the hosts the default session can connect to. Must be an array
+      # of host:port pairs. (required)
+      hosts: 
+        - localhost:27017
+      options:
+        # Change whether the session persists in safe mode by default.
+        # (default: false)
+        # safe: false
+
+        # Change the default consistency model to :eventual or :strong.
+        # :eventual will send reads to secondaries, :strong sends everything
+        # to master. (default: :eventual)
+        # consistency: :eventual
+
+        # How many times Moped should attempt to retry an operation after
+        # failure. (default: 30)
+        # max_retries: 30
+
+        # The time in seconds that Moped should wait before retrying an
+        # operation on failure. (default: 1)
+        # retry_interval: 1
     ############################
     # Local Writable Connection
     ############################
