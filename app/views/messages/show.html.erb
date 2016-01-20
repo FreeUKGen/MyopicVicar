@@ -45,19 +45,20 @@
             </tr>
           <% end%>
         <% end%>
-        <% if @message.attachment.present?%>
-          <tr>
+        <tr>
+        <% if @message.attachment.present?%>        
             <td>Text Attachment :</td><td class="weight--semibold"> <%= File.read("#{Rails.root}/public" + @message.attachment_url) %> </td>
-          </tr>
         <% else %>
           <td>Text Attachment :</td><td class="weight--semibold"> No text document attached.</td>
-        <% end %>  
+        <% end %> 
+        </tr>
+        <tr>
         <% if @message.images_url %>
           <td>Image Attachment :</td><td class="weight--semibold"> <%= image_tag @message.images_url %></td>
         <% else %>
           <td>Image Attachment :</td><td class="weight--semibold"> No images attached.</td>
         <% end %>       
-          
+         </tr> 
       </table>
        <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
       
