@@ -6,7 +6,6 @@ class Freereg1CsvEntriesController < ApplicationController
   def index
     display_info
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
-
   end
 
   def show
@@ -29,7 +28,7 @@ class Freereg1CsvEntriesController < ApplicationController
       session[:error_id] = params[:id]
       set_up_error_display
       if @freereg1_csv_file.nil?
-        flash[:notice] = "The error appears to have become disconnected from it file. Contact system administration"
+        flash[:notice] = "The error appears to have become disconnected from its file. Contact system administration"
         redirect_to :action => 'show'
         return
       end
@@ -201,6 +200,12 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file = Freereg1CsvFile.id(session[:freereg1_csv_file_id]).first
     else
       @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    end
+
+    if @freereg1_csv_file.nil?
+      flash[:notice] = "The entry you are trying to access is not found in the database. The entry or batch may have been deleted."
+      redirect_to main_app.new_manage_resource_path
+      return
     end
 
     @freereg1_csv_file_id =  @freereg1_csv_file.id
