@@ -65,6 +65,7 @@ class Feedback
     ccs << cc.email_address unless cc.nil?  
     cc = UseridDetail.where(:person_role => 'executive_director').first
     ccs << cc.email_address unless cc.nil?
+    ccs = ccs.uniq
     UserMailer.feedback(self,ccs).deliver    
   end 
 
