@@ -45,9 +45,13 @@
             </tr>
           <% end%>
         <% end%>
-        <tr>
-          <td>Text Attachment :</td><td class="weight--semibold"> <%= File.read("#{Rails.root}/public" + @message.attachment_url) %> </td>
-        </tr>
+        <% if @message.attachment.present?%>
+          <tr>
+            <td>Text Attachment :</td><td class="weight--semibold"> <%= File.read("#{Rails.root}/public" + @message.attachment_url) %> </td>
+          </tr>
+        <% else %>
+          <td>Text Attachment :</td><td class="weight--semibold"> No text document attached.</td>
+        <% end %>  
         <% if @message.images_url %>
           <td>Image Attachment :</td><td class="weight--semibold"> <%= image_tag @message.images_url %></td>
         <% else %>
