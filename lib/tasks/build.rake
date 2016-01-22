@@ -42,12 +42,12 @@ namespace :build do
 	IMPORT_COMMAND =  "mongoimport --db "
 	IMPORT_IN = " --file  "
 
-	# example build:freereg[recreate,create_search_records,a-d,e-f,g-h]
+	# example build:freereg[add,create_search_records,a-d,e-f,g-h,27017]
 	#This processes the csv files and creates the search records at the same time. Before doing so it
 	# saves a copy of the Master and Alias; it drops Places/Churches/Registers/Freere1_csv_files,Freereg1_csv_entries and search records.
 	#it then runs a csv_process on all userids starting with a, b, c and then d with another process doing e, and f. and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
 	#and indexes everything
-	# example build:freereg[recreate,create_search_records,*/WRY*.csv,*/NFK*.csv,*/DEN*.csv]
+	# example build:freereg[add,create_search_records,*/WRY*.csv,*/NFK*.csv,*/DEN*.csv,27017]
 	# this creates a database for WRY and NFK  with search records from all files
 	# it saves Master and Alias before dropping everything and rebuilding and re-indexing
 	#example build:freereg[add,create_search_records,userid/wryconba.csv,userid/norabsma.csv,]
@@ -57,8 +57,7 @@ namespace :build do
 	# config.mongodb_bin_location        where the Mongodb binary are located
 	# config.mongodb_collection_temp     where to store the temp files
 	# config.mongodb_collection_location where the github collections are located
-	#       as well as the date of the dataset being used
-	# config.dataset_date = "13 Dec 2013"
+	# 
 
 	task :freereg,[:type,:search_records,:range1,:range2,:range3,:port] => [:setup,:create_freereg_csv_indexes] do |t, args|
 		p "completed build"
@@ -209,13 +208,13 @@ namespace :build do
 	#NOTE NO SETUP of the database IS DONE DURING THIS TASK
 	task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |t, args|
 
-		require 'freereg_csv_processor'
+		require 'freereg_csv_update_processor'
 		# use the processor to initiate search record creation on add or update but not on recreation when we do at end
 		search_records = "no_search_records"
 		search_records = "create_search_records" if args.search_records == "create_search_records_processor"
 
-		puts "processing CSV file with #{args.type} and #{search_records}"
-		success = FreeregCsvProcessor.process(args.type,search_records,args.range)
+		puts "processing CSV file with  #{search_records}"
+		success = FreeregCsvUpdateProcessor.process(args.range,search_records,"change")
 		if success
 			puts "Freereg task complete."
 			exit(true)
@@ -227,13 +226,13 @@ namespace :build do
 	end
 	task :process_freereg1_individual_csv,[:user,:file] => [:environment] do |t, args|
 
-		require 'freereg_csv_processor'
+		require 'freereg_csv_update_processor'
 		require 'user_mailer'
 		# use the processor to initiate search record creation on add or update but not on recreation when we do at end
 		range = File.join(args.user ,args.file)
 		search_records = "create_search_records"
 
-		success = FreeregCsvProcessor.process("recreate",search_records,range)
+		success = FreeregCsvUpdateProcessor.process("add",search_records,range)
 		if success
 			UserMailer.batch_processing_success(args.user,args.file).deliver
 			exit(true)
