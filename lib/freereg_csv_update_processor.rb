@@ -918,48 +918,59 @@ def self.check_and_create_db_record_for_entry(data_record,file_for_record)
       #we have an existing record but may be for different location
       #p "existing record"
       existing_record = Freereg1CsvEntry.id(@all_records_hash.key(new_digest)).first
-      #p existing_record.inspect
-      if existing_record.same_location(existing_record,file_for_record)
-        #p "same location"
-        #record location is OK
-        if existing_record.search_record.present?
-          # search record and entry are OK
-          success = "nochange" 
-          #p success 
-        else
-          success = "change"
-          #need to create search record as one does not exist
-          #p "creating search as not there"
-          existing_record.transform_search_record if  @@create_search_records == true 
-        end
-      else
-        
-        #p "changing location"
-        #change of location
-        #update location of record
-        record = existing_record.search_record
-        existing_record.update_location(data_record,file_for_record)
-        
-          if  record.present?
+      if existing_record.present?
+        #p existing_record.inspect
+        if existing_record.same_location(existing_record,file_for_record)
+          #p "same location"
+          #record location is OK
+          if existing_record.search_record.present?
+            # search record and entry are OK
             success = "nochange" 
-            #p "updating record"
-             #p record.inspect
-            # need to update search record  with location
-            record.update_location(data_record,file_for_record)
-            #p "updated record"
-            #p record.inspect
+            #p success 
           else
             success = "change"
             #need to create search record as one does not exist
-            #p "created record"
-            existing_record.transform_search_record if  @@create_search_records == true
-            #p existing_record.search_record
+            #p "creating search as not there"
+            existing_record.transform_search_record if  @@create_search_records == true 
           end
+        else          
+          #p "changing location"
+          #change of location
+          #update location of record
+          record = existing_record.search_record
+          existing_record.update_location(data_record,file_for_record)
+          
+            if  record.present?
+              success = "nochange" 
+              #p "updating record"
+               #p record.inspect
+              # need to update search record  with location
+              record.update_location(data_record,file_for_record)
+              #p "updated record"
+              #p record.inspect
+            else
+              success = "change"
+              #need to create search record as one does not exist
+              #p "created record"
+              existing_record.transform_search_record if  @@create_search_records == true
+              #p existing_record.search_record
+            end
+        end
+        #we need to eliminate this record from hash
+        @all_records_hash.delete(@all_records_hash.key(new_digest))
+         #p "dropping hash entry"
+         #p @all_records_hash.inspect
+      else
+        #this should never happen but it has
+        success = "new"
+        #new entry and record
+        #p "creating new entry"
+        success = create_db_record_for_entry(data_record)
+        #p "new"
+        #p success
+        sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+        sleep(sleep_time)
       end
-      #we need to eliminate this record from hash
-      @all_records_hash.delete(@all_records_hash.key(new_digest))
-       #p "dropping hash entry"
-       #p @all_records_hash.inspect
     else
       success = "new"
       #new entry and record
@@ -1436,7 +1447,7 @@ end
                     @@message_file.close 
                     user = UseridDetail.where(userid: "REGManager").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
-                    user = UseridDetail.where(userid: "Captainkirk").first
+                    user = UseridDetail.where(userid: "ericb").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
                   end
                   at_exit do
