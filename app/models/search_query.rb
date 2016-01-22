@@ -246,11 +246,25 @@ class SearchQuery
     params
   end
   def previous_record(current)
-    record = self.search_result.records[self.search_result.records.index(current.to_s) - 1 ]
+    records_sorted = self.results
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil? || idx <= 0
+    record = record_ids_sorted[idx-1]
     record
   end
   def next_record(current)
-    record = self.search_result.records[self.search_result.records.index(current.to_s) + 1 ]
+    records_sorted = self.results
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil?
+    record = record_ids_sorted[idx+1]
     record
   end
 
