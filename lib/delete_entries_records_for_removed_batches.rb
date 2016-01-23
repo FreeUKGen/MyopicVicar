@@ -43,7 +43,7 @@ class DeleteEntriesRecordsForRemovedBatches
     file = @@message_file
     user = UseridDetail.where(userid: "REGManager").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver
-    user = UseridDetail.where(userid: "Captainkirk").first
+    user = UseridDetail.where(userid: "ericb").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver
   end #end process
 end
