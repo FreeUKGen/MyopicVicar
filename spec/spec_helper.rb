@@ -55,7 +55,7 @@ def process_test_file(file)
   username = file[:user]
   userid = UseridDetail.where(:userid => username).first
   unless userid
-    UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com")
+    UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')
   end
 
   FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
@@ -67,7 +67,7 @@ def setup_userids
 
   Dir.glob(File.join(Rails.root, 'test_data', 'freereg1_csvs', '*')).
     map{|fn| File.basename(fn)}.
-    each{|uid| UseridDetail.create!(:userid => uid, :password => uid, :encrypted_password => uid, :email_address => "#{uid}@example.com") unless UseridDetail.where(:userid => uid).first}
+    each{|uid| UseridDetail.create!(:userid => uid, :password => uid, :encrypted_password => uid, :email_address => "#{uid}@example.com", :person_surname => uid, :person_forename => uid, :syndicate => 'test') unless UseridDetail.where(:userid => uid).first}
 
 end
 

@@ -18,9 +18,14 @@ describe Freereg1CsvEntry do
   before(:all) do
     Place.create_indexes
     SearchRecord.create_indexes
+
+    SearchRecord.setup_benchmark
+
   end
 
-
+  after(:all) do
+    SearchRecord.report_benchmark    
+  end
 
 
   before(:each) do
@@ -152,6 +157,7 @@ describe Freereg1CsvEntry do
 
   it "should parse and find dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
+
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #
       process_test_file(file)
@@ -184,6 +190,7 @@ describe Freereg1CsvEntry do
 
       end
     end
+
   end
 
   it "should handle dual forenames" do
@@ -310,6 +317,7 @@ describe Freereg1CsvEntry do
   it "should not yet find records by wildcard" do
     filespec = FREEREG1_CSV_FILES[2]
     process_test_file(filespec)
+    
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
     entry = file_record.freereg1_csv_entries.first
     search_record = entry.search_record
