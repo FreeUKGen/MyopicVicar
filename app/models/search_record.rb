@@ -29,7 +29,6 @@ class SearchRecord
   belongs_to :freereg1_csv_entry, index: true
   belongs_to :place
 
-
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
 
   #denormalized fields
@@ -85,6 +84,9 @@ class SearchRecord
      end
      def record_id(id)
        where(:id => id)
+     end
+     def chapman_code(code)
+       where(:chapman_code => code)
      end
   end
 
@@ -392,6 +394,6 @@ class SearchRecord
 
   def self.delete_freereg1_csv_entries
     SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
-
   end
+  
 end

@@ -41,6 +41,8 @@ fi
 trace "disable of searches"
 sudo /root/bin/searchctl.sh disable
 cd ${ROOT}
+trace "Get the list of files waiting to be processed"
+sudo -u webserv bundle exec rake RAILS_ENV=production build:get_waiting_file_list --trace
 trace "write the REG_users file for the image servers"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
 trace "process the uploads"
@@ -51,10 +53,11 @@ trace "update county stats"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_county_stats --trace
 trace "delete entries and records for removed files"
 sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
-trace "doing rsync of freereg1 data into freereg2"
-sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
-trace "update of the database2"
-sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
+#disable the FR1 to FR sync and update
+#trace "doing rsync of freereg1 data into freereg2"
+#sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
+#trace "update of the database2"
+#sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 trace "re enable searches"
 sudo /root/bin/searchctl.sh enable
 trace "finished"

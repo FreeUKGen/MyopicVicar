@@ -74,33 +74,27 @@ class SearchQuery
   def search
     search_index = SearchRecord.index_hint(search_params)
     records = SearchRecord.collection.find(search_params).hint(search_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-
-    search_record_array = Array.new
-    n = 0
-    records.each do |rec|
-      n = n + 1
-      search_record_array << rec["_id"].to_s
-      break if n == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    end
-    self.search_result =  SearchResult.new(records: search_record_array)
-    self.result_count = search_record_array.length
-    self.runtime = (Time.now.utc - self.updated_at) * 1000
-    self.search_index = search_index
-    self.save
+    self.persist_results(records,search_index)
+    records
   end
 
   def fetch_records
     return @search_results if @search_results
     if self.search_result.present?
       records = self.search_result.records
-      @search_results = SearchRecord.find(records)
+      begin
+        @search_results = SearchRecord.find(records)
+      rescue Mongoid::Errors::DocumentNotFound
+        logger.warn("FREEREG:SEARCH_ERROR:search record in search results went missing")
+        @search_results = nil
+      end
     else
       @search_results = nil
     end
     @search_results    
   end
 
-  def persist_results(results)
+  def persist_results(results,index)
     # finally extract the records IDs and persist them
     records = Array.new
     results.each do |rec|
@@ -108,8 +102,9 @@ class SearchQuery
     end
     self.search_result =  SearchResult.new(records: records)
     self.result_count = records.length
-    self.save
-        
+    self.runtime = (Time.now.utc - self.updated_at) * 1000
+    self.search_index = index
+    self.save  
   end
 
   def compare_name(x,y)
@@ -185,7 +180,7 @@ class SearchQuery
   def results
     records = fetch_records
     sort_results(records) unless records.nil?
-    persist_results(records) unless records.nil? 
+    #persist_results(records) unless records.nil? 
     records
   end
 
@@ -251,11 +246,25 @@ class SearchQuery
     params
   end
   def previous_record(current)
-    record = self.search_result.records[self.search_result.records.index(current.to_s) - 1 ]
+    records_sorted = self.results
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil? || idx <= 0
+    record = record_ids_sorted[idx-1]
     record
   end
   def next_record(current)
-    record = self.search_result.records[self.search_result.records.index(current.to_s) + 1 ]
+    records_sorted = self.results
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil?
+    record = record_ids_sorted[idx+1]
     record
   end
 

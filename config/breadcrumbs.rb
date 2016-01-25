@@ -153,7 +153,7 @@ crumb :county_options do |county|
   parent :root
 end
 crumb :place_range_options do |county,active|
-  if session[:active]
+  if session[:active_place]
     link "Range Selection", selection_manage_counties_path(:option =>'Work with Active Places')  
   else
      link "Range Selection", selection_manage_counties_path(:option =>'Work with All Places') 
@@ -163,7 +163,7 @@ end
 
 crumb :places do |county,place|
   case
-    when session[:character].present?
+    when session[:character].present? 
       link "Places", place_range_manage_counties_path
     when place.blank?
       link "Places", places_path
@@ -391,8 +391,26 @@ crumb :edit_contact do |contact|
   link "Edit Contact", edit_contact_path(contact)
   parent :show_contact, contact
 end
-
-
+crumb :messages do
+  link "Messages", messages_path
+  parent :root
+end
+crumb :show_message do |message|
+  link "Show Message", message_path(message)
+  parent :messages
+end
+crumb :edit_message do |message|
+  link "Edit Message", edit_message_path(message)
+  parent :show_message, message
+end
+crumb :create_message do |message|
+  link "Create Message", new_message_path(message)
+  parent :messages
+end
+crumb :send_message do |message|
+  link "Send Message", send_message_messages_path(message)
+  parent :show_message, message
+end
 # crumb :projects do
 #   link "Projects", projects_path
 # end

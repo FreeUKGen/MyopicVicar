@@ -6,7 +6,6 @@ class Freereg1CsvEntriesController < ApplicationController
   def index
     display_info
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
-
   end
 
   def show
@@ -26,11 +25,10 @@ class Freereg1CsvEntriesController < ApplicationController
     @error_file = BatchError.id(params[:id]).first
     if @error_file.present?
       get_user_info_from_userid
-      display_info
       session[:error_id] = params[:id]
       set_up_error_display
       if @freereg1_csv_file.nil?
-        flash[:notice] = "The error appears to have become disconnected from it file. Contact system administration"
+        flash[:notice] = "The error appears to have become disconnected from its file. Contact system administration"
         redirect_to :action => 'show'
         return
       end
@@ -64,7 +62,7 @@ class Freereg1CsvEntriesController < ApplicationController
     place = church.place
     @freereg1_csv_entry.church_name = church.church_name
     @freereg1_csv_entry.place = place.place_name
-    @freereg1_csv_entry.county = place.county
+    @freereg1_csv_entry.county = place.chapman_code
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
     @freereg1_csv_entry.save
     @freereg1_csv_file.calculate_distribution
@@ -73,12 +71,12 @@ class Freereg1CsvEntriesController < ApplicationController
       flash[:notice] = 'The creation of the record was unsuccessful'
       display_info
       render :action => 'error'
+      return
     else
       @freereg1_csv_entry.transform_search_record
       @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
-      @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
-      @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
+      @freereg1_csv_file.lock_all(session[:my_own])
       @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
 
       if session[:error_id].nil?
@@ -109,6 +107,7 @@ class Freereg1CsvEntriesController < ApplicationController
     file_line_number = @freereg1_csv_file.records.to_i + 1
     line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
+   
     @freereg1_csv_entry.multiple_witnesses.build
   end
 
@@ -147,7 +146,7 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_file.save
         @freereg1_csv_file.calculate_distribution
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
-        render :action => 'show'
+        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry) 
       end
     else
       go_back("entry",params[:id])
@@ -174,6 +173,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def set_up_error_display
     @freereg1_csv_file = @error_file.freereg1_csv_file
+
     @error_file.data_line[:record_type] = @error_file.record_type
     @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
     @error_line = @error_file.record_number
@@ -182,6 +182,17 @@ class Freereg1CsvEntriesController < ApplicationController
     Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
       @place_names << place.place_name
     end
+     @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @file_owner = @freereg1_csv_file.userid
+    @register = @freereg1_csv_file.register
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = @register.church #id?
+    @church_name = @church.church_name
+    @place = @church.place #id?
+    @county =  @place.county
+    @place_name = @place.place_name
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
   end
 
   def display_info
@@ -189,6 +200,12 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file = Freereg1CsvFile.id(session[:freereg1_csv_file_id]).first
     else
       @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    end
+
+    if @freereg1_csv_file.nil?
+      flash[:notice] = "The entry you are trying to access is not found in the database. The entry or batch may have been deleted."
+      redirect_to main_app.new_manage_resource_path
+      return
     end
 
     @freereg1_csv_file_id =  @freereg1_csv_file.id

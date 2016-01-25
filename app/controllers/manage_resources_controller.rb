@@ -4,6 +4,8 @@
   skip_before_filter :require_login, only: [:index,:new]
   def index
       clean_session 
+      clean_session_for_syndicate
+      clean_session_for_county
       session[:initial_page] = request.original_url
       if current_refinery_user.nil?
        redirect_to refinery.logout_path

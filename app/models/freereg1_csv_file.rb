@@ -131,6 +131,9 @@ class Freereg1CsvFile
     def county(name)
       where(:county => name)
     end
+    def record_type(name)
+      where(:record_type => name)
+    end
     def userid(name)
       where(:userid => name)
     end
@@ -364,6 +367,7 @@ class Freereg1CsvFile
         success[0] =  false
         success[1] = success[1] + "file has a null church #{batch} " 
       end
+      return success if !success[0]
     end
     success
   end
@@ -439,6 +443,8 @@ class Freereg1CsvFile
     end
     #deal with absent county
     param[:county] = old_location[:place].chapman_code if param[:county].blank?
+    update_county = true
+    update_county = false if  param[:county] == old_location[:place].chapman_code
     new_location = file.new_location(param)
     file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
                            :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
@@ -449,6 +455,7 @@ class Freereg1CsvFile
       file.update_attribute(:locked_by_coordinator, true)
     end
     new_location[:place].update_attribute(:data_present, true)
+    new_location[:place].recalculate_last_amended_date
     file.propogate_file_location_change(new_location)
     PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
     return[false,""]
@@ -460,12 +467,14 @@ class Freereg1CsvFile
     register_type = RegisterType.display_name(new_location[:register].register_type)
     location_names << "#{place_name} (#{church_name})"
     location_names  << " [#{register_type}]"
-    self.freereg1_csv_entries.each do |entry|
+    self.freereg1_csv_entries.no_timeout.each do |entry|
       if entry.search_record.nil?
-        logger.info "search record missing for entry #{entry._id}"
+        logger.info "FREEREG:search record missing for entry #{entry._id}"
       else
+        entry.update_attributes(:place => place_name, :church_name => church_name)
         record = entry.search_record
-        record.update_attribute(:location_names, location_names)
+        record.update_attributes(:location_names => location_names, :chapman_code => new_location[:county])
+        
         if record.place_id != new_location[:place]._id
           record.update_attribute(:place_id, new_location[:place]._id)
         end
@@ -503,7 +512,7 @@ class Freereg1CsvFile
     new_church.save
     new_place.churches << new_church unless new_place._id == new_church.place_id
     new_place.save
-    location = {:register => new_register, :church => new_church, :place => new_place}
+    location = {:register => new_register, :church => new_church, :place => new_place, :county =>param[:county]}
   end
 
   def date_change(transcription_date,modification_date)
@@ -535,20 +544,20 @@ class Freereg1CsvFile
     self.update_number_of_files
     register = self.register
     if register.nil?
-      logger.warn("#{self.id} does not belong to a register ")
+      logger.warn("FREEREG:#{self.id} does not belong to a register ")
       return
     else
       church = register.church
       if church.nil?
-        logger.warn( "#{register.id} does not belong to a church ")
+        logger.warn( "FREEREG:#{register.id} does not belong to a church ")
         return
       else
         place = church.place
         if place.nil?
-          logger.warn( "#{church.id} does not belong to a place ")
+          logger.warn( "FREEREG:#{church.id} does not belong to a place ")
           return
         else
-          Place.recalculate_last_amended_date(place)
+          place.recalculate_last_amended_date
         end
       end
     end
@@ -559,7 +568,7 @@ class Freereg1CsvFile
     return if register.nil?
     church = register.church
     place = church.place
-    Place.recalculate_last_amended_date(place)
+    place.recalculate_last_amended_date
   end
 
 
@@ -604,42 +613,56 @@ class Freereg1CsvFile
     end
     #TODO need to recompute max, min and range
     unless added_records == 0
-      logger.info "update record count #{self.records.to_i} and #{added_records}"
+      logger.info "FREEREG:update record count #{self.records.to_i} and #{added_records}"
       records = self.records.to_i + added_records
       self.update_attributes(:records => records.to_s,:locked_by_coordinator => true )
-      logger.info "updated record count #{self.records.to_i} "
+      logger.info "FREEREG:updated record count #{self.records.to_i} "
     end
     return [false, ""]
   end
 
   def lock(type)
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+    set_transciber_lock = !self.locked_by_transcriber
+    set_coordinator_lock = !self.locked_by_coordinator
     batches.each do |batch|
       if  type
-        if  batch.locked_by_transcriber
-          batch.update_attributes(:locked_by_transcriber => false)
-        else
-          batch.update_attributes(:locked_by_transcriber => true)
-
-        end
+        #transcriber is changing their lock
+          batch.update_attributes(:locked_by_transcriber => set_transciber_lock)
       else
-
-        if  batch.locked_by_coordinator
-          batch.update_attributes(:locked_by_coordinator => false)
-          batch.update_attributes(:locked_by_transcriber => false)
-
-        else
-          batch.update_attributes(:locked_by_coordinator => true)
-          batch.update_attributes(:locked_by_transcriber => false)
-        end
+        #coordinator is changing locks
+          batch.update_attributes(:locked_by_coordinator => set_coordinator_lock)
+          batch.update_attributes(:locked_by_transcriber => false) unless set_coordinator_lock
       end
     end
   end
+
+  def lock_all(type)
+    batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
+    batches.each do |batch|
+      if  type
+        #transcriber is changing their lock
+          batch.update_attributes(:locked_by_transcriber => true)
+      else
+        #coordinator is changing locks
+          batch.update_attributes(:locked_by_coordinator => true)         
+      end
+    end
+  end
+
   def force_unlock
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
     batches.each do |batch|
       batch.update_attributes(:locked_by_coordinator => false)
       batch.update_attributes(:locked_by_transcriber => false)
+    end
+  end
+
+  def check_locking_and_set(param,sess)
+    if sess[:my_own]
+      self.update_attributes(:locked_by_transcriber => true)
+    else
+      self.update_attributes(:locked_by_coordinator => true)
     end
   end
 
@@ -664,13 +687,7 @@ class Freereg1CsvFile
     old_place_id = Church.find(church_id).place_id
   end
 
-  def check_locking_and_set(param,sess)
-    if sess[:my_own]
-      self.update_attributes(:locked_by_transcriber => true)
-    else
-      self.update_attributes(:locked_by_coordinator => true)
-    end
-  end
+  
   def self.change_userid(id,old_userid, new_userid)
     success = true
     @message = ""
@@ -926,5 +943,4 @@ class Freereg1CsvFile
         f.write("#{self.id},#{self.userid},#{self.file_name}\n")
       end    
     end
-
-  end
+end

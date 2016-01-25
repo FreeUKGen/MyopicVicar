@@ -36,8 +36,9 @@ class FreeregContentsController < ApplicationController
   end
 
   def create
-    case params[:commit]
-    when "Select"
+
+    case 
+    when params.present? && params[:freereg_content].present? && params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
       @freereg_content = FreeregContent.new(params[:freereg_content])
       @chapman_code = params[:freereg_content][:chapman_codes][1]
       session[:chapman_code] = @chapman_code
@@ -51,15 +52,15 @@ class FreeregContentsController < ApplicationController
         @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
         render :new
       end
-    when "Select One Option"
+    when params[:action] == "create"
       proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
       case proceed
        when "dual"
         flash[:notice] = "Only a place or a character can be selected not both"
-        redirect_to :back and return
+        redirect_to freereg_contents_path and return
       when "no option"
         flash[:notice] = "You must select either a place or a character"
-        redirect_to :back and return
+        redirect_to freereg_contents_path and return
       when "place"   
         redirect_to freereg_content_path(params[:freereg_content][:place]) and return
       when "character"
@@ -100,13 +101,18 @@ class FreeregContentsController < ApplicationController
     @show_alphabet = session[:show_alphabet]
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-    @coordinator = County.coordinator_name(@chapman_code)
-    @page = FreeregContent.get_header_information(session[:chapman_code])
-    @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
-    p @places
-    @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
-    render  '_show_body'
-    return
+    if @chapman_code.present? &&  @county.present? && @character.present?
+      @coordinator = County.coordinator_name(@chapman_code)
+      @page = FreeregContent.get_header_information(@chapman_code)
+      @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+      @records = FreeregContent.number_of_records_in_county(@chapman_code)
+      render  '_show_body'
+      return
+    else
+      flash[:notice] = "Problem with your selection."
+      redirect_to :action => 'new' and return
+    end
+
   end
 
 
@@ -161,19 +167,24 @@ class FreeregContentsController < ApplicationController
       end
     end
     @church  = @register.church
-    @place = @church.place
-    @county = session[:county]
-    @character =  session[:character]
-    @files_id = Array.new
-    @place_name = @place.place_name
-    @register_name = @register.register_name
-    @register_name = @register.alternate_register_name if @register_name.nil?
-    @church_name = @church.church_name
-    individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
-    @files = Freereg1CsvFile.combine_files(individual_files)
-    @transcribers = FreeregContent.get_transcribers(@files)
-    @decade = FreeregContent.get_decades(@files)
-    @register_type = RegisterType.display_name(@register.register_type)
+    if  @church.present?
+      @place = @church.place
+      @county = session[:county]
+      @character =  session[:character]
+      @files_id = Array.new
+      @place_name = @place.place_name
+      @register_name = @register.register_name
+      @register_name = @register.alternate_register_name if @register_name.nil?
+      @church_name = @church.church_name
+      individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
+      @files = Freereg1CsvFile.combine_files(individual_files)
+      @transcribers = FreeregContent.get_transcribers(@files)
+      @decade = FreeregContent.get_decades(@files)
+      @register_type = RegisterType.display_name(@register.register_type)
+    else
+      flash[:notice] = "The register has no church; you will need to start again"
+      redirect_to :back and return
+    end
   end
 
   def place

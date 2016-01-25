@@ -14,12 +14,20 @@
 # 
 MyopicVicar::Application.routes.draw do
 
+  get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
+  get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
+  get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages 
+  get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages 
+  get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
+  get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
+  resources :messages
+
    get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
    get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
    get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
-  
+  get 'physical_files/files_for_county', :to =>'physical_files#files_for_county', :as => :files_for_county_physical_files
   get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
   get 'physical_files/processed_but_no_files', :to =>'physical_files#processed_but_no_files', :as => :processed_but_no_files_physical_files
   get 'physical_files/processed_but_no_file_in_fr1', :to =>'physical_files#processed_but_no_file_in_fr1', :as => :processed_but_no_file_in_fr1_physical_files
@@ -30,6 +38,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/:id/reprocess(.:format)',  :to => 'physical_files#reprocess', :as => :reprocess_physical_file
   get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
+  get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
   resources :physical_files
 
   resources :search_statistics
@@ -194,7 +203,8 @@ MyopicVicar::Application.routes.draw do
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint, :as => :selection_freereg1_csv_file 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint, :as => :selection_freereg1_csv_file 
   get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', constraints: MyFilesWaitingConstraint, :as => :selection_freereg1_csv_file 
-    resources :freereg1_csv_files
+  get  'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
+  resources :freereg1_csv_files
 
   resources :emendation_types
 

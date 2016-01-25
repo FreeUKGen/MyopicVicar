@@ -92,8 +92,8 @@ class ManageCountiesController < ApplicationController
   end
 
   def place_range
-    if params[:params].present?
-      session[:character]  = params[:params] 
+    if params[:params].present? || session[:character].present?
+      session[:character]  = params[:params] if params[:params].present?
       @character = session[:character]
       @county = session[:county]
       get_user_info_from_userid

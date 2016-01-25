@@ -92,7 +92,7 @@ class ContactsController < InheritedResources::Base
         return
       end
     else
-      redirect_to @contact.previous_page_url
+      redirect_to :action => 'new'
       return
     end
   end
@@ -129,7 +129,7 @@ class ContactsController < InheritedResources::Base
     @contact.record_id = params[:id]
     @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
     @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
-    @contact.county = @freereg1_csv_entry.freereg1_csv_file.register.church.place.chapman_code
+    @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 

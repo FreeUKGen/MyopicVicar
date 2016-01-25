@@ -162,11 +162,16 @@ class UserMailer < ActionMailer::Base
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested enhancement. Reference #{@contact.identifier}")
   end
-
   def general(contact,ccs)
     @contact = contact
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
+  end
+
+  def send_message(mymessage,ccs)
+    @message = mymessage
+    get_message_attachment if @message.attachment.present? ||  @message.images.present?
+    mail(:from => "freereg-contacts@freereg.org.uk",:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
   def genealogy(contact,ccs)
@@ -226,7 +231,16 @@ class UserMailer < ActionMailer::Base
       attachments[@image] = File.binread(@file)
     end
   end
-
+  def get_message_attachment
+    if @message.attachment.present? || @message.images.present?
+      @file_name = File.basename(@message.attachment.path)
+      @file = "#{Rails.root}/public" + @message.attachment_url
+      attachments[@file_name] = File.read(@file)
+      @image = File.basename(@message.images.path)
+      @filei = "#{Rails.root}/public" + @message.images_url
+      attachments[@image] = File.binread(@filei)
+    end
+  end
   def get_coordinator_name
     coordinator = Syndicate.where(:syndicate_code => @user.syndicate).first
     if coordinator.nil?

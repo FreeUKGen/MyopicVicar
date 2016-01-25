@@ -83,7 +83,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def role
-    p params
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = " lower case userid"
@@ -315,9 +314,9 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     if @userid.has_files?
       flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
-      next_place_to_go_unsuccessful_update
+       redirect_to :action => 'options'
     else
-      Freereg1CsvFile.delete_userid(@userid.userid) unless userid.nil?
+      Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
       redirect_to :action => 'options'
@@ -353,13 +352,13 @@ class UseridDetailsController < ApplicationController
     when  params[:commit] == "Submit"
       @user = UseridDetail.where(userid:  session[:userid]).first
       render :action => 'new' and return
-    when session[:type] == 'researcher_registration'
+    when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
-    when session[:type] == 'transcriber_registration'
+    when params[:commit] == 'Register Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       render :action => 'transcriber_registration' and return
-    when session[:type] == 'technical_registration'
+    when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
       @user = UseridDetail.where(userid:  session[:userid]).first

@@ -179,32 +179,22 @@ class Place
   end
 
 
-  def self.recalculate_last_amended_date(place)
-    place.churches.each do |church|
+  def recalculate_last_amended_date
+    self.churches.each do |church|
       church.registers.each do |register|
         register.freereg1_csv_files.each do |file|
-
           file_creation_date = file.transcription_date
           file_amended_date = file.modification_date if (Freereg1CsvFile.convert_date(file.modification_date)  > Freereg1CsvFile.convert_date(file_creation_date))
-
           file_amended_date =  file_creation_date if file_amended_date.nil?
-
-          register.last_amended = file_amended_date if (Freereg1CsvFile.convert_date(file_amended_date)  > Freereg1CsvFile.convert_date(register.last_amended))
-          #p register.last_amended
-
+          register.update_attribute(:last_amended, file_amended_date) if (Freereg1CsvFile.convert_date(file_amended_date)  > Freereg1CsvFile.convert_date(register.last_amended))
         end #end of file
-        register.save
-
-        church.last_amended = register.last_amended if (Freereg1CsvFile.convert_date(register.last_amended ) > Freereg1CsvFile.convert_date(church.last_amended))
-        # p church.last_amended
+        church.update_attribute(:last_amended, register.last_amended) if (Freereg1CsvFile.convert_date(register.last_amended ) > Freereg1CsvFile.convert_date(church.last_amended))
       end #end of register
-      church.save
-      place.last_amended = church.last_amended if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(place.last_amended))
-      #p place.last_amended
-    end #end of church
-    place.save
-    place.update_data_present
+      self.update_attribute(:last_amended, church.last_amended) if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(self.last_amended))
+    end #end of church 
+    self.update_data_present
   end
+
   def update_data_present
     if self.data_present?
       self.update_attribute(:data_present,true)
@@ -244,6 +234,7 @@ class Place
       return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
       self.propogate_place_name_change
       self.propogate_batch_lock
+      self.recalculate_last_amended_date
       PlaceCache.refresh(self.chapman_code)
     end
     return [false, ""]
@@ -251,17 +242,16 @@ class Place
 
   def propogate_place_name_change
     place_id = self._id
-
-    self.churches.each do |church|
+    self.churches.no_timeout.each do |church|
       church.update_attribute(:place_id, place_id)
-      church.registers.each do |register|
+      church.registers.no_timeout.each do |register|
         location_names =[]
         location_names << "#{place_name} (#{church.church_name})"
         location_names  << " [#{RegisterType.display_name(register.register_type)}]"
-        register.freereg1_csv_files.each do |file|
-          file.freereg1_csv_entries.each do |entry|
+        register.freereg1_csv_files.no_timeout.each do |file|
+          file.freereg1_csv_entries.no_timeout.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}"
+              logger.info "FREEREG:search record missing for entry #{entry._id}"
             else
               entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
             end
@@ -287,7 +277,7 @@ class Place
         register.freereg1_csv_files do |file|
           file.freereg1_csv_entries.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}"
+              logger.info "FREEREG:search record missing for entry #{entry._id}"
             else
               entry.search_record.update_attribute(:chapman_code, self.chapman_code)
             end
@@ -320,6 +310,7 @@ class Place
       return [true, "Error in save of place; contact the webmaster"]
     end
     self.propogate_county_change
+    PlaceCache.refresh(self.chapman_code)
     return [false, ""]
   end
 

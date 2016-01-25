@@ -105,15 +105,15 @@ class ApplicationController < ActionController::Base
   end
 
   def log_possible_host_change
-    log_message = "PHC WARNING: browser may have jumped across servers mid-session!\n"
-    log_message += "PHC Time.now=\t\t#{Time.now}\n"
-    log_message += "PHC params=\t\t#{params}\n"
-    log_message += "PHC caller=\t\t#{caller.first}\n"
-    log_message += "PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
-    log_message += "PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
-    log_message += "PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
-    log_message += "PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
-    log_message += "PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
+    log_message = "FREEREG:PHC WARNING: browser may have jumped across servers mid-session!\n"
+    log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
+    log_message += "FREEREG:PHC params=\t\t#{params}\n"
+    log_message += "FREEREG:PHC caller=\t\t#{caller.first}\n"
+    log_message += "FREEREG:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
+    log_message += "FREEREG:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
+    log_message += "FREEREG:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
+    log_message += "FREEREG:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
+    log_message += "FREEREG:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
     
     logger.warn(log_message)    
   end
@@ -147,7 +147,7 @@ class ApplicationController < ActionController::Base
     session.delete(:physical_index_page)
     session.delete(:character)
     session.delete(:edit_userid)
-    
+    session.delete(:who)   
   end
 
   def clean_session_for_county
@@ -236,7 +236,7 @@ class ApplicationController < ActionController::Base
 
   def go_back(type,record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
-    logger.info "ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path
     return
   end  

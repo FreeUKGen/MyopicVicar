@@ -43,10 +43,12 @@ module FreeregOptionsConstants
      ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]
   ]
-  RECORDS_PER_RANGE = 750000
+  RECORDS_PER_RANGE = 500000
   FILES_PER_PAGE = 500
   MAX_RECORDS_COORDINATOR = 4000
   MAX_RECORDS_DATA_MANAGER = 15000 
   MAX_RECORDS_SYSTEM_ADMINISTRATOR = 100000 
+  MESSAGE_RECIPIENTS = ['Myself to Review',"Active Transcribers",'Inactive Transcribers','Coordinators','Researchers', 'Managers', 'Coordinators and Managers']
+  
 
 end
