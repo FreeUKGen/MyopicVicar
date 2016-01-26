@@ -20,11 +20,13 @@ describe Freereg1CsvEntry do
     SearchRecord.create_indexes
 
     SearchRecord.setup_benchmark
+    Freereg1Translator.setup_benchmark
 
   end
 
   after(:all) do
     SearchRecord.report_benchmark    
+    Freereg1Translator.report_benchmark    
   end
 
 
@@ -336,7 +338,6 @@ describe Freereg1CsvEntry do
     result.should be_in_result(entry)
 
   end
-
 
 
 

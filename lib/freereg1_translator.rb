@@ -52,12 +52,41 @@ module Freereg1Translator
     :file_line_number => :file_line_number,
   }
 
+ def self.setup_benchmark
+    unless defined? @@tts
+      @@tts = {}
+      @@tts[:entry] = Benchmark.measure {}
+      @@tts[:file] = Benchmark.measure {}
+      @@tts[:transform] = Benchmark.measure {}
+    end
+  end
+ def self.report_benchmark
+    print "\n\nTranslator\n"    
+    @@tts.each_pair do |k,v|
+      print "#{k}\t"
+      print "#{v.format}"
+    end
+  end
+
+ 
+
   def self.translate(file, entry)
-    entry_attrs = entry_attributes(entry) # straightforward remapping of csv entry fields to corresponding search record fields
-    file_attrs = file_attributes(file)    # populating search record fields from file header
-    file_attrs.merge!(entry_attrs)        # join the two
-    names = transform_names(entry)        # populate names from csv entry based on mapping file
-    file_attrs[:transcript_names] = names
+
+    entry_attrs = nil
+    file_attrs = nil
+    names = nil
+        
+    @@tts[:entry] += Benchmark.measure do
+      entry_attrs = entry_attributes(entry) # straightforward remapping of csv entry fields to corresponding search record fields
+    end
+    @@tts[:file] += Benchmark.measure do
+      file_attrs = file_attributes(file)    # populating search record fields from file header
+      file_attrs.merge!(entry_attrs)        # join the two
+    end
+    @@tts[:transform] += Benchmark.measure do
+      names = transform_names(entry)        # populate names from csv entry based on mapping file
+      file_attrs[:transcript_names] = names
+    end
     
     file_attrs
   end
