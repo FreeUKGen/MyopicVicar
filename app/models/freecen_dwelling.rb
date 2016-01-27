@@ -39,14 +39,14 @@ class FreecenDwelling
     #Scotland doesn't have folio
     if '1841' == year
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
+        return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
       end
-      return ['Census Year', 'County', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
+      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
     end
     if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-      return ['Census Year', 'County', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name']
     end
-    ['Census Year', 'County', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
   end
   def dwelling_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number
@@ -55,13 +55,13 @@ class FreecenDwelling
     # self.place.place_name is currently identical to civil_parish
     if '1841' == year
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return [self.freecen1_vld_file.full_year, disp_county, self.civil_parish, self.freecen1_vld_file.piece, self.enumeration_district, self.page_number, self.house_number, self.house_or_street_name]
+        return [self.freecen1_vld_file.full_year, disp_county, self.place.place_name, self.civil_parish, self.freecen1_vld_file.piece.to_s, self.enumeration_district, self.page_number, self.house_number, self.house_or_street_name]
       end
-      return [self.freecen1_vld_file.full_year, disp_county, self.civil_parish, self.freecen1_vld_file.piece, self.enumeration_district, self.folio_number, self.page_number, self.house_number, self.house_or_street_name]
+      return [self.freecen1_vld_file.full_year, disp_county, self.place.place_name, self.civil_parish, self.freecen1_vld_file.piece.to_s, self.enumeration_district, self.folio_number, self.page_number, self.house_number, self.house_or_street_name]
     end
     if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-      return [self.freecen1_vld_file.full_year, disp_county, self.civil_parish, self.ecclesiastical_parish, self.freecen1_vld_file.piece, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
+      return [self.freecen1_vld_file.full_year, disp_county, self.place.place_name, self.civil_parish, self.ecclesiastical_parish, self.freecen1_vld_file.piece.to_s, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
     end
-    [self.freecen1_vld_file.full_year, disp_county, self.civil_parish, self.ecclesiastical_parish, self.freecen1_vld_file.piece, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
+    [self.freecen1_vld_file.full_year, disp_county, self.place.place_name, self.civil_parish, self.ecclesiastical_parish, self.freecen1_vld_file.piece.to_s, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
   end
 end

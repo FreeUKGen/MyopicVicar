@@ -32,13 +32,13 @@ class County
     unless self.county_coordinator == parameters[:county_coordinator] #no change in coordinator
       if UseridDetail.where(:userid => previous_county_coordinator).exists? then #make sure that
         @old_userid = UseridDetail.where(:userid => previous_county_coordinator).first
-        if @old_userid.county_groups.length == 1
+        if @old_userid.county_groups.present? && @old_userid.county_groups.length == 1
           unless  (@old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
             @old_userid.person_role = 'transcriber'  if @old_userid.syndicate_groups.nil?
             @old_userid.person_role = 'syndicate_coordinator' if @old_userid.syndicate_groups.present? && @old_userid.syndicate_groups.length >= 1
           end # role
         end #length
-        @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
+        @old_userid.county_groups.delete_if {|code| code == self.chapman_code} unless @old_userid.county_groups.nil?
         @old_userid.save(:validate => false)  unless @old_userid.nil?
       end ## old exists
       if UseridDetail.where(:userid => parameters[:county_coordinator]).exists? then # make sure there is a new coordinator to upgrade

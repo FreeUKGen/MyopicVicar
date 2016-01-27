@@ -4,7 +4,6 @@ module Freecen
     def process_dat_file(filename)
       file_record = process_dat_filename(filename)
       entry_records = process_dat_contents(filename)
-      
       persist_to_database(filename, file_record, entry_records)
     end
   
@@ -26,7 +25,7 @@ module Freecen
           entry.district_name = hash[:distname]
           entry.subplaces = []
           if is_scotland? file
-            entry.piece_number = hash[:a_sct_piecenum]
+            entry.piece_number = hash[:a_sct_piecenum].to_i
             entry.suffix = hash[:a_sct_suffix]            
             
             # $parnum = substr($line,64,1);
@@ -41,7 +40,7 @@ module Freecen
             # $parnum = $parnum + ($paroff*10);
             entry.parish_number = (parish_number + paroff*10).to_s
           else
-            entry.piece_number = hash[:a_piecenum]
+            entry.piece_number = hash[:a_piecenum].to_i
             entry.parish_number = '0'
             entry.suffix = ''
           end
@@ -72,7 +71,7 @@ module Freecen
     def process_dat_contents(filename)
       # open the file
       raw_file = File.read(filename)
-      # loop through each 299-byte substring
+      # loop through each 64-byte substring
       record_count = raw_file.length / DAT_RECORD_LENGTH - 1
       contents = []
       (0...record_count).to_a.each do |i|
@@ -81,8 +80,15 @@ module Freecen
       
       contents
     end
-  
-  
+    
+    # 4 (0-3) : piece No
+    # 4 (4-7) : reg dist No
+    # 20 (8-27) : reg sub-dist name (for 'a') / civil parish name (for 'b')
+    # 8 (28-35): LDS film # or filename
+    # 24 (36-59): spaces
+    # 3 (60-62): 3 spaces or SCT OPN supp Nos (OPN is Original Parish Number)
+    # 1 (63): 'a' or 'b'
+    
     DAT_POSITION_MAP = 
     {
       :distname => [8,20],

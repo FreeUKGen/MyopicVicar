@@ -8,22 +8,30 @@ namespace :freecen do
   # see http://west-penwith.org.uk/fctools/doc/reference.html
   def process_file(filename)
     print "Processing #{filename}\n"
-    parser = Freecen::Freecen1VldParser.new
-    file_record = parser.process_vld_file(filename)
+    begin
+      parser = Freecen::Freecen1VldParser.new
+      file_record = parser.process_vld_file(filename)
     
-    transformer = Freecen::Freecen1VldTransformer.new
-    transformer.transform_file_record(file_record)   
+      transformer = Freecen::Freecen1VldTransformer.new
+      transformer.transform_file_record(file_record)
     
-    translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_file_record(file_record)
-    print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
+      translator = Freecen::Freecen1VldTranslator.new
+      translator.translate_file_record(file_record)
+      print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
+    rescue => e
+      p e.message
+    end
   end
   
   desc "Process legacy FreeCEN1 VLD files"
   task :process_freecen1_vld, [:filename] => [:environment] do |t, args| 
     if Dir.exist? args.filename
-      Dir.glob(File.join(args.filename, '*.[Vv][Ll][Dd]')).each do |filename|
-        process_file(filename)  
+      vld_list=Dir.glob(File.join(args.filename, '*.[Vv][Ll][Dd]'))
+      ii=1
+      vld_list.sort_by{|f| f.downcase}.each do |filename|
+        process_file(filename)
+        print "\tfinished file number #{ii} of #{vld_list.length}\n"
+        ii+=1
       end
     else
       process_file(args.filename)

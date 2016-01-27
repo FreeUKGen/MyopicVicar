@@ -4,7 +4,14 @@ module Freecen
     def process_vld_file(filename)
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename)
-      
+
+      # do not persist if piece not found. raise exception so we can notify
+      # person loading the files that either the PARMS.DAT or .VLD file needs
+      # to be fixed
+      chapman_code = File.basename(File.dirname(filename))
+      if nil == FreecenPiece.where(:chapman_code => chapman_code, :piece_number => file_record[:piece]).first
+        raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]}. year=#{file_record[:full_year]} file=#{filename}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county if it hasn't been run, verify that the PARMS.DAT file is correct, verify that the .VLD file is in the correct directory and named correctly.\n"
+      end
       persist_to_database(filename, file_record, entry_records)
     end
   
@@ -76,7 +83,7 @@ module Freecen
       centype = filename[0,2]
           # if (uc($centype) eq "HO") {
       centype.upcase!
-      if "HO" == centype
+      if "HO" == centype #HO = England & Wales, 1841 & 1851
             
               # #process EW 1841-1851
               # $year = 1 if (substr($file,2,1) == 4 ||substr($file,2,1) == 1); 
@@ -93,7 +100,7 @@ module Freecen
         series = "ENW"
         
           # } elsif (uc($centype) eq "HS") {
-      elsif "HS" == centype
+      elsif "HS" == centype #HS = Scotland, 1841 & 1851
         
               # #process SC 1841-1851
               # $year = 1 if substr($file,2,1) == 4;
@@ -108,7 +115,7 @@ module Freecen
         sctpar = filename[3,2] # what is this used for?
         series = "SCT"
           # } elsif (uc($centype) eq "RG") {
-      elsif "RG" == centype
+      elsif "RG" == centype #RG = England & Wales, 1861 onwards
         
               # #process EW 1861-1891
         year_stub = filename[2,2]
@@ -129,7 +136,7 @@ module Freecen
               # $piece = substr($file,4,4);
         piece = filename[4,4]
           # } elsif (uc($centype) eq "RS") {
-      elsif "RS" == centype
+      elsif "RS" == centype #RS = Scotland, 1861 onwards
               # #process SC 1861-1891
         year_stub = filename[2,1]
               # $year = 3 if substr($file,2,1) == 6;
@@ -169,7 +176,7 @@ module Freecen
           
       full_year = year*10 + 1831
       
-      {:full_year => full_year, :raw_year => year, :piece => piece, :series => series, :census_type => centype }
+      {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype }
     end
     
     VLD_RECORD_LENGTH = 299

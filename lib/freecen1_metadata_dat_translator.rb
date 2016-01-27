@@ -17,9 +17,9 @@ module Freecen
         place.chapman_code = piece.chapman_code
         place.place_name = piece.district_name
       end 
-      piece.subplaces.each do |subplace|
-        place.alternateplacenames << Alternateplacename.new(:alternate_name => subplace) unless place.alternateplacenames.where(:alternate_name => subplace).count > 0
-      end
+#      piece.subplaces.each do |subplace|
+#        place.alternateplacenames << Alternateplacename.new(:alternate_name => subplace) unless place.alternateplacenames.where(:alternate_name => subplace).count > 0
+#      end
       place.latitude = 60 # TODO handle for FreeCEN
       place.longitude = 0
       place.save!

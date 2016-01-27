@@ -8,7 +8,7 @@ class Freecen1VldFile
   field :census_type, type: String
   field :raw_year, type: String
   field :full_year, type: String
-  field :piece, type: String
+  field :piece, type: Integer
   field :series, type: String
   
   def chapman_code

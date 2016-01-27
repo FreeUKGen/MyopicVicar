@@ -20,7 +20,8 @@ class Contact
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
-  field :contact_county, type: String
+  field :selected_county, type: String # user-selected county to contact in FC2
+  field :fc_individual_id, type: String
   field :identifier, type: String
   attr_accessor :action
 
@@ -73,6 +74,8 @@ class Contact
 
   def communicate_website_problem
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
@@ -85,6 +88,8 @@ class Contact
 
   def communicate_data_question
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
       ccs << person.email_address
     end
@@ -96,8 +101,10 @@ class Contact
 
   def communicate_data_problem
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if self.record_id.present? && coordinator.present
+    ccs << coordinator.email_address if coordinator.present?
     UseridDetail.where(:person_role => 'data_manager').all.each do |person|
       ccs << person.email_address
     end
@@ -110,6 +117,8 @@ class Contact
 
   def communicate_publicity
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'publicity_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -123,6 +132,8 @@ class Contact
 
   def communicate_genealogical_question
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'genealogy_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -137,6 +148,8 @@ class Contact
 
   def communicate_enhancement_suggestion
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'project_manager').all.each do |person|
       ccs << person.email_address
     end
@@ -150,6 +163,8 @@ class Contact
 
   def communicate_volunteering
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -164,6 +179,8 @@ class Contact
 
   def communicate_general
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address unless person.nil?
     end
@@ -174,12 +191,34 @@ class Contact
   end
 
   def get_coordinator
-    return nil if MyopicVicar::Application.config.template_set == 'freecen'
-    entry = SearchRecord.find(self.record_id).freereg1_csv_entry
-    record = Freereg1CsvEntry.find(entry)
-    file = record.freereg1_csv_file
-    county = file.county #this is chapman code
-    coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      entry = SearchRecord.find(self.record_id).freereg1_csv_entry
+      record = Freereg1CsvEntry.find(entry)
+      file = record.freereg1_csv_file
+      county = file.county #this is chapman code
+      coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      coord = nil
+      rec_county = SearchRecord.find(self.record_id).chapman_code
+      if rec_county.present?
+        c = County.where(:chapman_code => rec_county).first
+        return nil if c.nil?
+        cc_id = c.county_coordinator
+        coord = UseridDetail.where(:userid => cc_id).first unless cc_id.nil?
+      end
+      return coord
+    end
+  end
+
+  # used by freecen if user selects to contact coordinator for a specific county
+  def get_coordinator_for_selected_county
+    return nil if MyopicVicar::Application.config.template_set != 'freecen'
+    return nil if nil == self.selected_county || ''==self.selected_county
+    c = County.where(:chapman_code => self.selected_county).first
+    return nil if c.nil?
+    cc_userid = c.county_coordinator
+    coord = UseridDetail.where(:userid => cc_userid).first unless cc_userid.nil?
+    coord
   end
 
   def github_issue

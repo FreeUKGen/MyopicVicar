@@ -1,6 +1,6 @@
 class Freecen1FixedDatEntry
   include Mongoid::Document
-  field :piece_number, type: String
+  field :piece_number, type: Integer
   field :district_name, type: String
   field :subplaces, type: Array
   field :parish_number, type: String
