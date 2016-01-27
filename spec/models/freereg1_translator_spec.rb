@@ -111,11 +111,186 @@ describe Freereg1Translator do
     
     file_record.freereg1_csv_entries.all.to_a.each_with_index do |entry, i|
       if i % 100 == 0
-        p i
         entry.search_record.transcript_names.should eq(old_names[i].map{|n| HashWithIndifferentAccess.new_from_hash_copying_default(n)})
       end
     end  
   end
 
+  it "should populate marriages correctly" do
+    old_names = []
+    old_names[0] =
+    [{"role"=>"b",
+        "type"=>"primary",
+        "first_name"=>"Margerie",
+        "last_name"=>"CHATTERTON"},
+      {"role"=>"g",
+        "type"=>"primary",
+        "first_name"=>"Thomas",
+        "last_name"=>"BUCKMASTER"}]
+    old_names[100] =
+    [{"role"=>"b",
+        "type"=>"primary",
+        "first_name"=>"Margarie",
+        "last_name"=>"BEARD"},
+      {"role"=>"g", "type"=>"primary", "first_name"=>"John", "last_name"=>"OUTRED"}]
+    old_names[200] =
+    [{"role"=>"b", "type"=>"primary", "first_name"=>"Mary", "last_name"=>"WELCH"},
+      {"role"=>"g",
+        "type"=>"primary",
+        "first_name"=>"Thomas",
+        "last_name"=>"WILLIAMS"}]
+    old_names[300] =
+    [{"role"=>"b",
+        "type"=>"primary",
+        "first_name"=>"Mary",
+        "last_name"=>"DEARMER"},
+      {"role"=>"g",
+        "type"=>"primary",
+        "first_name"=>"George",
+        "last_name"=>"GRAVES"}]
+    old_names[400] =
+    [{"role"=>"b", "type"=>"primary", "first_name"=>"Ann", "last_name"=>"WALLIS"},
+      {"role"=>"g",
+        "type"=>"primary",
+        "first_name"=>"William",
+        "last_name"=>"HIDE"},
+      {"role"=>"gf", "type"=>"other", "first_name"=>"John", "last_name"=>"HIDE"},
+      {"role"=>"bf",
+        "type"=>"other",
+        "first_name"=>"Richard",
+        "last_name"=>"WALLIS"}]
+    old_names[500] =
+    [{"role"=>"b",
+        "type"=>"primary",
+        "first_name"=>"Lizzie Gertrude",
+        "last_name"=>"WATSON"},
+      {"role"=>"g",
+        "type"=>"primary",
+        "first_name"=>"Charles",
+        "last_name"=>"WORBEY"},
+      {"role"=>"gf",
+        "type"=>"other",
+        "first_name"=>"Thomas",
+        "last_name"=>"WORBEY"},
+      {"role"=>"bf",
+        "type"=>"other",
+        "first_name"=>"George",
+        "last_name"=>"WATSON"}]
+
+
+    filespec = FREEREG1_CSV_FILES[4]
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    
+    file_record.freereg1_csv_entries.all.to_a.each_with_index do |entry, i|
+      if i % 100 == 0
+        entry.search_record.transcript_names.should eq(old_names[i])
+      end
+    end  
+  end
+
+  it "should populate burials correctly" do
+    old_names = []
+    old_names[0] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"John",
+        "last_name"=>"NORTHWAY"},
+      {"role"=>"fr",
+        "type"=>"other",
+        "first_name"=>"Grace",
+        "last_name"=>"NORTHWAY"},
+      {"role"=>"mr",
+        "type"=>"other",
+        "first_name"=>"Thomas",
+        "last_name"=>"NORTHWAY"}]
+    old_names[10] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Michael",
+        "last_name"=>"CRANG"}]
+    old_names[20] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Thomas",
+        "last_name"=>"*COTT"}]
+    old_names[30] =
+    [{"role"=>"bu", "type"=>"primary", "first_name"=>"Ann", "last_name"=>"CRANG"}]
+    old_names[40] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Mary",
+        "last_name"=>"MANSEB"}]
+    old_names[50] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Roger",
+        "last_name"=>"HUTCHINGS"},
+      {"role"=>"mr",
+        "type"=>"other",
+        "first_name"=>"John",
+        "last_name"=>"HUTCHINGS"}]
+    old_names[60] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Edward",
+        "last_name"=>"VANE"}]
+    old_names[70] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Joseph",
+        "last_name"=>"MORRICE"}]
+    old_names[80] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Will.",
+        "last_name"=>"JEWELL"},
+      {"role"=>"mr", "type"=>"other", "first_name"=>"Humphry", "last_name"=>"SAY"}]
+    old_names[90] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Elizabeth",
+        "last_name"=>"BRAMMELL"}]
+    old_names[100] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Emmet",
+        "last_name"=>"SMALE"}]
+    old_names[110] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Amos",
+        "last_name"=>"HILLMAN"}]
+    old_names[120] =
+    [{"role"=>"bu",
+        "type"=>"primary",
+        "first_name"=>"Johes",
+        "last_name"=>"RENDIUI"},
+      {"role"=>"mr",
+        "type"=>"other",
+        "first_name"=>"Johis",
+        "last_name"=>"RENDIUI"}]
+
+
+    filespec = FREEREG1_CSV_FILES[3]
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    
+    file_record.freereg1_csv_entries.all.to_a.each_with_index do |entry, i|
+      if i % 10 == 0
+        entry.search_record.transcript_names.should eq(old_names[i])
+      end
+    end  
+
+  end
+
+  def print_old_names(file_record)
+      file_record.freereg1_csv_entries.all.to_a.each_with_index do |entry, i|
+      if i % 10 == 0
+        print "old_names[#{i}] = \n"
+        pp entry.search_record.transcript_names
+      end
+    end  
+  end  
 
 end

@@ -84,7 +84,15 @@ module Freereg1Translator
       file_attrs.merge!(entry_attrs)        # join the two
     end
     @@tts[:transform] += Benchmark.measure do
-      names = transform_names(entry)        # populate names from csv entry based on mapping file
+      # if file.record_type == RecordType::BAPTISM
+        # names = translate_names_baptism(entry)
+      # elsif file.record_type == RecordType::MARRIAGE
+        # names = translate_names_marriage(entry)
+      # else
+        # names = translate_names_burial(entry)
+        # # names = transform_names(entry)        # populate names from csv entry based on mapping file      
+      # end
+      names = transform_names(entry)
       file_attrs[:transcript_names] = names
     end
     
@@ -150,6 +158,114 @@ module Freereg1Translator
   
     names
 
+  end
+
+
+  def self.translate_names_marriage(entry)
+    names = []
+    # - role: b
+      # type: primary
+      # fields:
+        # first_name: bride_forename
+        # last_name:  bride_surname
+    names << { :role => 'b', :type => 'primary', :first_name => entry.bride_forename, :last_name => entry.bride_surname }
+    # - role: g
+      # type: primary
+      # fields:
+        # first_name: groom_forename
+        # last_name:  groom_surname
+    names << { :role => 'g', :type => 'primary', :first_name => entry.groom_forename, :last_name => entry.groom_surname }
+    # 
+    # - role: gf
+      # type: other
+      # fields:
+        # first_name: groom_father_forename
+        # last_name:  groom_father_surname
+    if entry.groom_father_surname
+      names << { :role => 'gf', :type => 'other', :first_name => entry.groom_father_forename, :last_name => entry.groom_father_surname }
+    end
+    # - role: bf
+      # type: other
+      # fields:
+        # first_name: bride_father_forename
+        # last_name:  bride_father_surname
+        
+    if entry.bride_father_surname
+      names << { :role => 'bf', :type => 'other', :first_name => entry.bride_father_forename, :last_name => entry.bride_father_surname }      
+    end
+    
+    names
+  end
+  
+  def self.translate_names_burial(entry)
+    names = []
+    
+    # - role: bu
+      # type: primary
+      # fields:
+        # first_name: burial_person_forename
+        # last_name:  
+        # - burial_person_surname
+        # - relative_surname
+    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename, :last_name => (entry.burial_person_surname||entry.relative_surname)}
+    # - role: fr
+      # type: other
+      # fields:
+        # first_name: female_relative_forename
+        # last_name:  relative_surname
+    if entry.female_relative_forename
+      names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname }
+    end
+    # - role: mr
+      # type: other
+      # fields:
+        # first_name: male_relative_forename
+        # last_name:  relative_surname
+    if entry.male_relative_forename
+      names << { :role => 'mr', :type => 'other', :first_name => entry.male_relative_forename, :last_name => entry.relative_surname}    
+    end        
+
+    
+    names
+  end
+  
+  def self.translate_names_baptism(entry)
+    names = []
+
+    # - role: ba
+      # type: primary
+      # fields:
+        # first_name: person_forename
+        # last_name:
+        # - father_surname
+        # - mother_surname
+    surname = entry.father_surname || entry.mother_surname
+    forename = entry.person_forename || ""
+    names << { :role => 'ba', :type => 'primary', :first_name => forename, :last_name => surname}
+    
+    # - role: f
+      # type: other
+      # fields:
+        # first_name: father_forename
+        # last_name:  father_surname
+    if entry.father_forename
+      names << { :role => 'f', :type => 'other', :first_name => entry.father_forename, :last_name => entry.father_surname}      
+    end
+
+
+    # - role: m
+      # type: other
+      # fields:
+        # first_name: mother_forename
+        # last_name:
+        # - mother_surname
+        # - father_surname
+    if entry.mother_forename
+      names << { :role => 'm', :type => 'other', :first_name => entry.mother_forename, :last_name => (entry.mother_surname || entry.father_surname)}
+    end
+    
+
+    names    
   end
   
 end
