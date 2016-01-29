@@ -39,7 +39,6 @@
       </thead>
       <tbody>
 	<tr>
-	  <%# @search_record.place.place_name --- moved to models/freecen_dwelling (see "*TODO*") %>
 	  <% @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
 	  <td>
 	    <%= field_val %>
