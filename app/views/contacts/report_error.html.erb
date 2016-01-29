@@ -33,7 +33,7 @@
 
 
       <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="name_input">
-        <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please provide a name for when we contact you; it will not be made public</span></a>
+        <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please provide a name for when we contact you; it will not be made public</span></a>
         </label>
       <% if @contact.name.nil? %>
         <input name="contact[name]" type="text" class="text-input" placeholder="Mandatory" required="required" >
@@ -42,7 +42,7 @@
       <% end %>
       </li>
       <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="email_address_input">
-         <label class="label" for="email_address">Your email address <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please enter your email address so we can contact you; it will not be made public</span></a></label>
+         <label class="label" for="email_address">Your email address <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please enter your email address so we can contact you; it will not be made public</span></a></label>
       <% if @contact.email_address.nil? %>
         <input name="contact[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
       <% else%>
@@ -51,12 +51,12 @@
       </li>
       
     <li class="grid__item  one-third  palm-one-whole  push--bottom">
-      <label>Screenshot or image <span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select any supporting images (jpg, jpeg or gif only)</span></a></label>
+      <label>Screenshot or image <span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span  >Please select any supporting images (jpg, jpeg or gif only)</span></a></label>
         <input name="contact[screenshot]" type="file" >
       </li>
       <br>
     <li class="grid__item  two-thirds  palm-one-whole  push--bottom">
-      <label>Description <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span>Please enter your reasons for commenting on the record entry</span></a></label>
+      <label>Description <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please enter your reasons for commenting on the record entry</span></a></label>
       <% if @contact.body.nil? %>
       <textarea name="contact[body]"  style="width: 100%;"  rows="6"></textarea>
       <% else%>
