@@ -40,8 +40,8 @@ class Place
   field :master_place_lon, type: String
   field :error_flag,type: String, default: nil
   field :data_present, type: Boolean, default: false
+  field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :alternate, type: String, default: ""
-
 
   embeds_many :alternateplacenames
 

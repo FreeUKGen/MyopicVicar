@@ -19,9 +19,16 @@ class PlaceCache
       places = Place.where(:chapman_code => county).asc(:place_name)
       places.each do |place|
         if place.data_present
-          county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
+          cen_years_with_data = ""
+          [1841,1851,1861,1871,1881,1891].each do |yy|
+            if !place.cen_data_years.nil? && place.cen_data_years.include?(yy)
+              cen_years_with_data += (""==cen_years_with_data) ? " " : "/"
+              cen_years_with_data += "#{yy}"
+            end
+          end
+          county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)}#{cen_years_with_data})"
         end
-      end      
+      end
     end
     PlaceCache.create!({ :chapman_code => county, :places_json => county_response.to_json})
   end
