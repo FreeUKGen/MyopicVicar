@@ -25,7 +25,7 @@ class PlaceCache
               if(""==cen_years_with_data)
                 cen_years_with_data += " #{yy}"
               else
-                cen_years_with_data += "/#{yy-1800}"
+                cen_years_with_data += ",'#{yy-1800}"
               end
             end
           end
