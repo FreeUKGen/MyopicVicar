@@ -100,6 +100,5 @@ namespace :freecen do
     Freecen1FixedDatFile.delete_all
   end
 
-
 end
 
