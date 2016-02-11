@@ -20,7 +20,7 @@ namespace :freecen do
   end
   
   desc "Process legacy FreeCEN1 VLD files"
-  task :process_freecen1_vld, [:filename] => [:environment] do |t, args|
+  task :process_freecen1_vld, [:filename,:report_email] => [:environment] do |t, args|
     vld_err_messages = []
     if Dir.exist? args.filename
       vld_list=Dir.glob(File.join(args.filename, '*.[Vv][Ll][Dd]'))
@@ -43,13 +43,19 @@ namespace :freecen do
         vld_err_messages << e.message
       end
     end
+    report = "No errors reported"
     if vld_err_messages.length > 0
-      #TODO: send an email with vld_err_messages if requested?
-      p "##############################################################"
-      p "The following error messages were reported during processing:"
+      report = "The following processing error messages were reported:\n"
       vld_err_messages.each do |msg|
-        p "  #{msg}"
+        report += "  #{msg}\n"
       end
+    end
+    p "########################################################"
+    puts report
+    if !args.report_email.nil?
+      require 'user_mailer'
+      p "sending email to #{args.report_email} to notify of task completion"
+      UserMailer.freecen_processing_report(args.report_email,"FreeCen VLD processing #{args.filename} ended", report).deliver
     end
   end
 

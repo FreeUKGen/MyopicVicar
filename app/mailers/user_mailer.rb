@@ -5,6 +5,11 @@ class UserMailer < ActionMailer::Base
     default from: "freecen-contacts@freecen.org.uk"
   end
 
+  def freecen_processing_report(to_email,subj,report)
+    @freecen_report = report
+    mail(:from => "freecen-processing@freecen.org.uk", :to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
+  end
+
   def batch_processing_success(user,batch,records,error,headers)
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
