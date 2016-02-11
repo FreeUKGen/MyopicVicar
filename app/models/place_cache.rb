@@ -29,7 +29,11 @@ class PlaceCache
               end
             end
           end
-          county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)}#{cen_years_with_data})"
+          if MyopicVicar::Application.config.template_set == 'freereg'
+            county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
+          elsif MyopicVicar::Application.config.template_set == 'freecen'
+            county_response[place.id] = "#{place.place_name} (#{place.chapman_code}#{cen_years_with_data})"
+          end
         end
       end
     end
