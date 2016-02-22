@@ -16,11 +16,55 @@ class PhysicalFilesController < InheritedResources::Base
     when   @sorted_by == "(All files by userid then batch name)"
       @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when @sorted_by == '(File not processed)'
-      @batches = PhysicalFile.not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      # @batches = PhysicalFile.not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      @batches = PhysicalFile.not_processed.all
+      unless @batches.nil?
+        @batches = @batches.sort {|a,b|
+          cmp = a[:userid].downcase <=> b[:userid].downcase
+          if 0==cmp #same userid, sort by upload date
+            if a[:base_uploaded_date].nil?
+              if b[:base_uploaded_date].nil?
+                0
+              else
+                -1
+              end
+            elsif b[:base_uploaded_date].nil?
+              1
+            else
+              a[:base_uploaded_date] <=> b[:base_uploaded_date]
+            end
+          else
+            cmp
+          end
+        }
+        @batches = Kaminari.paginate_array(@batches).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      end
     when @sorted_by ==  "Not Processed" && session[:who].present?
       @batches = PhysicalFile.userid(session[:who]).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when @sorted_by ==  "Not Processed" && session[:county].present?
-      @batches = PhysicalFile.county(session[:county]).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE) 
+      # @batches = PhysicalFile.county(session[:county]).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE) 
+      @batches = PhysicalFile.county(session[:county]).not_processed.all
+      unless @batches.nil?
+        @batches = @batches.sort {|a,b|
+          cmp = a[:userid].downcase <=> b[:userid].downcase
+          if 0==cmp #same userid, sort by upload date
+            if a[:base_uploaded_date].nil?
+              if b[:base_uploaded_date].nil?
+                0
+              else
+                -1
+              end
+            elsif b[:base_uploaded_date].nil?
+              1
+            else
+              a[:base_uploaded_date] <=> b[:base_uploaded_date]
+            end
+          else
+            cmp
+          end
+        }
+        @batches = Kaminari.paginate_array(@batches).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      end
     when   @sorted_by == '(Processed but no file in FR2)'
       @batches = PhysicalFile.processed.not_uploaded_into_base.all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     when   @sorted_by == "Processed but no file in FR2" && session[:who].present?

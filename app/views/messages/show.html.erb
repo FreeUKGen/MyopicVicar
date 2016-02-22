@@ -36,7 +36,7 @@
         </tr>
         
         <tr>
-          <td>Message :</td><td class="weight--semibold"><%= @message.body %></td>
+          <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly"><%= @message.body %></textarea></td>
         </tr>
         <% if @message.sent_messages.present?%>
           <% @message.sent_messages.each do |each_message| %>
