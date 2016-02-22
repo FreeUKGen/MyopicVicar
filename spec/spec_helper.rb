@@ -224,6 +224,24 @@ ARTIFICIAL_FILES = [
   }
 ]
 
+DELTA_FILES = [
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v1/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v2/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v3/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  }
+]
+
 
 EMBARGO_FILES = [
   {

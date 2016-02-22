@@ -340,6 +340,29 @@ describe Freereg1CsvEntry do
   end
 
 
+  it "should not update records that have not changed meaningfully" do
+    filespec = DELTA_FILES[0]
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry = file_record.freereg1_csv_entries.first
+    search_record = entry.search_record
+
+    first = search_record.id
+
+    filespec = DELTA_FILES[1]
+    process_test_file(filespec)
+    file_record2 = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry2 = file_record2.freereg1_csv_entries.first
+    search_record2 = entry2.search_record
+    second = search_record2.id
+
+    binding.pry
+
+    first.should eq(second)
+
+  end
+
+
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required
