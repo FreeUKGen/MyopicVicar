@@ -18,7 +18,7 @@ namespace :build do
   collection_array[14] = "contacts"
   collection_array[15] = "attic_files"
   collection_array[16] = "physical_files"
-  collection_array[16] = "messages"
+  collection_array[17] = "messages"
 	COLLECTIONS = {
 		'master_place_names' => 'MasterPlaceName',
 		'batch_errors' => 'BatchError',
