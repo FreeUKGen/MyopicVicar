@@ -19,7 +19,7 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'record_type'
 
-require 'freereg_csv_processor'
+require 'freereg_csv_update_processor'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -52,13 +52,24 @@ end
 
 def process_test_file(file)
   Rails.application.config.datafiles=file[:basedir]
+
+  # create_stub user
   username = file[:user]
   userid = UseridDetail.where(:userid => username).first
   unless userid
     UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')
   end
 
-  FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
+  # create stub place
+  place = Place.where(:place_name => file[:placename], :chapman_code => file[:chapman_code]).first  
+  unless place
+    place = Place.create!(:place_name => file[:placename], :chapman_code => file[:chapman_code], :latitude => 60, :longitude => 0)
+    place.approve
+    place.save!
+  end
+
+  # FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
+  FreeregCsvUpdateProcessor.process_single_file(File.join(file[:basedir], file[:user], File.basename(file[:filename])), "change", true, "add")
 
 end
 
@@ -78,6 +89,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::BURIAL,
     :user => 'kirknorfolk',
     :chapman_code => 'NFK',
+    :placename => 'Aldeby',
     :entry_count => 15,
     :entries => {
       :first => {
@@ -102,6 +114,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::BAPTISM,
     :user => 'kirkbedfordshire',
     :chapman_code => 'BDF',
+    :placename => 'Yielden',
     :entry_count => 1223,
     :entries => {
       :first => {
@@ -131,6 +144,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
+    :placename => 'Caldecote',
     :entry_count => 45,
     :entries => {
       :first => {
@@ -159,6 +173,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::BURIAL,
     :user => 'Devonian',
     :chapman_code => 'DEV',
+    :placename => 'Landcross',
     :entry_count => 128,
     :entries => {
       :first => {
@@ -183,6 +198,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
+    :placename => 'Willian',
     :entry_count => 545,
     :entries => {
       :first => {

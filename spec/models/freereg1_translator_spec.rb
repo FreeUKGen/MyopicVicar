@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'record_type'
-require 'freereg_csv_processor'
+require 'freereg_csv_update_processor'
 require 'pp'
 
 RSpec::Matchers.define :be_in_result do |entry|

@@ -196,48 +196,48 @@ namespace :build_ssl do
 		exit(true)
 	end
 
-	# This is the processing task. It can be invoked on its own as build:process_freereg1_csv[] with
-	#parameters as defined for build:freereg EXCEPT there is only one range argument
-	#NOTE NO SETUP of the database IS DONE DURING THIS TASK
-	task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |t, args|
-
-		require 'freereg_csv_processor'
-		# use the processor to initiate search record creation on add or update but not on recreation when we do at end
-		search_records = "no_search_records"
-		search_records = "create_search_records" if args.search_records == "create_search_records_processor"
-
-		puts "processing CSV file with #{args.type} and #{search_records}"
-		success = FreeregCsvProcessor.process(args.type,search_records,args.range)
-		if success
-			puts "Freereg task complete."
-			exit(true)
-		else
-			puts "Freereg task failed"
-
-			exit(false)
-		end
-	end
-	task :process_freereg1_individual_csv,[:user,:file] => [:environment] do |t, args|
-
-		require 'freereg_csv_processor'
-		require 'user_mailer'
-		# use the processor to initiate search record creation on add or update but not on recreation when we do at end
-		range = File.join(args.user ,args.file)
-		search_records = "create_search_records"
-
-		success = FreeregCsvProcessor.process("recreate",search_records,range)
-		if success
-			UserMailer.batch_processing_success(args.user,args.file).deliver
-			exit(true)
-		else
-			file = File.join(Rails.application.config.datafiles,args.user,args.file)
-			if File.exists?(file)
-				p file
-				File.delete(file)
-			end
-			exit(false)
-		end
-	end
+	# # This is the processing task. It can be invoked on its own as build:process_freereg1_csv[] with
+	# #parameters as defined for build:freereg EXCEPT there is only one range argument
+	# #NOTE NO SETUP of the database IS DONE DURING THIS TASK
+	# task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |t, args|
+# 
+		# require 'freereg_csv_processor'
+		# # use the processor to initiate search record creation on add or update but not on recreation when we do at end
+		# search_records = "no_search_records"
+		# search_records = "create_search_records" if args.search_records == "create_search_records_processor"
+# 
+		# puts "processing CSV file with #{args.type} and #{search_records}"
+		# success = FreeregCsvProcessor.process(args.type,search_records,args.range)
+		# if success
+			# puts "Freereg task complete."
+			# exit(true)
+		# else
+			# puts "Freereg task failed"
+# 
+			# exit(false)
+		# end
+	# end
+	# task :process_freereg1_individual_csv,[:user,:file] => [:environment] do |t, args|
+# 
+		# require 'freereg_csv_processor'
+		# require 'user_mailer'
+		# # use the processor to initiate search record creation on add or update but not on recreation when we do at end
+		# range = File.join(args.user ,args.file)
+		# search_records = "create_search_records"
+# 
+		# success = FreeregCsvProcessor.process("recreate",search_records,range)
+		# if success
+			# UserMailer.batch_processing_success(args.user,args.file).deliver
+			# exit(true)
+		# else
+			# file = File.join(Rails.application.config.datafiles,args.user,args.file)
+			# if File.exists?(file)
+				# p file
+				# File.delete(file)
+			# end
+			# exit(false)
+		# end
+	# end
 	
 	desc "Create the indexes after all FreeREG processes have completed"
 	task :create_freereg_csv_indexes => [:parallel_create_search_records, :setup_index, :environment] do

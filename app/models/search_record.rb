@@ -235,19 +235,23 @@ class SearchRecord
   end
 
   def transform
-    @@tts[:populate_tts] += Benchmark.measure { populate_search_from_transcript }
-
-    @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
-
-    @@tts[:separate_tts] += Benchmark.measure { separate_all }
-
-    @@tts[:emend_tts] += Benchmark.measure { emend_all }
-
-    @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
-
-    @@tts[:date_tts] += Benchmark.measure { transform_date }
-
-    @@tts[:location_tts] += Benchmark.measure { populate_location }
+    if defined? @@tts
+      @@tts[:populate_tts] += Benchmark.measure { populate_search_from_transcript }
+      @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
+      @@tts[:separate_tts] += Benchmark.measure { separate_all }
+      @@tts[:emend_tts] += Benchmark.measure { emend_all }
+      @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
+      @@tts[:date_tts] += Benchmark.measure { transform_date }
+      @@tts[:location_tts] += Benchmark.measure { populate_location }
+    else
+      populate_search_from_transcript
+      downcase_all
+      separate_all
+      emend_all
+      create_soundex
+      transform_date
+      populate_location
+    end
   end
 
   def populate_search_from_transcript
@@ -364,9 +368,36 @@ class SearchRecord
     @@places = nil if (defined?(@@places)).nil?
 
     record = nil
-    @@tts[:translate_tts] += Benchmark.measure { record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry)) }
+    if defined? @tts
+      @@tts[:translate_tts] += Benchmark.measure { record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry)) }
+  
+      @@tts[:place_lookup_tts] += Benchmark.measure do 
+        record.freereg1_csv_entry = entry
+        file = entry.freereg1_csv_file
+        if @@file.nil? || @@owner.nil?  
+          places = file.register.church.place 
+          @@places = places
+          @@file = file.file_name
+          @@owner = file.userid
+        else
+          if @@file == file.file_name && @@owner == file.userid
+            places = @@places
+          else
+            places = file.register.church.place 
+            @@places = places
+            @@file = file.file_name
+            @@owner = file.userid
+          end
+        end
+        record.place = places
+      end
+      
+      @@tts[:total_save_tts] += Benchmark.measure do
+        record.save!
+      end
+    else
+      record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
 
-    @@tts[:place_lookup_tts] += Benchmark.measure do 
       record.freereg1_csv_entry = entry
       file = entry.freereg1_csv_file
       if @@file.nil? || @@owner.nil?  
@@ -385,9 +416,7 @@ class SearchRecord
         end
       end
       record.place = places
-    end
     
-    @@tts[:total_save_tts] += Benchmark.measure do
       record.save!
     end
   end

@@ -751,12 +751,12 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
    end
    @@data_hold[@@place_register_key].store(number,data_record)
   end
-  
-                     #          def self.delete_all
-                     #           Freereg1CsvEntry.delete_all
-                     #            Freereg1CsvFile.delete_all
-                     #            SearchRecord.delete_freereg1_csv_entries
-                     #         end
+
+  def self.delete_all
+    Freereg1CsvEntry.delete_all
+    Freereg1CsvFile.delete_all
+    SearchRecord.delete_freereg1_csv_entries
+  end
                      #process the first 4 columns of the data record
                      # County, Place, Church, Reg #
   def self.setup_or_add_to_list_of_registers(place_register_key,data_record)
@@ -879,9 +879,9 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
       header_errors = 0
       header_errors = @@header_error.length unless  @@header_error.nil?
       puts "#@@userid #{@@filename} processed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type}; #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@batch_errors} data errors "
-      @@message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@batch_errors} data errors"
+      message_file.puts "#@@userid\t#{@@filename}\tprocessed  #{@@header[:records]} data lines for location #{@freereg1_csv_file.county}, #{@freereg1_csv_file.place}, #{@freereg1_csv_file.church_name}, #{@freereg1_csv_file.register_type}, #{@freereg1_csv_file.record_type};  #{@not_updated} unchanged and #{@deleted} removed.  #{header_errors} header errors and #{@batch_errors} data errors"
       if @freereg1_csv_file.register.church.place.error_flag == "Place name is not approved"
-         @@message_file.puts "Place name is unapproved"
+         message_file.puts "Place name is unapproved"
       end
       #reset ready for next batch
       #@@number_of_error_messages = 0
@@ -903,7 +903,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
     @locations.each do |location|
       loc = Freereg1CsvFile.find(location)
       puts "Removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for #{loc.file_name} in #{loc.userid}"
-      @@message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
+      message_file.puts "#{loc.userid} #{loc.file_name} removing batch for location #{loc.county}, #{loc.place}, #{loc.church_name}, #{loc.register_type}, #{loc.record_type} for "
       loc.delete
    end
   end
@@ -1073,7 +1073,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
            @@number_of_error_messages = @@number_of_error_messages + 1
            @csvdata = @@array_of_data_lines[@@number_of_line]
            puts "#{@@userid} #{@@filename}" + free.message + " at line #{@@number_of_line}"
-           @@message_file.puts "#{@@userid}\t#{@@filename}" + free.message + " at line #{@@number_of_line}"
+           message_file.puts "#{@@userid}\t#{@@filename}" + free.message + " at line #{@@number_of_line}"
 
 
            @@header_error[@@number_of_error_messages] = Hash.new
@@ -1095,9 +1095,9 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
 
          puts e.message
          puts e.backtrace
-         @@message_file.puts "#{@@userid}\t#{@@filename} line #{n} crashed the processor\n"
-         @@message_file.puts e.message
-         @@message_file.puts e.backtrace.inspect
+         message_file.puts "#{@@userid}\t#{@@filename} line #{n} crashed the processor\n"
+         message_file.puts e.message
+         message_file.puts e.backtrace.inspect
          break
 
        end#end of begin
@@ -1149,7 +1149,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
        if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
          code_set_specified_in_csv = first_data_line[5].strip
          if !code_set.nil? && code_set != code_set_specified_in_csv
-           @@message_file.puts "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
+           message_file.puts "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
          else
            code_set = code_set_specified_in_csv
          end
@@ -1176,7 +1176,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
        #Deal with the macintosh instruction in freereg1
        code_set = "macRoman" if (code_set.downcase == "macintosh")
        code_set = code_set.upcase if code_set.length == 5 || code_set.length == 6
-       @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set)
+       message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set)
        code_set = "Windows-1252" unless Encoding.name_list.include?(code_set)
 
        #p "code_set is #{code_set} after adjustments"
@@ -1208,10 +1208,10 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
      rescue => e
          #p "rescue block entered " + (@@slurp_fail_reason.nil? ? "" : @@slurp_fail_reason)
        p "csv slurp rescue " + (e.message)
-       @@message_file.puts "#{@@userid}\t#{@@filename} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*"
-       @@message_file.puts @@slurp_fail_reason if !@@slurp_fail_reason.nil?
-       @@message_file.puts e.message
-       @@message_file.puts e.backtrace.inspect
+       message_file.puts "#{@@userid}\t#{@@filename} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*"
+       message_file.puts @@slurp_fail_reason if !@@slurp_fail_reason.nil?
+       message_file.puts e.message
+       message_file.puts e.backtrace.inspect
        success = false
 
      else
@@ -1228,7 +1228,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
         PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
         message = "#{@@userid} #{@@header[:file_name]} file does not exist"
        p  message
-       @@message_file.puts message
+       message_file.puts message
        UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
        return false
     end
@@ -1240,7 +1240,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
      message = "#{@@header[:userid]} does not exit"
      p  message
-     @@message_file.puts message
+     message_file.puts message
      return false
     end
   
@@ -1268,7 +1268,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
            #file in database is same or more recent than we we are attempting to reload so do not process
              message = "#{@@userid} #{@@header[:file_name]} is older than the one in the system"
             p  message
-            @@message_file.puts message
+            message_file.puts message
             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
             PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
             PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
@@ -1277,7 +1277,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
            #do not process if coordinator has locked
             message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
             p  message
-            @@message_file.puts message
+            message_file.puts message
             UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
             PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
             PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
@@ -1323,6 +1323,105 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
      @@header[:uploaded_date] = @@uploaded_date
      @@slurp_fail_reason = nil
   end
+  
+  def self.process_single_file(filename, delta, force, recreate, filename_count=1, create_search_records=true)
+    p "Started on the file #{filename} at #{Time.now}"
+    @@create_search_records = create_search_records unless defined? @@create_search_records
+    @@file_start = Time.new
+    setup_for_new_file(filename)
+    #do we process the file
+    process = false
+    process = check_for_replace(filename,force) unless recreate == "recreate"
+    #get the data for the file in one gob
+    @success = slurp_the_csv_file(filename) if process == true
+    #check to see that we need to process the data and we got it all
+    if @success == true  && process == true
+      #how many records did we process?
+      n = process_the_data
+      if n == 0
+        #lets deal with a null file
+        UserMailer.batch_processing_failure("there were no valid records, possibly because each record had an invalid county or place name",@@header[:userid],@@header[:file_name]).deliver 
+        batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
+        batch.destroy unless batch.nil?
+      else
+        #now lets clean up the files and send out messages 
+        #do we have a record of this physical file
+        batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
+        if batch.nil?
+          #file did not come in through FR2 so its unknown
+          batch = PhysicalFile.new(:userid => @@header[:userid], :file_name => @@header[:file_name],:change => true, :change_uploaded_date => Time.now)
+          batch.save
+        end
+        if delta == "delta"
+          file_location = File.join(base_directory, @@header[:userid])
+          Dir.mkdir(file_location) unless Dir.exists?(file_location)
+          p "copying file to freereg2 base"
+          FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true)
+          batch.update_attributes( :base => true, :base_uploaded_date => Time.now)
+        end
+        if @@create_search_records
+          # we created search records so its in the search database database
+          batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
+        else
+          #only checked for errors so file is not processed into search database
+          batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
+        end
+        batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil) if n == 0
+        #kludge to send email to user 
+        header_errors = 0
+        header_errors= @@header_error.length unless  @@header_error.nil?
+        batch_errors = @@number_of_error_messages - header_errors
+        batch_errors = 0 if batch_errors <= 0
+        UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,batch_errors, header_errors).deliver if delta == 'process' || (delta == 'change' && filename_count == 1)
+        if defined? @@nn
+          @@nn += n unless n.nil?        
+        end
+      end
+    else
+      #another kludge to send a message to user that the file did not get processed when the processing failed
+      if (delta == 'change' && filename_count == 1 && process == true)
+        message_file.puts "File not processed" if @success == false
+        message_file.close
+        file = message_file
+        user_msg = file
+        if !@@slurp_fail_reason.nil?
+          user_msg = @@slurp_fail_reason + file.to_s
+        end
+        UserMailer.batch_processing_failure( user_msg,@@header[:userid],@@header[:file_name]).deliver
+        user = UseridDetail.where(userid: "REGManager").first
+        UserMailer.update_report_to_freereg_manager(file,user).deliver
+      end
+      if delta == 'process' && process == true
+        file = "There was a malfunction in the processing; contact system administration"
+        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver                                          
+      end
+      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+    end
+    #reset for next file
+    @success = true
+    #we pause for a time to allow the slaves to really catch up
+  end
+
+  def self.qualify_path(path)
+    unless path.match(/^\//) || path.match(/:/) # unix root or windows
+      path = File.join(Rails.root, path)      
+    end
+    
+    path
+  end
+  
+  def self.message_file
+    unless defined? @@message_file
+      file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
+      time = Time.new.to_i.to_s
+      file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
+      @@message_file = File.new(file_for_warning_messages, "w")
+      @@message_file.puts " Using #{Rails.application.config.website}"
+
+    end
+
+    @@message_file    
+  end
 
   def self.process(range,type,delta)
     #this is the basic processing
@@ -1332,22 +1431,16 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
     @@create_search_records = true if type == "search_records" || type == "create_search_records"
     EmailVeracity::Config[:skip_lookup]=true
     base_directory = Rails.application.config.datafiles
-    change_directory = Rails.application.config.datafiles_changeset
+    change_directory = qualify_path(Rails.application.config.datafiles_changeset)
     #delta files holds the list of userid/files names that have changed either as a result of syncing with FR1
     #or as a single file for processing in FR2. The latter can be a check for errors or adding to the database
-    delta_file = Rails.application.config.datafiles_delta
+    delta_file = qualify_path(Rails.application.config.datafiles_delta)
     #process files holds the list of userid/file names that have been submitted for overnight processing in FR2
-    process_file = Rails.application.config.processing_delta
+    process_file = qualify_path(Rails.application.config.processing_delta)
     #set up message files
-    file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
-    time = Time.new.to_i.to_s
-    file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
-    @@message_file = File.new(file_for_warning_messages, "w")
-    @@message_file.puts " Using #{Rails.application.config.website}"
     report_time = Time.now.strftime("%d/%m/%Y %H:%M")
     p "Started a build with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
-    @@message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"
-    #set up to determine files to be processed
+    message_file.puts "Started a build at #{Time.new}with options of #{recreate} with #{@@create_search_records} search_records, a base directory at #{base_directory}, a change directory at #{change_directory} and a file #{range} and a delta #{delta} that was run at #{report_time}"         #set up to determine files to be processed
     filenames = GetFiles.get_all_of_the_filenames(base_directory,range) if delta == 'change'
     filenames = GetFiles.use_the_delta(change_directory,delta_file) if delta == 'delta'
     filenames = GetFiles.use_the_delta(base_directory,process_file) if delta == 'process'
@@ -1355,83 +1448,12 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
     force = false
     force = true if delta == 'process'
     p "#{filenames.length} files selected for processing" unless filenames.nil?
-    @@message_file.puts "#{filenames.length}\t files selected for processing\n" unless filenames.nil?
+    message_file.puts "#{filenames.length}\t files selected for processing\n" unless filenames.nil?
     time_start = Time.now
-    nn = 0
+    @@nn = 0
     #now we cycle through the files
     filenames.each do |filename|
-      p "Started on the file #{filename} at #{Time.now}"
-      @@file_start = Time.new
-      setup_for_new_file(filename)
-      #do we process the file
-      process = false
-      process = check_for_replace(filename,force) unless recreate == "recreate"
-      #get the data for the file in one gob
-      @success = slurp_the_csv_file(filename) if process == true
-      #check to see that we need to process the data and we got it all
-      if @success == true  && process == true
-        #how many records did we process?
-        n = process_the_data
-        if n == 0
-          #lets deal with a null file
-          UserMailer.batch_processing_failure("there were no valid records, possibly because each record had an invalid county or place name",@@header[:userid],@@header[:file_name]).deliver 
-          batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
-          batch.destroy unless batch.nil?
-        else
-          #now lets clean up the files and send out messages 
-          #do we have a record of this physical file
-          batch = PhysicalFile.where(:userid => @@header[:userid], :file_name => @@header[:file_name] ).first
-          if batch.nil?
-            #file did not come in through FR2 so its unknown
-            batch = PhysicalFile.new(:userid => @@header[:userid], :file_name => @@header[:file_name],:change => true, :change_uploaded_date => Time.now)
-            batch.save
-          end
-          if delta == "delta"
-            file_location = File.join(base_directory, @@header[:userid])
-            Dir.mkdir(file_location) unless Dir.exists?(file_location)
-            p "copying file to freereg2 base"
-            FileUtils.cp(filename,File.join(file_location, @@header[:file_name] ),:verbose => true)
-            batch.update_attributes( :base => true, :base_uploaded_date => Time.now)
-          end
-          if @@create_search_records
-            # we created search records so its in the search database database
-            batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
-          else
-            #only checked for errors so file is not processed into search database
-            batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
-          end
-          batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil) if n == 0
-          #kludge to send email to user 
-          header_errors = 0
-          header_errors= @@header_error.length unless  @@header_error.nil?
-          batch_errors = @@number_of_error_messages - header_errors
-          batch_errors = 0 if batch_errors <= 0
-          UserMailer.batch_processing_success(@@header[:userid],@@header[:file_name],n,batch_errors, header_errors).deliver if delta == 'process' || (delta == 'change' && filenames.length == 1)
-          nn = nn + n unless n.nil?
-        end
-      else
-        #another kludge to send a message to user that the file did not get processed when the processing failed
-        if (delta == 'change' && filenames.length == 1 && process == true)
-          @@message_file.puts "File not processed" if @success == false
-          @@message_file.close
-          file = @@message_file
-          user_msg = file
-          if !@@slurp_fail_reason.nil?
-            user_msg = @@slurp_fail_reason + file.to_s
-          end
-          UserMailer.batch_processing_failure( user_msg,@@header[:userid],@@header[:file_name]).deliver
-          user = UseridDetail.where(userid: "REGManager").first
-          UserMailer.update_report_to_freereg_manager(file,user).deliver
-        end
-        if delta == 'process' && process == true
-          file = "There was a malfunction in the processing; contact system administration"
-          UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver                                          
-        end
-        PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-      end
-      #reset for next file
-      @success = true
-      #we pause for a time to allow the slaves to really catch up
+      process_single_file(filename, force, delta, recreate, filenames.length, @@create_search_records)
       sleep_time = 1000 * Rails.application.config.sleep.to_f
       sleep(sleep_time) 
     end #filename loop end
@@ -1439,10 +1461,10 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
     time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
     
     if filenames.length > 1
-      p "Created  #{nn} entries at an average time of #{time}ms per record" 
-      @@message_file.puts  "Created  #{nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
-      file = @@message_file
-      @@message_file.close 
+      p "Created  #{@@nn} entries at an average time of #{time}ms per record" 
+      message_file.puts  "Created  #{@@nn} entries at an average time of #{time}ms per record at #{Time.new}\n" 
+      file = message_file
+      message_file.close 
       user = UseridDetail.where(userid: "REGManager").first
       UserMailer.update_report_to_freereg_manager(file,user).deliver
       user = UseridDetail.where(userid: "ericb").first

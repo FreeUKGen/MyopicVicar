@@ -76,22 +76,24 @@ module Freereg1Translator
     file_attrs = nil
     names = nil
         
-    @@tts[:entry] += Benchmark.measure do
+    if defined? @@tts
+      @@tts[:entry] += Benchmark.measure do
+        entry_attrs = entry_attributes(entry) # straightforward remapping of csv entry fields to corresponding search record fields
+      end
+      @@tts[:file] += Benchmark.measure do
+        file_attrs = file_attributes(file)    # populating search record fields from file header
+        file_attrs.merge!(entry_attrs)        # join the two
+      end
+      @@tts[:transform] += Benchmark.measure do
+        names = transform_names(entry)
+        file_attrs[:transcript_names] = names
+      end
+    else
       entry_attrs = entry_attributes(entry) # straightforward remapping of csv entry fields to corresponding search record fields
-    end
-    @@tts[:file] += Benchmark.measure do
+
       file_attrs = file_attributes(file)    # populating search record fields from file header
       file_attrs.merge!(entry_attrs)        # join the two
-    end
-    @@tts[:transform] += Benchmark.measure do
-      # if file.record_type == RecordType::BAPTISM
-        # names = translate_names_baptism(entry)
-      # elsif file.record_type == RecordType::MARRIAGE
-        # names = translate_names_marriage(entry)
-      # else
-        # names = translate_names_burial(entry)
-        # # names = transform_names(entry)        # populate names from csv entry based on mapping file      
-      # end
+
       names = transform_names(entry)
       file_attrs[:transcript_names] = names
     end
