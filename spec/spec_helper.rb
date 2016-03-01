@@ -231,11 +231,15 @@ ARTIFICIAL_FILES = [
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'NTH',
+    :placename => 'Gretton',
     :user => 'artificial'
   },
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'LEI',
+    :placename => 'Belton',
     :user => 'artificial'
   }
 ]
@@ -243,18 +247,24 @@ ARTIFICIAL_FILES = [
 DELTA_FILES = [
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v1/kirknorfolk/NFKALEBU.csv",
-    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
-    :user => 'artificial'
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v1/",
+    :chapman_code => 'NFK',
+    :placename => 'Aldeby',
+    :user => 'kirknorfolk'
   },
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v2/kirknorfolk/NFKALEBU.csv",
-    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
-    :user => 'artificial'
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v2/",
+    :chapman_code => 'NFK',
+    :placename => 'Aldeby',
+    :user => 'kirknorfolk'
   },
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v3/kirknorfolk/NFKALEBU.csv",
-    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
-    :user => 'artificial'
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v3/",
+    :chapman_code => 'NFK',
+    :placename => 'Aldeby',
+    :user => 'kirknorfolk'
   }
 ]
 

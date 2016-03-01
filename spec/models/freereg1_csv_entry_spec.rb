@@ -31,7 +31,9 @@ describe Freereg1CsvEntry do
 
 
   before(:each) do
-    FreeregCsvProcessor::delete_all
+    SearchRecord.delete_all
+    Freereg1CsvEntry.delete_all
+    Freereg1CsvFile.delete_all
     Place.delete_all
     Church.delete_all
     Register.delete_all
@@ -356,9 +358,17 @@ describe Freereg1CsvEntry do
     search_record2 = entry2.search_record
     second = search_record2.id
 
-    binding.pry
-
     first.should eq(second)
+
+    filespec = DELTA_FILES[2]
+    process_test_file(filespec)
+    file_record3 = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry3 = file_record3.freereg1_csv_entries.first
+    search_record3 = entry3.search_record
+    third = search_record3.id
+
+    first.should_not eq(third)
+
 
   end
 
