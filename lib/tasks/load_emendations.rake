@@ -9,120 +9,368 @@ task :load_emendations => :environment do
     et.delete
   end
   et = EmendationType.create!(:name => 'expansion', :target_field => :first_name, :origin => THIS_RAKE_TASK)
-  EmendationRule.create!(:original => 'abig', :replacement => 'abigail', :emendation_type => et)
-  EmendationRule.create!(:original => 'abr', :replacement => 'abraham', :emendation_type => et)
+  EmendationRule.create!(:original => 'abig', :replacement => 'abigail', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'abm', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abra', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abrah', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abraha', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abrahm', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abram', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abrm', :replacement => 'abraham', :emendation_type => et, :gender => 'm') #
+  EmendationRule.create!(:original => 'abr', :replacement => 'abraham', :emendation_type => et, :gender => 'm')
   EmendationRule.create!(:original => 'agn', :replacement => 'agnes', :emendation_type => et)
-##added genders to alex for testing:
   EmendationRule.create!(:original => 'alex', :replacement => 'alexander', :emendation_type => et, :gender => 'm')
   EmendationRule.create!(:original => 'alex', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')
-
-  EmendationRule.create!(:original => 'alexr', :replacement => 'alexander', :emendation_type => et)
-  EmendationRule.create!(:original => 'alf', :replacement => 'alfred', :emendation_type => et)
+  EmendationRule.create!(:original => 'alexand', :replacement => 'alexander', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'alexand', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'alexandr', :replacement => 'alexander', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'alexandr', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'alexdr', :replacement => 'alexander', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'alexdr', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'alexr', :replacement => 'alexander', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'alexr', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'alf', :replacement => 'alfred', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'alic', :replacement => 'alice', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'allex', :replacement => 'alexander', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'allex', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')#
   EmendationRule.create!(:original => 'amb', :replacement => 'ambrose', :emendation_type => et)
-  EmendationRule.create!(:original => 'and', :replacement => 'andrew', :emendation_type => et)
-  EmendationRule.create!(:original => 'ant', :replacement => 'anthony', :emendation_type => et)
-  EmendationRule.create!(:original => 'art', :replacement => 'arthur', :emendation_type => et)
+  EmendationRule.create!(:original => 'and', :replacement => 'andrew', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'andr', :replacement => 'andrew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'andw', :replacement => 'andrew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'ant', :replacement => 'anthony', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'anth', :replacement => 'anthony', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'antho', :replacement => 'anthony', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'anthy', :replacement => 'anthony', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'anto', :replacement => 'anthony', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'anty', :replacement => 'anthony', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'arch', :replacement => 'archibald', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'archd', :replacement => 'archibald', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'art', :replacement => 'arthur', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'arth', :replacement => 'arthur', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'atha', :replacement => 'agatha', :emendation_type => et, :gender => 'f')#
   EmendationRule.create!(:original => 'aug', :replacement => 'augustus', :emendation_type => et)
-  EmendationRule.create!(:original => 'barb', :replacement => 'barbara', :emendation_type => et)
-  EmendationRule.create!(:original => 'bart', :replacement => 'bartholomew', :emendation_type => et)
-  EmendationRule.create!(:original => 'benj', :replacement => 'benjamin', :emendation_type => et)
-  EmendationRule.create!(:original => 'brid', :replacement => 'bridget', :emendation_type => et)
-  EmendationRule.create!(:original => 'cath', :replacement => 'catherine', :emendation_type => et)
-  EmendationRule.create!(:original => 'chas', :replacement => 'charles', :emendation_type => et)
+  EmendationRule.create!(:original => 'barb', :replacement => 'barbara', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'barba', :replacement => 'barbara', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'bart', :replacement => 'bartholomew', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'barth', :replacement => 'bartholomew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'bartho', :replacement => 'bartholomew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'barthol', :replacement => 'bartholomew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'barthw', :replacement => 'bartholomew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'barw', :replacement => 'bartholomew', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'ben', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benj', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'benja', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benjam', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benjamn', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benjan', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benjm', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benjn', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benn', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'brid', :replacement => 'bridget', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'bridgt', :replacement => 'bridget', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cath', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'cath', :replacement => 'catherine', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'catha', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cathar', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cathe', :replacement => 'catherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cather', :replacement => 'catherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cathn', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'cathn', :replacement => 'catherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cathne', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'cathne', :replacement => 'catherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cathr', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'cathr', :replacement => 'catherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cathrn', :replacement => 'catharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'cathrn', :replacement => 'catherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'cha', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'char', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'charl', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'charls', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'chars', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'chas', :replacement => 'charles', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'chris', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'chrisr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christ', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christo', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christop', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christoph', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christophr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christopr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'chro', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'chrs', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
   EmendationRule.create!(:original => 'clem', :replacement => 'clement', :emendation_type => et)
+  EmendationRule.create!(:original => 'clemt', :replacement => 'clement', :emendation_type => et)#
   EmendationRule.create!(:original => 'const', :replacement => 'constance', :emendation_type => et)
-  EmendationRule.create!(:original => 'corn', :replacement => 'cornelius', :emendation_type => et)
-  EmendationRule.create!(:original => 'danl', :replacement => 'daniel', :emendation_type => et)
-  EmendationRule.create!(:original => 'dav', :replacement => 'david', :emendation_type => et)
-  EmendationRule.create!(:original => 'deb', :replacement => 'deborah', :emendation_type => et)
-  EmendationRule.create!(:original => 'den', :replacement => 'dennis', :emendation_type => et)
-  EmendationRule.create!(:original => 'doug', :replacement => 'douglas', :emendation_type => et)
-  EmendationRule.create!(:original => 'dy', :replacement => 'dorothy', :emendation_type => et)
-  EmendationRule.create!(:original => 'edm', :replacement => 'edmund', :emendation_type => et)
-  EmendationRule.create!(:original => 'edrus', :replacement => 'edward', :emendation_type => et)
-  EmendationRule.create!(:original => 'edw', :replacement => 'edward', :emendation_type => et)
-  EmendationRule.create!(:original => 'eliz', :replacement => 'elizabeth', :emendation_type => et)
-  EmendationRule.create!(:original => 'esth', :replacement => 'esther', :emendation_type => et)
-  EmendationRule.create!(:original => 'ezek', :replacement => 'ezekiel', :emendation_type => et)
-  EmendationRule.create!(:original => 'fred', :replacement => 'frederick', :emendation_type => et)
-  EmendationRule.create!(:original => 'froo', :replacement => 'franco', :emendation_type => et)
-  EmendationRule.create!(:original => 'fs', :replacement => 'francis', :emendation_type => et)
-  EmendationRule.create!(:original => 'gab', :replacement => 'gabriel', :emendation_type => et)
-  EmendationRule.create!(:original => 'geo', :replacement => 'george', :emendation_type => et)
-  EmendationRule.create!(:original => 'geof', :replacement => 'geoffrey', :emendation_type => et)
-  EmendationRule.create!(:original => 'godf', :replacement => 'godfrey', :emendation_type => et)
-  EmendationRule.create!(:original => 'greg', :replacement => 'gregory', :emendation_type => et)
-  EmendationRule.create!(:original => 'gul', :replacement => 'william', :emendation_type => et)
-  EmendationRule.create!(:original => 'han', :replacement => 'hannah', :emendation_type => et)
-  EmendationRule.create!(:original => 'hen', :replacement => 'henry', :emendation_type => et)
-  EmendationRule.create!(:original => 'hel', :replacement => 'helen', :emendation_type => et)
-  EmendationRule.create!(:original => 'herb', :replacement => 'herbert', :emendation_type => et)
-  EmendationRule.create!(:original => 'hy', :replacement => 'henry', :emendation_type => et)
-  EmendationRule.create!(:original => 'ioh', :replacement => 'john', :emendation_type => et)
-  EmendationRule.create!(:original => 'isb', :replacement => 'isabel', :emendation_type => et)
-  EmendationRule.create!(:original => 'jabus', :replacement => 'james', :emendation_type => et)
-  EmendationRule.create!(:original => 'jac', :replacement => 'james', :emendation_type => et)
-  EmendationRule.create!(:original => 'jas', :replacement => 'james', :emendation_type => et)
-  EmendationRule.create!(:original => 'jer', :replacement => 'jeremiah', :emendation_type => et)
-  EmendationRule.create!(:original => 'jno', :replacement => 'john', :emendation_type => et)
-  EmendationRule.create!(:original => 'jon', :replacement => 'jonathan', :emendation_type => et)
-  EmendationRule.create!(:original => 'jos', :replacement => 'joseph', :emendation_type => et)
-  EmendationRule.create!(:original => 'josh', :replacement => 'joshua', :emendation_type => et)
-  EmendationRule.create!(:original => 'josh', :replacement => 'josiah', :emendation_type => et)
-  EmendationRule.create!(:original => 'jud', :replacement => 'judith', :emendation_type => et)
-  EmendationRule.create!(:original => 'lau', :replacement => 'laurence', :emendation_type => et)
-  EmendationRule.create!(:original => 'lawr', :replacement => 'lawrence', :emendation_type => et)
-  EmendationRule.create!(:original => 'leon', :replacement => 'leonard', :emendation_type => et)
-  EmendationRule.create!(:original => 'lyd', :replacement => 'lydia', :emendation_type => et)
-  EmendationRule.create!(:original => 'margt', :replacement => 'margaret', :emendation_type => et)
-  EmendationRule.create!(:original => 'math', :replacement => 'matthias', :emendation_type => et)
-  EmendationRule.create!(:original => 'matt', :replacement => 'matthew', :emendation_type => et)
-  EmendationRule.create!(:original => 'mau', :replacement => 'maurice', :emendation_type => et)
-  EmendationRule.create!(:original => 'mich', :replacement => 'michael', :emendation_type => et)
-  EmendationRule.create!(:original => 'micls', :replacement => 'michael', :emendation_type => et)
-  EmendationRule.create!(:original => 'mill', :replacement => 'millicent', :emendation_type => et)
-  EmendationRule.create!(:original => 'my', :replacement => 'mary', :emendation_type => et)
-  EmendationRule.create!(:original => 'nath', :replacement => 'nathaniel', :emendation_type => et)
-  EmendationRule.create!(:original => 'nich', :replacement => 'nicholas', :emendation_type => et)
-  EmendationRule.create!(:original => 'nics', :replacement => 'nicholas', :emendation_type => et)
-  EmendationRule.create!(:original => 'ol', :replacement => 'oliver', :emendation_type => et)
-  EmendationRule.create!(:original => 'pat', :replacement => 'patrick', :emendation_type => et)
-  EmendationRule.create!(:original => 'pen', :replacement => 'penelope', :emendation_type => et)
-  EmendationRule.create!(:original => 'pet', :replacement => 'peter', :emendation_type => et)
-  EmendationRule.create!(:original => 'phil', :replacement => 'philip', :emendation_type => et)
-  EmendationRule.create!(:original => 'phin', :replacement => 'phineas', :emendation_type => et)
-  EmendationRule.create!(:original => 'phyl', :replacement => 'phyllis', :emendation_type => et)
-  EmendationRule.create!(:original => 'prisc', :replacement => 'priscilla', :emendation_type => et)
-  EmendationRule.create!(:original => 'pru', :replacement => 'prudence', :emendation_type => et)
-  EmendationRule.create!(:original => 'rach', :replacement => 'rachel', :emendation_type => et)
-  EmendationRule.create!(:original => 'ray', :replacement => 'raymond', :emendation_type => et)
-  EmendationRule.create!(:original => 'reb', :replacement => 'rebecca', :emendation_type => et)
-  EmendationRule.create!(:original => 'reg', :replacement => 'reginald', :emendation_type => et)
-  EmendationRule.create!(:original => 'ric', :replacement => 'richard', :emendation_type => et)
-  EmendationRule.create!(:original => 'richdus', :replacement => 'richard', :emendation_type => et)
-  EmendationRule.create!(:original => 'robt', :replacement => 'robert', :emendation_type => et)
-  EmendationRule.create!(:original => 'rog', :replacement => 'roger', :emendation_type => et)
-  EmendationRule.create!(:original => 'saml', :replacement => 'samuel', :emendation_type => et)
-  EmendationRule.create!(:original => 'sar', :replacement => 'sarah', :emendation_type => et)
-  EmendationRule.create!(:original => 'silv', :replacement => 'sylvester', :emendation_type => et)
-  EmendationRule.create!(:original => 'sim', :replacement => 'simon', :emendation_type => et)
-  EmendationRule.create!(:original => 'sol', :replacement => 'solomon', :emendation_type => et)
-  EmendationRule.create!(:original => 'ste', :replacement => 'stephen', :emendation_type => et)
-  EmendationRule.create!(:original => 'sus', :replacement => 'susan', :emendation_type => et)
-  EmendationRule.create!(:original => 'susna', :replacement => 'susanna', :emendation_type => et)
-  EmendationRule.create!(:original => 'theo', :replacement => 'theodore', :emendation_type => et)
-  EmendationRule.create!(:original => 'thos', :replacement => 'thomas', :emendation_type => et)
-  EmendationRule.create!(:original => 'tim', :replacement => 'timothy', :emendation_type => et)
-  EmendationRule.create!(:original => 'urs', :replacement => 'ursula', :emendation_type => et)
+  EmendationRule.create!(:original => 'corn', :replacement => 'cornelius', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'cuth', :replacement => 'cuthbert', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'cuthbt', :replacement => 'cuthbert', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'cutht', :replacement => 'cuthbert', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'dan', :replacement => 'daniel', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'danl', :replacement => 'daniel', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'danll', :replacement => 'daniel', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'dav', :replacement => 'david', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'davd', :replacement => 'david', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'deb', :replacement => 'deborah', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'den', :replacement => 'dennis', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'don', :replacement => 'donald', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'dor', :replacement => 'dorothy', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'doro', :replacement => 'dorothy', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'doroth', :replacement => 'dorothy', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'dory', :replacement => 'dorothy', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'doug', :replacement => 'douglas', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'dy', :replacement => 'dorothy', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'ed', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'ed', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'edd', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'edd', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'edm', :replacement => 'edmund', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'edmd', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'edrus', :replacement => 'edward', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'edw', :replacement => 'edward', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'edwd', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'edwrd', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'eleanr', :replacement => 'eleanor', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elear', :replacement => 'eleanor', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'eli', :replacement => 'elias', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'elis', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisa', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisab', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisabth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elish', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elith', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'eliz', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'elizab', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizabh', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizabth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizae', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizah', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizb', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizbeth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizbt', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizbth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizh', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizt', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'elizth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "eliz'th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elliz", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "ellizab", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elsab", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elsp", :replacement => 'elspeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elyz", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elyzab", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elz", :replacement => 'eliza', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elz", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elzab", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "elzth", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "em", :replacement => 'emma', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "em", :replacement => 'emily', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "emm", :replacement => 'emma', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "emm", :replacement => 'emily', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'esth', :replacement => 'esther', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'ezek', :replacement => 'ezekiel', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => "ewd", :replacement => 'edward', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "fra", :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "fra", :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "fran", :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "fran", :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "franc", :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "franc", :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "franc", :replacement => 'franchesca', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "francs", :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "francs", :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "francs", :replacement => 'franchesca', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "frans", :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "frans", :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "frans", :replacement => 'franchesca', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "fras", :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "fras", :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "fras", :replacement => 'franchesca', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'fred', :replacement => 'frederick', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'fredk', :replacement => 'frederick', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'froo', :replacement => 'franco', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'fs', :replacement => 'francis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'fs', :replacement => 'frances', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'gab', :replacement => 'gabriel', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gab', :replacement => 'gabrielle', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'gab', :replacement => 'gabriella', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'geo', :replacement => 'george', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'geoe', :replacement => 'george', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'geor', :replacement => 'george', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'georg', :replacement => 'george', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'geof', :replacement => 'geoffrey', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gilb', :replacement => 'gilbert', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'gilbt', :replacement => 'gilbert', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'godf', :replacement => 'godfrey', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gr', :replacement => 'griffith', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'greg', :replacement => 'gregory', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'griffth', :replacement => 'griffith', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'guil', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'guil', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'guilieli', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'guilieli', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'gul', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gul', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'guli', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'guli', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'guliel', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'guliel', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'gulielm', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gulielm', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'gulielmi', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gulielmi', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'gull', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'gull', :replacement => 'gulielmus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'han', :replacement => 'hannah', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'hanh', :replacement => 'hannah', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'hann', :replacement => 'hannah', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'hannh', :replacement => 'hannah', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'hel', :replacement => 'helen', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'hen', :replacement => 'henry', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'henr', :replacement => 'henry', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'henric', :replacement => 'henrici', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'henric', :replacement => 'henry', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'henrici', :replacement => 'henry', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'heny', :replacement => 'henry', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'herb', :replacement => 'herbert', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'hump', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'humph', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'humphr', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'humpy', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'hy', :replacement => 'henry', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'illeg', :replacement => 'illegitimus', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'ioh', :replacement => 'john', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'isa', :replacement => 'isaiah', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'isa', :replacement => 'isabel', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'isa', :replacement => 'isabella', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'isab', :replacement => 'isabel', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'isab', :replacement => 'isabella', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'isaba', :replacement => 'isabel', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'isaba', :replacement => 'isabella', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'isb', :replacement => 'isabel', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'jabus', :replacement => 'james', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'jac', :replacement => 'james', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'jas', :replacement => 'james', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'jeff', :replacement => 'jeffery', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'jer', :replacement => 'jeremiah', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'jer', :replacement => 'jeremy', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jere', :replacement => 'jeremy', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jere', :replacement => 'jeremiah', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jerem', :replacement => 'jeremy', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jerem', :replacement => 'jeremiah', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jeremh', :replacement => 'jeremy', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jeremh', :replacement => 'jeremiah', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jerh', :replacement => 'jeremy', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jerh', :replacement => 'jeremiah', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jhn', :replacement => 'john', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jho', :replacement => 'john', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jno', :replacement => 'john', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'joh', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'joha', :replacement => 'johanna', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'johan', :replacement => 'johanna', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'johan', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'johes', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'johis', :replacement => 'johannis', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'johnes', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jon', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'jona', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jonan', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jonat', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jonath', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jonathn', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jonn', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jos', :replacement => 'joseph', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'josa', :replacement => 'joshua', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'josh', :replacement => 'josiah', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'josp', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'josph', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jsp', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jud', :replacement => 'judith', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'jud', :replacement => 'judas', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'kat', :replacement => 'katherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'kat', :replacement => 'katharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'kath', :replacement => 'katherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'kath', :replacement => 'katharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'kathar', :replacement => 'katharine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'kather', :replacement => 'katherine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'kathr', :replacement => 'katherine', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'kathr', :replacement => 'katharine', :emendation_type => et, :gender => 'f')#sdx
+  EmendationRule.create!(:original => 'lanc', :replacement => 'lancelot', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'lau', :replacement => 'laurence', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'laur', :replacement => 'laurence', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'law', :replacement => 'lawrence', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'lawr', :replacement => 'lawrence', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'leo', :replacement => 'leonard', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'leon', :replacement => 'leonard', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'leond', :replacement => 'leonard', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'lyd', :replacement => 'lydia', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'mag', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'mags', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'magt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'mar', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'marg', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'marga', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'margar', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'margart', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'margat', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'marget', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'margrt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'margt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'margtt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => 'math', :replacement => 'matthias', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'matt', :replacement => 'matthew', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'mau', :replacement => 'maurice', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'mich', :replacement => 'michael', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'micls', :replacement => 'michael', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'mill', :replacement => 'millicent', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'my', :replacement => 'mary', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'nath', :replacement => 'nathaniel', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'nich', :replacement => 'nicholas', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'nics', :replacement => 'nicholas', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'ol', :replacement => 'oliver', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'pat', :replacement => 'patrick', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'pen', :replacement => 'penelope', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'pet', :replacement => 'peter', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'phil', :replacement => 'philip', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'phin', :replacement => 'phineas', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'phyl', :replacement => 'phyllis', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'prisc', :replacement => 'priscilla', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'pru', :replacement => 'prudence', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'rach', :replacement => 'rachel', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'ray', :replacement => 'raymond', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'reb', :replacement => 'rebecca', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'reg', :replacement => 'reginald', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'ric', :replacement => 'richard', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'richdus', :replacement => 'richard', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'robt', :replacement => 'robert', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'rog', :replacement => 'roger', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'saml', :replacement => 'samuel', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'sar', :replacement => 'sarah', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'silv', :replacement => 'sylvester', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'sim', :replacement => 'simon', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'sol', :replacement => 'solomon', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'ste', :replacement => 'stephen', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'sus', :replacement => 'susan', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'susna', :replacement => 'susanna', :emendation_type => et, :gender => 'f')
+  EmendationRule.create!(:original => 'theo', :replacement => 'theodore', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'thos', :replacement => 'thomas', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'tim', :replacement => 'timothy', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'urs', :replacement => 'ursula', :emendation_type => et, :gender => 'f')
   EmendationRule.create!(:original => 'val', :replacement => 'valentine', :emendation_type => et)
-  EmendationRule.create!(:original => 'vinc', :replacement => 'vincent', :emendation_type => et)
-  EmendationRule.create!(:original => 'walt', :replacement => 'walter', :emendation_type => et)
+  EmendationRule.create!(:original => 'vinc', :replacement => 'vincent', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'walt', :replacement => 'walter', :emendation_type => et, :gender => 'm')
   EmendationRule.create!(:original => 'win', :replacement => 'winifred', :emendation_type => et)
-  EmendationRule.create!(:original => 'wm', :replacement => 'william', :emendation_type => et)
-  EmendationRule.create!(:original => 'xpr', :replacement => 'christopher', :emendation_type => et)
-  EmendationRule.create!(:original => 'xtianus', :replacement => 'christian', :emendation_type => et)
-  EmendationRule.create!(:original => 'xtopherus', :replacement => 'christopher', :emendation_type => et)
-  EmendationRule.create!(:original => 'zach', :replacement => 'zachariah', :emendation_type => et)
+  EmendationRule.create!(:original => 'wm', :replacement => 'william', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'xpr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'xtianus', :replacement => 'christian', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'xtopherus', :replacement => 'christopher', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'zach', :replacement => 'zachariah', :emendation_type => et, :gender => 'm')
 
   et = EmendationType.create!(:name => 'delatinization', :target_field => :first_name, :origin => THIS_RAKE_TASK)
   EmendationRule.create!(:original => 'adamus', :replacement => 'adam', :emendation_type => et)
