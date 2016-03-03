@@ -350,6 +350,8 @@ describe Freereg1CsvEntry do
     search_record = entry.search_record
 
     first = search_record.id
+    fc = SearchRecord.count
+    fce = Freereg1CsvEntry.count
 
     filespec = DELTA_FILES[1]
     process_test_file(filespec)
@@ -358,7 +360,11 @@ describe Freereg1CsvEntry do
     search_record2 = entry2.search_record
     second = search_record2.id
 
-    first.should eq(second)
+    sc = SearchRecord.count
+    sce = Freereg1CsvEntry.count
+    fc.should eq(sc)
+    fce.should eq(sce)
+#    first.should eq(second)
 
     filespec = DELTA_FILES[2]
     process_test_file(filespec)

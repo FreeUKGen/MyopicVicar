@@ -918,11 +918,13 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
         #we have an existing record but may be for different location
         #p "existing record"
         existing_record = Freereg1CsvEntry.id(@all_records_hash.key(new_digest)).first
+#        binding.pry
         if existing_record.present?
           #p existing_record.inspect
           if existing_record.same_location(existing_record,file_for_record)
             #p "same location"
             #record location is OK
+            print "\tinspecting existing record\t#{existing_record.id}\n"
             if existing_record.search_record.present?
               # search record and entry are OK
               success = "nochange" 
