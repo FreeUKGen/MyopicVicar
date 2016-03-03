@@ -13,11 +13,16 @@ class ContactsController < InheritedResources::Base
 
   def show
     @contact = Contact.id(params[:id]).first
-    if @contact.nil?
-      go_back("contact",params[:id])
+    if @contact.present?
+      if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
+        file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
+        set_session_parameters_for_record(file)
+      else
+        set_nil_session_parameters
+      end
     else
-      set_session_parameters_for_record(@contact) if @contact.entry_id.present?
-    end
+      go_back("contact",params[:id])
+    end   
   end
 
   def list_by_name
@@ -87,24 +92,33 @@ class ContactsController < InheritedResources::Base
         return
       end
     else
-      redirect_to @contact.previous_page_url
+      redirect_to :action => 'new'
       return
     end
   end
 
   def edit
-    load(params[:id]) 
-    if @contact.github_issue_url.present?
-      flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
-      redirect_to :action => 'show'
-      return
-    end  
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      if @contact.github_issue_url.present?
+        flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
+        redirect_to :action => 'show'
+        return
+      end
+    else
+      go_back("contact",params[:id])
+    end   
   end
   
   def update
-    load(params[:id])
-    @contact.update_attributes(params[:contact])
-    redirect_to :action => 'show'
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      @contact.update_attributes(params[:contact])
+      redirect_to :action => 'show'
+      return
+    else
+      go_back("contact",params[:id])
+    end  
   end
 
   def report_error
@@ -115,34 +129,41 @@ class ContactsController < InheritedResources::Base
     @contact.record_id = params[:id]
     @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
     @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
-    @contact.county = @freereg1_csv_entry.freereg1_csv_file.register.church.place.chapman_code
+    @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 
   def delete
-    Contact.find(params[:id]).destroy
-    flash.notice = "Contact destroyed"
-    redirect_to :action => 'index'
+   @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      @contact.destroy
+      flash.notice = "Contact destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("contact",params[:id])
+    end      
   end
 
   def convert_to_issue
-    @contact = load(params[:id])
-    if @contact.github_issue_url.blank?
-      @contact.github_issue
-      flash.notice = "Issue created on Github."
-      redirect_to contact_path(@contact.id)
-      return
+   @contact = Contact.id(params[:id]).first
+    if @contact.present?  
+      if @contact.github_issue_url.blank?
+        @contact.github_issue
+        flash.notice = "Issue created on Github."
+        redirect_to contact_path(@contact.id)
+        return
+      else
+        flash.notice = "Issue has already been created on Github."
+        redirect_to :show
+        return
+      end 
     else
-      flash.notice = "Issue has already been created on Github."
-      redirect_to :show
-      return
-    end 
-
+      go_back("contact",params[:id])
+    end  
   end
 
-  def set_session_parameters_for_record(contact)
-    file_id = Freereg1CsvEntry.find(contact.entry_id).freereg1_csv_file
-    file = Freereg1CsvFile.find(file_id)
+  def set_session_parameters_for_record(file)
     church = file.register.church
     place = church.place
     session[:freereg1_csv_file_id] = file._id
@@ -152,9 +173,12 @@ class ContactsController < InheritedResources::Base
     session[:county] = place.county
   end
 
-  def message
-    
-    
+  def  set_nil_session_parameters
+    session[:freereg1_csv_file_id] = nil
+    session[:freereg1_csv_file_name] = nil
+    session[:place_name] = nil
+    session[:church_name] = nil
+    session[:county] = nil
   end
 
   def load(contact)

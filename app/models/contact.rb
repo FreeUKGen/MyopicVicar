@@ -187,12 +187,11 @@ class Contact
         c.password = Rails.application.config.github_password
       end
       response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
-      logger.info("APP: #{response}")
+      logger.info("FREEREG:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
-      p self
     else
-      logger.error("Tried to create an issue, but Github integration is not enabled!")
+      logger.error("FREEREG:Tried to create an issue, but Github integration is not enabled!")
     end
   end
 

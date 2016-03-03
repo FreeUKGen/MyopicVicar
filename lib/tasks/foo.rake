@@ -1,5 +1,10 @@
 require 'chapman_code'
 namespace :foo do
+  desc "Check refinery users are complete, setting fix to fix will add it"
+  task :check_refinery_entries,[:limit,:fix] => :environment do |t, args|
+  require 'check_refinery_entries'
+    CheckRefineryEntries.process(args.limit,args.fix)
+  end
 
   desc "Correct the witness records"
   task :correct_witness_records,[:limit,:range] => :environment do |t, args|

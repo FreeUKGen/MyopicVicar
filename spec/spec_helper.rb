@@ -19,7 +19,7 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'record_type'
 
-require 'freereg_csv_processor'
+require 'freereg_csv_update_processor'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -52,13 +52,23 @@ end
 
 def process_test_file(file)
   Rails.application.config.datafiles=file[:basedir]
+
+  # create_stub user
   username = file[:user]
   userid = UseridDetail.where(:userid => username).first
   unless userid
-    UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com")
+    UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')
   end
 
-  FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
+  # create stub place
+  place = Place.where(:place_name => file[:placename], :chapman_code => file[:chapman_code]).first  
+  unless place
+    place = Place.create!(:place_name => file[:placename], :chapman_code => file[:chapman_code], :latitude => 60, :longitude => 0)
+    place.approve
+    place.save!
+  end
+
+  FreeregCsvUpdateProcessor.process_single_file(File.join(file[:basedir], file[:user], File.basename(file[:filename])), "change", true, "add")
   Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
 
 end
@@ -68,7 +78,7 @@ def setup_userids
 
   Dir.glob(File.join(Rails.root, 'test_data', 'freereg1_csvs', '*')).
     map{|fn| File.basename(fn)}.
-    each{|uid| UseridDetail.create!(:userid => uid, :password => uid, :encrypted_password => uid, :email_address => "#{uid}@example.com") unless UseridDetail.where(:userid => uid).first}
+    each{|uid| UseridDetail.create!(:userid => uid, :password => uid, :encrypted_password => uid, :email_address => "#{uid}@example.com", :person_surname => uid, :person_forename => uid, :syndicate => 'test') unless UseridDetail.where(:userid => uid).first}
 
 end
 
@@ -79,6 +89,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::BURIAL,
     :user => 'kirknorfolk',
     :chapman_code => 'NFK',
+    :placename => 'Aldeby',
     :entry_count => 15,
     :entries => {
       :first => {
@@ -103,6 +114,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::BAPTISM,
     :user => 'kirkbedfordshire',
     :chapman_code => 'BDF',
+    :placename => 'Yielden',
     :entry_count => 1223,
     :entries => {
       :first => {
@@ -134,6 +146,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
+    :placename => 'Caldecote',
     :entry_count => 45,
     :entries => {
       :first => {
@@ -166,6 +179,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::BURIAL,
     :user => 'Devonian',
     :chapman_code => 'DEV',
+    :placename => 'Landcross',
     :entry_count => 128,
     :entries => {
       :first => {
@@ -190,6 +204,7 @@ FREEREG1_CSV_FILES = [
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
+    :placename => 'Willian',
     :entry_count => 545,
     :entries => {
       :first => {
@@ -222,11 +237,15 @@ ARTIFICIAL_FILES = [
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'NTH',
+    :placename => 'Gretton',
     :user => 'artificial'
   },
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'LEI',
+    :placename => 'Belton',
     :user => 'artificial'
   }
 ]
@@ -241,6 +260,30 @@ EMENDATION_FILES = [
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :user => 'artificial'
+  }
+]
+
+DELTA_FILES = [
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v1/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v1/",
+    :chapman_code => 'NFK',
+    :placename => 'Aldeby',
+    :user => 'kirknorfolk'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v2/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v2/",
+    :chapman_code => 'NFK',
+    :placename => 'Aldeby',
+    :user => 'kirknorfolk'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v3/kirknorfolk/NFKALEBU.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/deltas/v3/",
+    :chapman_code => 'NFK',
+    :placename => 'Aldeby',
+    :user => 'kirknorfolk'
   }
 ]
 

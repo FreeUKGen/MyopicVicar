@@ -23,7 +23,7 @@ class UseridDetailsController < ApplicationController
     @role = session[:role]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
-    @user.person_role == "data_manager"
+      @user.person_role == "data_manager"
     @syndicates = Syndicate.get_syndicates if @user.person_role == "system_administrator"
     @userid = UseridDetail.new
   end
@@ -37,7 +37,7 @@ class UseridDetailsController < ApplicationController
 
   def all
     if params[:page]
-     session[:user_index_page] = params[:page]
+      session[:user_index_page] = params[:page]
     end
     session[:return_to] = request.fullpath
     get_user_info_from_userid
@@ -83,8 +83,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def role
-    p params
-    @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1) 
+    @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = " lower case userid"
   end
@@ -235,14 +234,19 @@ class UseridDetailsController < ApplicationController
       else
         name = params[:name].split(":")
         number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
-        if  number == 1
+        case
+        when number == 0
+          @userids = UseridDetail.where(:person_surname => name[0]).all
+          if @userids.blank?
+            flash[:notice] = "could not locate the name likely because of blanks in the stored name"
+          end
+          render 'index'
+          return
+        when number == 1
           userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
           redirect_to userid_detail_path(userid)
           return
-        else
-          if params[:page]
-            session[:user_index_page] = params[:page]
-          end
+        when number >= 2
           @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all
           render 'index'
           return
@@ -276,15 +280,15 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     success = Array.new
     success[0] = true
-    case 
-      when params[:commit] == "Rename" 
-        success[0] = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
-        success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success[0]
-      when params[:commit] == "Disable"
-        params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
-        params[:userid_detail][:active]  = false
-        params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
-     when params[:commit] == "Update"
+    case
+    when params[:commit] == "Rename"
+      success[0] = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
+      success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success[0]
+    when params[:commit] == "Disable"
+      params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
+      params[:userid_detail][:active]  = false
+      params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
+    when params[:commit] == "Update"
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
       note_to_send_email_to_sc = false
       note_to_send_email_to_sc = true if params[:userid_detail][:syndicate] != @userid.syndicate
@@ -293,10 +297,10 @@ class UseridDetailsController < ApplicationController
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
-     UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
-     flash[:notice] = 'The update of the profile was successful'
-     redirect_to userid_detail_path(@userid)
-     return
+      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
+      flash[:notice] = 'The update of the profile was successful'
+      redirect_to userid_detail_path(@userid)
+      return
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
@@ -310,9 +314,9 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     if @userid.has_files?
       flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
-      next_place_to_go_unsuccessful_update
+       redirect_to :action => 'options'
     else
-      Freereg1CsvFile.delete_userid(@userid.userid)
+      Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
       redirect_to :action => 'options'
@@ -322,10 +326,10 @@ class UseridDetailsController < ApplicationController
   def disable
     session[:return_to] = request.fullpath
     load(params[:id])
-    unless @userid.active 
+    unless @userid.active
       @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
       flash[:notice] = "Userid re-activated"
-       redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
+      redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
     end
     session[:type] = "disable"
   end
@@ -348,20 +352,20 @@ class UseridDetailsController < ApplicationController
     when  params[:commit] == "Submit"
       @user = UseridDetail.where(userid:  session[:userid]).first
       render :action => 'new' and return
-    when session[:type] == 'researcher_registration'
+    when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
-    when session[:type] == 'transcriber_registration'
+    when params[:commit] == 'Register Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       render :action => 'transcriber_registration' and return
-    when session[:type] == 'technical_registration'
+    when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
       @user = UseridDetail.where(userid:  session[:userid]).first
       render :action => 'new' and return
     end
   end
-  
+
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Submit'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
@@ -371,14 +375,14 @@ class UseridDetailsController < ApplicationController
     current_refinery_user = session[:refinery]
     session.delete(:refinery)
     case
-   
+
     when params[:commit] == "Submit"
       redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
     else
       redirect_to refinery.login_path and return
-    end 
+    end
   end
-  
+
   def record_validation_errors(exception)
     flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
     @userid.delete

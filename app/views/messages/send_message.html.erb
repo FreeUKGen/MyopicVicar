@@ -1,0 +1,30 @@
+<% breadcrumb :send_message,  @message%>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div class= "grid">
+
+<section class="island  island--light ">
+<%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
+  <%= f.fields_for :sent_message do |multiple| %>     
+    <%= f.hidden_field :action%>     
+      <li  class="grid__item  one-third  palm-one-whole push--bottom " id="message_recipients">
+        <label class="label" for="recipients"> Recipients <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >You may elect multiple recipients</span></a></label>
+        <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="3">
+        <% @options.each do |value| %>
+          <% if value == @sent_message.recipients %>
+            <option value="<%=value%>" selected="selected" ><%=value%></option>
+          <% else %>
+            <option value="<%=value%>" ><%=value%></option>
+          <% end %>
+        <% end %>
+        </select>
+      </li>
+      <%= multiple.input :active, :as => :boolean ,:wrapper_html => { :class => "grid__item  one-third  palm-one-whole text--center"}%> 
+  <% end %>
+  <%= f.action :submit, :as => :input,  :label => 'Send' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %> <br>
+<% end%>
+  </section>
+  </div>

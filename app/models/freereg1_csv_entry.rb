@@ -159,6 +159,8 @@ class Freereg1CsvEntry
     string = string + self.father_occupation.strip + "occupation" unless self.father_occupation.nil?
     string = string + self.person_abode.strip + "abode" unless self.person_abode.nil?
     string = string + self.notes.strip + "notes" unless self.notes.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
   end
   def create_marriage_string
@@ -187,6 +189,8 @@ class Freereg1CsvEntry
     string = string + self.witness2_forename.strip + "witness2" unless self.witness2_forename.nil?
     string = string + self.witness2_surname.strip + "witness2surname" unless self.witness2_surname.nil?
     string = string + self.notes.strip + "notes" unless self.notes.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
 
   end
@@ -202,6 +206,8 @@ class Freereg1CsvEntry
     string = string + self.person_sex.strip unless self.person_sex.nil?
     string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
     string = string + self.notes.strip + "notes" unless self.notes.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
   end
   def hex_to_base64_digest(hexdigest)
@@ -220,7 +226,9 @@ class Freereg1CsvEntry
         one.person_sex == two.person_sex &&
         one.father_occupation == two.father_occupation &&
         one.person_abode == two.person_abode &&
-        one.notes == two.notes
+        one.notes == two.notes &&
+        one.film == two.film &&
+        one.film_number == two.film_number
       equal = true
     else
       equal = false
@@ -251,7 +259,9 @@ class Freereg1CsvEntry
         one.witness1_surname  ==          two.witness1_surname &&
         one.witness2_forename  ==              two.witness2_forename &&
         one.witness2_surname  ==   two.witness2_surname &&
-        one.notes == two.notes
+        one.notes == two.notes &&
+        one.film == two.film &&
+        one.film_number == two.film_number
       equal = true
     else
       equal = false
@@ -268,7 +278,9 @@ class Freereg1CsvEntry
         one.register_entry_number  == two.register_entry_number &&
         one.person_sex == two.person_sex &&
         one.burial_person_abode == one.burial_person_abode &&
-        one.notes == two.notes
+        one.notes == two.notes &&
+        one.film == two.film &&
+        one.film_number == two.film_number
       equal = true
     else
       equal = false
@@ -282,7 +294,7 @@ class Freereg1CsvEntry
       changes[k] = a[k] if a[k] != b[k]
     end
     changes.each_key do |field|
-      return true if FreeregOptionsConstants::FORCE_SEARCH_RECORD_RECREATE.include?(field)
+      return true if Freereg1Translator::FORCE_SEARCH_RECORD_RECREATE.include?(field)
     end
     return false
   end
@@ -294,14 +306,23 @@ class Freereg1CsvEntry
   end
 
   def update_search_record
-    #delete existing and then recreate
-    record = self.search_record
-    place = self.freereg1_csv_file.register.church.place
-    place.search_records.delete(record) unless record.nil?
-    self.search_record = nil
-    record.destroy unless record.nil?
-    self.transform_search_record
+    if should_update_search_record?
+      #delete existing and then recreate
+      record = self.search_record
+      place = self.freereg1_csv_file.register.church.place
+      place.search_records.delete(record) unless record.nil?
+      self.search_record = nil
+      record.destroy unless record.nil?
+      self.transform_search_record      
+    end
   end
+  
+  def should_update_search_record?
+    return true if !self.search_record
+    
+    Freereg1Translator.meaningful_changes?(self.previous_changes.keys)
+  end
+  
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -354,7 +375,9 @@ class Freereg1CsvEntry
 
 
   def transform_search_record
-    SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
+    if should_update_search_record?
+      SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
+    end
   end
 
 

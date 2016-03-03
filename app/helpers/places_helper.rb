@@ -17,4 +17,9 @@ module PlacesHelper
   def clear(register)
     session.delete("#{register.id}") 
   end
+  def active(yes)
+    field = "All"
+    field = "Active" if yes
+    field    
+  end
 end

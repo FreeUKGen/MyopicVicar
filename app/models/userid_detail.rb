@@ -34,7 +34,7 @@ class UseridDetail
   field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
-  attr_accessor :action
+  attr_accessor :action, :message
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
@@ -51,7 +51,8 @@ class UseridDetail
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
 
-  before_create :add_lower_case_userid
+  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname
+  before_save :capitalize_forename, :captilaize_surname
 
   after_create :save_to_refinery
   after_update :update_refinery
@@ -69,6 +70,9 @@ class UseridDetail
     end
     def role(role)
       where(:person_role => role)
+    end
+    def active(role)
+      where(:active => role)
     end
   end
 
@@ -185,6 +189,14 @@ class UseridDetail
 
   def add_lower_case_userid
     self[:userid_lower_case] = self[:userid].downcase
+  end
+
+  def capitalize_forename
+    self.person_forename = self.person_forename.downcase.titleize
+  end
+
+  def captilaize_surname
+    self.person_surname = self.person_surname.downcase.titleize
   end
 
   def finish_creation_setup

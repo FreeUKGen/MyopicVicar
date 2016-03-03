@@ -3,15 +3,16 @@ class ManageCountiesController < ApplicationController
   def index
     redirect_to :action => 'new'
   end
+
   def new
     #get county to be used
-   
     clean_session_for_county
-    session.delete(:county) 
+    session.delete(:county)
     session.delete(:chapman_code)
     get_user_info_from_userid
     get_counties_for_selection
-    number_of_counties = @counties.length
+    number_of_counties = 0
+    number_of_counties = @counties.length unless @counties.nil?
     if number_of_counties == 0
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
@@ -28,12 +29,15 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Please select one'
     @manage_county = ManageCounty.new
   end
+
   def show
     redirect_to :action => 'new'
   end
-   def selection
+
+  def selection
     redirect_to :action => 'new'
   end
+
   def create
     if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
       flash[:notice] = 'You did not selected anything'
@@ -44,7 +48,7 @@ class ManageCountiesController < ApplicationController
     @county = ChapmanCode.has_key(session[:chapman_code])
     session[:county] = @county
     redirect_to :action => 'select_action'
-      return
+    return
   end
 
   def select_action
@@ -58,18 +62,57 @@ class ManageCountiesController < ApplicationController
 
   def work_all_places
     get_user_info_from_userid
-    session[:active_place] = 'All'
-    redirect_to places_path
+    session[:active_place] = false
+    work_places_core
   end
 
   def work_with_active_places
     get_user_info_from_userid
-    session[:active_place] = 'Active'
-    redirect_to places_path
-    return
+    session[:active_place] = true
+    work_places_core
   end
+
+  def work_places_core
+    show_alphabet = ManageCounty.records(session[:chapman_code],session[:show_alphabet])
+    session[:show_alphabet] = show_alphabet
+    if show_alphabet == 0
+      redirect_to places_path
+      return
+    else
+      @active = session[:active_place]
+      @manage_county = ManageCounty.new
+      @county = session[:county]
+      session[:show_alphabet] = show_alphabet
+      @options = FreeregOptionsConstants::ALPHABETS[show_alphabet]
+      @location = 'location.href= "/manage_counties/place_range?params=" + this.value'
+      @prompt = 'Select Place Range'
+      render '_form_for_range_selection'
+      return
+    end
+  end
+
+  def place_range
+    if params[:params].present? || session[:character].present?
+      session[:character]  = params[:params] if params[:params].present?
+      @character = session[:character]
+      @county = session[:county]
+      get_user_info_from_userid
+      @active = session[:active_place]
+      if session[:active_place]
+        @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+      else
+        @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.all.order_by(place_name: 1)
+      end
+    else
+      flash[:notice] = 'You did not make a range selection'
+       redirect_to :action => 'select_action'
+      return
+    end
+  end
+
   def work_with_specific_place
     get_user_info_from_userid
+    session[:select_place] = true
     @manage_county = ManageCounty.new
     @county = session[:county]
     @places = Array.new
@@ -81,8 +124,10 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Select Place'
     render '_form_for_selection'
   end
+
   def places_with_unapproved_names
     get_user_info_from_userid
+    session[:select_place] = true
     @manage_county = ManageCounty.new
     @county = session[:county]
     @places = Array.new
@@ -92,8 +137,9 @@ class ManageCountiesController < ApplicationController
     @options = @places
     @location = 'location.href= "/manage_counties/places?params=" + this.value'
     @prompt = 'Select Place'
-  render '_form_for_selection'
+    render '_form_for_selection'
   end
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
@@ -103,18 +149,22 @@ class ManageCountiesController < ApplicationController
     session[:sort] = "error DESC, file_name ASC"
     redirect_to freereg1_csv_files_path
   end
+
   def display_by_filename
     get_user_info_from_userid
     @county = session[:county]
-   @who = @user.person_forename
+    @who = @user.person_forename
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
     redirect_to freereg1_csv_files_path
+   
   end
+
   def upload_batch
     redirect_to new_csvfile_path
   end
+
   def display_by_userid_filename
     get_user_info_from_userid
     @county = session[:county]
@@ -132,7 +182,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-    redirect_to freereg1_csv_files_path
+   redirect_to freereg1_csv_files_path
   end
 
   def display_by_ascending_uploaded_date
@@ -158,6 +208,7 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Select batch'
     render '_form_for_selection'
   end
+
   def files
     get_user_info_from_userid
     @county = session[:county]
@@ -167,9 +218,10 @@ class ManageCountiesController < ApplicationController
       redirect_to freereg1_csv_file_path(file)
       return
     else
-     redirect_to freereg1_csv_files_path
+      redirect_to freereg1_csv_files_path
     end
   end
+
   def places
     get_user_info_from_userid
     @county = session[:county]
@@ -186,7 +238,7 @@ class ManageCountiesController < ApplicationController
   def get_counties_for_selection
     @counties = @user.county_groups
     @countries = @user.country_groups
-    if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == 'documentation_coordinator'
       @countries = Array.new
       counties = County.all.order_by(chapman_code: 1)
       counties.each do |county|

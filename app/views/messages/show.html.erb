@@ -1,0 +1,67 @@
+<% breadcrumb :show_message, @message %>
+<div style="clear:both;"> </div>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<div class="grid">
+  <section class="island ">
+    <h4 >Message Details</h4>
+
+
+    <div class="grid__item  ">
+      
+      <table class="table--bordered table--data " >
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>subject :</td> <td class="weight--semibold"> <%= @message.subject %>  </td>
+        </tr>
+        <tr>
+        <td>Sent by : </td> <td class="weight--semibold"> <%= @message.userid %>  </td>
+        </tr>
+        <tr>
+          <td>Time and date of message:</td> <td class="weight--semibold">  <%= @message.message_time.strftime("%H:%M on %F") unless @message.message_time.nil? %></td>
+        </tr>
+        
+        <tr>
+          <td>Identifier :</td><td class="weight--semibold"><%= @message.identifier %></td>
+        </tr>
+        
+        <tr>
+          <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly"><%= @message.body %></textarea></td>
+        </tr>
+        <% if @message.sent_messages.present?%>
+          <% @message.sent_messages.each do |each_message| %>
+            <tr>
+              <td>Recipients :</td> <td class="weight--semibold"><%= active_field(each_message)%> <%= each_message.recipients%> <%= formatted_date(each_message)%></td>
+            </tr>
+          <% end%>
+        <% end%>
+        <tr>
+        <% if @message.attachment.present?%>        
+            <td>Text Attachment :</td><td class="weight--semibold"> <%= File.read("#{Rails.root}/public" + @message.attachment_url) %> </td>
+        <% else %>
+          <td>Text Attachment :</td><td class="weight--semibold"> No text document attached.</td>
+        <% end %> 
+        </tr>
+        <tr>
+        <% if @message.images_url %>
+          <td>Image Attachment :</td><td class="weight--semibold"> <%= image_tag @message.images_url %></td>
+        <% else %>
+          <td>Image Attachment :</td><td class="weight--semibold"> No images attached.</td>
+        <% end %>       
+         </tr> 
+      </table>
+       <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
+      
+    </div>
+  </section>
+</div>

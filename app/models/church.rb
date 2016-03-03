@@ -45,17 +45,20 @@ class Church
 
   end
   def propogate_church_name_change
-    place_name = self.place.place_name
-    self.registers.each do |register|
+    place = self.place
+    place_name = place.place_name
+    self.registers.no_timeout.each do |register|
         location_names = []
         location_names << "#{place_name} (#{self.church_name})"
         location_names  << " [#{RegisterType.display_name(register.register_type)}]"
-        register.freereg1_csv_files.each do |file|
-          file.freereg1_csv_entries.each do |entry|
+        register.freereg1_csv_files.no_timeout.each do |file|
+          file.freereg1_csv_entries.no_timeout.each do |entry|
             if entry.search_record.nil?
-              logger.info "search record missing for entry #{entry._id}" 
-            else
-              entry.search_record.update_attribute(:location_names, location_names)
+              logger.info "FREEREG:search record missing for entry #{entry._id}" 
+            else 
+              entry.update_attributes(:place => place_name, :church_name => self.church_name)
+              record  = entry.search_record
+              record.update_attributes(:location_names => location_names,:place_id => place.id, :chapman_code => place.chapman_code)
             end
           end
         end 
@@ -97,13 +100,16 @@ class Church
   def relocate_church(param)
     unless param[:place_name].blank? || param[:place_name] == self.place.place_name
       old_place = self.place
-      chapman_code = place.chapman_code
+      chapman_code = old_place.chapman_code
       new_place = Place.where(:chapman_code => chapman_code, :place_name => param[:place_name]).first
-      param[:county] = old_place.chapman_code if param[:county].blank?
-      self.update_attribute(:place_id, new_place._id)
+      param[:county] = chapman_code if param[:county].blank?
+      self.update_attributes(:place_id => new_place._id, :place_name => param[:place_name])
+      new_place.update_attribute(:data_present, true) if new_place.search_records.exists? && new_place.data_present == false
+      new_place.recalculate_last_amended_date
       return [true, "Error in save of church; contact the webmaster"] if self.errors.any?
     end
     self.propogate_church_name_change
+    PlaceCache.refresh(new_place.chapman_code)
     return [false, ""]
   end
 

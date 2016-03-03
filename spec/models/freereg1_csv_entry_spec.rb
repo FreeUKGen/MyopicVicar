@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'record_type'
-require 'freereg_csv_processor'
+require 'freereg_csv_update_processor'
 require 'pp'
 
 RSpec::Matchers.define :be_in_result do |entry|
@@ -18,13 +18,22 @@ describe Freereg1CsvEntry do
   before(:all) do
     Place.create_indexes
     SearchRecord.create_indexes
+
+    SearchRecord.setup_benchmark
+    Freereg1Translator.setup_benchmark
+
+  end
+
+  after(:all) do
+    SearchRecord.report_benchmark    
+    Freereg1Translator.report_benchmark    
   end
 
 
-
-
   before(:each) do
-    FreeregCsvProcessor::delete_all
+    SearchRecord.delete_all
+    Freereg1CsvEntry.delete_all
+    Freereg1CsvFile.delete_all
     Place.delete_all
     Church.delete_all
     Register.delete_all
@@ -174,6 +183,7 @@ describe Freereg1CsvEntry do
 
   it "should parse and find dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
+
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #
       process_test_file(file)
@@ -206,6 +216,7 @@ describe Freereg1CsvEntry do
 
       end
     end
+
   end
 
   it "should handle dual forenames" do
@@ -387,6 +398,7 @@ describe Freereg1CsvEntry do
     filespec = FREEREG1_CSV_FILES[2]
 
     process_test_file(filespec)
+    
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
     entry = file_record.freereg1_csv_entries.first
     search_record = entry.search_record
@@ -421,6 +433,42 @@ describe Freereg1CsvEntry do
 
   end
 
+
+  it "should not update records that have not changed meaningfully" do
+    filespec = DELTA_FILES[0]
+    process_test_file(filespec)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry = file_record.freereg1_csv_entries.first
+    search_record = entry.search_record
+
+    first = search_record.id
+    fc = SearchRecord.count
+    fce = Freereg1CsvEntry.count
+
+    filespec = DELTA_FILES[1]
+    process_test_file(filespec)
+    file_record2 = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry2 = file_record2.freereg1_csv_entries.first
+    search_record2 = entry2.search_record
+    second = search_record2.id
+
+    sc = SearchRecord.count
+    sce = Freereg1CsvEntry.count
+    fc.should eq(sc)
+    fce.should eq(sce)
+#    first.should eq(second)
+
+    filespec = DELTA_FILES[2]
+    process_test_file(filespec)
+    file_record3 = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry3 = file_record3.freereg1_csv_entries.first
+    search_record3 = entry3.search_record
+    third = search_record3.id
+
+    first.should_not eq(third)
+
+
+  end
 
 
 
