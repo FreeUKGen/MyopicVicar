@@ -12,7 +12,10 @@ task :load_emendations => :environment do
   EmendationRule.create!(:original => 'abig', :replacement => 'abigail', :emendation_type => et)
   EmendationRule.create!(:original => 'abr', :replacement => 'abraham', :emendation_type => et)
   EmendationRule.create!(:original => 'agn', :replacement => 'agnes', :emendation_type => et)
-  EmendationRule.create!(:original => 'alex', :replacement => 'alexander', :emendation_type => et)
+##added genders to alex for testing:
+  EmendationRule.create!(:original => 'alex', :replacement => 'alexander', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => 'alex', :replacement => 'alexandra', :emendation_type => et, :gender => 'f')
+
   EmendationRule.create!(:original => 'alexr', :replacement => 'alexander', :emendation_type => et)
   EmendationRule.create!(:original => 'alf', :replacement => 'alfred', :emendation_type => et)
   EmendationRule.create!(:original => 'amb', :replacement => 'ambrose', :emendation_type => et)

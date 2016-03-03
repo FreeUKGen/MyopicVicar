@@ -18,7 +18,7 @@ namespace :build do
   collection_array[14] = "contacts"
   collection_array[15] = "attic_files"
   collection_array[16] = "physical_files"
-  collection_array[16] = "messages"
+  collection_array[17] = "messages"
 	COLLECTIONS = {
 		'master_place_names' => 'MasterPlaceName',
 		'batch_errors' => 'BatchError',
@@ -32,12 +32,12 @@ namespace :build do
 		'syndicates' => 'Syndicate',
 		'counties' => 'County',
 		'countries' => 'Country',
-		'search_queries' => 'SearchQuery',
 		'feedbacks' => 'Feedback',
+		'search_queries' => 'SearchQuery',
     'contacts' => 'Contact',
     'attic_files' => 'AtticFile',
     'physical_files' => 'PhysicalFile',
-    'message' => "Messages"
+    'messages' => "Message"
 	}
 	EXPORT_COMMAND =  "mongoexport --db "
 	EXPORT_OUT = " --out  "
@@ -441,7 +441,7 @@ namespace :build do
     require "search_query"
     require "attic_file"
     require "physical_file"
-    require "messages"
+    require "message"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.sessions[:default][:database]
     hosts = Mongoid.sessions[:default][:hosts]
