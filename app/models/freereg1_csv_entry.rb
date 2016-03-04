@@ -375,8 +375,6 @@ class Freereg1CsvEntry
 
 
   def transform_search_record
-#    binding.pry
-    print "transform_search_record on #{self.line_id}\t#{self.id}\n"
     if should_update_search_record?
       SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
     end
