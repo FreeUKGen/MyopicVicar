@@ -77,6 +77,7 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'benjamn', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'benjan', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'benjm', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'benj:n', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'benjn', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'benn', :replacement => 'benjamin', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'brid', :replacement => 'bridget', :emendation_type => et, :gender => 'f')
@@ -101,9 +102,17 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'charls', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'chars', :replacement => 'charles', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'chas', :replacement => 'charles', :emendation_type => et, :gender => 'm')
+  add_ruleset(:original => 'chr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'chris', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'chrisr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'christ', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christ:n', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christ:n', :replacement => 'christian', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christia-', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'christia-', :replacement => 'christian', :emendation_type => et)##sdx same female
+  EmendationRule.create!(:original => 'christn', :replacement => 'christopher', :emendation_type => et, :gender => 'm')##
+  EmendationRule.create!(:original => 'christn.', :replacement => 'christian', :emendation_type => et, :gender => 'm')##
+  EmendationRule.create!(:original => 'christn.', :replacement => 'christopher', :emendation_type => et, :gender => 'm')##
   add_ruleset(:original => 'christo', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'christop', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'christoph', :replacement => 'christopher', :emendation_type => et, :gender => 'm')#
@@ -139,13 +148,17 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'ed', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'ed', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'eda', :replacement => 'edith', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'edi', :replacement => 'edith', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'edi', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'edd', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'edd', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'edm', :replacement => 'edmund', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'edmd', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'edm:d', :replacement => 'edmund', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'edrus', :replacement => 'edward', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'edw', :replacement => 'edward', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => "edw'd", :replacement => 'edward', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "edw:d", :replacement => 'edward', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'edwd', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'edwrd', :replacement => 'edward', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'eleanr', :replacement => 'eleanor', :emendation_type => et, :gender => 'f')#
@@ -157,6 +170,7 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'elisab', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elisabth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'elis:th', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elish', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elisth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elith', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
@@ -165,8 +179,15 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'eliz', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => "eliz'h", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')
+  add_ruleset(:original => "eliz-th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => "eliz:th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => "eliz'b", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => "eliz'h", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => "eliz'th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'eliza', :replacement => 'eliza', :emendation_type => et, :gender => 'f')#for punctuation at end
   add_ruleset(:original => 'eliza', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elizab', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'elizabeth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#for punctuation at end
   add_ruleset(:original => 'elizabh', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elizabth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elizae', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
@@ -179,7 +200,6 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'elizh', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elizt', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elizth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
-  add_ruleset(:original => "eliz'th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "elliz", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "ellizab", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "elsab", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
@@ -268,6 +288,9 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'henrici', :replacement => 'henry', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'heny', :replacement => 'henry', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'herb', :replacement => 'herbert', :emendation_type => et, :gender => 'm')
+  add_ruleset(:original => 'hon', :replacement => 'honorable', :emendation_type => et)#
+  add_ruleset(:original => 'honble', :replacement => 'honorable', :emendation_type => et)#
+  add_ruleset(:original => 'honr', :replacement => 'honorable', :emendation_type => et)#
   add_ruleset(:original => 'hump', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'humph', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'humphr', :replacement => 'humphrey', :emendation_type => et, :gender => 'm')#
@@ -283,8 +306,13 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'isaba', :replacement => 'isabel', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'isaba', :replacement => 'isabella', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'isb', :replacement => 'isabel', :emendation_type => et, :gender => 'f')
+  add_ruleset(:original => 'isob', :replacement => 'isabel', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'isob', :replacement => 'isabella', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'jabus', :replacement => 'james', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'jac', :replacement => 'james', :emendation_type => et, :gender => 'm')
+  add_ruleset(:original => 'jacob', :replacement => 'jacob', :emendation_type => et, :gender => 'm')#for punctiuation at end
+  add_ruleset(:original => 'jane', :replacement => 'jane', :emendation_type => et, :gender => 'f')#for punctiuation at end
+  add_ruleset(:original => 'jant', :replacement => 'janet', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'jas', :replacement => 'james', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'jeff', :replacement => 'jeffery', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'jer', :replacement => 'jeremiah', :emendation_type => et, :gender => 'm')
@@ -300,7 +328,10 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'jhn', :replacement => 'john', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jho', :replacement => 'john', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jn', :replacement => 'john', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'jn', :replacement => 'junior', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => 'jn:o', :replacement => 'john', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jno', :replacement => 'john', :emendation_type => et, :gender => 'm')
+  add_ruleset(:original => 'jnr', :replacement => 'junior', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jo', :replacement => 'john', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'joe', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'joh', :replacement => 'john', :emendation_type => et, :gender => 'm')#
@@ -308,8 +339,11 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'joha', :replacement => 'johanna', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'johan', :replacement => 'johanna', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'johan', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'johanes', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'johanis', :replacement => 'johannis', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'johes', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'johis', :replacement => 'johannis', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'john', :replacement => 'john', :emendation_type => et, :gender => 'm')#for punctuation at end
   add_ruleset(:original => 'johnes', :replacement => 'johannes', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jon', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'jona', :replacement => 'jonathan', :emendation_type => et, :gender => 'm')#
@@ -324,9 +358,12 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'josh', :replacement => 'josiah', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'josp', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'josph', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'jr', :replacement => 'junior', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jsp', :replacement => 'joseph', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'jud', :replacement => 'judith', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => 'jud', :replacement => 'judas', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'jun', :replacement => 'junior', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'junr', :replacement => 'junior', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'kat', :replacement => 'katherine', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'kat', :replacement => 'katharine', :emendation_type => et, :gender => 'f')#sdx
   add_ruleset(:original => 'kath', :replacement => 'katherine', :emendation_type => et, :gender => 'f')#
@@ -353,11 +390,13 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'mar', :replacement => 'mary', :emendation_type => et, :gender => 'f')##
   add_ruleset(:original => 'marg', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "marg't", :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  EmendationRule.create!(:original => "marg:t", :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'marga', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'margar', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'margart', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'margat', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'marget', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'margr', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'margrt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'margt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => 'margtt', :replacement => 'margaret', :emendation_type => et, :gender => 'f')#
@@ -366,6 +405,7 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'mart', :replacement => 'martin', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'mart', :replacement => 'martha', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'marth', :replacement => 'martha', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'mary', :replacement => 'mary', :emendation_type => et, :gender => 'f')#for punctuation at end
   add_ruleset(:original => 'mary-ann', :replacement => 'mary', :emendation_type => et, :gender => 'f')#exp?
   add_ruleset(:original => 'mary-ann', :replacement => 'ann', :emendation_type => et, :gender => 'f')#exp?
   add_ruleset(:original => 'mary-anne', :replacement => 'mary', :emendation_type => et, :gender => 'f')#exp?
@@ -420,6 +460,7 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'pen', :replacement => 'penelope', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => 'pet', :replacement => 'peter', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'petr', :replacement => 'peter', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'ph', :replacement => 'philip', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'phil', :replacement => 'philip', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'phill', :replacement => 'philip', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'philp', :replacement => 'philip', :emendation_type => et, :gender => 'm')#
@@ -457,6 +498,7 @@ task :load_emendations => :environment do
   add_ruleset(:original => "rob't", :replacement => 'robert', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'rob.t', :replacement => 'robert', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'robt', :replacement => 'robert', :emendation_type => et, :gender => 'm')
+  add_ruleset(:original => 'robte', :replacement => 'robert', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'robti', :replacement => 'robert', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'robtus', :replacement => 'robert', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'robtus', :replacement => 'robertus', :emendation_type => et, :gender => 'm')#
@@ -467,11 +509,15 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'rose-mary', :replacement => 'mary', :emendation_type => et, :gender => 'f')#exp?
   add_ruleset(:original => 'sam', :replacement => 'samuel', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'sam', :replacement => 'samantha', :emendation_type => et, :gender => 'f')#
-  add_ruleset(:original => 'saml', :replacement => 'samuel', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => "sam'l", :replacement => 'samuel', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "sam:l", :replacement => 'samuel', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'saml', :replacement => 'samuel', :emendation_type => et, :gender => 'm')
+  EmendationRule.create!(:original => "sam:ll", :replacement => 'samuel', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'samll', :replacement => 'samuel', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'samu', :replacement => 'samuel', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'sar', :replacement => 'sarah', :emendation_type => et, :gender => 'f')
+  add_ruleset(:original => 'sara', :replacement => 'sara', :emendation_type => et, :gender => 'f')#for punctuation at end
+  add_ruleset(:original => 'sarah', :replacement => 'sarah', :emendation_type => et, :gender => 'f')#for punctuation at end
   add_ruleset(:original => 'sarah-ann', :replacement => 'ann', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'sarah-ann', :replacement => 'sarah', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'sarh', :replacement => 'sarah', :emendation_type => et, :gender => 'f')#
@@ -493,11 +539,14 @@ task :load_emendations => :environment do
   add_ruleset(:original => "tho's", :replacement => 'thomas', :emendation_type => et, :gender => 'm')###
   add_ruleset(:original => 'thom', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'thoma', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'thomas', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#for punctuation at end
   add_ruleset(:original => 'thoms', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'thos', :replacement => 'thomas', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'tim', :replacement => 'timothy', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'timo', :replacement => 'timothy', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'timy', :replacement => 'timothy', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'tom', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'tos', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'urs', :replacement => 'ursula', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => 'val', :replacement => 'valentine', :emendation_type => et)
   add_ruleset(:original => 'vinc', :replacement => 'vincent', :emendation_type => et, :gender => 'm')
@@ -506,10 +555,14 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'win', :replacement => 'winifred', :emendation_type => et)
   add_ruleset(:original => 'wil', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'will', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "willa-", :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willi', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => "will'm", :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "will:m", :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  EmendationRule.create!(:original => "will-m", :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willia', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willia', :replacement => 'williamina', :emendation_type => et, :gender => 'f')#
+  add_ruleset(:original => 'william', :replacement => 'william', :emendation_type => et, :gender => 'm')#for punctuation at end
   add_ruleset(:original => 'willie', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willim', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willimi', :replacement => 'william', :emendation_type => et, :gender => 'm')#
@@ -520,13 +573,24 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'willius', :replacement => 'willimus', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willm', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'willmi', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'willms', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'willms', :replacement => 'willimus', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'willmus', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'willmus', :replacement => 'willimus', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'wills', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'wills', :replacement => 'willimus', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'willym', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'wilm', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'wim', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'wllm', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'wlm', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'wm', :replacement => 'william', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'wmi', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'wmus', :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'wmus', :replacement => 'willimus', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'w:m', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => "w'm", :replacement => 'william', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => 'wyll', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'wyllm', :replacement => 'william', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'xpr', :replacement => 'christopher', :emendation_type => et, :gender => 'm')
   add_ruleset(:original => 'xtianus', :replacement => 'christian', :emendation_type => et, :gender => 'm')
