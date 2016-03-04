@@ -273,6 +273,65 @@ describe Freereg1CsvEntry do
   end
 
 
+  it "should create baptism entries despite blank forenames" do
+    process_test_file(NO_BAPTISMAL_NAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_BAPTISMAL_NAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 1
+    entry = file_record.freereg1_csv_entries.first
+
+    query_params = { :first_name => 'william',
+                     :last_name => 'foster',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    query_params = { :last_name => 'foster',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
+  it "should create burial entries despite blank forenames" do
+    process_test_file(NO_BURIAL_FORENAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_BURIAL_FORENAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 2
+    entry = file_record.freereg1_csv_entries.first
+
+    query_params = { :last_name => 'johnson',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    entry = file_record.freereg1_csv_entries.last
+    query_params = { :last_name => 'thompson',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
+
   it "should filter by place" do
     # first create something to test against
     different_filespec = FREEREG1_CSV_FILES[2]

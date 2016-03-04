@@ -219,7 +219,7 @@ module Freereg1Translator
         # last_name:  
         # - burial_person_surname
         # - relative_surname
-    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename, :last_name => (entry.burial_person_surname||entry.relative_surname)}
+    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => (entry.burial_person_surname||entry.relative_surname)}
     # - role: fr
       # type: other
       # fields:

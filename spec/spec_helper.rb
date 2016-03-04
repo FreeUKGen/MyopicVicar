@@ -253,6 +253,15 @@ NO_BAPTISMAL_NAME =
     :user => 'BobChown'
   }
 
+NO_BURIAL_FORENAME = 
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/1boy7girls/LINBEEBU.CSV",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/",
+    :chapman_code => 'LIN',
+    :placename => 'Beelsby',
+    :user => '1boy7girls'
+  }
+
 NO_RELATIVE_SURNAME = 
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/brilyn/NFKWYMBU.CSV",
