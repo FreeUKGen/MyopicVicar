@@ -313,10 +313,12 @@ class SearchRecord
   def separate_names(names_array)
     separated_names = []
     names_array.each do |name|
+      name_role = (name[:role].nil?) ? nil : name[:role]
+      name_gender = (name[:gender].nil?) ? nil : name[:gender]
       tokens = name.first_name.split(/-|\s+/)
       if tokens.size > 1
         tokens.each do |token|
-          separated_names << search_name(token, name.last_name, name.type, Source::SEPARATION)
+          separated_names << search_name(token, name.last_name, name.type, name_role, name_gender, Source::SEPARATION)
         end
       end
     end
@@ -350,18 +352,34 @@ class SearchRecord
         if name_hash[:type] == 'witness'
           person_type=PersonType::WITNESS
         end
-        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type)
+        person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
+        person_gender = gender_from_role(person_role)
+        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
         search_names << name if name
       end
     end
   end
 
+  def gender_from_role(role)
+    if 'f'==role||'h'==role||'g'==role||'bf'==role||'gf'==role||'mr'==role
+      return 'm'
+    elsif 'm'==role||'w'==role||'b'==role||'bm'==role||'gm'==role||'fr'==role
+      return 'f'
+    elsif 'ba'==role||'bu'==role
+      if !self.freereg1_csv_entry.nil? && !self.freereg1_csv_entry.person_sex.nil?
+        sex = self.freereg1_csv_entry.person_sex.downcase
+        if 'm'==sex || 'f'==sex
+          return sex
+        end
+      end
+    end
+    nil
+  end
 
-
-  def search_name(first_name, last_name, person_type, source = Source::TRANSCRIPT)
+  def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type })
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end

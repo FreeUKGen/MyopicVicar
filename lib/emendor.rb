@@ -25,6 +25,11 @@ module Emendor
       
       if rules
         rules.each do |rule|
+          if !rule[:gender].nil? #ignore gender-based rule unless same gender
+            if name[:gender].nil? || (name[:gender] != rule[:gender])
+              next
+            end
+          end
           emended_name = SearchName.new(name.attributes)
           emended_name[:first_name] = rule.replacement
           emended_name.origin = SearchRecord::Source::EMENDOR

@@ -162,40 +162,14 @@ module Freereg1Translator
 
   # create transcript names from the entry and mapping configuration  
   def self.transform_names(entry)
-
-    names = []
-    role_fields_map = begin
-      YAML.load(File.open("#{Rails.root}/config/csv_layout.yml"))
-    rescue ArgumentError => e
-      puts "Could not parse YAML: #{e.message}"
+    case entry.record_type
+    when RecordType::BURIAL
+      translate_names_burial(entry)
+    when RecordType::MARRIAGE
+      translate_names_marriage(entry)
+    when RecordType::BAPTISM
+      translate_names_baptism(entry)
     end
-    # consider duplicate field keys for different formats (see relative surnames above)
-    role_fields_map.each do |role|
-      role_name = role['role']
-      type_name = role['type']
-      fields_map = role['fields']
-
-      first_name_keys = fields_map['first_name'].is_a?(Array) ? fields_map['first_name'] : [fields_map['first_name']]
-      last_name_keys = fields_map['last_name'].is_a?(Array) ? fields_map['last_name'] : [fields_map['last_name']]
-      
-      first_name_key = first_name_keys.detect { |key| entry[key.to_sym] }
-      last_name_key = last_name_keys.detect { |key| entry[key.to_sym] }
-      
-      if first_name_key && last_name_key # does it have both first and last names?
-        extra_name = { :role => role_name, :type => type_name }
-        fields_map.each_pair do |standard, original|
-          if original.is_a? Array
-            original.detect { |o| extra_name[standard.to_sym] = entry[o.to_sym] }
-          else
-            extra_name[standard.to_sym] = entry[original.to_sym]
-          end
-        end
-        names << extra_name
-      end    
-    end
-  
-    names
-
   end
 
 
@@ -245,14 +219,14 @@ module Freereg1Translator
         # last_name:  
         # - burial_person_surname
         # - relative_surname
-    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename, :last_name => (entry.burial_person_surname||entry.relative_surname)}
+    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => (entry.burial_person_surname||entry.relative_surname)}
     # - role: fr
       # type: other
       # fields:
         # first_name: female_relative_forename
         # last_name:  relative_surname
     if entry.female_relative_forename
-      names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname }
+      names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname||entry.burial_person_surname }
     end
     # - role: mr
       # type: other
@@ -260,7 +234,7 @@ module Freereg1Translator
         # first_name: male_relative_forename
         # last_name:  relative_surname
     if entry.male_relative_forename
-      names << { :role => 'mr', :type => 'other', :first_name => entry.male_relative_forename, :last_name => entry.relative_surname}    
+      names << { :role => 'mr', :type => 'other', :first_name => entry.male_relative_forename, :last_name => entry.relative_surname||entry.burial_person_surname }    
     end        
 
     

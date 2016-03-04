@@ -264,21 +264,95 @@ describe Freereg1CsvEntry do
     end    
   end
 
+  it "should create burial entries despite no relative surnames" do
+    process_test_file(NO_RELATIVE_SURNAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_RELATIVE_SURNAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 1
+    entry = file_record.freereg1_csv_entries.first
 
-#  it "should not create search records for embargoed dates" do
-#    EMBARGO_FILES.each do |file|
-#      process_test_file(file)
-#      file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first       
-#
-#      file_record.freereg1_csv_entries.count.should eq 2
-#
-#      entry = file_record.freereg1_csv_entries.first
-#      entry.search_record.should_not be nil
-#      
-#      entry = file_record.freereg1_csv_entries.last
-#      entry.search_record.should be nil
-#    end    
-#  end
+    query_params = { :first_name => 'elizabeth',
+                     :last_name => 'cranness',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    query_params = { :first_name => 'philip',
+                     :last_name => 'cranness',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
+
+  it "should create baptism entries despite blank forenames" do
+    process_test_file(NO_BAPTISMAL_NAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_BAPTISMAL_NAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 1
+    entry = file_record.freereg1_csv_entries.first
+
+    query_params = { :first_name => 'william',
+                     :last_name => 'foster',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    query_params = { :last_name => 'foster',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
+  it "should create burial entries despite blank forenames" do
+    process_test_file(NO_BURIAL_FORENAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_BURIAL_FORENAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 2
+    entry = file_record.freereg1_csv_entries.first
+
+    query_params = { :last_name => 'johnson',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    entry = file_record.freereg1_csv_entries.last
+    query_params = { :last_name => 'thompson',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
 
   it "should filter by place" do
     # first create something to test against
@@ -432,44 +506,6 @@ describe Freereg1CsvEntry do
     query.save.should eq false
 
   end
-
-
-  it "should not update records that have not changed meaningfully" do
-    filespec = DELTA_FILES[0]
-    process_test_file(filespec)
-    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
-    entry = file_record.freereg1_csv_entries.first
-    search_record = entry.search_record
-
-    first = search_record.id
-    fc = SearchRecord.count
-    fce = Freereg1CsvEntry.count
-
-    filespec = DELTA_FILES[1]
-    process_test_file(filespec)
-    file_record2 = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
-    entry2 = file_record2.freereg1_csv_entries.first
-    search_record2 = entry2.search_record
-    second = search_record2.id
-
-    sc = SearchRecord.count
-    sce = Freereg1CsvEntry.count
-    fc.should eq(sc)
-    fce.should eq(sce)
-#    first.should eq(second)
-
-    filespec = DELTA_FILES[2]
-    process_test_file(filespec)
-    file_record3 = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
-    entry3 = file_record3.freereg1_csv_entries.first
-    search_record3 = entry3.search_record
-    third = search_record3.id
-
-    first.should_not eq(third)
-
-
-  end
-
 
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
