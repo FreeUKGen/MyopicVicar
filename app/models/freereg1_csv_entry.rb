@@ -294,7 +294,7 @@ class Freereg1CsvEntry
       changes[k] = a[k] if a[k] != b[k]
     end
     changes.each_key do |field|
-      return true if FreeregOptionsConstants::FORCE_SEARCH_RECORD_RECREATE.include?(field)
+      return true if Freereg1Translator::FORCE_SEARCH_RECORD_RECREATE.include?(field)
     end
     return false
   end
@@ -306,14 +306,23 @@ class Freereg1CsvEntry
   end
 
   def update_search_record
-    #delete existing and then recreate
-    record = self.search_record
-    place = self.freereg1_csv_file.register.church.place
-    place.search_records.delete(record) unless record.nil?
-    self.search_record = nil
-    record.destroy unless record.nil?
-    self.transform_search_record
+    if should_update_search_record?
+      #delete existing and then recreate
+      record = self.search_record
+      place = self.freereg1_csv_file.register.church.place
+      place.search_records.delete(record) unless record.nil?
+      self.search_record = nil
+      record.destroy unless record.nil?
+      self.transform_search_record      
+    end
   end
+  
+  def should_update_search_record?
+    return true if !self.search_record
+    
+    Freereg1Translator.meaningful_changes?(self.previous_changes.keys)
+  end
+  
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -366,7 +375,9 @@ class Freereg1CsvEntry
 
 
   def transform_search_record
-    SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
+    if should_update_search_record?
+      SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
+    end
   end
 
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'record_type'
-require 'freereg_csv_processor'
+require 'freereg_csv_update_processor'
 require 'pp'
 
 RSpec::Matchers.define :be_in_result do |entry|
@@ -18,13 +18,22 @@ describe Freereg1CsvEntry do
   before(:all) do
     Place.create_indexes
     SearchRecord.create_indexes
+
+    SearchRecord.setup_benchmark
+    Freereg1Translator.setup_benchmark
+
+  end
+
+  after(:all) do
+    SearchRecord.report_benchmark    
+    Freereg1Translator.report_benchmark    
   end
 
 
-
-
   before(:each) do
-    FreeregCsvProcessor::delete_all
+    SearchRecord.delete_all
+    Freereg1CsvEntry.delete_all
+    Freereg1CsvFile.delete_all
     Place.delete_all
     Church.delete_all
     Register.delete_all
@@ -152,6 +161,7 @@ describe Freereg1CsvEntry do
 
   it "should parse and find dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
+
     FREEREG1_CSV_FILES.each_with_index do |file, index|
 #
       process_test_file(file)
@@ -184,6 +194,7 @@ describe Freereg1CsvEntry do
 
       end
     end
+
   end
 
   it "should handle dual forenames" do
@@ -231,21 +242,95 @@ describe Freereg1CsvEntry do
     end    
   end
 
+  it "should create burial entries despite no relative surnames" do
+    process_test_file(NO_RELATIVE_SURNAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_RELATIVE_SURNAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 1
+    entry = file_record.freereg1_csv_entries.first
 
-#  it "should not create search records for embargoed dates" do
-#    EMBARGO_FILES.each do |file|
-#      process_test_file(file)
-#      file_record = Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first       
-#
-#      file_record.freereg1_csv_entries.count.should eq 2
-#
-#      entry = file_record.freereg1_csv_entries.first
-#      entry.search_record.should_not be nil
-#      
-#      entry = file_record.freereg1_csv_entries.last
-#      entry.search_record.should be nil
-#    end    
-#  end
+    query_params = { :first_name => 'elizabeth',
+                     :last_name => 'cranness',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    query_params = { :first_name => 'philip',
+                     :last_name => 'cranness',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
+
+  it "should create baptism entries despite blank forenames" do
+    process_test_file(NO_BAPTISMAL_NAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_BAPTISMAL_NAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 1
+    entry = file_record.freereg1_csv_entries.first
+
+    query_params = { :first_name => 'william',
+                     :last_name => 'foster',
+                     :inclusive => true }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    query_params = { :last_name => 'foster',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
+  it "should create burial entries despite blank forenames" do
+    process_test_file(NO_BURIAL_FORENAME)
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(NO_BURIAL_FORENAME[:filename])).first 
+      
+    file_record.freereg1_csv_entries.count.should eq 2
+    entry = file_record.freereg1_csv_entries.first
+
+    query_params = { :last_name => 'johnson',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+
+    entry = file_record.freereg1_csv_entries.last
+    query_params = { :last_name => 'thompson',
+                     :inclusive => false }
+    q = SearchQuery.new(query_params)
+    q.save!(:validate => false)
+    q.search
+    result = q.results
+
+    result.count.should have_at_least(1).items
+    result.should be_in_result(entry)
+  end
+
 
   it "should filter by place" do
     # first create something to test against
@@ -310,6 +395,7 @@ describe Freereg1CsvEntry do
   it "should not yet find records by wildcard" do
     filespec = FREEREG1_CSV_FILES[2]
     process_test_file(filespec)
+    
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
     entry = file_record.freereg1_csv_entries.first
     search_record = entry.search_record
@@ -328,8 +414,6 @@ describe Freereg1CsvEntry do
     result.should be_in_result(entry)
 
   end
-
-
 
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
