@@ -11,7 +11,7 @@ module Freecen
         piece.district_name = entry.district_name
         piece.subplaces =     entry.subplaces
         piece.parish_number = entry.parish_number
-#        piece.suffix =        entry.suffix
+        piece.suffix =        entry.suffix
         piece.freecen1_fixed_dat_entry = entry
         piece.save!
       end

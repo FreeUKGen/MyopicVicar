@@ -26,7 +26,8 @@ module Freecen
           entry.subplaces = []
           if is_scotland? file
             entry.piece_number = hash[:a_sct_piecenum].to_i
-            entry.suffix = hash[:a_sct_suffix]            
+            entry.suffix = hash[:a_sct_suffix]
+            entry.suffix.strip! unless entry.suffix.nil?
             
             # $parnum = substr($line,64,1);
             parish_number = hash[:a_sct_parnum].to_i
@@ -39,6 +40,7 @@ module Freecen
             end
             # $parnum = $parnum + ($paroff*10);
             entry.parish_number = (parish_number + paroff*10).to_s
+            #p ">>is_scotland? TRUE, piece_number=#{entry.piece_number} parish_number=#{entry.parish_number} suffix='#{entry.suffix}'"
           else
             entry.piece_number = hash[:a_piecenum].to_i
             entry.parish_number = '0'
@@ -75,7 +77,7 @@ module Freecen
       record_count = raw_file.length / DAT_RECORD_LENGTH - 1
       contents = []
       (0...record_count).to_a.each do |i|
-        contents << process_dat_record(raw_file[64 + i*DAT_RECORD_LENGTH, DAT_RECORD_LENGTH])
+        contents << process_dat_record(raw_file[64 + i*DAT_RECORD_LENGTH, DAT_RECORD_LENGTH*2]) #RECORD_LENGTH*2 because several a offsets are > 63
       end
       
       contents
