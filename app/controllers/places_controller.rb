@@ -9,7 +9,7 @@ class PlacesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
-    if session[:active_place] == 'Active'
+    if session[:active_place] 
       @places = Place.where( :chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)
      
     else

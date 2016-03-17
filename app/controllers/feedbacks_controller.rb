@@ -72,7 +72,7 @@ class FeedbacksController < InheritedResources::Base
     end
     flash.notice = "Thank you for your feedback!"
     @feedback.communicate
-    redirect_to @feedback.problem_page_url
+    redirect_to :action => 'new'
   end
 
   def delete

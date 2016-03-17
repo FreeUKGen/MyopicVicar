@@ -12,21 +12,21 @@ module UseridRole
     'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Profiles","Contacts","Roadmap"],
     'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Profiles","Contacts","Roadmap"],
     'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts","Roadmap"],
-    'data_manager' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
+    'data_manager' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
                          "Feedback", "Contacts", "System Documentation","Roadmap" ],
     'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "Site Statistics",
                       "System Documentation","Access Profiles","Roadmap"],
-    'system_administrator' =>[  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Manage Userids", "Syndicate Coordinators",
+    'system_administrator' =>[  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Manage Userids", "Syndicate Coordinators",
                                 "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Site Statistics","Search Performance",
-                                "Feedback", "Contacts", "System Documentation","Roadmap" ],
+                                "Feedback", "Contacts", "Message System", "System Documentation","Roadmap" ],
     'project_manager' =>[  "Profile", "Batches", "Manage Userids", "RefineryCMS", "Site Statistics","Search Performance",
                                 "Feedback", "Contacts", "System Documentation","Roadmap" ],                          
     'executive_director' =>[  "Profile", "Batches", "Manage Userids", "Syndicate Coordinators",
                                 "County Coordinators", "Country Coordinators","RefineryCMS", "Site Statistics","Search Performance",
-                                "Feedback", "Contacts", "System Documentation","Roadmap" ], 
+                                "Feedback", "Contacts", "Message System","System Documentation","Roadmap" ], 
     'publicity_coordinator'=> [ "Profile", "Batches",  "Contacts", "System Documentation" ,"Roadmap"],                              
     'genealogy_coordinator'=> [ "Profile", "Batches", "Contacts", "System Documentation" ,"Roadmap"],
-    'documentation_coordinator' => [  "Profile", "Batches", "Manage Syndicate", "Manage Counties", "Access Profiles", "RefineryCMS",
+    'documentation_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Access Profiles", "RefineryCMS",
                          "Feedback", "Contacts", "System Documentation","Roadmap" ],
     'engagement_coordinator' => [  "Profile", "Batches", "Access Profiles", "RefineryCMS", "Contacts", "System Documentation","Roadmap" ]  
   }
@@ -55,10 +55,11 @@ module UseridRole
     "Contacts" => "/contacts",
     "System Documentation" => "../system-documents",
     "Roadmap" => "../system-documents/development-roadmap",
-    "Logout" => "/refinery/logout"
+    "Logout" => "/refinery/logout",
+    "Message System" => "/messages"
   }
-  USERID_MANAGER_OPTIONS = ["Browse userids","Create userid","Select specific email","Select specific userid", "Select Role","Select specific surname/forename"]
-  USERID_ACCESS_OPTIONS = ["Select specific email","Select specific userid", "Select specific surname/forename"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Create userid"]
+  USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
     #todo clean up first 2
@@ -68,6 +69,7 @@ module UseridRole
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
     "Select Role" => "/userid_details/person_roles"
+   
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
@@ -120,7 +122,7 @@ module UseridRole
     'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
   }
   PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no Files','Processed but no File in FR1','Processed but no File in FR2','Browse Files' ,
-                             'Waiting to be processed','Files for Specific Userid' ]
+                             'Waiting to be processed','Files for Specific Userid']
 
   PHYSICAL_FILES_OPTIONS_TRANSLATION ={
     'Browse Files' => "/physical_files/all_files",
@@ -129,7 +131,7 @@ module UseridRole
     'Processed but no File in FR1' => '/physical_files/processed_but_no_file_in_fr1',
     'Processed but no Files' => '/physical_files/processed_but_no_files',
     'Waiting to be processed' => '/physical_files/waiting_to_be_processed',
-    'Files for Specific Userid' => '/physical_files/files_for_specific_userid',
+    'Files for Specific Userid' => '/physical_files/files_for_specific_userid'
   }
 
 

@@ -1,0 +1,12 @@
+<% breadcrumb :place_range_options,  @county, @active%>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>  
+<div class="island ">   
+  <%= simple_form_for @manage_county  do |f| %>
+    <%= f.input :action,  :as => :select,  :label => "Make a Selection", :required => true, :collection => @options ,:input_html => {'onchange' => @location,:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4}%>
+  <% end %>
+</div>
+ 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class FreeregCsvUpdateProcessor
   #coding: utf-8
 
@@ -16,7 +17,7 @@ class FreeregCsvUpdateProcessor
   require 'freereg_validations'
   CONTAINS_PERIOD = /\./
   HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
-  BOM = /ï»¿/
+  #BOM = /ï»¿/
   DATEMAX = 2020
   DATEMIN = 1530
   HEADER_FLAG = /\A\#\z/
@@ -318,10 +319,7 @@ class FreeregCsvUpdateProcessor
              #get a line of data
              def self.get_line_of_data
                @csvdata = @@array_of_data_lines[@@number_of_line]
-               #get rid of any BOM
                raise FreeREGEnd,  "End of file" if @csvdata.nil?
-               #stripped BOM
-               @csvdata[0].gsub!(/ï»¿/, '') unless @csvdata[0].nil?
                @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
                raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
                @first_character = "?"
@@ -640,9 +638,9 @@ class FreeregCsvUpdateProcessor
                      data_record[:file_line_number] = n
                      data_record[:register_entry_number] = @csvdata[3]
                      data_record[:birth_date] = @csvdata[4]
-                     data_record[:year] = FreeregValidations.year_extract(@csvdata[4])
                      data_record[:baptism_date] = @csvdata[5]
-                     data_record[:year] = FreeregValidations.year_extract(@csvdata[5]) if data_record[:year].nil?
+                     data_record[:year] = FreeregValidations.year_extract(@csvdata[5])
+                     data_record[:year] = FreeregValidations.year_extract(@csvdata[4]) if FreeregValidations.year_extract(@csvdata[5]).nil?
                      datestat(data_record[:year]) unless data_record[:year].nil?
                      data_record[:person_forename] = @csvdata[6]
                      data_record[:person_sex] = cleansex(@csvdata[7])
@@ -798,6 +796,7 @@ def self.process_register_headers
         @all_records_hash[entry.id] = entry.record_digest
       end                  
     end
+    @locations.uniq
     p "There are #{@locations.length} locations and #{@all_records_hash.length} existing records for this file"
     #p @all_records_hash.inspect
   end
@@ -919,48 +918,59 @@ def self.check_and_create_db_record_for_entry(data_record,file_for_record)
       #we have an existing record but may be for different location
       #p "existing record"
       existing_record = Freereg1CsvEntry.id(@all_records_hash.key(new_digest)).first
-      #p existing_record.inspect
-      if existing_record.same_location(existing_record,file_for_record)
-        #p "same location"
-        #record location is OK
-        if existing_record.search_record.present?
-          # search record and entry are OK
-          success = "nochange" 
-          #p success 
-        else
-          success = "change"
-          #need to create search record as one does not exist
-          #p "creating search as not there"
-          existing_record.transform_search_record if  @@create_search_records == true 
-        end
-      else
-        
-        #p "changing location"
-        #change of location
-        #update location of record
-        record = existing_record.search_record
-        existing_record.update_location(data_record,file_for_record)
-        
-          if  record.present?
+      if existing_record.present?
+        #p existing_record.inspect
+        if existing_record.same_location(existing_record,file_for_record)
+          #p "same location"
+          #record location is OK
+          if existing_record.search_record.present?
+            # search record and entry are OK
             success = "nochange" 
-            #p "updating record"
-             #p record.inspect
-            # need to update search record  with location
-            record.update_location(data_record,file_for_record)
-            #p "updated record"
-            #p record.inspect
+            #p success 
           else
             success = "change"
             #need to create search record as one does not exist
-            #p "created record"
-            existing_record.transform_search_record if  @@create_search_records == true
-            #p existing_record.search_record
+            #p "creating search as not there"
+            existing_record.transform_search_record if  @@create_search_records == true 
           end
+        else          
+          #p "changing location"
+          #change of location
+          #update location of record
+          record = existing_record.search_record
+          existing_record.update_location(data_record,file_for_record)
+          
+            if  record.present?
+              success = "nochange" 
+              #p "updating record"
+               #p record.inspect
+              # need to update search record  with location
+              record.update_location(data_record,file_for_record)
+              #p "updated record"
+              #p record.inspect
+            else
+              success = "change"
+              #need to create search record as one does not exist
+              #p "created record"
+              existing_record.transform_search_record if  @@create_search_records == true
+              #p existing_record.search_record
+            end
+        end
+        #we need to eliminate this record from hash
+        @all_records_hash.delete(@all_records_hash.key(new_digest))
+         #p "dropping hash entry"
+         #p @all_records_hash.inspect
+      else
+        #this should never happen but it has
+        success = "new"
+        #new entry and record
+        #p "creating new entry"
+        success = create_db_record_for_entry(data_record)
+        #p "new"
+        #p success
+        sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+        sleep(sleep_time)
       end
-      #we need to eliminate this record from hash
-      @all_records_hash.delete(@all_records_hash.key(new_digest))
-       #p "dropping hash entry"
-       #p @all_records_hash.inspect
     else
       success = "new"
       #new entry and record
@@ -1096,158 +1106,223 @@ end
                      return n
                    end #end of method
 
-                   def self.recode_windows_1252_to_utf8(string)
-                    string.gsub(/[\u0081\u008D\u008F\u0090\u009D]/,"")
-                     string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
-                     force_encoding('Windows-1252').encode('utf-8') }
-                   end
+                   #def self.recode_windows_1252_to_utf8(string)
+                   # string.gsub(/[\u0081\u008D\u008F\u0090\u009D]/,"")
+                   #  string.gsub(/[\u0080-\u009F]/) {|x| x.getbyte(1).chr.
+                   #  force_encoding('Windows-1252').encode('utf-8') }
+                   #end
 
                    def self.slurp_the_csv_file(filename)
 
                      begin
-                       # normalise line endings
-                       # get character set
-                       #first_data_line = CSV.parse_line(xxx, {:row_sep => "\r\n",:skip_blanks => true})
+                       #read entire .csv as binary text (no encoding/conversion)
+                       csvtxt = File.open(filename, "rb", :encoding => "ASCII-8BIT:ASCII-8BIT"){|f| f.read}
 
-                       first_data_line = CSV.parse_line(File.open(filename) {|f| f.readline})
-                       code_set =  first_data_line[5].strip if first_data_line[0] == "+INFO" && !first_data_line[5].nil?
-                       #set Characterset default
+                       #check for BOM and if found, assume corresponding
+                       # unicode encoding (unless invalid sequences found),
+                       # regardless of what user specified in column 5 since it
+                       # may have been edited and saved as unicode by coord 
+                       # without updating col 5 to reflect the new encoding.
+                       if !csvtxt.nil? && csvtxt.length > 2
+                         if csvtxt[0].ord==0xEF && csvtxt[1].ord==0xBB && csvtxt[2].ord==0xBF
+                           #p "UTF-8 BOM found"
+                           csvtxt = csvtxt[3..-1]#remove BOM
+                           code_set = 'UTF-8'
+                           csvtxt.force_encoding(code_set)
+                           if !csvtxt.valid_encoding?
+                             #not really a UTF-8 file. probably was edited in
+                             #software that added BOM to beginning without
+                             #properly transcoding existing characters to UTF-8
+                             code_set = nil
+                             csvtxt.force_encoding('ASCII-8BIT')
+                           else
+                             csvtxt=csvtxt.encode('utf-8', :undef => :replace)
+                           end
+                         end
+                       end
+                       
+                       # parse first csv line to get encoding (if any) in col 5
+                       @@slurp_fail_reason = "CSV parse failure on first line"
+                       first_data_line = CSV.parse_line(csvtxt)
+                       @@slurp_fail_reason = nil # no exception thrown
+                       code_set_specified_in_csv = nil
+                       if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
+                         code_set_specified_in_csv = first_data_line[5].strip
+                         if !code_set.nil? && code_set != code_set_specified_in_csv
+                           @@message_file.puts "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
+                         else
+                           code_set = code_set_specified_in_csv
+                         end
+                       end
 
+                       if code_set.nil? || code_set.empty? || code_set=="chset"
+                         #if it looks like valid UTF-8 and we know it isn't
+                         #Windows-1252 because of undefined characters, then
+                         #default to UTF-8 instead of Windows-1252
+                         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
+                             csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
+                             csvtxt.index(0x9D.chr)
+                           #p 'undefined Windows-1252 chars, try UTF-8 default'
+                           csvtxt.force_encoding('UTF-8')
+                           code_set = 'UTF-8' if csvtxt.valid_encoding?
+                           csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
+                         end
+                       end
+                       #default to Windows-1252
                        code_set = "Windows-1252" if (code_set.nil? || code_set.empty? || code_set == "chset")
-                       #code_set = code_set.gsub(/\s+/, ' ').strip
-                       #Deal with the cp437 code which is not in ruby also deal with the macintosh instruction in freereg1
-                       code_set = "Windows-1252" if (code_set == "cp437" || code_set == "CP437")
+                       code_set = "UTF-8" if (code_set.upcase == "UTF8")
+                       #Deal with the cp437 code which is IBM437 in ruby
+                       code_set = "IBM437" if (code_set.upcase == "CP437")
+                       #Deal with the macintosh instruction in freereg1
                        code_set = "macRoman" if (code_set.downcase == "macintosh")
                        code_set = code_set.upcase if code_set.length == 5 || code_set.length == 6
                        @@message_file.puts "Invalid Character Set detected #{code_set} have assumed Windows-1252" unless Encoding.name_list.include?(code_set)
                        code_set = "Windows-1252" unless Encoding.name_list.include?(code_set)
+
+                       #p "code_set is #{code_set} after adjustments"
                        #if we have valid new character set; use it and change the file encoding
                        @@charset = Encoding.find(code_set)
-                       xxx = File.read(filename, :encoding => @@charset).gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
-                       xxx = recode_windows_1252_to_utf8(xxx) if code_set == "Windows-1252"
+                       # convert to UTF-8 if we didn't already. If our
+                       # preference is to fail when invalid characters or
+                       # undefined characters are found (so we can fix the
+                       # file or specified encoding) instead of silently
+                       # replacing bad characters with the undefined character
+                       # symbol, the two replacement options can be removed
+                       unless csvtxt.encoding == 'UTF-8'
+                         csvtxt.force_encoding(code_set)
+                         @@slurp_fail_reason = "the processor failed to convert to UTF-8 from character set #{code_set}" + (code_set_specified_in_csv.nil? ? " (assumed because none specified in column 5 of CSV file)." : " (specified in column 5 of CSV file as #{code_set_specified_in_csv}).") + " Please verify that the proper character set is specified. If it is, there may be unsupported characters in the file."
+                         csvtxt = csvtxt.encode('UTF-8', invalid: :replace, undef: :replace)
+                         @@slurp_fail_reason = nil # no exception thrown
+                       end
+
+                       # normalise line endings
+                       xxx = csvtxt.gsub(/\r?\n/, "\r\n").gsub(/\r\n?/, "\r\n")
+
                        #now get all the data
+                       @@slurp_fail_reason="the CSV parser failed. The CSV file might not be formatted correctly"
                        @@array_of_data_lines = CSV.parse(xxx, {:row_sep => "\r\n",:skip_blanks => true})
-
+                       @@slurp_fail_reason=nil # no exception thrown
                        @@header [:characterset] = code_set
-
                        success = true
                        #we rescue when for some reason the slurp barfs
                      rescue => e
-
+                         #p "rescue block entered " + (@@slurp_fail_reason.nil? ? "" : @@slurp_fail_reason)
+                       p "csv slurp rescue " + (e.message)
                        @@message_file.puts "#{@@userid}\t#{@@filename} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*"
+                       @@message_file.puts @@slurp_fail_reason if !@@slurp_fail_reason.nil?
                        @@message_file.puts e.message
                        @@message_file.puts e.backtrace.inspect
                        success = false
 
                      else
                        raise FreeREGError,  "System_Error,Empty file" if @@array_of_data_lines.nil?
-                       ensure
-                         #we ensure that processing keeps going by dropping out through the bottom
-                       end #begin end
-                       return success
-                     end #method end
+                     ensure
+                       #we ensure that processing keeps going by dropping out through the bottom
+                     end #begin end
+                     return success
+                   end #method end
 
-                     def self.check_for_replace(filename,force)
-                       if !File.exists?(filename)
-                          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                          message = "#{@@userid} #{@@header[:file_name]} file does not exist"
-                         p  message
-                         @@message_file.puts message
-                         UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
-                         return false
-                       end
-                       #check to see if we should process the file
-                       check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name],
-                                                                :userid => @@header[:userid]}).first
-                       check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
+def self.check_for_replace(filename,force)
+  if !File.exists?(filename)
+      #make sure file actually exists
+      PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+      message = "#{@@userid} #{@@header[:file_name]} file does not exist"
+     p  message
+     @@message_file.puts message
+     UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver                                 
+     return false
+  end
 
-                       if check_for_userid.nil?
-                         #but first we need to check that there is a userid
-                         PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
-                         message = "#{@@header[:userid]} does not exit"
-                         p  message
-                         @@message_file.puts message
-                         return false
-                       end
+  #check to see if we should process the file
+  check_for_userid = UseridDetail.where(:userid => @@header[:userid]).first
+  if check_for_userid.nil?
+   #but first we need to check that there is a userid to receive the file
+   PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name]) 
+   message = "#{@@header[:userid]} does not exit"
+   p  message
+   @@message_file.puts message
+   return false
+  end
 
-                       if check_for_file.nil?
-                         #if file not there then need to create
-                         return true
-                       else
-                         #file is in the database so lets test to see if we process
-                         case
-                         when force
-                           @@update = true
-                           #process file regardless
-                           return true
-                         when @@header[:digest] == check_for_file.digest
-                           #file in database is same or more recent than we we are attempting to reload so do not process
-                           message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
-                            p  message
-                           @@message_file.puts message
-                           UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
-                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
-                           return false
-                         when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
-                           #file in database is same or more recent than we we are attempting to reload so do not process
-                             message = "#{@@userid} #{@@header[:file_name]} is not more recent than the last processing"
-                            p  message
-                            @@message_file.puts message
-                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
-                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
-                           return false
-                         when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
-                           #do not process if coordinator has locked
-                            message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
-                            p  message
-                            @@message_file.puts message
-                            UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
-                            PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
-                            PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
-                            return false
-                          else
-                               @@update = true
-                               return true
-                          end
-                           end #check_for_file loop end
+  check_for_file = Freereg1CsvFile.where({ :file_name => @@header[:file_name], :userid => @@header[:userid]}).first
+  if check_for_file.nil?
+   #if file not there then need to create
+   return true
+  else
+   #file is in the database so lets test to see if we process
+    case
+       when force
+         @@update = true
+         #process file regardless
+         return true
+       #when @@header[:digest] == check_for_file.digest
+         #file in database is same as the one we are attempting to reload so do not process
+        # message =  "#{@@userid} #{@@header[:file_name]} has not changed since last processing"
+        #  p  message
+        # @@message_file.puts message
+        # UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+        #  PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+        # PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
+        # return false
+       when ( check_for_file.uploaded_date.strftime("%s") > @@uploaded_date.strftime("%s") )
+         #file in database is same or more recent than we we are attempting to reload so do not process
+           message = "#{@@userid} #{@@header[:file_name]} is older than the one in the system"
+          p  message
+          @@message_file.puts message
+          UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+          PhysicalFile.add_processed_flag(@@userid,@@header[:file_name]) 
+         return false
+       when (check_for_file.locked_by_transcriber || check_for_file.locked_by_coordinator ) then
+         #do not process if coordinator has locked
+          message = "#{@@userid} #{@@header[:file_name]} had been locked by either yourself or the coordinator and is not processed"
+          p  message
+          @@message_file.puts message
+          UserMailer.batch_processing_failure(message,@@header[:userid],@@header[:file_name]).deliver 
+          PhysicalFile.remove_waiting_flag(@@userid,@@header[:file_name])
+          PhysicalFile.add_processed_flag(@@userid,@@header[:file_name])
+          return false
+      else
+         @@update = true
+         return true
+    end
+  end #check_for_file loop end
+end #method end
 
-                         end #method end
-
-                         def self.setup_for_new_file(filename)
-                           # turn off domain checks -- some of these email accounts may no longer work and that's okay
-                           #initializes variables
-                           #gets information on the file to be processed
-                           @@update = false
-                           #@@place is used to hold the last place name processed for this file
-                           @@place = nil
-                           @@header = Hash.new
-                           @csvdata = Array.new
-                           @@list_of_registers = Hash.new()
-                           @@header_error = Hash.new()
-                           @@system_error = Hash.new()
-                           @@data_hold = Hash.new
-                           @data_record = Hash.new
-                           @@array_of_data_lines = Array.new {Array.new}
-                           @@charset = "iso-8859-1"
-                           @@file = filename
-                           standalone_filename = File.basename(filename)
-                           @@filename = standalone_filename
-                           full_dirname = File.dirname(filename)
-                           parent_dirname = File.dirname(full_dirname)
-                           user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
-                           @@userid = user_dirname
-                           @@header[:digest] = Digest::MD5.file(filename).hexdigest if File.exists?(filename)
-                           #delete any user log file for errors we put it in the same directory as the csv file came from
-                           @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
-                           File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)
-                           @@header[:file_name] = standalone_filename #do not capitalize filenames
-                           @@header[:userid] = user_dirname
-                           @@uploaded_date = Time.now
-                           @@uploaded_date = File.mtime(filename) if File.exists?(filename)
-                           @@header[:uploaded_date] = @@uploaded_date
-                         end
+def self.setup_for_new_file(filename)
+   # turn off domain checks -- some of these email accounts may no longer work and that's okay
+   #initializes variables
+   #gets information on the file to be processed
+   @@update = false
+   #@@place is used to hold the last place name processed for this file
+   @@place = nil
+   @@header = Hash.new
+   @csvdata = Array.new
+   @@list_of_registers = Hash.new()
+   @@header_error = Hash.new()
+   @@system_error = Hash.new()
+   @@data_hold = Hash.new
+   @data_record = Hash.new
+   @@array_of_data_lines = Array.new {Array.new}
+   @@charset = "iso-8859-1"
+   @@file = filename
+   standalone_filename = File.basename(filename)
+   @@filename = standalone_filename
+   full_dirname = File.dirname(filename)
+   parent_dirname = File.dirname(full_dirname)
+   user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+   @@userid = user_dirname
+   @@header[:digest] = Digest::MD5.file(filename).hexdigest if File.exists?(filename)
+   #delete any user log file for errors we put it in the same directory as the csv file came from
+   @@user_file_for_warning_messages = full_dirname + '/' + standalone_filename + ".log"
+   File.delete(@@user_file_for_warning_messages)   if File.exists?(@@user_file_for_warning_messages)
+   @@header[:file_name] = standalone_filename #do not capitalize filenames
+   @@header[:userid] = user_dirname
+   @@uploaded_date = Time.now
+   @@uploaded_date = File.mtime(filename) if File.exists?(filename)
+   @@header[:uploaded_date] = @@uploaded_date
+   @@slurp_fail_reason = nil
+end
 
                          def self.process(range,type,delta)
                            #this is the basic processing
@@ -1341,7 +1416,11 @@ end
                                         @@message_file.puts "File not processed" if @success == false
                                         @@message_file.close
                                         file = @@message_file
-                                        UserMailer.batch_processing_failure( file,@@header[:userid],@@header[:file_name]).deliver
+                                        user_msg = file
+                                        if !@@slurp_fail_reason.nil?
+                                          user_msg = @@slurp_fail_reason + file.to_s
+                                        end
+                                        UserMailer.batch_processing_failure( user_msg,@@header[:userid],@@header[:file_name]).deliver
                                         user = UseridDetail.where(userid: "REGManager").first
                                         UserMailer.update_report_to_freereg_manager(file,user).deliver
                                      end
@@ -1368,7 +1447,7 @@ end
                     @@message_file.close 
                     user = UseridDetail.where(userid: "REGManager").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
-                    user = UseridDetail.where(userid: "Captainkirk").first
+                    user = UseridDetail.where(userid: "ericb").first
                     UserMailer.update_report_to_freereg_manager(file,user).deliver
                   end
                   at_exit do

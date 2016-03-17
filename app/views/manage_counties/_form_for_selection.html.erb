@@ -1,13 +1,12 @@
-<div class="island  island--light">
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>  
-<%= semantic_form_for @manage_county, :html => { :class => "grid"}  do |f| %>
-<%= f.input :action,  
-    { :as => :select, :include_blank => true,  :label => "Make a Selection", :required => true, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%>
 
-<% end %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>  
+<div class="island ">   
+  <%= simple_form_for @manage_county  do |f| %>
+    <%= f.input :action,  :as => :select, :include_blank => true,  :label => "Make a Selection", :required => true, :collection => @options ,:input_html => {'onchange' => @location,:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4}%>
+  <% end %>
 </div>
  

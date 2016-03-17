@@ -195,12 +195,18 @@ class UserMailer < ActionMailer::Base
     get_attachment
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested enhancement. Reference #{@contact.identifier}")
   end
-
   def general(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
     get_attachment
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
+  end
+
+  def send_message(mymessage,ccs)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    @message = mymessage
+    get_message_attachment if @message.attachment.present? ||  @message.images.present?
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
   def genealogy(contact,ccs)
@@ -267,6 +273,19 @@ class UserMailer < ActionMailer::Base
       @image = File.basename(@contact.screenshot.path)
       @file = "#{Rails.root}/public" + @contact.screenshot_url
       attachments[@image] = File.binread(@file)
+    end
+  end
+
+  def get_message_attachment
+    if @message.attachment.present?
+      @file_name = File.basename(@message.attachment.path)
+      @file = "#{Rails.root}/public" + @message.attachment_url
+      attachments[@file_name] = File.read(@file)
+    end
+    if @message.images.present?
+      @image = File.basename(@message.images.path)
+      @filei = "#{Rails.root}/public" + @message.images_url
+      attachments[@image] = File.binread(@filei)
     end
   end
 

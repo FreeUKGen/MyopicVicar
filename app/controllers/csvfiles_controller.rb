@@ -61,21 +61,27 @@ class CsvfilesController < ApplicationController
 
   def edit
     #code to move existing file to attic
-    get_user_info_from_userid
-    @file = Freereg1CsvFile.find(params[:id])
-    @person = @file.userid
-    @file_name = @file.file_name
-    #there can be multiple batches only one of which might be locked
-    Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
-      if file.locked_by_transcriber ||  file.locked_by_coordinator
-        flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
-        redirect_to :back
-        return
+    @file = Freereg1CsvFile.id(params[:id]).first
+    if @file.present?
+      get_user_info_from_userid
+      @person = @file.userid
+      @file_name = @file.file_name
+      #there can be multiple batches only one of which might be locked
+      Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
+        if file.locked_by_transcriber ||  file.locked_by_coordinator
+          flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
+          redirect_to :back
+          return
+        end
       end
+      @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
+      session[:file_name] =  @file_name
+      get_userids_and_transcribers
+    else
+      flash[:notice] = "There was no file to replace"
+      redirect_to :back
+      return
     end
-    @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
-    session[:file_name] =  @file_name
-    get_userids_and_transcribers
   end
 
   def update
@@ -101,7 +107,7 @@ class CsvfilesController < ApplicationController
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
           if batch.nil?
             flash[:notice] = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
-            logger.warn("CSV_FAILURE: No file for #{session[:userid]}")
+            logger.warn("FREEREG:CSV_FAILURE: No file for #{session[:userid]}")
             @csvfile.delete
             redirect_to action: :new
             return
@@ -112,13 +118,13 @@ class CsvfilesController < ApplicationController
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
           if batch.present?
             flash[:notice] = "Your file is currently waiting to be processed. It cannot be processed this way now"
-            logger.warn("CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
+            logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
             @csvfile.delete
             redirect_to action: :new
             return
           end
           pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
-          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."    
         else
         end #case
         @csvfile.delete
@@ -163,32 +169,6 @@ class CsvfilesController < ApplicationController
     else
       @userids = @user
     end #end case
-  end
-
-  def download
-    @role = session[:role]
-    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
-    if  @freereg1_csv_file.nil?
-      flash[:notice] =  "There is no batch to download."
-      redirect_to :back and return
-    end
-    errors =  @freereg1_csv_file.check_file
-    if errors[0]
-      log_messenger("BATCH_ERRORS #{errors[1]}")
-    end
-    ok_to_proceed = @freereg1_csv_file.check_batch
-    if !ok_to_proceed[0] 
-      flash[:notice] =  "There is a problem with the batch you are attempting to download; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
-      redirect_to :back and return
-    end
-    @freereg1_csv_file.backup_file
-    my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)   
-    if File.file?(my_file)
-      send_file( my_file, :filename => @freereg1_csv_file.file_name)
-      @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
-    end 
-    @freereg1_csv_file.update_attributes(:locked_by_coordinator => false,:locked_by_transcriber => false)
-    flash[:notice] =  "The file has been downloaded to your computer"
   end
 
   def load_people(userids)

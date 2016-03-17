@@ -11,4 +11,11 @@ class BatchError
   belongs_to  :freereg1_csv_file, index: true
   index({entry_id:1})
   index({freereg1_csv_file_id: 1,entry_id:1})
+
+  class << self
+    def id(id)
+      where(:id => id)
+    end
+  end
+
 end

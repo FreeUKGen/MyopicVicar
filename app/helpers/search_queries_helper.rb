@@ -39,5 +39,14 @@ module SearchQueriesHelper
       ""
     end
   end
+  def county(search_record)
+    chapman = search_record.chapman_code
+    if chapman.present?
+       county = ChapmanCode.has_key(chapman)
+    else
+      county = search_record.place.county
+    end
+    county
+  end
 
 end

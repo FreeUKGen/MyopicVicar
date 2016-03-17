@@ -40,7 +40,11 @@
  <tr>
    <td>County Last Updated</td><td > <%= @county.u_at.strftime("%d %b %Y") unless @county.u_at.nil?%>  </td>   
  </tr>
-
+ <tr><td>County Files</td><td > <%= @county.files %>  </td></tr>
+ <tr><td>Total Records</td>       <td > <%= @county.total_records %>  </td></tr>
+ <tr><td>Baptism Records</td>       <td > <%= @county.baptism_records %>  </td></tr>
+ <tr><td>Burial Records</td>      <td > <%= @county.burial_records %>  </td></tr>
+ <tr><td>Marriage Records</td>       <td > <%= @county.marriage_records %>  </td></tr>
 </table>
 </div>
 

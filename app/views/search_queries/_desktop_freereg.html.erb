@@ -55,18 +55,15 @@
             <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%>
           </td>
           <td>
-            <%= search_record.place.county %>
+            <%= county(search_record) %>
           </td>
           <td>
             <%= format_location(search_record) %>
           </td>
           <td>
-            <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
-            <% if session[:viewed] %>
-            <i>
-            <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
-            </i>
-            <% end %>
+            <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %> 
+            <i><%= viewed(@search_query,search_record)%></i>
+            
           </td>
         </tr>
       </tbody>

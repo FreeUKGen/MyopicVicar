@@ -1,11 +1,12 @@
-<%= render 'my_own_header' if session[:my_own]%>
-<%= render 'coordinator_header' unless session[:my_own]%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
   </div>
 <% end %>
+<%= render 'my_own_header' if session[:my_own]%>
+<%= render 'coordinator_header' unless session[:my_own]%>
 <% unless @freereg1_csv_files.nil? || @freereg1_csv_files.length == 0%>
+<%= paginate @freereg1_csv_files %>
   <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
   <div class="grid__item ">
     <section class="island ">
@@ -17,9 +18,9 @@
               <th class="t8">Cty</th>
               <th class="t12">Place</th>
               <% if session[:my_own]%>
-               <th class="t20">Church</th>
+               <th class="t15">Church</th>
               <% else%>
-               <th class="t10">Church</th>
+               <th class="t15">Church</th>
               <% end%>
               <th class="t5">Reg</th>
               <% unless session[:my_own]%>
@@ -40,7 +41,7 @@
                   <td class="t5"><%= chapman(freereg1_csv_file) %></td>
                   <td class="t8"><%= place_name(freereg1_csv_file) %></td>
                   <td class="t8"><%= church_name(freereg1_csv_file) %></td>
-                  <td class="t3"><%= register_type(freereg1_csv_file) %></td>
+                  <td class="t8"><%= register_type(freereg1_csv_file) %></td>
                   <% unless session[:my_own]%>
                     <td class="t10"><%= freereg1_csv_file.userid %></td>
                   <% end %>
@@ -49,9 +50,9 @@
                   <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>
                   <td class="t4"><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
                   <td class="t4"><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
-                  <td class="t4"><%= link_to 'DL', download_csvfile_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get  %></td>
+                  <td class="t4"><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get  %></td>
                   <td class="t4"><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
-                  <td  class="t4"><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock this file?' %>
+                  <td  class="t4"><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock all of the batches associated with this file?' %>
                   </td>
                   <td class="t4"><%= link_to 'DE', remove_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to delete this file? This may take a few minutes if there many records', method: :get   %></td>
                   </td>
@@ -62,6 +63,7 @@
             </tbody> 
           </table>
         </div>
+        <%= paginate @freereg1_csv_files %>
       </div>
     </section> 
   </div>    
