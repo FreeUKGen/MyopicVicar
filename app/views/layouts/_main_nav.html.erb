@@ -47,9 +47,11 @@
         </li>
        
         <li>
-	  <% if false %>
-          <%= link_to "Help", "/help" %>
-	  <% end %>
+          <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+            <%= link_to "Help", "/help" %>
+          <% else %>
+            <%= link_to "Help", "/information-for-researchers" %>
+          <% end %>
         </li>
         <% end %>
       </ul>
