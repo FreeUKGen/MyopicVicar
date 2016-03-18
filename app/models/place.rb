@@ -169,6 +169,7 @@ class Place
 
   def change_name(param)
     place_name = param[:place_name]
+    return [true, "That place name is already in use"] if Place.place(place_name).exists?
     unless self.place_name == place_name
       self.save_to_original
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
