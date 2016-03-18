@@ -1460,7 +1460,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
       sleep(sleep_time) 
     end #filename loop end
     time = 0
-    time = (((Time.now  - time_start )/(nn))*1000) unless nn == 0
+    time = (((Time.now  - time_start )/(@@nn))*1000) unless @@nn == 0
     
     if filenames.length > 1
       p "Created  #{@@nn} entries at an average time of #{time}ms per record" 
