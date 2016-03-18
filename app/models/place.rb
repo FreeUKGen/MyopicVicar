@@ -259,6 +259,7 @@ class Place
         place.delete
       end
     end
+    PlaceCache.refresh(self.chapman_code)
     return [true, ""]
   end
 
