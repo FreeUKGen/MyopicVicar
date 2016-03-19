@@ -924,7 +924,6 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
           if existing_record.same_location(existing_record,file_for_record)
             #p "same location"
             #record location is OK
-            print "\tinspecting existing record\t#{existing_record.id}\n"
             if existing_record.search_record.present?
               # search record and entry are OK
               success = "nochange" 
