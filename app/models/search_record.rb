@@ -315,8 +315,8 @@ class SearchRecord
     names_array.each do |name|
       name_role = (name[:role].nil?) ? nil : name[:role]
       name_gender = (name[:gender].nil?) ? nil : name[:gender]
-      tokens = name.first_name.split(/-|\s+/)
-      if tokens.size > 1
+      tokens = name.first_name.split(/-|\s+/) unless name.nil? || name.first_name.nil?
+      if tokens.present? && tokens.size > 1
         tokens.each do |token|
           separated_names << search_name(token, name.last_name, name.type, name_role, name_gender, Source::SEPARATION)
         end
@@ -328,10 +328,12 @@ class SearchRecord
   def separate_last_names(names_array)
     separated_names = []
     names_array.each do |name|
-      tokens = name.last_name.split(/-|\s+/)
-      if tokens.size > 1
+      name_role = (name[:role].nil?) ? nil : name[:role]
+      name_gender = (name[:gender].nil?) ? nil : name[:gender]
+      tokens = name.last_name.split(/-|\s+/) unless name.nil? || name.last_name.nil?
+      if tokens.present? && tokens.size > 1
         tokens.each do |token|
-          separated_names << search_name(name.first_name, token, name.type, Source::SEPARATION_LAST) unless is_surname_stopword(token)
+          separated_names << search_name(name.first_name, token, name.type, name_role, name_gender, Source::SEPARATION_LAST) unless is_surname_stopword(token)
         end
       end
     end
