@@ -81,6 +81,9 @@ class Place
       'miles' => ENGLISH,
       'kilometers' => SI
     }
+     def self.system_to_units(system)
+      OPTIONS.invert[system]
+    end
   end
 
   class << self
@@ -111,10 +114,6 @@ class Place
     def place(place)
       where(:place_name => place)
     end
-
-    def system_to_units(system)
-      OPTIONS.invert[system]
-    end   
   end
 
   def add_location_if_not_present
