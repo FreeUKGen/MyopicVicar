@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 class FreeregCsvUpdateProcessor
+# This class processes a file or files of CSV records.
+#It converts them into entries and stores them in the freereg1_csv_entries     collection
   #coding: utf-8
 
   require "csv"
@@ -15,6 +17,7 @@ class FreeregCsvUpdateProcessor
   require 'get_files'
   require "#{Rails.root}/app/models/userid_detail"
   require 'freereg_validations'
+  require 'freereg_options_constants'
   CONTAINS_PERIOD = /\./
   HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
   #BOM = /ï»¿/
@@ -156,21 +159,6 @@ class FreeregCsvUpdateProcessor
 
 
   attr_accessor :freereg1_csv_file
-
-
-  # validate the modern date of creation or modification
-  def self.datevalmod(m)
-    return true if @csvdata[m].nil? || @csvdata[m].empty?
-    if  @csvdata[m] =~ VALID_DATE
-      DATE_SPLITS.each_pair do |date_splitter, date_split|
-        date_parts = @csvdata[m].split(date_split)
-        unless date_parts[1].nil?
-          return true if  VALID_MONTH.include?(date_parts[1].upcase) || date_parts[1] =~ VALID_NUMERIC_MONTH
-        end
-      end
-    end
-    return false
-  end
 
   #calculate the minimum and maximum dates in the file; also populate the decadal content table starting at 1530
   def self.datestat(x)
@@ -320,19 +308,22 @@ class FreeregCsvUpdateProcessor
  def self.get_line_of_data
    @csvdata = @@array_of_data_lines[@@number_of_line]
    raise FreeREGEnd,  "End of file" if @csvdata.nil?
- @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
- raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
- @first_character = "?"
- @first_character = @csvdata[0].slice(0) unless  @csvdata[0].nil?
- @line_type = "Data"
- @line_type = "Header" if (@first_character == '+' || @first_character ==  '#') || @csvdata[0] =~ HEADER_DETECTION
- number_of_fields = @csvdata.length
- number_empty = 1
- @csvdata.each do |l|
-   number_empty = number_empty + 1 if l.nil? || l.empty?
- end
- #      puts " #{@@number_of_line} #{@line_type} #{first_character} #{number_of_fields} #{number_empty} "
- raise FreeREGError,  "The data line has only 1 field" if number_empty == number_of_fields && @line_type == "Data"
+   @csvdata.each_index  {|x| @csvdata[x] = @csvdata[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless @csvdata[x].nil? }
+   raise FreeREGError,  "Empty data line" if @csvdata.empty? || @csvdata[0].nil?
+   @first_character = "?"
+   @first_character = @csvdata[0].slice(0) unless  @csvdata[0].nil?
+   @line_type = "Data"
+   @line_type = "Header" if (@first_character == '+' || @first_character ==  '#') || @csvdata[0] =~ HEADER_DETECTION
+   number_of_fields = @csvdata.length
+   number_filled = 0
+   number_empty = 1
+   @csvdata.each do |l|
+     number_empty = number_empty + 1 if l.nil? || l.empty?
+     number_filled = number_filled + 1 if l.present?
+   end
+    p "#{@@number_of_line} #{number_of_fields} #{number_empty}, #{number_filled}"
+   #      puts " #{@@number_of_line} #{@line_type} #{first_character} #{number_of_fields} #{number_empty} "
+   raise FreeREGError,  "The data line has no usable fields" if @line_type == "Data" && number_filled <= FreeregOptionsConstants::MINIMUM_NUMBER_OF_FIELDS
    return @line_type
  end
 
@@ -432,7 +423,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
      @@header [:transcriber_name] = @csvdata[2]
      raise FreeREGError, "Header_Error,The syndicate can only contain alphabetic and space characters in the second header line" unless FreeregValidations.cleantext(@csvdata[3])
      @@header [:transcriber_syndicate] = @csvdata[3]
-     @csvdata[5] = '01 Jan 1998' unless datevalmod(5)
+     @csvdata[5] = '01 Jan 1998' unless FreeregValidations.modern_date_valid?(@csvdata[5]) 
      @@header [:transcription_date] = @csvdata[5]
      userid = UseridDetail.where(:userid =>  @@header [:userid] ).first
 
@@ -494,8 +485,11 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
      @csvdata = @csvdata.compact
      @number_of_fields = @csvdata.length
      raise FreeREGError, "Header_Error,The forth header line is completely empty; please check the file for blank lines" if @number_of_fields == 0
+     modern_date_field_0 = FreeregValidations.modern_date_valid?(@csvdata[0]) 
+     modern_date_field_1 = FreeregValidations.modern_date_valid?(@csvdata[1]) 
+     modern_date_field_2 = FreeregValidations.modern_date_valid?(@csvdata[2]) 
      case
-     when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
+     when @number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && modern_date_field_1 
        #standard format
        @@header [:modification_date] = @csvdata[1]
        @@header [:first_comment] = @csvdata[2]
@@ -509,7 +503,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
        if a[0] =~ HEADER_FLAG
          a = a.drop(1)
          @csvdata[0] = a.join("").strip
-         if datevalmod(0) == true
+         if modern_date_field_0
            @@header [:modification_date] = @csvdata[0]
          else
            @@header [:first_comment] = @csvdata[0]
@@ -519,7 +513,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
          raise FreeREGError, "Header_Error,I did not know enough about your data format to extract notes Information at header line 4"
 
        end
-     when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
+     when (@number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG && modern_date_field_2)
        #date and no notes
        @@header [:modification_date] = @csvdata[1]
      when @number_of_fields == 2 && @csvdata[0] =~ HEADER_FLAG
@@ -533,10 +527,10 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
          a = a.drop(1)
          @csvdata[0] = a.join("").strip
          case
-         when datevalmod(0)
+         when modern_date_field_0
            @@header [:modification_date] = @csvdata[0]
            @@header [:first_comment] = @csvdata[1]
-         when datevalmod(1)
+         when modern_date_field_2
            @@header [:modification_date] = @csvdata[1]
            @@header [:first_comment] = @csvdata[0]
          else
@@ -548,11 +542,11 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
          raise FreeREGError, "Header_Error,I did not know enough about your data format to extract notes Information at header line 4"
 
        end
-     when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
+     when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && modern_date_field_1)
        # date and one note
        @@header [:modification_date] = @csvdata[1]
        @@header [:first_comment] = @csvdata[2]
-     when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && datevalmod(2))
+     when (@number_of_fields == 3 && @csvdata[0] =~ HEADER_FLAG && modern_date_field_2)
        #one note and a date
        @@header [:modification_date] = @csvdata[2]
        @@header [:first_comment] = @csvdata[1]
@@ -560,15 +554,15 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
        # Many comments
        @csvdata.drop(1)
        @@header [:first_comment] = @csvdata.join(" ")
-     when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
+     when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && modern_date_field_1)
        #date and 3 comments
        @@header [:modification_date] = @csvdata[2]
        @csvdata = @csvdata.drop(1)
        @@header [:first_comment] = @csvdata.join(" ")
-     when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && !datevalmod(1))
+     when (@number_of_fields == 4 && @csvdata[0] =~ HEADER_FLAG && !modern_date_field_1)
        # 4 comments one of which may be a date that is not in field 2
        @@header [:first_comment] = @csvdata.join(" ")
-     when (@number_of_fields == 5 && @csvdata[0] =~ HEADER_FLAG && datevalmod(1))
+     when (@number_of_fields == 5 && @csvdata[0] =~ HEADER_FLAG && modern_date_field_1)
        #,date and 3 comments
        @@header [:modification_date] = @csvdata[1]
        @csvdata = @csvdata.drop(2)
@@ -1325,7 +1319,7 @@ when (@number_of_fields == 4) && (@csvdata[0] =~ HEADER_FLAG)
      @@slurp_fail_reason = nil
   end
   
-  def self.process_single_file(filename, delta, force, recreate, filename_count=1, create_search_records=true)
+  def self.process_single_file(filename, force, delta,  recreate, filename_count=1, create_search_records=true)
     p "Started on the file #{filename} at #{Time.now}"
     @@create_search_records = create_search_records unless defined? @@create_search_records
     @@file_start = Time.new

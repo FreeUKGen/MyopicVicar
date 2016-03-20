@@ -18,8 +18,10 @@ module FreeregValidations
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
+  VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+  VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
   DATE_SPLITS = {
             " " => /\s/,
@@ -306,6 +308,20 @@ module FreeregValidations
     return false unless Place.where(:place_name => field).exists?
     return false if Place.where(:place_name => field).first.disabled == 'true'
     return true
+  end
+
+  def FreeregValidations.modern_date_valid?(field)
+    # determines if the modern date of creation or modification is valid
+    return true if field.blank?
+    if  field =~ VALID_DATE
+      DATE_SPLITS.each_pair do |date_splitter, date_split|
+        date_parts = field.split(date_split)
+        unless date_parts[1].nil?
+          return true if  VALID_MONTH.include?(date_parts[1].upcase) || date_parts[1] =~ VALID_NUMERIC_MONTH
+        end
+      end
+    end
+    return false
   end
 
 end
