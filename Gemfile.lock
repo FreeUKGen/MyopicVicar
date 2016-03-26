@@ -65,12 +65,20 @@ GEM
     arbre (1.0.1)
       activesupport (>= 3.0.0)
     arel (3.0.3)
+    ast (2.2.0)
     awesome_nested_set (2.1.6)
       activerecord (>= 3.0.0)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
     babosa (0.3.11)
-    bcrypt (3.1.7)
-    bcrypt (3.1.7-x86-mingw32)
+    bcrypt (3.1.10)
+    bcrypt (3.1.10-x64-mingw32)
+    bcrypt (3.1.10-x86-mingw32)
     bcrypt-ruby (3.1.5)
+      bcrypt (>= 3.1.3)
+    bcrypt-ruby (3.1.5-x64-mingw32)
       bcrypt (>= 3.1.3)
     bcrypt-ruby (3.1.5-x86-mingw32)
       bcrypt (>= 3.1.3)
@@ -91,7 +99,11 @@ GEM
       mongoid-grid_fs (>= 1.3, < 3.0)
     celluloid (0.15.2)
       timers (~> 1.1.0)
+    codeclimate-engine-rb (0.3.1)
+      virtus (~> 1.0)
     coderay (1.1.0)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -99,9 +111,12 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.7.0)
+    colorize (0.7.7)
     debug_inspector (0.0.2)
     decorators (1.0.3)
       railties (>= 3.0.19, != 3.2.9, != 3.2.8, != 3.2.7, != 3.2.6, != 3.2.5, != 3.2.4, != 3.2.3, != 3.2.2, != 3.2.10, != 3.2.1, != 3.2.0, != 3.1.9, != 3.1.8, != 3.1.7, != 3.1.6, != 3.1.5, != 3.1.4, != 3.1.3, != 3.1.2, != 3.1.1, != 3.1.0)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
     devise (2.2.8)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -114,13 +129,22 @@ GEM
       multi_json (~> 1.0)
       rack
     email_veracity (0.6.0)
+    equalizer (0.0.11)
     erubis (2.7.0)
     excon (0.33.0)
     execjs (2.0.2)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.3)
+    ffi (1.9.3-x64-mingw32)
     ffi (1.9.3-x86-mingw32)
+    flay (2.7.0)
+      erubis (~> 2.7.0)
+      ruby_parser (~> 3.0)
+      sexp_processor (~> 4.0)
+    flog (4.3.2)
+      ruby_parser (~> 3.1, > 3.1.0)
+      sexp_processor (~> 4.4)
     fog (1.22.0)
       fog-brightbox
       fog-core (~> 1.21, >= 1.21.1)
@@ -153,6 +177,7 @@ GEM
       activesupport (>= 3.2, < 5)
     hike (1.2.3)
     i18n (0.7.0)
+    ice_nine (0.11.2)
     inherited_resources (1.4.1)
       has_scope (~> 0.6.0.rc)
       responders (~> 1.0.0.rc)
@@ -164,6 +189,8 @@ GEM
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
+    launchy (2.4.3)
+      addressable (~> 2.3)
     libv8 (3.16.14.7)
     listen (2.7.5)
       celluloid (>= 0.15.2)
@@ -207,12 +234,16 @@ GEM
     newrelic_rpm (3.11.1.284)
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
+    nokogiri (1.6.2.1-x64-mingw32)
+      mini_portile (= 0.6.0)
     nokogiri (1.6.2.1-x86-mingw32)
       mini_portile (= 0.6.0)
     octokit (3.7.0)
       sawyer (~> 0.6.0, >= 0.5.3)
     origin (1.1.0)
     orm_adapter (0.5.0)
+    parser (2.3.0.6)
+      ast (~> 2.2)
     polyamorous (0.5.0)
       activerecord (~> 3.0)
     polyglot (0.3.5)
@@ -254,12 +285,17 @@ GEM
       rake (>= 0.8.7)
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
+    rainbow (2.1.0)
     rake (10.4.2)
     rb-fsevent (0.9.4)
     rb-inotify (0.9.4)
       ffi (>= 0.5.0)
     rdoc (3.12.2)
       json (~> 1.4)
+    reek (3.11)
+      codeclimate-engine-rb (~> 0.3.1)
+      parser (~> 2.3, >= 2.3.0.6)
+      rainbow (~> 2.0)
     ref (1.0.5)
     refinerycms (2.1.2)
       bundler (>= 1.2.2, < 2.0)
@@ -319,6 +355,17 @@ GEM
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
+    ruby_parser (3.8.1)
+      sexp_processor (~> 4.1)
+    rubycritic (2.8.0)
+      colorize
+      flay (= 2.7.0)
+      flog (= 4.3.2)
+      launchy (= 2.4.3)
+      parser (~> 2.3)
+      reek (= 3.11)
+      ruby_parser (~> 3.8)
+      virtus (~> 1.0)
     rubyzip (0.9.9)
     sass (3.3.7)
     sass-rails (3.2.6)
@@ -330,6 +377,7 @@ GEM
       faraday (~> 0.8, < 0.10)
     seo_meta (1.4.0)
       railties (>= 3.0.0)
+    sexp_processor (4.7.0)
     simple_form (2.1.3)
       actionpack (~> 3.0)
       activemodel (~> 3.0)
@@ -344,8 +392,11 @@ GEM
       libv8 (~> 3.16.14.0)
       ref
     thor (0.19.1)
+    thread_safe (0.3.5)
     tilt (1.4.1)
     timers (1.1.0)
+    traceroute (0.5.0)
+      rails (>= 3.0.0)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -356,6 +407,11 @@ GEM
       json (>= 1.8.0)
     unicode (0.4.4.1)
     unicode (0.4.4.1-x86-mingw32)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
     warden (1.2.3)
       rack (>= 1.0)
     will_paginate (3.0.5)
@@ -363,12 +419,14 @@ GEM
 
 PLATFORMS
   ruby
+  x64-mingw32
   x86-mingw32
 
 DEPENDENCIES
   activeadmin
   activeadmin-mongoid
   airbrake
+  bcrypt (~> 3.1.9)
   bourbon (~> 2.1)
   carrierwave-mongoid
   coffee-rails (~> 3.2.1)
@@ -402,10 +460,15 @@ DEPENDENCIES
   refinerycms-authentication (~> 2.1.1)
   refinerycms-county_pages!
   rspec-rails
+  rubycritic
   rubyzip (~> 0.9.9)
   sass-rails (~> 3.2.3)
   simple_form
   text
   therubyracer
+  traceroute
   uglifier (>= 1.0.3)
   unicode (~> 0.4.3)
+
+BUNDLED WITH
+   1.10.6

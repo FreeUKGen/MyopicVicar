@@ -65,6 +65,10 @@ class PhysicalFile
       batch = PhysicalFile.userid(id).file_name(file).first
       batch.update_attributes(:waiting_to_be_processed => false, :waiting_date => nil) if batch.present?  
      end
+     def remove_base_flag(id,file) 
+      batch = PhysicalFile.userid(id).file_name(file).first   
+      batch.update_attributes(:base => false, :base_uploaded_date => nil)  if batch.present?  
+     end
      
      def add_processed_flag(id,file)
       batch = PhysicalFile.userid(id).file_name(file).first
@@ -91,9 +95,7 @@ class PhysicalFile
       end  
      end
   end
-  def remove_base_flag    
-   self.update_attributes(:base => false, :base_uploaded_date => nil)  
-  end
+  
   def remove_change_flag
    self.update_attributes(:change => false, :change_uploaded_date => nil)   
   end

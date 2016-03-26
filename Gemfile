@@ -20,12 +20,11 @@ gem 'mobvious'
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'airbrake'
-
+gem 'bcrypt', '~> 3.1.9'
 gem 'text'
 gem 'json'
 gem 'pry'
 gem 'pry-stack_explorer'
-gem 'pry-byebug'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
 gem 'kaminari'
@@ -55,6 +54,9 @@ gem 'simple_form'
 gem 'newrelic_rpm'
 gem 'newrelic_moped'
 gem 'octokit'
+
+gem 'traceroute'
+gem "rubycritic", :require => false
 
 # Gems used only for assets and not required
 # in production environments by default.

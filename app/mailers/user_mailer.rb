@@ -44,7 +44,9 @@ class UserMailer < ActionMailer::Base
   end
 
   def batch_processing_failure(message,user,batch)
-    @message = message
+    @message = File.read(message)
+    p message
+     
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new

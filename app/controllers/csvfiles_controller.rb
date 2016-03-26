@@ -123,7 +123,7 @@ class CsvfilesController < ApplicationController
             redirect_to action: :new
             return
           end
-          pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"search_records\",\"all_in_range\",\"no\",#{range}]")
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."    
         else
         end #case
