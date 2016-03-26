@@ -299,7 +299,11 @@ class SearchRecord
           person_type=PersonType::PRIMARY
         end
         person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
-        person_gender = gender_from_role(person_role)
+        if MyopicVicar::Application.config.template_set == 'freecen'
+          person_gender = self.freecen_individual.sex.downcase unless self.freecen_individual.nil? || self.freecen_individual.sex.nil?
+        else
+          person_gender = gender_from_role(person_role)
+        end
         name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
         search_names << name if name
       end
