@@ -304,9 +304,8 @@ module FreeregValidations
      year = nil if year.to_s =~ VALID_UCF
      year
   end
-  def FreeregValidations.place_exists(field)
-    return false unless Place.where(:place_name => field).exists?
-    return false if Place.where(:place_name => field).first.disabled == 'true'
+  def FreeregValidations.valid_place?(field,chapman)
+    return false unless Place.chapman_code(chapman).place(field).not_disabled.exists?
     return true
   end
 
@@ -323,5 +322,9 @@ module FreeregValidations
     end
     return false
   end
+  def FreeregValidations.valid_chapman_code?(field)
+   return true if ChapmanCode::values.include?(field) &&
+       !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(field))
 
+  end
 end

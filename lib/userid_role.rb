@@ -84,7 +84,8 @@ module UseridRole
   }
   COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
                                'Review Batches by Filename', 'Review Batches by Userid then Filename',
-                               'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',"Upload New Batch"]
+                               'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',
+                               "Upload New Batch",'List files waiting to be processed']
   COUNTY_OPTIONS_TRANSLATION = {
     'All Places' => "/manage_counties/selection?option=Work with All Places",
     'Active Places' => "/manage_counties/selection?option=Work with Active Places",
@@ -97,6 +98,7 @@ module UseridRole
     'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
     'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
     'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
+    'List files waiting to be processed' => "/freereg1_csv_files/selection?option=List files waiting to be processed",
     'Upload New Batch' =>  "/csvfiles/new"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
