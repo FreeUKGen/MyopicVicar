@@ -1,5 +1,7 @@
 <% breadcrumb :physical_files%>
-<h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @person %></h2>
+<h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @person %> </h2>
+  <p style="text-align: center"> Number of files <%= @number if @number.present?%>.  Download report as: <%= link_to "CSV", physical_files_path(format: "csv") %> </p>
+
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
 	<%= flash[:notice] %> <br>
@@ -7,7 +9,7 @@
 <% end %>
 <p>
 	<div id="main" style="color:black">
-		<%= paginate @batches %>
+		<%= paginate @batches if @paginate%>
 		<table  class="table--bordered  table--data">
 			<tr >
 				<th>Userid</th>

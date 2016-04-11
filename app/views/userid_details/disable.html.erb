@@ -2,7 +2,9 @@
 <p style="text-align: center"><b>Changing <%= @userid.userid %> to inactive</b> </p>
 <%= simple_form_for @userid do |f| %>
 
-<%= f.input :disabled_reason,:label => "Reason for making inactive :",:input_html => { :size => 60 }%>
+<%= f.input :disabled_reason_standard,  :collection => UseridRole::REASONS_FOR_INACTIVATING, :include_blank => true,:label => "Reason for making inactive :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+
+<%= f.input :disabled_reason,:hint => "If you selected 'Other' or need to add information, explain here.",:label => "Reason for making inactive (explanation) :",:input_html => { :size => 60 }%>
  <%= f.button :submit, 'Disable'   %>
  <% end %>
 

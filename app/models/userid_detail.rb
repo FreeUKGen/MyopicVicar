@@ -24,6 +24,7 @@ class UseridDetail
   field :number_of_records, type: Integer, default: 0 # not being used for display
   field :sign_up_date, type: DateTime
   field :disabled_date, type: DateTime
+  field :disabled_reason_standard, type: String
   field :disabled_reason, type: String
   field :person_role, type: String, default: 'researcher'
   field :syndicate_groups, type: Array

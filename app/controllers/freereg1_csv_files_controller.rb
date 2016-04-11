@@ -391,24 +391,17 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file) 
-      if @freereg1_csv_file.locked_by_transcriber  ||  @freereg1_csv_file.locked_by_coordinator
-        flash[:notice] = 'The removal of the batch was unsuccessful; the batch is locked'
-        redirect_to :back
-        return
-      end
-      @freereg1_csv_file.add_to_rake_delete_list
-      @physical_file.update_attributes(:file_processed =>false, :file_processed_date => nil) if Freereg1CsvFile.where(:file_name => @freereg1_csv_file.file_name, :userid => @freereg1_csv_file.userid).count >= 1
-      @freereg1_csv_file.save_to_attic
-      @freereg1_csv_file.delete
-      flash[:notice] = 'The removal of the batch entry was successful'
-      if session[:my_own]
-        redirect_to my_own_freereg1_csv_file_path
-        return
+
+      success, message = @freereg1_csv_file.remove_batch
+      if success
+        flash[:notice] = 'The removal of the batch entry was successful'
       else
-        redirect_to register_path(@return_location)
-        return
+        flash[:notice] = message
       end
+      redirect_to :back
+      return        
     else
+      #no id
       go_back("batch",params[:id])
     end
   end

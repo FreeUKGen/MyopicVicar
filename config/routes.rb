@@ -216,6 +216,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   resources :search_records
 
+  get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query
   get 'search_queries/:id/about(.:format)', :to => 'search_queries#about', :as => :about_search_query
   get 'search_queries/:id/broaden(.:format)', :to => 'search_queries#broaden', :as => :broaden_search_query
   get 'search_queries/:id/narrow(.:format)', :to => 'search_queries#narrow', :as => :narrow_search_query

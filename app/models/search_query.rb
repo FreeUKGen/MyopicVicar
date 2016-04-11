@@ -250,6 +250,7 @@ class SearchQuery
   end
   def previous_record(current)
     records_sorted = self.results
+    return nil if records_sorted.nil?
     record_ids_sorted = Array.new
     records_sorted.each do |rec|
       record_ids_sorted << rec["_id"].to_s
@@ -261,6 +262,7 @@ class SearchQuery
   end
   def next_record(current)
     records_sorted = self.results
+    return nil if records_sorted.nil?
     record_ids_sorted = Array.new
     records_sorted.each do |rec|
       record_ids_sorted << rec["_id"].to_s

@@ -2,17 +2,18 @@ class PhysicalFile
  include Mongoid::Document
  include Mongoid::Timestamps::Created::Short
  include Mongoid::Timestamps::Updated::Short
+ require 'csv'
  field :file_name, type: String
  field :userid, type: String
- field :base_uploaded_date, type: DateTime
  field :base,type: Boolean, default: false
- field :change_uploaded_date, type: DateTime
+ field :base_uploaded_date, type: DateTime
  field :change,type: Boolean, default: false
- field :file_processed_date, type: DateTime
+ field :change_uploaded_date, type: DateTime
  field :file_processed, type: Boolean, default: false
- field :action, type: String
+ field :file_processed_date, type: DateTime
  field :waiting_to_be_processed, type: Boolean, default: false
  field :waiting_date, type: DateTime
+ field :action, type: String
  attr_accessor :type
  attr_accessor :county
  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
@@ -22,7 +23,6 @@ class PhysicalFile
  index ({file_processed: 1})
  index ({ change: 1})
  index ({ waiting_to_be_processed: 1})
-  
 
   class << self
      def id(id)
@@ -55,7 +55,9 @@ class PhysicalFile
      def waiting
       where(:waiting_to_be_processed => true)
      end
-
+     def not_waiting
+      where(:waiting_to_be_processed => false)
+     end
      def userid(id)
       where(:userid => id)
      end
@@ -63,12 +65,46 @@ class PhysicalFile
       batch = PhysicalFile.userid(id).file_name(file).first
       batch.update_attributes(:waiting_to_be_processed => false, :waiting_date => nil) if batch.present?  
      end
+     
      def add_processed_flag(id,file)
       batch = PhysicalFile.userid(id).file_name(file).first
       batch.update_attributes(:file_processed => true) if batch.present?  
      end
+     def as_csv(batch,sorted,who,county)
+      header = Array.new
+      row = 0
+      CSV.generate do |csv|
+        PhysicalFile.attribute_names.each do |column_name|
+          header << column_name if row == 0
+          header <<  column_name unless  row == 0
+          row = row + 1
+        end
+        header <<  sorted
+        header <<  who if who.present?
+        header <<  county if county.present?
+        p header
+        csv <<  header
+        batch.each do |physical_file|
+          row = row + 1
+          csv << physical_file.attributes.values_at(*PhysicalFile.attribute_names)
+        end 
+      end  
+     end
   end
-
+  def remove_base_flag    
+   self.update_attributes(:base => false, :base_uploaded_date => nil)  
+  end
+  def remove_change_flag
+   self.update_attributes(:change => false, :change_uploaded_date => nil)   
+  end
+  def remove_processed_flag
+    self.update_attributes(:file_processed =>false, :file_processed_date => nil)
+  end
+  def empty?
+    file = false
+    file = true if PhysicalFile.userid(self.userid).file_name(self.file_name).not_uploaded_into_base.not_uploaded_into_change.not_processed.not_waiting.exists?
+    file
+  end
 
   def add_file(batch)
     success = true

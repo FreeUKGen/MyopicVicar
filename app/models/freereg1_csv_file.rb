@@ -938,9 +938,27 @@ class Freereg1CsvFile
       names
     end
     def add_to_rake_delete_list
-     processing_file = Rails.application.config.delete_list
+      processing_file = Rails.application.config.delete_list
       File.open(processing_file, 'a') do |f|
         f.write("#{self.id},#{self.userid},#{self.file_name}\n")
       end    
+    end
+    def remove_batch
+      if self.locked_by_transcriber  ||  self.locked_by_coordinator
+        return false,'The removal of the batch was unsuccessful; the batch is locked'
+      else
+        #deal with file and its records
+        self.add_to_rake_delete_list 
+        self.save_to_attic
+        self.delete 
+        #deal with the Physical Files collection     
+        physical_file = PhysicalFile.userid(self.userid).file_name(self.file_name).first
+        if physical_file.present?
+          physical_file.remove_processed_flag 
+          physical_file.remove_base_flag 
+          physical_file.destroy if physical_file.empty?
+        end
+        return true, 'The removal of the batch entry was successful'
+      end
     end
 end

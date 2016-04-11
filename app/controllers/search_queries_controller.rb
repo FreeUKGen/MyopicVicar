@@ -159,6 +159,30 @@ class SearchQueriesController < ApplicationController
       return
     end
   end
+  def show_print_version
+    @printable_format = true;
+    if params[:id].present?
+      @search_query = SearchQuery.where(:id => params[:id]).first
+    else
+      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
+      go_back
+      return
+    end
+    if @search_query.present?
+      @search_results =   @search_query.results
+    else
+      logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
+      go_back
+      return
+    end
+    if @search_results.nil? || @search_query.result_count.nil?
+      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+      go_back
+      return
+    end
+    render "show", :layout => false
+  end
+
   def go_back
     flash[:notice] = "We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page"
     redirect_to new_search_query_path

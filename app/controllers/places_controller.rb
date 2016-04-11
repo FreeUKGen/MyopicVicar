@@ -4,14 +4,12 @@ class PlacesController < ApplicationController
 
   skip_before_filter :require_login, only: [:for_search_form,:for_freereg_content_form]
 
-
   def index
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
     if session[:active_place] 
       @places = Place.where( :chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)
-     
     else
        @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)     
     end
@@ -19,61 +17,6 @@ class PlacesController < ApplicationController
     @user = UseridDetail.where(:userid => session[:userid]).first
     session[:page] = request.original_url
   end
-
-  def show
-    load(params[:id])
-    
-
-  end
-
-  def edit
-    load(params[:id])
-    get_places_counties_and_countries
-    @place_name = Place.find(session[:place_id]).place_name
-    @place.alternateplacenames.build
-    @county = session[:county]
- 
-
-  end
-  def rename
-    get_user_info_from_userid
-    load(params[:id])
-    get_places_counties_and_countries
-    @county = session[:county]
-    @records = @place.search_records.count
-
-  end
-
-  def approve
-    session[:return_to] = request.referer
-    get_user_info_from_userid
-    load(params[:id])
-    @place.approve
-    flash[:notice] = "Unapproved flag removed; Don't forget you now need to update the Grid Ref as well as check that county and country fields are set."
-    redirect_to place_path(@place)
-  end
-
-  def relocate
-    get_user_info_from_userid
-    load(params[:id])
-    @county = session[:county]
-    get_places_counties_and_countries
-    @records = @place.search_records.count
-
-  end
-
-  def merge
-    load(params[:id])
-    errors = @place.merge_places
-    if errors[0]  then
-      flash[:notice] = "Place Merge unsuccessful; #{errors[1]}"
-      render :action => 'show'
-      return
-    end
-    flash[:notice] = 'The merge of the Places was successful'
-    redirect_to place_path(@place)
-  end
-
 
   def new
     get_places_counties_and_countries
@@ -104,6 +47,35 @@ class PlacesController < ApplicationController
       flash[:notice] = 'The addition to Place Name was successful'
       redirect_to place_path(@place)
     end
+  end
+
+  def show
+    load(params[:id])   
+  end
+
+  def edit
+    load(params[:id])
+    get_places_counties_and_countries
+    @place_name = Place.find(session[:place_id]).place_name
+    @place.alternateplacenames.build
+    @county = session[:county]
+  end
+
+  def rename
+    get_user_info_from_userid
+    load(params[:id])
+    get_places_counties_and_countries
+    @county = session[:county]
+    @records = @place.search_records.count
+  end
+
+  def relocate
+    get_user_info_from_userid
+    load(params[:id])
+    @county = session[:county]
+    get_places_counties_and_countries
+    @records = @place.search_records.count
+
   end
 
   def update
@@ -148,22 +120,6 @@ class PlacesController < ApplicationController
    end
   end
 
-
-  def load(place_id)
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @place = Place.id(place_id).first
-    if @place.nil?
-      go_back("place",place_id)
-    else
-      session[:place_id] = place_id
-      @place_name = @place.place_name
-      session[:place_name] = @place_name
-      @county = ChapmanCode.has_key(@place.chapman_code)
-      session[:county] = @county
-      @first_name = session[:first_name]
-    end
-  end
-
   def destroy
     load(params[:id])
     unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
@@ -183,31 +139,43 @@ class PlacesController < ApplicationController
      flash[:notice] = 'The disabling of the place was successful'
     redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
   end
-
-  def get_places_counties_and_countries
-    @countries = Array.new
-    Country.all.order_by(country_code: 1).each do |country|
-      @countries << country.country_code
+#additional controller actions
+  def approve
+    session[:return_to] = request.referer
+    get_user_info_from_userid
+    load(params[:id])
+    @place.approve
+    flash[:notice] = "Unapproved flag removed; Don't forget you now need to update the Grid Ref as well as check that county and country fields are set."
+    redirect_to place_path(@place)
+  end
+  
+  def merge
+    load(params[:id])
+    success,message = @place.merge_places
+    if !success then
+      flash[:notice] = "Place Merge unsuccessful; #{message}"
+      render :action => 'show'
+      return
     end
-    @counties = ChapmanCode.keys
-    placenames = Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
-    @placenames = Array.new
-    placenames.each do |placename|
-      @placenames << placename.place_name
+    flash[:notice] = 'The merge of the Places was successful'
+    redirect_to place_path(@place)
+  end
+ #controller methods 
+  def load(place_id)
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @place = Place.id(place_id).first
+    if @place.nil?
+      go_back("place",place_id)
+    else
+      session[:place_id] = place_id
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      @county = ChapmanCode.has_key(@place.chapman_code)
+      session[:county] = @county
+      @first_name = session[:first_name]
     end
   end
-
-
-  def record_cannot_be_deleted
-    flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
-    redirect_to places_path
-  end
-
-  def record_validation_errors
-    flash[:notice] = 'The validation of Place failed when it should not have done'
-    redirect_to places_path
-  end
-
+  
   def for_search_form
     if params[:search_query]
       chapman_codes = params[:search_query][:chapman_codes]
@@ -226,6 +194,7 @@ class PlacesController < ApplicationController
       end
     end
   end
+  
   def for_freereg_content_form
     unless params[:freereg_content].nil?
       chapman_codes = params[:freereg_content][:chapman_codes]
@@ -240,4 +209,28 @@ class PlacesController < ApplicationController
       end
     end
   end
+
+  def get_places_counties_and_countries
+    @countries = Array.new
+    Country.all.order_by(country_code: 1).each do |country|
+      @countries << country.country_code
+    end
+    @counties = ChapmanCode.keys
+    placenames = Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+    @placenames = Array.new
+    placenames.each do |placename|
+      @placenames << placename.place_name
+    end
+  end
+
+  def record_cannot_be_deleted
+    flash[:notice] = 'The deletion of the place was unsuccessful because there were dependant documents; please delete them first'
+    redirect_to places_path
+  end
+
+  def record_validation_errors
+    flash[:notice] = 'The validation of Place failed when it should not have done'
+    redirect_to places_path
+  end
+
 end
