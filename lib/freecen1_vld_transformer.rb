@@ -5,22 +5,30 @@ module Freecen
       
     def transform_file_record(freecen1_vld_file)
       dwelling = nil
+      piece = nil
       freecen1_vld_file.freecen1_vld_entries.each do |entry|
         if dwelling && dwelling.dwelling_number == entry.dwelling_number
           # do nothing -- the dwelling on this record is the same as for the previous entry
         else
           # save previous dwelling
           dwelling.save! if dwelling
+          piece.save! if piece
           
           # first record or different record
           dwelling = dwelling_from_entry(entry)
+          piece = nil
+          piece = dwelling.freecen_piece unless dwelling.nil?
         end
         unless dwelling.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
           individual_from_entry(entry, dwelling)
+          unless piece.nil?
+            piece.status = 'Online' if piece.status != 'Online'
+            piece.inc(:num_individuals, 1)
+          end
         end
       end
       dwelling.save!
-      
+      piece.save! unless piece.nil?
     end
 
   
@@ -30,8 +38,10 @@ module Freecen
         dwelling[key] = entry.send(key) unless key == "_id"
       end
       dwelling.freecen1_vld_file=entry.freecen1_vld_file
-      dwelling.place = check_and_get_place(dwelling, entry.freecen1_vld_file.chapman_code)
-      
+#      dwelling.place = check_and_get_place(dwelling, entry.freecen1_vld_file.chapman_code)
+      dwelling.freecen_piece = check_and_get_piece(dwelling, entry)
+      dwelling.place = nil
+      dwelling.place = dwelling.freecen_piece.place unless dwelling.freecen_piece.nil?
       dwelling
     end
     
@@ -47,23 +57,22 @@ module Freecen
       individual    
     end
     
-    def check_and_get_place(dwelling, chapman_code)
-      chapman_code = dwelling.freecen1_vld_file.chapman_code
-      # use DAT file places
-        piece_number = dwelling.freecen1_vld_file.piece
-        chapman_code = dwelling.freecen1_vld_file.chapman_code
+    def check_and_get_piece(dwelling, entry)
+      year = entry.freecen1_vld_file.full_year
 
-        # This could return the wrong place for split pieces (e.g.,1841/ABD/168)
-        # in which more than one place is specified for the same piece number.
-        # It depends on which file this dwelling is in. The piece number alone
-        # is ambiguous in those cases and we don't know at this point which
-        # place should be used if there is more than one.
-        piece = FreecenPiece.where(:chapman_code => chapman_code, :piece_number => piece_number).first
+      piece_number = dwelling.freecen1_vld_file.piece
+      chapman_code = dwelling.freecen1_vld_file.chapman_code
+
+      piece = FreecenPiece.where(:year => year, :chapman_code => chapman_code, :piece_number => piece_number)
+      if piece.count > 1
+        raise "Multiple FreecenPieces found for chapman code #{chapman_code} and piece number #{piece_number}. year=#{dwelling.freecen1_vld_file.full_year} dir=#{dwelling.freecen1_vld_file.dir_name} file=#{dwelling.freecen1_vld_file.file_name}\n"
+      end
+      piece = piece.first
         
-        unless piece
-          raise "No FreecenPiece found for chapman code #{chapman_code} and piece number #{piece_number}. year=#{dwelling.freecen1_vld_file.full_year} dir=#{dwelling.freecen1_vld_file.dir_name} file=#{dwelling.freecen1_vld_file.file_name}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county.\n"
-        end
-      return piece.place unless piece.nil?
+      unless piece
+        raise "No FreecenPiece found for chapman code #{chapman_code} and piece number #{piece_number}. year=#{dwelling.freecen1_vld_file.full_year} dir=#{dwelling.freecen1_vld_file.dir_name} file=#{dwelling.freecen1_vld_file.file_name}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county.\n"
+      end
+      return piece
     end
   end
 end

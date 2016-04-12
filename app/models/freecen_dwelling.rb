@@ -15,6 +15,7 @@ class FreecenDwelling
   belongs_to :freecen1_vld_file
   has_many :freecen_individuals
   belongs_to :place
+  belongs_to :freecen_piece
 
   # previous / next dwelling in census (not previous/next search result)
   def prev_next_dwelling_ids

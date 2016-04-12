@@ -180,6 +180,8 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
   resources :freereg_contents
 
+  get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
+  get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
 
   get 'churches/:id/rename', :to => 'churches#rename', :as => :rename_church
   get 'churches/:id/merge(.:format)', :to => 'churches#merge', :as => :merge_church

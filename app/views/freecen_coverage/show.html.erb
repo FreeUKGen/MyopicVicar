@@ -1,0 +1,50 @@
+<h1 class="title text--center">Coverage for <%= @county %> (<%=@chapman_code%>)</h1>
+
+<p>The county details of the database coverage is still under construction.  Please do not report errors on this page yet.</p>
+
+<% ['1841','1851','1861','1871','1881','1891'].each do |yy| %>
+  <% prev_disp = '' %>
+  <% unless @county_pieces.nil? || @county_pieces[yy].nil? || @county_pieces[yy]['pieces'].nil? || @county_pieces[yy]['pieces'].length < 1 %>
+    <% yyhash = @county_pieces[yy] %>
+    <a name="<%= yy %>"></a>
+    <center><h3><%= yyhash['header'] %><% unless yyhash['header_info'].nil? || yyhash['header_info']=='' %> <a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span><%= yyhash['header_info'] %></span><% end %></h3></center>
+    <div class="table-wrapper" style="margin-top:-20px;">
+     <table class="table--bordered table--data" >
+       <colgroup >
+	 <col class=t10>
+	 <col class=t10>
+	 <col class=t35>
+	 <col class=t10>
+	 <col class=t15>
+       </colgroup>
+       <thead>
+         <th>Piece</th>
+         <th>Place</th>
+         <th>Comprising</th>
+         <th>Status</th>
+         <th>Remarks</th>
+<!--         <th>Debug<br>(ignore, will be removed)</th>  -->
+       </thead>
+       <tbody>
+	 <% yyhash['pieces'].each do |p_hash| %>
+	 <tr <%if 'Online'!=p_hash['status']%>style="color:#aaaaaa;"<%end%>>
+	   <td><%= (prev_disp!=p_hash['display_piece']) ? p_hash['display_piece'] :' ' %></td>
+	   <% prev_disp=p_hash['display_piece'] %>
+	   <td><%= p_hash['place_name'] %></td>
+	   <td><%= p_hash['subplace_names'] %></td>
+	   <td><%= p_hash['status']%> </td>
+	   <td><%= p_hash['remarks']%> </td>
+<!--	   <td><%= p_hash['parish_number']%>-<% p_hash['district_name']%>-<%=p_hash['place_id']%> </td> -->
+	 </tr>
+	 <% end unless yyhash['pieces'].nil? %>
+
+       </tbody>
+     </table>
+   </div><!-- table-wrapper -->
+   <% end %>
+ <% end %>
+
+
+
+</section>
+

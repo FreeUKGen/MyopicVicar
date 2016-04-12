@@ -10,9 +10,17 @@ module Freecen
         piece.piece_number =  entry.piece_number
         piece.district_name = entry.district_name
         piece.subplaces =     entry.subplaces
+        piece.subplaces_sort = ''
+        piece.subplaces.each do |sp|
+          unless sp.nil? || sp.empty?
+            piece.subplaces_sort += ', ' unless ''==piece.subplaces_sort
+            piece.subplaces_sort += sp.downcase 
+          end
+        end
         piece.parish_number = entry.parish_number
         piece.suffix =        entry.suffix
         piece.freecen1_fixed_dat_entry = entry
+        piece.year =          freecen1_fixed_dat_file.year
         piece.save!
       end
       
