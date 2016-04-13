@@ -291,6 +291,18 @@ NO_RELATIVE_SURNAME =
   }
 
 
+SQUARE_BRACE_UCF =
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/ucf_nostar.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'NTH',
+    :placename => 'Gretton',
+    :user => 'artificial'
+  }
+
+
+
+
 
 DELTA_FILES = [
   {

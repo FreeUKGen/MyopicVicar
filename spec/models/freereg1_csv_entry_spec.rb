@@ -507,6 +507,32 @@ describe Freereg1CsvEntry do
 
   end
 
+  it "should find square brace UCF" do
+    filespec = SQUARE_BRACE_UCF
+
+    process_test_file(filespec)
+    
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+
+    file_record.freereg1_csv_entries.each do |entry|
+      [entry.father_forename, entry.mother_forename].each do |search_forename|
+        if search_forename # we should find this
+          query_params = { :first_name => search_forename,
+                           :last_name => entry.father_surname }
+          q = SearchQuery.new(query_params)
+          q.save!(:validate => false)
+          q.search
+          result = q.results
+ 
+          p entry.person_forename
+          result.should have_at_least(1).items
+          result.should be_in_result(entry)
+                    
+        end
+      end      
+    end
+  end
+
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required
