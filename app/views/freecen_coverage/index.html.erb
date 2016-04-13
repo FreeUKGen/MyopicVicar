@@ -28,7 +28,8 @@
 	   <td><%= cty['cty'] %> &nbsp;&nbsp; (<%= cty['cc'] %>)</td>
 	   <td><%= number_with_delimiter(cty['num_rec']) %></td>
 	   <td><%= (cty['pct_online'] > 0)? "%.1f" % cty['pct_online'] : 0 %></td>
-	   <% detail_href="/freecen_coverage/#{cty['cc']}##{cty['yy']}" %>
+	   <% detail_href="/freecen_coverage/#{cty['cc']}" %>
+	   <% detail_href+="##{cty['yy']}" unless '1841'==cty['yy'] %>
 	   <td><%= link_to "Details", detail_href %></td>
 	 </tr>
 	 <% end %>
