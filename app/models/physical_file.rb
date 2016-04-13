@@ -95,7 +95,9 @@ class PhysicalFile
       end  
      end
   end
-  
+  def remove_base_flag
+   self.update_attributes(:change => false, :change_uploaded_date => nil)   
+  end
   def remove_change_flag
    self.update_attributes(:change => false, :change_uploaded_date => nil)   
   end

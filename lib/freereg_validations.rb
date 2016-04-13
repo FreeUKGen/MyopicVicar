@@ -304,10 +304,7 @@ module FreeregValidations
      year = nil if year.to_s =~ VALID_UCF
      year
   end
-  def FreeregValidations.valid_place?(field,chapman)
-    return false unless Place.chapman_code(chapman).place(field).not_disabled.exists?
-    return true
-  end
+ 
 
   def FreeregValidations.modern_date_valid?(field)
     # determines if the modern date of creation or modification is valid
@@ -322,9 +319,25 @@ module FreeregValidations
     end
     return false
   end
+  
   def FreeregValidations.valid_chapman_code?(field)
    return true if ChapmanCode::values.include?(field) &&
        !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(field))
+  end
 
+  def FreeregValidations.valid_place?(field,chapman)
+    place = Place.chapman_code(chapman).place(field).not_disabled.first
+    return false unless place.present?
+    return true
+  end
+
+  def FreeregValidations.valid_church?(church_name,chapman_code,place_name)
+    place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
+    place.churches.each do |church|
+     if church.church_name.downcase == church_name.downcase
+      return true
+     end
+    end
+    return false
   end
 end

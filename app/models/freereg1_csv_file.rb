@@ -34,7 +34,7 @@ class Freereg1CsvFile
   #and the register information from the register collection
   field :country, type: String
   field :county, type: String #note in headers this is actually a Chapman code
-  
+  field :chapman_code,  type: String
   field :church_name, type: String
   field :register_type, type: String
   field :record_type, type: String#, :in => RecordType::ALL_TYPES+[nil]
@@ -42,6 +42,7 @@ class Freereg1CsvFile
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   field :place, type: String
+  field :place_name, type: String
   field :records, type: String
   field :datemin, type: String
   field :datemax, type: String
@@ -90,8 +91,8 @@ class Freereg1CsvFile
     p num
     entries.each do |entry|
       entry.destroy
-      sleep_time = 2*(Rails.application.config.sleep.to_f)
-      sleep(sleep_time)
+      #sleep_time = 2*(Rails.application.config.sleep.to_f)
+      #sleep(sleep_time)
     end
   end
 
@@ -131,11 +132,24 @@ class Freereg1CsvFile
     def county(name)
       where(:county => name)
     end
+    def place(name)
+      where(:place => name)
+    end
+    def chapman_code(name)
+      #note chapman is county in file
+      where(:county => name)
+    end
     def record_type(name)
       where(:record_type => name)
     end
     def userid(name)
       where(:userid => name)
+    end
+    def church_name(name)
+      where(:church_name => name)  
+    end
+    def register_type(name)
+      where(:register_type => name)      
     end
     def file_name(name)
       where(:file_name => name)
@@ -160,6 +174,8 @@ class Freereg1CsvFile
 
 
   def update_register
+    p "updating register"
+    p self
     Register.update_or_create_register(self)
   end
 
@@ -858,7 +874,7 @@ class Freereg1CsvFile
     datemin = FreeregValidations::YEAR_MAX
     self.freereg1_csv_entries.each do |entry|
       xx = entry.year
-      unless xx.nil?
+      if xx.present? && entry.enough_name_fields?
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
         datemin = xx if xx < datemin
@@ -955,7 +971,7 @@ class Freereg1CsvFile
         physical_file = PhysicalFile.userid(self.userid).file_name(self.file_name).first
         if physical_file.present?
           physical_file.remove_processed_flag 
-          physical_file.remove_base_flag 
+          physical_file.remove_base_flag
           physical_file.destroy if physical_file.empty?
         end
         return true, 'The removal of the batch entry was successful'

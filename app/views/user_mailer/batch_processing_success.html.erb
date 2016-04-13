@@ -2,7 +2,8 @@
 
 <p><%= @userid.person_forename %>,</p>
 
-<p>The file submitted for processing has been completed. We processed <%= @records%> records and there were <%= @errors%> data errors and <%= @headers%> header errors. If there were any errors you will need to review the on-line information for this file to see the details.</p>
+<p>The file submitted for processing has been completed. Please review the following report.</p><%= @message.html_safe%> <p> If there were any data errors you will need to correct them either by using the on-line editing system or by correcting the file off line and then replacing the file on the system. </p>
+
 
 <p> The FreeREG Team</p>
 

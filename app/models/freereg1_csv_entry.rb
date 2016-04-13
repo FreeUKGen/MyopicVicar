@@ -145,6 +145,23 @@ class Freereg1CsvEntry
     return the_digest
   end
 
+   def enough_name_fields?
+      process = false
+      case self.record_type
+      when "ba"
+          process = true if self.person_forename.present? || self.father_forename.present? || self.mother_forename.present? ||
+            self.father_surname.present? || self.mother_surname.present?
+      when "bu"
+        process = true if self.burial_person_forename.present? || self.male_relative_forename.present? || self.female_relative_forename.present? ||
+            self.relative_surname.present? || self.burial_person_surname.present?
+      when "ma"
+      process = true if self.groom_forename.present? || self.groom_surname.present? || self.bride_forename.present? ||
+              self.bride_surname.present? || self.groom_father_forename.present? || self.groom_father_surname.present? || self.bride_father_surname.present? ||
+              self.bride_father_forename.present? || self.multiple_witness_names? 
+      end
+      return process
+    end
+
   def create_baptism_string
     string = ''
     string = string + self.person_forename.strip + "person" unless  self.person_forename.nil?
@@ -297,6 +314,15 @@ class Freereg1CsvEntry
       return true if Freereg1Translator::FORCE_SEARCH_RECORD_RECREATE.include?(field)
     end
     return false
+  end
+  def multiple_witness_names?
+    present = false
+     self.multiple_witnesses.each do |witness|
+        if  witness.witness_forname.present? || witness.witness_surname.present?
+          present = true
+        end
+     end
+     return present
   end
 
   def self.update_parameters(params,entry)
