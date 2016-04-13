@@ -1,7 +1,6 @@
 <h1 class="title text--center">Database Coverage</h1>
 
 <section class="island  " >
-
 <p style="margin-top:-40px;">* Only a few counties are loaded for testing (those with darker text). Visit the <a href="http://www.freecen.org.uk" target="_blank">old site</a> for the rest. Graphs are not yet available.</p>
 
 <% ['1841','1851','1861','1871','1881','1891'].each do |yy| %>
@@ -27,15 +26,15 @@
 	 <% yyhash['counties'].each do |ctykey,cty| %>
 	 <tr <%if 0==cty['pct_online']%>style="color:#aaaaaa;"<%end%>>
 	   <td><%= cty['cty'] %> &nbsp;&nbsp; (<%= cty['cc'] %>)</td>
-	   <td><%= cty['num_rec'] %></td>
+	   <td><%= number_with_delimiter(cty['num_rec']) %></td>
 	   <td><%= (cty['pct_online'] > 0)? "%.1f" % cty['pct_online'] : 0 %></td>
-	   <% detail_href="/freecen_coverage/#{cty['cc']}" %>
+	   <% detail_href="/freecen_coverage/#{cty['cc']}##{cty['yy']}" %>
 	   <td><%= link_to "Details", detail_href %></td>
 	 </tr>
 	 <% end %>
 	 <tr>
 	   <td><b>Subtotal for <%=yy%></b></td>
-	   <td><%= yyhash['subtot_records_online'] %></td>
+	   <td><%= number_with_delimiter(yyhash['subtot_records_online']) %></td>
 	   <td><%= (yyhash['subtot_pct_pieces_online'] > 0)? "%.1f" % yyhash['subtot_pct_pieces_online'] : 0 %></td>
 	   <td>&nbsp;</td>
 	 </tr>
@@ -64,7 +63,7 @@
        <tbody>
 	 <tr>
 	   <td><b>Grand Total</b></td>
-	   <td><%= @all_pieces['tot_records_online'] %></td>
+	   <td><%= number_with_delimiter(@all_pieces['tot_records_online']) %></td>
 	   <td><%= (@all_pieces['tot_pct_pieces_online'] > 0)? "%.1f" % @all_pieces['tot_pct_pieces_online'] : 0 %></td>
 	   <td>&nbsp;</td>
 	 </tr>

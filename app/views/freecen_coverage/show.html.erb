@@ -7,7 +7,7 @@
   <% unless @county_pieces.nil? || @county_pieces[yy].nil? || @county_pieces[yy]['pieces'].nil? || @county_pieces[yy]['pieces'].length < 1 %>
     <% yyhash = @county_pieces[yy] %>
     <a name="<%= yy %>"></a>
-    <center><h3><%= yyhash['header'] %><% unless yyhash['header_info'].nil? || yyhash['header_info']=='' %> <a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span><%= yyhash['header_info'] %></span><% end %></h3></center>
+    <center><h3><%= yyhash['header'] %><% unless yyhash['header_info'].nil? || yyhash['header_info']=='' %> <a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span><%= yyhash['header_info'] %></span><% end %></h3></center>
     <div class="table-wrapper" style="margin-top:-20px;">
      <table class="table--bordered table--data" >
        <colgroup >
