@@ -26,10 +26,11 @@ class NewFreeregCsvUpdateProcessor
 	# build:freereg_new_update[create_search_record,range,no,a] 
 
 
-	# Flow uses ProjectControl to set up the communications with the userid and the managers
+	# It uses NewFreeregCsvUpdateProcessor as a class
+	# The main entry point is activate_project to set up an instance of NewFreeregCsvUpdateProcessor to communication with the userid and the manager
+	# and control the flow
 	# CsvFiles gets the files to be processed
 	# We then cycle through a single file in CsvFile
-
 	# CsvFile has a_single_file_process method that controls the ingest and processing of the data from the file
 	# through methods contained in CsvRecords and CsvRecord.
 	# CsvRecords looks after the extraction of the header information including the new DEF header which is used 
