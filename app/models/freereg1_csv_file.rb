@@ -174,8 +174,6 @@ class Freereg1CsvFile
 
 
   def update_register
-    p "updating register"
-    p self
     Register.update_or_create_register(self)
   end
 

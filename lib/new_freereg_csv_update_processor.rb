@@ -513,13 +513,6 @@ class CsvFile < CsvFiles
 	    return code_set
 	end
 
-	def do_we_refresh_place_cache?(batch)
-		refresh = true
-		place = Place.chapman_code(batch.county).place(batch.place).first
-		refresh = false if place.search_records.exists? 
-		return refresh		
-	end
-
 	def ensure_processable?(project)
 	  success, message = self.check_file_exists?(project)
 	  success, message = self.check_userid_exists?(project) if success
@@ -567,9 +560,8 @@ class CsvFile < CsvFiles
 		all_records_hash = Hash.new
 		freereg1_csv_files = Freereg1CsvFile.where(:file_name => @header[:file_name], :userid => @header[:userid]).all
 	    freereg1_csv_files.each do |batch|
-	    	refresh_place_cache = self.do_we_refresh_place_cache?(batch)
 			args = {:chapman_code => batch.county,:place_name => batch.place,:church_name =>
-		  	  batch.church_name,:register_type => batch.register_type, :record_type => batch.record_type, :id => batch.id, :refresh_place_cache => refresh_place_cache} 
+		  	  batch.church_name,:register_type => batch.register_type, :record_type => batch.record_type, :id => batch.id} 
 		  	key = sum_the_header(args)
 		  	locations[key] = args
 	        batch.batch_errors.delete_all
@@ -630,9 +622,8 @@ class CsvFile < CsvFiles
 
 	def refresh_place_cache?(key,value)
 		refresh = true
-		key_exists = @unique_existing_locations.has_key?(key)
-		existing_value = @unique_existing_locations[key]
-		refresh = existing_value[:refresh_place_cache] if key_exists
+		place = Place.chapman_code(value[:chapman_code]).place(value[:place_name]).first
+		refresh = false if place.search_records.exists? 
 		return refresh
 	end
 
