@@ -20,7 +20,7 @@ gem 'mobvious'
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'airbrake'
-gem 'bcrypt', '~> 3.1.9'
+gem 'bcrypt', '>= 3.1.9'
 gem 'text'
 gem 'json'
 gem 'pry'
