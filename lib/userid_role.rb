@@ -141,4 +141,15 @@ module UseridRole
 
   SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
 
+  REASONS_FOR_INACTIVATING = {
+    'Not currently transcribing (may return)' => 'temporary',
+    'No longer transcribing (permanently)' => 'permanent',
+    'Emails bounce' => 'bad-email',
+    'No response to contact over time' => 'no-response',
+    'Deceased' => 'deceased',
+    'Requested no further contact' => 'do-not-contact',
+    'Coordinator controlled' => 'coord-controlled',
+    'Other (please explain below)' => 'other'
+  }
+
 end

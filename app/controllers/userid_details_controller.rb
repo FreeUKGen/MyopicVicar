@@ -327,7 +327,7 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     load(params[:id])
     unless @userid.active
-      @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
+      @userid.update_attributes(:active => true, :disabled_reason_standard => nil, :disabled_reason => nil, :disabled_date => nil)
       flash[:notice] = "Userid re-activated"
       redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
     end

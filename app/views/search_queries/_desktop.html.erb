@@ -1,3 +1,5 @@
+<% print_friendly = (!@printable_format.nil? && @printable_format) ? true : false %>
+
 <section class="island  " >
   <div class="table-wrapper">
     <table class="table--bordered table--data" >
@@ -12,26 +14,38 @@
       <thead  >
         <th>
           <%= link_to('Participants', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
-          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
+	  <% unless print_friendly %>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
+	  <% end %>
         </th>
         <th>
           <%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
-          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Type of record. Click heading to sort by type</span></a>
+	  <% unless print_friendly %>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Type of record. Click heading to sort by type</span></a>
+	  <% end %>
         </th>
         <th>
           <%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
-          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a>
+	  <% unless print_friendly %>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a>
+	  <% end %>
         </th>
         <th>
           <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
-          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>County in which event was recorded. Click heading to sort by the county</span></a>
+	  <% unless print_friendly %>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>County in which event was recorded. Click heading to sort by the county</span></a>
+	  <% end %>
         </th>
         <th>
           <%= link_to('Location', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
-          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a>
+	  <% unless print_friendly %>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a>
+	  <% end %>
         </th>
         <th>Detail<br>
-          <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Click on the detail link in the record below to get transcription details</span></a>
+	  <% unless print_friendly %>
+            <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Click on the detail link in the record below to get transcription details</span></a>
+	  <% end %>
         </th>
       </thead >
       <% @search_results.each do |search_record| %>

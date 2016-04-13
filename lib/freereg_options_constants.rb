@@ -49,7 +49,7 @@ module FreeregOptionsConstants
   MAX_RECORDS_DATA_MANAGER = 15000 
   MAX_RECORDS_SYSTEM_ADMINISTRATOR = 100000 
   MESSAGE_RECIPIENTS = ['Myself to Review',"Active Transcribers",'Inactive Transcribers','Coordinators','Researchers', 'Managers', 'Coordinators and Managers']
-  MINIMUM_NUMBER_OF_FIELDS = 5
+  MINIMUM_NUMBER_OF_FIELDS = 3
   CHURCH_WORD_EXPANSIONS =  {
     'Albans' => 'Alban',
     'Albright\'s' => 'Albright',
@@ -115,7 +115,6 @@ module FreeregOptionsConstants
     'Philips' => 'Philip',
     'Stevens' => 'Steven',
     'Steven\'s' => 'Steven',
-
     'Swithen' => 'Swithin',
     'Swithins' => 'Swithin',
     'Swithin\'s' => 'Swithin',
