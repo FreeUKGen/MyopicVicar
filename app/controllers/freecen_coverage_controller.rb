@@ -1,6 +1,7 @@
 class FreecenCoverageController < ApplicationController
   require 'chapman_code'
   require 'freecen_piece'
+  require 'freecen_coverage'
   skip_before_filter :require_login
 
   def index
