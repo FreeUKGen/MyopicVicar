@@ -104,7 +104,7 @@ class NewFreeregCsvUpdateProcessor
 
 	def communicate_to_managers(csvfile)
 	  time = 0
-	  time = (((Time.now.to_i  - @project_start_time.to_i)/@total_records)/1000000) unless @total_records == 0
+	  time = ((Time.now.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
 	  self.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",false)
 	  file = @message_file
 	  @message_file.close 
@@ -255,20 +255,21 @@ class CsvFile < CsvFiles
 	  return false,"lines not extracted #{message}. <br>" unless success
 	  success, message = @csv_records.get_the_file_information_from_the_headers(self,project) 
 	  p "finished header" 
-	  return false,"header errors" unless success 
+	  return success,"header errors" unless success 
 	  success,@records_processed = @csv_records.extract_the_data(self,project)
 	  p "finished data"
-	  p success
-	  return false,"Data not extracted #{@records_processed}. <br>" unless success
+	  return success,"Data not extracted #{@records_processed}. <br>" unless success
 	  p @records_processed if success
 	  success,@records_processed,@data_errors = self.process_the_data(project) if success
-	  return false,"Data not processed #{@records_processed}. <br>" unless success
+	  return success,"Data not processed #{@records_processed}. <br>" unless success
 	  success, message = self.clean_up_supporting_information(project) 
 	  p "finished clean up"
-	  return false,"clean up failed #{message}. <br>" unless success
+	  time = ((Time.now.to_i  - @file_start.to_i)*1000)/@total_records unless @total_records == 0
+	  project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)   
+	  return success,"clean up failed #{message}. <br>" unless success
 	  success, message = self.communicate_file_processing_results(project)
 	  p "finished com"
-	  return false,"communication failed #{message}. <br>" unless success
+	  return success,"communication failed #{message}. <br>" unless success
 	  return true,@total_records ,@total_data_errors 
 	end
 
@@ -325,20 +326,22 @@ class CsvFile < CsvFiles
 	   return success
 	end
 
-	def check_and_set_characterset(code_set,csvtxt)
+	def check_and_set_characterset(code_set,csvtxt,project)
+		project.write_messages_to_all("Setting Character set currently #{code_set}",false) 
 	    code_set = self.default_charset if (code_set.blank? || code_set == "chset")
 		#if it looks like valid UTF-8 and we know it isn't
          #Windows-1252 because of undefined characters, then
          #default to UTF-8 instead of Windows-1252
+       project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
              csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
              csvtxt.index(0x9D.chr)
            #p 'undefined Windows-1252 chars, try UTF-8 default'
+          project.write_messages_to_all("Found undefined}",false) 
            csvtxt.force_encoding('UTF-8')
            code_set = 'UTF-8' if csvtxt.valid_encoding?
            csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
         end
-        code_set = self.default_charset if (code_set.blank? || code_set == "chset")
 	    code_set = "UTF-8" if (code_set.upcase == "UTF8") 
 	    #Deal with the cp437 code which is IBM437 in ruby
 	    code_set = "IBM437" if (code_set.upcase == "CP437")
@@ -354,13 +357,15 @@ class CsvFile < CsvFiles
        # file or specified encoding) instead of silently
        # replacing bad characters with the undefined character
        # symbol, the two replacement options can be removed
+      project.write_messages_to_all("Do we force encoding #{code_set}",false) 
 	    unless csvtxt.encoding == 'UTF-8'
 	      csvtxt.force_encoding(code_set)
 	      self.slurp_fail_message = "the processor failed to convert to UTF-8 from character set #{code_set}. <br>"
 	      csvtxt = csvtxt.encode('UTF-8', invalid: :replace, undef: :replace)
 	      self.slurp_fail_message = nil # no exception thrown
 	    end
-	    return code_set, message
+	   project.write_messages_to_all("Code set of string is #{csvtxt.encoding}",false) 
+	    return code_set, message, csvtxt
 	end
 
 	def check_file_exists?(project)
@@ -387,7 +392,7 @@ class CsvFile < CsvFiles
 	end
 
 	def check_userid_exists?(project)
-		message = "The userid #{@userid} does not exist. <br>"
+		message = "The #{@userid} userid does not exist. <br>"
 		if UseridDetail.userid(@userid).first.present?
 			return true, "OK"
 		else
@@ -404,15 +409,21 @@ class CsvFile < CsvFiles
 	    p "clean up after failure"
 	    batch = PhysicalFile.userid(@userid).file_name(@file_name).first
 	    return true if batch.blank? || message.blank?
-	    PhysicalFile.remove_base_flag(@userid,@file_name) if message.include? "file does not exist. <br>"
-	    PhysicalFile.userid(@userid).file_name(@file_name).delete if message.include? "userid does not exist. <br>"
-	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include? "file is older than one on system. <br>"
-	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include? "file on system is locked. <br>"
+	    PhysicalFile.remove_base_flag(@userid,@file_name) if message.include? "does not exist. "
+	    PhysicalFile.userid(@userid).file_name(@file_name).delete if message.include? "userid does not exist. "
+	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include? "file is older than one on system. "
+	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include? "is already on system and is locked against replacement. "
 		batch.delete if message.include? "header errors"
 	end
 
 	def clean_up_supporting_information(project)
-	   self.physical_file_clean_up(project)
+		if @records_processed.blank? ||  @records_processed == 0
+			batch = PhysicalFile.userid(@userid).file_name(@file_name).first
+	    	return true if batch.blank?
+	    	batch.delete
+		else
+			self.physical_file_clean_up_on_success(project)
+		end	   
 	   return true
 	end
 
@@ -493,7 +504,8 @@ class CsvFile < CsvFiles
 	end
 
 
-	def determine_if_utf8(csvtxt)
+	def determine_if_utf8(csvtxt,project)
+		project.write_messages_to_all("Check for BOM",false) 
 	    #check for BOM and if found, assume corresponding
 	    # unicode encoding (unless invalid sequences found),
 	    # regardless of what user specified in column 5 since it
@@ -503,30 +515,36 @@ class CsvFile < CsvFiles
 	    if !csvtxt.nil? && csvtxt.length > 2
 	      if csvtxt[0].ord==0xEF && csvtxt[1].ord==0xBB && csvtxt[2].ord==0xBF
 	        #p "UTF-8 BOM found"
+	        project.write_messages_to_all("BOM found",false) 
 	        csvtxt = csvtxt[3..-1]#remove BOM
 	        code_set = 'UTF-8'
 	        self.slurp_fail_message = "BOM detected so using UTF8. <br>"
 	        csvtxt.force_encoding(code_set)
 	        if !csvtxt.valid_encoding?
+	        	project.write_messages_to_all("Not really a UTF8",false) 
 	          #not really a UTF-8 file. probably was edited in
 	          #software that added BOM to beginning without
 	          #properly transcoding existing characters to UTF-8
 	          code_set = nil
 	          csvtxt.force_encoding('ASCII-8BIT')
 	        else
-	          csvtxt=csvtxt.encode('utf-8', :undef => :replace)
+	          self.slurp_fail_message = "BOM detected so using UTF8. <br>"
+	          project.write_messages_to_all("Really a UTF8",false) 
+	          csvtxt = csvtxt.encode('utf-8', :undef => :replace)
 	        end
 	      else
+	      	code_set = nil
 	        #No BOM
-	       self.slurp_fail_message = nil
+	        self.slurp_fail_message = nil
 	      end
 	    else
 	      #No BOM
 	     self.slurp_fail_message = nil
 	      code_set = nil
 	    end
-	   self.slurp_fail_message = "BOM detected so using UTF8. <br>"
-	    return code_set
+	    project.write_messages_to_all("Code set #{code_set}",false) 
+	    
+	    return code_set,csvtxt
 	end
 
 	def ensure_processable?(project)
@@ -588,24 +606,26 @@ class CsvFile < CsvFiles
 	 	return locations,all_records_hash
 	end
 
-	def get_codeset_from_header(code_set,csvtxt)
+	def get_codeset_from_header(code_set,csvtxt,project)
 	    @slurp_fail_message = "CSV parse failure on first line. <br>"
 	    first_data_line = CSV.parse_line(csvtxt)
 	    @slurp_fail_message = nil # no exception thrown
 	    if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
 	      code_set_specified_in_csv = first_data_line[5].strip
+	     project.write_messages_to_all("Detecting character set found #{code_set_specified_in_csv}",false) 
 	      if !code_set.nil? && code_set != code_set_specified_in_csv
            message = "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
-           write_messages_to_all(message,false) 
+          project.write_messages_to_all(message,false) 
          else
+         	project.write_messages_to_all("using #{code_set_specified_in_csv}",false) 
            code_set = code_set_specified_in_csv
          end
 	    end
 	    return code_set
 	end
 
-	def physical_file_clean_up(project)
-		p "physical file clean up"
+	def physical_file_clean_up_on_success(project)
+		p "physical file clean up on success"
 		batch = PhysicalFile.userid(@header[:userid]).file_name( @header[:file_name] ).first
 	    if batch.nil?
 	      batch = PhysicalFile.new(:userid => @header[:userid], :file_name => @header[:file_name],:base => true, :base_uploaded_date => Time.now)
@@ -718,22 +738,21 @@ class CsvFile < CsvFiles
 	    csvtxt = File.open(@file, "rb", :encoding => "ASCII-8BIT:ASCII-8BIT"){|f| f.read}
 	    project.write_messages_to_all("Empty file",true) if csvtxt.blank?
 	    return false if csvtxt.blank?
-	    code = self.determine_if_utf8(csvtxt)
-	    code = self.get_codeset_from_header(code,csvtxt) 
-	    code  , message = self.check_and_set_characterset(code,csvtxt)
+	    code,csvtxt = self.determine_if_utf8(csvtxt,project)
+	    code = self.get_codeset_from_header(code,csvtxt,project) 
+	    code, message, csvtxt = self.check_and_set_characterset(code,csvtxt,project)
 	    csvtxt = self.standardize_line_endings(csvtxt)
-	    success = self.extract_the_array_of_lines(csvtxt)
-	    return success, message
+	    success = self.extract_the_array_of_lines(csvtxt)    
 	  rescue  => e
-	    p "csv slurp rescue " + (e.message)
+	  	project.write_messages_to_all("csv slurp rescue #{e.message}",false) 	   
 	    error_message = "#{@userid}\t#{@file_name} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*. <br>"
 	    project.write_messages_to_all(error_message,true) 
-	    project.write_log_file @slurp_fail_message if @slurp_fail_message.present?
-	    project.write_log_file e.message
-	    project.write_log_file e.backtrace.inspect
-	    return false,e.message
-	  #ensure
-	  	#return true, "dropped through ensure"
+	    project.write_log_file("#{e.message}") 
+	    project.write_log_file("#{e.backtrace.inspect}") 
+	    success = false
+	    message = e.message
+	  ensure
+	  	return success, message
 	    #we ensure that processing keeps going by dropping out through the bottom
 	  end #begin end
 	end
@@ -1281,7 +1300,7 @@ class CsvRecord < CsvRecords
 	  	#separate field
 	    church_name = @data_line[csvrecords.data_entry_order[:church_name]]
 	    success2 = true if FreeregValidations.valid_church?(church_name,chapman_code,place_name) 
-	    project.write_messages_to_all("The church name at field #{@data_line[csvrecords.data_entry_order[:church_name]]} is invalid at line #{line}. <br>" , true)  if  !success2
+	    project.write_messages_to_all("The church name #{church_name} is invalid for #{place_name} at line #{line}. <br>" , true)  if  !success2
 	    register_type = @data_line[csvrecords.data_entry_order[:register_type]]
 	    success3 = true if FreeregValidations.valid_register_type?(register_type,chapman_code,place_name,church_name) 
 	    project.write_messages_to_all("The register type at field #{@data_line[csvrecords.data_entry_order[:register_type]]} is invalid at line #{line}. <br>", true)   if  !success3
@@ -1291,7 +1310,7 @@ class CsvRecord < CsvRecords
 	    success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
 	    project.write_messages_to_all("The church field #{@data_line[csvrecords.data_entry_order[:church_name]]} is invalid at line #{line}. <br>", true)   if  !success4
 	    success5 = true if FreeregValidations.valid_church?(church_name,chapman_code,place_name) if success1 && success4
-	    project.write_messages_to_all("The church name at field #{@data_line[csvrecords.data_entry_order[:church_name]]} is invalid at line #{line}. <br>", true)   if  !success5
+	    project.write_messages_to_all("The church name #{church_name} is invalid for #{place_name} at line #{line}. <br>", true)   if  !success5
 	    
 	    return false unless success && success1 && success4 && success5
 	  end
