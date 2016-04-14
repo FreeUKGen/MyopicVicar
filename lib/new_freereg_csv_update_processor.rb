@@ -325,9 +325,20 @@ class CsvFile < CsvFiles
 	   return success
 	end
 
-	def check_and_set_characterset(code,csvtxt)
-		code_set = code
-	    code_set = self.default_charset if (code.blank? || code == "chset")
+	def check_and_set_characterset(code_set,csvtxt)
+	    code_set = self.default_charset if (code_set.blank? || code_set == "chset")
+		#if it looks like valid UTF-8 and we know it isn't
+         #Windows-1252 because of undefined characters, then
+         #default to UTF-8 instead of Windows-1252
+        if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
+             csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
+             csvtxt.index(0x9D.chr)
+           #p 'undefined Windows-1252 chars, try UTF-8 default'
+           csvtxt.force_encoding('UTF-8')
+           code_set = 'UTF-8' if csvtxt.valid_encoding?
+           csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
+        end
+        code_set = self.default_charset if (code_set.blank? || code_set == "chset")
 	    code_set = "UTF-8" if (code_set.upcase == "UTF8") 
 	    #Deal with the cp437 code which is IBM437 in ruby
 	    code_set = "IBM437" if (code_set.upcase == "CP437")
@@ -337,6 +348,12 @@ class CsvFile < CsvFiles
 	    message = "Invalid Character Set detected #{code_set} have assumed Windows-1252. <br>" unless Encoding.name_list.include?(code_set)
 	    code_set = self.default_charset unless Encoding.name_list.include?(code_set)
 	    self.header[:characterset] = code_set
+	   # convert to UTF-8 if we didn't already. If our
+       # preference is to fail when invalid characters or
+       # undefined characters are found (so we can fix the
+       # file or specified encoding) instead of silently
+       # replacing bad characters with the undefined character
+       # symbol, the two replacement options can be removed
 	    unless csvtxt.encoding == 'UTF-8'
 	      csvtxt.force_encoding(code_set)
 	      self.slurp_fail_message = "the processor failed to convert to UTF-8 from character set #{code_set}. <br>"
@@ -501,7 +518,6 @@ class CsvFile < CsvFiles
 	        end
 	      else
 	        #No BOM
-	        code_set = nil
 	       self.slurp_fail_message = nil
 	      end
 	    else
@@ -509,7 +525,7 @@ class CsvFile < CsvFiles
 	     self.slurp_fail_message = nil
 	      code_set = nil
 	    end
-	   self..slurp_fail_message = "BOM detected so using UTF8. <br>"
+	   self.slurp_fail_message = "BOM detected so using UTF8. <br>"
 	    return code_set
 	end
 
@@ -572,14 +588,20 @@ class CsvFile < CsvFiles
 	 	return locations,all_records_hash
 	end
 
-	def get_codeset_from_header(csvtxt)
+	def get_codeset_from_header(code_set,csvtxt)
 	    @slurp_fail_message = "CSV parse failure on first line. <br>"
 	    first_data_line = CSV.parse_line(csvtxt)
 	    @slurp_fail_message = nil # no exception thrown
 	    if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
 	      code_set_specified_in_csv = first_data_line[5].strip
+	      if !code_set.nil? && code_set != code_set_specified_in_csv
+           message = "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
+           write_messages_to_all(message,false) 
+         else
+           code_set = code_set_specified_in_csv
+         end
 	    end
-	    return code_set_specified_in_csv
+	    return code_set
 	end
 
 	def physical_file_clean_up(project)
@@ -697,8 +719,8 @@ class CsvFile < CsvFiles
 	    project.write_messages_to_all("Empty file",true) if csvtxt.blank?
 	    return false if csvtxt.blank?
 	    code = self.determine_if_utf8(csvtxt)
-	    code = self.get_codeset_from_header(csvtxt) if code.nil?
-	    code, message = self.check_and_set_characterset(code,csvtxt)
+	    code = self.get_codeset_from_header(code,csvtxt) 
+	    code  , message = self.check_and_set_characterset(code,csvtxt)
 	    csvtxt = self.standardize_line_endings(csvtxt)
 	    success = self.extract_the_array_of_lines(csvtxt)
 	    return success, message
