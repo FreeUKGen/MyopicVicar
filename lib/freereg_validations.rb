@@ -1,10 +1,9 @@
 module FreeregValidations
-   require "unicode"
-
+  
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
-  VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
-  VALID_NUMERIC  = /[\p{N}]/u
-  VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/u
+  VALID_NAME =/[\p{L}\'\"\ \.\;\:]/
+  VALID_NUMERIC  = /[\p{N}]/
+  VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
@@ -319,7 +318,7 @@ module FreeregValidations
     end
     return false
   end
-  
+
   def FreeregValidations.valid_chapman_code?(field)
    return true if ChapmanCode::values.include?(field) &&
        !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(field))
