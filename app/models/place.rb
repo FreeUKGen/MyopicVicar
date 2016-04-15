@@ -114,6 +114,10 @@ class Place
     def place(place)
       where(:place_name => place)
     end
+    def modified_place_name(place)
+      where(:modified_place_name => place)
+    end
+
   end
 
   def add_location_if_not_present

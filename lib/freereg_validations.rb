@@ -325,7 +325,8 @@ module FreeregValidations
   end
 
   def FreeregValidations.valid_place?(field,chapman)
-    place = Place.chapman_code(chapman).place(field).not_disabled.first
+    field = field.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase unless field.blank?
+    place = Place.chapman_code(chapman).modified_place_name(field).not_disabled.first
     return false unless place.present?
     return true
   end

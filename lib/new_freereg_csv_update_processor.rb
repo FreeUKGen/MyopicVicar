@@ -43,17 +43,17 @@ class NewFreeregCsvUpdateProcessor
 	attr_accessor :freereg_files_directory,:create_search_records,:type_of_project,:force_rebuild,
 	  :file_range,:message_file,:member_message_file,:project_start_time,:total_records, :total_files,:total_data_errors
 
-	def initialize(a,b,c,d,e,f)
-	  @create_search_records = b
-	  @file_range = e
-	  @force_rebuild = d
-	  @freereg_files_directory = a
+	def initialize(arg1,arg2,arg3,arg4,arg5,arg6)
+	  @create_search_records = arg2
+	  @file_range = arg5
+	  @force_rebuild = arg4
+	  @freereg_files_directory = arg1
 	  @message_file = define_message_file
-	  @project_start_time = f
+	  @project_start_time = arg6
 	  @total_data_errors = 0
 	  @total_files = 0
 	  @total_records = 0
-	  @type_of_project = c    
+	  @type_of_project = arg3    
 	  EmailVeracity::Config[:skip_lookup]=true
 	end  
 
@@ -407,12 +407,10 @@ class CsvFile < CsvFiles
 	def clean_up_physical_files_after_failure(message)
 	    p "clean up after failure"
 	    batch = PhysicalFile.userid(@userid).file_name(@file_name).first
-	    return true if batch.blank? || message.blank?
-	    PhysicalFile.remove_base_flag(@userid,@file_name) if message.include? "does not exist. "
-	    PhysicalFile.userid(@userid).file_name(@file_name).delete if message.include? "userid does not exist. "
-	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include? "file is older than one on system. "
-	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include? "is already on system and is locked against replacement. "
-		batch.delete if message.include? "header errors"
+	    return true if batch.blank? || message.blank? 
+	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("file is older than one on system. ")
+	    PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("is already on system and is locked against replacement. ")
+		batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
 	end
 
 	def clean_up_supporting_information(project)
