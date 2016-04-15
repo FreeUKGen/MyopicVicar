@@ -514,7 +514,7 @@ describe Freereg1CsvEntry do
     
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
 
-    file_record.freereg1_csv_entries.each do |entry|
+    file_record.freereg1_csv_entries.each_with_index do |entry,i|
       [entry.father_forename, entry.mother_forename].each do |search_forename|
         if search_forename # we should find this
           query_params = { :first_name => search_forename,
@@ -524,7 +524,7 @@ describe Freereg1CsvEntry do
           q.search
           result = q.results
  
-          p entry.person_forename
+#          print "Test case # #{i}: #{entry.person_forename} should match queries for #{search_forename}\n"
           result.should have_at_least(1).items
           result.should be_in_result(entry)
                     

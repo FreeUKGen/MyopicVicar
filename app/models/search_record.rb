@@ -1,6 +1,7 @@
 require 'name_role'
 require 'record_type'
 require 'emendor'
+require 'ucf_transformer'
 require 'freereg1_translator'
 require 'date_parser'
 
@@ -229,6 +230,7 @@ class SearchRecord
       @@tts[:downcase_tts] = Benchmark.measure {}
       @@tts[:separate_tts] = Benchmark.measure {}
       @@tts[:emend_tts] = Benchmark.measure {}
+      @@tts[:transform_ucf_tts] = Benchmark.measure {}
       @@tts[:soundex_tts] = Benchmark.measure {}
       @@tts[:date_tts] = Benchmark.measure {}
       @@tts[:location_tts] = Benchmark.measure {}
@@ -253,6 +255,7 @@ class SearchRecord
       @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
       @@tts[:separate_tts] += Benchmark.measure { separate_all }
       @@tts[:emend_tts] += Benchmark.measure { emend_all }
+      @@tts[:transform_ucf_tts] += Benchmark.measure { transform_ucf }
       @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
       @@tts[:date_tts] += Benchmark.measure { transform_date }
       @@tts[:location_tts] += Benchmark.measure { populate_location }
@@ -261,6 +264,7 @@ class SearchRecord
       downcase_all
       separate_all
       emend_all
+      transform_ucf
       create_soundex
       transform_date
       populate_location
@@ -303,6 +307,10 @@ class SearchRecord
 
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
+  end
+
+  def transform_ucf
+    self.search_names = UcfTransformer.transform(self.search_names)
   end
 
   def separate_all
