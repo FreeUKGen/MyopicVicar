@@ -59,7 +59,7 @@ class NewFreeregCsvUpdateProcessor
 
 	def self.activate_project(create_search_records,type,force,range)
 		force, create_search_records = NewFreeregCsvUpdateProcessor.convert_to_bolean(create_search_records,force)
-	    @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.now.strftime("%d/%m/%Y %H:%M"))
+	    @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
 	    @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
 	    @csvfiles = CsvFiles.new
 	    success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
@@ -264,7 +264,7 @@ class CsvFile < CsvFiles
 	  return success,"Data not processed #{@records_processed}. <br>" unless success
 	  success, message = self.clean_up_supporting_information(project) 
 	  p "finished clean up"
-	  time = ((Time.now.to_i  - @file_start.to_i)*1000)/@total_records unless @total_records == 0
+	  time = ((Time.new.to_i  - @file_start.to_i)*1000)/@total_records unless @total_records == 0
 	  project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)   
 	  return success,"clean up failed #{message}. <br>" unless success
 	  success, message = self.communicate_file_processing_results(project)
