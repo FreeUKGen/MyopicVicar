@@ -104,7 +104,7 @@ class NewFreeregCsvUpdateProcessor
 
 	def communicate_to_managers(csvfile)
 	  time = 0
-	  time = ((Time.now.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
+	  time = ((Time.new.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
 	  self.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",false)
 	  file = @message_file
 	  @message_file.close 
