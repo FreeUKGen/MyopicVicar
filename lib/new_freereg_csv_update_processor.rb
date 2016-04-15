@@ -327,21 +327,22 @@ class CsvFile < CsvFiles
 	end
 
 	def check_and_set_characterset(code_set,csvtxt,project)
-		project.write_messages_to_all("Setting Character set currently #{code_set}",false) 
-	    code_set = self.default_charset if (code_set.blank? || code_set == "chset")
 		#if it looks like valid UTF-8 and we know it isn't
          #Windows-1252 because of undefined characters, then
-         #default to UTF-8 instead of Windows-1252
-       project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
+         #default to UTF-8 instead of Windows-1252   
+       if code_set.nil? || code_set.empty? || code_set=="chset"
+       	project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
              csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
              csvtxt.index(0x9D.chr)
            #p 'undefined Windows-1252 chars, try UTF-8 default'
-          project.write_messages_to_all("Found undefined}",false) 
+           project.write_messages_to_all("Found undefined}",false) 
            csvtxt.force_encoding('UTF-8')
            code_set = 'UTF-8' if csvtxt.valid_encoding?
            csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
         end
+       end
+        code_set = self.default_charset if (code_set.blank? || code_set == "chset")
 	    code_set = "UTF-8" if (code_set.upcase == "UTF8") 
 	    #Deal with the cp437 code which is IBM437 in ruby
 	    code_set = "IBM437" if (code_set.upcase == "CP437")
@@ -357,14 +358,12 @@ class CsvFile < CsvFiles
        # file or specified encoding) instead of silently
        # replacing bad characters with the undefined character
        # symbol, the two replacement options can be removed
-      project.write_messages_to_all("Do we force encoding #{code_set}",false) 
 	    unless csvtxt.encoding == 'UTF-8'
 	      csvtxt.force_encoding(code_set)
 	      self.slurp_fail_message = "the processor failed to convert to UTF-8 from character set #{code_set}. <br>"
 	      csvtxt = csvtxt.encode('UTF-8', invalid: :replace, undef: :replace)
 	      self.slurp_fail_message = nil # no exception thrown
 	    end
-	   project.write_messages_to_all("Code set of string is #{csvtxt.encoding}",false) 
 	    return code_set, message, csvtxt
 	end
 
@@ -505,7 +504,6 @@ class CsvFile < CsvFiles
 
 
 	def determine_if_utf8(csvtxt,project)
-		project.write_messages_to_all("Check for BOM",false) 
 	    #check for BOM and if found, assume corresponding
 	    # unicode encoding (unless invalid sequences found),
 	    # regardless of what user specified in column 5 since it
@@ -525,10 +523,12 @@ class CsvFile < CsvFiles
 	          #not really a UTF-8 file. probably was edited in
 	          #software that added BOM to beginning without
 	          #properly transcoding existing characters to UTF-8
-	          code_set = nil
+	          code_set = 'ASCII-8BIT' 
+	          csvtxt.encode('ASCII-8BIT')      
 	          csvtxt.force_encoding('ASCII-8BIT')
+	          project.write_messages_to_all("Not really ASCII-8BIT",false) unless csvtxt.valid_encoding?
 	        else
-	          self.slurp_fail_message = "BOM detected so using UTF8. <br>"
+	          self.slurp_fail_message = "Using UTF8. <br>"
 	          project.write_messages_to_all("Really a UTF8",false) 
 	          csvtxt = csvtxt.encode('utf-8', :undef => :replace)
 	        end
