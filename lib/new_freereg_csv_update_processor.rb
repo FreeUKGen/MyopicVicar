@@ -215,8 +215,8 @@ class CsvFile < CsvFiles
 	  @file = file 
 	  @file_locations = Hash.new
 	  @file_name = standalone_filename
-	  @file_start =   Time.now        
-	  @uploaded_date = Time.now
+	  @file_start =  nil     
+	  @uploaded_date = Time.new
 	  @uploaded_date = File.mtime(file) if File.exists?(file)	 
 	  @header_error = Array.new()
 	  @header = Hash.new
@@ -241,7 +241,7 @@ class CsvFile < CsvFiles
 	  success = true
 	  project.member_message_file = self.define_member_message_file 
 	  p project.member_message_file
-	  @file_start = Time.now
+	  @file_start = Time.new
 	  project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
 	  success, message = self.ensure_processable?(project) unless project.force_rebuild
 	  p "finished file checking #{message}. <br>"
@@ -626,12 +626,12 @@ class CsvFile < CsvFiles
 		p "physical file clean up on success"
 		batch = PhysicalFile.userid(@header[:userid]).file_name( @header[:file_name] ).first
 	    if batch.nil?
-	      batch = PhysicalFile.new(:userid => @header[:userid], :file_name => @header[:file_name],:base => true, :base_uploaded_date => Time.now)
+	      batch = PhysicalFile.new(:userid => @header[:userid], :file_name => @header[:file_name],:base => true, :base_uploaded_date => Time.new)
 	      batch.save
 	    end      
 	    if project.create_search_records
 	      # we created search records so its in the search database database
-	      batch.update_attributes( :file_processed => true, :file_processed_date => Time.now,:waiting_to_be_processed => false, :waiting_date => nil)
+	      batch.update_attributes( :file_processed => true, :file_processed_date => Time.new,:waiting_to_be_processed => false, :waiting_date => nil)
 	    else
 	      #only checked for errors so file is not processed into search database
 	      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
@@ -647,8 +647,10 @@ class CsvFile < CsvFiles
 	 		place_cache_refresh = self.refresh_place_cache?(key,value)
 			freereg1_csv_file = self.setup_batch_for_processing(project,key,value)
 			records, batch_errors, not_changed = self.process_the_records_for_this_batch_into_the_database(project,key,freereg1_csv_file)       
-			self.update_the_file_information(project,freereg1_csv_file,records,batch_errors) 		
-			message = "#{records} records were processed of which #{not_changed} were unchanged and #{batch_errors} had data errors. <p>"
+			self.update_the_file_information(project,freereg1_csv_file,records,batch_errors) 
+			changed = 0
+			changed = 	records - 	not_changed unless records.blank?
+			message = "#{records} records were processed of which #{changed} were updated and #{batch_errors} had data errors. <p>"
 			project.write_messages_to_all(message,true)
 			PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
 			project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
@@ -715,10 +717,10 @@ class CsvFile < CsvFiles
 	    	p "creating new"
 			freereg1_csv_file = Freereg1CsvFile.new(batch_header)
 			freereg1_csv_file.update_register
-			message = "The database contains no records for this location #{batch_header[:chapman_code]},#{batch_header[:place_name]},#{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}; so a new batch will be created. <br>"
+			message = "The database contains no correct records for this location #{batch_header[:chapman_code]},#{batch_header[:place_name]},#{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}; so a new batch will be created. <br>"
 	    else
 	    	p "using current"
-	    	message = "The database contains #{freereg1_csv_file.records} records for this location #{batch_header[:chapman_code]},#{batch_header[:place_name]},#{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}; so it will be updated. <br>"
+	    	message = "The database contains #{freereg1_csv_file.records} correct records for this location #{batch_header[:chapman_code]},#{batch_header[:place_name]},#{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}; so it will be updated. <br>"
 	         #remove batch errors for this location
 	         freereg1_csv_file.error = 0
 	         #remove this location from the total locations
@@ -773,7 +775,7 @@ class CsvFile < CsvFiles
 	    @total_data_errors = @total_data_errors + batch_errors
 		freereg1_csv_file.calculate_distribution
 		freereg1_csv_file.update_attribute(:processed, false) if !project.create_search_records
-	    freereg1_csv_file.update_attributes(:processed => true, :processed_date => Time.now) if project.create_search_records
+	    freereg1_csv_file.update_attributes(:processed => true, :processed_date => Time.new) if project.create_search_records
 		freereg1_csv_file.update_attributes(:error => batch_errors)
 	end
 end
@@ -1214,6 +1216,19 @@ class CsvRecord < CsvRecords
 	  @data_record = Hash.new	      
 	end
 
+	def correct_church_name(word)
+	 	word = word.gsub(/\./, " ").gsub(/\s+/, ' ').strip
+	 	church_words = word.split(" ")
+	 	new_church_word = ""
+		church_words.each do |church_word|
+	     	church_word = FreeregOptionsConstants::CHURCH_WORD_EXPANSIONS[church_word] if FreeregOptionsConstants::CHURCH_WORD_EXPANSIONS.has_key?(church_word) 
+	     	church_word = FreeregOptionsConstants::COMMON_WORD_EXPANSIONS[church_word] if FreeregOptionsConstants::COMMON_WORD_EXPANSIONS.has_key?(church_word)
+     	    new_church_word = new_church_word + church_word + " "
+     	end
+     	word = new_church_word.strip
+     	return word
+   	end
+
 	def extract_data_line(csvrecords,csvfile,project,line)
 	  #p "extracting data line"
 	  begin
@@ -1276,6 +1291,7 @@ class CsvRecord < CsvRecords
 		  	success = false
 		  	message = "Empty church field"
 		  end
+		  church_name = self.correct_church_name(church_name)
 	  return success, message, church_name, register_type
 	end
 
@@ -1298,7 +1314,7 @@ class CsvRecord < CsvRecords
 	  	#separate field
 	    church_name = @data_line[csvrecords.data_entry_order[:church_name]]
 	    success2 = true if FreeregValidations.valid_church?(church_name,chapman_code,place_name) 
-	    project.write_messages_to_all("The church name #{church_name} is invalid for #{place_name} at line #{line}. <br>" , true)  if  !success2
+	    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>" , true)  if  !success2
 	    register_type = @data_line[csvrecords.data_entry_order[:register_type]]
 	    success3 = true if FreeregValidations.valid_register_type?(register_type,chapman_code,place_name,church_name) 
 	    project.write_messages_to_all("The register type at field #{@data_line[csvrecords.data_entry_order[:register_type]]} is invalid at line #{line}. <br>", true)   if  !success3
@@ -1306,9 +1322,9 @@ class CsvRecord < CsvRecords
 	  else
 	  	#part of church name
 	    success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
-	    project.write_messages_to_all("The church field #{@data_line[csvrecords.data_entry_order[:church_name]]} is invalid at line #{line}. <br>", true)   if  !success4
+	    project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
 	    success5 = true if FreeregValidations.valid_church?(church_name,chapman_code,place_name) if success1 && success4
-	    project.write_messages_to_all("The church name #{church_name} is invalid for #{place_name} at line #{line}. <br>", true)   if  !success5
+	    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
 	    
 	    return false unless success && success1 && success4 && success5
 	  end
