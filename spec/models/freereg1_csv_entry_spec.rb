@@ -518,16 +518,15 @@ describe Freereg1CsvEntry do
       [entry.father_forename, entry.mother_forename].each do |search_forename|
         if search_forename # we should find this
           query_params = { :first_name => search_forename,
-                           :last_name => entry.father_surname }
+                           :last_name => entry.mother_surname || entry.father_surname }
           q = SearchQuery.new(query_params)
           q.save!(:validate => false)
           q.search
           result = q.results
  
-#          print "Test case # #{i}: #{entry.person_forename} should match queries for #{search_forename}\n"
+          print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
           result.should have_at_least(1).items
           result.should be_in_result(entry)
-                    
         end
       end      
     end
