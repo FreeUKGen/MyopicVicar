@@ -47,7 +47,7 @@ class ChurchesController < InheritedResources::Base
     if @church.nil?
       go_back("church",params[:id])
     else
-      setup(params[:id])
+       setup(params[:id])
       @county = session[:county]
       @church.alternatechurchnames.build
     end
@@ -60,7 +60,7 @@ class ChurchesController < InheritedResources::Base
     if @church.nil?
       go_back("church",params[:id])
     else
-      setup(params[:id])
+       setup(params[:id])
       @county = session[:county]
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first

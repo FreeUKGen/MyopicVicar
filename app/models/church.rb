@@ -61,7 +61,6 @@ class Church
               record.update_attributes(:location_names => location_names,:place_id => place.id, :chapman_code => place.chapman_code)
             end
           end
-          file.update_attributes(:place => place_name, :church_name => self.church_name)
         end 
       end
  
