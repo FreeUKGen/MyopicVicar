@@ -8,17 +8,17 @@ module UseridRole
     'pending' => [ "Profile"],
     'transcriber' => [  "Profile", "Batches","Roadmap"],
     'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Roadmap"],
-    'contacts_coordinator'=> [ "Profile", "Batches", "Feedback", "Contacts", "System Documentation" ,"Roadmap"],
+    'contacts_coordinator'=> [ "Profile", "Batches", "Feedback", "Contacts", "Access Profiles", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Profiles","Contacts","Roadmap"],
     'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Profiles","Contacts","Roadmap"],
     'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts","Roadmap"],
     'data_manager' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
-                         "Feedback", "Contacts", "System Documentation","Roadmap" ],
+                         "Feedback", "Contacts", "Denominations","System Documentation","Roadmap" ],
     'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "Site Statistics",
                       "System Documentation","Access Profiles","Roadmap"],
     'system_administrator' =>[  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Manage Userids", "Syndicate Coordinators",
                                 "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Site Statistics","Search Performance",
-                                "Feedback", "Contacts", "Message System", "System Documentation","Roadmap" ],
+                                "Feedback", "Contacts", "Message System", "Denominations","System Documentation","Roadmap" ],
     'project_manager' =>[  "Profile", "Batches", "Manage Userids", "RefineryCMS", "Site Statistics","Search Performance",
                                 "Feedback", "Contacts", "System Documentation","Roadmap" ],                          
     'executive_director' =>[  "Profile", "Batches", "Manage Userids", "Syndicate Coordinators",
@@ -32,6 +32,7 @@ module UseridRole
   }
 
   OPTIONS_TRANSLATION = {
+    "Denominations" => "/denominations",
     "Saved Searches" => "/my_saved_searches",
     "Profile" => "/userid_details/my_own" ,
     "Batches" => "/freereg1_csv_files/my_own" ,
