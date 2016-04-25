@@ -13,6 +13,7 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  resources :denominations
 
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
   get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages

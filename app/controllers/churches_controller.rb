@@ -23,6 +23,7 @@ class ChurchesController < InheritedResources::Base
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
     @church.alternatechurchnames.build
+    denomination_list
   end
 
   def create
@@ -40,6 +41,12 @@ class ChurchesController < InheritedResources::Base
       redirect_to church_path(church)
     end
   end
+  def denomination_list
+    @denominations = Array.new
+    Denomination.all.order_by(denomination: 1).each do |denomination|
+      @denominations << denomination.denomination
+    end
+  end
 
   def edit   
     get_user_info_from_userid
@@ -51,6 +58,7 @@ class ChurchesController < InheritedResources::Base
       @county = session[:county]
       @church.alternatechurchnames.build
     end
+    denomination_list
   end
 
 
