@@ -1,7 +1,7 @@
 class DenominationsController < ApplicationController
   def index
     get_user_info_from_userid
-    @denominations = Denomination.all
+    @denominations = Denomination.all.order_by(denomination: 1)
   end
   def new
     get_user_info_from_userid
