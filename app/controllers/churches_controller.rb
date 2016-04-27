@@ -27,18 +27,18 @@ class ChurchesController < InheritedResources::Base
   end
 
   def create
-    church = Church.new(params[:church]) 
-    place = Place.find(session[:place_id])
-    place.churches << church
-    place.save
-    # church.save
-    if church.errors.any?
-      flash[:notice] = 'The addition of the Church was unsuccessful'
-      redirect_to new_church_path
-      return
-    else
+    @church = Church.new(params[:church]) 
+    @place = Place.find(session[:place_id])
+    church_ok = @church.church_does_not_exist(@place)
+    if church_ok[0]
+      @place.churches << @church
       flash[:notice] = 'The addition of the Church was successful'
-      redirect_to church_path(church)
+      redirect_to church_path(@church)
+    else
+      get_user_info_from_userid
+      flash[:notice] = "The addition of the Church was unsuccessful because #{church_ok[1]}"
+      redirect_to new_church_path
+      return     
     end
   end
   def denomination_list
