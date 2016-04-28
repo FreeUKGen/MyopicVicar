@@ -28,8 +28,9 @@ class Church
 
   def church_does_not_exist(place)
     return false, "Church name cannot be blank" unless self.church_name.present?
+    self.church_name = self.church_name.strip
     place.churches.each do |church|
-      if church.church_name == self[:church_name]
+      if church.church_name == self.church_name
          return false, "Church of that name already exits"
       end
     end
