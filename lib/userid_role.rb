@@ -8,11 +8,11 @@ module UseridRole
     'pending' => [ "Profile"],
     'transcriber' => [  "Profile", "Batches","Roadmap"],
     'syndicate_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Roadmap"],
-    'contacts_coordinator'=> [ "Profile", "Batches", "Feedback", "Contacts", "Access Profiles", "System Documentation" ,"Roadmap"],
-    'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Access Profiles","Contacts","Roadmap"],
-    'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County","Access Profiles","Contacts","Roadmap"],
+    'contacts_coordinator'=> [ "Profile", "Batches", "Manage Counties","Feedback", "Contacts", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "System Documentation" ,"Roadmap"],
+    'county_coordinator' =>  [  "Profile", "Batches", "Manage Syndicate", "Manage County", "Display Userids","Contacts","Roadmap"],
+    'country_coordinator' => [  "Profile", "Batches", "Manage Syndicate","Manage Country", "Manage County", "Display Userids","Contacts","Roadmap"],
     'volunteer_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Userids","Contacts","Roadmap"],
-    'data_manager' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Access Profiles", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
+    'data_manager' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "RefineryCMS", "Physical Files","Access Attic", "Search Performance",
                          "Feedback", "Contacts", "Denominations","System Documentation","Roadmap" ],
     'technical' => [  "Profile", "Batches",   "RefineryCMS", "Access Attic","Search Performance", "Feedback", "Contacts", "Site Statistics",
                       "System Documentation","Access Profiles","Roadmap"],
@@ -26,9 +26,9 @@ module UseridRole
                                 "Feedback", "Contacts", "Message System","System Documentation","Roadmap" ], 
     'publicity_coordinator'=> [ "Profile", "Batches",  "Contacts", "System Documentation" ,"Roadmap"],                              
     'genealogy_coordinator'=> [ "Profile", "Batches", "Contacts", "System Documentation" ,"Roadmap"],
-    'documentation_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Access Profiles", "RefineryCMS",
+    'documentation_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Display Userids", "RefineryCMS",
                          "Feedback", "Contacts", "System Documentation","Roadmap" ],
-    'engagement_coordinator' => [  "Profile", "Batches", "Access Profiles", "RefineryCMS", "Contacts", "System Documentation","Roadmap" ]  
+    'engagement_coordinator' => [  "Profile", "Batches", "Display Userids", "RefineryCMS", "Contacts", "System Documentation","Roadmap" ]  
   }
 
   OPTIONS_TRANSLATION = {
@@ -42,7 +42,9 @@ module UseridRole
     "Manage Country" => "/manage_counties" ,
     "Manage Counties" => "/manage_counties" ,
     "Manage Userids"=> "/userid_details/options" ,
-    "Access Profiles" => "/userid_details/display" ,
+    "Display Userids" => "/userid_details/display" ,
+    "Display Syndicate Coordinators" => "/syndicates/display" ,
+    "Display County Coordinators" => "/counties/display" ,
     "Syndicate Coordinators" => "/syndicates" ,
     "County Coordinators" => "/counties" ,
     "Country Coordinators" => "/countries" ,

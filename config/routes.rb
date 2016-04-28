@@ -91,7 +91,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :countries
 
-
+  get 'counties/display', :to =>'counties#display', :as => :display_counties
   get 'counties/select', :to =>'counties#select', :as => :select_counties
   get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
@@ -122,7 +122,6 @@ MyopicVicar::Application.routes.draw do
   resources :userid_details
 
 
-
   get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_manage_counties 
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_manage_counties 
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint 
@@ -142,6 +141,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties 
   resources :manage_counties
 
+  get 'syndicates/display', :to =>'syndicates#display', :as => :display_syndicates
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
   get 'syndicates/selection', :to =>'syndicates#selection', :as => :selection_syndicates
   resources :syndicates
