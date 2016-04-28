@@ -1,4 +1,4 @@
-class FeedbacksController < InheritedResources::Base
+class FeedbacksController < ApplicationController
   skip_before_filter :require_login
   def index
     @feedbacks = Feedback.all.order_by(feedback_time: -1)

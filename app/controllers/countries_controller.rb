@@ -1,4 +1,4 @@
-class CountriesController < InheritedResources::Base
+class CountriesController < ApplicationController
 
 
   def index

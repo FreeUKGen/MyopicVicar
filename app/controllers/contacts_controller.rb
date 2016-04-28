@@ -1,4 +1,4 @@
-class ContactsController < InheritedResources::Base
+class ContactsController < ApplicationController
   require 'freereg_options_constants'
   skip_before_filter :require_login, only: [:new, :report_error, :create]
   def index
