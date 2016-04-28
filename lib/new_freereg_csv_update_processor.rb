@@ -650,7 +650,7 @@ class CsvFile < CsvFiles
 			self.update_the_file_information(project,freereg1_csv_file,records,batch_errors) 
 			changed = 0
 			changed = 	records - 	not_changed unless records.blank?
-			message = "#{records} records were processed of which #{changed} were updated and #{batch_errors} had data errors. <p>"
+			message = "#{records} records were processed of which #{changed} were updated/added and #{batch_errors} had data errors. <p>"
 			project.write_messages_to_all(message,true)
 			PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
 			project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
