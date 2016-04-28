@@ -1,6 +1,6 @@
 <p style="text-align: center"><b>Details for a County </p></b>
 
-<div style="text-align: center"> <%= button_to 'Edit details', edit_county_path(@county), method: :get  %> </div>
+<div style="text-align: center"> <%= button_to 'Edit details', edit_county_path(@county), method: :get  unless @user.person_role == "contacts_coordinator"%> </div>
 
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
