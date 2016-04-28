@@ -9,8 +9,8 @@ module Freecen
       # person loading the files that either the PARMS.DAT or .VLD file needs
       # to be fixed
       chapman_code = File.basename(File.dirname(filename))
-      if nil == FreecenPiece.where(:chapman_code => chapman_code, :piece_number => file_record[:piece]).first
-        raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]}. year=#{file_record[:full_year]} file=#{filename}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county if it hasn't been run, verify that the PARMS.DAT file is correct, verify that the .VLD file is in the correct directory and named correctly.\n"
+      if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
+        raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county if it hasn't been run, verify that the PARMS.DAT file is correct, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
       persist_to_database(filename, file_record, entry_records)
     end
@@ -112,7 +112,7 @@ module Freecen
         piece = filename[5,3]
               # $sctpar = substr($file,3,2);
               # $series = "SCT";
-        sctpar = filename[3,2] # what is this used for?
+        sctpar = filename[3,2] # this is parish_number for scotland split files
         series = "SCT"
           # } elsif (uc($centype) eq "RG") {
       elsif "RG" == centype #RG = England & Wales, 1861 onwards
@@ -175,8 +175,8 @@ module Freecen
           # $fullyear = $year*10 + 1831;
           
       full_year = year*10 + 1831
-      
-      {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype }
+      sctpar = sctpar.to_i.to_s #strip spaces and if empty or nil, make it "0"
+      {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype, :sctpar => sctpar }
     end
     
     VLD_RECORD_LENGTH = 299

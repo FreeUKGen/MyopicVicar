@@ -10,6 +10,7 @@ class Freecen1VldFile
   field :full_year, type: String
   field :piece, type: Integer
   field :series, type: String
+  field :sctpar, type: String
   
   def chapman_code
     self.dir_name

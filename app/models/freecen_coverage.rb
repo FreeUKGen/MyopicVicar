@@ -18,7 +18,7 @@ class FreecenCoverage
       all_years[yy]['counties'][cty]['num_pieces'] += 1
       piece_rec = piece[:num_individuals]
       if piece_rec > 0
-        p "    piece_rec=#{piece_rec}"
+        #p "    piece_rec=#{piece_rec}"
         all_years[yy]['counties'][cty]['num_rec'] += piece_rec
         all_years[yy]['counties'][cty]['num_online'] += 1
       end
@@ -85,7 +85,7 @@ class FreecenCoverage
         p "empty subplace! piece id=#{piece._id}" if ''==sp
       end
       all_years[yy]['pieces'][piece_idx] = {'display_piece'=>display_piece,
-        'country'=>piece.place.country,'place_name'=>piece.place.place_name,'subplace_names'=>subplaces,'status'=>piece.status,'remarks'=>piece.remarks,'parish_number'=>piece.parish_number,'online_time'=>piece.online_time,'yy'=>yy,'district_name'=>piece.district_name,'place_id'=>piece.place._id}
+        'country'=>piece.place.country,'place_name'=>piece.place.place_name,'subplace_names'=>subplaces,'status'=>piece.status,'remarks'=>piece.remarks,'parish_number'=>piece.parish_number,'online_time'=>piece.online_time,'yy'=>yy,'district_name'=>piece.district_name,'place_id'=>piece.place._id,'piece_id'=>piece._id}
       if piece_rec > 0
         all_years[yy]['stats']['num_rec'] += piece_rec
         all_years[yy]['stats']['num_online'] += 1

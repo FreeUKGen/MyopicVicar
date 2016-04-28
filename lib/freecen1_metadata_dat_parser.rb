@@ -12,6 +12,7 @@ module Freecen
       file.save!
 
       entry = nil
+      a_entry = nil
       entry_hash_array.each do |hash|
         if hash[:rectype] == 'a'
           # this is a new piece
@@ -20,7 +21,7 @@ module Freecen
           entry.save! if entry 
           
           # now create a new one
-          entry = Freecen1FixedDatEntry.new        
+          entry = Freecen1FixedDatEntry.new
           entry.freecen1_fixed_dat_file = file
           entry.district_name = hash[:distname]
           entry.subplaces = []
@@ -30,26 +31,55 @@ module Freecen
             entry.suffix.strip! unless entry.suffix.nil?
             
             # $parnum = substr($line,64,1);
-            parish_number = hash[:a_sct_parnum].to_i
+            parish_number = hash[:a_sct_parnum]
             # $paroff = 1;
             # $paroff = substr($line,95,1) if (substr($line,93,1) eq "S" && substr($line,96,1) == $parnum);
-            if hash[:a_sct_paroff_cond_a] == "S" && hash[:a_sct_paroff_cond_b] == entry.parish_number
-              paroff = hash[:a_paroff_a_and_b].to_i
+            if hash[:a_sct_paroff_cond_a] == "S" && hash[:a_sct_paroff_cond_b] == parish_number
+              paroff = hash[:a_sct_paroff_a_and_b].to_i
             else
-              paroff = 1            
+              paroff = 1
             end
             # $parnum = $parnum + ($paroff*10);
-            entry.parish_number = (parish_number + paroff*10).to_s
+            entry.parish_number = (parish_number.to_i + paroff*10).to_s
             #p ">>is_scotland? TRUE, piece_number=#{entry.piece_number} parish_number=#{entry.parish_number} suffix='#{entry.suffix}'"
           else
             entry.piece_number = hash[:a_piecenum].to_i
             entry.parish_number = '0'
             entry.suffix = ''
           end
+          a_entry = entry
         else
+          if is_scotland? file
+            # scotland split files do not always follow the a/b record format.
+            # For example ABD1861 has an a record followed by several b records
+            # that are each for a different file, each of which should be
+            # treated as if it has that same a record before it.
+            suffix = hash[:b_sct_suffix]
+            suffix.strip! unless suffix.nil?
+            parish_number = hash[:b_sct_parnum]
+            if hash[:b_sct_paroff_cond_a] == "S" && hash[:b_sct_paroff_cond_b] == parish_number
+              paroff = hash[:b_sct_paroff_a_and_b].to_i
+            else
+              paroff = 1
+            end
+            parish_number = (parish_number.to_i + paroff*10).to_s
+
+            if parish_number != a_entry.parish_number
+              # a different split file, save the entry and create a new one
+              entry.save! if entry 
+              entry = Freecen1FixedDatEntry.new
+              entry.piece_number = a_entry.piece_number
+              entry.parish_number = parish_number
+              entry.suffix = suffix
+              entry.freecen1_fixed_dat_file = file
+              entry.district_name = a_entry.district_name
+              entry.subplaces = []
+            end
+          end
           # sub place for an existing piece
           entry.subplaces << hash[:distname]
         end
+          
       end
       entry.save! if entry
       
@@ -77,7 +107,7 @@ module Freecen
       record_count = raw_file.length / DAT_RECORD_LENGTH - 1
       contents = []
       (0...record_count).to_a.each do |i|
-        contents << process_dat_record(raw_file[64 + i*DAT_RECORD_LENGTH, DAT_RECORD_LENGTH*2]) #RECORD_LENGTH*2 because several a offsets are > 63
+        contents << process_dat_record(raw_file[64 + i*DAT_RECORD_LENGTH, DAT_RECORD_LENGTH*2]) #RECORD_LENGTH*2 because several offsets are > 63
       end
       
       contents
@@ -104,7 +134,8 @@ module Freecen
       :a_sct_parnum => [64,1],
       :a_sct_paroff_cond_a => [93,1],
       :a_sct_paroff_cond_b => [96,1],
-      :a_paroff_a_and_b => [95,1],
+      :a_sct_paroff_a_and_b => [95,1],
+      :lds_film_num => [28,8],
       
       :b_suffix => [60,3],
       :b_sct_suffix => [60,3],
@@ -112,7 +143,8 @@ module Freecen
       :b_sct_paroff_cond_a => [29,1],
       :b_sct_paroff_cond_b => [32,1],
       :b_sct_paroff_a_and_b => [31,1],
-      
+      :b_file_name => [28,8]
+     
     }
     
   
