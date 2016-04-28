@@ -10,6 +10,7 @@
   <% if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
   <h4 class="text--center" style="color:red">Your results were limited to the maximum number of results. We suggest you may wish to refine your search to ensure a complete set of results</h4>
   <% end%>
+  <% unless defined?(@printable_format) && @printable_format %>
   <div class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small " %>
     <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small " %>
     <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  weight--light btn--small ")%>
@@ -23,10 +24,11 @@
       <%= link_to "Printable Format", show_print_version_search_query_path, :class => "btn  weight--light btn--small" %>
     <% end %>
   </div>
+  <% end %>
   <div style="clear:both;"> </div>
 </section>
 <section class="island  island--light " >
-  <% if !@printable_format.nil? && @printable_format %> <br>
+  <% if defined?(@printable_format) && @printable_format %> <br>
     <% search_params_for_display(@search_query).each do |name, value| %>
       <%= name %>: <%= value %><br>
     <% end %><br>
@@ -52,7 +54,9 @@
 <% end%>
 <br>
 <% if @search_query.result_count > 5 %>
-<div class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
+ <% unless defined?(@printable_format) && @printable_format %>
+
+  <div class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
   <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small " %>
   <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  weight--light btn--small ")%>
   <% if @search_query.can_be_broadened? %>
@@ -62,7 +66,8 @@
   <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small  " %>
   <% end %>
   <a href="#"  class="btn  weight--light btn--small ">Go to top</a>
-</div>
+  </div>
+ <% end %>
 <% end %>
 <% else%>
  <p>No results found. This could be because there are no transcriptions for the Places you were searching; review our <%= link_to "Database Contents" , "/freereg_contents" %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/tips-for-searching-the-database" %> for advice on how to get the most out of your searches. </p>
