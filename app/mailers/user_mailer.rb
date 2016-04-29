@@ -11,7 +11,7 @@ class UserMailer < ActionMailer::Base
         emails <<  user_email_with_name  
       end
       syndicate_coordinator = nil
-      #syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
+      syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
       if syndicate_coordinator.present?
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator).first
@@ -20,7 +20,7 @@ class UserMailer < ActionMailer::Base
           emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
         end
       end
-      #@batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+      @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
       county = County.where(chapman_code: @batch.county).first unless @batch.nil?
       if county.present?
         county_coordinator = county.county_coordinator
