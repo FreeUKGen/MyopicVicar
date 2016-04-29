@@ -131,7 +131,7 @@ class ChurchesController < ApplicationController
       setup(params[:id])
       case
       when params[:commit] == 'Submit'
-        params[:church][:church_name] = params[:church][:church_name].strip
+        params[:church][:church_name] = params[:church][:church_name].strip unless params[:church][:church_name].blank?
         @church.update_attributes(params[:church])
         if @church.errors.any?  then
           flash[:notice] = 'The update of the Church was unsuccessful'
@@ -142,7 +142,7 @@ class ChurchesController < ApplicationController
         redirect_to church_path(@church)
         return
       when params[:commit] == 'Rename'
-        params[:church][:church_name] = params[:church][:church_name].strip
+        params[:church][:church_name] = params[:church][:church_name].strip  unless params[:church][:church_name].blank?
         errors = @church.change_name(params[:church])
         if errors  then
           flash[:notice] = 'The rename of the Church was unsuccessful'
