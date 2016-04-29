@@ -1,72 +1,25 @@
 class ContactsController < ApplicationController
-  require 'freereg_options_constants'
-  skip_before_filter :require_login, only: [:new, :report_error, :create]
-  def index
-    get_user_info_from_userid
-    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
-      @county = @user.county_groups
-      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
-    else
-      @contacts = Contact.all.order_by(contact_time: -1)
-    end  
-  end
 
-  def show
+  require 'freereg_options_constants'
+
+  skip_before_filter :require_login, only: [:new, :report_error, :create]
+
+  def convert_to_issue
     @contact = Contact.id(params[:id]).first
     if @contact.present?
-      if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
-        file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
-        set_session_parameters_for_record(file)
+      if @contact.github_issue_url.blank?
+        @contact.github_issue
+        flash.notice = "Issue created on Github."
+        redirect_to contact_path(@contact.id)
+        return
       else
-        set_nil_session_parameters
-      end
+        flash.notice = "Issue has already been created on Github."
+        redirect_to :action => "show"
+        return
+      end 
     else
       go_back("contact",params[:id])
-    end   
-  end
-
-  def list_by_name
-    get_user_info_from_userid
-    @contacts = Contact.all.order_by(name: 1)
-    render :index
-  end
-
-  def list_by_identifier
-    get_user_info_from_userid
-    @contacts = Contact.all.order_by(identifier: -1)
-    render :index
-  end
-
-  def list_by_type
-    get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_type: 1)
-    render :index
-  end
-
-
-  def list_by_date
-    get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_time: 1)
-    render :index
-  end
-
-  def select_by_identifier
-    get_user_info_from_userid
-    @options = Hash.new
-    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
-      @options[contact.identifier] = contact.id
-    end
-    @contact = Contact.new
-    @location = 'location.href= "/contacts/" + this.value'
-    @prompt = 'Select Identifier'
-    render '_form_for_selection'
-  end
-
-  def new
-    @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES
-    @contact.contact_time = Time.now
-    @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    end    
   end
 
   def create
@@ -97,28 +50,70 @@ class ContactsController < ApplicationController
     end
   end
 
-  def edit
+  def destroy
     @contact = Contact.id(params[:id]).first
-    if @contact.present? 
-      if @contact.github_issue_url.present?
-        flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
-        redirect_to :action => 'show'
-        return
-      end
-    else
-      go_back("contact",params[:id])
-    end   
-  end
-  
-  def update
-    @contact = Contact.id(params[:id]).first
-    if @contact.present? 
-      @contact.update_attributes(params[:contact])
-      redirect_to :action => 'show'
+    if @contact.present?
+      @contact.delete
+      flash.notice = "Contact destroyed"
+      redirect_to :action => 'index'
       return
     else
       go_back("contact",params[:id])
+    end    
+  end
+
+  def edit
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      if @contact.github_issue_url.present?
+          flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
+          redirect_to :action => 'show'
+          return
+      end
+    else
+      go_back("contact",params[:id])
     end  
+  end
+
+  def index
+    get_user_info_from_userid
+    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
+      @county = @user.county_groups
+      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
+    else
+      @contacts = Contact.all.order_by(contact_time: -1)
+    end  
+  end
+
+  def list_by_date
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(contact_time: 1)
+    render :index
+  end
+
+  def list_by_identifier
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(identifier: -1)
+    render :index
+  end
+
+  def list_by_name
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(name: 1)
+    render :index
+  end
+
+  def list_by_type
+    get_user_info_from_userid
+    @contacts = Contact.all.order_by(contact_type: 1)
+    render :index
+  end
+
+  def new
+    @contact = Contact.new
+    @options = FreeregOptionsConstants::ISSUES
+    @contact.contact_time = Time.now
+    @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
   end
 
   def report_error
@@ -133,34 +128,24 @@ class ContactsController < ApplicationController
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 
-  def delete
-   @contact = Contact.id(params[:id]).first
-    if @contact.present? 
-      @contact.destroy
-      flash.notice = "Contact destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      go_back("contact",params[:id])
-    end      
+  def select_by_identifier
+    get_user_info_from_userid
+    @options = Hash.new
+    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
+      @options[contact.identifier] = contact.id
+    end
+    @contact = Contact.new
+    @location = 'location.href= "/contacts/" + this.value'
+    @prompt = 'Select Identifier'
+    render '_form_for_selection'
   end
 
-  def convert_to_issue
-   @contact = Contact.id(params[:id]).first
-    if @contact.present?  
-      if @contact.github_issue_url.blank?
-        @contact.github_issue
-        flash.notice = "Issue created on Github."
-        redirect_to contact_path(@contact.id)
-        return
-      else
-        flash.notice = "Issue has already been created on Github."
-        redirect_to :show
-        return
-      end 
-    else
-      go_back("contact",params[:id])
-    end  
+  def  set_nil_session_parameters
+    session[:freereg1_csv_file_id] = nil
+    session[:freereg1_csv_file_name] = nil
+    session[:place_name] = nil
+    session[:church_name] = nil
+    session[:county] = nil
   end
 
   def set_session_parameters_for_record(file)
@@ -172,20 +157,30 @@ class ContactsController < ApplicationController
     session[:church_name] = church.church_name
     session[:county] = place.county
   end
-
-  def  set_nil_session_parameters
-    session[:freereg1_csv_file_id] = nil
-    session[:freereg1_csv_file_name] = nil
-    session[:place_name] = nil
-    session[:church_name] = nil
-    session[:county] = nil
-  end
-
-  def load(contact)
-    @contact = Contact.id(contact).first
-    if @contact.blank?
-      go_back("contact",contact)
+  
+  def show
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
+        file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
+        set_session_parameters_for_record(file)
+      else
+        set_nil_session_parameters
+      end
+    else
+      go_back("contact",params[:id])
+    end   
+  end 
+  
+  def update
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? 
+      @contact.update_attributes(params[:contact])
+      redirect_to :action => 'show'
+      return
+    else
+      go_back("contact",params[:id])
     end  
-    @contact 
   end
+  
 end
