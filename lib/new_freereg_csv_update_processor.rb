@@ -809,7 +809,6 @@ class CsvRecords <  CsvFile
 	end
 
 	def extract_from_header_one(header_field,csvfile)
-		p "header one"
 		#process the header line 1
 		# eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
 		csvfile.header_error << "First line of file does not start with +INFO it has #{header_field[0]}. <br>" unless (header_field[0] =~ FreeregOptionsConstants::HEADER_DETECTION)
@@ -817,10 +816,10 @@ class CsvRecords <  CsvFile
 		userid  = UseridDetail.userid(csvfile.header[:userid]).first
 		new_email = userid.email_address if userid.present?
 		csvfile.header[:transcriber_email] = new_email unless new_email.nil?
-		csvfile.header_error << "Invalid file type #{header_field[4]} in first line of header. <br>" unless FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
+		csvfile.header_error << "Invalid file type #{header_field[4]} in first line of header. <br>" if header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
 		  # canonicalize record type
-		  scrubbed_record_type = Unicode::upcase(header_field[4]).gsub(/\s/, '')
-		  csvfile.header[:record_type] =  FreeregOptionsConstants::RECORD_TYPE_TRANSLATION[scrubbed_record_type]
+		  scrubbed_record_type = Unicode::upcase(header_field[4]).gsub(/\s/, '') unless header_field[4].blank?
+		  csvfile.header[:record_type] =  FreeregOptionsConstants::RECORD_TYPE_TRANSLATION[scrubbed_record_type] unless header_field[4].blank?
 		if csvfile.header_error.present?
 			return false
 		else
@@ -829,7 +828,6 @@ class CsvRecords <  CsvFile
 	end
 
 	def extract_from_header_two(header_field,csvfile)
-	  p "header two"
 	  #process the header line 2
 	  # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
 	  header_field = header_field.compact
@@ -843,6 +841,7 @@ class CsvRecords <  CsvFile
 	  when number_of_fields == 1 && header_field[0] =~ FreeregOptionsConstants::HEADER_FLAG
 	    #empty line
 	    csvfile.header_error << "The second header line has no usable fields.<br>"
+      return true
 	  when number_of_fields == 4 && header_field[0].length > 1
 	    #deal with #transcriber
 	    process_header_line_two_transcriber(header_field,csvfile)
@@ -870,9 +869,9 @@ class CsvRecords <  CsvFile
 	  end
 	 if csvfile.header_error.present?
 			return false
-		else
+	 else
 			return true
-		end 
+	 end 
 	end
 
 	def process_header_line_two_block_eric_special(header_field,csvfile)
@@ -887,7 +886,7 @@ class CsvRecords <  CsvFile
 	      i +=1
 	  end
 	    process_header_line_two_block(header_field,csvfile)
-	 end
+	end
 
 	def process_header_line_two_missing_comma(header_field,csvfile)
 	    header_field[5] = header_field[4]
@@ -936,17 +935,19 @@ class CsvRecords <  CsvFile
   def extract_from_header_three(header_field,csvfile)
       # => process the csvfile.headerer line 3
       # eg #,Credit,Libby,email address,,,,,,
-      p "header three"
       header_field = header_field.compact
       number_of_fields = header_field.length
-      csvfile.header_error << "The third header line is completely empty; please check the file for blank lines. <br>" if number_of_fields == 0
       case
+      when number_of_fields == 0
+        csvfile.header_error << "The third header line is completely empty; please check the file for blank lines. <br>"
+        return true
       when (header_field[0] =~ FreeregOptionsConstants::HEADER_FLAG &&  FreeregOptionsConstants::VALID_CREDIT_CODE.include?(header_field[1]))
         #the normal case
         process_header_line_three_block(header_field,csvfile)
       when number_of_fields == 1 && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG
         #no information just keep going
         csvfile.header_error << "The third header line has no usable fields. <br>"
+        return true
       when number_of_fields == 2 && !FreeregOptionsConstants::VALID_CREDIT_CODE.include?(header_field[1])
         #eric special #,Credit name
         process_header_line_three_eric_special(header_field,csvfile)
@@ -964,10 +965,10 @@ class CsvRecords <  CsvFile
       	return true
       end
       if csvfile.header_error.present?
-		return false
-	else
-		return true
-	end
+		    return false
+	    else
+		    return true
+	    end
   end
 
   def process_header_line_three_five_fields(header_field,csvfile)
@@ -993,14 +994,15 @@ class CsvRecords <  CsvFile
   end
 
   def extract_from_header_four(header_field,csvfile)
-      p "header four"
       header_field = header_field.compact
       number_of_fields = header_field.length
-      csvfile.header_error << "The forth header line is completely empty; please check the file for blank lines. <br>" if number_of_fields == 0
       @modern_date_field_0 = FreeregValidations.modern_date_valid?(header_field[0])
       @modern_date_field_1 = FreeregValidations.modern_date_valid?(header_field[1])
       @modern_date_field_2 = FreeregValidations.modern_date_valid?(header_field[2])
       case
+        when number_of_fields == 0
+          csvfile.header_error << "The forth header line is completely empty; please check the file for blank lines. <br>"
+          retrn true
 	      when number_of_fields == 4 && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG && @modern_date_field_1
 	        #the normal case
 	        process_header_line_four_block(header_field,csvfile)
@@ -1108,7 +1110,6 @@ class CsvRecords <  CsvFile
       #process the optional header line 5
       #eg +LDS,,,,
       #get an array of current entry fields      
-      p "header five"
       case 
 	      when header_field[0] == "+LDS"
 	        csvfile.header[:lds] = true
@@ -1135,7 +1136,7 @@ class CsvRecords <  CsvFile
       end
       p "order"
       p @data_entry_order
-      return true
+      return true, "OK"
   end
 # This extracts the header and entry information from the file and adds it to the database
   def extract_the_data(csvfile,project)    	
@@ -1169,25 +1170,32 @@ class CsvRecords <  CsvFile
   end
 
   def get_the_file_information_from_the_headers(csvfile,project)
-	p "Extracting header information"	
-	success = extract_from_header_one(@header_lines[0],csvfile) unless @header_lines.length <= 0	
-	success1 = extract_from_header_two(@header_lines[1],csvfile) unless @header_lines.length <= 1	
-	success2 = extract_from_header_three(@header_lines[2],csvfile) unless @header_lines.length <= 2	
-	success3 = extract_from_header_four(@header_lines[3],csvfile)  unless @header_lines.length <= 3	
-	@data_entry_order = get_default_data_entry_order(csvfile)  if @header_lines.length <= 4
-	success4 = true
-	success4 = extract_from_header_five(@header_lines[4],csvfile) unless @header_lines.length <= 4
-	if csvfile.header_error.present?
-		if !success || !success1 || !success2 || !success3 || !success4
-			project.write_messages_to_all("Processing was terminated because of a fatal header error. <p>",true)
-			inform_the_user(csvfile,project)
-			return false, "Header problem"	
-		else
-			project.write_messages_to_all("While processing continued there were the following header warnings. <p>",true)
-			inform_the_user(csvfile,project)
-		end
-	end
-	return true
+
+    p "Extracting header information" 
+    success1 = success2 = success3 = success4 = true
+    success = false 
+    csvfile.header_error << "There are no valid header lines. <br>"if @header_lines.length == 0
+  	success = extract_from_header_one(@header_lines[0],csvfile) unless @header_lines.length <= 0	
+    csvfile.header_error << "There was only one header line. <br>" if @header_lines.length == 1
+  	success1 = extract_from_header_two(@header_lines[1],csvfile) unless @header_lines.length <= 1	
+  	csvfile.header_error << "There were only two header lines. <br>" if @header_lines.length == 2
+    success2 = extract_from_header_three(@header_lines[2],csvfile) unless @header_lines.length <= 2	
+    csvfile.header_error << "There were only three header lines. <br>" if @header_lines.length == 3
+  	success3 = extract_from_header_four(@header_lines[3],csvfile)  unless @header_lines.length <= 3	
+    csvfile.header_error << "There were only four header lines. <br>" if @header_lines.length == 4
+  	@data_entry_order = get_default_data_entry_order(csvfile)  if @header_lines.length <= 4 && csvfile.header[:record_type].present?
+  	success4 = extract_from_header_five(@header_lines[4],csvfile) unless @header_lines.length <= 4
+  	if csvfile.header_error.present?
+  		if !success || !success1 || !success2 || !success3 || !success4
+  			project.write_messages_to_all("Processing was terminated because of a fatal header error. <p>",true)
+  			inform_the_user(csvfile,project)
+  			return false, "Header problem"	
+  		else
+  			project.write_messages_to_all("While processing continued there were the following header warnings. <p>",true)
+  			inform_the_user(csvfile,project)
+  		end
+  	end
+  	return true, "OK"
 	end
 
 	def inform_the_user(csvfile,project)
