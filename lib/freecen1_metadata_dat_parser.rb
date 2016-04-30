@@ -29,6 +29,7 @@ module Freecen
             entry.piece_number = hash[:a_sct_piecenum].to_i
             entry.suffix = hash[:a_sct_suffix]
             entry.suffix.strip! unless entry.suffix.nil?
+            entry.suffix = nil if entry.suffix.blank?
             
             # $parnum = substr($line,64,1);
             parish_number = hash[:a_sct_parnum]
@@ -40,12 +41,12 @@ module Freecen
               paroff = 1
             end
             # $parnum = $parnum + ($paroff*10);
-            entry.parish_number = (parish_number.to_i + paroff*10).to_s
+            entry.parish_number = (parish_number.to_i + paroff*10)
             #p ">>is_scotland? TRUE, piece_number=#{entry.piece_number} parish_number=#{entry.parish_number} suffix='#{entry.suffix}'"
           else
             entry.piece_number = hash[:a_piecenum].to_i
-            entry.parish_number = '0'
-            entry.suffix = ''
+            entry.parish_number = nil
+            entry.suffix = nil
           end
           a_entry = entry
         else
@@ -56,13 +57,14 @@ module Freecen
             # treated as if it has that same a record before it.
             suffix = hash[:b_sct_suffix]
             suffix.strip! unless suffix.nil?
+            suffix = nil if suffix.blank?
             parish_number = hash[:b_sct_parnum]
             if hash[:b_sct_paroff_cond_a] == "S" && hash[:b_sct_paroff_cond_b] == parish_number
               paroff = hash[:b_sct_paroff_a_and_b].to_i
             else
               paroff = 1
             end
-            parish_number = (parish_number.to_i + paroff*10).to_s
+            parish_number = (parish_number.to_i + paroff*10)
 
             if parish_number != a_entry.parish_number
               # a different split file, save the entry and create a new one
@@ -87,6 +89,7 @@ module Freecen
     end
   
     def is_scotland?(file)
+      return true if 'SCS'==file.chapman_code
       ChapmanCode::CODES["Scotland"].values.include? file.chapman_code
     end
   

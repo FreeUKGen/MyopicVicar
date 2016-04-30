@@ -76,7 +76,7 @@ class FreecenCoverage
       piece_rec = piece[:num_individuals]
       piece_idx = all_years[yy]['pieces'].length
       display_piece = "#{piece.piece_number}"
-      display_piece += "/#{piece.suffix}" if !piece.suffix.nil? && !piece.suffix.empty?
+      display_piece += "/#{piece.suffix}" if !piece.suffix.blank?
       subplaces=''
       piece.subplaces.each do |sp|
         subplaces += ', ' if ''!= subplaces && !sp.nil? && sp != ''
@@ -97,7 +97,7 @@ class FreecenCoverage
     proref = {'1841'=>'HO107','1851'=>'HO107','1861'=>'RG9','1871'=>'RG10','1881'=>'RG11','1891'=>'RG12','1901'=>'RG13','1911'=>'RG14'}
     proref_census = {'1841'=>'England/Wales 1841 and 1851 Censuses','1851'=>'England/Wales 1841 and 1851 Censuses','1861'=>'England/Wales 1861 Census','1871'=>'England/Wales 1871 Census','1881'=>'England/Wales 1881 Census','1891'=>'England/Wales 1891 Census','1901'=>'England/Wales 1901 Census','1911'=>'England/Wales 1911 Census'}
     all_years.each do |yykey, yyhash|
-      if ChapmanCode::CODES['Scotland'].values.include?(chapman)
+      if 'SCS'==chapman||ChapmanCode::CODES['Scotland'].values.include?(chapman)
         yyhash['header'] = "#{yykey} (Scotland)"
       elsif !proref[yykey].nil? && !proref_census[yykey].nil?
         yyhash['header'] = "#{yykey} / #{proref[yykey]}"

@@ -5,7 +5,7 @@ class FreecenPiece
   field :district_name, type: String
   field :subplaces, type: Array
   field :subplaces_sort, type: String
-  field :parish_number, type: String
+  field :parish_number, type: Integer
   field :suffix, type: String
   field :year, type: String
   field :status, type: String
@@ -17,5 +17,5 @@ class FreecenPiece
   has_many :freecen_dwellings
   
   index(:piece_number => 1, :chapman_code => 1)
-  index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1)
+  index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
 end

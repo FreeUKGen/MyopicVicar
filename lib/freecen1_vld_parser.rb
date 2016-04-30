@@ -175,7 +175,8 @@ module Freecen
           # $fullyear = $year*10 + 1831;
           
       full_year = year*10 + 1831
-      sctpar = sctpar.to_i.to_s #strip spaces and if empty or nil, make it "0"
+      sctpar = sctpar.to_i
+      sctpar = nil if 0==sctpar
       {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype, :sctpar => sctpar }
     end
     
