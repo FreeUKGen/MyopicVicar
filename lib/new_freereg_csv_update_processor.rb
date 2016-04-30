@@ -1182,7 +1182,6 @@ class CsvRecords <  CsvFile
     success2 = extract_from_header_three(@header_lines[2],csvfile) unless @header_lines.length <= 2	
     csvfile.header_error << "There were only three header lines. <br>" if @header_lines.length == 3
   	success3 = extract_from_header_four(@header_lines[3],csvfile)  unless @header_lines.length <= 3	
-    csvfile.header_error << "There were only four header lines. <br>" if @header_lines.length == 4
   	@data_entry_order = get_default_data_entry_order(csvfile)  if @header_lines.length <= 4 && csvfile.header[:record_type].present?
   	success4 = extract_from_header_five(@header_lines[4],csvfile) unless @header_lines.length <= 4
   	if csvfile.header_error.present?
