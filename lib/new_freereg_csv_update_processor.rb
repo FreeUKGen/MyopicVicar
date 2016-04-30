@@ -21,9 +21,9 @@ class NewFreeregCsvUpdateProcessor
 	#:force_rebuild causes all files to be processed
 	#:file_range
 
-	# normally run by the rake task build:freereg_new_update[create_search_record,individual,no,userid/filename] or
-	# build:freereg_new_update[create_search_record,waiting,no,a-9] or
-	# build:freereg_new_update[create_search_record,range,no,a] 
+	# normally run by the rake task build:freereg_new_update[create_search_records,individual,no,userid/filename] or
+	# build:freereg_new_update[create_search_records,waiting,no,a-9] or
+	# build:freereg_new_update[create_search_records,range,no,a] 
 
 
 	# It uses NewFreeregCsvUpdateProcessor as a class
@@ -717,10 +717,10 @@ class CsvFile < CsvFiles
 	    	p "creating new"
 			freereg1_csv_file = Freereg1CsvFile.new(batch_header)
 			freereg1_csv_file.update_register
-			message = "The database contains no correct records for this location #{batch_header[:chapman_code]},#{batch_header[:place_name]},#{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}; so a new batch will be created. <br>"
+			message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
 	    else
 	    	p "using current"
-	    	message = "The database contains #{freereg1_csv_file.records} correct records for this location #{batch_header[:chapman_code]},#{batch_header[:place_name]},#{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}; so it will be updated. <br>"
+	    	message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
 	         #remove batch errors for this location
 	         freereg1_csv_file.error = 0
 	         #remove this location from the total locations
@@ -1330,9 +1330,11 @@ class CsvRecord < CsvRecords
 	  	#part of church name
 	    success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
 	    project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
-	    success5 = true if FreeregValidations.valid_church?(church_name,chapman_code,place_name) if success1 && success4
+	    success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
 	    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
-	    
+	    #we use the server church name in case of case differences
+      church_name = set_church_name if  success5
+      p 
 	    return false unless success && success1 && success4 && success5
 	  end
 	   self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)     
@@ -1342,13 +1344,13 @@ class CsvRecord < CsvRecords
 
 	def load_data_record(csvfile,chapman_code,place_name,church_name,register_type)
 	  @data_record[:chapman_code] = chapman_code	 
-	   @data_record[:place_name] = place_name 
-	   @data_record[:church_name] = church_name
-	   @data_record[:register_type] = register_type
-	   @data_record[:record_type] = csvfile.header[:record_type]
-	   args = {:chapman_code => @data_record[:chapman_code],:place_name => @data_record[:place_name],:church_name =>
+	  @data_record[:place_name] = place_name 
+	  @data_record[:church_name] = church_name
+	  @data_record[:register_type] = register_type
+	  @data_record[:record_type] = csvfile.header[:record_type]
+	  args = {:chapman_code => @data_record[:chapman_code],:place_name => @data_record[:place_name],:church_name =>
 		      @data_record[:church_name],:register_type => @data_record[:register_type], :record_type => csvfile.header[:record_type]} 
-	   @data_record[:location] = csvfile.sum_the_header(args)
+	  @data_record[:location] = csvfile.sum_the_header(args)
 	end
 
 	def load_hold(csvfile)
@@ -1464,4 +1466,15 @@ class CsvRecord < CsvRecords
 		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds].present?
 		  csvfile.data[line] = data_record
 	end
+
+  def validate_church_and_set(church_name,chapman_code,place_name) 
+    place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
+    place.churches.each do |church|
+     if church.church_name.downcase == church_name.downcase
+      return true, church.church_name
+     end
+    end
+    return false, "No match"
+  end
+  
 end
