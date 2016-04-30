@@ -1343,7 +1343,8 @@ class CsvRecord < CsvRecords
 	end
 
 	def load_data_record(csvfile,chapman_code,place_name,church_name,register_type)
-	  @data_record[:chapman_code] = chapman_code	 
+	  @data_record[:chapman_code] = chapman_code	
+    @data_record[:county] = chapman_code    
 	  @data_record[:place_name] = place_name 
 	  @data_record[:church_name] = church_name
 	  @data_record[:register_type] = register_type
@@ -1356,6 +1357,7 @@ class CsvRecord < CsvRecords
 	def load_hold(csvfile)
 	   hold = Hash.new
 	   hold[:chapman_code] = @data_record[:chapman_code]
+     hold[:county] = @data_record[:county]
 	   hold[:place_name] = @data_record[:place_name]
 	   hold[:church_name] = @data_record[:church_name]
 	   hold[:register_type] = @data_record[:register_type]
