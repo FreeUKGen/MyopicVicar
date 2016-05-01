@@ -402,6 +402,13 @@ class SearchRecord
     end
   end
 
+  def contains_wildcard_ucf?
+    search_names.detect do |name|
+      name.contains_wildcard_ucf?
+    end
+  end
+
+
   def self.from_annotation(annotation)
     Rails.logger.debug("from_annotation processing #{annotation.inspect}")
 

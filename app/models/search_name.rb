@@ -6,4 +6,10 @@ class SearchName
   field :role, type: String
   field :gender, type: String #m=male, f=female, nil=not specified
   field :type, type: String
+  
+
+
+  def contains_wildcard_ucf?
+    UcfTransformer.contains_wildcard_ucf?(self.first_name) || UcfTransformer.contains_wildcard_ucf?(self.first_name)
+  end
 end

@@ -77,9 +77,16 @@ class SearchQuery
   def search
     search_index = SearchRecord.index_hint(search_params)
     records = SearchRecord.collection.find(search_params).hint(search_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    if can_query_ucf?
+      ucf_index = SearchRecord.index_hint(ucf_params)
+      ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+      ucf_records = filter_ucf_records(ucf_records)
+      # actually filter on them
+    end
     self.persist_results(records,search_index)
     records
   end
+
 
   def fetch_records
     return @search_results if @search_results
@@ -202,6 +209,58 @@ class SearchQuery
 
   def explain_plan_no_sort
     SearchRecord.where(search_params).all.explain
+  end
+
+  def ucf_params
+    params = Hash.new
+    params[:record_type] = record_type if record_type
+    params.merge!(place_search_params)
+    params.merge!(date_search_params)
+    params["_id"] = { "$in" => ucf_record_ids } #moped doesn't translate :id into "_id"
+
+    params    
+  end
+
+  def can_query_ucf?
+    self.places.size > 0
+  end
+
+  def ucf_record_ids
+    ids = []
+    
+    self.places.inject([]) { |accum, place| accum + place.ucf_record_ids }
+  end
+
+  def filter_ucf_records(records)
+    filtered_records = []
+    records.each do |record|
+      p record.id
+      record.search_names.each do |name|
+        p name
+        if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive
+          if name.contains_wildcard_ucf?
+            if self.first_name.blank?
+              # test surname
+              if self.last_name.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
+                filtered_records << record
+              end
+            elsif self.last_name.blank?
+              # test forename
+              if self.first_name.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+                filtered_records << record
+              end
+            else
+              # test both
+              print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
+              if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase)) 
+                filtered_records << record
+              end
+            end        
+          end
+        end        
+      end
+    end
+    filtered_records
   end
 
   def search_params

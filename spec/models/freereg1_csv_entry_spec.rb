@@ -532,6 +532,38 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should find wildcard UCF" do
+    filespec = WILDCARD_UCF
+
+    process_test_file(filespec)
+    
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    place = file_record.freereg1_csv_entries.first.search_record.place
+    place.ucf_list.size.should_not eq(0)
+    
+    file_record.freereg1_csv_entries.each do |entry|
+      place.ucf_list.values.first.should include(entry.id)
+    end
+
+    file_record.freereg1_csv_entries.each_with_index do |entry,i|
+      [entry.mother_forename].each do |search_forename|
+        if search_forename # we should find this
+          query_params = { :first_name => search_forename,
+                           :last_name => entry.mother_surname }
+          p query_params
+          q = SearchQuery.new(query_params)
+          q.places << place
+          q.save!(:validate => false)
+          q.search
+          result = q.results
+ 
+          print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
+          result.should have_at_least(1).items
+          result.should be_in_result(entry)
+        end
+      end      
+    end
+  end
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required

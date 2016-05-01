@@ -300,6 +300,15 @@ SQUARE_BRACE_UCF =
     :user => 'artificial'
   }
 
+WILDCARD_UCF =
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/ucf_star.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'SOM',
+    :placename => 'Runnington',
+    :user => 'artificial'
+  }
+
 
 
 

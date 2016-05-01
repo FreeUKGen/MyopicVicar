@@ -49,7 +49,6 @@ module UcfTransformer
   end
 
   def self.transform(name_array)
-#    binding.pry
     transformed_names = []
     # loop through each name
     name_array.each do |name|     
@@ -70,6 +69,17 @@ module UcfTransformer
     name_array + transformed_names
   end
   
-
+  def self.contains_wildcard_ucf?(name_part)
+    print "\tcontains_wildcard_ucf?(#{name_part}) => #{contains_wildcard_ucf?(name_part)}\n"
+    name_part.match(/[\*_]/)
+  end
+  
+  def self.ucf_to_regex(name_part)
+    Regexp.new(name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w?'))
+  end
+  
+  def self.wildcard_ucf_to_regex(name_part)
+    
+  end
 
 end

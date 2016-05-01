@@ -41,6 +41,7 @@ class Place
   field :error_flag,type: String, default: nil
   field :data_present, type: Boolean, default: false
   field :alternate, type: String, default: ""
+  field :ucf_list, type: Hash, default: {}
 
 
   embeds_many :alternateplacenames
@@ -114,6 +115,10 @@ class Place
     def place(place)
       where(:place_name => place)
     end
+  end
+
+  def ucf_record_ids
+    self.ucf_list.values.inject([]) { |accum, value| accum + value }
   end
 
   def add_location_if_not_present
@@ -321,6 +326,13 @@ class Place
         end
       end
     end
+  end
+
+
+  def update_ucf_list(file)
+    ids = self.ucf_list[file.id] || []
+    ids = file.search_record_ids_with_wildcard_ucf  
+    self.ucf_list[file.id] = ids
   end
 
   def recalculate_last_amended_date
