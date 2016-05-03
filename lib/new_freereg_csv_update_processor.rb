@@ -70,6 +70,9 @@ class NewFreeregCsvUpdateProcessor
 	    @project.write_log_file("#{files_to_be_processed.length}\t files selected for processing. <br>")
 	    files_to_be_processed.each do |file|
 	      @csvfile = CsvFile.new(file)
+        p "file set up"
+        p @csvfile.header
+        p @csvfile.uploaded_date
 	      success, @records_processed,@data_errors = @csvfile.a_single_csv_file_process(@project)
 	      if success
 	        p "processed file"
@@ -225,7 +228,7 @@ class CsvFile < CsvFiles
 	  @header[:userid] = user_dirname
 	  @header[:uploaded_date] = @uploaded_date 
 	  @header[:def] = false
-	  @header[:lds] = false
+	  @header[:lds] = "no"
 	  @slurp_fail_message = nil   
 	  @userid = user_dirname
 	  @total_data_errors = 0
@@ -242,6 +245,7 @@ class CsvFile < CsvFiles
 	  project.member_message_file = self.define_member_message_file 
 	  p project.member_message_file
 	  @file_start = Time.new
+    project.write_log_file("******************************************************************* <br>")
 	  project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
 	  success, message = self.ensure_processable?(project) unless project.force_rebuild
 	  p "finished file checking #{message}. <br>"
@@ -703,6 +707,7 @@ class CsvFile < CsvFiles
 
 	def setup_batch_for_processing(project,thiskey,thisvalue)
 		p "setting up the batch"
+    p self
 		batch_header = @header
 		batch_header[:county] = thisvalue[:chapman_code]
 		batch_header[:chapman_code] = thisvalue[:chapman_code]
@@ -719,6 +724,7 @@ class CsvFile < CsvFiles
 			freereg1_csv_file.update_register
 			message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
 	    else
+        freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def])
 	    	p "using current"
 	    	message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
 	         #remove batch errors for this location
@@ -1112,7 +1118,7 @@ class CsvRecords <  CsvFile
       #get an array of current entry fields      
       case 
 	      when header_field[0] == "+LDS"
-	        csvfile.header[:lds] = true
+	        csvfile.header[:lds] = "yes"
 	         @data_entry_order = get_default_data_entry_order(csvfile)
 	      when header_field[0] == "#" && header_field[1] == "DEF"
 	        csvfile.header[:def]  = true
@@ -1130,7 +1136,7 @@ class CsvRecords <  CsvFile
       	  		return false, "The field order definition contains an invalid field #{header_field[n]}. <br>"
       	 	end
 	      else
-	        csvfile.header[:lds] = false
+	        csvfile.header[:lds] = "no"
 	        csvfile.header[:def]  = false
 	        @data_entry_order = get_default_data_entry_order(csvfile)
       end
@@ -1398,8 +1404,8 @@ class CsvRecord < CsvRecords
 		  @data_record[:person_abode] = @data_line[csvrecords.data_entry_order[:person_abode]]
 		  @data_record[:father_occupation] = @data_line[csvrecords.data_entry_order[:father_occupation]]
 		  @data_record[:notes] = @data_line[csvrecords.data_entry_order[:notes]]
-		  @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds].present?
-		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds].present?
+		  @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds] == "yes"
+		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds] == "yes"
 		  csvfile.data[line] = data_record
 	end
 
@@ -1421,8 +1427,8 @@ class CsvRecord < CsvRecords
 		  @data_record[:person_age] = @data_line[csvrecords.data_entry_order[:person_age]]
 		  @data_record[:burial_person_abode] = @data_line[csvrecords.data_entry_order[:burial_person_abode]]
 		  @data_record[:notes] = @data_line[csvrecords.data_entry_order[:notes]]
-		  @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds].present?
-		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds].present?
+		  @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds] == "yes"
+		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds] == "yes"
 		   csvfile.data[line] = data_record
 	end
 
@@ -1464,8 +1470,8 @@ class CsvRecord < CsvRecords
 		  @data_record[:witness2_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:witness2_surname]]) unless
 		  		@data_line[csvrecords.data_entry_order[:witness2_surname]].nil?
 		  @data_record[:notes] = @data_line[csvrecords.data_entry_order[:notes]]
-		  @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds].present?
-		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds].present?
+		  @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds] == "yes"
+		  @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds] == "yes"
 		  csvfile.data[line] = data_record
 	end
 

@@ -71,8 +71,7 @@ class Freereg1CsvFile
   field :csvfile, type: String
   field :processed, type: Boolean, default: true
   field :processed_date, type: DateTime
-
-
+  field :def, type: Boolean, default: false
 
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
@@ -407,7 +406,7 @@ class Freereg1CsvFile
       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
       csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
       #eg +LDS,,,,
-      csv << ['+LDS'] if file.lds =='yes'
+      csv << ['+LDS'] if file.lds || file.lds =='yes'
 
       
         register = file.register
