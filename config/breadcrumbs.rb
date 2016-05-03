@@ -109,9 +109,9 @@ end
 crumb :waiting do |file|
   link "Files waiting to be processed"
   if session[:my_own]
-    parent :files, file
+    parent :my_own_files
   else
-    parent :my_options
+     parent :files, file   
   end
 end
 crumb :change_userid do |file|
