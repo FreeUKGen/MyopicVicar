@@ -964,8 +964,8 @@ class Freereg1CsvFile
     
   def search_record_ids_with_wildcard_ucf
     ids = []
-    binding.pry
     self.freereg1_csv_entries.each do |entry|
+      binding.pry
       ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
     end
     ids

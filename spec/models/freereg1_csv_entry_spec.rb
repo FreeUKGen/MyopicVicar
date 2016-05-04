@@ -542,6 +542,8 @@ describe Freereg1CsvEntry do
     place.ucf_list.size.should_not eq(0)
     
     file_record.freereg1_csv_entries.each do |entry|
+      p entry.search_record.transcript_names
+      pp entry.search_record.search_names
       place.ucf_list.values.first.should include(entry.id)
     end
 
