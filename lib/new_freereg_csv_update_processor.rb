@@ -199,7 +199,6 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
         processed = file.file_processed_date
         if processed.present?
           processed = processed.to_time
-          p processed
          files = File.join(project.freereg_files_directory, file.userid, file.file_name) if processed >= time_start && processed <= time_end
         end
     end
@@ -210,12 +209,13 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
     p "special selection 2 files" 
     time_start = Time.utc(2016,"may",02,0,19,1)
     time_end = Time.utc(2016,"may",04,0,30,0,)
+    p time_start
+    p time_end
     files = Array.new
     PhysicalFile.all.no_timeout.each do |file|
         processed = file.file_processed_date
         if processed.present?
           processed = processed.to_time
-          p processed
          files = File.join(project.freereg_files_directory, file.userid, file.file_name) if processed >= time_start && processed <= time_end
         end
     end
