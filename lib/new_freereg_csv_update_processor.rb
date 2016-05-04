@@ -194,16 +194,21 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
     time_end = Time.utc(2016,"may",02,0,30,0)
     p time_start
     p time_end
+    time_start = time_start.to_f
+    time_end = time_end.to_f
     files = Array.new
     PhysicalFile.all.no_timeout.each do |file|
         processed = file.file_processed_date
         if processed.present?
-          processed = processed.to_time
-         files = File.join(project.freereg_files_directory, file.userid, file.file_name) if processed >= time_start && processed <= time_end
+          processed = processed.to_time.to_f
+          if processed.between?(time_start, time_end)
+            file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            files << file
+          end
         end
     end
     p "selected"
-    p files
+    p files.length
   end
   def get_the_special_selection_2_files_to_be_processed(project)
     p "special selection 2 files" 
@@ -211,16 +216,21 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
     time_end = Time.utc(2016,"may",04,0,30,0,)
     p time_start
     p time_end
+    time_start = time_start.to_f
+    time_end = time_end.to_f
     files = Array.new
     PhysicalFile.all.no_timeout.each do |file|
         processed = file.file_processed_date
         if processed.present?
-          processed = processed.to_time
-         files = File.join(project.freereg_files_directory, file.userid, file.file_name) if processed >= time_start && processed <= time_end
+          processed = processed.to_time.to_f
+          if processed.between?(time_start, time_end)
+            file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            files << file
+          end
         end
     end
     p "selected"
-    p files
+    p files.length
   end
 
 
