@@ -23,27 +23,27 @@
   #we do not accept  
       if current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
         flash[:notice] = "You are not currently registered with FreeReg "
-        current_refinery_user.delete unless current_refinery_user.nil?  
+        sign_out(current_refinery_user) unless current_refinery_user.nil?
         redirect_to refinery.login_path
         return
       end
       unless  current_refinery_user.userid_detail.active
       flash[:notice] = "You are not active, if you believe this to be a mistake please contact your coordinator"
-       current_refinery_user.delete unless current_refinery_user.nil?
+       sign_out(current_refinery_user) unless current_refinery_user.nil?
        redirect_to refinery.login_path
        return
       end
       @user = current_refinery_user.userid_detail 
       if @user.person_role == "researcher"  || @user.person_role == 'pending' 
        flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
-       current_refinery_user.delete unless current_refinery_user.nil? 
+       sign_out(current_refinery_user) unless current_refinery_user.nil?
        redirect_to refinery.login_path
        return
       end
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       if !Rails.application.config.member_open
         unless @user.person_role == "system_administrator"  || @user.person_role == 'technical' 
-          current_refinery_user.delete unless current_refinery_user.nil?
+          sign_out(current_refinery_user) unless current_refinery_user.nil?
           flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
           redirect_to refinery.login_path
           return
