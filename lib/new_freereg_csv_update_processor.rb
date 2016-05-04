@@ -197,18 +197,20 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
     time_start = time_start.to_f
     time_end = time_end.to_f
     files = Array.new
+    total_entries = 0
     PhysicalFile.all.no_timeout.each do |file|
         processed = file.file_processed_date
         if processed.present?
           processed = processed.to_time.to_f
           if processed.between?(time_start, time_end)
-            file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
-            files << file
+            affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            files << affected_file
+            actual_file = Freereg1CsvFile.userid(file.userid).file_name(file.file_name).first
+            total_entries = total_entries + actual_file.freereg1_csv_entries.count unless actual_file.blank?
           end
         end
     end
-    p "selected"
-    p files.length
+    p "#{files.length} met the selection criteria with #{total_entries} entries"
   end
   def get_the_special_selection_2_files_to_be_processed(project)
     p "special selection 2 files" 
@@ -219,18 +221,20 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
     time_start = time_start.to_f
     time_end = time_end.to_f
     files = Array.new
+    total_entries = 0
     PhysicalFile.all.no_timeout.each do |file|
         processed = file.file_processed_date
         if processed.present?
           processed = processed.to_time.to_f
           if processed.between?(time_start, time_end)
-            file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
-            files << file
+            affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            files << affected_file
+            actual_file = Freereg1CsvFile.userid(file.userid).file_name(file.file_name).first
+            total_entries = total_entries + actual_file.freereg1_csv_entries.count unless actual_file.blank?
           end
         end
     end
-    p "selected"
-    p files.length
+   p "#{files.length} met the selection criteria with #{total_entries} entries"
   end
 
 
