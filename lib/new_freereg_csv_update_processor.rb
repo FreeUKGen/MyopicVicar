@@ -511,7 +511,7 @@ class CsvFile < CsvFiles
 	    p "communicating failure"
 	    project.member_message_file.close
 	    file = project.member_message_file
-	    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver unless project.type == "special_selection_1" || "special_selection_2"
+	    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
 	    self.clean_up_message(project)
 	    return true
 	end
@@ -520,7 +520,7 @@ class CsvFile < CsvFiles
     p "communicating success"
 		project.member_message_file.close
 	  file = project.member_message_file
-		UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type == "special_selection_1" || "special_selection_2"
+		UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
 	  self.clean_up_message(project)
     return true
 	end
@@ -760,7 +760,6 @@ class CsvFile < CsvFiles
 
 	def setup_batch_for_processing(project,thiskey,thisvalue)
 		p "setting up the batch"
-    p self
 		batch_header = @header
 		batch_header[:county] = thisvalue[:chapman_code]
 		batch_header[:chapman_code] = thisvalue[:chapman_code]
@@ -1357,7 +1356,7 @@ class CsvRecord < CsvRecords
 		  	success = false
 		  	message = "Empty church field"
 		  end
-		  church_name = self.(church_name)
+		  church_name = self.correct_church_name(church_name)
 	  return success, message, church_name, register_type
 	end
 
@@ -1393,7 +1392,6 @@ class CsvRecord < CsvRecords
 	    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
 	    #we use the server church name in case of case differences
       church_name = set_church_name if  success5
-      p 
 	    return false unless success && success1 && success4 && success5
 	  end
 	   self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)     
