@@ -67,7 +67,6 @@ class NewFreeregCsvUpdateProcessor
 	      @project.write_log_file("processing terminated as we have no records to process. <br>")
 	      return
 	    end
-      return if type == "special_selection_1" || "special_selection_2"
 	    @project.write_log_file("#{files_to_be_processed.length}\t files selected for processing. <br>")
 	    files_to_be_processed.each do |file|
 	      @csvfile = CsvFile.new(file)
