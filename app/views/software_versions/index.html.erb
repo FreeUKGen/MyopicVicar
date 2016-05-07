@@ -1,0 +1,23 @@
+<h2 class=" text--center">Listing of Software Versions</h2>
+<div>
+<table class="table--bordered  table--striped  table--data">
+  <tr>
+     <th class="t15" >Type</th>
+    <th class="t15" >Version</th>
+    <th class="t15">Date of Update</th>
+    <th class="t15">Commitments</th>
+    <th class="t15" >Actions</th>
+  </tr>
+
+<% @softwares.each do |software| %>
+  <tr>
+    <td><%= software.type %></td>
+    <td><%= software.version %></td>
+    <td><%= software.date_of_update %></td>
+    <td><%= link_to 'Commitments', commitments_software_versions_path(software) %></td>
+    <td><%= link_to 'Edit', edit_software_version_path(software) %></td>
+  </tr>
+<% end %>
+</table>
+</div>
+
