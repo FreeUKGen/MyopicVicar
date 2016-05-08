@@ -38,8 +38,6 @@ def self.process(process,time_start,time_end,version)
       commitment[:commitment_message] = commit[:commit][:message]
       software_version = SoftwareVersion.type("Search Record").date(commit[:commit][:author][:date]).first
       if software_version.present?
-        p "existing "
-        p mod
         software_version.commitments << commitment        
       else
         software_version = SoftwareVersion.new
