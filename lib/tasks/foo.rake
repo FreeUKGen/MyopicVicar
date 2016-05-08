@@ -1,10 +1,10 @@
 require 'chapman_code'
 
 namespace :foo do
- # rake foo:get_software_version[2012/1/1/0/0/0,2015/4/8/0/0/0,1.0]
- task :get_software_version,[:start,:last,:version] => :environment do |t,args|
+ # rake foo:get_software_version[manual,2012/1/1/0/0/0,2015/4/8/0/0/0,1.0]
+ task :get_software_version,[:manual,:start,:last,:version] => :environment do |t,args|
   require 'get_software_version'
-    GetSoftwareVersion.process(args.start,args.last,args.version)
+    GetSoftwareVersion.process(args.manual,args.start,args.last,args.version)
   end
 
   desc "Check refinery users are complete, setting fix to fix will add it"

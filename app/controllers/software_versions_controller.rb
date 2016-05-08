@@ -10,9 +10,20 @@ class SoftwareVersionsController < ApplicationController
 
   def destroy
     @software = SoftwareVersion.id(params[:id]).first
-    if @batch.nil?
-        go_back("software",batch)
-    end
+    if  @software.present?
+        @software.delete
+        if @software.errors.any?
+          flash[:notice] = 'The delete of the Version was unsuccessful'
+          redirect_to software_versions_path
+          return
+        else
+          flash[:notice] = 'The delete of the search_record information was successful'
+          redirect_to software_versions_path
+          return
+        end
+      else
+        go_back("software",params[:id])
+      end  
   end
 
   def edit
@@ -48,7 +59,15 @@ class SoftwareVersionsController < ApplicationController
      @software = SoftwareVersion.id(params[:id]).first
       if  @software.present?
         @software.update_attributes(params[:software_version])
-
+        if @software.errors.any?
+          flash[:notice] = 'The update of the Version was unsuccessful'
+          render :action => 'edit'
+          return
+        else
+          flash[:notice] = 'The update the Version was successful'
+          redirect_to software_versions_path
+          return
+        end
       else
         go_back("software",params[:id])
       end  
