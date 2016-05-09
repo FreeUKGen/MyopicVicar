@@ -152,7 +152,7 @@ module Freereg1Translator
     new_attrs = {}
     # keys for finding duplicate tranascript
     new_attrs[:record_type] = file.record_type
-
+    new_attrs[:search_record_version] = file.search_record_version
     new_attrs
   end
 

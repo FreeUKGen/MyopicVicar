@@ -210,6 +210,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
         end
     end
     p "#{files.length} met the selection criteria with #{total_entries} entries"
+    return files
   end
   def get_the_special_selection_2_files_to_be_processed(project)
     p "special selection 2 files" 
@@ -234,6 +235,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
         end
     end
    p "#{files.length} met the selection criteria with #{total_entries} entries"
+   return files
   end
 
 
@@ -281,6 +283,9 @@ class CsvFile < CsvFiles
 	  @header[:uploaded_date] = @uploaded_date 
 	  @header[:def] = false
 	  @header[:lds] = "no"
+    software_version = SoftwareVersion.control.first
+    @header[:software_version] = software_version.version 
+    @header[:search_record_version] = software_version.last_search_record_version 
 	  @slurp_fail_message = nil   
 	  @userid = user_dirname
 	  @total_data_errors = 0

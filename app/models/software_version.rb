@@ -3,12 +3,11 @@ class SoftwareVersion
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  #attr_accessor :date_of_update, :version
   
   field :date_of_update,  type: DateTime
   field :version, type: String
   field :type, type: String
-  
+  field :last_search_record_version, type: String
   embeds_many :commitments
 
   class << self
