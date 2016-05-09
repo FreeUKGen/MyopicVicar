@@ -77,6 +77,8 @@ def process_test_file(file)
   # FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
 #  FreeregCsvUpdateProcessor.process_single_file(File.join(file[:basedir], file[:user], File.basename(file[:filename])), "change", true, "add")
   NewFreeregCsvUpdateProcessor.activate_project('create_search_records','individual','force_rebuild',File.join(file[:user], File.basename(file[:filename])))
+  
+  Freereg1CsvFile.last
 end
 
 

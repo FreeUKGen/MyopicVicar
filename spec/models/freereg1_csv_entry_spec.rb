@@ -176,7 +176,8 @@ describe Freereg1CsvEntry do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.count.should have_at_least(1).items
+
+      result.count.should be >= 1
       result.should be_in_result(entry)              
     end
   end
@@ -239,7 +240,7 @@ describe Freereg1CsvEntry do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.count.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
     end    
   end
@@ -279,7 +280,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
 
     query_params = { :first_name => 'philip',
@@ -290,7 +291,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
   end
 
@@ -310,7 +311,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
 
     query_params = { :last_name => 'foster',
@@ -320,7 +321,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
   end
 
@@ -338,7 +339,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
 
     entry = file_record.freereg1_csv_entries.last
@@ -349,7 +350,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
   end
 
@@ -384,7 +385,7 @@ describe Freereg1CsvEntry do
       q.search
       result = q.results
 
-      result.count.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
       
       query_params = { :first_name => name["first_name"],
@@ -395,7 +396,7 @@ describe Freereg1CsvEntry do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.count.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
       
       query_params = { :first_name => name["first_name"],
@@ -439,7 +440,7 @@ describe Freereg1CsvEntry do
       q.search
       result = q.results
   
-      result.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
     end
 
@@ -455,7 +456,7 @@ describe Freereg1CsvEntry do
       q.search
       result = q.results
   
-      result.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
     end
   end
@@ -525,7 +526,7 @@ describe Freereg1CsvEntry do
           result = q.results
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
-          result.should have_at_least(1).items
+          result.count.should be >= 1
           result.should be_in_result(entry)
         end
       end      
@@ -560,7 +561,7 @@ describe Freereg1CsvEntry do
           result = q.results
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
-          result.should have_at_least(1).items
+          result.count.should be >= 1
           result.should be_in_result(entry)
         end
       end      
@@ -582,7 +583,7 @@ describe Freereg1CsvEntry do
       # print "\n\tResults:\n"
       # result.each { |r| pp r.attributes}
       if should_find
-        result.count.should have_at_least(1).items
+        result.count.should be >= 1
         result.should be_in_result(entry)
       else
         result.should_not be_in_result(entry)            
