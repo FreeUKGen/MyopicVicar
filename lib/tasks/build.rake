@@ -534,7 +534,16 @@ namespace :build do
     
       DeleteEntriesRecordsForRemovedBatches.process   
   end
-
+  task :freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
+    require 'new_freereg_csv_update_processor'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.sessions[:default][:database]
+    hosts = Mongoid.sessions[:default][:hosts]
+    host = hosts[0]
+    p "using database #{db} on host #{host}"  
+      NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+  end
 
 end
 

@@ -1,0 +1,22 @@
+<% if @denomination.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@denomination.errors.count, "error") %> prohibited this denomination from being saved:</h2>
+    <ul>
+      <% @denomination.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<div>
+  <%= simple_form_for @denomination do |f| %>
+    <%= f.input :denomination, :label => "Denomination" %>
+    <%= f.input :notes, :label => "Notes" %>
+    <%= f.submit %>
+  <% end %>
+</div>

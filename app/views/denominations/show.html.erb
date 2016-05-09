@@ -1,0 +1,28 @@
+<% breadcrumb :show_denomination,  @denomination%>
+<h2 class="text--center"> Denomination</h2>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<div  class="text--center">  <%= link_to 'Edit Denomination', edit_denomination_path(@denomination) , method: :get, :class => "btn weight--light btn--small" %>     <%= link_to 'Create Denomination', new_denomination_path , method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Destroy Denomination', denomination_path(@denomination), method: :delete, data: { confirm: 'Are you sure you want to destroy this Denomination.?' } , :class => "btn  weight--light btn--small"%>
+</div>
+<div class="grid__item  ">
+      <table class=" table--bordered table--data">
+        <colgroup >
+          <col class="t40">
+          <col class="t60">
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Denomination :</td><td class="weight--semibold"><%= @denomination.denomination %></td>
+        </tr>
+          <tr>
+            <td>Notes about the Denomination :</td><td class="weight--semibold"> <%= @denomination.notes %> </td>
+          </tr>
+          
+      </table>
+</div>

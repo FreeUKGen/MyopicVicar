@@ -8,26 +8,28 @@
 <div id="main" style="color:black">
    <table class="table--bordered table--data ">
     <tr>
-      <th style="width:10%">County</th>
-      <th style="width:20">County Coordinator</th>
-      <th style="width:10">Files</th>
-      <th style="width:10">Total Records</th>
-      <th style="width:10">Baptisms</th>
-      <th style="width:10">Burials</th>
-      <th style="width:10">Marriages</th>
-      <th style="width:15%">Action</th>
+      <th class="t8">County</th>
+      <th class="t20">County Coordinator</th>
+      <th class="t30">email address</th>
+      <th class="t8">Files</th>
+      <th class="t8">Total Records</th>
+      <th class="t8">Baptisms</th>
+      <th class="t8">Burials</th>
+      <th class="t8">Marriages</th>
+      <th class="t10">Action</th>
       
     </tr>
     <% @counties.each do |county| %>
       <tr id="<%=county.id%>">
         <td > <%= county.chapman_code %>  </td>
         <td > <%= county.county_coordinator %>  </td>
+        <td > <%= email_address(county.county_coordinator) %>  </td>
         <td > <%= county.files %>  </td>
         <td > <%= county.total_records %>  </td>
         <td > <%= county.baptism_records %>  </td>
         <td > <%= county.burial_records %>  </td>
         <td > <%= county.marriage_records %>  </td>
-        <td><%= link_to 'SH', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'ED', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get  %></td>
+        <td><%= link_to 'SH', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'ED', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get  if @user.person_role == "system_administrator"%></td>
       </tr>
     <% end %>
   </table>

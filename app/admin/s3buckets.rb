@@ -67,11 +67,11 @@ ActiveAdmin.register S3bucket do
       # This proc will be called when there are changes.
     end
 
-    listener = Listen.to("/tmp/myopicvicar/fbmd-images/#{params[:dir]}")
-    listener.change(&callback) # convert the callback to a block and register it
-
-    listener.start(false) # don't block
-
+    # listener = Listen.to("/tmp/myopicvicar/fbmd-images/#{params[:dir]}")
+    # listener.change(&callback) # convert the callback to a block and register it
+# 
+    # listener.start(false) # don't block
+# 
 
     system "rake s3bucket:import[#{params[:id]},#{params[:dir]},#{u.id}] &"
     redirect_to admin_uploads_path

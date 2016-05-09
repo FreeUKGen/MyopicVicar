@@ -19,7 +19,7 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'record_type'
 
-require 'freereg_csv_update_processor'
+require 'new_freereg_csv_update_processor'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -68,9 +68,15 @@ def process_test_file(file)
     place.save!
   end
 
-  FreeregCsvUpdateProcessor.process_single_file(File.join(file[:basedir], file[:user], File.basename(file[:filename])), "change", true, "add")
-  Freereg1CsvFile.where(:file_name => File.basename(file[:filename])).first 
-
+  church = Church.where(:church_name => file[:churchname]).first
+  if !church
+    church = Church.create!(:church_name => file[:churchname])
+    place.churches << church
+    place.save!    
+  end
+  # FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
+#  FreeregCsvUpdateProcessor.process_single_file(File.join(file[:basedir], file[:user], File.basename(file[:filename])), "change", true, "add")
+  NewFreeregCsvUpdateProcessor.activate_project('create_search_records','individual','force_rebuild',File.join(file[:user], File.basename(file[:filename])))
 end
 
 
@@ -90,6 +96,7 @@ FREEREG1_CSV_FILES = [
     :user => 'kirknorfolk',
     :chapman_code => 'NFK',
     :placename => 'Aldeby',
+    :churchname => 'St Mary',
     :entry_count => 15,
     :entries => {
       :first => {
@@ -115,6 +122,7 @@ FREEREG1_CSV_FILES = [
     :user => 'kirkbedfordshire',
     :chapman_code => 'BDF',
     :placename => 'Yielden',
+    :churchname => 'St Fictional',
     :entry_count => 1223,
     :entries => {
       :first => {
@@ -147,6 +155,7 @@ FREEREG1_CSV_FILES = [
     :user => 'Chd',
     :chapman_code => 'HRT',
     :placename => 'Caldecote',
+    :churchname => 'St Mary Magdalene',
     :entry_count => 45,
     :entries => {
       :first => {
@@ -180,6 +189,7 @@ FREEREG1_CSV_FILES = [
     :user => 'Devonian',
     :chapman_code => 'DEV',
     :placename => 'Landcross',
+    :churchname => 'Holy Trinity',
     :entry_count => 128,
     :entries => {
       :first => {
@@ -205,10 +215,11 @@ FREEREG1_CSV_FILES = [
     :user => 'Chd',
     :chapman_code => 'HRT',
     :placename => 'Willian',
+    :churchname => 'All Saints',
     :entry_count => 545,
     :entries => {
       :first => {
-        :line_id => "Chd.HRTWILMA.CSV.1",
+        :line_id => "Chd.HRTWILMA.csv.1",
         :marriage_date => '8 Oct 1559',
         :bride_surname => 'CHATTERTON',
         :bride_forename => 'Margerie',
@@ -217,7 +228,7 @@ FREEREG1_CSV_FILES = [
         :modern_year => 1559
       },
       :last => {
-        :line_id => "Chd.HRTWILMA.CSV.545",
+        :line_id => "Chd.HRTWILMA.csv.545",
         :marriage_date => '11 Nov 1911',
         :bride_surname => 'SWAIN',
         :bride_forename => 'Bessie Malinda',
@@ -239,6 +250,7 @@ ARTIFICIAL_FILES = [
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :chapman_code => 'NTH',
     :placename => 'Gretton',
+    :churchname => 'St James',
     :user => 'artificial'
   },
   {
@@ -246,6 +258,7 @@ ARTIFICIAL_FILES = [
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :chapman_code => 'LEI',
     :placename => 'Belton',
+    :churchname => 'St John The Baptist',
     :user => 'artificial'
   }
 ]
@@ -269,6 +282,7 @@ NO_BAPTISMAL_NAME =
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/",
     :chapman_code => 'KEN',
     :placename => 'Stone in Oxney',
+    :churchname => 'St Mary',
     :user => 'BobChown'
   }
 
@@ -278,6 +292,7 @@ NO_BURIAL_FORENAME =
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/",
     :chapman_code => 'LIN',
     :placename => 'Beelsby',
+    :churchname => 'St Andrew',
     :user => '1boy7girls'
   }
 
@@ -287,6 +302,7 @@ NO_RELATIVE_SURNAME =
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/",
     :chapman_code => 'NFK',
     :placename => 'Wymondham',
+    :churchname => "Virgin Mary And St Thomas A Becket",
     :user => 'brilyn'
   }
 

@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'record_type'
-require 'freereg_csv_update_processor'
+require 'new_freereg_csv_update_processor'
 require 'pp'
 
 RSpec::Matchers.define :be_in_result do |entry|
   match do |results|
     found = false
     results.each do |record|
-      found = true if record.line_id == entry[:line_id]
+      found = true if record.line_id.downcase == entry[:line_id].downcase
     end
     found    
   end

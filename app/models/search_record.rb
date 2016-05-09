@@ -131,7 +131,8 @@ class SearchRecord
     self.update_attribute(:location_names, location_names)
     if self.place_id != place.id
           self.update_attribute(:place_id, place.id)
-    end    
+    end
+       
   end
 
   def self.fields_from_params(search_params)

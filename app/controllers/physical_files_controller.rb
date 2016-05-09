@@ -1,4 +1,4 @@
-class PhysicalFilesController < InheritedResources::Base
+class PhysicalFilesController < ApplicationController
   def index
     
     if params[:page]

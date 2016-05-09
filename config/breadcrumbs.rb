@@ -109,9 +109,9 @@ end
 crumb :waiting do |file|
   link "Files waiting to be processed"
   if session[:my_own]
-    parent :files, file
+    parent :my_own_files
   else
-    parent :my_options
+     parent :files, file   
   end
 end
 crumb :change_userid do |file|
@@ -410,6 +410,22 @@ end
 crumb :send_message do |message|
   link "Send Message", send_message_messages_path(message)
   parent :show_message, message
+end
+crumb :denominations do
+  link "Denominations", denominations_path
+  parent :root
+end
+crumb :show_denomination do |denomination|
+  link "Show Denomination", denomination_path(denomination)
+  parent :denominations
+end
+crumb :edit_denomination do |denomination|
+  link "Edit Denomination", edit_denomination_path(denomination)
+  parent :show_denomination, denomination
+end
+crumb :create_denomination do |denomination|
+  link "Create Denomination", new_denomination_path(denomination)
+  parent :denominations
 end
 # crumb :projects do
 #   link "Projects", projects_path

@@ -2,7 +2,8 @@
 
 <p><%= @userid.person_forename %>:</p>
 
-<p>We are sorry but the file submitted was not processed. The reason is <%= "#{@message}"%> <br>
+<p>We are sorry but the file submitted was not processed. The processing log follows and should contain a reason.</p><%= @message.html_safe%> <p>
+If the reasons are header errors or Place or Church names you must correct the original file and upload the corrected version into the system</p><p>
 
 If you do not understand the reason please ask your coordinator for assistance.</p>
 

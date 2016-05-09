@@ -115,6 +115,10 @@ class Place
     def place(place)
       where(:place_name => place)
     end
+    def modified_place_name(place)
+      where(:modified_place_name => place)
+    end
+
   end
 
   def ucf_record_ids

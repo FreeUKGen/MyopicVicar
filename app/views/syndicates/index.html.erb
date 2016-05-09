@@ -5,28 +5,28 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
 <% end %>
 </div>
- <div style="text-align: center"> <%= button_to 'Create new syndicate', new_syndicate_path, method: :get  %></div>
+ <div style="text-align: center"> <%= button_to 'Create new syndicate', new_syndicate_path, method: :get  if @user.person_role == "system_administrator"%></div>
  
 <div id="main"style="color:black">
   <table  class="table--bordered  table--striped  table--data">
     <tr>
 
-      <th style="width:23%">Syndicate</th>
-      <th style="width:23">Syndicate Coordinator</th>
-      <th style="width:8">Accepting Transcribers?</th>
-      <th style="width:23%">Show</th>
-      <th style="width:23%">Edit</th>
+      <th class="t8">Syndicate</th>
+      <th class="t8">Syndicate Coordinator</th>
+      <th class="t8">email address</th>
+      <th class="t8">Accepting Transcribers?</th>
+      <th class="t8">Show</th>
+      <th class="t8">Edit</th>
     </tr>
 
     <% @syndicates.each do |syndicate| %>
     <tr id="<%=syndicate.id%>">
      <td > <%= syndicate.syndicate_code %>  </td>
-     <td > <%= syndicate.syndicate_coordinator %>  </td>   
+     <td > <%= syndicate.syndicate_coordinator %>  </td>
+     <td > <%= email_address(syndicate.syndicate_coordinator) %>  </td>   
      <td > <%= syndicate.accepting_transcribers %>  </td>   
-
-
-     <td><%= button_to 'Show', syndicate_path(syndicate), method: :get  %></td><td><%= button_to 'Edit details', edit_syndicate_path(syndicate), method: :get  %>
-   </tr>
+     <td><%= button_to 'Show', syndicate_path(syndicate), method: :get  %></td><td><%= button_to 'Edit details', edit_syndicate_path(syndicate), method: :get  if @user.person_role == "system_administrator"%>
+    </tr>
    <% end %>
 
  </table>

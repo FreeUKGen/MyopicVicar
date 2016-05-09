@@ -1,12 +1,10 @@
 class UserMailer < ActionMailer::Base
   default from: "freereg-contacts@freereg.org.uk"
 
-  def batch_processing_success(user,batch,records,error,headers)
+  def batch_processing_success(file,user,batch)
+    @message = File.read(file)
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
-      @errors = error
-      @headers = headers
-      @records = records
       emails = Array.new
       unless @userid.nil? || !@userid.active
         user_email_with_name =  @userid.email_address    
@@ -44,7 +42,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def batch_processing_failure(message,user,batch)
-    @message = message
+    @message = File.read(message)
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new

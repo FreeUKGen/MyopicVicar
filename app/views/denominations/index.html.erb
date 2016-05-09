@@ -1,0 +1,24 @@
+<% breadcrumb :denominations%>
+<h2 class="text--center"> List of Denominations</h2>
+<div style="text-align: center"><%= link_to 'Create New Denomination', new_denomination_path %></div>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<div>
+  <table class=" table--bordered table--data">
+    <tr>
+      <th> Denomination</th>
+      <th colspan = "3">Actions</th>
+    </tr>
+    <% @denominations.each do |denomination| %>
+      <tr>
+        <td><%= denomination.denomination %></td>
+        <td><%= link_to 'Show', denomination %></td>
+        <td><%= link_to 'Edit', edit_denomination_path(denomination) %></td>
+        <td><%= link_to 'Destroy', denomination, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
