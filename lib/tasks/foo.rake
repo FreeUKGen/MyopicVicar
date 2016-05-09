@@ -2,6 +2,7 @@ require 'chapman_code'
 
 namespace :foo do
  # rake foo:get_software_version[manual,2012/1/1/0/0/0,2015/4/8/0/0/0,1.0]
+ desc "Get the software version, e.g. rake foo:get_software_version[manual,2012/1/1/0/0/0,2015/4/8/0/0/0,1.0]"
  task :get_software_version,[:manual,:start,:last,:version] => :environment do |t,args|
   require 'get_software_version'
     GetSoftwareVersion.process(args.manual,args.start,args.last,args.version)

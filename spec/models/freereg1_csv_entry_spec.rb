@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'record_type'
 require 'new_freereg_csv_update_processor'
 require 'pp'
+require 'get_software_version'
 
 RSpec::Matchers.define :be_in_result do |entry|
   match do |results|
@@ -21,6 +22,13 @@ describe Freereg1CsvEntry do
 
     SearchRecord.setup_benchmark
     Freereg1Translator.setup_benchmark
+
+    control_record =  SoftwareVersion.control.first
+    if control_record.blank?
+      control_record = SoftwareVersion.new
+      control_record.update_attribute(:type,"Control")
+      control_record.save
+    end
 
   end
 
