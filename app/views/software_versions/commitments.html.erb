@@ -1,0 +1,26 @@
+<h2 class=" text--center">Listing of Software Commitments</h2>
+<p style="text-align: center"> Version: <%=  @software.version %> Date of Update: <%=  @software.date_of_update %></p>
+<div>
+<table class="table--bordered  table--striped  table--data">
+  <tr>
+    <th class="t25" >Commitment Number</th>
+    <th class="t15">Author</th>
+    <th class="t15">Date Committed </th>
+    <th class="t45" >Commitment Message </th>
+  </tr>
+
+<% @software.commitments.each do |software| %>
+  <tr>
+    <td><%= link_to software[:commitment_number], "https://github.com/FreeUKGen/MyopicVicar/commit/#{software[:commitment_number]}" %></td>
+    <td><%= software[:author] %></td>
+    <td><%= software[:date_committed] %></td>
+    <td><%= software[:commitment_message] %></td>
+    
+  </tr>
+<% end %>
+</table>
+
+</div>
+
+<%= link_to 'Index of Software Versions', software_versions_path %>
+<br>

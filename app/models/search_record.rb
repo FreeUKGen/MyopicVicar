@@ -9,7 +9,7 @@ class SearchRecord
   include Mongoid::Document
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
-
+  before_save :add_digest
   #before_save :transform
   before_create :transform
   module Source
@@ -40,7 +40,8 @@ class SearchRecord
   #many :annotations, :in => :annotation_ids
 
   field :record_type, type: String
-
+  field :search_record_version, type: String
+  field :digest, type: String
   # transcript fields
   # field :first_name, type: String#, :required => false
   # field :last_name, type: String#, :required => false
@@ -90,6 +91,46 @@ class SearchRecord
      def chapman_code(code)
        where(:chapman_code => code)
      end
+    end
+  def add_digest
+    self.digest = self.cal_digest
+  end
+  def cal_digest
+    string = ''
+    string = string + self.add_soundex_string
+    string = string + self.add_search_name_string
+    string = string + self.add_search_date_string
+    md5 = OpenSSL::Digest::MD5.new
+    if string.nil?
+      p "#{self._id}, nil string for MD5"
+    else
+      the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
+    end
+    return the_digest    
+  end
+  def add_soundex_string
+    string = ""
+    self.search_soundex.each do |name|
+      string = string + name[:first_name] + name[:last_name]
+    end
+    return string
+  end
+  def add_search_name_string
+    string = ""
+    self.search_names.each do |name|
+      string = string + name[:first_name] + name[:last_name]
+    end
+    return string
+  end
+  def add_search_date_string
+    string = ""
+    self.search_dates.each do |date|
+      string = string + date
+    end
+    return string
+  end
+  def hex_to_base64_digest(hexdigest)
+    [[hexdigest].pack("H*")].pack("m").strip
   end
 
   INDEXES.each_pair do |name,fields|

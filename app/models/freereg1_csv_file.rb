@@ -72,7 +72,8 @@ class Freereg1CsvFile
   field :processed, type: Boolean, default: true
   field :processed_date, type: DateTime
   field :def, type: Boolean, default: false
-
+  field :software_version, type: String
+  field :search_record_version, type: String
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})

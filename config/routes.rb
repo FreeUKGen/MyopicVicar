@@ -13,6 +13,10 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  get 'software_versions/:id/commitments(.:format)',  :to => 'software_versions#commitments', :as => :commitments_software_versions
+  resources :software_versions
+
+
   resources :denominations
 
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages

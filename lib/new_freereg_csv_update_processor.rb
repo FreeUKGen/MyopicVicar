@@ -70,9 +70,6 @@ class NewFreeregCsvUpdateProcessor
 	    @project.write_log_file("#{files_to_be_processed.length}\t files selected for processing. <br>")
 	    files_to_be_processed.each do |file|
 	      @csvfile = CsvFile.new(file)
-        p "file set up"
-        p @csvfile.header
-        p @csvfile.uploaded_date
 	      success, @records_processed,@data_errors = @csvfile.a_single_csv_file_process(@project)
 	      if success
 	        p "processed file"
@@ -81,7 +78,7 @@ class NewFreeregCsvUpdateProcessor
 	        @project.total_files =  @project.total_files  + 1
 	      else
 	        p "failed to process file"
-	 		@csvfile.communicate_failure_to_member(@project,@records_processed)
+	 		    @csvfile.communicate_failure_to_member(@project,@records_processed)
 	        @csvfile.clean_up_physical_files_after_failure(@records_processed)
 	      end
 	    end
@@ -167,8 +164,14 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
 	  when "range"
 	    files = self.get_the_range_files_to_be_processed(project)
 	  when "individual"
-	    files = self.get_the_individual_file_to_be_processed(project)
-	  end
+	    files = self.get_the_individual_file_to_be_processed(project)  
+    when "special_selection_1"
+      # this is designed to correct the location and search record creation bug that existed for 2 days
+      files = self.get_the_special_selection_1_files_to_be_processed(project)
+      # this is designed to correct the failure to record the uploaded date and the LDS type
+     when "special_selection_2"
+      files = self.get_the_special_selection_2_files_to_be_processed(project)
+    end
 	  return true,files
 	end
 
@@ -184,6 +187,57 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
 	  files = GetFiles.get_all_of_the_filenames(project.freereg_files_directory,project.file_range)
 	  return files
 	end
+  def get_the_special_selection_1_files_to_be_processed(project)
+    p "special selection 1 files"
+    time_start = Time.utc(2016,"apr",29,01,23,0)
+    time_end = Time.utc(2016,"may",02,0,30,0)
+    p time_start
+    p time_end
+    time_start = time_start.to_f
+    time_end = time_end.to_f
+    files = Array.new
+    total_entries = 0
+    PhysicalFile.all.no_timeout.each do |file|
+        processed = file.file_processed_date
+        if processed.present?
+          processed = processed.to_time.to_f
+          if processed.between?(time_start, time_end)
+            affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            files << affected_file
+            actual_file = Freereg1CsvFile.userid(file.userid).file_name(file.file_name).first
+            total_entries = total_entries + actual_file.freereg1_csv_entries.count unless actual_file.blank?
+          end
+        end
+    end
+    p "#{files.length} met the selection criteria with #{total_entries} entries"
+    return files
+  end
+  def get_the_special_selection_2_files_to_be_processed(project)
+    p "special selection 2 files" 
+    time_start = Time.utc(2016,"may",02,0,19,1)
+    time_end = Time.utc(2016,"may",04,0,30,0,)
+    p time_start
+    p time_end
+    time_start = time_start.to_f
+    time_end = time_end.to_f
+    files = Array.new
+    total_entries = 0
+    PhysicalFile.all.no_timeout.each do |file|
+        processed = file.file_processed_date
+        if processed.present?
+          processed = processed.to_time.to_f
+          if processed.between?(time_start, time_end)
+            affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            files << affected_file
+            actual_file = Freereg1CsvFile.userid(file.userid).file_name(file.file_name).first
+            total_entries = total_entries + actual_file.freereg1_csv_entries.count unless actual_file.blank?
+          end
+        end
+    end
+   p "#{files.length} met the selection criteria with #{total_entries} entries"
+   return files
+  end
+
 
 	def get_the_waiting_files_to_be_processed(project)
 		p "waiting file selection"
@@ -229,6 +283,9 @@ class CsvFile < CsvFiles
 	  @header[:uploaded_date] = @uploaded_date 
 	  @header[:def] = false
 	  @header[:lds] = "no"
+    software_version = SoftwareVersion.control.first
+    @header[:software_version] = software_version.version 
+    @header[:search_record_version] = software_version.last_search_record_version 
 	  @slurp_fail_message = nil   
 	  @userid = user_dirname
 	  @total_data_errors = 0
@@ -243,7 +300,6 @@ class CsvFile < CsvFiles
 	  p "single csv file"
 	  success = true
 	  project.member_message_file = self.define_member_message_file 
-	  p project.member_message_file
 	  @file_start = Time.new
     project.write_log_file("******************************************************************* <br>")
 	  project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
@@ -460,16 +516,18 @@ class CsvFile < CsvFiles
 	    p "communicating failure"
 	    project.member_message_file.close
 	    file = project.member_message_file
-	    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver
+	    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
 	    self.clean_up_message(project)
 	    return true
 	end
 
 	def communicate_file_processing_results(project)
+    p "communicating success"
 		project.member_message_file.close
-	    file = project.member_message_file
-		 UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver 
-	    return true
+	  file = project.member_message_file
+		UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
+	  self.clean_up_message(project)
+    return true
 	end
 
 		def create_db_record_for_entry(project,data_record,freereg1_csv_file)
@@ -707,7 +765,6 @@ class CsvFile < CsvFiles
 
 	def setup_batch_for_processing(project,thiskey,thisvalue)
 		p "setting up the batch"
-    p self
 		batch_header = @header
 		batch_header[:county] = thisvalue[:chapman_code]
 		batch_header[:chapman_code] = thisvalue[:chapman_code]
@@ -1340,7 +1397,6 @@ class CsvRecord < CsvRecords
 	    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
 	    #we use the server church name in case of case differences
       church_name = set_church_name if  success5
-      p 
 	    return false unless success && success1 && success4 && success5
 	  end
 	   self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)     

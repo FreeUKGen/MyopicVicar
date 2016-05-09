@@ -9,7 +9,8 @@ development:
   files_for_processing: # location of file to hold list of files for overnight processing eg 'm:/processing.delta'
   delete_list: #location of a file to hold the list of files for overnight deletion of entries and search records eg 'm:/delete_list.txt'
   member_open: # a value of true means system is open for login; false it is under maintenance. SA and technical can still login
-  
+  github_user: #Name of account to use on Github 
+  github_password: #password for account
 test:
   mongodb_bin_location: 
   datafiles: 
