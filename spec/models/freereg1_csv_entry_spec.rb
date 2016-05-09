@@ -23,12 +23,7 @@ describe Freereg1CsvEntry do
     SearchRecord.setup_benchmark
     Freereg1Translator.setup_benchmark
 
-    control_record =  SoftwareVersion.control.first
-    if control_record.blank?
-      control_record = SoftwareVersion.new
-      control_record.update_attribute(:type,"Control")
-      control_record.save
-    end
+    SoftwareVersion.create!({:type =>"Control"}) unless SoftwareVersion.control.first
 
   end
 
