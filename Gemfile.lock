@@ -515,7 +515,7 @@ PLATFORMS
 DEPENDENCIES
   activeadmin
   activeadmin-mongoid
-  airbrake (= 3.1.14)
+  airbrake (~> 3.1.14)
   bcrypt (>= 3.1.9)
   bourbon (~> 2.1)
   carrierwave-mongoid

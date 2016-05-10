@@ -205,6 +205,24 @@ module Freereg1Translator
     if entry.bride_father_surname
       names << { :role => 'bf', :type => 'other', :first_name => entry.bride_father_forename, :last_name => entry.bride_father_surname }      
     end
+
+
+    # - role: wt
+      # type: witness
+      # fields:
+        # first_name: witness1_forename
+        # last_name:  witness1_surname
+    if entry.witness1_surname
+      names << { :role => 'wt', :type => 'witness', :first_name => entry.witness1_forename, :last_name => entry.witness1_surname }            
+    end
+    # - role: wt
+      # type: witness
+      # fields:
+        # first_name: witness2_forename
+        # last_name:  witness2_surname
+    if entry.witness2_surname
+      names << { :role => 'wt', :type => 'witness', :first_name => entry.witness2_forename, :last_name => entry.witness2_surname }            
+    end
     
     names
   end
