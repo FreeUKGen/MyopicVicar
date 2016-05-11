@@ -348,10 +348,12 @@ class CsvFile < CsvFiles
 	   else
 	   	#p "created record"
 	     success = "change" 
-	     #transform_search_record is a method in search_record.rb  
+	     #transform_search_record is a method in freereg1_csv_entry.rb.rb  
 	     # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on   
 	     existing_record.transform_search_record if  project.create_search_records && existing_record.enough_name_fields?
-	   end
+	     sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+       sleep(sleep_time)
+     end
 	   return success	
 	end
 
@@ -514,7 +516,6 @@ class CsvFile < CsvFiles
 
 	def communicate_failure_to_member(project,message)
 	    p "communicating failure"
-	    project.member_message_file.close
 	    file = project.member_message_file
 	    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
 	    self.clean_up_message(project)
@@ -523,7 +524,6 @@ class CsvFile < CsvFiles
 
 	def communicate_file_processing_results(project)
     p "communicating success"
-		project.member_message_file.close
 	  file = project.member_message_file
 		UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
 	  self.clean_up_message(project)
@@ -548,8 +548,8 @@ class CsvFile < CsvFiles
 	     entry.transform_search_record if  project.create_search_records && entry.enough_name_fields?
 	     success = "new"
 	   end
-	   #sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
-	   #sleep(sleep_time)
+	   sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+	   sleep(sleep_time)
 	   # p entry.search_record
 	   return success
 	end
@@ -629,7 +629,9 @@ class CsvFile < CsvFiles
 	             #need to create search record as one does not exist
 	             #p "creating search record as not there"
 	             existing_record.transform_search_record if project.create_search_records && existing_record.enough_name_fields?
-	           end
+	             sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+               sleep(sleep_time)
+             end
 	    else
 	          success = self.change_location_for_existing_entry_and_record(existing_record,data_record,project,freereg1_csv_file)
 	    end
@@ -1533,6 +1535,7 @@ class CsvRecord < CsvRecords
 
   def validate_church_and_set(church_name,chapman_code,place_name) 
     place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
+    return false, "No match" if place.churches.blank?
     place.churches.each do |church|
      if church.church_name.downcase == church_name.downcase
       return true, church.church_name

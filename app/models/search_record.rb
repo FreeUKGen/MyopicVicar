@@ -111,21 +111,23 @@ class SearchRecord
   def add_soundex_string
     string = ""
     self.search_soundex.each do |name|
-      string = string + name[:first_name] + name[:last_name]
+      string = string + name[:first_name] if name[:first_name].present? 
+      string = string + name[:last_name] if name[:last_name].present? 
     end
     return string
   end
   def add_search_name_string
     string = ""
     self.search_names.each do |name|
-      string = string + name[:first_name] + name[:last_name]
+      string = string + name[:first_name] if name[:first_name].present? 
+      string = string + name[:last_name] if name[:last_name].present?  
     end
     return string
   end
   def add_search_date_string
     string = ""
     self.search_dates.each do |date|
-      string = string + date
+      string = string + date if date.present?
     end
     return string
   end
