@@ -315,6 +315,7 @@ SQUARE_BRACE_UCF =
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :chapman_code => 'NTH',
     :placename => 'Gretton',
+    :churchname => "St James",
     :user => 'artificial'
   }
 
@@ -324,6 +325,7 @@ WILDCARD_UCF =
     :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :chapman_code => 'SOM',
     :placename => 'Runnington',
+    :churchname => 'St Peter',
     :user => 'artificial'
   }
 

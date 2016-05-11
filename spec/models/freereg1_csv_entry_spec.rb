@@ -514,9 +514,9 @@ describe Freereg1CsvEntry do
   it "should find square brace UCF" do
     filespec = SQUARE_BRACE_UCF
 
-    process_test_file(filespec)
+    file_record = process_test_file(filespec)
     
-    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    # file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
 
     file_record.freereg1_csv_entries.each_with_index do |entry,i|
       [entry.father_forename, entry.mother_forename].each do |search_forename|
@@ -539,9 +539,8 @@ describe Freereg1CsvEntry do
   it "should find wildcard UCF" do
     filespec = WILDCARD_UCF
 
-    process_test_file(filespec)
+    file_record = process_test_file(filespec)
     
-    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
     place = file_record.freereg1_csv_entries.first.search_record.place
     place.ucf_list.size.should_not eq(0)
     
