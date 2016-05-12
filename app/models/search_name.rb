@@ -10,6 +10,6 @@ class SearchName
 
 
   def contains_wildcard_ucf?
-    UcfTransformer.contains_wildcard_ucf?(self.first_name) || UcfTransformer.contains_wildcard_ucf?(self.first_name)
+    UcfTransformer.contains_wildcard_ucf?(self.first_name) || UcfTransformer.contains_wildcard_ucf?(self.last_name)
   end
 end

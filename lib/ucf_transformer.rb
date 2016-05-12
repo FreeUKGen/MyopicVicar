@@ -70,7 +70,7 @@ module UcfTransformer
   end
   
   def self.contains_wildcard_ucf?(name_part)
-    print "\tcontains_wildcard_ucf?(#{name_part}) => #{contains_wildcard_ucf?(name_part)}\n"
+    # print "\tcontains_wildcard_ucf?(#{name_part}) => #{name_part.match(/[\*_]/) ? 'true' : 'false'}\n"
     name_part.match(/[\*_]/)
   end
   

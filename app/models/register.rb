@@ -53,8 +53,6 @@ class Register
     cache = PlaceCache.where(:chapman_code => place.chapman_code).first.places_json 
     refresh_cache = true unless cache.include?(place.place_name)
     place.update_attribute(:data_present, true)
-
-    place.update_ucf_list(file)
     
     PlaceCache.refresh(place.chapman_code) if refresh_cache
   end

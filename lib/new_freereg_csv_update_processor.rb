@@ -701,6 +701,12 @@ class CsvFile < CsvFiles
 	      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
 	    end 
 	end
+
+  def update_place_after_processing(freereg1_csv_file, chapman_code, place_name)
+    place = Place.where(:chapman_code => chapman_code, :place_name => place_name).first
+    place.update_ucf_list(freereg1_csv_file)
+    place.save
+  end
 	      
 	def process_the_data(project)
 		p "Processing the data records"
@@ -718,6 +724,8 @@ class CsvFile < CsvFiles
 			project.write_messages_to_all(message,true)
 			PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
 			project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
+			
+			update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
 		end
 		p "after process"
 		counter = self.clean_up_unused_batches(project)

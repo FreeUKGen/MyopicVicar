@@ -543,11 +543,12 @@ describe Freereg1CsvEntry do
     
     place = file_record.freereg1_csv_entries.first.search_record.place
     place.ucf_list.size.should_not eq(0)
+    place.ucf_list.values.first.should_not eq([])
     
     file_record.freereg1_csv_entries.each do |entry|
       p entry.search_record.transcript_names
       pp entry.search_record.search_names
-      place.ucf_list.values.first.should include(entry.id)
+      place.ucf_list.values.first.should include(entry.search_record.id)
     end
 
     file_record.freereg1_csv_entries.each_with_index do |entry,i|
