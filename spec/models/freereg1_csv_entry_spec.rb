@@ -561,7 +561,7 @@ describe Freereg1CsvEntry do
           q.places << place
           q.save!(:validate => false)
           q.search
-          result = q.results
+          result = q.ucf_results
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
           result.count.should be >= 1
