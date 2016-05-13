@@ -14,7 +14,7 @@ task :update_search_records => :environment do
   time_start = Time.new
   Freereg1CsvFile.all.no_timeout.each do |file|
     n = n + 1
-    break if n == 10
+    break if n == 1000
     unless software_version == file.software_version && search_version == file.search_record_version
       register = file.register
       church = register.church if register.present?
