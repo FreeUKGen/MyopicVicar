@@ -45,9 +45,9 @@ task :update_search_records => :environment do
                   search_record.save
                 else
                   message_file.puts "Updating Search Record "
-                  message_file.puts search_record
+                  message_file.puts search_record.inspect
                   message_file.puts "Original Search Names"
-                  message_file.puts search_record.search_names
+                  message_file.puts search_record.search_names.inspect
                   search_record.search_record_version = search_version
                   search_record.digest = brand_new_digest
                   search_record.location_names = new_search_record.location_names unless search_record.location_names == new_search_record.location_names
@@ -63,7 +63,8 @@ task :update_search_records => :environment do
                   original.each_key {|key| search_record.search_names.delete(search_record.search_names.find(key))}
                   new_version.each_key {|key|  search_record.search_names << new_search_record.search_names.find(key)}
                   message_file.puts "Revised Search Names"
-                  message_file.puts search_record.search_names
+                  message_file.puts search_record.inspect
+                  message_file.puts search_record.search_names.inspect
                 end
                 search_record.save
               end
