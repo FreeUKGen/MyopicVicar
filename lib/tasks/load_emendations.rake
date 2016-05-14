@@ -736,7 +736,7 @@ task :load_emendations => :environment do
   EmendationRule.create!(:original => 'hyacintha', :replacement => 'hyacinth', :emendation_type => et)
   EmendationRule.create!(:original => 'ignatius', :replacement => 'ignatius', :emendation_type => et)
   EmendationRule.create!(:original => 'iolantha', :replacement => 'yolanda', :emendation_type => et)
-  EmendationRule.create!(:original => 'isaac', :replacement => 'isaac', :emendation_type => et)
+  EmendationRule.create!(:original => 'isaak', :replacement => 'isaac', :emendation_type => et)
   EmendationRule.create!(:original => 'isai', :replacement => 'jesse', :emendation_type => et)
   EmendationRule.create!(:original => 'ishachus', :replacement => 'isaac', :emendation_type => et)
   EmendationRule.create!(:original => 'isidorus', :replacement => 'isidore', :emendation_type => et)
