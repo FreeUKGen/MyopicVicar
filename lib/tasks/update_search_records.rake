@@ -1,4 +1,4 @@
-desc "Get a list of blanlk counties"
+desc "Update/upgrade search records"
 task :update_search_records => :environment do
 
   file_for_warning_messages = "log/search_record_digest.log"

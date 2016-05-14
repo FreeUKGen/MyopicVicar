@@ -461,9 +461,7 @@ class SearchRecord
         record.save!
       end
     else
-      p "creating record"
       record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-      p record
       record.freereg1_csv_entry = entry
       file = entry.freereg1_csv_file
       if @@file.nil? || @@owner.nil?
@@ -484,8 +482,6 @@ class SearchRecord
       record.place = places
 
       record.save!
-      p "after save"
-      p record
     end
   end
 
