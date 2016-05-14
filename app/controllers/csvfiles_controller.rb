@@ -101,7 +101,7 @@ class CsvfilesController < ApplicationController
         range = File.join(@csvfile.userid,@csvfile.file_name)
         case
         when params[:csvfile][:process]  == "Just check for errors"
-          pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"no_search_records\",\"change\"]")
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when params[:csvfile][:process]  == "Process tonight"
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
