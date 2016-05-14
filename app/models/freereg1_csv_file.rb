@@ -579,9 +579,11 @@ class Freereg1CsvFile
 
   def recalculate_last_amended
     register = self.register
-    return if register.nil?
+    return if register.blank?
     church = register.church
-    place = church.place
+    return if church.blank?
+    place = church.place 
+    return if place.blank?
     place.recalculate_last_amended_date
   end
 

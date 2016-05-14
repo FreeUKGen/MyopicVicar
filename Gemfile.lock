@@ -60,9 +60,9 @@ GEM
       multi_json (~> 1.0)
     acts_as_indexed (0.8.3)
     addressable (2.4.0)
-    airbrake (3.1.14)
+    airbrake (3.1.17)
       builder
-      json
+      multi_json
     arbre (1.0.3)
       activesupport (>= 3.0.0)
     arel (3.0.3)
@@ -186,7 +186,7 @@ GEM
       fog-json (~> 1.0)
       fog-xml (~> 0.1)
       ipaddress (~> 0.8)
-    fog-core (1.38.0)
+    fog-core (1.39.0)
       builder
       excon (~> 0.49)
       formatador (~> 0.2)
