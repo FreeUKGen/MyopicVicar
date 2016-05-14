@@ -1,7 +1,13 @@
 require 'chapman_code'
 
 namespace :foo do
- # rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]
+ # eg rake foo:update_search_records[200]
+ task :update_search_records,[:limit] => [:environment] do |t,args|
+  #limit is number of files to process 0 is all
+  require 'update_search_records'
+    UpdateSearchRecords.process(args.limit)
+  end
+  # rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]
  task :get_software_version,[:manual,:start,:last,:version] => :environment do |t,args|
   require 'get_software_version'
     GetSoftwareVersion.process(args.manual,args.start,args.last,args.version)
