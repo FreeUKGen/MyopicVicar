@@ -24,4 +24,19 @@ class FreecenCoverageController < ApplicationController
     @county_pieces = FreecenCoverage.get_county_coverage(@chapman_code)
   end
 
+  def graph
+    @chapman_code = params[:chapman_code]
+    @county = ChapmanCode.name_from_code(@chapman_code) if !@chapman_code.nil?
+    @county = 'all' if 'all' == params[:chapman_code]
+    @year = params[:year]
+    
+    redirect_to freecen_coverage_path if @county.nil?
+    unless ['1841','1851','1861','1871','1881','1891','all'].include? @year
+      redirect_to freecen_coverage_path
+    end
+    # @graph_data =FreecenCoverage.get_county_year_graph_data(@chapman_code,@year)
+    @graph_type = 'ind'
+    @graph_data =FreecenCoverage.get_graph_data_from_stats_file('/home/kennard/freeUKGEN/data/freecen__db-stats',@chapman_code,@year,@graph_type)
+  end
+
 end

@@ -108,5 +108,120 @@ class FreecenCoverage
   end
 
 
+  def self.get_county_year_graph_data(chapman, year)
+    pieces_at_time = []
+    ratio_at_time = []
+    
+    num_pieces = FreecenPiece.where(chapman_code: chapman, year: year).count
+    pieces_online = 0
+    olt = 0
+    FreecenPiece.where(chapman_code: chapman, year: year, online_time: {'$gt'=>0}).asc(:online_time).each do |piece|
+      olt = piece[:online_time]
+      unless olt.nil? || 0==olt || num_pieces < 1
+        pieces_online += 1
+        ratio = 0.0
+        ratio = pieces_online / num_pieces.to_f
+        pnum = piece[:piece_number].to_s
+        stOlt = Time.at(olt).strftime('%Y-%m-%d')
+        pieces_at_time << [olt, pieces_online, pnum, stOlt]
+        ratio_at_time << [olt, ratio, pnum, stOlt]
+      end
+    end
+#    ratio = 0.0
+#    ratio = pieces_online / num_pieces.to_f
+#    pieces_at_time << [olt, pieces_online]
+#    ratio_at_time << [olt, ratio]
+    {'pieces_at_time'=>pieces_at_time, 'ratio_at_time'=>ratio_at_time, 'chapman'=>chapman, 'year'=>year, 'num_pieces'=>num_pieces}
+  end
+
+  #leave year blank for all years. leave chapman blank for all counties.
+  #'ind'=return results as # of individuals, 'pct'=percent of pieces complete
+  def self.get_graph_data_from_stats_file(stats_file, chapman, year, ind_or_pct)
+    values_at_time = []
+    year = nil if 'all' == year
+    chapman = nil if 'all' == chapman
+    first_time = 0
+    max_value = 0
+    prev_value = 0
+    lines = File.readlines(stats_file)
+    lines.each do |line|
+      tstamp = line.to_i
+      first_time = tstamp if 0==first_time
+      label = " "
+      label += "#{year}-" unless year.blank?
+      label += "#{chapman}-" unless chapman.blank?
+      label += "#{ind_or_pct}:"
+      idx = line.index(label)
+      unless idx.nil?
+        idx += label.length
+        value = ('ind'==ind_or_pct) ? line[idx,16].to_i : line[idx,16].to_f
+        values_at_time << [tstamp,value] unless value==prev_value
+        prev_value = value
+        max_value = value if value > max_value
+      end
+    end
+    values_at_time = values_at_time.sort_by {|k| k[0]}
+    {'values_at_time'=>values_at_time, 'max'=>max_value, 'first_time'=>first_time, 'chapman'=>chapman, 'year'=>year}
+  end
+
+  def self.calculateGraphParms(first_timestamp, last_timestamp, max_y, max_x_ticks=40)
+    # decide the xtick interval, adjust the first/last times to start and stop
+    # on interval boundaries
+    ft = Time.at(first_timestamp)
+    lt = Time.at(last_timestamp)
+    minmon = ft.utc.month
+    minyear = ft.utc.year
+    maxmon = lt.utc.month
+    maxyear = lt.utc.year
+    if maxmon > 12
+      maxmon -= 12
+      maxyear += 1
+    end
+    xinterval=1
+    xintervals = [1,2,3,6,12,24,36,48,60,72,84,96,108,120,240,480,960]
+    x_ticks = max_x_ticks+1
+    while x_ticks > max_x_ticks && xintervals.length > 0
+      xinterval = xintervals.shift
+      monmin = (minmon/xinterval)*xinterval+1
+      first_timestamp = Time.utc(minyear,monmin,1,12).to_i
+      yearmax = maxyear
+      monmax = (maxmon+xinterval-1)/xinterval*xinterval + 1
+      if monmax > 12
+        monmax -= 12
+        yearmax += 1
+      end
+      last_timestamp = Time.utc(yearmax,monmax,1,12).to_i
+      x_ticks = (yearmax*12 + monmax - minyear*12 - monmin)/xinterval
+    end
+    # create date label strings for the xticks
+    x_tick_labels=[]
+    for tt in 0..x_ticks
+      ttmp = Time.at(first_timestamp) + (xinterval*tt).months
+      ttmpyear = ttmp.utc.year - 1900
+      while ttmpyear > 99
+        ttmpyear -= 100
+      end
+      x_tick_labels << [ttmp.to_i,"01/#{"%02d" % ttmp.month}/#{"%02d" % ttmpyear}"]
+    end
+    
+    # adjust max_y to next threshold for graphing and calculate yticks / labels
+    ylog = 0
+    ylog = Math::log10(max_y).to_i unless 0==max_y
+    ratio = max_y.to_f / 10**(ylog+1)
+    thresholds = [0.15, 0.20, 0.25, 0.30, 0.50, 0.75, 1.0]
+    ii = 0
+    while ratio > thresholds[ii] && ii<thresholds.length
+      ii+=1
+    end
+    max_y_adjusted = 10**(ylog) * (10*thresholds[ii])
+    yinterval = max_y_adjusted / 5
+    y_ticks=[]
+    for yy in 0..5
+      y_ticks << yy*yinterval.to_i;
+    end
+
+    # return the computed parameters to be used in the graph
+    {'first_time_adjusted'=>first_timestamp, 'last_time_adjusted'=>last_timestamp,'num_x_ticks'=>x_ticks,'x_ticks'=>x_tick_labels,'max_y_adjusted'=>max_y_adjusted, 'y_ticks'=>y_ticks}
+  end
 
 end

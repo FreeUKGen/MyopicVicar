@@ -182,6 +182,7 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
   get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
+  get 'freecen_coverage_graph/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :show_freecen_coverage
 
   get 'churches/:id/rename', :to => 'churches#rename', :as => :rename_church
   get 'churches/:id/merge(.:format)', :to => 'churches#merge', :as => :merge_church
