@@ -36,7 +36,7 @@ class FreecenCoverageController < ApplicationController
     end
     # @graph_data =FreecenCoverage.get_county_year_graph_data(@chapman_code,@year)
     @graph_type = 'ind'
-    @graph_data =FreecenCoverage.get_graph_data_from_stats_file('/home/kennard/freeUKGEN/data/freecen__db-stats',@chapman_code,@year,@graph_type)
+    @graph_data =FreecenCoverage.get_graph_data_from_stats_file(Rails.application.config.fc1_coverage_stats,@chapman_code,@year,@graph_type)
   end
 
 end
