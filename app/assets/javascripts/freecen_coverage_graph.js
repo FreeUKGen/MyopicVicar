@@ -9,7 +9,7 @@ function xform_point(xin,xin_min,xin_max,xout_min,xout_max,inverted){
 }
 
 //draw the graph. requires graph_canvas and text_canvas in the html page
-function drawCoverageGraph(graph_canvas_id, text_canvas_id, points, xLabel='', yLabel='', leftTicks=null, bottomTicks=null,x_min_value,x_max_value,y_min_value,y_max_value,top_margin=20,left_margin=100,right_margin=20,bottom_margin=100,canvas_w=700,canvas_h=400){
+function drawCoverageGraph(graph_canvas_id, text_canvas_id, points, xLabel, yLabel, leftTicks, bottomTicks,x_min_value,x_max_value,y_min_value,y_max_value,top_margin,left_margin,right_margin,bottom_margin,canvas_w,canvas_h){
 
   var canv = document.getElementById(graph_canvas_id), ctx = canv.getContext("2d"), x, y, canv2 = document.getElementById(text_canvas_id), ctx2 = canv2.getContext("2d"), metrics=null, x0, y0, xmax, ymax;
 
