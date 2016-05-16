@@ -159,6 +159,7 @@ class SearchQueriesController < ApplicationController
       return
     end
   end
+
   def show_print_version
     @printable_format = true;
     if params[:id].present?
