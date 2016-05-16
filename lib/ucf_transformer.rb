@@ -53,17 +53,21 @@ module UcfTransformer
     # loop through each name
     name_array.each do |name|     
       # first, handle the names in square brackets (invalid but common)
-      name.first_name.sub!(TENTATIVE_NAME_NOT_UCF,'\2')     
-      
-      expanded_forenames = expand_single_name(name.first_name)
-      if expanded_forenames # only add the transformation if we did stuff
-        transformed_names = expanded_forenames.map { |forename| SearchName.new(name.attributes.merge({:first_name => forename, :origin => 'ucf'}))}    
+      if name.first_name
+        name.first_name.sub!(TENTATIVE_NAME_NOT_UCF,'\2')     
+        
+        expanded_forenames = expand_single_name(name.first_name)
+        if expanded_forenames # only add the transformation if we did stuff
+          transformed_names = expanded_forenames.map { |forename| SearchName.new(name.attributes.merge({:first_name => forename, :origin => 'ucf'}))}    
+        end          
       end
 
-      name.last_name.sub!(TENTATIVE_NAME_NOT_UCF,'\2')           
-      expanded_surnames = expand_single_name(name.last_name)
-      if expanded_surnames # only add the transformation if we did stuff
-        transformed_names += expanded_surnames.map { |surname| SearchName.new(name.attributes.merge({:last_name => surname, :origin => 'ucf'}))}    
+      if name.last_name
+        name.last_name.sub!(TENTATIVE_NAME_NOT_UCF,'\2')           
+        expanded_surnames = expand_single_name(name.last_name)
+        if expanded_surnames # only add the transformation if we did stuff
+          transformed_names += expanded_surnames.map { |surname| SearchName.new(name.attributes.merge({:last_name => surname, :origin => 'ucf'}))}    
+        end        
       end
     end       
     name_array + transformed_names
@@ -71,7 +75,11 @@ module UcfTransformer
   
   def self.contains_wildcard_ucf?(name_part)
     # print "\tcontains_wildcard_ucf?(#{name_part}) => #{name_part.match(/[\*_]/) ? 'true' : 'false'}\n"
-    name_part.match(/[\*_]/)
+    if name_part.blank?
+      false
+    else
+      name_part.match(/[\*_]/)    
+    end
   end
   
   def self.ucf_to_regex(name_part)

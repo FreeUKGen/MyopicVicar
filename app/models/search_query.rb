@@ -46,6 +46,8 @@ class SearchQuery
 
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
+  field :ucf_unfiltered_count, type: Integer
+  field :ucf_result_ms, type: Integer
 
   field :session_id, type: String
   field :runtime, type: Integer
@@ -84,11 +86,14 @@ class SearchQuery
 
   def search_ucf
     if can_query_ucf?
+      start_ucf_time = Time.now.utc 
       ucf_index = SearchRecord.index_hint(ucf_params)
       ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+      self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
       
-      self.search_result.ucf_records = ucf_records.map { |sr| sr.id }      
+      self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
+      self.ucf_result_ms = (Time.now.utc - start_ucf_time) * 1000      
       self.save
     end
     
@@ -208,7 +213,11 @@ class SearchQuery
   end
 
   def ucf_results
-    SearchRecord.find(self.search_result.ucf_records)
+    if self.can_query_ucf?
+      SearchRecord.find(self.search_result.ucf_records)
+    else
+      nil
+    end
   end
 
   # # all this now does is copy the result IDs and persist the new order

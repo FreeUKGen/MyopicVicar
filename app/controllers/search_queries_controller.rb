@@ -148,6 +148,7 @@ class SearchQueriesController < ApplicationController
     end
     if @search_query.present?
       @search_results =   @search_query.results
+      @ucf_results = @search_query.ucf_results
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
       go_back
