@@ -334,9 +334,8 @@ class Place
 
 
   def update_ucf_list(file)
-    ids = self.ucf_list[file.id] || []
     ids = file.search_record_ids_with_wildcard_ucf  
-    self.ucf_list[file.id] = ids
+    self.ucf_list[file.id] = ids if ids && ids.size > 0
   end
 
   def recalculate_last_amended_date
