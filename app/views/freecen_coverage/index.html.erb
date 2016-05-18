@@ -1,7 +1,7 @@
 <h1 class="title text--center">Database Coverage</h1>
 
 <section class="island  " >
-<p style="margin-top:-40px;">* Only a few counties are loaded for testing (those with darker text). Visit the <a href="http://www.freecen.org.uk" target="_blank">old site</a> for the rest. Graphs are not yet available.</p>
+<p style="margin-top:-40px;">* Only a few counties are loaded for testing (those with darker text). Visit the <a href="http://www.freecen.org.uk" target="_blank">old site</a> for the rest.</p>
 
 <% ['1841','1851','1861','1871','1881','1891'].each do |yy| %>
   <% unless @all_pieces.nil? || @all_pieces[yy].nil? %>
@@ -14,13 +14,15 @@
 	 <col class="t35">
 	 <col class="t10">
 	 <col class="t10">
-	 <col class="t15">
+	 <col class="t10">
+	 <col class="t10">
 	 <col class="t10">
        </colgroup>
        <thead>
          <th>County &nbsp;&nbsp; (Chapman Code)</th>
          <th>Number of Individuals</th>
          <th>% Online</th>
+         <th>&nbsp;</th>
          <th>&nbsp;</th>
          <th>&nbsp;</th>
        </thead>
@@ -33,8 +35,10 @@
 	   <% detail_href="/freecen_coverage/#{cty['cc']}" %>
 	   <% detail_href+="##{cty['yy']}" unless '1841'==cty['yy'] %>
 	   <td><%= link_to "Details", detail_href %></td>
-	   <% graph_href="/freecen_coverage_graph/#{cty['cc']}/#{cty['yy']}" %>
-	   <td><%= link_to "Graph", graph_href %></td>
+	   <% graph_href="/freecen_coverage_graph/ind/#{cty['cc']}/#{cty['yy']}" %>
+	   <td><%= link_to "Totals Graph", graph_href %></td>
+	   <% graph_href="/freecen_coverage_graph/pct/#{cty['cc']}/#{cty['yy']}" %>
+	   <td><%= link_to "Percentage Graph", graph_href %></td>
 	 </tr>
 	 <% end %>
 	 <tr>
@@ -42,6 +46,8 @@
 	   <td><%= number_with_delimiter(yyhash['subtot_records_online']) %></td>
 	   <td><%= (yyhash['subtot_pct_pieces_online'] > 0)? "%.1f" % yyhash['subtot_pct_pieces_online'] : 0 %></td>
 	   <td>&nbsp;</td>
+	   <% graph_href="/freecen_coverage_graph/ind/all/#{yy}" %>
+	   <td><%= link_to "Totals Graph", graph_href %></td>
 	   <td>&nbsp;</td>
 	 </tr>
 
@@ -55,15 +61,19 @@
     <div class="table-wrapper" style="margin-top:-20px;">
      <table class="table--bordered table--data" >
        <colgroup >
-	 <col class=t35>
-	 <col class=t10 >
-	 <col class=t10 >
-	 <col class=t15>
+	 <col class="t35">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
        </colgroup>
        <thead>
          <th>&nbsp;</th>
          <th>Number of Individuals</th>
          <th>% Online</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
          <th>&nbsp;</th>
        </thead>
        <tbody>
@@ -71,6 +81,9 @@
 	   <td><b>Grand Total</b></td>
 	   <td><%= number_with_delimiter(@all_pieces['tot_records_online']) %></td>
 	   <td><%= (@all_pieces['tot_pct_pieces_online'] > 0)? "%.1f" % @all_pieces['tot_pct_pieces_online'] : 0 %></td>
+	   <td>&nbsp;</td>
+	   <% graph_href="/freecen_coverage_graph/ind/all/all" %>
+	   <td><%= link_to "Totals Graph", graph_href %></td>
 	   <td>&nbsp;</td>
 	 </tr>
 

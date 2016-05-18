@@ -1,5 +1,4 @@
-<h1 class="title text--center"><%= @year %> &ndash; <%= @county %> (<%=@chapman_code%>)</h1>
-<p>This page is still in development. Please do not report errors on this page.</p>
+<h1 class="title text--center"><%= @year %> &ndash; <%= @county %> <%='('+@chapman_code+')' unless 'all'==@chapman_code%></h1>
 <br>
 <%# ----------- set up graph variables --------- %>
 <% canvas_w = 700 %>
@@ -16,15 +15,18 @@
 <% max_time = now_time %>
 <% max_time = @graph_data['values_at_time'][-1][0] unless @graph_data.nil? || @graph_data['values_at_time'].nil? || @graph_data['values_at_time'][-1].nil? || @graph_data['values_at_time'][-1][0].nil? %>
 <% valmax = @graph_data['max'] %>
-<% gparms =FreecenCoverage.calculateGraphParms(first_time,max_time,valmax,20) %>
+<% gparms =FreecenCoverage.calculateGraphParms(first_time,max_time,valmax,20,@graph_type ) %>
 <% first_time = gparms['first_time_adjusted'] %>
 <% max_time = gparms['last_time_adjusted'] %>
 <% valmax = gparms['max_y_adjusted'] %>
-<% valmax = 100.0 if 'pct'==@graph_type %>
 
 <%# ------ one canvas for the graph lines, another for text overlay ----- %>
 <center>
+<% if'ind'==@graph_type %>
 <h4>Record Count (Individuals)</h4>
+<% else %>
+<h4>Percentage Completion</h4>
+<% end %>
 <div id="both" style="width:<%=canvas_w+2%>px;height:<%=canvas_h+2%>px;position:relative;top:0px;left:0px;border:1px solid #dddddd;background-color:#ffffff;">
 <canvas id="graph_canvas" width="<%= graph_w %>" height="<%= graph_h %>" style="border:1px solid #aaaaaa;position:absolute;left:<%=left_margin-1%>px;top:<%=top_margin%>px;background-color:#ffffff;"></canvas>
 <canvas id="text_canvas" width="<%= canvas_w %>" height="<%= canvas_h %>" style="position:absolute;left:0px;top:0px;"></canvas>

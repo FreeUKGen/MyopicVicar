@@ -25,18 +25,20 @@ class FreecenCoverageController < ApplicationController
   end
 
   def graph
+    @graph_type = params[:type]
     @chapman_code = params[:chapman_code]
     @county = ChapmanCode.name_from_code(@chapman_code) if !@chapman_code.nil?
-    @county = 'all' if 'all' == params[:chapman_code]
+    @county = 'All Counties' if 'all' == params[:chapman_code]
     @year = params[:year]
     
+    redirect_to freecen_coverage_path if 'ind'!=@graph_type&&'pct'!=@graph_type
     redirect_to freecen_coverage_path if @county.nil?
     unless ['1841','1851','1861','1871','1881','1891','all'].include? @year
       redirect_to freecen_coverage_path
     end
     # @graph_data =FreecenCoverage.get_county_year_graph_data(@chapman_code,@year)
-    @graph_type = 'ind'
     @graph_data =FreecenCoverage.get_graph_data_from_stats_file(Rails.application.config.fc1_coverage_stats,@chapman_code,@year,@graph_type)
+    @year = 'All Years' if 'all'==params[:year]
   end
 
 end

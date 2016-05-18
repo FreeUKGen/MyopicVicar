@@ -108,32 +108,6 @@ class FreecenCoverage
   end
 
 
-  def self.get_county_year_graph_data(chapman, year)
-    pieces_at_time = []
-    ratio_at_time = []
-    
-    num_pieces = FreecenPiece.where(chapman_code: chapman, year: year).count
-    pieces_online = 0
-    olt = 0
-    FreecenPiece.where(chapman_code: chapman, year: year, online_time: {'$gt'=>0}).asc(:online_time).each do |piece|
-      olt = piece[:online_time]
-      unless olt.nil? || 0==olt || num_pieces < 1
-        pieces_online += 1
-        ratio = 0.0
-        ratio = pieces_online / num_pieces.to_f
-        pnum = piece[:piece_number].to_s
-        stOlt = Time.at(olt).strftime('%Y-%m-%d')
-        pieces_at_time << [olt, pieces_online, pnum, stOlt]
-        ratio_at_time << [olt, ratio, pnum, stOlt]
-      end
-    end
-#    ratio = 0.0
-#    ratio = pieces_online / num_pieces.to_f
-#    pieces_at_time << [olt, pieces_online]
-#    ratio_at_time << [olt, ratio]
-    {'pieces_at_time'=>pieces_at_time, 'ratio_at_time'=>ratio_at_time, 'chapman'=>chapman, 'year'=>year, 'num_pieces'=>num_pieces}
-  end
-
   #leave year blank for all years. leave chapman blank for all counties.
   #'ind'=return results as # of individuals, 'pct'=percent of pieces complete
   def self.get_graph_data_from_stats_file(stats_file, chapman, year, ind_or_pct)
@@ -164,7 +138,7 @@ class FreecenCoverage
     {'values_at_time'=>values_at_time, 'max'=>max_value, 'first_time'=>first_time, 'chapman'=>chapman, 'year'=>year}
   end
 
-  def self.calculateGraphParms(first_timestamp, last_timestamp, max_y, max_x_ticks=40)
+  def self.calculateGraphParms(first_timestamp, last_timestamp, max_y, max_x_ticks=40, ind_or_pct='ind')
     # decide the xtick interval, adjust the first/last times to start and stop
     # on interval boundaries
     ft = Time.at(first_timestamp)
@@ -205,16 +179,21 @@ class FreecenCoverage
     end
     
     # adjust max_y to next threshold for graphing and calculate yticks / labels
-    ylog = 0
-    ylog = Math::log10(max_y).to_i unless 0==max_y
-    ratio = max_y.to_f / 10**(ylog+1)
-    thresholds = [0.15, 0.20, 0.25, 0.30, 0.50, 0.75, 1.0]
-    ii = 0
-    while ratio > thresholds[ii] && ii<thresholds.length
-      ii+=1
+    if 'pct'==ind_or_pct
+      max_y_adjusted = 100
+      yinterval = 20
+    else
+      ylog = 0
+      ylog = Math::log10(max_y).to_i unless 0==max_y
+      ratio = max_y.to_f / 10**(ylog+1)
+      thresholds = [0.15, 0.20, 0.25, 0.30, 0.50, 0.75, 1.0]
+      ii = 0
+      while ratio > thresholds[ii] && ii<thresholds.length
+        ii+=1
+      end
+      max_y_adjusted = 10**(ylog) * (10*thresholds[ii])
+      yinterval = max_y_adjusted / 5
     end
-    max_y_adjusted = 10**(ylog) * (10*thresholds[ii])
-    yinterval = max_y_adjusted / 5
     y_ticks=[]
     for yy in 0..5
       y_ticks << yy*yinterval.to_i;
