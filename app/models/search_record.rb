@@ -8,9 +8,9 @@ class SearchRecord
   include Mongoid::Document
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
-  before_save :add_digest
+  #before_save :add_digest
   #before_save :transform
-  before_create :transform
+  #before_create :transform
   module Source
     TRANSCRIPT='transcript'
     EMENDOR='e'
@@ -73,6 +73,33 @@ class SearchRecord
     "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
     "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
   }
+  INDEXES.each_pair do |name,fields|
+    field_spec = {}
+    fields.each { |field| field_spec[field] = 1 }
+    index(field_spec, :name => name)
+  end
+  def self.index_hint(search_params)
+    candidates = INDEXES.keys
+    scores = {}
+    search_fields = fields_from_params(search_params)
+    candidates.each { |name| scores[name] = index_score(name,search_fields)}
+    #    pp scores
+    best = scores.max_by { |k,v| v}
+    best[0]
+  end
+
+  def self.index_score(index_name, search_fields)
+    fields = INDEXES[index_name]
+    best_score = -1
+    fields.each_with_index do |field, i|
+      if search_fields.any? { |param| param == field }
+        best_score = i
+      else
+        break #bail since leading terms haven't been found
+      end
+    end
+    best_score
+  end
   class << self
     def marriages
       where(:record_type => "ma")
@@ -95,6 +122,7 @@ class SearchRecord
   end
   def cal_digest
     string = ''
+    string = string + self.add_location_string
     string = string + self.add_soundex_string
     string = string + self.add_search_name_string
     string = string + self.add_search_date_string
@@ -105,6 +133,13 @@ class SearchRecord
       the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
     end
     return the_digest
+  end
+  def add_location_string
+    string = ""
+    location = self.location_names
+    string = string + location[0].gsub(/\s+/, '') if location.present? && location[0].present?
+    string = string + location[1].gsub(/\s+/, '').gsub(/\[/, '').gsub(/\]/,'') if location.present? && location[1].present?
+    return string
   end
   def add_soundex_string
     string = ""
@@ -134,35 +169,79 @@ class SearchRecord
   def hex_to_base64_digest(hexdigest)
     [[hexdigest].pack("H*")].pack("m").strip
   end
-
-  INDEXES.each_pair do |name,fields|
-    field_spec = {}
-    fields.each { |field| field_spec[field] = 1 }
-    index(field_spec, :name => name)
-  end
-
-  def self.index_hint(search_params)
-    candidates = INDEXES.keys
-    scores = {}
-    search_fields = fields_from_params(search_params)
-    candidates.each { |name| scores[name] = index_score(name,search_fields)}
-    #    pp scores
-    best = scores.max_by { |k,v| v}
-    best[0]
-  end
-
-  def self.index_score(index_name, search_fields)
-    fields = INDEXES[index_name]
-    best_score = -1
-    fields.each_with_index do |field, i|
-      if search_fields.any? { |param| param == field }
-        best_score = i
+  def self.update_create_search_record(entry,search_version,place_id)
+    search_record = entry.search_record
+    if search_record.blank?
+      search_record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      search_record.freereg1_csv_entry = entry
+      search_record.search_record_version = search_version
+      search_record.transform
+      search_record.place_id = place_id
+      search_record.digest = search_record.cal_digest
+      search_record.save
+      return "created"
+    else
+      digest = search_record.digest
+      digest = search_record.cal_digest if digest.blank?
+      #create a temporary search record with the new information; this will not be saved
+      new_search_record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      new_search_record.freereg1_csv_entry = entry
+      new_search_record.place_id = place_id
+      new_search_record.transform
+      brand_new_digest = new_search_record.cal_digest
+      unless  brand_new_digest == digest
+        #we have to update the current search record
+        #add the search version and digest
+        search_record.search_record_version = search_version
+        search_record.digest = brand_new_digest
+        #update the transcript names if it has changed
+        search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names == new_search_record.transcript_names
+        #update the location if it has changed
+        search_record.location_names = new_search_record.location_names unless search_record.location_names == new_search_record.location_names
+        #update the soundex if it has changed
+        search_record.search_soundex = new_search_record.search_soundex unless search_record.search_soundex == new_search_record.search_soundex
+        #update the search date
+        search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
+        #create a hash of search names from the original search names
+        search_record.adjust_search_names(new_search_record)
+        return "updated"
       else
-        break #bail since leading terms haven't been found
+      	digest = search_record.digest
+        digest = search_record.cal_digest if digest.blank?
+        search_record.search_record_version = search_version
+        search_record.digest = brand_new_digest
+        search_record.save
+        return "digest added"
       end
     end
-    best_score
   end
+
+  def adjust_search_names(new_search_record)
+    original_names = get_search_names_hash(self)
+    new_names = get_search_names_hash(new_search_record)
+    original_copy = original_names
+    #remove from the original hash any record that is in the new set. What is left are search names that need
+    #to be removed as they are not in the new set
+    original_names.delete_if {|key, value| new_names.has_value?(value)}
+    # remove all search names in the new set that are in the original. What is left are the "new" search names
+    new_names.delete_if {|key, value| original_copy.has_value?(value)}
+    #remove search names from the search record that are no longer required
+    original_names.each_value do |value|
+      self.search_names.where(value).delete_all
+    end
+    #add the new search names to the existing search record
+    new_names.each_value {|value| self.search_names.new(value)}
+    self.save
+  end
+
+  def get_search_names_hash(names)
+    original = {}
+    names.search_names.each do |name|
+      original[name._id] = JSON.parse(name.to_json(:except => :_id))
+    end
+    return original
+  end
+
   def update_location(entry,file)
     place = file.register.church.place
     location_names =[]
@@ -461,9 +540,7 @@ class SearchRecord
         record.save!
       end
     else
-      p "creating record"
       record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-      p record
       record.freereg1_csv_entry = entry
       file = entry.freereg1_csv_file
       if @@file.nil? || @@owner.nil?
@@ -482,10 +559,7 @@ class SearchRecord
         end
       end
       record.place = places
-
       record.save!
-      p "after save"
-      p record
     end
   end
 

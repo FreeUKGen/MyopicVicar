@@ -52,35 +52,6 @@ module Freereg1Translator
     :file_line_number => :file_line_number,
   }
 
- FORCE_SEARCH_RECORD_RECREATE = [
-    "baptism_date", 
-    "birth_date", 
-    "bride_father_forename", 
-    "bride_father_surname", 
-    "bride_forename",
-    "bride_surname", 
-    "burial_date", 
-    "burial_person_forename", 
-    "burial_person_surname", 
-    "father_forename", 
-    "father_surname", 
-    "female_relative_forename", 
-    "groom_father_forename", 
-    "groom_father_surname", 
-    "groom_forename", 
-    "groom_surname", 
-    "male_relative_forename", 
-    "marriage_date",  
-    "mother_forename", 
-    "mother_surname", 
-    "person_forename", 
-    "relative_surname", 
-    "witness1_forename", 
-    "witness1_surname", 
-    "witness2_forename", 
-    "witness2_surname"
-   ]
- 
 
  def self.setup_benchmark
     unless defined? @@tts
@@ -154,10 +125,6 @@ module Freereg1Translator
     new_attrs[:record_type] = file.record_type
     new_attrs[:search_record_version] = file.search_record_version
     new_attrs
-  end
-
-  def self.meaningful_changes?(keys)
-    (FORCE_SEARCH_RECORD_RECREATE & keys).size > 0
   end
 
   # create transcript names from the entry and mapping configuration  

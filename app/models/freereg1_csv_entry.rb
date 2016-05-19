@@ -305,16 +305,6 @@ class Freereg1CsvEntry
     equal
   end
 
-  def self.detect_change(a,b)
-    changes = Hash.new
-    a.each_key do |k|
-      changes[k] = a[k] if a[k] != b[k]
-    end
-    changes.each_key do |field|
-      return true if Freereg1Translator::FORCE_SEARCH_RECORD_RECREATE.include?(field)
-    end
-    return false
-  end
   def multiple_witness_names?
     present = false
      self.multiple_witnesses.each do |witness|
@@ -331,24 +321,6 @@ class Freereg1CsvEntry
     return params
   end
 
-  def update_search_record
-    if should_update_search_record?
-      #delete existing and then recreate
-      record = self.search_record
-      place = self.freereg1_csv_file.register.church.place
-      place.search_records.delete(record) unless record.nil?
-      self.search_record = nil
-      record.destroy unless record.nil?
-      self.transform_search_record      
-    end
-  end
-  
-  def should_update_search_record?
-    return true if !self.search_record
-    
-    Freereg1Translator.meaningful_changes?(self.previous_changes.keys)
-  end
-  
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -398,15 +370,6 @@ class Freereg1CsvEntry
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
     end
   end
-
-
-  def transform_search_record
-    if should_update_search_record?
-      SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
-    end
-  end
-
-
 
   def display_fields
     file = self.freereg1_csv_file
