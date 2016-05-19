@@ -19,6 +19,9 @@ namespace :build do
   collection_array[15] = "attic_files"
   collection_array[16] = "physical_files"
   collection_array[17] = "messages"
+  collection_array[18] = "denominations"
+  collection_array[19] = "software_versions"
+
 	COLLECTIONS = {
 		'master_place_names' => 'MasterPlaceName',
 		'batch_errors' => 'BatchError',
@@ -37,7 +40,9 @@ namespace :build do
     'contacts' => 'Contact',
     'attic_files' => 'AtticFile',
     'physical_files' => 'PhysicalFile',
-    'messages' => "Message"
+    'messages' => "Message",
+    "denominations" => "Denomination",
+    "software_versions" => "SoftwareVersion"
 	}
 	EXPORT_COMMAND =  "mongoexport --db "
 	EXPORT_OUT = " --out  "
@@ -90,7 +95,7 @@ namespace :build do
 		#@datafile_location =  Rails.application.config.mongodb_datafile
 		#save master_place_names and alias
 		p "Save started"
-		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13","14","15","16","17"]
+		collections_to_save = ["0","1","2","3","4","8","9","10","11","12","13","14","15","16","17","18","19"]
    db = Mongoid.sessions[:default][:database]
     hosts = Mongoid.sessions[:default][:hosts]
     if args[:port] == "37017"
@@ -114,7 +119,7 @@ namespace :build do
 		#dops place, church, register, files
 		if args.type == "recreate"
 
-			collections_to_drop = ["5","6","7",]
+			collections_to_drop = ["5","6","7"]
 			collections_to_drop.each  do |col|
 				coll  = col.to_i
 				model = COLLECTIONS[collection_array[coll]].constantize if COLLECTIONS.has_key?(collection_array[coll])
@@ -210,13 +215,13 @@ namespace :build do
 	#NOTE NO SETUP of the database IS DONE DURING THIS TASK
 	task :process_freereg1_csv,[:type,:search_records,:range] => [:environment] do |t, args|
 
-		require 'freereg_csv_update_processor'
+		require 'new_freereg_csv_update_processor'
 		# use the processor to initiate search record creation on add or update but not on recreation when we do at end
 		search_records = "no_search_records"
 		search_records = "create_search_records" if args.search_records == "create_search_records_processor"
 
 		puts "processing CSV file with  #{search_records}"
-		success = FreeregCsvUpdateProcessor.process(args.range,search_records,"change")
+		success = NewFreeregCsvUpdateProcessor.activate_project(search_records,range,no_force,args.range)
 		if success
 			puts "Freereg task complete."
 			exit(true)
@@ -234,7 +239,7 @@ namespace :build do
 		range = File.join(args.user ,args.file)
 		search_records = "create_search_records"
 
-		success = FreeregCsvUpdateProcessor.process("add",search_records,range)
+		success = NewFreeregCsvUpdateProcessor.activate_project(search_records,individual,no_force,range)
 		if success
 			UserMailer.batch_processing_success(args.user,args.file).deliver
 			exit(true)
@@ -478,8 +483,8 @@ namespace :build do
      host = hosts[0]
     end
      p "using database #{db} on host #{host}"
-		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14","15","16","17"] if args.save == 'partial'
-		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"] if args.save == 'full'
+		collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14","15","16","17","18","19"] if args.save == 'partial'
+		collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"] if args.save == 'full'
 		@mongodb_bin =   Rails.application.config.mongodb_bin_location
 		@tmp_location =   Rails.application.config.mongodb_collection_location
 		@tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
@@ -499,16 +504,7 @@ namespace :build do
 		puts "Save task complete"
 	end
 
-  task :freereg_update,[:range,:type,:delta] => [:environment] do |t,args|
-    require 'freereg_csv_update_processor'
-    @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
-    hosts = Mongoid.sessions[:default][:hosts]
-    host = hosts[0]
-    p "using database #{db} on host #{host}"  
-      FreeregCsvUpdateProcessor.process(args.range,args.type,args.delta)
-  end
+  
   task :get_waiting_file_list => [:environment] do 
       # base = 1 uses the change files directory and base = 2 uses the actual files directory
     require 'get_waiting_file_list'
