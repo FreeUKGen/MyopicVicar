@@ -284,8 +284,10 @@ class CsvFile < CsvFiles
     @header[:def] = false
     @header[:lds] = "no"
     @software_version = SoftwareVersion.control.first
-    @header[:software_version] = @software_version.version
-    @header[:search_record_version] = @software_version.last_search_record_version
+    @header[:software_version] = ''
+    @header[:search_record_version] = ''
+    @header[:software_version] = @software_version.version if @software_version.present?
+    @header[:search_record_version] = @software_version.last_search_record_version if @software_version.present?
     @place_id = nil
     @slurp_fail_message = nil
     @userid = user_dirname
