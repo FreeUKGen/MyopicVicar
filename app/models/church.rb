@@ -17,8 +17,7 @@ class Church
 
   belongs_to :place, index: true
   index({ place_id: 1, church_name: 1 })
-  validates_presence_of :church_name
-  validate :church_does_not_exist, on: :create
+ 
 
   class << self
     def id(id)
@@ -27,8 +26,15 @@ class Church
   end
 
 
-  def church_does_not_exist
-    #errors.add(:church_name, "Church of that name already exits") unless place.church.nil?
+  def church_does_not_exist(place)
+    return false, "Church name cannot be blank" unless self.church_name.present?
+    self.church_name = self.church_name.strip
+    place.churches.each do |church|
+      if church.church_name == self.church_name
+         return false, "Church of that name already exits"
+      end
+    end
+    return true, "OK"
   end
 
 
@@ -61,6 +67,7 @@ class Church
               record.update_attributes(:location_names => location_names,:place_id => place.id, :chapman_code => place.chapman_code)
             end
           end
+          file.update_attributes(:place => place_name, :church_name => self.church_name)
         end 
       end
  

@@ -13,6 +13,11 @@
 # limitations under the License.
 # 
 MyopicVicar::Application.routes.draw do
+  get 'software_versions/:id/commitments(.:format)',  :to => 'software_versions#commitments', :as => :commitments_software_versions
+  resources :software_versions
+
+
+  resources :denominations
 
   resources :freecen_pieces
 
@@ -113,7 +118,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :countries
 
-
+  get 'counties/display', :to =>'counties#display', :as => :display_counties
   get 'counties/select', :to =>'counties#select', :as => :select_counties
   get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
@@ -144,7 +149,6 @@ MyopicVicar::Application.routes.draw do
   resources :userid_details
 
 
-
   get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_manage_counties 
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_manage_counties 
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint 
@@ -164,6 +168,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties 
   resources :manage_counties
 
+  get 'syndicates/display', :to =>'syndicates#display', :as => :display_syndicates
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
   get 'syndicates/selection', :to =>'syndicates#selection', :as => :selection_syndicates
   resources :syndicates
@@ -242,6 +247,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   resources :search_records
 
+  get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query
   get 'search_queries/:id/about(.:format)', :to => 'search_queries#about', :as => :about_search_query
   get 'search_queries/:id/broaden(.:format)', :to => 'search_queries#broaden', :as => :broaden_search_query
   get 'search_queries/:id/narrow(.:format)', :to => 'search_queries#narrow', :as => :narrow_search_query

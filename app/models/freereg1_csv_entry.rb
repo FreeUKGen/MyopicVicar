@@ -145,6 +145,23 @@ class Freereg1CsvEntry
     return the_digest
   end
 
+   def enough_name_fields?
+      process = false
+      case self.record_type
+      when "ba"
+          process = true if self.person_forename.present? || self.father_forename.present? || self.mother_forename.present? ||
+            self.father_surname.present? || self.mother_surname.present?
+      when "bu"
+        process = true if self.burial_person_forename.present? || self.male_relative_forename.present? || self.female_relative_forename.present? ||
+            self.relative_surname.present? || self.burial_person_surname.present?
+      when "ma"
+      process = true if self.groom_forename.present? || self.groom_surname.present? || self.bride_forename.present? ||
+              self.bride_surname.present? || self.groom_father_forename.present? || self.groom_father_surname.present? || self.bride_father_surname.present? ||
+              self.bride_father_forename.present? || self.multiple_witness_names? 
+      end
+      return process
+    end
+
   def create_baptism_string
     string = ''
     string = string + self.person_forename.strip + "person" unless  self.person_forename.nil?
@@ -288,15 +305,14 @@ class Freereg1CsvEntry
     equal
   end
 
-  def self.detect_change(a,b)
-    changes = Hash.new
-    a.each_key do |k|
-      changes[k] = a[k] if a[k] != b[k]
-    end
-    changes.each_key do |field|
-      return true if FreeregOptionsConstants::FORCE_SEARCH_RECORD_RECREATE.include?(field)
-    end
-    return false
+  def multiple_witness_names?
+    present = false
+     self.multiple_witnesses.each do |witness|
+        if  witness.witness_forname.present? || witness.witness_surname.present?
+          present = true
+        end
+     end
+     return present
   end
 
   def self.update_parameters(params,entry)
@@ -305,15 +321,6 @@ class Freereg1CsvEntry
     return params
   end
 
-  def update_search_record
-    #delete existing and then recreate
-    record = self.search_record
-    place = self.freereg1_csv_file.register.church.place
-    place.search_records.delete(record) unless record.nil?
-    self.search_record = nil
-    record.destroy unless record.nil?
-    self.transform_search_record
-  end
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -363,13 +370,6 @@ class Freereg1CsvEntry
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
     end
   end
-
-
-  def transform_search_record
-    SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
-  end
-
-
 
   def display_fields
     file = self.freereg1_csv_file

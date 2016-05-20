@@ -1,8 +1,13 @@
-class CountiesController < InheritedResources::Base
+class CountiesController < ApplicationController
 
   require 'county'
+def display
+    get_user_info_from_userid
+    @counties = County.all.order_by(chapman_code: 1)
+    render :action => :index
+end
 
-  def index
+def index
   @first_name = session[:first_name]
   @user = UseridDetail.where(:userid => session[:userid]).first
   @counties = County.all.order_by(chapman_code: 1)

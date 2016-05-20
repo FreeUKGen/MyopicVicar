@@ -71,6 +71,12 @@ class ApplicationController < ActionController::Base
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
   end
+  def get_place_id_from_file(freereg1_csv_file)
+    register = freereg1_csv_file.register
+    church = register.church
+    place = church.place
+    return place.id
+  end
 
   def  get_user_info_from_userid
      if session[:userid].nil?
@@ -242,5 +248,11 @@ class ApplicationController < ActionController::Base
     redirect_to main_app.new_manage_resource_path
     return
   end  
+  def reject_assess(user,action)
+    flash[:notice] = "You are not permitted to use this action"
+    logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end
   
 end

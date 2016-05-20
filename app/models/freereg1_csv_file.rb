@@ -34,7 +34,7 @@ class Freereg1CsvFile
   #and the register information from the register collection
   field :country, type: String
   field :county, type: String #note in headers this is actually a Chapman code
-  
+  field :chapman_code,  type: String
   field :church_name, type: String
   field :register_type, type: String
   field :record_type, type: String#, :in => RecordType::ALL_TYPES+[nil]
@@ -42,6 +42,7 @@ class Freereg1CsvFile
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   field :place, type: String
+  field :place_name, type: String
   field :records, type: String
   field :datemin, type: String
   field :datemax, type: String
@@ -70,9 +71,9 @@ class Freereg1CsvFile
   field :csvfile, type: String
   field :processed, type: Boolean, default: true
   field :processed_date, type: DateTime
-
-
-
+  field :def, type: Boolean, default: false
+  field :software_version, type: String
+  field :search_record_version, type: String
 
   index({file_name:1,userid:1,county:1,place:1,church_name:1,register_type:1})
   index({county:1,place:1,church_name:1,register_type:1, record_type: 1})
@@ -90,8 +91,8 @@ class Freereg1CsvFile
     p num
     entries.each do |entry|
       entry.destroy
-      sleep_time = 2*(Rails.application.config.sleep.to_f)
-      sleep(sleep_time)
+      #sleep_time = 2*(Rails.application.config.sleep.to_f)
+      #sleep(sleep_time)
     end
   end
 
@@ -131,11 +132,24 @@ class Freereg1CsvFile
     def county(name)
       where(:county => name)
     end
+    def place(name)
+      where(:place => name)
+    end
+    def chapman_code(name)
+      #note chapman is county in file
+      where(:county => name)
+    end
     def record_type(name)
       where(:record_type => name)
     end
     def userid(name)
       where(:userid => name)
+    end
+    def church_name(name)
+      where(:church_name => name)  
+    end
+    def register_type(name)
+      where(:register_type => name)      
     end
     def file_name(name)
       where(:file_name => name)
@@ -393,7 +407,7 @@ class Freereg1CsvFile
       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
       csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
       #eg +LDS,,,,
-      csv << ['+LDS'] if file.lds =='yes'
+      csv << ['+LDS'] if file.lds || file.lds =='yes'
 
       
         register = file.register
@@ -565,9 +579,11 @@ class Freereg1CsvFile
 
   def recalculate_last_amended
     register = self.register
-    return if register.nil?
+    return if register.blank?
     church = register.church
-    place = church.place
+    return if church.blank?
+    place = church.place 
+    return if place.blank?
     place.recalculate_last_amended_date
   end
 
@@ -858,7 +874,7 @@ class Freereg1CsvFile
     datemin = FreeregValidations::YEAR_MAX
     self.freereg1_csv_entries.each do |entry|
       xx = entry.year
-      unless xx.nil?
+      if xx.present? && entry.enough_name_fields?
         xx = entry.year.to_i
         datemax = xx if xx > datemax && xx < FreeregValidations::YEAR_MAX
         datemin = xx if xx < datemin
@@ -938,9 +954,27 @@ class Freereg1CsvFile
       names
     end
     def add_to_rake_delete_list
-     processing_file = Rails.application.config.delete_list
+      processing_file = Rails.application.config.delete_list
       File.open(processing_file, 'a') do |f|
         f.write("#{self.id},#{self.userid},#{self.file_name}\n")
       end    
+    end
+    def remove_batch
+      if self.locked_by_transcriber  ||  self.locked_by_coordinator
+        return false,'The removal of the batch was unsuccessful; the batch is locked'
+      else
+        #deal with file and its records
+        self.add_to_rake_delete_list 
+        self.save_to_attic
+        self.delete 
+        #deal with the Physical Files collection     
+        physical_file = PhysicalFile.userid(self.userid).file_name(self.file_name).first
+        if physical_file.present?
+          physical_file.remove_processed_flag 
+          physical_file.remove_base_flag
+          physical_file.destroy if physical_file.empty?
+        end
+        return true, 'The removal of the batch entry was successful'
+      end
     end
 end

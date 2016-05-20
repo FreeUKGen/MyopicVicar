@@ -1,10 +1,9 @@
 module FreeregValidations
-   require "unicode"
-
+  
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
-  VALID_NAME =/[\p{L}\'\"\ \.\;\:]/u
-  VALID_NUMERIC  = /[\p{N}]/u
-  VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/u
+  VALID_NAME =/[\p{L}\'\"\ \.\;\:]/
+  VALID_NUMERIC  = /[\p{N}]/
+  VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
@@ -18,8 +17,10 @@ module FreeregValidations
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
+  VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+  VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
   DATE_SPLITS = {
             " " => /\s/,
@@ -302,10 +303,41 @@ module FreeregValidations
      year = nil if year.to_s =~ VALID_UCF
      year
   end
-  def FreeregValidations.place_exists(field)
-    return false unless Place.where(:place_name => field).exists?
-    return false if Place.where(:place_name => field).first.disabled == 'true'
+ 
+
+  def FreeregValidations.modern_date_valid?(field)
+    # determines if the modern date of creation or modification is valid
+    return true if field.blank?
+    if  field =~ VALID_DATE
+      DATE_SPLITS.each_pair do |date_splitter, date_split|
+        date_parts = field.split(date_split)
+        unless date_parts[1].nil?
+          return true if  VALID_MONTH.include?(date_parts[1].upcase) || date_parts[1] =~ VALID_NUMERIC_MONTH
+        end
+      end
+    end
+    return false
+  end
+
+  def FreeregValidations.valid_chapman_code?(field)
+   return true if ChapmanCode::values.include?(field) &&
+       !FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.include?(ChapmanCode.has_key(field))
+  end
+
+  def FreeregValidations.valid_place?(field,chapman)
+    field = field.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase unless field.blank?
+    place = Place.chapman_code(chapman).modified_place_name(field).not_disabled.first
+    return false unless place.present?
     return true
   end
 
+  def FreeregValidations.valid_church?(church_name,chapman_code,place_name)
+    place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
+    place.churches.each do |church|
+     if church.church_name.downcase == church_name.downcase
+      return true
+     end
+    end
+    return false
+  end
 end

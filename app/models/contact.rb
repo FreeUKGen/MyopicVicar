@@ -79,6 +79,8 @@ class Contact
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
+    ccs << cc.email_address unless cc.nil?
     cc = UseridDetail.where(:person_role => 'project_manager').first
     ccs << cc.email_address unless cc.nil?
     cc = UseridDetail.where(:person_role => 'executive_director').first
@@ -96,6 +98,8 @@ class Contact
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.datamanager_data_question(self,ccs).deliver
   end
 
@@ -111,6 +115,8 @@ class Contact
    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.coordinator_data_problem(self,ccs).deliver
   end
 
@@ -127,6 +133,8 @@ class Contact
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.publicity(self,ccs).deliver
   end
 
@@ -158,6 +166,8 @@ class Contact
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.enhancement(self,ccs).deliver
   end
 
@@ -174,6 +184,8 @@ class Contact
     UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
       ccs << person.email_address
     end
+    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
+    ccs << cc.email_address unless cc.nil?
     UserMailer.volunteer(self,ccs).deliver
   end
 

@@ -33,8 +33,13 @@
     <%= f.input :transcription_agreement, :as => :boolean,:label => "Transcription agreement accepted?"%>
     <% unless session[:my_own] %>           
       <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 4},:selected => "Learning" %>
-      <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active"%>
-      <%= f.input :disabled_reason,:hint => "If you are changing to inactive put in a reason",:label => "Reason for making inactive",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
+      <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>
+      <%= f.hint "If you are changing to inactive, specify the reason below. Put additional explanation (if any) in the text field after the selection." %>
+      <%= f.input :disabled_reason_standard,  :collection => UseridRole::REASONS_FOR_INACTIVATING, :include_blank => true,:label => "Reason for making inactive :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+
+
+      <%= f.input :disabled_reason,:hint => "If you selected 'Other' or need to add information, explain here.",:label => "Reason for making inactive (explanation)",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
+
       <% unless @userid.active %> 
         <%= f.input :disabled_date,:label => "Date made inactive", :input_html => { :size => 30, :disabled => true}%>
       <% end%>

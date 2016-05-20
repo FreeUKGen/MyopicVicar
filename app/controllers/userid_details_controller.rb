@@ -2,38 +2,7 @@ class UseridDetailsController < ApplicationController
   require 'userid_role'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
-  def index
-    session[:return_to] = request.fullpath
-    get_user_info_from_userid
-    session[:my_own] = false
-    @role = session[:role]
-    if session[:active] ==  'All Members'
-      @userids = UseridDetail.get_userids_for_display(session[:syndicate])
-    else
-      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate])
-    end
-    @syndicate = session[:syndicate]
-    @sorted_by = session[:active]
-  end #end method
-
-  def new
-    session[:return_to] = request.fullpath
-    session[:type] = "add"
-    get_user_info_from_userid
-    @role = session[:role]
-    @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
-      @user.person_role == "data_manager"
-    @syndicates = Syndicate.get_syndicates if @user.person_role == "system_administrator"
-    @userid = UseridDetail.new
-  end
-
-  def show
-    session[:return_to] = request.fullpath
-    @syndicate = session[:syndicate]
-    get_user_info_from_userid
-    load(params[:id])
-  end
+ 
 
   def all
     if params[:page]
@@ -43,49 +12,6 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @userids = UseridDetail.get_userids_for_display('all')
     render "index"
-  end
-
-  def my_own
-    clean_session
-    clean_session_for_county
-    clean_session_for_syndicate
-    session[:edit_userid] = true
-    session[:return_to] = request.fullpath
-    session[:my_own] = true
-    get_user_info_from_userid
-    @userid = @user
-  end
-
-  def edit
-    session[:return_to] = request.fullpath
-    session[:type] = "edit"
-    get_user_info_from_userid
-    @userid = @user if  session[:my_own]
-    load(params[:id])
-    @syndicates = Syndicate.get_syndicates
-  end
-
-  def rename
-    session[:return_to] = request.fullpath
-    session[:type] = "edit"
-    get_user_info_from_userid
-    load(params[:id])
-    @syndicates = Syndicate.get_syndicates
-  end
-
-  def person_roles
-    session[:return_to] = request.fullpath
-    get_user_info_from_userid
-    @userid = UseridDetail.new
-    @options = UseridRole::VALUES
-    @prompt = 'Select Role?'
-    @location = 'location.href= "role?role=" + this.value'
-  end
-
-  def role
-    @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
-    @syndicate = " #{params[:role]}"
-    @sorted_by = " lower case userid"
   end
 
   def change_password
@@ -108,37 +34,158 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def create
+    session[:refinery] = current_refinery_user
+    @userid = UseridDetail.new(params[:userid_detail])
+    @userid.add_fields(params[:commit],session[:syndicate])
+    @userid.save
+    if @userid.save
+      @userid.send_invitation_to_create_password
+      flash[:notice] = 'The initial registration was successful; an email has been sent to the new person to complete the process.'
+      @userid.write_userid_file
+      next_place_to_go_successful_create
+    else
+      flash[:notice] = 'The registration was unsuccessful'
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+      next_place_to_go_unsuccessful_create
+    end
+  end
+
+  def destroy
+    load(params[:id])
+    session[:type] = "edit"
+    if @userid.has_files?
+      flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
+       redirect_to :action => 'options'
+    else
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
+      end
+      @userid.destroy
+      flash[:notice] = 'The destruction of the profile was successful'
+      redirect_to :action => 'options'
+    end
+  end
+
+  def disable
+    session[:return_to] = request.fullpath
+    load(params[:id])
+    unless @userid.active
+      @userid.update_attributes(:active => true, :disabled_reason_standard => nil, :disabled_reason => nil, :disabled_date => nil)
+      flash[:notice] = "Userid re-activated"
+      redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
+    end
+    session[:type] = "disable"
+  end
+
+  def display
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @syndicate = 'all'
+    session[:syndicate] =  @syndicate
+    @options= UseridRole::USERID_ACCESS_OPTIONS
+    session[:edit_userid] = false
+    render :action => "options"
+  end
+
+  def edit
+    session[:return_to] = request.fullpath
+    session[:type] = "edit"
+    get_user_info_from_userid
+    @userid = @user if  session[:my_own]
+    load(params[:id])
+    @syndicates = Syndicate.get_syndicates
+  end
+
   def general
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
   end
 
-  def researcher_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+  def index
     session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-    session[:type] = "researcher_registration"
-    @userid = UseridDetail.new
+    get_user_info_from_userid
+    session[:my_own] = false
+    @role = session[:role]
+    if session[:active] ==  'All Members'
+      @userids = UseridDetail.get_userids_for_display(session[:syndicate])
+    else
+      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate])
+    end
+    @syndicate = session[:syndicate]
+    @sorted_by = session[:active]
+  end #end method
+
+  def load(userid_id)
     @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @userid = UseridDetail.id(userid_id).first
+    if @userid.nil?
+      go_back("userid",userid_id)
+    else
+      session[:userid_id] = userid_id
+      @syndicate = session[:syndicate]
+      @role = session[:role]
+    end
   end
 
-  def transcriber_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+  def new
     session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-    session[:type] = "transcriber_registration"
-    @userid = UseridDetail.new
+    session[:type] = "add"
+    get_user_info_from_userid
+    @role = session[:role]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @transcription_agreement = [true,false]
-    @first_name = session[:first_name]
+    @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
+      @user.person_role == "data_manager"
+    @syndicates = Syndicate.get_syndicates if @user.person_role == "system_administrator"
+    @userid = UseridDetail.new
   end
 
-  def technical_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+  def my_own
+    clean_session
+    clean_session_for_county
+    clean_session_for_syndicate
+    session[:edit_userid] = true
     session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-    session[:type] = "technical_registration"
-    @userid = UseridDetail.new
+    session[:my_own] = true
+    get_user_info_from_userid
+    @userid = @user
+  end
+
+  def next_place_to_go_successful_create
+    @userid.finish_creation_setup if params[:commit] == 'Submit'
+    @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
+    @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
+    @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
+    #sending out the password reset destroys the current_user
+    current_refinery_user = session[:refinery]
+    session.delete(:refinery)
+    case
+
+    when params[:commit] == "Submit"
+      redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
+    else
+      redirect_to refinery.login_path and return
+    end
+  end
+
+  def next_place_to_go_unsuccessful_create
+    case
+    when  params[:commit] == "Submit"
+      @user = UseridDetail.where(userid:  session[:userid]).first
+      render :action => 'new' and return
+    when params[:commit] == 'Register Researcher'
+      render :action => 'researcher_registration' and return
+    when params[:commit] == 'Register Transcriber'
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+      @transcription_agreement = [true,false]
+      render :action => 'transcriber_registration' and return
+    when params[:commit] == 'Technical Registration'
+      render :action => 'technical_registration' and return
+    else
+      @user = UseridDetail.where(userid:  session[:userid]).first
+      render :action => 'new' and return
+    end
   end
 
   def options
@@ -153,49 +200,43 @@ class UseridDetailsController < ApplicationController
       @options= UseridRole::USERID_ACCESS_OPTIONS
     end
   end
-  def display
+  
+  def person_roles
     session[:return_to] = request.fullpath
     get_user_info_from_userid
-    @syndicate = 'all'
-    session[:syndicate] =  @syndicate
-    @options= UseridRole::USERID_ACCESS_OPTIONS
-    session[:edit_userid] = false
-    render :action => "options"
+    @userid = UseridDetail.new
+    @options = UseridRole::VALUES
+    @prompt = 'Select Role?'
+    @location = 'location.href= "role?role=" + this.value'
   end
 
-  def selection
+  def record_validation_errors(exception)
+    flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
+    @userid.delete
+    next_place_to_go_unsuccessful_update
+  end
+ 
+  def rename
     session[:return_to] = request.fullpath
+    session[:type] = "edit"
     get_user_info_from_userid
-    @userid = @user
-    case
-    when params[:option] == 'Browse userids'
-      @userids = UseridDetail.get_userids_for_display('all')
-      @syndicate = 'all'
-      render "index"
-      return
-    when params[:option] == "Create userid"
-      redirect_to :action => 'new'
-      return
-    when params[:option] == "Select specific email"
-      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
-      @location = 'location.href= "select?email=" + this.value'
-      @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
-    when params[:option] == "Select specific userid"
-      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
-      @location = 'location.href= "select?userid=" + this.value'
-      @prompt = "Select userid for #{session[:syndicate]}"
-    when params[:option] == "Select specific surname/forename"
-      @userids = UseridDetail.get_names_for_selection(session[:syndicate])
-      @location = 'location.href= "select?name=" + this.value'
-      @prompt = "Select surname/forename for #{session[:syndicate]}"
-    else
-      flash[:notice] = 'Invalid option'
-      params[:option] = nil
-      redirect_to :back
-      return
-    end
-    params[:option] = nil
-    @manage_syndicate = session[:syndicate]
+    load(params[:id])
+    @syndicates = Syndicate.get_syndicates
+  end
+
+  def researcher_registration
+    cookies.signed[:Administrator] = Rails.application.config.github_password
+    session[:return_to] = request.fullpath
+    session[:first_name] = 'New Registrant'
+    session[:type] = "researcher_registration"
+    @userid = UseridDetail.new
+    @first_name = session[:first_name]
+  end
+  
+  def role
+    @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
+    @syndicate = " #{params[:role]}"
+    @sorted_by = " lower case userid"
   end
 
   def select
@@ -259,23 +300,67 @@ class UseridDetailsController < ApplicationController
     end
   end
 
-  def create
-    session[:refinery] = current_refinery_user
-    @userid = UseridDetail.new(params[:userid_detail])
-    @userid.add_fields(params[:commit],session[:syndicate])
-    @userid.save
-    if @userid.save
-      @userid.send_invitation_to_create_password
-      flash[:notice] = 'The initial registration was successful; an email has been sent to the new person to complete the process.'
-      @userid.write_userid_file
-      next_place_to_go_successful_create
+  def selection
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @userid = @user
+    case
+    when params[:option] == 'Browse userids'
+      @userids = UseridDetail.get_userids_for_display('all')
+      @syndicate = 'all'
+      render "index"
+      return
+    when params[:option] == "Create userid"
+      redirect_to :action => 'new'
+      return
+    when params[:option] == "Select specific email"
+      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      @location = 'location.href= "select?email=" + this.value'
+      @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
+    when params[:option] == "Select specific userid"
+      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      @location = 'location.href= "select?userid=" + this.value'
+      @prompt = "Select userid for #{session[:syndicate]}"
+    when params[:option] == "Select specific surname/forename"
+      @userids = UseridDetail.get_names_for_selection(session[:syndicate])
+      @location = 'location.href= "select?name=" + this.value'
+      @prompt = "Select surname/forename for #{session[:syndicate]}"
     else
-      flash[:notice] = 'The registration was unsuccessful'
-      @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_create
+      flash[:notice] = 'Invalid option'
+      params[:option] = nil
+      redirect_to :back
+      return
     end
+    params[:option] = nil
+    @manage_syndicate = session[:syndicate]
   end
 
+  def show
+    session[:return_to] = request.fullpath
+    @syndicate = session[:syndicate]
+    get_user_info_from_userid
+    load(params[:id])
+  end
+
+  def technical_registration
+    cookies.signed[:Administrator] = Rails.application.config.github_password
+    session[:return_to] = request.fullpath
+    session[:first_name] = 'New Registrant'
+    session[:type] = "technical_registration"
+    @userid = UseridDetail.new
+  end
+  
+  def transcriber_registration
+    cookies.signed[:Administrator] = Rails.application.config.github_password
+    session[:return_to] = request.fullpath
+    session[:first_name] = 'New Registrant'
+    session[:type] = "transcriber_registration"
+    @userid = UseridDetail.new
+    @syndicates = Syndicate.get_syndicates_open_for_transcription
+    @transcription_agreement = [true,false]
+    @first_name = session[:first_name]
+  end  
+ 
   def update
     load(params[:id])
     success = Array.new
@@ -310,87 +395,4 @@ class UseridDetailsController < ApplicationController
       return
     end
   end
-
-  def destroy
-    load(params[:id])
-    session[:type] = "edit"
-    if @userid.has_files?
-      flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
-       redirect_to :action => 'options'
-    else
-      if MyopicVicar::Application.config.template_set != 'freecen'
-        Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
-      end
-      @userid.destroy
-      flash[:notice] = 'The destruction of the profile was successful'
-      redirect_to :action => 'options'
-    end
-  end
-
-  def disable
-    session[:return_to] = request.fullpath
-    load(params[:id])
-    unless @userid.active
-      @userid.update_attributes(:active => true, :disabled_reason => nil, :disabled_date => nil)
-      flash[:notice] = "Userid re-activated"
-      redirect_to userid_details_path(:anchor => "#{ @userid.id}") and return
-    end
-    session[:type] = "disable"
-  end
-
-  def load(userid_id)
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @userid = UseridDetail.id(userid_id).first
-    if @userid.nil?
-      go_back("userid",userid_id)
-    else
-      session[:userid_id] = userid_id
-      @syndicate = session[:syndicate]
-      @role = session[:role]
-    end
-  end
-
-  def next_place_to_go_unsuccessful_create
-    case
-    when  params[:commit] == "Submit"
-      @user = UseridDetail.where(userid:  session[:userid]).first
-      render :action => 'new' and return
-    when params[:commit] == 'Register Researcher'
-      render :action => 'researcher_registration' and return
-    when params[:commit] == 'Register Transcriber'
-      @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
-      render :action => 'transcriber_registration' and return
-    when params[:commit] == 'Technical Registration'
-      render :action => 'technical_registration' and return
-    else
-      @user = UseridDetail.where(userid:  session[:userid]).first
-      render :action => 'new' and return
-    end
-  end
-
-  def next_place_to_go_successful_create
-    @userid.finish_creation_setup if params[:commit] == 'Submit'
-    @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
-    @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
-    @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
-    #sending out the password reset destroys the current_user
-    current_refinery_user = session[:refinery]
-    session.delete(:refinery)
-    case
-
-    when params[:commit] == "Submit"
-      redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
-    else
-      redirect_to refinery.login_path and return
-    end
-  end
-
-  def record_validation_errors(exception)
-    flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
-    @userid.delete
-    next_place_to_go_unsuccessful_update
-  end
-
 end

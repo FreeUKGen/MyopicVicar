@@ -50,4 +50,23 @@ MyopicVicar::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+  
+  config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
+  config.datafiles = MyopicVicar::MongoConfig['datafiles']
+  config.dataset_date =  MyopicVicar::MongoConfig['dataset_date'] unless MyopicVicar::MongoConfig['dataset_date'].blank?
+  config.datafiles_changeset = MyopicVicar::MongoConfig['datafiles_changeset'] unless MyopicVicar::MongoConfig['datafiles_changeset'].blank?
+  config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
+  config.website = MyopicVicar::MongoConfig['website']
+  config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
+  config.github_login = 'FreeUKGenIssues'
+  config.github_password = ENV["GITHUB_WORD"]
+  config.github_repo = 'FreeUKGen/FreeUKRegProductIssues'
+  config.days_to_retain_search_queries = 90
+  config.sleep = MyopicVicar::MongoConfig['sleep']
+  config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
+  config.delete_list = MyopicVicar::MongoConfig['delete_list']
+  config.member_open = MyopicVicar::MongoConfig['member_open']
+  config.github_user = MyopicVicar::MongoConfig['github_user']
+  config.github_password = MyopicVicar::MongoConfig['github_password']
+
 end

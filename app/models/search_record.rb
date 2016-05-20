@@ -8,9 +8,9 @@ class SearchRecord
   include Mongoid::Document
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
-
+  #before_save :add_digest
   #before_save :transform
-  before_create :transform
+  #before_create :transform
   module Source
     TRANSCRIPT='transcript'
     EMENDOR='e'
@@ -39,7 +39,8 @@ class SearchRecord
   #many :annotations, :in => :annotation_ids
 
   field :record_type, type: String
-
+  field :search_record_version, type: String
+  field :digest, type: String
   # transcript fields
   # field :first_name, type: String#, :required => false
   # field :last_name, type: String#, :required => false
@@ -55,7 +56,7 @@ class SearchRecord
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
-  
+
   # derived search fields
   field :location_names, type:Array, default: []
   field :search_soundex, type: Array, default: []
@@ -73,40 +74,21 @@ class SearchRecord
     "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
     "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
   }
-    class << self
-     def marriages
-      where(:record_type => "ma")
-     end
-     def baptisms
-      where(:record_type => "ba")
-     end
-     def burials
-      where(:record_type => "bu")
-     end
-     def record_id(id)
-       where(:id => id)
-     end
-     def chapman_code(code)
-       where(:chapman_code => code)
-     end
-  end
-
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
     index(field_spec, :name => name)
   end
-  
-  def self.index_hint(search_params) 
+  def self.index_hint(search_params)
     candidates = INDEXES.keys
     scores = {}
     search_fields = fields_from_params(search_params)
     candidates.each { |name| scores[name] = index_score(name,search_fields)}
-#    pp scores
+    #    pp scores
     best = scores.max_by { |k,v| v}
     best[0]
   end
-  
+
   def self.index_score(index_name, search_fields)
     fields = INDEXES[index_name]
     best_score = -1
@@ -119,6 +101,148 @@ class SearchRecord
     end
     best_score
   end
+  class << self
+    def marriages
+      where(:record_type => "ma")
+    end
+    def baptisms
+      where(:record_type => "ba")
+    end
+    def burials
+      where(:record_type => "bu")
+    end
+    def record_id(id)
+      where(:id => id)
+    end
+    def chapman_code(code)
+      where(:chapman_code => code)
+    end
+  end
+  def add_digest
+    self.digest = self.cal_digest
+  end
+  def cal_digest
+    string = ''
+    string = string + self.add_location_string
+    string = string + self.add_soundex_string
+    string = string + self.add_search_name_string
+    string = string + self.add_search_date_string
+    md5 = OpenSSL::Digest::MD5.new
+    if string.nil?
+      p "#{self._id}, nil string for MD5"
+    else
+      the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
+    end
+    return the_digest
+  end
+  def add_location_string
+    string = ""
+    location = self.location_names
+    string = string + location[0].gsub(/\s+/, '') if location.present? && location[0].present?
+    string = string + location[1].gsub(/\s+/, '').gsub(/\[/, '').gsub(/\]/,'') if location.present? && location[1].present?
+    return string
+  end
+  def add_soundex_string
+    string = ""
+    self.search_soundex.each do |name|
+      string = string + name["first_name"] if name["first_name"].present?
+      string = string + name[:first_name] if name[:first_name].present?
+      string = string + name["last_name"] if name["last_name"].present?
+      string = string + name[:last_name] if name[:last_name].present?
+    end
+    return string
+  end
+  def add_search_name_string
+    string = ""
+    self.search_names.each do |name|
+      string = string + name[:first_name] if name[:first_name].present?
+      string = string + name[:last_name] if name[:last_name].present?
+    end
+    return string
+  end
+  def add_search_date_string
+    string = ""
+    self.search_dates.each do |date|
+      string = string + date if date.present?
+    end
+    return string
+  end
+  def hex_to_base64_digest(hexdigest)
+    [[hexdigest].pack("H*")].pack("m").strip
+  end
+  def self.update_create_search_record(entry,search_version,place_id)
+    search_record = entry.search_record
+    if search_record.blank?
+      search_record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      search_record.freereg1_csv_entry = entry
+      search_record.search_record_version = search_version
+      search_record.transform
+      search_record.place_id = place_id
+      search_record.digest = search_record.cal_digest
+      search_record.save
+      return "created"
+    else
+      digest = search_record.digest
+      digest = search_record.cal_digest if digest.blank?
+      #create a temporary search record with the new information; this will not be saved
+      new_search_record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      new_search_record.freereg1_csv_entry = entry
+      new_search_record.place_id = place_id
+      new_search_record.transform
+      brand_new_digest = new_search_record.cal_digest
+      unless  brand_new_digest == digest
+        #we have to update the current search record
+        #add the search version and digest
+        search_record.search_record_version = search_version
+        search_record.digest = brand_new_digest
+        #update the transcript names if it has changed
+        search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names == new_search_record.transcript_names
+        #update the location if it has changed
+        search_record.location_names = new_search_record.location_names unless search_record.location_names == new_search_record.location_names
+        #update the soundex if it has changed
+        search_record.search_soundex = new_search_record.search_soundex unless search_record.search_soundex == new_search_record.search_soundex
+        #update the search date
+        search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
+        #create a hash of search names from the original search names
+        search_record.adjust_search_names(new_search_record)
+        return "updated"
+      else
+      	digest = search_record.digest
+        digest = search_record.cal_digest if digest.blank?
+        search_record.search_record_version = search_version
+        search_record.digest = brand_new_digest
+        search_record.save
+        return "digest added"
+      end
+    end
+  end
+
+  def adjust_search_names(new_search_record)
+    original_names = get_search_names_hash(self)
+    new_names = get_search_names_hash(new_search_record)
+    original_copy = original_names
+    #remove from the original hash any record that is in the new set. What is left are search names that need
+    #to be removed as they are not in the new set
+    original_names.delete_if {|key, value| new_names.has_value?(value)}
+    # remove all search names in the new set that are in the original. What is left are the "new" search names
+    new_names.delete_if {|key, value| original_copy.has_value?(value)}
+    #remove search names from the search record that are no longer required
+    original_names.each_value do |value|
+      self.search_names.where(value).delete_all
+    end
+    #add the new search names to the existing search record
+    new_names.each_value {|value| self.search_names.new(value)}
+    self.save
+  end
+
+  def get_search_names_hash(names)
+    original = {}
+    names.search_names.each do |name|
+      original[name._id] = JSON.parse(name.to_json(:except => :_id))
+    end
+    return original
+  end
+
   def update_location(entry,file)
     place = file.register.church.place
     location_names =[]
@@ -129,19 +253,20 @@ class SearchRecord
     location_names  << " [#{register_type}]"
     self.update_attribute(:location_names, location_names)
     if self.place_id != place.id
-          self.update_attribute(:place_id, place.id)
-    end    
+      self.update_attribute(:place_id, place.id)
+    end
+
   end
 
   def self.fields_from_params(search_params)
     fields = []
-    
+
     search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
-    
+
     fields.uniq
   end
-  
-  def self.extract_fields(fields, params, current_field)    
+
+  def self.extract_fields(fields, params, current_field)
     if params.is_a?(Hash)
       # walk down the syntax tree
       params.each_pair do |key,value|
@@ -149,7 +274,7 @@ class SearchRecord
         if key.to_s =~ /\$/
           new_field = String.new(current_field)
         else
-          new_field = String.new(current_field + "." + key.to_s)             
+          new_field = String.new(current_field + "." + key.to_s)
         end
         extract_fields(fields, value, new_field)
       end
@@ -157,7 +282,7 @@ class SearchRecord
       # terminate
       fields << current_field
     end
-    
+
   end
 
   def comparable_name
@@ -165,7 +290,7 @@ class SearchRecord
       name['type'] == 'primary'
     end
   end
-  
+
   def location_names
     return self[:location_names] if self[:location_names] && self[:location_names].size > 0
 
@@ -216,21 +341,49 @@ class SearchRecord
     order
   end
 
+  def self.setup_benchmark
+    unless defined? @@tts
+      @@tts = {}
+      @@tts[:populate_tts] = Benchmark.measure {}
+      @@tts[:downcase_tts] = Benchmark.measure {}
+      @@tts[:separate_tts] = Benchmark.measure {}
+      @@tts[:emend_tts] = Benchmark.measure {}
+      @@tts[:soundex_tts] = Benchmark.measure {}
+      @@tts[:date_tts] = Benchmark.measure {}
+      @@tts[:location_tts] = Benchmark.measure {}
+
+      @@tts[:translate_tts] = Benchmark.measure {}
+      @@tts[:place_lookup_tts] = Benchmark.measure {}
+      @@tts[:total_save_tts] = Benchmark.measure {}
+    end
+  end
+
+  def self.report_benchmark
+    print "Phase\tUser\tSystem\tReal\n"
+    @@tts.each_pair do |k,v|
+      print "#{k}\t"
+      print "#{v.format}"
+    end
+  end
+
   def transform
-    populate_search_from_transcript
-
-    downcase_all
-
-    separate_all
-
-    emend_all
-
-    create_soundex
-
-    transform_date
-
-    populate_location
-
+    if defined? @@tts
+      @@tts[:populate_tts] += Benchmark.measure { populate_search_from_transcript }
+      @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
+      @@tts[:separate_tts] += Benchmark.measure { separate_all }
+      @@tts[:emend_tts] += Benchmark.measure { emend_all }
+      @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
+      @@tts[:date_tts] += Benchmark.measure { transform_date }
+      @@tts[:location_tts] += Benchmark.measure { populate_location }
+    else
+      populate_search_from_transcript
+      downcase_all
+      separate_all
+      emend_all
+      create_soundex
+      transform_date
+      populate_location
+    end
   end
 
   def populate_search_from_transcript
@@ -280,8 +433,8 @@ class SearchRecord
     names_array.each do |name|
       name_role = (name[:role].nil?) ? nil : name[:role]
       name_gender = (name[:gender].nil?) ? nil : name[:gender]
-      tokens = name.first_name.split(/-|\s+/)
-      if tokens.size > 1
+      tokens = name.first_name.split(/-|\s+/) unless name.nil? || name.first_name.nil?
+      if tokens.present? && tokens.size > 1
         tokens.each do |token|
           separated_names << search_name(token, name.last_name, name.type, name_role, name_gender, Source::SEPARATION)
         end
@@ -364,34 +517,66 @@ class SearchRecord
   end
 
   def self.from_freereg1_csv_entry(entry)
+
     #   # assumes no existing entries for this line
     @@file = nil if (defined?(@@file)).nil?
     @@owner = nil if (defined?(@@owner)).nil?
     @@places = nil if (defined?(@@places)).nil?
-    record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-    record.freereg1_csv_entry = entry
-    file = entry.freereg1_csv_file
-    if @@file.nil? || @@owner.nil?  
-      places = file.register.church.place 
-      @@places = places
-      @@file = file.file_name
-      @@owner = file.userid
+
+    record = nil
+    if defined? @tts
+      @@tts[:translate_tts] += Benchmark.measure { record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry)) }
+
+      @@tts[:place_lookup_tts] += Benchmark.measure do
+        record.freereg1_csv_entry = entry
+        file = entry.freereg1_csv_file
+        if @@file.nil? || @@owner.nil?
+          places = file.register.church.place
+          @@places = places
+          @@file = file.file_name
+          @@owner = file.userid
+        else
+          if @@file == file.file_name && @@owner == file.userid
+            places = @@places
+          else
+            places = file.register.church.place
+            @@places = places
+            @@file = file.file_name
+            @@owner = file.userid
+          end
+        end
+        record.place = places
+      end
+
+      @@tts[:total_save_tts] += Benchmark.measure do
+        record.save!
+      end
     else
-      if @@file == file.file_name && @@owner == file.userid
-        places = @@places
-      else
-        places = file.register.church.place 
+      record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      record.freereg1_csv_entry = entry
+      file = entry.freereg1_csv_file
+      if @@file.nil? || @@owner.nil?
+        places = file.register.church.place
         @@places = places
         @@file = file.file_name
         @@owner = file.userid
+      else
+        if @@file == file.file_name && @@owner == file.userid
+          places = @@places
+        else
+          places = file.register.church.place
+          @@places = places
+          @@file = file.file_name
+          @@owner = file.userid
+        end
       end
+      record.place = places
+      record.save!
     end
-    record.place = places
-    record.save!
   end
 
   def self.delete_freereg1_csv_entries
     SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
   end
-  
+
 end

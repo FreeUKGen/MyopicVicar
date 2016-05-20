@@ -1,4 +1,4 @@
-class MessagesController < InheritedResources::Base
+class MessagesController < ApplicationController
   require 'freereg_options_constants'
  require 'userid_role'
   def index

@@ -36,7 +36,7 @@ class CreateUseridDocs
 
   def self.check_for_replace(filename,userid,digest)
     #check to see if we should process the file
-    #is it aleady there?
+    #is it already there?
     check_for_file = UseridDetail.where(:userid => userid).first
     if check_for_file.nil?
       #if file not there then need to create

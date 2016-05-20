@@ -75,5 +75,7 @@ MyopicVicar::Application.configure do
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
-  config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats']
+  config.github_user = MyopicVicar::MongoConfig['github_user']
+  config.github_password = MyopicVicar::MongoConfig['github_password']
+  config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
 end

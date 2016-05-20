@@ -111,13 +111,20 @@ class SearchQuery
   def compare_name(x,y)
     x_name = x.comparable_name
     y_name = y.comparable_name
-    unless x_name.blank? || y_name.blank?
-      if x_name['last_name'] == y_name['last_name']
-        x_name['first_name'] <=> y_name['first_name']
-      else
-        x_name['last_name'] <=> y_name['last_name']
-      end
+    if x_name.blank?
+      return y_name.blank? ? 0 : -1
     end
+    return 1 if y_name.blank?
+    if x_name['last_name'] == y_name['last_name']
+      if x_name['first_name'].nil? || y_name['first_name'].nil?
+        return x_name['first_name'].to_s <=> y_name['first_name'].to_s
+      end
+      return x_name['first_name'] <=> y_name['first_name']
+    end
+    if x_name['last_name'].nil? || y_name['last_name'].nil?
+      return x_name['last_name'].to_s <=> y_name['last_name'].to_s
+    end
+    return x_name['last_name'] <=> y_name['last_name']
   end
 
   def compare_location(x,y)
@@ -249,6 +256,7 @@ class SearchQuery
 
   def previous_record(current)
     records_sorted = self.results
+    return nil if records_sorted.nil?
     record_ids_sorted = Array.new
     records_sorted.each do |rec|
       record_ids_sorted << rec["_id"].to_s
@@ -261,6 +269,7 @@ class SearchQuery
 
   def next_record(current)
     records_sorted = self.results
+    return nil if records_sorted.nil?
     record_ids_sorted = Array.new
     records_sorted.each do |rec|
       record_ids_sorted << rec["_id"].to_s

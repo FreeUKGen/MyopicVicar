@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'freereg_csv_processor'
+require 'freereg_csv_update_processor'
 
 describe Freereg1CsvFile do
   before(:all) do
@@ -8,7 +8,7 @@ describe Freereg1CsvFile do
   end
 
   before(:each) do
-    FreeregCsvProcessor::delete_all
+    FreeregCsvUpdateProcessor::delete_all
   end
 
 
