@@ -58,14 +58,9 @@ class Feedback
 
   def communicate
     ccs = Array.new
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:person_role => 'project_manager').first
-    ccs << cc.email_address unless cc.nil?  
-    cc = UseridDetail.where(:person_role => 'executive_director').first
-    ccs << cc.email_address unless cc.nil?
-    ccs = ccs.uniq
     UserMailer.feedback(self,ccs).deliver    
   end 
 

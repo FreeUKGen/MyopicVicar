@@ -76,15 +76,9 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
-    ccs << cc.email_address unless cc.nil?
-    cc = UseridDetail.where(:person_role => 'project_manager').first
-    ccs << cc.email_address unless cc.nil?
-    cc = UseridDetail.where(:person_role => 'executive_director').first
-    ccs << cc.email_address unless cc.nil?
     UserMailer.website(self,ccs).deliver
   end
 
@@ -92,14 +86,9 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      ccs << person.email_address
-    end
-    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
-    ccs << cc.email_address unless cc.nil?
     UserMailer.datamanager_data_question(self,ccs).deliver
   end
 
@@ -109,14 +98,9 @@ class Contact
     ccs << selected_coord.email_address unless selected_coord.nil?
     coordinator = self.get_coordinator if self.record_id.present?
     ccs << coordinator.email_address if coordinator.present?
-    UseridDetail.where(:person_role => 'data_manager').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-   UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      ccs << person.email_address
-    end
-    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
-    ccs << cc.email_address unless cc.nil?
     UserMailer.coordinator_data_problem(self,ccs).deliver
   end
 
@@ -128,13 +112,9 @@ class Contact
     UseridDetail.where(:person_role => 'publicity_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:person_role => 'executive_director').first
-    ccs << cc.email_address unless cc.nil?
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
-    ccs << cc.email_address unless cc.nil?
     UserMailer.publicity(self,ccs).deliver
   end
 
@@ -145,10 +125,7 @@ class Contact
     UseridDetail.where(:person_role => 'genealogy_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contact_coordinator').all.each do |person|
-      ccs << person.email_address
-    end
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
     UserMailer.genealogy(self,ccs).deliver
@@ -158,16 +135,12 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+      ccs << person.email_address
+    end
     UseridDetail.where(:person_role => 'project_manager').all.each do |person|
       ccs << person.email_address
     end
-    cc = UseridDetail.where(:person_role => 'executive_director').first
-    ccs << cc.email_address unless cc.nil?
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      ccs << person.email_address
-    end
-    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
-    ccs << cc.email_address unless cc.nil?
     UserMailer.enhancement(self,ccs).deliver
   end
 
@@ -178,14 +151,9 @@ class Contact
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'engagement_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      ccs << person.email_address
-    end
-    cc = UseridDetail.where(:person_role => 'contacts_coordinator').first
-    ccs << cc.email_address unless cc.nil?
     UserMailer.volunteer(self,ccs).deliver
   end
 
@@ -195,9 +163,6 @@ class Contact
     ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address unless person.nil?
-    end
-    UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
-      ccs << person.email_address
     end
     UserMailer.general(self,ccs).deliver
   end
@@ -209,6 +174,7 @@ class Contact
       file = record.freereg1_csv_file
       county = file.county #this is chapman code
       coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+      return coordinator
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       coord = nil
       rec_county = SearchRecord.find(self.record_id).chapman_code

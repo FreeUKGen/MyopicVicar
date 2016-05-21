@@ -79,8 +79,9 @@ class Freereg1CsvEntriesController < ApplicationController
       render :action => 'error'
       return
     else
-      software_version = SoftwareVersion.control.first
-      search_version  = software_version.last_search_record_version
+      software_version = SoftwareVersion.control.first 
+      search_version = ''
+      search_version  = software_version.last_search_record_version unless software_version.blank?
       place_id = get_place_id_from_file(@freereg1_csv_file)
       SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
       @freereg1_csv_file.backup_file
@@ -145,8 +146,9 @@ class Freereg1CsvEntriesController < ApplicationController
         return
       else
         #update search record if there is a change
-        software_version = SoftwareVersion.control.first
-        search_version  = software_version.last_search_record_version
+        software_version = SoftwareVersion.control.first 
+        search_version = ''
+        search_version  = software_version.last_search_record_version unless software_version.blank?
         place_id = get_place_id_from_file(@freereg1_csv_file)
         SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
         # lock file and note modification date
