@@ -75,6 +75,11 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
+    end
     UserMailer.website(self,ccs).deliver
   end
 
@@ -82,6 +87,11 @@ class Contact
     ccs = Array.new
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
     end
     UserMailer.datamanager_data_question(self,ccs).deliver
   end
@@ -105,6 +115,11 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
+    end
     UserMailer.publicity(self,ccs).deliver
   end
 
@@ -115,6 +130,11 @@ class Contact
     end
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
     end
     UserMailer.genealogy(self,ccs).deliver
   end
@@ -127,6 +147,11 @@ class Contact
     UseridDetail.where(:person_role => 'project_manager').all.each do |person|
       ccs << person.email_address
     end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
+    end
     UserMailer.enhancement(self,ccs).deliver
   end
 
@@ -138,13 +163,23 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
+    end
     UserMailer.volunteer(self,ccs).deliver
   end
 
   def communicate_general
     ccs = Array.new
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
-      ccs << person.email_address unless person.nil?
+      ccs << person.email_address 
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
     end
     UserMailer.general(self,ccs).deliver
   end

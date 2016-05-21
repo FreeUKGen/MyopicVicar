@@ -61,6 +61,11 @@ class Feedback
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
+    end
     UserMailer.feedback(self,ccs).deliver    
   end 
 
