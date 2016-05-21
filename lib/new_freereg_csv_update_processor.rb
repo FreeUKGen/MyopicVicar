@@ -467,9 +467,9 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)
-      project.member_message_file.close
+      
       project.message_file.close if project.type_of_project == "individual"
-      File.delete(project.message_file) if project.type_of_project == "individual"
+      #File.delete(project.message_file) if project.type_of_project == "individual"
   end
 
   def clean_up_physical_files_after_failure(message)
@@ -531,6 +531,8 @@ class CsvFile < CsvFiles
   def communicate_file_processing_results(project)
     p "communicating success"
     file = project.member_message_file
+    file.close
+    p file
     UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
@@ -1301,19 +1303,6 @@ class CsvRecord < CsvRecords
     @data_record = Hash.new
   end
 
-  def correct_church_name(word)
-    word = word.gsub(/\./, " ").gsub(/\s+/, ' ').strip
-    church_words = word.split(" ")
-    new_church_word = ""
-    church_words.each do |church_word|
-      church_word = FreeregOptionsConstants::CHURCH_WORD_EXPANSIONS[church_word] if FreeregOptionsConstants::CHURCH_WORD_EXPANSIONS.has_key?(church_word)
-      church_word = FreeregOptionsConstants::COMMON_WORD_EXPANSIONS[church_word] if FreeregOptionsConstants::COMMON_WORD_EXPANSIONS.has_key?(church_word)
-      new_church_word = new_church_word + church_word + " "
-    end
-    word = new_church_word.strip
-    return word
-  end
-
   def extract_data_line(csvrecords,csvfile,project,line)
     #p "extracting data line"
     begin
@@ -1376,7 +1365,7 @@ class CsvRecord < CsvRecords
       success = false
       message = "Empty church field"
     end
-    church_name = self.correct_church_name(church_name)
+    church_name = Church.standardize_church_name(church_name)
     return success, message, church_name, register_type
   end
 
@@ -1392,13 +1381,14 @@ class CsvRecord < CsvRecords
     success = true if FreeregValidations.valid_chapman_code?(chapman_code)
     project.write_messages_to_all("The county code #{chapman_code} at field #{@data_line[csvrecords.data_entry_order[:chapman_code]]} is invalid at line #{line}. <br>", true)   if  !success
     place_name = @data_line[csvrecords.data_entry_order[:place_name]]
-    success1 = true if  FreeregValidations.valid_place?(place_name,chapman_code)
+    success1, set_place_name = validate_place_and_set(place_name,chapman_code)
     project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid at line #{line}. <br>", true)   if  !success1
+    place_name = set_place_name if success1
     #allows for different Register type input
     if csvfile.header[:def]
       #separate field
       church_name = @data_line[csvrecords.data_entry_order[:church_name]]
-      success2 = true if FreeregValidations.valid_church?(church_name,chapman_code,place_name)
+      success2 , set_church_name = validate_church_and_set(church_name,chapman_code,place_name)
       project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>" , true)  if  !success2
       register_type = @data_line[csvrecords.data_entry_order[:register_type]]
       success3 = true if FreeregValidations.valid_register_type?(register_type,chapman_code,place_name,church_name)
@@ -1407,11 +1397,16 @@ class CsvRecord < CsvRecords
     else
       #part of church name
       success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
+      p church_name
+      p success4
       project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
+      p success5
+      p set_church_name
       project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
       #we use the server church name in case of case differences
       church_name = set_church_name if  success5
+      p church_name
       return false unless success && success1 && success4 && success5
     end
     self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)
@@ -1548,13 +1543,19 @@ class CsvRecord < CsvRecords
 
   def validate_church_and_set(church_name,chapman_code,place_name)
     place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
-    return false, "No match" if place.churches.blank?
+    return false, "No match" if place.blank? || place.churches.blank?
     place.churches.each do |church|
       if church.church_name.downcase == church_name.downcase
         return true, church.church_name
       end
     end
     return false, "No match"
+  end
+  def validate_place_and_set(field,chapman)
+    field = field.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase unless field.blank?
+    place = Place.chapman_code(chapman).modified_place_name(field).not_disabled.first
+    return false unless place.present?
+    return true, place.place_name
   end
 
 end

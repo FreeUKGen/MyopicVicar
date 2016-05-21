@@ -75,6 +75,7 @@ class Church
  
   def change_name(param)
     unless self.church_name == param[:church_name]
+      param[:church_name] = Church.standardize_church_name(param[:church_name])
       self.update_attribute(:church_name, param[:church_name])
     end
     if self.errors.any?
@@ -138,5 +139,18 @@ class Church
     end
     stats =[records,min,max]
     return stats
+  end
+
+  def self.standardize_church_name(word)
+    word = word.gsub(/\./, " ").gsub(/\s+/, ' ').strip
+    church_words = word.split(" ")
+    new_church_word = ""
+    church_words.each do |church_word|
+      church_word = FreeregOptionsConstants::CHURCH_WORD_EXPANSIONS[church_word] if FreeregOptionsConstants::CHURCH_WORD_EXPANSIONS.has_key?(church_word)
+      church_word = FreeregOptionsConstants::COMMON_WORD_EXPANSIONS[church_word] if FreeregOptionsConstants::COMMON_WORD_EXPANSIONS.has_key?(church_word)
+      new_church_word = new_church_word + church_word + " "
+    end
+    word = new_church_word.strip
+    return word
   end
 end
