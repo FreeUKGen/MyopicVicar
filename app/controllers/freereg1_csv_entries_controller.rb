@@ -11,10 +11,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def show
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
-    p "showing"
-    p @freereg1_csv_entry
-    p @freereg1_csv_entry.search_record
-    p @freereg1_csv_entry.search_record.search_names
     if @freereg1_csv_entry.present?
       get_user_info_from_userid
       session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
@@ -79,7 +75,7 @@ class Freereg1CsvEntriesController < ApplicationController
       render :action => 'error'
       return
     else
-      software_version = SoftwareVersion.control.first 
+      software_version = SoftwareVersion.control.first
       search_version = ''
       search_version  = software_version.last_search_record_version unless software_version.blank?
       place_id = get_place_id_from_file(@freereg1_csv_file)
@@ -146,7 +142,7 @@ class Freereg1CsvEntriesController < ApplicationController
         return
       else
         #update search record if there is a change
-        software_version = SoftwareVersion.control.first 
+        software_version = SoftwareVersion.control.first
         search_version = ''
         search_version  = software_version.last_search_record_version unless software_version.blank?
         place_id = get_place_id_from_file(@freereg1_csv_file)
@@ -170,6 +166,7 @@ class Freereg1CsvEntriesController < ApplicationController
     if @freereg1_csv_entry.present?
       freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
       freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
+      @freereg1_csv_entry.destroy
       freereg1_csv_file.calculate_distribution
       freereg1_csv_file.recalculate_last_amended
       freereg1_csv_file.update_number_of_files
