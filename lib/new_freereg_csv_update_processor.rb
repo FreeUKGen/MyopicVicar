@@ -354,7 +354,7 @@ class CsvFile < CsvFiles
        # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on 
        place = self.place_id  
        SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if  project.create_search_records && existing_record.enough_name_fields?
-       sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+       sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)
      end
      return success 
@@ -500,8 +500,8 @@ class CsvFile < CsvFiles
        file_for_entry = actual_record.freereg1_csv_file_id
        files << file_for_entry unless files.include?(file_for_entry)
        actual_record.destroy unless actual_record.nil?
-      #sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-       #sleep(sleep_time) unless actual_record.nil?
+      sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+       sleep(sleep_time) unless actual_record.nil?
      end
      #recalculate distribution after clean up
      files.each do |file|
@@ -554,7 +554,7 @@ class CsvFile < CsvFiles
        SearchRecord.update_create_search_record(entry,self.header[:search_record_version],place) if  project.create_search_records && entry.enough_name_fields?
        success = "new"
      end
-     sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+     sleep_time = (Rails.application.config.sleep.to_f).to_f
      sleep(sleep_time)
      # p entry.search_record
      return success
@@ -635,7 +635,7 @@ class CsvFile < CsvFiles
         #p "creating search record as not there"
         place = self.place_id
         SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if project.create_search_records && existing_record.enough_name_fields?
-        sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+        sleep_time = (Rails.application.config.sleep.to_f).to_f
         sleep(sleep_time)
       end
     else
