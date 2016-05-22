@@ -1,39 +1,39 @@
 class SoftwareVersionsController < ApplicationController
   def commitments
     @software = SoftwareVersion.id(params[:id]).first
-      if  @software.present?
-        @software
-      else
-        go_back("software",params[:id])
-      end  
+    if  @software.present?
+      @software
+    else
+      go_back("software",params[:id])
+    end
   end
 
   def destroy
     @software = SoftwareVersion.id(params[:id]).first
     if  @software.present?
-        @software.delete
-        if @software.errors.any?
-          flash[:notice] = 'The delete of the Version was unsuccessful'
-          redirect_to software_versions_path
-          return
-        else
-          flash[:notice] = 'The delete of the search_record information was successful'
-          redirect_to software_versions_path
-          return
-        end
+      @software.delete
+      if @software.errors.any?
+        flash[:notice] = 'The delete of the Version was unsuccessful'
+        redirect_to software_versions_path
+        return
       else
-        go_back("software",params[:id])
-      end  
+        flash[:notice] = 'The delete of the search_record information was successful'
+        redirect_to software_versions_path
+        return
+      end
+    else
+      go_back("software",params[:id])
+    end
   end
 
   def edit
     get_user_info_from_userid
-     @software = SoftwareVersion.id(params[:id]).first
-      if  @software.present?
-        @software
-      else
-        go_back("software",params[:id])
-      end  
+    @software = SoftwareVersion.id(params[:id]).first
+    if  @software.present?
+      @software
+    else
+      go_back("software",params[:id])
+    end
   end
 
   def index
@@ -41,36 +41,35 @@ class SoftwareVersionsController < ApplicationController
   end
 
   def new
-    
+
   end
 
   def show
-     get_user_info_from_userid
-     @software = SoftwareVersion.id(params[:id]).first
-      if  @software.present?
-        @software
-      else
-        go_back("software",params[:id])
-      end     
+    get_user_info_from_userid
+    @software = SoftwareVersion.id(params[:id]).first
+    if  @software.present?
+      @software
+    else
+      go_back("software",params[:id])
+    end
   end
   def update
-    p params
     get_user_info_from_userid
-     @software = SoftwareVersion.id(params[:id]).first
-      if  @software.present?
-        @software.update_attributes(params[:software_version])
-        if @software.errors.any?
-          flash[:notice] = 'The update of the Version was unsuccessful'
-          render :action => 'edit'
-          return
-        else
-          flash[:notice] = 'The update the Version was successful'
-          redirect_to software_versions_path
-          return
-        end
+    @software = SoftwareVersion.id(params[:id]).first
+    if  @software.present?
+      @software.update_attributes(params[:software_version])
+      if @software.errors.any?
+        flash[:notice] = 'The update of the Version was unsuccessful'
+        render :action => 'edit'
+        return
       else
-        go_back("software",params[:id])
-      end  
+        flash[:notice] = 'The update the Version was successful'
+        redirect_to software_versions_path
+        return
+      end
+    else
+      go_back("software",params[:id])
+    end
   end
 
 end

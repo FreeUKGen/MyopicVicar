@@ -322,7 +322,6 @@ class CsvFile < CsvFiles
     success,@records_processed = @csv_records.extract_the_data(self,project)
     p "finished data"
     return success,"Data not extracted #{@records_processed}. <br>" unless success
-    p @records_processed if success
     success,@records_processed,@data_errors = self.process_the_data(project) if success
     return success,"Data not processed #{@records_processed}. <br>" unless success
     success, message = self.clean_up_supporting_information(project)
@@ -466,10 +465,9 @@ class CsvFile < CsvFiles
     end  
   end
 
-  def clean_up_message(project)
-      
+  def clean_up_message(project)     
       project.message_file.close if project.type_of_project == "individual"
-      #File.delete(project.message_file) if project.type_of_project == "individual"
+      File.delete(project.message_file) if project.type_of_project == "individual"
   end
 
   def clean_up_physical_files_after_failure(message)
@@ -532,7 +530,6 @@ class CsvFile < CsvFiles
     p "communicating success"
     file = project.member_message_file
     file.close
-    p file
     UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
@@ -963,9 +960,9 @@ class CsvRecords <  CsvFile
     eric[4] = header_field[4]
     eric[5] = header_field[5]
     i = 2
-    while i < 6  do
-        header_field[i] = eric[i]
-        i +=1
+    while i < 6
+      header_field[i] = eric[i]
+      i +=1
     end
     process_header_line_two_block(header_field,csvfile)
   end
@@ -995,9 +992,9 @@ class CsvRecords <  CsvFile
 
   def process_header_line_two_transcriber(header_field,csvfile)
     i = 0
-    while i < 4  do
-        header_field[5-i] = header_field[3-i]
-        i +=1
+    while i < 4
+      header_field[5-i] = header_field[3-i]
+      i +=1
     end
     header_field[2] = header_field[2].gsub(/#/, '')
     process_header_line_two_block(header_field,csvfile)
@@ -1215,8 +1212,6 @@ class CsvRecords <  CsvFile
       csvfile.header[:def]  = false
       @data_entry_order = get_default_data_entry_order(csvfile)
     end
-    p "order"
-    p @data_entry_order
     return true, "OK"
   end
   # This extracts the header and entry information from the file and adds it to the database
@@ -1254,7 +1249,7 @@ class CsvRecords <  CsvFile
     p "Extracting header information"
     success1 = success2 = success3 = success4 = true
     success = false
-    csvfile.header_error << "There are no valid header lines. <br>"if @header_lines.length == 0
+    csvfile.header_error << "There are no valid header lines. <br>" if @header_lines.length == 0
     success = extract_from_header_one(@header_lines[0],csvfile) unless @header_lines.length <= 0
     csvfile.header_error << "There was only one header line. <br>" if @header_lines.length == 1
     success1 = extract_from_header_two(@header_lines[1],csvfile) unless @header_lines.length <= 1
@@ -1397,16 +1392,11 @@ class CsvRecord < CsvRecords
     else
       #part of church name
       success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
-      p church_name
-      p success4
       project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
-      p success5
-      p set_church_name
       project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
       #we use the server church name in case of case differences
       church_name = set_church_name if  success5
-      p church_name
       return false unless success && success1 && success4 && success5
     end
     self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)
