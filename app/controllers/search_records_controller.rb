@@ -16,11 +16,11 @@ class SearchRecordsController < ApplicationController
     @cen_year = ' '
     @cen_piece = ' '
     @cen_chapman_code = ' '
-    if @dwelling && @dwelling.freecen1_vld_file
+    if @dwelling && @dwelling.freecen_piece
       @dwelling_offset = 0
       @dwelling_number = @dwelling.dwelling_number
       if !params[:dwel].nil?
-        @dwelling = @dwelling.freecen1_vld_file.freecen_dwellings.where(_id: params[:dwel]).first
+        @dwelling = @dwelling.freecen_piece.freecen_dwellings.where(_id: params[:dwel]).first
         if @dwelling.nil?
           redirect_to new_search_query_path
           return
@@ -28,9 +28,9 @@ class SearchRecordsController < ApplicationController
         @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
         @dwelling_number = @dwelling.dwelling_number
       end
-      @cen_year = @dwelling.freecen1_vld_file.full_year
-      @cen_piece = @dwelling.freecen1_vld_file.piece.to_s
-      @cen_chapman_code = @dwelling.freecen1_vld_file.chapman_code
+      @cen_year = @dwelling.freecen_piece.year
+      @cen_piece = @dwelling.freecen_piece.piece_number.to_s
+      @cen_chapman_code = @dwelling.freecen_piece.chapman_code
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
@@ -68,11 +68,11 @@ class SearchRecordsController < ApplicationController
     @cen_year = ' '
     @cen_piece = ' '
     @cen_chapman_code = ' '
-    if @dwelling && @dwelling.freecen1_vld_file
+    if @dwelling && @dwelling.freecen_piece
       @dwelling_offset = 0
       @dwelling_number = @dwelling.dwelling_number
       if !params[:dwel].nil?
-        @dwelling = @dwelling.freecen1_vld_file.freecen_dwellings.where(_id: params[:dwel]).first
+        @dwelling = @dwelling.freecen_piece.freecen_dwellings.where(_id: params[:dwel]).first
         if @dwelling.nil?
           redirect_to new_search_query_path
           return
@@ -80,9 +80,9 @@ class SearchRecordsController < ApplicationController
         @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
         @dwelling_number = @dwelling.dwelling_number
       end
-      @cen_year = @dwelling.freecen1_vld_file.full_year
-      @cen_piece = @dwelling.freecen1_vld_file.piece.to_s
-      @cen_chapman_code = @dwelling.freecen1_vld_file.chapman_code
+      @cen_year = @dwelling.freecen_piece.year
+      @cen_piece = @dwelling.freecen_piece.piece_number.to_s
+      @cen_chapman_code = @dwelling.freecen_piece.chapman_code
       prev_next_dwellings = @dwelling.prev_next_dwelling_ids
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
