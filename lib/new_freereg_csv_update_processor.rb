@@ -396,12 +396,12 @@ class CsvFile < CsvFiles
          #Windows-1252 because of undefined characters, then
          #default to UTF-8 instead of Windows-1252   
        if code_set.nil? || code_set.empty? || code_set=="chset"
-        project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
+        #project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
              csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
              csvtxt.index(0x9D.chr)
            #p 'undefined Windows-1252 chars, try UTF-8 default'
-           project.write_messages_to_all("Found undefined}",false) 
+           #project.write_messages_to_all("Found undefined}",false) 
            csvtxt.force_encoding('UTF-8')
            code_set = 'UTF-8' if csvtxt.valid_encoding?
            csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
@@ -579,23 +579,22 @@ class CsvFile < CsvFiles
     if !csvtxt.nil? && csvtxt.length > 2
       if csvtxt[0].ord==0xEF && csvtxt[1].ord==0xBB && csvtxt[2].ord==0xBF
         #p "UTF-8 BOM found"
-        project.write_messages_to_all("BOM found",false)
+        #project.write_messages_to_all("BOM found",false)
         csvtxt = csvtxt[3..-1]#remove BOM
         code_set = 'UTF-8'
         self.slurp_fail_message = "BOM detected so using UTF8. <br>"
         csvtxt.force_encoding(code_set)
         if !csvtxt.valid_encoding?
-          project.write_messages_to_all("Not really a UTF8",false)
+          #project.write_messages_to_all("Not really a UTF8",false)
           #not really a UTF-8 file. probably was edited in
           #software that added BOM to beginning without
           #properly transcoding existing characters to UTF-8
           code_set = 'ASCII-8BIT'
           csvtxt.encode('ASCII-8BIT')
           csvtxt.force_encoding('ASCII-8BIT')
-          project.write_messages_to_all("Not really ASCII-8BIT",false) unless csvtxt.valid_encoding?
+          #project.write_messages_to_all("Not really ASCII-8BIT",false) unless csvtxt.valid_encoding?
         else
           self.slurp_fail_message = "Using UTF8. <br>"
-          project.write_messages_to_all("Really a UTF8",false)
           csvtxt = csvtxt.encode('utf-8', :undef => :replace)
         end
       else
@@ -608,7 +607,7 @@ class CsvFile < CsvFiles
       self.slurp_fail_message = nil
       code_set = nil
     end
-    project.write_messages_to_all("Code set #{code_set}",false)
+    #project.write_messages_to_all("Code set #{code_set}",false)
 
     return code_set,csvtxt
   end
@@ -681,12 +680,12 @@ class CsvFile < CsvFiles
     @slurp_fail_message = nil # no exception thrown
     if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
       code_set_specified_in_csv = first_data_line[5].strip
-      project.write_messages_to_all("Detecting character set found #{code_set_specified_in_csv}",false)
+      # project.write_messages_to_all("Detecting character set found #{code_set_specified_in_csv}",false)
       if !code_set.nil? && code_set != code_set_specified_in_csv
         message = "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
-        project.write_messages_to_all(message,false)
+        # project.write_messages_to_all(message,false)
       else
-        project.write_messages_to_all("using #{code_set_specified_in_csv}",false)
+        #project.write_messages_to_all("using #{code_set_specified_in_csv}",false)
         code_set = code_set_specified_in_csv
       end
     end
