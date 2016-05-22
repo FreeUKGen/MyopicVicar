@@ -71,6 +71,8 @@ module Freecen
       record = SearchRecord.new({ :transcript_dates => [transcript_date], :transcript_names => [transcript_name], :chapman_code => chapman_code, :record_type => full_year})
       record.place = individual.freecen_dwelling.place
       record.freecen_individual = individual
+      record.transform
+      record.add_digest
       record.save! 
       
       if record.place.data_present == false
