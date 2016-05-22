@@ -12,7 +12,7 @@
     
     </colgroup>
     <thead >
-      <tr>
+        <tr>
         <td colspan="2">
           <% if @entry && @annotations && @annotations.length %>
           <h2>Offline Transcriptions</h2>
@@ -30,14 +30,35 @@
     <tbody>
       <% @entry.ordered_display_fields.each do |field| %>
       <% if @entry[field] %>
-      <% unless (field == 'line_id' && !current_refinery_user) %>
       <tr>
-        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>     
-         <td class="weight--semibold"><%= @entry[field] %></td>
+        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
+        <td class="weight--semibold"><%= @entry[field] %></td>
       </tr>
       <% end %>
       <% end %>
-      <% end %>
+      <% @entry.multiple_witnesses.each do |witness| %>
+      <tr>
+        <td class="weight--normal">Witness </td>
+        <td class="weight--semibold"><%= witness.witness_forename %> <%= witness.witness_surname %></td>
+      </tr>
+      <% end%>
+      
+      <tr>
+        <td class="weight--normal">Register note </td>
+        <td class="weight--semibold"><%= @entry.notes %></td>
+      </tr>
+      
+      <tr>
+        <td class="weight--normal">Transcriber notes </td>
+        <td class="weight--semibold"><%= @entry.notes_from_transcriber%></td>
+      </tr>
+      
+      <% if current_refinery_user %>
+      <tr>
+        <td class="weight--normal"> Line id </td>
+        <td class="weight--semibold"><%= @entry.line_id %></td>
+      </tr>
+      <% end%>
     </tbody>
   </table>
   <% end %>

@@ -154,7 +154,6 @@ class Freereg1CsvEntry
     self.groom_surname = self.groom_surname.upcase if self.groom_surname.present?
     self.mother_surname = self.mother_surname.upcase if self.mother_surname.present?
     self.relative_surname = self.relative_surname.upcase if self.relative_surname.present?
-
   end
 
   def enough_name_fields?
@@ -436,15 +435,12 @@ class Freereg1CsvEntry
       "male_relative_",
       "female_relative_",
       "relative_",
-      "witness1_",
-      "witness2_"
+
     ].each do |prefix|
       ["forename", "surname", "age", "sex", "condition", "abode", "parish", "occupation", ].each do |suffix|
         order << "#{prefix}#{suffix}"
       end
     end
-    order << 'line_id'
-    order << 'notes'
 
     order
   end
