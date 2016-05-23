@@ -521,6 +521,7 @@ class CsvFile < CsvFiles
   def communicate_failure_to_member(project,message)
       p "communicating failure"
       file = project.member_message_file
+      file.close
       UserMailer.batch_processing_failure(file,@userid,@file_name).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
       self.clean_up_message(project)
       return true
