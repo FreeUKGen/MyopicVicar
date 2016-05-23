@@ -3,6 +3,7 @@ class Freereg1CsvEntriesController < ApplicationController
   require 'freereg_validations'
 
   skip_before_filter :require_login, only: [:show]
+
   def index
     display_info
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
@@ -44,6 +45,7 @@ class Freereg1CsvEntriesController < ApplicationController
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
     params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
     @freereg1_csv_entry = Freereg1CsvEntry.new(params[:freereg1_csv_entry])
+
     unless session[:error_id].nil?
       error_file = @freereg1_csv_file.batch_errors.find( session[:error_id])
       file_line_number = error_file.record_number
@@ -73,7 +75,11 @@ class Freereg1CsvEntriesController < ApplicationController
       render :action => 'error'
       return
     else
-      @freereg1_csv_entry.transform_search_record
+      software_version = SoftwareVersion.control.first
+      search_version = ''
+      search_version  = software_version.last_search_record_version unless software_version.blank?
+      place_id = get_place_id_from_file(@freereg1_csv_file)
+      SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
       @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
       @freereg1_csv_file.lock_all(session[:my_own])
@@ -107,7 +113,7 @@ class Freereg1CsvEntriesController < ApplicationController
     file_line_number = @freereg1_csv_file.records.to_i + 1
     line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
-   
+
     @freereg1_csv_entry.multiple_witnesses.build
   end
 
@@ -128,8 +134,6 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
       params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
       params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
-      #see if we need to recalculate search record
-      recreate_search_record = Freereg1CsvEntry.detect_change(params[:freereg1_csv_entry],@freereg1_csv_entry.attributes)
       #update entry
       @freereg1_csv_entry.update_attributes(params[:freereg1_csv_entry])
       if @freereg1_csv_entry.errors.any?
@@ -138,7 +142,11 @@ class Freereg1CsvEntriesController < ApplicationController
         return
       else
         #update search record if there is a change
-        @freereg1_csv_entry.update_search_record if recreate_search_record
+        software_version = SoftwareVersion.control.first
+        search_version = ''
+        search_version  = software_version.last_search_record_version unless software_version.blank?
+        place_id = get_place_id_from_file(@freereg1_csv_file)
+        SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
         # lock file and note modification date
         @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
         @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
@@ -146,13 +154,11 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_file.save
         @freereg1_csv_file.calculate_distribution
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
-        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry) 
+        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry)
       end
     else
       go_back("entry",params[:id])
     end
-
-
   end
 
   def destroy
@@ -160,6 +166,7 @@ class Freereg1CsvEntriesController < ApplicationController
     if @freereg1_csv_entry.present?
       freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
       freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
+      @freereg1_csv_entry.destroy
       freereg1_csv_file.calculate_distribution
       freereg1_csv_file.recalculate_last_amended
       freereg1_csv_file.update_number_of_files
@@ -182,7 +189,7 @@ class Freereg1CsvEntriesController < ApplicationController
     Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
       @place_names << place.place_name
     end
-     @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
     @file_owner = @freereg1_csv_file.userid
     @register = @freereg1_csv_file.register
     @register_name = RegisterType.display_name(@register.register_type)
@@ -236,5 +243,4 @@ class Freereg1CsvEntriesController < ApplicationController
     end
     year
   end
-
 end

@@ -25,11 +25,9 @@ class Freereg1CsvFile
   require 'register_type'
   require 'csv'
 
-
-
   # Fields correspond to cells in CSV headers
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  #These field are there in the entry collection from the original files coming in as CSV file. 
+  #These field are there in the entry collection from the original files coming in as CSV file.
   #They are NOT USED we use the county and country from the Place collection the church_name from the church collection
   #and the register information from the register collection
   field :country, type: String
@@ -85,10 +83,8 @@ class Freereg1CsvFile
 
   before_destroy do |file|
     file.save_to_attic
-    p "Deleting entries"
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
     num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
-    p num
     entries.each do |entry|
       entry.destroy
       #sleep_time = 2*(Rails.application.config.sleep.to_f)
@@ -146,10 +142,10 @@ class Freereg1CsvFile
       where(:userid => name)
     end
     def church_name(name)
-      where(:church_name => name)  
+      where(:church_name => name)
     end
     def register_type(name)
-      where(:register_type => name)      
+      where(:register_type => name)
     end
     def file_name(name)
       where(:file_name => name)
@@ -342,10 +338,10 @@ class Freereg1CsvFile
       success[1] = success[1] + "batch has a null register #{batch} "
     when register.church.blank?
       success[0] = false
-      success[1] = success[1] + "batch has a null church #{batch} " 
+      success[1] = success[1] + "batch has a null church #{batch} "
     when register.church.place.blank?
       success[0] =  false
-      success[1] = success[1] + "batch has a null church #{batch} " 
+      success[1] = success[1] + "batch has a null church #{batch} "
     end
     success
   end
@@ -376,10 +372,10 @@ class Freereg1CsvFile
         success[1] = success[1] + "file has a null register #{batch} "
       when register.church.blank?
         success[0] = false
-        success[1] = success[1] + "file has a null church #{batch} " 
+        success[1] = success[1] + "file has a null church #{batch} "
       when register.church.place.blank?
         success[0] =  false
-        success[1] = success[1] + "file has a null church #{batch} " 
+        success[1] = success[1] + "file has a null church #{batch} "
       end
       return success if !success[0]
     end
@@ -398,7 +394,7 @@ class Freereg1CsvFile
     file_parts = Freereg1CsvFile.where(:file_name => file.file_name, :userid => file.userid).all
     CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
-      record_type = RecordType.display_name(file.record_type).upcase + 'S'
+      record_type = RecordType.display_name(file.record_type).upcase + 'S' unless file.record_type.blank?
       csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
       # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
       csv << ['#','CCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
@@ -409,46 +405,91 @@ class Freereg1CsvFile
       #eg +LDS,,,,
       csv << ['+LDS'] if file.lds || file.lds =='yes'
 
-      
-        register = file.register
-        church = register.church
-        place = church.place
-        records = file.freereg1_csv_entries
-        records.each do |rec|
-          church_name = church.church_name.to_s + " " + register.register_type.to_s
+
+      register = file.register
+      church = register.church
+      place = church.place
+      records = file.freereg1_csv_entries
+      records.each do |rec|
+        church_name = church.church_name.to_s + " " + register.register_type.to_s
+        case
+        when file.record_type == "ba"
+
+          csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
+                      "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
+                      "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
+                      "#{rec.father_occupation}","#{rec.notes}"]
+          csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
+          csv << csv_hold
+
+        when file.record_type == "bu"
+
+          csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
+                      "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
+                      "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
+                      "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
+          csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
+          csv << csv_hold
+
+        when file.record_type == "ma"
+          witnesses = rec.get_listing_of_witnesses
+          witnesses.present? ? number_of_witnesses = witnesses.length : number_of_witnesses = 0
+          witness1 = Array.new(2)
+          witness2 = Array.new(2)
           case
-          when file.record_type == "ba"
-
-            csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
-                        "#{rec.register_entry_number}","#{rec.birth_date}","#{rec.baptism_date}","#{rec.person_forename}","#{rec.person_sex}",
-                        "#{rec.father_forename}","#{rec.mother_forename}","#{rec.father_surname}","#{rec.mother_surname}","#{rec.person_abode}",
-                        "#{rec.father_occupation}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
+          when number_of_witnesses == 0
+            witness1[0] = witness1[1] = witness2[0] = witness2[1] = note = ''
+            csv_hold = self.marriage_record(place,church_name,rec,witness1,witness2,note,file)
             csv << csv_hold
-
-          when file.record_type == "bu"
-
-            csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
-                        "#{rec.register_entry_number}","#{rec.burial_date}","#{rec.burial_person_forename}",
-                        "#{rec.relationship}","#{rec.male_relative_forename}","#{rec.female_relative_forename}","#{rec.relative_surname}",
-                        "#{rec.burial_person_surname}","#{rec.person_age}","#{rec.burial_person_abode}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
+          when number_of_witnesses == 1
+            witness2[0] = witness2[1] = note = ''
+            witness1 = witnesses[0]
+            csv_hold = self.marriage_record(place,church_name,rec,witness1,witness2,note,file)
             csv << csv_hold
-
-          when file.record_type == "ma"
-            csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
-                        "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
-                        "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
-                        "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
-                        "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
-                        "#{rec.witness1_forename}","#{rec.witness1_surname}","#{rec.witness2_forename}","#{rec.witness2_surname}","#{rec.notes}"]
-            csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
+          when number_of_witnesses == 2
+            witness1 = witnesses[0]
+            witness2 = witnesses[1]
+            note = ''
+            csv_hold = self.marriage_record(place,church_name,rec,witness1,witness2,note,file)
             csv << csv_hold
-          end #end case
-        end #end records
+          when number_of_witnesses > 2
+            while number_of_witnesses > 0
+              case
+              when number_of_witnesses.odd?
+                witness2[0]  = ''
+                witness2[1] = ''
+                witness1 = witnesses[-1]
+                note = "duplicated for additional witnesses"
+                witnesses.pop(1) unless witnesses.blank?
+                number_of_witnesses = number_of_witnesses - 1
+                csv_hold = self.marriage_record(place,church_name,rec,witness1,witness2,note,file)
+                csv << csv_hold
+              when number_of_witnesses.even?
+                witness1 = witnesses[-2]
+                witness2 = witnesses[-1]
+                note = "duplicated for additional witnesses"
+                witnesses.pop(2) unless witnesses.blank?
+                number_of_witnesses = number_of_witnesses - 2
+                csv_hold = self.marriage_record(place,church_name,rec,witness1,witness2,note,file)
+                csv << csv_hold
+              end
+            end
+          end
+        end #end case
+      end #end records
     end #end csv
   end #end method
 
+  def marriage_record(place,church_name,rec,witness1,witness2,note,file)
+    csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
+                "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
+                "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
+                "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
+                "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
+                "#{witness1[0]}","#{witness1[1]}","#{witness2[0]}","#{witness2[1]}","#{rec.notes}#{note}"]
+    csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
+    return csv_hold
+  end
 
   def self.update_location(file,param,myown)
     old_location = file.old_location
@@ -488,7 +529,7 @@ class Freereg1CsvFile
         entry.update_attributes(:place => place_name, :church_name => church_name)
         record = entry.search_record
         record.update_attributes(:location_names => location_names, :chapman_code => new_location[:county])
-        
+
         if record.place_id != new_location[:place]._id
           record.update_attribute(:place_id, new_location[:place]._id)
         end
@@ -582,7 +623,7 @@ class Freereg1CsvFile
     return if register.blank?
     church = register.church
     return if church.blank?
-    place = church.place 
+    place = church.place
     return if place.blank?
     place.recalculate_last_amended_date
   end
@@ -644,11 +685,11 @@ class Freereg1CsvFile
     batches.each do |batch|
       if  type
         #transcriber is changing their lock
-          batch.update_attributes(:locked_by_transcriber => set_transciber_lock)
+        batch.update_attributes(:locked_by_transcriber => set_transciber_lock)
       else
         #coordinator is changing locks
-          batch.update_attributes(:locked_by_coordinator => set_coordinator_lock)
-          batch.update_attributes(:locked_by_transcriber => false) unless set_coordinator_lock
+        batch.update_attributes(:locked_by_coordinator => set_coordinator_lock)
+        batch.update_attributes(:locked_by_transcriber => false) unless set_coordinator_lock
       end
     end
   end
@@ -658,10 +699,10 @@ class Freereg1CsvFile
     batches.each do |batch|
       if  type
         #transcriber is changing their lock
-          batch.update_attributes(:locked_by_transcriber => true)
+        batch.update_attributes(:locked_by_transcriber => true)
       else
         #coordinator is changing locks
-          batch.update_attributes(:locked_by_coordinator => true)         
+        batch.update_attributes(:locked_by_coordinator => true)
       end
     end
   end
@@ -703,7 +744,7 @@ class Freereg1CsvFile
     old_place_id = Church.find(church_id).place_id
   end
 
-  
+
   def self.change_userid(id,old_userid, new_userid)
     success = true
     @message = ""
@@ -909,8 +950,8 @@ class Freereg1CsvFile
         bin = 0 if bin < 0
         bin = 49 if bin > 49
         self.daterange[bin] = self.daterange[bin] + 1
+      end
     end
-  end
     def define_colour
       #need to consider storing the processed rather than a look up
       case
@@ -957,20 +998,20 @@ class Freereg1CsvFile
       processing_file = Rails.application.config.delete_list
       File.open(processing_file, 'a') do |f|
         f.write("#{self.id},#{self.userid},#{self.file_name}\n")
-      end    
+      end
     end
     def remove_batch
       if self.locked_by_transcriber  ||  self.locked_by_coordinator
         return false,'The removal of the batch was unsuccessful; the batch is locked'
       else
         #deal with file and its records
-        self.add_to_rake_delete_list 
+        self.add_to_rake_delete_list
         self.save_to_attic
-        self.delete 
-        #deal with the Physical Files collection     
+        self.delete
+        #deal with the Physical Files collection
         physical_file = PhysicalFile.userid(self.userid).file_name(self.file_name).first
         if physical_file.present?
-          physical_file.remove_processed_flag 
+          physical_file.remove_processed_flag
           physical_file.remove_base_flag
           physical_file.destroy if physical_file.empty?
         end

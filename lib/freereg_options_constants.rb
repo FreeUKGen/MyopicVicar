@@ -137,6 +137,7 @@ module FreeregOptionsConstants
     'st.' => 'St',
     'sT.' => 'St',
     'ST' => 'St',
+    'ST.' => 'St',
     'Gt' => 'Great',
     'GT' => 'Great',
     'Gt.' => 'Great',

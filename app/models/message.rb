@@ -5,11 +5,11 @@ class Message
   field :body, type: String
   field :message_time, type: DateTime
   field :userid, type: String
-  field :attachment, type: String 
+  field :attachment, type: String
   field :identifier, type: String
   field :path, type: String
   field :file_name, type: String
-  field :images, type: String 
+  field :images, type: String
   attr_accessor :action
 
   embeds_many :sent_messages
@@ -33,9 +33,8 @@ class Message
   def communicate(recipients,active)
     ccs = Array.new
     recipients.each do |recip|
-      p recip
       UseridDetail.role(recip).active(active).all.each do |person|
-      ccs << person.email_address
+        ccs << person.email_address
       end
     end
     ccs = ccs.uniq

@@ -1,16 +1,16 @@
 class MessagesController < ApplicationController
   require 'freereg_options_constants'
- require 'userid_role'
+  require 'userid_role'
   def index
-    get_user_info_from_userid   
-    @messages = Message.all.order_by(message_time: -1)  
+    get_user_info_from_userid
+    @messages = Message.all.order_by(message_time: -1)
   end
 
   def show
     @message = Message.id(params[:id]).first
     if @message.blank?
       go_back("message",params[:id])
-    end 
+    end
     @sent =   @message.sent_messages
   end
 
@@ -50,17 +50,16 @@ class MessagesController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
-   
+
   end
 
   def create
     @message = Message.new(params[:message])
     @message.file_name = @message.attachment_identifier
     if @message.save
-      p @message 
-      flash[:notice] = "Message created"    
+      flash[:notice] = "Message created"
       redirect_to :action => 'index'
-      return  
+      return
     else
       redirect_to  :new
       return
@@ -77,45 +76,45 @@ class MessagesController < ApplicationController
       @message.action =  @sent_message.id
     else
       go_back("message",params[:id])
-    end 
-   
+    end
+
   end
 
   def edit
     @message = Message.id(params[:id]).first
-    if @message.blank? 
+    if @message.blank?
       go_back("message",params[:id])
-    end   
+    end
   end
-  
+
   def update
     @message = Message.id(params[:id]).first
     if @message.present?
-     case params[:commit]
-       when "Submit"
-          @message.update_attributes(params[:message])
-       when "Send"
-         @sent_message = @message.sent_messages.id(params[:message][:action]).first
-         @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:message][:sent_message][:active])
-         @message.communicate(params[:recipients],  params[:message][:sent_message][:active])
-         flash[:notice] = "Message sent to #{params[:recipients]} #{ params[:message][:sent_message][:active]}"
+      case params[:commit]
+      when "Submit"
+        @message.update_attributes(params[:message])
+      when "Send"
+        @sent_message = @message.sent_messages.id(params[:message][:action]).first
+        @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:message][:sent_message][:active])
+        @message.communicate(params[:recipients],  params[:message][:sent_message][:active])
+        flash[:notice] = "Message sent to #{params[:recipients]} #{ params[:message][:sent_message][:active]}"
       end
       redirect_to :action => 'show'
       return
     else
       go_back("message",params[:id])
-    end  
+    end
   end
 
   def delete
-   @message = Message.id(params[:id]).first
-    if @message.present? 
+    @message = Message.id(params[:id]).first
+    if @message.present?
       @message.destroy
       flash.notice = "Message destroyed"
       redirect_to :action => 'index'
       return
     else
       go_back("message",params[:id])
-    end      
+    end
   end
 end

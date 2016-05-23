@@ -28,6 +28,7 @@ class ChurchesController < ApplicationController
 
   def create
     @church = Church.new(params[:church]) 
+    @church.church_name = Church.standardize_church_name(@church.church_name)
     @place = Place.find(session[:place_id])
     church_ok = @church.church_does_not_exist(@place)
     if church_ok[0]

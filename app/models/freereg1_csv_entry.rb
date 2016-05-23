@@ -88,7 +88,7 @@ class Freereg1CsvEntry
 
   belongs_to :freereg1_csv_file, index: true
 
-  before_save :add_digest
+  before_save :add_digest, :captitalize_surnames
 
 
   before_destroy do |entry|
@@ -98,7 +98,7 @@ class Freereg1CsvEntry
   has_one :search_record
 
 
-  embeds_many :multiple_witnesses
+  embeds_many :multiple_witnesses, cascade_callbacks: true
   accepts_nested_attributes_for :multiple_witnesses,allow_destroy: true,
     reject_if: :all_blank
 
@@ -125,6 +125,7 @@ class Freereg1CsvEntry
   def add_digest
     self.record_digest = self.cal_digest
   end
+
   def cal_digest
     case self.record_type
     when RecordType::BAPTISM
@@ -144,23 +145,33 @@ class Freereg1CsvEntry
     end
     return the_digest
   end
+  def captitalize_surnames
+    self.bride_father_surname = self.bride_father_surname.upcase if self.bride_father_surname.present?
+    self.bride_surname = self.bride_surname.upcase if self.bride_surname.present?
+    self.burial_person_surname = self.burial_person_surname.upcase if self.burial_person_surname.present?
+    self.father_surname = self.father_surname.upcase if self.father_surname.present?
+    self.groom_father_surname = self.groom_father_surname.upcase if self.groom_father_surname.present?
+    self.groom_surname = self.groom_surname.upcase if self.groom_surname.present?
+    self.mother_surname = self.mother_surname.upcase if self.mother_surname.present?
+    self.relative_surname = self.relative_surname.upcase if self.relative_surname.present?
+  end
 
-   def enough_name_fields?
-      process = false
-      case self.record_type
-      when "ba"
-          process = true if self.person_forename.present? || self.father_forename.present? || self.mother_forename.present? ||
-            self.father_surname.present? || self.mother_surname.present?
-      when "bu"
-        process = true if self.burial_person_forename.present? || self.male_relative_forename.present? || self.female_relative_forename.present? ||
-            self.relative_surname.present? || self.burial_person_surname.present?
-      when "ma"
+  def enough_name_fields?
+    process = false
+    case self.record_type
+    when "ba"
+      process = true if self.person_forename.present? || self.father_forename.present? || self.mother_forename.present? ||
+        self.father_surname.present? || self.mother_surname.present?
+    when "bu"
+      process = true if self.burial_person_forename.present? || self.male_relative_forename.present? || self.female_relative_forename.present? ||
+        self.relative_surname.present? || self.burial_person_surname.present?
+    when "ma"
       process = true if self.groom_forename.present? || self.groom_surname.present? || self.bride_forename.present? ||
-              self.bride_surname.present? || self.groom_father_forename.present? || self.groom_father_surname.present? || self.bride_father_surname.present? ||
-              self.bride_father_forename.present? || self.multiple_witness_names? 
-      end
-      return process
+        self.bride_surname.present? || self.groom_father_forename.present? || self.groom_father_surname.present? || self.bride_father_surname.present? ||
+        self.bride_father_forename.present? || self.multiple_witness_names?
     end
+    return process
+  end
 
   def create_baptism_string
     string = ''
@@ -305,24 +316,14 @@ class Freereg1CsvEntry
     equal
   end
 
-  def self.detect_change(a,b)
-    changes = Hash.new
-    a.each_key do |k|
-      changes[k] = a[k] if a[k] != b[k]
-    end
-    changes.each_key do |field|
-      return true if Freereg1Translator::FORCE_SEARCH_RECORD_RECREATE.include?(field)
-    end
-    return false
-  end
   def multiple_witness_names?
     present = false
-     self.multiple_witnesses.each do |witness|
-        if  witness.witness_forname.present? || witness.witness_surname.present?
-          present = true
-        end
-     end
-     return present
+    self.multiple_witnesses.each do |witness|
+      if  witness.witness_forname.present? || witness.witness_surname.present?
+        present = true
+      end
+    end
+    return present
   end
 
   def self.update_parameters(params,entry)
@@ -331,24 +332,6 @@ class Freereg1CsvEntry
     return params
   end
 
-  def update_search_record
-    if should_update_search_record?
-      #delete existing and then recreate
-      record = self.search_record
-      place = self.freereg1_csv_file.register.church.place
-      place.search_records.delete(record) unless record.nil?
-      self.search_record = nil
-      record.destroy unless record.nil?
-      self.transform_search_record      
-    end
-  end
-  
-  def should_update_search_record?
-    return true if !self.search_record
-    
-    Freereg1Translator.meaningful_changes?(self.previous_changes.keys)
-  end
-  
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -360,7 +343,7 @@ class Freereg1CsvEntry
       success = true
     else
       success = false
-    end  
+    end
     success
   end
   def update_location(record,file)
@@ -368,7 +351,7 @@ class Freereg1CsvEntry
     #p record
     #p file
     #p self
-    self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])  
+    self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])
     #p self
   end
 
@@ -398,15 +381,6 @@ class Freereg1CsvEntry
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
     end
   end
-
-
-  def transform_search_record
-    if should_update_search_record?
-      SearchRecord.from_freereg1_csv_entry(self) #unless self.embargoed?
-    end
-  end
-
-
 
   def display_fields
     file = self.freereg1_csv_file
@@ -461,15 +435,12 @@ class Freereg1CsvEntry
       "male_relative_",
       "female_relative_",
       "relative_",
-      "witness1_",
-      "witness2_"
+
     ].each do |prefix|
       ["forename", "surname", "age", "sex", "condition", "abode", "parish", "occupation", ].each do |suffix|
         order << "#{prefix}#{suffix}"
       end
     end
-    order << 'line_id'
-    order << 'notes'
 
     order
   end
@@ -620,9 +591,9 @@ class Freereg1CsvEntry
       end
       #following is disabled until check is improved
       #unless FreeregValidations.birth_date_less_than_baptism_date(self.birth_date,self.baptism_date)
-        #errors.add(:birth_date, "Birth date is more recent than baptism date")
-        #self.error_flag = "true"
-     # end
+      #errors.add(:birth_date, "Birth date is more recent than baptism date")
+      #self.error_flag = "true"
+      # end
       unless FreeregValidations.cleantext(self.person_abode)
         errors.add(:person_abode, "Invalid characters")
         self.error_flag = "true"
@@ -689,6 +660,17 @@ class Freereg1CsvEntry
     else
       p "freereg entry validations #{self.id} no record type"
     end
+  end
+  def get_listing_of_witnesses
+    witnesses = Array.new
+    single_witness = Array.new(2)
+    self.multiple_witnesses.each do |witness|
+      single_witness = Array.new(2)
+      single_witness[0] = witness.witness_forename
+      single_witness[1] = witness.witness_surname
+      witnesses << single_witness
+    end
+    witnesses
   end
 
 end
