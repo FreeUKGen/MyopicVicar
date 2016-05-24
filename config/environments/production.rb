@@ -103,4 +103,6 @@ MyopicVicar::Application.configure do
   config.member_open = MyopicVicar::MongoConfig['member_open']
   config.github_user = MyopicVicar::MongoConfig['github_user']
   config.github_password = MyopicVicar::MongoConfig['github_password']
+  config.wildcard_support = false
+
 end

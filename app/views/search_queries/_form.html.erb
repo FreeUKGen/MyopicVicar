@@ -122,12 +122,14 @@
 					<span>Check to search names of family members mentioned within records in addition to the names of the main participants.</span>
 				</a>
 			<% end %>
-			<%= f.label :witness do %>
-				<%= f.check_box :witness, { :tabindex => 8 }, "true", "false" %>
-				Witnesses
-				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-					<span>Check to search names of witnesses mentioned within records in addition to the names of the main participants.</span>
-				</a>
+			<% if witness_search_enabled? %>
+  			<%= f.label :witness do %>
+  				<%= f.check_box :witness, { :tabindex => 8 }, "true", "false" %>
+  				Witnesses
+  				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+  					<span>Check to search names of witnesses mentioned within records in addition to the names of the main participants.</span>
+  				</a>
+  			<% end %>
 			<% end %>
 		</li>
 		<li class="grid__item  one-quarter  palm-one-whole">
