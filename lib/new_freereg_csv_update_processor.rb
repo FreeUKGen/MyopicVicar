@@ -467,7 +467,7 @@ class CsvFile < CsvFiles
 
   def clean_up_message(project)     
       project.message_file.close if project.type_of_project == "individual"
-      File.delete(project.message_file) if project.type_of_project == "individual"
+      File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file)
   end
 
   def clean_up_physical_files_after_failure(message)
