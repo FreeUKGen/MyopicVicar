@@ -71,9 +71,9 @@ class SearchQuery
   index({ c_at: 1})
 
   class << self
-     def search_id(name)
+    def search_id(name)
       where(:id => name)
-     end
+    end
   end
 
   def search
@@ -112,7 +112,7 @@ class SearchQuery
     else
       @search_results = nil
     end
-    @search_results    
+    @search_results
   end
 
   def persist_results(results,index)
@@ -125,7 +125,7 @@ class SearchQuery
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.search_index = index
-    self.save  
+    self.save
   end
 
   def compare_name(x,y)
@@ -169,11 +169,11 @@ class SearchQuery
         else
           results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
         end
-      when SearchOrder::DATE 
+      when SearchOrder::DATE
         if self.order_asc
           results.sort! { |x,y| (x.search_dates.first||'') <=> (y.search_dates.first||'') }
         else
-          results.sort! { |x,y| (y.search_dates.first||'') <=> (x.search_dates.first||'') }        
+          results.sort! { |x,y| (y.search_dates.first||'') <=> (x.search_dates.first||'') }
         end
       when SearchOrder::TYPE
         if self.order_asc
@@ -201,14 +201,14 @@ class SearchQuery
             compare_name(y,x)  # note the reverse order
           end
         end
-      end 
-    end   
+      end
+    end
   end
 
   def results
     records = fetch_records
     sort_results(records) unless records.nil?
-    #persist_results(records) unless records.nil? 
+    #persist_results(records) unless records.nil?
     records
   end
 
@@ -222,11 +222,11 @@ class SearchQuery
 
   # # all this now does is copy the result IDs and persist the new order
   # def new_order(old_query)
-    # # first fetch the actual records
-    # records = old_query.search_result.records
-    # self.search_result =  SearchResult.new(records: records)
-    # self.result_count = records.length
-    # self.save    
+  # # first fetch the actual records
+  # records = old_query.search_result.records
+  # self.search_result =  SearchResult.new(records: records)
+  # self.result_count = records.length
+  # self.save
   # end
 
   def explain_plan
@@ -328,7 +328,7 @@ class SearchQuery
     if start_year || end_year
       date_params = Hash.new
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
-      date_params["$lt"] = DateParser::end_search_date(end_year) if end_year
+      date_params["$lte"] = DateParser::end_search_date(end_year) if end_year
       params[:search_dates] = { "$elemMatch" => date_params }
     end
     params
@@ -412,11 +412,11 @@ class SearchQuery
   end
 
   def name_not_blank
-    if last_name.blank? && !adequate_first_name_criteria? 
+    if last_name.blank? && !adequate_first_name_criteria?
       errors.add(:first_name, "A forename and county must be part of your search if you have not entered a surname.")
     end
   end
-  
+
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0
   end
@@ -444,7 +444,7 @@ class SearchQuery
     end
     if chapman_codes.length > 3
       if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
-       errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+        errors.add(:chapman_codes, "You cannot select more than 3 counties.")
       end
     end
   end
