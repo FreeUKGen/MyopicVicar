@@ -9,8 +9,12 @@ development:
   files_for_processing: # location of file to hold list of files for overnight processing eg 'm:/processing.delta'
   delete_list: #location of a file to hold the list of files for overnight deletion of entries and search records eg 'm:/delete_list.txt'
   member_open: # a value of true means system is open for login; false it is under maintenance. SA and technical can still login
-  github_user: #Name of account to use on Github 
-  github_password: #password for account
+  wildcard_support: # true of false for wildcard UI
+  github_issues_login: #login for issues
+  github_issues_password: #password for issues
+  github_issues_repo: #as stated
+  days_to_retain_search_queries: #as stated
+
 test:
   mongodb_bin_location: 
   datafiles: 
@@ -33,4 +37,9 @@ production:
   datafiles_delta: 
   files_for_processing: 
   delete_list: 
-  member_open: 
+  member_open:
+  wildcard_support: 
+  github_issues_login: 
+  github_issues_password: 
+  github_issues_repo:
+  days_to_retain_search_queries: 

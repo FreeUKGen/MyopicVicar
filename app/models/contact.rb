@@ -174,7 +174,7 @@ class Contact
   def communicate_general
     ccs = Array.new
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
-      ccs << person.email_address 
+      ccs << person.email_address
     end
     if ccs.blank?
       UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
@@ -196,10 +196,10 @@ class Contact
   def github_issue
     if Contact.github_enabled
       Octokit.configure do |c|
-        c.login = Rails.application.config.github_login
-        c.password = Rails.application.config.github_password
+        c.login = Rails.application.config.github_issues_login
+        c.password = Rails.application.config.github_issues_password
       end
-      response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
+      response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("FREEREG:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
@@ -209,7 +209,7 @@ class Contact
   end
 
   def self.github_enabled
-    !Rails.application.config.github_password.blank?
+    !Rails.application.config.github_issues_password.blank?
   end
 
   def issue_title

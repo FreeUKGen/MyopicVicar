@@ -24,7 +24,7 @@ class Feedback
   validate :title_or_body_exist
 
   before_create :url_check, :add_identifier, :add_email
- 
+
   class << self
     def id(id)
       where(:id => id)
@@ -32,7 +32,7 @@ class Feedback
   end
 
   def title_or_body_exist
-     errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
+    errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
   end
 
   def url_check
@@ -42,7 +42,7 @@ class Feedback
   end
 
   def add_identifier
-     self.identifier = Time.now.to_i - Time.gm(2015).to_i  
+    self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
 
   def add_email
@@ -66,16 +66,16 @@ class Feedback
         ccs << person.email_address
       end
     end
-    UserMailer.feedback(self,ccs).deliver    
-  end 
+    UserMailer.feedback(self,ccs).deliver
+  end
 
   def github_issue
     if Feedback.github_enabled
       Octokit.configure do |c|
-        c.login = Rails.application.config.github_login
-        c.password = Rails.application.config.github_password
+        c.login = Rails.application.config.github_issues_login
+        c.password = Rails.application.config.github_issues_password
       end
-      response = Octokit.create_issue(Rails.application.config.github_repo, issue_title, issue_body, :labels => [])
+      response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("FREEREG:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
@@ -85,11 +85,11 @@ class Feedback
   end
 
   def self.github_enabled
-    !Rails.application.config.github_password.blank?
+    !Rails.application.config.github_issues_password.blank?
   end
 
   def issue_title
-   "#{identifier} #{title} (#{name})"
+    "#{identifier} #{title} (#{name})"
   end
 
   def issue_body

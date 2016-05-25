@@ -1,17 +1,17 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -38,10 +38,10 @@ MyopicVicar::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
 
-  
+
   # Do not compress assets
   config.assets.compress = false
-   
+
   # Expands the lines which load the assets
   config.assets.debug = false
   config.assets.raise_runtime_errors = true
@@ -49,7 +49,7 @@ MyopicVicar::Application.configure do
 
   # Raise exception on mass assignment protection for Active Record models
   config.active_record.mass_assignment_sanitizer = :strict
-   
+
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
@@ -67,15 +67,13 @@ MyopicVicar::Application.configure do
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
-  config.github_login = 'FreeUKGenIssues'
-  config.github_password = ENV["GITHUB_WORD"]
-  config.github_repo = 'FreeUKGen/FreeUKRegProductIssues'
-  config.days_to_retain_search_queries = 90
+  config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
+  config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
+  config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
+  config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
-  config.github_user = MyopicVicar::MongoConfig['github_user']
-  config.github_password = MyopicVicar::MongoConfig['github_password']
-  config.wildcard_support = false
+  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
 end
