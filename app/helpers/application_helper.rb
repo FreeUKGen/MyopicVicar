@@ -125,4 +125,13 @@ module ApplicationHelper
     number_with_delimiter(num, :delimiter => ',')
   end
 
+  def witness_search_enabled?
+    Rails.application.config.respond_to?(:wildcard_support) && Rails.application.config.wildcard_support 
+  end
+
+  def ucf_wildcards_enabled?
+    Rails.application.config.respond_to?(:wildcard_support) && Rails.application.config.wildcard_support
+  end
+
+
 end

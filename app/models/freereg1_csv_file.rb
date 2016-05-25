@@ -1018,4 +1018,18 @@ class Freereg1CsvFile
         return true, 'The removal of the batch entry was successful'
       end
     end
+    
+  def search_record_ids_with_wildcard_ucf
+    ids = []
+    self.freereg1_csv_entries.each do |entry|
+      ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
+      # if entry.search_record && entry.search_record.contains_wildcard_ucf?
+        # print "added #{entry.search_record.id} to ucf_list\n"
+      # else
+        # print "declined to add #{entry.search_record.id} to ucf_list\n"
+      # end
+    end
+    ids
   end
+
+end

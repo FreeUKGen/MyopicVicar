@@ -14,25 +14,36 @@
       <b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>,
       <b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
       <b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
+      <% if @search_query.query_contains_wildcard? && @search_query.fuzzy %>
+      	<i>(Because this query contained a wildcard, use of SOUNDEX was ignored in favor of a wildcard search on exact names.)</i>
+      <% end %>
       <br> <br>
       
       Search Logic:
       <% if @search_query.first_name %>
       Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalization)
-      <% if @search_query.fuzzy %>
-      and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
-      <% end %>.
-      <% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
-      <% if emendations && emendations.size > 0 %>
-      In addition, match records whose first name is
-      <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
-      <% end %>
+	      <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
+	      and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
+	      <% end %>.
+	      <% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
+	      <% if emendations && emendations.size > 0 %>
+	      In addition, match records whose first name is
+	      <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
+	      <% end %>
       <% end %>
       <% if @search_query.last_name %>
-      Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)
-      <% if @search_query.fuzzy %>
-      and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
+	      Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)
+	      <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
+		      and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
+	      <% end %>
       <% end %>
+      <% if @search_query.inclusive || @search_query.witness %>
+      	This search will match against the primary names in the record (i.e. baptisee, bride and groom, or deceased).  In addition, it will search 
+      	<% if @search_query.inclusive %> other family members mentioned (father, mother, etc) <% end %>
+      	<% if @search_query.inclusive && @search_query.witness %> and <% end %>
+      	<% if @search_query.witness %> witnesses mentioned<% end %>
+      	on the record.
+      	
       <% end %>
     </p>
     <h3>Date</h3>

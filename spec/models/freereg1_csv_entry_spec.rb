@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'record_type'
 require 'new_freereg_csv_update_processor'
 require 'pp'
+require 'get_software_version'
 
 RSpec::Matchers.define :be_in_result do |entry|
   match do |results|
@@ -21,6 +22,8 @@ describe Freereg1CsvEntry do
 
     SearchRecord.setup_benchmark
     Freereg1Translator.setup_benchmark
+
+    SoftwareVersion.create!({:type =>"Control"}) unless SoftwareVersion.control.first
 
   end
 
@@ -159,6 +162,29 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should handle witnesses correctly" do
+    Freereg1CsvEntry.count.should eq(0)
+#
+    file = FREEREG1_CSV_FILES[2]
+    file_record = process_test_file(file)
+    entry = file_record.freereg1_csv_entries.last
+ 
+    record = file[:entries][:last]
+
+    record[:witnesses].each do |witness|        
+      query_params = { :first_name => witness[:first_name],
+                       :last_name => witness[:last_name],
+                       :witness => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+
+      result.count.should be >= 1
+      result.should be_in_result(entry)              
+    end
+  end
+
   it "should parse and find dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
 
@@ -217,7 +243,7 @@ describe Freereg1CsvEntry do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.count.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
     end    
   end
@@ -257,7 +283,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
 
     query_params = { :first_name => 'philip',
@@ -268,7 +294,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
   end
 
@@ -288,7 +314,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
 
     query_params = { :last_name => 'foster',
@@ -298,7 +324,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
   end
 
@@ -316,7 +342,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
 
     entry = file_record.freereg1_csv_entries.last
@@ -327,7 +353,7 @@ describe Freereg1CsvEntry do
     q.search
     result = q.results
 
-    result.count.should have_at_least(1).items
+    result.count.should be >= 1
     result.should be_in_result(entry)
   end
 
@@ -362,7 +388,7 @@ describe Freereg1CsvEntry do
       q.search
       result = q.results
 
-      result.count.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
       
       query_params = { :first_name => name["first_name"],
@@ -373,7 +399,7 @@ describe Freereg1CsvEntry do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.count.should have_at_least(1).items
+      result.count.should be >= 1
       result.should be_in_result(entry)
       
       query_params = { :first_name => name["first_name"],
@@ -392,29 +418,158 @@ describe Freereg1CsvEntry do
     
   end
 
-  it "should not yet find records by wildcard" do
+  it "should find records by wildcard" do
     filespec = FREEREG1_CSV_FILES[2]
     process_test_file(filespec)
-    
     file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
     entry = file_record.freereg1_csv_entries.first
     search_record = entry.search_record
     place = search_record.place
     name = search_record.transcript_names.first
 
-    query_params = { :first_name => name["first_name"],
-                     :last_name => name["last_name"],
-                     :inclusive => true }
-    q = SearchQuery.new(query_params)
-    q.save!(:validate => false)
-    q.search
-    result = q.results
+    last_name = name["last_name"]
+    first_name = name["first_name"]
 
-    result.count.should have_at_least(1).items
-    result.should be_in_result(entry)
+    # surname with ending 
+    [last_name, 
+      "#{last_name}*", 
+        last_name.sub(last_name[2], '?'), 
+        last_name.sub(last_name[2], '*')].each do |name_with_wildcard|
+      query_params = { :first_name => name["first_name"],
+                       :last_name => name_with_wildcard,
+                       :inclusive => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+  
+      result.count.should be >= 1
+      result.should be_in_result(entry)
+    end
+
+    [first_name, 
+      "#{first_name}*", 
+      first_name.sub(first_name[2], '?'), 
+      first_name.sub(first_name[2], '*')].each do |name_with_wildcard|
+      query_params = { :first_name => "#{first_name}*",
+                       :last_name => name["last_name"],
+                       :inclusive => true }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+  
+      result.count.should be >= 1
+      result.should be_in_result(entry)
+    end
+  end
+
+  it "should handle wildcard performance" do
+    Freereg1CsvEntry.count.should eq(0)
+    Freereg1CsvFile.count.should eq(0)
+    Church.count.should eq(0)
+    Register.count.should eq(0)
+    SearchRecord.count.should eq(0)
+    Place.count.should eq(0)
+
+    process_test_file(FREEREG1_CSV_FILES[1])  # clear cached class variables
+    filespec = FREEREG1_CSV_FILES[2]
+
+    process_test_file(filespec)
+    
+    file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+    entry = file_record.freereg1_csv_entries.first
+    search_record = entry.search_record
+    place = search_record.place
+
+    place.should_not eq nil
+    
+    name = search_record.transcript_names.first
+
+    last_name = name["last_name"]
+    first_name = name["first_name"]
+
+    # begins-with wildcard should use name index
+    query_params = { :first_name => name["first_name"],
+                     :last_name => last_name.sub(last_name[2], '?') }
+    query = SearchQuery.new(query_params)
+    query.places << place
+
+    SearchRecord.index_hint(query.search_params).should eq("place_ln_fn")
+     
+    # ends-with wildcard should not use name index (with no place)
+    query_params = { :record_type => RecordType::BAPTISM,
+                     :last_name => last_name.sub(last_name[0], '*') }
+    query = SearchQuery.new(query_params)
+    SearchRecord.index_hint(query.search_params).should_not eq("ln_rt_fn_sd")
+    
+    # ends-with wildcard should require place_id
+    query_params = { :record_type => RecordType::BAPTISM,
+                     :last_name => last_name.sub(last_name[0], '*') }
+    query = SearchQuery.new(query_params)
+    query.save.should eq false
 
   end
 
+  it "should find square brace UCF" do
+    filespec = SQUARE_BRACE_UCF
+
+    file_record = process_test_file(filespec)
+    
+    # file_record = Freereg1CsvFile.where(:file_name => File.basename(filespec[:filename])).first 
+
+    file_record.freereg1_csv_entries.each_with_index do |entry,i|
+      [entry.father_forename, entry.mother_forename].each do |search_forename|
+        if search_forename # we should find this
+          query_params = { :first_name => search_forename,
+                           :last_name => entry.mother_surname || entry.father_surname }
+          q = SearchQuery.new(query_params)
+          q.save!(:validate => false)
+          q.search
+          result = q.results
+ 
+          print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
+          result.count.should be >= 1
+          result.should be_in_result(entry)
+        end
+      end      
+    end
+  end
+
+  it "should find wildcard UCF" do
+    filespec = WILDCARD_UCF
+
+    file_record = process_test_file(filespec)
+    
+    place = file_record.freereg1_csv_entries.first.search_record.place
+    place.ucf_list.size.should_not eq(0)
+    place.ucf_list.values.first.should_not eq([])
+    
+    file_record.freereg1_csv_entries.each do |entry|
+      p entry.search_record.transcript_names
+      pp entry.search_record.search_names
+      place.ucf_list.values.first.should include(entry.search_record.id)
+    end
+
+    file_record.freereg1_csv_entries.each_with_index do |entry,i|
+      [entry.mother_forename].each do |search_forename|
+        if search_forename # we should find this
+          query_params = { :first_name => search_forename,
+                           :last_name => entry.mother_surname }
+          p query_params
+          q = SearchQuery.new(query_params)
+          q.places << place
+          q.save!(:validate => false)
+          q.search
+          result = q.ucf_results
+ 
+          print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
+          result.count.should be >= 1
+          result.should be_in_result(entry)
+        end
+      end      
+    end
+  end
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required
@@ -431,7 +586,7 @@ describe Freereg1CsvEntry do
       # print "\n\tResults:\n"
       # result.each { |r| pp r.attributes}
       if should_find
-        result.count.should have_at_least(1).items
+        result.count.should be >= 1
         result.should be_in_result(entry)
       else
         result.should_not be_in_result(entry)            

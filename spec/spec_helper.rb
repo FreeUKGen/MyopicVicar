@@ -77,6 +77,8 @@ def process_test_file(file)
   # FreeregCsvProcessor.process('recreate', 'create_search_records', File.join(file[:user], File.basename(file[:filename])))
 #  FreeregCsvUpdateProcessor.process_single_file(File.join(file[:basedir], file[:user], File.basename(file[:filename])), "change", true, "add")
   NewFreeregCsvUpdateProcessor.activate_project('create_search_records','individual','force_rebuild',File.join(file[:user], File.basename(file[:filename])))
+  
+  Freereg1CsvFile.last
 end
 
 
@@ -147,8 +149,10 @@ FREEREG1_CSV_FILES = [
     }
    },
   {
-    :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
-    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    # :filename => "/home/benwbrum/dev/clients/freeukgen/scratch/Chd/HRTCALMA.csv",
+    # :basedir => "/home/benwbrum/dev/clients/freeukgen/scratch/",
+   :filename => "#{Rails.root}/test_data/freereg1_csvs/Chd/HRTCALMA.csv",
+   :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
     :type => RecordType::MARRIAGE,
     :user => 'Chd',
     :chapman_code => 'HRT',
@@ -172,7 +176,11 @@ FREEREG1_CSV_FILES = [
         :bride_forename => 'Anne',
         :groom_surname => 'CLARKE',
         :groom_forename => 'Charles',
-        :modern_year => 1837
+        :modern_year => 1837,
+        :witnesses => [
+          { :first_name => 'William', :last_name => 'CLARKE'},
+          { :first_name => 'Mary', :last_name => 'GARRATT'}
+        ]
       }
     }
    },
@@ -257,6 +265,19 @@ ARTIFICIAL_FILES = [
   }
 ]
 
+EMENDATION_FILES = [
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/double_latinization.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  },
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/multiple_expansions.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :user => 'artificial'
+  }
+]
+
 NO_BAPTISMAL_NAME = 
   {
     :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/BobChown/KENSTIBA1.csv",
@@ -286,6 +307,30 @@ NO_RELATIVE_SURNAME =
     :churchname => "Virgin Mary And St Thomas A Becket",
     :user => 'brilyn'
   }
+
+
+SQUARE_BRACE_UCF =
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/ucf_nostar.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'NTH',
+    :placename => 'Gretton',
+    :churchname => "St James",
+    :user => 'artificial'
+  }
+
+WILDCARD_UCF =
+  {
+    :filename => "#{Rails.root}/test_data/freereg1_csvs/artificial/ucf_star.csv",
+    :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+    :chapman_code => 'SOM',
+    :placename => 'Runnington',
+    :churchname => 'St Peter',
+    :user => 'artificial'
+  }
+
+
+
 
 
 DELTA_FILES = [
