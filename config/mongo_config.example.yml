@@ -10,6 +10,7 @@ development:
   delete_list: #location of a file to hold the list of files for overnight deletion of entries and search records eg 'm:/delete_list.txt'
   member_open: # a value of true means system is open for login; false it is under maintenance. SA and technical can still login
   wildcard_support: # true of false for wildcard UI
+  witness_support: # true of false for witness UI
   github_issues_login: #login for issues
   github_issues_password: #password for issues
   github_issues_repo: #as stated

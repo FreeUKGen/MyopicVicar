@@ -102,5 +102,5 @@ MyopicVicar::Application.configure do
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
   config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
-
+  config.witness_support = MyopicVicar::MongoConfig['witness_support']
 end
