@@ -208,7 +208,7 @@ class SearchRecord
         search_record.adjust_search_names(new_search_record)
         return "updated"
       else
-      	digest = search_record.digest
+        digest = search_record.digest
         digest = search_record.cal_digest if digest.blank?
         search_record.search_record_version = search_version
         search_record.digest = brand_new_digest
@@ -220,8 +220,8 @@ class SearchRecord
 
   def adjust_search_names(new_search_record)
     original_names = get_search_names_hash(self)
+    original_copy = get_search_names_hash(self)
     new_names = get_search_names_hash(new_search_record)
-    original_copy = original_names
     #remove from the original hash any record that is in the new set. What is left are search names that need
     #to be removed as they are not in the new set
     original_names.delete_if {|key, value| new_names.has_value?(value)}
@@ -292,7 +292,7 @@ class SearchRecord
     if param.is_a? Regexp
       # does this begin with a wildcard?
 
-      param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl 
+      param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl
     else
       true
     end
@@ -500,13 +500,23 @@ class SearchRecord
       return 'm'
     elsif 'm'==role||'w'==role||'b'==role||'bm'==role||'gm'==role||'fr'==role
       return 'f'
-    elsif 'ba'==role||'bu'==role
+    elsif 'ba'==role
       if !self.freereg1_csv_entry.nil? && !self.freereg1_csv_entry.person_sex.nil?
         sex = self.freereg1_csv_entry.person_sex.downcase
         if 'm'==sex || 'f'==sex
           return sex
         end
       end
+    elsif 'bu'==role
+      case
+      when self.freereg1_csv_entry.relationship.downcase =~ /son/
+        sex = 'm'
+      when  self.freereg1_csv_entry.relationship.downcase =~ /dau/ || self.freereg1_csv_entry.relationship.downcase =~ /wife/ || self.freereg1_csv_entry.relationship.downcase =~ /wid/
+        sex = 'f'
+      else
+        sex = nil
+      end
+      return sex
     end
     nil
   end
