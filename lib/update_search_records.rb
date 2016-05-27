@@ -1,10 +1,16 @@
 class UpdateSearchRecords
-  def self.process(limit)
+  def self.process(limit,record_type)
     file_for_warning_messages = "log/search_record_digest.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
     message_file = File.new(file_for_warning_messages, "w")
-    p "Started a search_record update for #{limit} files"
-    message_file.puts  "Started a search_record update for #{limit} files"
+
+    unless RecordType.all_types.include?(record_type)
+      p "Invalid record type #{record_type} it must be one of#{RecordType.all_types}"
+      return
+    end
+
+    p "Started a search_record update for #{limit} files for #{record_type}"
+    message_file.puts  "Started a search_record update for #{limit} files for #{record_type}"
     n = 0
     software_version = SoftwareVersion.control.first
     version = software_version.version
@@ -13,7 +19,7 @@ class UpdateSearchRecords
     updated_records = 0
     created_records = 0
     time_start = Time.new
-    Freereg1CsvFile.all.no_timeout.each do |file|
+    Freereg1CsvFile.record_type(record_type).all.no_timeout.each do |file|
       n = n + 1
       break if n == limit.to_i
       unless software_version == file.software_version && search_version == file.search_record_version
@@ -27,9 +33,9 @@ class UpdateSearchRecords
           records = records + recs
           if file.freereg1_csv_entries.count > 1
             Freereg1CsvEntry.where(:freereg1_csv_file_id => file.id).all.no_timeout.each do |entry|
-            	result = SearchRecord.update_create_search_record(entry,search_version,place.id)
-            	updated_records = updated_records + 1 if result == "updated"
-            	created_records = created_records + 1 if result == "created"
+              result = SearchRecord.update_create_search_record(entry,search_version,place.id)
+              updated_records = updated_records + 1 if result == "updated"
+              created_records = created_records + 1 if result == "created"
             end
           end
           file.update_attributes(:software_version => version, :search_record_version => search_version)

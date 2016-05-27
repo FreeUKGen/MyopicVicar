@@ -1,36 +1,36 @@
 require 'chapman_code'
 
 namespace :foo do
- # eg rake foo:update_search_records[200]
- task :update_search_records,[:limit] => [:environment] do |t,args|
-  #limit is number of files to process 0 is all
-  require 'update_search_records'
-    UpdateSearchRecords.process(args.limit)
+  # eg rake foo:update_search_records[200,bu]
+  task :update_search_records,[:limit,:record_type] => [:environment] do |t,args|
+    #limit is number of files to process 0 is all
+    require 'update_search_records'
+    UpdateSearchRecords.process(args.limit,args.record_type)
   end
   # rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]
 
- desc "Get the software version, e.g. rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]"
- task :get_software_version,[:manual,:start,:last,:version] => :environment do |t,args|
-  require 'get_software_version'
+  desc "Get the software version, e.g. rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]"
+  task :get_software_version,[:manual,:start,:last,:version] => :environment do |t,args|
+    require 'get_software_version'
     GetSoftwareVersion.process(args.manual,args.start,args.last,args.version)
   end
 
   desc "Check refinery users are complete, setting fix to fix will add it"
   task :check_refinery_entries,[:limit,:fix] => :environment do |t, args|
-  require 'check_refinery_entries'
+    require 'check_refinery_entries'
     CheckRefineryEntries.process(args.limit,args.fix)
   end
 
   desc "Correct the witness records"
   task :correct_witness_records,[:limit,:range] => :environment do |t, args|
-  require 'correct_witness_records'
+    require 'correct_witness_records'
     CorrectWitnessRecords.process(args.limit,args.range)
   end
 
 
   desc "Initialize the Physical files collection"
   task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
-  require 'load_physical_file_records'
+    require 'load_physical_file_records'
     LoadPhysicalFileRecords.process(args.limit,args.range)
     PhysicalFile.create_indexes()
   end
@@ -47,16 +47,16 @@ namespace :foo do
       puts "Completed Checking #{limit} Search records"
     end
   end
- desc "Correct missing modified_place_names list"
-   task :missing_modified_place_names, [:limit] => [:environment] do |t, args|
-   require 'missing_modified_place_names' 
-   Mongoid.unit_of_work(disable: :all) do
-     MissingModifiedPlaceNames.process(args.limit)
+  desc "Correct missing modified_place_names list"
+  task :missing_modified_place_names, [:limit] => [:environment] do |t, args|
+    require 'missing_modified_place_names'
+    Mongoid.unit_of_work(disable: :all) do
+      MissingModifiedPlaceNames.process(args.limit)
 
-     puts "Task complete."
-   end
+      puts "Task complete."
+    end
   end
- 
+
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
   task :add_record_digest, [:num,:range] => [:environment]do |t, args|
@@ -68,7 +68,7 @@ namespace :foo do
       puts "Completed adding #{limit} record digests"
     end
   end
- desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
+  desc "Process the freereg1_csv_entries and check that there is a corresponding SearchRecords document"
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
   task :check_record_digest, [:num] => [:environment]do |t, args|
@@ -86,7 +86,7 @@ namespace :foo do
   desc "Create the indexes after all FreeREG processes have completed"
   task :create_freereg_csv_indexes => [:environment] do
     #task is there to creat indexes after running of freereg_csv_processor
-   require "county"
+    require "county"
     require "country"
     require "userid_detail"
     require "syndicate"
@@ -222,7 +222,7 @@ namespace :foo do
     require 'report_problem_email_address'
 
     Mongoid.unit_of_work(disable: :all) do
-    ReportProblemEmailAddress.process(args.range)
+      ReportProblemEmailAddress.process(args.range)
       puts "Task complete."
     end
   end
@@ -236,11 +236,11 @@ namespace :foo do
     end
   end
 
-desc "Load attic files"
+  desc "Load attic files"
   task :load_files_into_userid_details, [:len,:range,:fr] => [:environment] do |t, args|
     require 'load_files_into_userid_details'
-      LoadFilesIntoUseridDetails.process(args.len,args.range,args.fr)
-      puts "Task complete."
-  
+    LoadFilesIntoUseridDetails.process(args.len,args.range,args.fr)
+    puts "Task complete."
+
   end
 end
