@@ -2,7 +2,7 @@ class UseridDetailsController < ApplicationController
   require 'userid_role'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
- 
+
 
   def all
     if params[:page]
@@ -56,7 +56,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     if @userid.has_files?
       flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
-       redirect_to :action => 'options'
+      redirect_to :action => 'options'
     else
       Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
       @userid.destroy
@@ -198,7 +198,7 @@ class UseridDetailsController < ApplicationController
       @options= UseridRole::USERID_ACCESS_OPTIONS
     end
   end
-  
+
   def person_roles
     session[:return_to] = request.fullpath
     get_user_info_from_userid
@@ -213,7 +213,7 @@ class UseridDetailsController < ApplicationController
     @userid.delete
     next_place_to_go_unsuccessful_update
   end
- 
+
   def rename
     session[:return_to] = request.fullpath
     session[:type] = "edit"
@@ -223,14 +223,14 @@ class UseridDetailsController < ApplicationController
   end
 
   def researcher_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "researcher_registration"
     @userid = UseridDetail.new
     @first_name = session[:first_name]
   end
-  
+
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
@@ -341,15 +341,15 @@ class UseridDetailsController < ApplicationController
   end
 
   def technical_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "technical_registration"
     @userid = UseridDetail.new
   end
-  
+
   def transcriber_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = "transcriber_registration"
@@ -357,8 +357,8 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @transcription_agreement = [true,false]
     @first_name = session[:first_name]
-  end  
- 
+  end
+
   def update
     load(params[:id])
     success = Array.new
