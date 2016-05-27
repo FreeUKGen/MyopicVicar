@@ -104,7 +104,6 @@ module Freereg1Translator
   def self.entry_attributes(entry)
     new_attrs = {}
     KEY_MAP.keys.each do |key|
-      p key
       new_attrs[KEY_MAP[key]] = entry[key] if entry[key]
     end
 
