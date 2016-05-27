@@ -34,6 +34,7 @@ class UpdateSearchRecords
           if file.freereg1_csv_entries.count > 1
             Freereg1CsvEntry.where(:freereg1_csv_file_id => file.id).all.no_timeout.each do |entry|
               result = SearchRecord.update_create_search_record(entry,search_version,place.id)
+              sleep(Rails.application.config.sleep.to_f) if result == "updated" ||  result == "created"
               updated_records = updated_records + 1 if result == "updated"
               created_records = created_records + 1 if result == "created"
             end
