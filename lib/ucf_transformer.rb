@@ -15,7 +15,7 @@
 module UcfTransformer
   
   BRACE_REGEX = /(\[(\w*?)\])/
-  EDITORIAL_NOT_UCF = /blank|sic|\?|unnamed|deceased|wife|son|daughter|widow/
+  EDITORIAL_NOT_UCF = /blank|sic|illegible|\?|unnamed|deceased|wife|son|daughter|widow/
   TENTATIVE_NAME_NOT_UCF = /(\[(john|william|thomas|james|mary|richard)\])/
 
   def self.expand_single_name(name)
