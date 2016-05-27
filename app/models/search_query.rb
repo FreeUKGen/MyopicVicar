@@ -65,7 +65,7 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
-  
+
   before_validation :clean_blanks
 
   index({ c_at: 1})
@@ -86,17 +86,17 @@ class SearchQuery
 
   def search_ucf
     if can_query_ucf?
-      start_ucf_time = Time.now.utc 
+      start_ucf_time = Time.now.utc
       ucf_index = SearchRecord.index_hint(ucf_params)
       ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
       self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
-      
+
       self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
-      self.ucf_result_ms = (Time.now.utc - start_ucf_time) * 1000      
+      self.ucf_result_ms = (Time.now.utc - start_ucf_time) * 1000
       self.save
     end
-    
+
   end
 
   def fetch_records
@@ -244,7 +244,7 @@ class SearchQuery
     params.merge!(date_search_params)
     params["_id"] = { "$in" => ucf_record_ids } #moped doesn't translate :id into "_id"
 
-    params    
+    params
   end
 
   def can_query_ucf?
@@ -253,16 +253,16 @@ class SearchQuery
 
   def ucf_record_ids
     ids = []
-    
+
     self.places.inject([]) { |accum, place| accum + place.ucf_record_ids }
   end
 
   def filter_ucf_records(records)
     filtered_records = []
     records.each do |record|
- #     p record.id
+      #     p record.id
       record.search_names.each do |name|
- #       p name
+        #       p name
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive
           if name.contains_wildcard_ucf?
             if self.first_name.blank?
@@ -277,13 +277,13 @@ class SearchQuery
               end
             else
               # test both
- #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
-              if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase)) 
+              #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
+              if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
                 filtered_records << record
               end
-            end        
+            end
           end
-        end        
+        end
       end
     end
     filtered_records
@@ -361,7 +361,7 @@ class SearchQuery
   def name_search_params
     params = Hash.new
     name_params = Hash.new
-    
+
     type_array = [SearchRecord::PersonType::PRIMARY]
     type_array << SearchRecord::PersonType::FAMILY if inclusive
     type_array << SearchRecord::PersonType::WITNESS if witness
@@ -369,45 +369,45 @@ class SearchQuery
     name_params["type"] = search_type
 
     if query_contains_wildcard?
-        name_params["first_name"] = wildcard_to_regex(first_name.downcase) if first_name
-        name_params["last_name"] = wildcard_to_regex(last_name.downcase) if last_name
-  
-        params["search_names"] =  { "$elemMatch" => name_params}
-    
+      name_params["first_name"] = wildcard_to_regex(first_name.downcase) if first_name
+      name_params["last_name"] = wildcard_to_regex(last_name.downcase) if last_name
+
+      params["search_names"] =  { "$elemMatch" => name_params}
+
     else
       if fuzzy
         name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
         name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
-  
+
         params["search_soundex"] =  { "$elemMatch" => name_params}
       else
         name_params["first_name"] = first_name.downcase if first_name
         name_params["last_name"] = last_name.downcase if last_name
-  
+
         params["search_names"] =  { "$elemMatch" => name_params}
-      end      
+      end
     end
-    
+
     params
   end
 
   WILDCARD = /[?*]/
 
   def query_contains_wildcard?
-    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)) 
+    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))
   end
-  
+
 
   def begins_with_wildcard(name_string)
     name_string.index(WILDCARD) == 0
   end
-  
+
   def wildcard_to_regex(name_string)
     return name_string unless name_string.match(WILDCARD)
-  
+
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
     regex_string = trimmed.gsub('?', '\w').gsub('*', '.*') #replace glob-style wildcards with regex wildcards
-    
+
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end
 
@@ -425,15 +425,19 @@ class SearchQuery
     # allow promiscuous wildcards if place is defined
     if query_contains_wildcard?
       if place_search?
+        if last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
+          errors.add(:last_name, "Two letters must precede any wildcard in a surname.")
+        end
         # place_id is an adequate index -- all is well; do nothing
       else
-        if last_name.match(WILDCARD)
-          if last_name.index(WILDCARD) < 3
-            errors.add(:last_name, "Three letters must precede any wildcard in a surname unless a specific place is also chosen.")
-          end
-        else
-          # wildcard is in first name only -- no worries
-        end
+        errors.add(:last_name, "Wildcard can only be used with a specific place.")
+        #if last_name.match(WILDCARD)
+        #if last_name.index(WILDCARD) < 3
+        #errors.add(:last_name, "Three letters must precede any wildcard in a surname unless a specific place is also chosen.")
+        #end
+        #else
+        # wildcard is in first name only -- no worries
+        #end
       end
     end
   end
@@ -466,7 +470,7 @@ class SearchQuery
   def wildcards_are_valid
     if first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, "A place must be selected if name queries begin with a wildcard")
-    end      
+    end
   end
 
   def clean_blanks
@@ -502,5 +506,5 @@ class SearchQuery
     place = Place.find(place_id)
     place.places_near(radius_factor, place_system)
   end
-  
+
 end
