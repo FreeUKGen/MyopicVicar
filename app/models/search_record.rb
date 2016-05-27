@@ -208,12 +208,13 @@ class SearchRecord
         search_record.adjust_search_names(new_search_record)
         return "updated"
       else
-        digest = search_record.digest
-        digest = search_record.cal_digest if digest.blank?
-        search_record.search_record_version = search_version
-        search_record.digest = brand_new_digest
-        search_record.save
-        return "digest added"
+        unless search_record.search_record_version == search_version && search_record.digest == digest
+          search_record.search_record_version = search_version
+          search_record.digest = digest
+          search_record.save
+          return "digest added"
+        end
+        return "no update"
       end
     end
   end

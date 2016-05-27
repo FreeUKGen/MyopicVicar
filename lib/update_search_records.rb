@@ -17,12 +17,14 @@ class UpdateSearchRecords
     search_version  = software_version.last_search_record_version
     records = 0
     updated_records = 0
+    digest_added = 0
+    no_update = 0
     created_records = 0
     time_start = Time.new
     Freereg1CsvFile.record_type(record_type).all.no_timeout.each do |file|
       n = n + 1
       break if n == limit.to_i
-      unless software_version == file.software_version && search_version == file.search_record_version
+      unless search_version == file.search_record_version
         register = file.register
         church = register.church if register.present?
         place = church.place if church.present?
@@ -37,6 +39,8 @@ class UpdateSearchRecords
               sleep(Rails.application.config.sleep.to_f) if result == "updated" ||  result == "created"
               updated_records = updated_records + 1 if result == "updated"
               created_records = created_records + 1 if result == "created"
+              digest_added = digest_added + 1 if result == "digest_added"
+              no_update = no_update + 1 if result == "no_update"
             end
           end
           file.update_attributes(:software_version => version, :search_record_version => search_version)
@@ -48,7 +52,7 @@ class UpdateSearchRecords
     time_end = Time.new
     process_time = (time_end - time_start)
     rate = process_time* 1000/ records
-    message_file.puts "Processed #{records} records of which #{updated_records} were updated and #{created_records} created in #{process_time} seconds at a rate of #{rate} ms/record"
-    p "Processed #{records} records of which #{updated_records} were updated and #{created_records} created in #{process_time} seconds at a rate of #{rate} ms/record"
+    message_file.puts "Processed #{records} records of which #{updated_records} were updated, #{created_records} created, #{digest_added} digests added, #{no_update} records changed in #{process_time} seconds at a rate of #{rate} ms/record"
+    p "Processed #{records} records of which #{updated_records} were updated, #{created_records} created, #{digest_added} digests added, #{no_update} records changed in #{process_time} seconds at a rate of #{rate} ms/record"
   end
 end
