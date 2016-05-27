@@ -133,6 +133,7 @@ class NewFreeregCsvUpdateProcessor
     time = Time.new.to_i.to_s
     file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
     message_file = File.new(file_for_warning_messages, "w")
+    message_file.chmod( 0664 )
     return message_file
   end
 
@@ -466,7 +467,6 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)     
-      project.message_file.close if project.type_of_project == "individual"
       File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file)
   end
 
