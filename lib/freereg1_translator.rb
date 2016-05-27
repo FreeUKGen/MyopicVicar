@@ -196,16 +196,18 @@ module Freereg1Translator
     # fields:
     # first_name: female_relative_forename
     # last_name:  relative_surname
-    if entry.female_relative_forename
-      names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname.present? ? entry.relative_surname : entry.burial_person_surname }
-    end
-    # - role: mr
-    # type: other
-    # fields:
-    # first_name: male_relative_forename
-    # last_name:  relative_surname
-    if entry.male_relative_forename
-      names << { :role => 'mr', :type => 'other', :first_name => entry.male_relative_forename, :last_name => entry.relative_surname.present?  ? entry.relative_surname : entry.burial_person_surname }
+    if entry.female_relative_forename.present? || entry.male_relative_forename.present? || entry.relative_surname.present?
+      if entry.female_relative_forename
+        names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname.present? ? entry.relative_surname : entry.burial_person_surname }
+      end
+      # - role: mr
+      # type: other
+      # fields:
+      # first_name: male_relative_forename
+      # last_name:  relative_surname
+      if entry.male_relative_forename
+        names << { :role => 'mr', :type => 'other', :first_name => entry.male_relative_forename, :last_name => entry.relative_surname.present?  ? entry.relative_surname : entry.burial_person_surname }
+      end
     end
 
 
