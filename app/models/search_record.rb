@@ -508,13 +508,15 @@ class SearchRecord
         end
       end
     elsif 'bu'==role
-      case
-      when self.freereg1_csv_entry.relationship.downcase =~ /son/
-        sex = 'm'
-      when  self.freereg1_csv_entry.relationship.downcase =~ /dau/ || self.freereg1_csv_entry.relationship.downcase =~ /wife/ || self.freereg1_csv_entry.relationship.downcase =~ /wid/
-        sex = 'f'
-      else
-        sex = nil
+      if self.freereg1_csv_entry.relationship
+        case
+        when self.freereg1_csv_entry.relationship.downcase =~ /son/
+          sex = 'm'
+        when  self.freereg1_csv_entry.relationship.downcase =~ /dau/ || self.freereg1_csv_entry.relationship.downcase =~ /wife/ || self.freereg1_csv_entry.relationship.downcase =~ /wid/
+          sex = 'f'
+        else
+          sex = nil
+        end
       end
       return sex
     end
