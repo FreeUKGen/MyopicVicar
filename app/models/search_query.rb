@@ -248,7 +248,7 @@ class SearchQuery
   end
 
   def can_query_ucf?
-    self.places.size > 0
+    false && self.places.size > 0 # disable search until tested
   end
 
   def ucf_record_ids
