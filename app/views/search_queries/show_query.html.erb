@@ -1,0 +1,73 @@
+<h1>Show Query</h1>
+<div class="grid__item ">
+  <table   class="table--bordered  table--data">
+    <colgroup >
+    <col class=t40>
+    <col class=t60>
+    </colgroup>
+    <tr>
+      <th class="caps">Field</th>
+      <th  class="caps">Value</th>
+    </tr>
+    <tr>
+      <td>Run at :</td><td class="weight--semibold"> <%= @search_query.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+    </tr>
+    <tr>
+      <td>first_name :</td><td class="weight--semibold"> <%= @search_query.first_name%></td>
+    </tr>
+    <tr>
+      <td>last_name :</td><td class="weight--semibold"> <%= @search_query.last_name %> </td>
+    </tr>
+    <tr>
+      <td>fuzzy :</td><td class="weight--semibold"> <%= @search_query.fuzzy %>  </td>
+    </tr>
+    <tr>
+      <td>role :</td><td class="weight--semibold"> <%= @search_query.role %>  </td>
+    </tr>
+    <tr>
+      <td>record_type :</td><td class="weight--semibold"> <%= @search_query.record_type %>  </td>
+    </tr>
+    <tr>
+      <td>chapman_codes :</td><td class="weight--semibold"><%= @search_query.chapman_codes %> </td>
+    </tr>
+    <tr>
+      <td>inclusive :</td><td class="weight--semibold"><%= @search_query.inclusive %> </td>
+    </tr>
+    <tr>
+      <td>witness :</td><td class="weight--semibold"><%= @search_query.witness%> </td>
+    </tr>
+    <tr>
+      <td>start_year :</td><td class="weight--semibold"><%= @search_query.start_year %> </td>
+    </tr>    
+    <tr>
+      <td>end_year :</td><td class="weight--semibold"> <%= @search_query.end_year%></td>
+    </tr>
+    <tr>
+      <td>last_name :</td><td class="weight--semibold"> <%= @search_query.last_name %> </td>
+    </tr>
+    <tr>
+      <td>radius_factor :</td><td class="weight--semibold"> <%= @search_query.radius_factor %>  </td>
+    </tr>
+    <tr>
+      <td>search_nearby_places :</td><td class="weight--semibold"> <%= @search_query.search_nearby_places %>  </td>
+    </tr>
+    <tr>
+      <td>result_count :</td><td class="weight--semibold"> <%= @search_query.result_count %>  </td>
+    </tr>
+    <tr>
+      <td>place_system :</td><td class="weight--semibold"><%= @search_query.place_system %> </td>
+    </tr>
+    <tr>
+      <td>ucf_unfiltered_count :</td><td class="weight--semibold"><%= @search_query.ucf_unfiltered_count %> </td>
+    </tr>
+    <tr>
+      <td>ucf_result_ms :</td><td class="weight--semibold"><%= @search_query.ucf_result_ms%> </td>
+    </tr>
+    <tr>
+      <td>runtime :</td><td class="weight--semibold"><%= @search_query.runtime %> </td>
+    </tr>
+    <tr>
+      <td>search_index :</td><td class="weight--semibold"><%= @search_query.search_index%> </td>
+    </tr>
+  </table>
+</div>

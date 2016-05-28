@@ -86,6 +86,15 @@ class SearchQueriesController < ApplicationController
       report_for_day
     end
   end
+  def show_query
+    if params[:id].present?
+      @search_query = SearchQuery.where(:id => params[:id]).first
+    else
+      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
+      go_back
+      return
+    end
+  end
 
   def report_for_day
     if day_param = params[:day]
