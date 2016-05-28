@@ -248,7 +248,7 @@ class SearchQuery
   end
 
   def can_query_ucf?
-    false && self.places.size > 0 # disable search until tested
+    Rails.application.config.wildcard_support && self.places.size > 0 # disable search until tested
   end
 
   def ucf_record_ids
