@@ -130,8 +130,10 @@ class NewFreeregCsvUpdateProcessor
 
   def define_message_file
     file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
-    time = Time.new.to_i.to_s
-    file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
+    time = Time.new
+    tnsec = time.nsec/1000
+    time = time.to_i.to_s + tnsec.to_s
+    file_for_warning_messages = (file_for_warning_messages + "_" + time + ".log").to_s
     message_file = File.new(file_for_warning_messages, "w")
     message_file.chmod( 0664 )
     return message_file
@@ -563,8 +565,10 @@ class CsvFile < CsvFiles
 
   def define_member_message_file
       file_for_member_messages = File.join(Rails.root,"log/#{self.userid}_member_update_messages")
-    time = Time.new.to_i.to_s
-    file_for_member_messages = (file_for_member_messages + "." + time + ".log").to_s
+    time = Time.new
+    tnsec = time.nsec/1000
+    time = time.to_i.to_s + tnsec.to_s
+    file_for_member_messages = (file_for_member_messages + "_" + time + ".log").to_s
     member_message_file = File.new(file_for_member_messages, "w")
     return member_message_file
   end
