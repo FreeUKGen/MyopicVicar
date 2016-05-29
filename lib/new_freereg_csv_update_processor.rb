@@ -339,7 +339,6 @@ class CsvFile < CsvFiles
   end
 
   def change_location_for_existing_entry_and_record(existing_record,data_record,project,freereg1_csv_file)
-     p "changing location"
      #change of location
      existing_record.update_location(data_record,freereg1_csv_file)
      #update location of record       
