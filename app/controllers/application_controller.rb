@@ -250,7 +250,8 @@ class ApplicationController < ActionController::Base
   end  
   def reject_assess(user,action)
     flash[:notice] = "You are not permitted to use this action"
-    logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    logger.info "#{appname}:ACCESS ISSUE: The #{user} attempted to access #{action}."
     redirect_to main_app.new_manage_resource_path
     return
   end
