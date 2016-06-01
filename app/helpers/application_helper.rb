@@ -78,7 +78,7 @@ module ApplicationHelper
     display_map["First Name"] = search_query.first_name.upcase if search_query.first_name
     display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
     display_map["Exact Match?"] = "Yes" unless search_query.fuzzy
-     display_map["Exact Match?"] = "No" if search_query.fuzzy
+    display_map["Exact Match?"] = "No" if search_query.fuzzy
 
     display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
 
@@ -93,7 +93,7 @@ module ApplicationHelper
       place = search_query.places.first.place_name
       if search_query.all_radius_places.size > 0
         place <<
-          " (including #{search_query.all_radius_places.size} additional places within
+        " (including #{search_query.all_radius_places.size} additional places within
           #{search_query.all_radius_places.last.geo_near_distance.round(1)}
           #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
       end
@@ -108,20 +108,20 @@ module ApplicationHelper
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <ins class="adsbygoogle"
-         style="display:inline-block;width:728px;height:90px"
-         data-ad-client="ca-pub-7825403497160061"
-         data-ad-slot="3235467631"></ins>
+    style="display:inline-block;width:728px;height:90px"
+    data-ad-client="ca-pub-7825403497160061"
+    data-ad-slot="3235467631"></ins>
     <script>
     (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
     if Rails.env.development?
       banner = <<-HTML
-        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
       HTML
     end
     banner.html_safe
-  end 
+  end
   def title(title = nil)
     if title.present?
       content_for :title, title
@@ -132,5 +132,14 @@ module ApplicationHelper
   def display_number(num)
     number_with_delimiter(num, :delimiter => ',')
   end
+
+  def witness_search_enabled?
+    Rails.application.config.respond_to?(:witness_support) && Rails.application.config.witness_support
+  end
+
+  def ucf_wildcards_enabled?
+    Rails.application.config.respond_to?(:wildcard_support) && Rails.application.config.wildcard_support
+  end
+
 
 end

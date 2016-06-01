@@ -1,17 +1,17 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -45,10 +45,10 @@ MyopicVicar::Application.configure do
   # config.force_ssl = true
 
   # See everything in the log (default is :info)
-   #config.log_level = :warn
+  #config.log_level = :warn
 
   # Prepend all log lines with the following tags
-   #config.log_tags = [ :subdomain, :uuid ]
+  #config.log_tags = [ :subdomain, :uuid ]
 
   # Use a different logger for distributed setups
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
@@ -93,15 +93,27 @@ MyopicVicar::Application.configure do
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
+<<<<<<< HEAD
   config.github_login = 'FreeUKGenIssues'
   config.github_password = ENV["GITHUB_WORD"]
   config.github_repo = 'FreeUKGen/FreeCENMigration'
   config.days_to_retain_search_queries = 90
+=======
+  config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
+  config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
+  config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
+  config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
+>>>>>>> master
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
+<<<<<<< HEAD
   config.github_user = MyopicVicar::MongoConfig['github_user']
   config.github_password = MyopicVicar::MongoConfig['github_password']
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
+=======
+  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
+  config.witness_support = MyopicVicar::MongoConfig['witness_support']
+>>>>>>> master
 end

@@ -130,9 +130,12 @@ class NewFreeregCsvUpdateProcessor
 
   def define_message_file
     file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
-    time = Time.new.to_i.to_s
-    file_for_warning_messages = (file_for_warning_messages + "." + time + ".log").to_s
+    time = Time.new
+    tnsec = time.nsec/1000
+    time = time.to_i.to_s + tnsec.to_s
+    file_for_warning_messages = (file_for_warning_messages + "_" + time + ".log").to_s
     message_file = File.new(file_for_warning_messages, "w")
+    message_file.chmod( 0664 )
     return message_file
   end
 
@@ -322,7 +325,6 @@ class CsvFile < CsvFiles
     success,@records_processed = @csv_records.extract_the_data(self,project)
     p "finished data"
     return success,"Data not extracted #{@records_processed}. <br>" unless success
-    p @records_processed if success
     success,@records_processed,@data_errors = self.process_the_data(project) if success
     return success,"Data not processed #{@records_processed}. <br>" unless success
     success, message = self.clean_up_supporting_information(project)
@@ -337,7 +339,6 @@ class CsvFile < CsvFiles
   end
 
   def change_location_for_existing_entry_and_record(existing_record,data_record,project,freereg1_csv_file)
-     p "changing location"
      #change of location
      existing_record.update_location(data_record,freereg1_csv_file)
      #update location of record       
@@ -355,7 +356,7 @@ class CsvFile < CsvFiles
        # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on 
        place = self.place_id  
        SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if  project.create_search_records && existing_record.enough_name_fields?
-       sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+       sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)
      end
      return success 
@@ -397,12 +398,12 @@ class CsvFile < CsvFiles
          #Windows-1252 because of undefined characters, then
          #default to UTF-8 instead of Windows-1252   
        if code_set.nil? || code_set.empty? || code_set=="chset"
-        project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
+        #project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
              csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
              csvtxt.index(0x9D.chr)
            #p 'undefined Windows-1252 chars, try UTF-8 default'
-           project.write_messages_to_all("Found undefined}",false) 
+           #project.write_messages_to_all("Found undefined}",false) 
            csvtxt.force_encoding('UTF-8')
            code_set = 'UTF-8' if csvtxt.valid_encoding?
            csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
@@ -466,10 +467,8 @@ class CsvFile < CsvFiles
     end  
   end
 
-  def clean_up_message(project)
-      
-      project.message_file.close if project.type_of_project == "individual"
-      #File.delete(project.message_file) if project.type_of_project == "individual"
+  def clean_up_message(project)     
+      File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file)
   end
 
   def clean_up_physical_files_after_failure(message)
@@ -502,8 +501,8 @@ class CsvFile < CsvFiles
        file_for_entry = actual_record.freereg1_csv_file_id
        files << file_for_entry unless files.include?(file_for_entry)
        actual_record.destroy unless actual_record.nil?
-      #sleep_time = 20*(Rails.application.config.sleep.to_f).to_f
-       #sleep(sleep_time) unless actual_record.nil?
+      sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+       sleep(sleep_time) unless actual_record.nil?
      end
      #recalculate distribution after clean up
      files.each do |file|
@@ -523,6 +522,7 @@ class CsvFile < CsvFiles
   def communicate_failure_to_member(project,message)
       p "communicating failure"
       file = project.member_message_file
+      file.close
       UserMailer.batch_processing_failure(file,@userid,@file_name).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
       self.clean_up_message(project)
       return true
@@ -532,7 +532,6 @@ class CsvFile < CsvFiles
     p "communicating success"
     file = project.member_message_file
     file.close
-    p file
     UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
@@ -557,7 +556,7 @@ class CsvFile < CsvFiles
        SearchRecord.update_create_search_record(entry,self.header[:search_record_version],place) if  project.create_search_records && entry.enough_name_fields?
        success = "new"
      end
-     sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+     sleep_time = (Rails.application.config.sleep.to_f).to_f
      sleep(sleep_time)
      # p entry.search_record
      return success
@@ -565,8 +564,10 @@ class CsvFile < CsvFiles
 
   def define_member_message_file
       file_for_member_messages = File.join(Rails.root,"log/#{self.userid}_member_update_messages")
-    time = Time.new.to_i.to_s
-    file_for_member_messages = (file_for_member_messages + "." + time + ".log").to_s
+    time = Time.new
+    tnsec = time.nsec/1000
+    time = time.to_i.to_s + tnsec.to_s
+    file_for_member_messages = (file_for_member_messages + "_" + time + ".log").to_s
     member_message_file = File.new(file_for_member_messages, "w")
     return member_message_file
   end
@@ -582,23 +583,22 @@ class CsvFile < CsvFiles
     if !csvtxt.nil? && csvtxt.length > 2
       if csvtxt[0].ord==0xEF && csvtxt[1].ord==0xBB && csvtxt[2].ord==0xBF
         #p "UTF-8 BOM found"
-        project.write_messages_to_all("BOM found",false)
+        #project.write_messages_to_all("BOM found",false)
         csvtxt = csvtxt[3..-1]#remove BOM
         code_set = 'UTF-8'
         self.slurp_fail_message = "BOM detected so using UTF8. <br>"
         csvtxt.force_encoding(code_set)
         if !csvtxt.valid_encoding?
-          project.write_messages_to_all("Not really a UTF8",false)
+          #project.write_messages_to_all("Not really a UTF8",false)
           #not really a UTF-8 file. probably was edited in
           #software that added BOM to beginning without
           #properly transcoding existing characters to UTF-8
           code_set = 'ASCII-8BIT'
           csvtxt.encode('ASCII-8BIT')
           csvtxt.force_encoding('ASCII-8BIT')
-          project.write_messages_to_all("Not really ASCII-8BIT",false) unless csvtxt.valid_encoding?
+          #project.write_messages_to_all("Not really ASCII-8BIT",false) unless csvtxt.valid_encoding?
         else
           self.slurp_fail_message = "Using UTF8. <br>"
-          project.write_messages_to_all("Really a UTF8",false)
           csvtxt = csvtxt.encode('utf-8', :undef => :replace)
         end
       else
@@ -611,7 +611,7 @@ class CsvFile < CsvFiles
       self.slurp_fail_message = nil
       code_set = nil
     end
-    project.write_messages_to_all("Code set #{code_set}",false)
+    #project.write_messages_to_all("Code set #{code_set}",false)
 
     return code_set,csvtxt
   end
@@ -639,7 +639,7 @@ class CsvFile < CsvFiles
         #p "creating search record as not there"
         place = self.place_id
         SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if project.create_search_records && existing_record.enough_name_fields?
-        sleep_time = 10*(Rails.application.config.sleep.to_f).to_f
+        sleep_time = (Rails.application.config.sleep.to_f).to_f
         sleep(sleep_time)
       end
     else
@@ -684,12 +684,12 @@ class CsvFile < CsvFiles
     @slurp_fail_message = nil # no exception thrown
     if !first_data_line.nil? && first_data_line[0] == "+INFO" && !first_data_line[5].nil?
       code_set_specified_in_csv = first_data_line[5].strip
-      project.write_messages_to_all("Detecting character set found #{code_set_specified_in_csv}",false)
+      # project.write_messages_to_all("Detecting character set found #{code_set_specified_in_csv}",false)
       if !code_set.nil? && code_set != code_set_specified_in_csv
         message = "ignoring #{code_set_specified_in_csv} specified in col 5 of .csv header because #{code_set} Byte Order Mark (BOM) was found in the file"
-        project.write_messages_to_all(message,false)
+        # project.write_messages_to_all(message,false)
       else
-        project.write_messages_to_all("using #{code_set_specified_in_csv}",false)
+        #project.write_messages_to_all("using #{code_set_specified_in_csv}",false)
         code_set = code_set_specified_in_csv
       end
     end
@@ -718,6 +718,13 @@ class CsvFile < CsvFiles
     end
   end
 
+
+  def update_place_after_processing(freereg1_csv_file, chapman_code, place_name)
+    place = Place.where(:chapman_code => chapman_code, :place_name => place_name).first
+    place.update_ucf_list(freereg1_csv_file)
+    place.save
+  end
+
   def process_the_data(project)
     p "Processing the data records"
     @unique_existing_locations, @all_existing_records = self.get_batch_locations_and_records_for_existing_file
@@ -734,6 +741,7 @@ class CsvFile < CsvFiles
       project.write_messages_to_all(message,true)
       PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
       project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
+      update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
     end
     p "after process"
     counter = self.clean_up_unused_batches(project)
@@ -963,9 +971,9 @@ class CsvRecords <  CsvFile
     eric[4] = header_field[4]
     eric[5] = header_field[5]
     i = 2
-    while i < 6  do
-        header_field[i] = eric[i]
-        i +=1
+    while i < 6
+      header_field[i] = eric[i]
+      i +=1
     end
     process_header_line_two_block(header_field,csvfile)
   end
@@ -995,9 +1003,9 @@ class CsvRecords <  CsvFile
 
   def process_header_line_two_transcriber(header_field,csvfile)
     i = 0
-    while i < 4  do
-        header_field[5-i] = header_field[3-i]
-        i +=1
+    while i < 4
+      header_field[5-i] = header_field[3-i]
+      i +=1
     end
     header_field[2] = header_field[2].gsub(/#/, '')
     process_header_line_two_block(header_field,csvfile)
@@ -1215,8 +1223,6 @@ class CsvRecords <  CsvFile
       csvfile.header[:def]  = false
       @data_entry_order = get_default_data_entry_order(csvfile)
     end
-    p "order"
-    p @data_entry_order
     return true, "OK"
   end
   # This extracts the header and entry information from the file and adds it to the database
@@ -1254,7 +1260,7 @@ class CsvRecords <  CsvFile
     p "Extracting header information"
     success1 = success2 = success3 = success4 = true
     success = false
-    csvfile.header_error << "There are no valid header lines. <br>"if @header_lines.length == 0
+    csvfile.header_error << "There are no valid header lines. <br>" if @header_lines.length == 0
     success = extract_from_header_one(@header_lines[0],csvfile) unless @header_lines.length <= 0
     csvfile.header_error << "There was only one header line. <br>" if @header_lines.length == 1
     success1 = extract_from_header_two(@header_lines[1],csvfile) unless @header_lines.length <= 1
@@ -1397,16 +1403,11 @@ class CsvRecord < CsvRecords
     else
       #part of church name
       success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
-      p church_name
-      p success4
       project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
-      p success5
-      p set_church_name
       project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
       #we use the server church name in case of case differences
       church_name = set_church_name if  success5
-      p church_name
       return false unless success && success1 && success4 && success5
     end
     self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)

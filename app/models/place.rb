@@ -42,6 +42,7 @@ class Place
   field :data_present, type: Boolean, default: false
   field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :alternate, type: String, default: ""
+  field :ucf_list, type: Hash, default: {}
 
   embeds_many :alternateplacenames
 
@@ -121,6 +122,10 @@ class Place
       where(:modified_place_name => place)
     end
 
+  end
+
+  def ucf_record_ids
+    self.ucf_list.values.inject([]) { |accum, value| accum + value }
   end
 
   def add_location_if_not_present
@@ -332,6 +337,12 @@ class Place
         end
       end
     end
+  end
+
+
+  def update_ucf_list(file)
+    ids = file.search_record_ids_with_wildcard_ucf  
+    self.ucf_list[file.id] = ids if ids && ids.size > 0
   end
 
   def recalculate_last_amended_date

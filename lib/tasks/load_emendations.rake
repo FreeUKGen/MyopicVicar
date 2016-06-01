@@ -12,7 +12,7 @@ def add_ruleset(parms)
   EmendationRule.create!(parms)
 end
 
-task :load_emendations => :environment do  
+task :load_emendations => :environment do
   THIS_RAKE_TASK = 'load_emendations rake task'
   ets = EmendationType.where(:origin => THIS_RAKE_TASK)
   ets.each do |et|
@@ -539,6 +539,7 @@ task :load_emendations => :environment do
   add_ruleset(:original => "tho's", :replacement => 'thomas', :emendation_type => et, :gender => 'm')###
   add_ruleset(:original => 'thom', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'thoma', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
+  add_ruleset(:original => "thom's", :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'thomas', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#for punctuation at end
   add_ruleset(:original => 'thoms', :replacement => 'thomas', :emendation_type => et, :gender => 'm')#
   add_ruleset(:original => 'thos', :replacement => 'thomas', :emendation_type => et, :gender => 'm')

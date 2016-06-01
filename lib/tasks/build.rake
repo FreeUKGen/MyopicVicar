@@ -77,8 +77,9 @@ namespace :build do
 		file_for_warning_messages = "log/freereg_messages.log"
 		File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
 		@@message_file = File.new(file_for_warning_messages, "a")
-		@@message_file.chmod( 0664 )
 		puts "Freereg messages log deleted."
+		@@message_file.chmod( 0664 )
+		@@message_file.chmod( 0664 )
 		x = system("rake load_emendations")
 		puts "Emendations loaded" if x
 		EmendationRule.create_indexes()
@@ -530,6 +531,8 @@ namespace :build do
     
       DeleteEntriesRecordsForRemovedBatches.process   
   end
+  
+  desc "build search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
   task :freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
     require 'new_freereg_csv_update_processor'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location

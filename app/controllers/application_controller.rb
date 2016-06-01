@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   require 'userid_role'
   require 'register_type'
 
-  
+
   def load_last_stat
     @site_stat = SiteStatistic.last
   end
@@ -39,21 +39,21 @@ class ApplicationController < ActionController::Base
 
   def require_cookie_directive
     if cookies[:cookiesDirective].blank?
-     flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
-     redirect_to main_app.new_search_query_path
-    end  
-  end  
+      flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
+      redirect_to main_app.new_search_query_path
+    end
+  end
 
   helper_method :mobile_device?
   def mobile_device?
-   # Season this regexp to taste. I prefer to treat iPad as non-mobile.
-   request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
+    # Season this regexp to taste. I prefer to treat iPad as non-mobile.
+    request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
   end
 
-  helper_method :device_type  
-  def device_type  
-      request.env['mobvious.device_type']
-  end 
+  helper_method :device_type
+  def device_type
+    request.env['mobvious.device_type']
+  end
 
   def require_login
     if session[:userid].nil?
@@ -63,9 +63,9 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource_or_scope)
-    cookies.signed[:Administrator] = Rails.application.config.github_password
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     logger.warn("APP: current_refinery_user #{current_refinery_user}")
-    logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil? 
+    logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil?
     @user = current_refinery_user.userid_detail
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
@@ -79,21 +79,21 @@ class ApplicationController < ActionController::Base
   end
 
   def  get_user_info_from_userid
-     if session[:userid].nil?
-        if current_refinery_user.nil?
-          redirect_to refinery.login_path
-          return
-        else
-          @user = current_refinery_user.userid_detail
-          session[:userid] = @user.userid
-        end
-     else
-       @user = UseridDetail.where(:userid => session[:userid]).first
-     end
-     @userid = @user._id
-     @first_name = @user.person_forename
-     @manager = manager?(@user)
-     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    if session[:userid].nil?
+      if current_refinery_user.nil?
+        redirect_to refinery.login_path
+        return
+      else
+        @user = current_refinery_user.userid_detail
+        session[:userid] = @user.userid
+      end
+    else
+      @user = UseridDetail.where(:userid => session[:userid]).first
+    end
+    @userid = @user._id
+    @first_name = @user.person_forename
+    @manager = manager?(@user)
+    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
   def  get_user_info(userid,name)
@@ -127,8 +127,8 @@ class ApplicationController < ActionController::Base
 
   def log_messenger(message)
     log_message = message
-    logger.warn(log_message) 
-  end  
+    logger.warn(log_message)
+  end
 
   def get_places_for_menu_selection
     placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
@@ -139,34 +139,34 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session
-    session.delete(:freereg1_csv_file_id) 
-    session.delete(:freereg1_csv_file_name) 
-    session.delete(:county) 
-    session.delete(:chapman_code) 
-    session.delete(:place_name) 
-    session.delete(:church_name) 
-    session.delete(:sort) 
-    session.delete(:csvfile) 
+    session.delete(:freereg1_csv_file_id)
+    session.delete(:freereg1_csv_file_name)
+    session.delete(:county)
+    session.delete(:chapman_code)
+    session.delete(:place_name)
+    session.delete(:church_name)
+    session.delete(:sort)
+    session.delete(:csvfile)
     session[:my_own] = false
-    session.delete(:freereg) 
-    session.delete(:edit) 
+    session.delete(:freereg)
+    session.delete(:edit)
     session.delete(:sorted_by)
     session.delete(:physical_index_page)
     session.delete(:character)
     session.delete(:edit_userid)
-    session.delete(:who)   
+    session.delete(:who)
   end
 
   def clean_session_for_county
-    session.delete(:freereg1_csv_file_id) 
-    session.delete(:freereg1_csv_file_name) 
-    session.delete(:place_name) 
-    session.delete(:church_name) 
-    session.delete(:sort) 
-    session.delete(:csvfile) 
+    session.delete(:freereg1_csv_file_id)
+    session.delete(:freereg1_csv_file_name)
+    session.delete(:place_name)
+    session.delete(:church_name)
+    session.delete(:sort)
+    session.delete(:csvfile)
     session[:my_own] = false
-    session.delete(:freereg) 
-    session.delete(:edit) 
+    session.delete(:freereg)
+    session.delete(:edit)
     session.delete(:sort)
     session.delete(:sorted_by)
     session.delete(:syndicate)
@@ -196,19 +196,19 @@ class ApplicationController < ActionController::Base
     session.delete(:record)
     session.delete(:current_page)
 
-   end
+  end
 
   def clean_session_for_syndicate
-    session.delete(:freereg1_csv_file_id) 
-    session.delete(:freereg1_csv_file_name) 
-    session.delete(:place_name) 
-    session.delete(:church_name) 
-    session.delete(:sort) 
-    session.delete(:active) 
-    session.delete(:csvfile) 
+    session.delete(:freereg1_csv_file_id)
+    session.delete(:freereg1_csv_file_name)
+    session.delete(:place_name)
+    session.delete(:church_name)
+    session.delete(:sort)
+    session.delete(:active)
+    session.delete(:csvfile)
     session[:my_own] = false
-    session.delete(:freereg) 
-    session.delete(:edit) 
+    session.delete(:freereg)
+    session.delete(:edit)
     session.delete(:sort)
     session.delete(:sorted_by)
     session.delete(:viewed)
@@ -238,7 +238,7 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_userid)
     session.delete(:record)
     session.delete(:select_place)
-     session.delete(:current_page)
+    session.delete(:current_page)
   end
 
   def go_back(type,record)
@@ -247,7 +247,7 @@ class ApplicationController < ActionController::Base
     logger.info "#{appname}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path
     return
-  end  
+  end
   def reject_assess(user,action)
     flash[:notice] = "You are not permitted to use this action"
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
@@ -255,5 +255,5 @@ class ApplicationController < ActionController::Base
     redirect_to main_app.new_manage_resource_path
     return
   end
-  
+
 end

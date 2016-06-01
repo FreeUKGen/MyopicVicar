@@ -3,5 +3,7 @@ class SearchResult
   
   field :records, type: Array, default: []
   field :viewed_records, type: Array, default: []
-   embedded_in :search_query
+  embedded_in :search_query
+  field :ucf_records, type: Array, default: []
+
 end

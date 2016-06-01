@@ -1,7 +1,7 @@
 <% title "Record Details #{@search_record.freereg1_csv_entry.id}" %>
 <section  >
   
-  <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @previous_record.nil? %> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
+  <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
 </section>
 <section>
   <% if @search_record.freereg1_csv_entry %>
@@ -30,14 +30,35 @@
     <tbody>
       <% @entry.ordered_display_fields.each do |field| %>
       <% if @entry[field] %>
-      <% unless (field == 'line_id' && !current_refinery_user) %>
       <tr>
-        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>     
-         <td class="weight--semibold"><%= @entry[field] %></td>
+        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
+        <td class="weight--semibold"><%= @entry[field] %></td>
       </tr>
       <% end %>
       <% end %>
-      <% end %>
+      <% @entry.multiple_witnesses.each do |witness| %>
+      <tr>
+        <td class="weight--normal">Witness </td>
+        <td class="weight--semibold"><%= witness.witness_forename %> <%= witness.witness_surname %></td>
+      </tr>
+      <% end%>
+      
+      <tr>
+        <td class="weight--normal">Register note </td>
+        <td class="weight--semibold"><%= @entry.notes %></td>
+      </tr>
+      
+      <tr>
+        <td class="weight--normal">Transcriber notes </td>
+        <td class="weight--semibold"><%= @entry.notes_from_transcriber%></td>
+      </tr>
+      
+      <% if current_refinery_user %>
+      <tr>
+        <td class="weight--normal"> Line id </td>
+        <td class="weight--semibold"><%= @entry.line_id %></td>
+      </tr>
+      <% end%>
     </tbody>
   </table>
   <% end %>

@@ -19,7 +19,7 @@ gem 'mobvious'
 
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
-gem 'airbrake'
+gem 'airbrake', '~> 3.1.14'
 gem 'bcrypt', '>= 3.1.9'
 gem 'text'
 gem 'json'
@@ -47,7 +47,6 @@ gem 'rspec-rails'
 
 gem "fog"
 gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid'
-gem "listen"
 
 gem 'simple_form'
 

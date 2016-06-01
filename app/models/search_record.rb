@@ -1,6 +1,7 @@
 require 'name_role'
 require 'record_type'
 require 'emendor'
+require 'ucf_transformer'
 require 'freereg1_translator'
 require 'date_parser'
 
@@ -16,6 +17,7 @@ class SearchRecord
     EMENDOR='e'
     SUPPLEMENT='s'
     SEPARATION='sep'
+    SEPARATION_LAST='sepl'
     USER_ADDITION='u'
   end
 
@@ -207,20 +209,21 @@ class SearchRecord
         search_record.adjust_search_names(new_search_record)
         return "updated"
       else
-      	digest = search_record.digest
-        digest = search_record.cal_digest if digest.blank?
-        search_record.search_record_version = search_version
-        search_record.digest = brand_new_digest
-        search_record.save
-        return "digest added"
+        #unless search_record.search_record_version == search_version && search_record.digest == digest
+        #search_record.search_record_version = search_version
+        #search_record.digest = digest
+        #search_record.save
+        #return "digest added"
+        #end
+        return "no update"
       end
     end
   end
 
   def adjust_search_names(new_search_record)
     original_names = get_search_names_hash(self)
+    original_copy = get_search_names_hash(self)
     new_names = get_search_names_hash(new_search_record)
-    original_copy = original_names
     #remove from the original hash any record that is in the new set. What is left are search names that need
     #to be removed as they are not in the new set
     original_names.delete_if {|key, value| new_names.has_value?(value)}
@@ -280,9 +283,21 @@ class SearchRecord
       end
     else
       # terminate
-      fields << current_field
+      if indexable_value?(params)
+        fields << current_field
+      end
     end
 
+  end
+
+  def self.indexable_value?(param)
+    if param.is_a? Regexp
+      # does this begin with a wildcard?
+
+      param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl
+    else
+      true
+    end
   end
 
   def comparable_name
@@ -348,6 +363,7 @@ class SearchRecord
       @@tts[:downcase_tts] = Benchmark.measure {}
       @@tts[:separate_tts] = Benchmark.measure {}
       @@tts[:emend_tts] = Benchmark.measure {}
+      @@tts[:transform_ucf_tts] = Benchmark.measure {}
       @@tts[:soundex_tts] = Benchmark.measure {}
       @@tts[:date_tts] = Benchmark.measure {}
       @@tts[:location_tts] = Benchmark.measure {}
@@ -372,6 +388,7 @@ class SearchRecord
       @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
       @@tts[:separate_tts] += Benchmark.measure { separate_all }
       @@tts[:emend_tts] += Benchmark.measure { emend_all }
+      @@tts[:transform_ucf_tts] += Benchmark.measure { transform_ucf }
       @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
       @@tts[:date_tts] += Benchmark.measure { transform_date }
       @@tts[:location_tts] += Benchmark.measure { populate_location }
@@ -380,6 +397,7 @@ class SearchRecord
       downcase_all
       separate_all
       emend_all
+      transform_ucf
       create_soundex
       transform_date
       populate_location
@@ -424,8 +442,13 @@ class SearchRecord
     self.search_names = Emendor.emend(self.search_names)
   end
 
+  def transform_ucf
+    self.search_names = UcfTransformer.transform(self.search_names)
+  end
+
   def separate_all
     separate_names(self.search_names)
+    separate_last_names(self.search_names)
   end
 
   def separate_names(names_array)
@@ -443,6 +466,24 @@ class SearchRecord
     names_array << separated_names
   end
 
+  def separate_last_names(names_array)
+    separated_names = []
+    names_array.each do |name|
+      name_role = (name[:role].nil?) ? nil : name[:role]
+      name_gender = (name[:gender].nil?) ? nil : name[:gender]
+      tokens = name.last_name.split(/-|\s+/) unless name.nil? || name.last_name.nil?
+      if tokens.present? && tokens.size > 1
+        tokens.each do |token|
+          separated_names << search_name(name.first_name, token, name.type, name_role, name_gender, Source::SEPARATION_LAST) unless is_surname_stopword(token)
+        end
+      end
+    end
+    names_array << separated_names
+  end
+
+  def is_surname_stopword(namepart)
+    ['da','de','del','della','der','des','di','du','la','le','mc','mac','o','of','or','van','von','y'].include?(namepart)
+  end
 
   def populate_search_names
     if transcript_names && transcript_names.size > 0
@@ -450,6 +491,9 @@ class SearchRecord
         person_type=PersonType::FAMILY
         if name_hash[:type] == 'primary'
           person_type=PersonType::PRIMARY
+        end
+        if name_hash[:type] == 'witness'
+          person_type=PersonType::WITNESS
         end
         person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
         if MyopicVicar::Application.config.template_set == 'freecen'
@@ -468,13 +512,25 @@ class SearchRecord
       return 'm'
     elsif 'm'==role||'w'==role||'b'==role||'bm'==role||'gm'==role||'fr'==role
       return 'f'
-    elsif 'ba'==role||'bu'==role
+    elsif 'ba'==role
       if !self.freereg1_csv_entry.nil? && !self.freereg1_csv_entry.person_sex.nil?
         sex = self.freereg1_csv_entry.person_sex.downcase
         if 'm'==sex || 'f'==sex
           return sex
         end
       end
+    elsif 'bu'==role
+      if self.freereg1_csv_entry.relationship
+        case
+        when self.freereg1_csv_entry.relationship.downcase =~ /son/
+          sex = 'm'
+        when  self.freereg1_csv_entry.relationship.downcase =~ /dau/ || self.freereg1_csv_entry.relationship.downcase =~ /wife/ || self.freereg1_csv_entry.relationship.downcase =~ /wid/
+          sex = 'f'
+        else
+          sex = nil
+        end
+      end
+      return sex
     end
     nil
   end
@@ -494,6 +550,13 @@ class SearchRecord
       nil
     end
   end
+
+  def contains_wildcard_ucf?
+    search_names.detect do |name|
+      name.contains_wildcard_ucf?
+    end
+  end
+
 
   def self.from_annotation(annotation)
     Rails.logger.debug("from_annotation processing #{annotation.inspect}")
