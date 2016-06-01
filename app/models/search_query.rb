@@ -56,6 +56,7 @@ class SearchQuery
   field :order_asc, type: Boolean, default: true
   field :region, type: String #bot honeypot
   field :search_index, type: String
+  field :day, type:String
   belongs_to :userid_detail
 
   embeds_one :search_result
@@ -67,13 +68,21 @@ class SearchQuery
   validate :wildcard_is_appropriate
 
   before_validation :clean_blanks
+  before_create :add_day
 
   index({ c_at: 1})
+  index({day: -1,runtime: -1})
+  index({day: -1,u_at: -1})
+  index({day: -1,result_count: -1})
 
   class << self
     def search_id(name)
       where(:id => name)
     end
+  end
+
+  def add_day
+    self.day = self.c_at.strftime("%F")
   end
 
   def search

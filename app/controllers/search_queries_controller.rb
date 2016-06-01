@@ -98,17 +98,19 @@ class SearchQueriesController < ApplicationController
 
   def report_for_day
     if day_param = params[:day]
-      @start_day = DateTime.parse(day_param)
+      @start_day = DateTime.parse(day_param).strftime("%F")
+      p @start_day
     else
-      @start_day = DateTime.now
+      @start_day = DateTime.now.strftime("%F")
+
     end
     unless order_param = params[:order]
       order_param = :runtime
     end
-    @end_day = @start_day
-    @start_time = @start_day.beginning_of_day.utc
-    @end_time = @end_day.end_of_day.utc
-    @search_queries = SearchQuery.where(:c_at.gte => @start_time, :c_at.lte => @end_time).desc(order_param)
+    @previous_day = (Date.parse(@start_day) - 1).strftime("%F")
+    @next_day = (Date.parse(@start_day) + 1).strftime("%F")
+
+    @search_queries = SearchQuery.where(:day => @start_day).desc(order_param)
   end
 
   def report_for_session

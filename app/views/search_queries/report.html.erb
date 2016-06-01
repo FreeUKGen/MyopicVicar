@@ -9,10 +9,10 @@
     <% end %>
     <% else %>
     <li>
-      <%= link_to("Previous Day", search_query_report_path(:day => @start_day.yesterday.strftime("%Y-%m-%d")))%>
+      <%= link_to("Previous Day", search_query_report_path(:day => @previous_day))%>
     </li>
     <li>
-      <%= link_to("Next Day", search_query_report_path(:day => @start_day.tomorrow.strftime("%Y-%m-%d")))%>
+      <%= link_to("Next Day", search_query_report_path(:day => @next_day))%>
     </li>
     <% end %>
   </ul>
@@ -27,9 +27,8 @@
 </p>
 <% else %>
 <p>
-  Listing the longest-running queries from
-  <b><%= @start_time.strftime("%Y-%m-%d %H:%M:%S") %></b>
-  to <b><%= @end_time.strftime("%Y-%m-%d %H:%M:%S") %> (GMT<%= @end_day.zone %>)</b><br />
+  Listing the longest-running queries for
+  <b><%= @start_day %></b><br />
 </p>
 <% end %>
 <p>The 'Analyze' button will re-execute the query and analyze it.</p>
@@ -56,13 +55,13 @@
     </th>
     <% else %>
     <th>
-      <%= link_to("Run Time (ms)", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "runtime")) %>
+      <%= link_to("Run Time (ms)", search_query_report_path(:day => @start_day, :order => "runtime")) %>
     </th>
     <th>
-      <%= link_to("Start Time", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "updated_at")) %>
+      <%= link_to("Start Time", search_query_report_path(:day => @start_day, :order => "updated_at")) %>
     </th>
     <th>
-      <%= link_to("Results Found", search_query_report_path(:day => @start_day.strftime("%Y-%m-%d"), :order => "result_count")) %>
+      <%= link_to("Results Found", search_query_report_path(:day => @start_day, :order => "result_count")) %>
     </th>
     <th>
       Index used
