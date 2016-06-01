@@ -2,10 +2,10 @@ require 'chapman_code'
 
 namespace :foo do
   # eg rake foo:update_search_records[200,bu]
-  task :update_search_records,[:limit,:record_type] => [:environment] do |t,args|
+  task :update_search_records,[:limit,:record_type,:version] => [:environment] do |t,args|
     #limit is number of files to process 0 is all
     require 'update_search_records'
-    UpdateSearchRecords.process(args.limit,args.record_type)
+    UpdateSearchRecords.process(args.limit,args.record_type,args.version)
   end
   # rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]
 
