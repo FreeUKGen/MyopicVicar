@@ -68,5 +68,6 @@ MyopicVicar::Application.configure do
   config.member_open = MyopicVicar::MongoConfig['member_open']
   config.github_user = MyopicVicar::MongoConfig['github_user']
   config.github_password = MyopicVicar::MongoConfig['github_password']
-
+  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
+  config.witness_support = MyopicVicar::MongoConfig['witness_support']
 end

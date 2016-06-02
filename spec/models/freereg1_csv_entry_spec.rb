@@ -162,6 +162,23 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should not create blank and redundant search names" do
+    Freereg1CsvEntry.count.should eq(0)
+    (FREEREG1_CSV_FILES+[NO_BURIAL_FORENAME,NO_RELATIVE_SURNAME,NO_BAPTISMAL_NAME]).each_with_index do |file, index|
+      file_record = process_test_file(file)
+      
+      file_record.freereg1_csv_entries.each do |entry|
+        name_count = entry.search_record.search_names.count
+        unique_names = entry.search_record.search_names.to_a.map{ |name| { :fn => name.first_name, :ln => name.last_name, :role => name.role} }.uniq
+        true_name_count = unique_names.count
+        binding.pry if true_name_count != name_count
+        message = "different number of names in #{entry.search_record.search_names.to_s} from #{unique_names.to_s}"
+        true_name_count.should eq(name_count), message
+      end
+ 
+     end    
+  end
+
   it "should handle witnesses correctly" do
     Freereg1CsvEntry.count.should eq(0)
 #
