@@ -93,27 +93,15 @@ MyopicVicar::Application.configure do
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
-<<<<<<< HEAD
-  config.github_login = 'FreeUKGenIssues'
-  config.github_password = ENV["GITHUB_WORD"]
-  config.github_repo = 'FreeUKGen/FreeCENMigration'
-  config.days_to_retain_search_queries = 90
-=======
   config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
   config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
   config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
   config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
->>>>>>> master
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
-<<<<<<< HEAD
-  config.github_user = MyopicVicar::MongoConfig['github_user']
-  config.github_password = MyopicVicar::MongoConfig['github_password']
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
-=======
   config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
->>>>>>> master
 end
