@@ -1,4 +1,7 @@
 require 'spec_helper'
+require 'freecen1_metadata_dat_parser'
+require 'freecen1_metadata_dat_transformer'
+require 'freecen1_metadata_dat_translator'
 require 'freecen1_vld_parser'
 require 'freecen1_vld_transformer'
 require 'freecen1_vld_translator'
@@ -6,6 +9,16 @@ require 'freecen_constants'
 
 describe Freecen1VldFile do
 
+  TEST_DAT_FILES = [
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1861', 'DURPARMS.DAT'),
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1841', 'CONPARMS.DAT'),
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1851', 'CONPARMS.DAT'),
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1861', 'CONPARMS.DAT'),
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1871', 'CONPARMS.DAT'),
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1881', 'CONPARMS.DAT'),
+    File.join(Rails.root, 'test_data', 'freecen1_dats', '1891', 'CONPARMS.DAT')
+  ]
+  
   TEST_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'DUR', 'RG093730.VLD')
   
   YEAR_VLD_FILES = {
@@ -77,10 +90,16 @@ describe Freecen1VldFile do
   }
 
  
+
+  before(:all) do
+    clean_database
+    load_dats    
+  end
  
 
   before(:each) do
     clean_database
+#    load_dats
   end
 
 
@@ -88,7 +107,7 @@ describe Freecen1VldFile do
     process_file(TEST_VLD_FILE)
     Freecen1VldFile.count.should  eq 1
     Freecen1VldEntry.count.should eq 3058
-    FreecenDwelling.count.should eq 650 # was 654 -- where did the four missing records go?
+    FreecenDwelling.count.should eq 650 # was 654 -- where did the two missing records go?
     SearchRecord.count.should     eq 0 #this will change once uninhabited houses work
   end
   
@@ -124,7 +143,7 @@ describe Freecen1VldFile do
       q.save!(:validate => false)
       q.search
       result = q.results
-      result.should have_at_least(1).items
+      result.count.should be >= 1
     end
   end
 
@@ -144,7 +163,7 @@ describe Freecen1VldFile do
       q.search
       result = q.results
 
-      result.should have_at_least(1).items
+      result.count.should be >= 1
     end
   end
 
@@ -167,7 +186,7 @@ describe Freecen1VldFile do
         q.search
         result = q.results
   
-        result.should have_at_least(1).items
+        result.count.should be >= 1
         
       end
       seen = {}
@@ -203,7 +222,7 @@ describe Freecen1VldFile do
         result = q.results
  
  #       print "#{record_type} #{index}\n"
-        result.should have_at_least(1).items        
+        result.count.should be >= 1
         SearchRecord.delete_all
       end
     end
@@ -214,7 +233,6 @@ describe Freecen1VldFile do
 
 
   def clean_database
-    Place.delete_all
     SearchRecord.delete_all
     FreecenDwelling.delete_all
     FreecenIndividual.delete_all
@@ -222,6 +240,23 @@ describe Freecen1VldFile do
     Freecen1VldFile.delete_all
     
   end
+
+  def load_dats
+    FreecenPiece.delete_all
+    Place.delete_all
+
+    TEST_DAT_FILES.each do |filename|
+      parser = Freecen::Freecen1MetadataDatParser.new
+      file_record = parser.process_dat_file(filename)
+      
+      transformer = Freecen::Freecen1MetadataDatTransformer.new
+      transformer.transform_file_record(file_record)
+      
+      translator = Freecen::Freecen1MetadataDatTranslator.new
+      translator.translate_file_record(file_record)      
+    end
+  end
+
 
   def process_file(filename)
 #    print "process_file dwelling count=#{FreecenDwelling.count} before file is processed\n"
