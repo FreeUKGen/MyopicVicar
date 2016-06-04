@@ -78,7 +78,7 @@ class SearchRecord
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
-    index(field_spec, :name => name)
+    index(field_spec, {:name => name, background: true })
   end
   def self.index_hint(search_params)
     candidates = INDEXES.keys
@@ -197,11 +197,11 @@ class SearchRecord
         search_record.search_record_version = search_version
         search_record.digest = brand_new_digest
         #update the transcript names if it has changed
-        search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names == new_search_record.transcript_names
+        search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
         #update the location if it has changed
-        search_record.location_names = new_search_record.location_names unless search_record.location_names == new_search_record.location_names
+        search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
         #update the soundex if it has changed
-        search_record.search_soundex = new_search_record.search_soundex unless search_record.search_soundex == new_search_record.search_soundex
+        search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
         #update the search date
         search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
         #create a hash of search names from the original search names
@@ -217,6 +217,27 @@ class SearchRecord
         return "no update"
       end
     end
+  end
+  def soundex_names_equal?(new_search_record)
+    names = self.search_soundex
+    new_names = new_search_record.search_soundex
+    new_names = new_names.each { |hash| hash.stringify_keys!}
+    names == new_names ? result = true : result = false
+    result
+  end
+  def location_names_equal?(new_search_record)
+    location_names = self.location_names
+    new_location_names = new_search_record.location_names
+    location_names[0] == new_location_names[0] && location_names[1].strip == new_location_names[1].strip ? result = true : result = false
+    result
+  end
+
+  def transcript_names_equal?(new_search_record)
+    names = self.transcript_names
+    new_names = new_search_record.transcript_names
+    new_names = new_names.each { |hash| hash.stringify_keys!}
+    names == new_names ? result = true : result = false
+    result
   end
 
   def adjust_search_names(new_search_record)
