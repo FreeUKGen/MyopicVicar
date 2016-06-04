@@ -68,8 +68,20 @@ module Freecen
       
       transcript_date = translate_date(individual, full_year)
       
-      record = SearchRecord.new({ :transcript_dates => [transcript_date], :transcript_names => [transcript_name], :chapman_code => chapman_code, :record_type => full_year})
+      record = 
+        SearchRecord.new({  :transcript_dates => [transcript_date], 
+                            :transcript_names => [transcript_name], 
+                            :chapman_code => chapman_code, 
+                            :record_type => full_year})
       record.place = individual.freecen_dwelling.place
+      
+      if !individual.birth_county.blank?
+        record.birth_chapman_code = individual.birth_county
+      end
+      if !individual.verbatim_birth_county.blank?
+        record.birth_chapman_code = individual.verbatim_birth_county
+      end
+      
       record.freecen_individual = individual
       record.transform
       record.add_digest

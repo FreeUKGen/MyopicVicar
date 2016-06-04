@@ -32,60 +32,58 @@ describe Freecen1VldFile do
   
   YEAR_BIRTH_DATE = {
     RecordType::CENSUS_1841 => {
-      0 => 1786, # 55 y
-      1 => 1806, # 35 y
-      2 => 1826, # 15 y
-      3 => 1831, # 10 y
-      4 => 1836, # 5 y
-      9 => 1840, # 5 m
-      79 => 1841, # 2 m
-      92 => 1840 # 10 m
+      0 => 1791, # 50 y
+      1 => 1796, # 45 y
+      2 => 1819, # 15 y
+      3 => 1821, # 10 y
+      4 => 1823, # 5 y
+      9 => 1832 # 5 m
     },
     RecordType::CENSUS_1851 => {
-      0 => 1808, # 43 y
-      1 => 1839, # 12 y
-      2 => 1844, # 7 y
-      3 => 1848, # 3 y
-      4 => 1822, # 29 y
-      7 => 1850, # 9 m
-      14 => 1851, # 1 m
-      19 => 1850, # 7 m
-      28 => 1850, # 9 m
-      55 => 1850 # 8 m
+      0 => 1819, # 32y
+      1 => 1802, # 49y
+      2 => 1816, # 35y
+      3 => 1801, # 50y
+      4 => 1831, # 20y
+      7 => 1840, # 11y
+      14 => 1841, # 10y
+      19 => 1848, # 3y
+      28 => 1812, # 39y
+      55 => 1845 # 6y
     },
     RecordType::CENSUS_1861 => {
-      0 => 1826, # 35 y
-      1 => 1836, # 25 y
-      2 => 1847, # 14 y
-      3 => 1846, # 15 y
-      4 => 1848, # 13 y
-      38 => 1861, # 3 w
-      44 => 1860, # 8 m
-      59 => 1861, # 1 m
-      73 => 1860 # 9 m
+      0 => 1826, # 35y
+      1 => 1836, # 25y
+      2 => 1847, # 14y
+      3 => 1846, # 15y
+      4 => 1848, # 13y
+      38 => 1861, # 3w
+      44 => 1860, # 8m
+      59 => 1861, # 1m
+      73 => 1860 # 9m
     },
     RecordType::CENSUS_1871 => {
-      0 => 1832, # 39 y
-      1 => 1833, # 38 y
-      2 => 1856, # 15 y
-      3 => 1861, # 10 y
-      4 => 1863, # 8 y
-      29 => 1871, # 3 m
-      64 => 1871 # 2 m
+      0 => 1832, # 39y
+      1 => 1833, # 38y
+      2 => 1856, # 15y
+      3 => 1861, # 10y
+      4 => 1863, # 8y
+      29 => 1871, # 3m
+      64 => 1871 # 2m
     },
     RecordType::CENSUS_1881 => {
-      0 => 1834, # 47 y
-      1 => 1834, # 47 y
-      2 => 1868, # 13 y
-      3 => 1875, # 6 y
-      4 => 1825 # 56 y
+      0 => 1834, # 47y
+      1 => 1834, # 47y
+      2 => 1868, # 13y
+      3 => 1875, # 6y
+      4 => 1825 # 56y
     },
     RecordType::CENSUS_1891 => {
-      0 => 1855, # 36 y
-      1 => 1871, # 20 y
-      2 => 1875, # 16 y
-      3 => 1847, # 44 y
-      4 => 1852 # 39 y
+      0 => 1855, # 36y
+      1 => 1871, # 20y
+      2 => 1875, # 16y
+      3 => 1847, # 44y
+      4 => 1852 # 39y
     }
   }
 
@@ -221,13 +219,56 @@ describe Freecen1VldFile do
         q.search
         result = q.results
  
- #       print "#{record_type} #{index}\n"
+#        print "#{index} => #{individual.search_record.search_dates.first[0..3]}, # #{individual.age}#{individual.age_unit}\n"
+        binding.pry if result.count == 0
         result.count.should be >= 1
         SearchRecord.delete_all
       end
     end
   end
 
+
+  it "should find records by name wildcard and county" do
+    process_file(TEST_VLD_FILE)
+    dwelling = FreecenDwelling.last
+    translator = Freecen::Freecen1VldTranslator.new
+    translator.translate_dwelling(dwelling, 'DUR', dwelling.freecen1_vld_file.full_year)
+
+    dwelling.freecen_individuals.each do |individual|
+      wildcard_surname = individual.surname.sub(/...$/, "*")
+      
+      query_params = { :first_name => individual.forenames,
+                       :last_name => wildcard_surname,
+                       :chapman_codes => ['DUR'],
+                       :inclusive => false }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+
+      result.count.should be >= 1
+    end
+  end
+
+  it "should find records by name and birth county" do
+    process_file(TEST_VLD_FILE)
+    dwelling = FreecenDwelling.last
+    translator = Freecen::Freecen1VldTranslator.new
+    translator.translate_dwelling(dwelling, 'DUR', dwelling.freecen1_vld_file.full_year)
+
+    dwelling.freecen_individuals.each do |individual|
+      query_params = { :first_name => individual.forenames,
+                       :last_name => individual.surname,
+                       :birth_chapman_codes => [individual.verbatim_birth_county],
+                       :inclusive => false }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+
+      result.count.should be >= 1
+    end
+  end
 
 
 

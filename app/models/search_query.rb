@@ -57,6 +57,10 @@ class SearchQuery
   field :region, type: String #bot honeypot
   field :search_index, type: String
   field :day, type:String
+  
+  field :birth_chapman_codes, type: Array, default: []
+  field :birth_place_name, type: String
+  
   belongs_to :userid_detail
 
   embeds_one :search_result
@@ -316,6 +320,7 @@ class SearchQuery
       params[:place_id] = { "$in" => search_place_ids }
     else
       params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
     end
 
     params
