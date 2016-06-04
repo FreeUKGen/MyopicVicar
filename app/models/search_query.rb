@@ -68,21 +68,17 @@ class SearchQuery
   validate :wildcard_is_appropriate
 
   before_validation :clean_blanks
-  before_create :add_day
 
-  index({ c_at: 1})
-  index({day: -1,runtime: -1})
-  index({day: -1,u_at: -1})
-  index({day: -1,result_count: -1})
+
+  index({ c_at: 1},{background: true })
+  index({day: -1,runtime: -1},{background: true })
+  index({day: -1,u_at: -1},{background: true })
+  index({day: -1,result_count: -1},{background: true })
 
   class << self
     def search_id(name)
       where(:id => name)
     end
-  end
-
-  def add_day
-    self.day = self.c_at.strftime("%F")
   end
 
   def search
@@ -134,6 +130,7 @@ class SearchQuery
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.search_index = index
+    self.day = Time.now.strftime("%F")
     self.save
   end
 
