@@ -70,6 +70,7 @@
     <th>&nbsp;</th>
   </thead>
   <tbody>
+    <%= paginate @search_queries %>
     <% @search_queries.each do |query| %>
     <tr>
       <td><%= button_to("Show", show_query_search_query_path(query), :method=>:get)%>
