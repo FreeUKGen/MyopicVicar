@@ -419,12 +419,12 @@ class SearchQuery
 
   def name_not_blank
     if last_name.blank? && !adequate_first_name_criteria?
-      errors.add(:first_name, "A forename and county must be part of your search if you have not entered a surname.")
+      errors.add(:first_name, "A forename, county and place must be part of your search if you have not entered a surname.")
     end
   end
 
   def adequate_first_name_criteria?
-    !first_name.blank? && chapman_codes.length > 0
+    !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
   end
 
   def wildcard_is_appropriate
