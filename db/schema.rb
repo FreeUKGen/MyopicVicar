@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140610180803) do
+ActiveRecord::Schema.define(:version => 20160611162608) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -28,6 +28,50 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
   add_index "active_admin_comments", ["namespace"], :name => "index_active_admin_comments_on_namespace"
   add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
 
+  create_table "refinery_authentication_devise_roles", :force => true do |t|
+    t.string "title"
+  end
+
+  create_table "refinery_authentication_devise_roles_users", :id => false, :force => true do |t|
+    t.integer "user_id"
+    t.integer "role_id"
+  end
+
+  add_index "refinery_authentication_devise_roles_users", ["role_id", "user_id"], :name => "refinery_roles_users_role_id_user_id"
+  add_index "refinery_authentication_devise_roles_users", ["user_id", "role_id"], :name => "refinery_roles_users_user_id_role_id"
+
+  create_table "refinery_authentication_devise_user_plugins", :force => true do |t|
+    t.integer "user_id"
+    t.string  "name"
+    t.integer "position"
+  end
+
+  add_index "refinery_authentication_devise_user_plugins", ["name"], :name => "index_refinery_authentication_devise_user_plugins_on_name"
+  add_index "refinery_authentication_devise_user_plugins", ["user_id", "name"], :name => "refinery_user_plugins_user_id_name", :unique => true
+
+  create_table "refinery_authentication_devise_users", :force => true do |t|
+    t.string   "username",               :null => false
+    t.string   "email",                  :null => false
+    t.string   "encrypted_password",     :null => false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.integer  "sign_in_count"
+    t.datetime "remember_created_at"
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+    t.string   "slug"
+    t.string   "userid_detail_id"
+    t.string   "password_salt"
+    t.string   "full_name"
+  end
+
+  add_index "refinery_authentication_devise_users", ["id"], :name => "index_refinery_authentication_devise_users_on_id"
+  add_index "refinery_authentication_devise_users", ["slug"], :name => "index_refinery_authentication_devise_users_on_slug"
+
   create_table "refinery_county_pages", :force => true do |t|
     t.string   "name"
     t.string   "chapman_code"
@@ -36,6 +80,18 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
   end
+
+  create_table "refinery_image_translations", :force => true do |t|
+    t.integer  "refinery_image_id", :null => false
+    t.string   "locale",            :null => false
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.string   "image_alt"
+    t.string   "image_title"
+  end
+
+  add_index "refinery_image_translations", ["locale"], :name => "index_refinery_image_translations_on_locale"
+  add_index "refinery_image_translations", ["refinery_image_id"], :name => "index_refinery_image_translations_on_refinery_image_id"
 
   create_table "refinery_images", :force => true do |t|
     t.string   "image_mime_type"
@@ -46,6 +102,8 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
     t.string   "image_uid"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.string   "image_title"
+    t.string   "image_alt"
   end
 
   create_table "refinery_page_part_translations", :force => true do |t|
@@ -61,11 +119,12 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
 
   create_table "refinery_page_parts", :force => true do |t|
     t.integer  "refinery_page_id"
-    t.string   "title"
+    t.string   "slug"
     t.text     "body"
     t.integer  "position"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+    t.string   "title"
   end
 
   add_index "refinery_page_parts", ["id"], :name => "index_refinery_page_parts_on_id"
@@ -102,6 +161,7 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
     t.string   "layout_template"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.string   "custom_slug"
   end
 
   add_index "refinery_pages", ["depth"], :name => "index_refinery_pages_on_depth"
@@ -109,6 +169,17 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
   add_index "refinery_pages", ["lft"], :name => "index_refinery_pages_on_lft"
   add_index "refinery_pages", ["parent_id"], :name => "index_refinery_pages_on_parent_id"
   add_index "refinery_pages", ["rgt"], :name => "index_refinery_pages_on_rgt"
+
+  create_table "refinery_resource_translations", :force => true do |t|
+    t.integer  "refinery_resource_id", :null => false
+    t.string   "locale",               :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+    t.string   "resource_title"
+  end
+
+  add_index "refinery_resource_translations", ["locale"], :name => "index_refinery_resource_translations_on_locale"
+  add_index "refinery_resource_translations", ["refinery_resource_id"], :name => "index_refinery_resource_translations_on_refinery_resource_id"
 
   create_table "refinery_resources", :force => true do |t|
     t.string   "file_mime_type"
@@ -119,49 +190,6 @@ ActiveRecord::Schema.define(:version => 20140610180803) do
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
   end
-
-  create_table "refinery_roles", :force => true do |t|
-    t.string "title"
-  end
-
-  create_table "refinery_roles_users", :id => false, :force => true do |t|
-    t.integer "user_id"
-    t.integer "role_id"
-  end
-
-  add_index "refinery_roles_users", ["role_id", "user_id"], :name => "index_refinery_roles_users_on_role_id_and_user_id"
-  add_index "refinery_roles_users", ["user_id", "role_id"], :name => "index_refinery_roles_users_on_user_id_and_role_id"
-
-  create_table "refinery_user_plugins", :force => true do |t|
-    t.integer "user_id"
-    t.string  "name"
-    t.integer "position"
-  end
-
-  add_index "refinery_user_plugins", ["name"], :name => "index_refinery_user_plugins_on_name"
-  add_index "refinery_user_plugins", ["user_id", "name"], :name => "index_refinery_user_plugins_on_user_id_and_name", :unique => true
-
-  create_table "refinery_users", :force => true do |t|
-    t.string   "username",               :null => false
-    t.string   "email",                  :null => false
-    t.string   "encrypted_password",     :null => false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.integer  "sign_in_count"
-    t.datetime "remember_created_at"
-    t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "created_at",             :null => false
-    t.datetime "updated_at",             :null => false
-    t.string   "slug"
-    t.string   "userid_detail_id"
-    t.string   "password_salt"
-  end
-
-  add_index "refinery_users", ["id"], :name => "index_refinery_users_on_id"
-  add_index "refinery_users", ["slug"], :name => "index_refinery_users_on_slug"
 
   create_table "seo_meta", :force => true do |t|
     t.integer  "seo_meta_id"
