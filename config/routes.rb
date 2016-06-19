@@ -13,6 +13,28 @@
 # limitations under the License.
 #
 MyopicVicar::Application.routes.draw do
+  # Mikes winfreereg request
+
+  get 'transreg_csvfiles/delete'
+  post 'transreg_csvfiles/upload'
+  post 'transreg_csvfiles/replace'
+
+  get 'transreg_batches/list'
+  get 'transreg_batches/download'
+  get 'transreg_churches/list'
+  get 'transreg_places/list'
+  get 'transreg_counties/register_types'
+  get 'transreg_counties/list'
+  get 'transreg_users/refreshuser'
+  get 'transreg_users/authenticate'
+
+  resources :transreg_counties
+  resources :transreg_users
+
+  # end mikes request
+
+
+
   get 'software_versions/:id/commitments(.:format)',  :to => 'software_versions#commitments', :as => :commitments_software_versions
   resources :software_versions
 

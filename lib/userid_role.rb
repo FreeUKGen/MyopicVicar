@@ -1,7 +1,7 @@
 module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
             'volunteer_coordinator','data_manager', 'technical','system_administrator', 'contacts_coordinator','project_manager','executive_director',
-            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator']
+            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator','computer']
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
     'trainee' => [ "Profile", "Batches","Roadmap"],
@@ -20,15 +20,15 @@ module UseridRole
                                 "County Coordinators", "Country Coordinators","Physical Files","RefineryCMS", "Access Attic","Site Statistics","Search Performance",
                                 "Feedback", "Contacts", "Message System", "Denominations","Software Version Information","System Documentation","Roadmap" ],
     'project_manager' =>[  "Profile", "Batches", "Manage Userids", "RefineryCMS", "Site Statistics","Search Performance",
-                                "Feedback", "Contacts", "System Documentation","Roadmap" ],                          
+                           "Feedback", "Contacts", "System Documentation","Roadmap" ],
     'executive_director' =>[  "Profile", "Batches", "Manage Userids", "Syndicate Coordinators",
-                                "County Coordinators", "Country Coordinators","RefineryCMS", "Site Statistics","Search Performance",
-                                "Feedback", "Contacts", "Message System","System Documentation","Roadmap" ], 
-    'publicity_coordinator'=> [ "Profile", "Batches",  "Contacts", "System Documentation" ,"Roadmap"],                              
+                              "County Coordinators", "Country Coordinators","RefineryCMS", "Site Statistics","Search Performance",
+                              "Feedback", "Contacts", "Message System","System Documentation","Roadmap" ],
+    'publicity_coordinator'=> [ "Profile", "Batches",  "Contacts", "System Documentation" ,"Roadmap"],
     'genealogy_coordinator'=> [ "Profile", "Batches", "Contacts", "System Documentation" ,"Roadmap"],
     'documentation_coordinator' => [  "Profile", "Batches", "Manage Syndicates", "Manage Counties", "Display Userids", "RefineryCMS",
-                         "Feedback", "Contacts", "System Documentation","Roadmap" ],
-    'engagement_coordinator' => [  "Profile", "Batches", "Display Userids", "RefineryCMS", "Contacts", "System Documentation","Roadmap" ]  
+                                      "Feedback", "Contacts", "System Documentation","Roadmap" ],
+    'engagement_coordinator' => [  "Profile", "Batches", "Display Userids", "RefineryCMS", "Contacts", "System Documentation","Roadmap" ]
   }
 
   OPTIONS_TRANSLATION = {
@@ -73,7 +73,7 @@ module UseridRole
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
     "Select Role" => "/userid_details/person_roles"
-   
+
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
