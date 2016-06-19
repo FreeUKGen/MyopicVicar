@@ -180,7 +180,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def set_up_error_display
     @freereg1_csv_file = @error_file.freereg1_csv_file
-
     @error_file.data_line[:record_type] = @error_file.record_type
     @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
     @error_line = @error_file.record_number
@@ -189,15 +188,17 @@ class Freereg1CsvEntriesController < ApplicationController
     Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
       @place_names << place.place_name
     end
-    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
-    @file_owner = @freereg1_csv_file.userid
-    @register = @freereg1_csv_file.register
-    @register_name = RegisterType.display_name(@register.register_type)
-    @church = @register.church #id?
-    @church_name = @church.church_name
-    @place = @church.place #id?
-    @county =  @place.county
-    @place_name = @place.place_name
+    unless @freereg1_csv_file.nil?
+      @freereg1_csv_file_name = @freereg1_csv_file.file_name
+      @file_owner = @freereg1_csv_file.userid
+      @register = @freereg1_csv_file.register
+      @register_name = RegisterType.display_name(@register.register_type)
+      @church = @register.church #id?
+      @church_name = @church.church_name
+      @place = @church.place #id?
+      @county =  @place.county
+      @place_name = @place.place_name
+    end
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
   end

@@ -229,8 +229,12 @@ class Freereg1CsvFile
       holding['records'] = holding['records'].to_i + individual.records.to_i
       holding['datemax'] = individual.datemax.to_i  if individual.datemax.to_i > holding['datemax'].to_i
       holding['datemin'] = individual.datemin.to_i if individual.datemin.to_i < holding['datemin'].to_i
-      holding['daterange'].each_index do |i|
-        holding['daterange'][i] = holding['daterange'][i].to_i + individual.daterange[i].to_i
+      if holding['daterange'].blank?
+        holding['daterange'] = individual.daterange
+      else
+        holding['daterange'].each_index do |i|
+          holding['daterange'][i] = holding['daterange'][i].to_i + individual.daterange[i].to_i unless individual.daterange.blank?
+        end
       end
       holding['transcriber_name'] << individual.transcriber_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') unless individual.transcriber_name.blank?
       holding['credit_name'] << individual.credit_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') unless individual.credit_name.blank?
