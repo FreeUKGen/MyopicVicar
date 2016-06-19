@@ -35,8 +35,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    session[:refinery] = current_refinery_user
-    @userid = UseridDetail.new(params[:userid_detail])
+    @userid = UseridDetail.new(userid_details_params)
     @userid.add_fields(params[:commit],session[:syndicate])
     @userid.save
     if @userid.save
@@ -155,9 +154,6 @@ class UseridDetailsController < ApplicationController
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
     @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
-    #sending out the password reset destroys the current_user
-    current_refinery_user = session[:refinery]
-    session.delete(:refinery)
     case
 
     when params[:commit] == "Submit"
@@ -373,14 +369,12 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     when params[:commit] == "Update"
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
-      note_to_send_email_to_sc = false
-      note_to_send_email_to_sc = true if params[:userid_detail][:syndicate] != @userid.syndicate
     end
-    @userid.update_attributes(params[:userid_detail])
+    @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
-      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
+      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if @userid.previous_syndicate != @userid.syndicate
       flash[:notice] = 'The update of the profile was successful'
       redirect_to userid_detail_path(@userid)
       return
@@ -390,5 +384,9 @@ class UseridDetailsController < ApplicationController
       render :action => 'edit'
       return
     end
+  end
+  private
+  def userid_details_params
+    params.require(:userid_detail).permit!
   end
 end

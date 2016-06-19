@@ -14,6 +14,18 @@
 #
 module ApplicationHelper
 
+  def get_user_info_from_userid
+    @userid = session[:userid]
+    @user_id = session[:user_id]
+    @first_name = session[:first_name]
+    @manager = session[:manager]
+    @roles = session[:role]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @roles = UseridRole::OPTIONS.fetch(session[:role])
+  end
+
+
+
   def problem_url
     # construct url parameters for problem reports
     problem_time = Time.now.utc
@@ -21,7 +33,7 @@ module ApplicationHelper
     problem_page_url=request.env['REQUEST_URI']
     previous_page_url=request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
-    user_id = current_refinery_user.username
+    user_id = session[:userid]
     url = main_app.new_feedback_path({ :feedback_time => problem_time,
                                        :session_id => session_id,
                                        :user_id => user_id,
@@ -38,7 +50,7 @@ module ApplicationHelper
     problem_page_url=request.env['REQUEST_URI']
     previous_page_url=request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
-    user_id = current_refinery_user.username
+    user_id = session[:userid]
 
     {  :feedback_time => problem_time,
        :session_id => session_id,
@@ -130,7 +142,7 @@ module ApplicationHelper
   end
 
   def ucf_wildcards_enabled?
-    Rails.application.config.respond_to?(:wildcard_support) && Rails.application.config.wildcard_support
+    Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
   end
 
 

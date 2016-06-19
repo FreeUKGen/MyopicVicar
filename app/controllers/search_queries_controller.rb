@@ -2,9 +2,89 @@ class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
   skip_before_filter :require_cookie_directive, :only => :new
   before_filter :check_for_mobile, :only => :show
+  rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   RECORDS_PER_PAGE = 100
+
+  def about
+    if params[:page_number]
+      @page_number = params[:page_number].to_i
+    else
+      @page_number = 0
+    end
+    begin
+      @search_query = SearchQuery.find(params[:id])
+    rescue Mongoid::Errors::DocumentNotFound
+      log_possible_host_change
+      redirect_to new_search_query_path
+    end
+  end
+
+  def analyze
+    @search_query = SearchQuery.find(params[:id])
+    begin
+      @plan = @search_query.explain_plan
+    rescue => ex
+      @plan_error = ex.message
+      @plan = @search_query.explain_plan_no_sort
+    end
+  end
+
+  def broaden
+    old_query = SearchQuery.find(params[:id])
+    @search_query = SearchQuery.new(old_query.attributes)
+    @search_query.radius_factor = @search_query.radius_factor * 2
+    @search_query.search_result = nil
+    @search_query.save
+    @search_results = @search_query.search
+    redirect_to search_query_path(@search_query)
+  end
+
+  def create
+    if params[:search_query].present? && params[:search_query][:region].blank?
+      @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
+      @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
+      @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
+      if @search_query["chapman_codes"][1].eql?("YKS")
+        @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
+      end
+      if @search_query["chapman_codes"][1].eql?("CHI")
+        @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+      end
+      @search_query.session_id = request.session_options[:id]
+      if  @search_query.save
+        session[:query] = @search_query.id
+        @search_results = @search_query.search
+        redirect_to search_query_path(@search_query)
+      else
+        render :new
+      end
+    else
+      render :new
+    end
+  end
+
+  def edit
+    @search_query = SearchQuery.find(params[:id])
+  end
+
+  def go_back
+    flash[:notice] = "We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page"
+    redirect_to new_search_query_path
+    return
+  end
+
   def index
     redirect_to :action => :new
+  end
+
+  def narrow
+    old_query = SearchQuery.find(params[:id])
+    @search_query = SearchQuery.new(old_query.attributes)
+    @search_query.radius_factor = @search_query.radius_factor / 2
+    @search_query.search_result = nil
+    @search_query.save
+    @search_results = @search_query.search
+    redirect_to search_query_path(@search_query)
   end
 
   def new
@@ -25,74 +105,36 @@ class SearchQueriesController < ApplicationController
     end
   end
 
-
   def remember
     @search_query = SearchQuery.find(params[:id])
-    current_refinery_user.userid_detail.remember_search(@search_query)
+    get_user_info_from_userid
+    @user.remember_search(@search_query)
     flash[:notice] = "This search has been added to your remembered searches"
     redirect_to search_query_path(@search_query)
   end
 
-  def broaden
+  def reorder
     old_query = SearchQuery.find(params[:id])
-    @search_query = SearchQuery.new(old_query.attributes)
-    @search_query.radius_factor = @search_query.radius_factor * 2
-    @search_query.search_result = nil
-    @search_query.save
-    @search_results = @search_query.search
-    redirect_to search_query_path(@search_query)
-  end
-
-  def narrow
-    old_query = SearchQuery.find(params[:id])
-    @search_query = SearchQuery.new(old_query.attributes)
-    @search_query.radius_factor = @search_query.radius_factor / 2
-    @search_query.search_result = nil
-    @search_query.save
-    @search_results = @search_query.search
-    redirect_to search_query_path(@search_query)
-  end
-
-  def create
-    if params[:search_query].present? && params[:search_query][:region].blank?
-      @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
-      @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
-      @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
-      if @search_query["chapman_codes"][1].eql?("YKS")
-        @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
-      end
-      if @search_query["chapman_codes"][1].eql?("CHI")
-        @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
-      end
-      @search_query.session_id = request.session_options[:id]
-
-      if  @search_query.save
-        @search_results = @search_query.search
-        redirect_to search_query_path(@search_query)
-      else
-        render :new
-      end
+    order_field=params[:order_field]
+    if order_field==old_query.order_field
+      # reverse the directions
+      old_query.order_asc = !old_query.order_asc
     else
-      render :new
+      old_query.order_field = order_field
+      old_query.order_asc = true
     end
+    old_query.save!
+    #    old_query.new_order(old_query)
+    redirect_to search_query_path(old_query)
   end
 
-  # default criteria:
-  # today
   def report
+    # default criteria:
+    # today
     if params[:session_id]
       report_for_session
     else
       report_for_day
-    end
-  end
-  def show_query
-    if params[:id].present?
-      @search_query = SearchQuery.where(:id => params[:id]).first
-    else
-      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
-      go_back
-      return
     end
   end
 
@@ -119,31 +161,11 @@ class SearchQueriesController < ApplicationController
     @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
   end
 
-
-  def analyze
-    @search_query = SearchQuery.find(params[:id])
-    begin
-      @plan = @search_query.explain_plan
-    rescue => ex
-      @plan_error = ex.message
-      @plan = @search_query.explain_plan_no_sort
-    end
-
-  end
-
-  def reorder
-    old_query = SearchQuery.find(params[:id])
-    order_field=params[:order_field]
-    if order_field==old_query.order_field
-      # reverse the directions
-      old_query.order_asc = !old_query.order_asc
-    else
-      old_query.order_field = order_field
-      old_query.order_asc = true
-    end
-    old_query.save!
-    #    old_query.new_order(old_query)
-    redirect_to search_query_path(old_query)
+  def search_taking_too_long
+    @search_query = SearchQuery.find(session[:query])
+    session[:query] = nil
+    flash[:notice] = "Your search is running too long. We suggest you change some of the parameters"
+    redirect_to new_search_query_path(:search_id => @search_query)
   end
 
   def show
@@ -193,42 +215,31 @@ class SearchQueriesController < ApplicationController
     render "show", :layout => false
   end
 
-  def go_back
-    flash[:notice] = "We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page"
-    redirect_to new_search_query_path
-    return
+  def show_query
+    if params[:id].present?
+      @search_query = SearchQuery.where(:id => params[:id]).first
+    else
+      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
+      go_back
+      return
+    end
   end
 
-
-  def edit
-    @search_query = SearchQuery.find(params[:id])
-
-  end
   def update
-    @search_query = SearchQuery.new(params[:search_query].delete_if{|k,v| v.blank? })
+    @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
     @search_query.session_id = request.session_options[:id]
-
     if  @search_query.save
       redirect_to search_query_path(@search_query)
     else
       render :edit
     end
-
   end
 
-  def about
-    if params[:page_number]
-      @page_number = params[:page_number].to_i
-    else
-      @page_number = 0
-    end
-    begin
-      @search_query = SearchQuery.find(params[:id])
-    rescue Mongoid::Errors::DocumentNotFound
-      log_possible_host_change
-      redirect_to new_search_query_path
-    end
-  end
 
+  private
+
+  def search_params
+    params.require(:search_query).permit!
+  end
 
 end

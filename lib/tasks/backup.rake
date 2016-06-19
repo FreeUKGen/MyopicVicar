@@ -32,11 +32,11 @@ namespace :freereg do
 
   def run_mongo(program, command_line)
     fq_program =  File.join(Rails.application.config.mongodb_bin_location, program)
-    db = Mongoid.sessions[:default][:database]
-    host = Mongoid.sessions[:default][:hosts].first
-    ssl = " --ssl " 
-    if Mongoid.sessions[:default][:options] && Mongoid.sessions[:default][:options][:ssl]
-      ssl = " --ssl " 
+    db = Mongoid.clients[:default][:database]
+    host = Mongoid.clients[:default][:hosts].first
+    ssl = " --ssl "
+    if Mongoid.clients[:default][:options] && Mongoid.clients[:default][:options][:ssl]
+      ssl = " --ssl "
     else
       ssl = ""
     end
@@ -70,8 +70,8 @@ namespace :freereg do
 
   desc "Save freereg databases to a backup file"
   task :backup, [:backup_file] => [:environment] do  |t,args|
-  # this needs to mimic this:
-  # backup_stem=`date -u +"%Y%m%d%H%M%S"`
+    # this needs to mimic this:
+    # backup_stem=`date -u +"%Y%m%d%H%M%S"`
     backup_stem = Time.now.strftime("%Y%m%d%H%M%S")
     # dumpfile="/raid/freereg2/backups/working/$backup_stem"
     working_dir = File.join(Rails.application.config.backup_directory, 'working')
@@ -160,15 +160,15 @@ namespace :freereg do
   def validate_database
     # check to make sure the database tables exist
     begin
-      Refinery::User.count
+      Refinery::Authentication::Devise::User.count
     rescue
       print "Error: Database appears to be empty.  Run rake db:setup to create tables and seed it.\n"
       exit
     end
     # # check emendations
     # if EmendationRule.count == 0
-      # print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
-      # exit
+    # print "Error: Emendation rules have not been loaded.  Run rake load_emendations to load them.\n"
+    # exit
     # end
 
   end
@@ -225,4 +225,3 @@ namespace :freereg do
   end
 
 end
-

@@ -16,14 +16,14 @@ class ContactsController < ApplicationController
         flash.notice = "Issue has already been created on Github."
         redirect_to :action => "show"
         return
-      end 
+      end
     else
       go_back("contact",params[:id])
-    end    
+    end
   end
 
   def create
-    @contact = Contact.new(params[:contact])
+    @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
       session.delete(:flash)
       @contact.session_data = session
@@ -59,20 +59,20 @@ class ContactsController < ApplicationController
       return
     else
       go_back("contact",params[:id])
-    end    
+    end
   end
 
   def edit
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       if @contact.github_issue_url.present?
-          flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
-          redirect_to :action => 'show'
-          return
+        flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
+        redirect_to :action => 'show'
+        return
       end
     else
       go_back("contact",params[:id])
-    end  
+    end
   end
 
   def index
@@ -82,7 +82,7 @@ class ContactsController < ApplicationController
       @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
     else
       @contacts = Contact.all.order_by(contact_time: -1)
-    end  
+    end
   end
 
   def list_by_date
@@ -157,7 +157,7 @@ class ContactsController < ApplicationController
     session[:church_name] = church.church_name
     session[:county] = place.county
   end
-  
+
   def show
     @contact = Contact.id(params[:id]).first
     if @contact.present?
@@ -169,18 +169,23 @@ class ContactsController < ApplicationController
       end
     else
       go_back("contact",params[:id])
-    end   
-  end 
-  
+    end
+  end
+
   def update
     @contact = Contact.id(params[:id]).first
-    if @contact.present? 
-      @contact.update_attributes(params[:contact])
+    if @contact.present?
+      @contact.update_attributes(contact_params)
       redirect_to :action => 'show'
       return
     else
       go_back("contact",params[:id])
-    end  
+    end
   end
-  
+
+  private
+  def contact_params
+    params.require(:contact).permit!
+  end
+
 end

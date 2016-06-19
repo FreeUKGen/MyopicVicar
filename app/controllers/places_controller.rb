@@ -8,10 +8,10 @@ class PlacesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @county = ChapmanCode.has_key(session[:chapman_code])
-    if session[:active_place] 
+    if session[:active_place]
       @places = Place.where( :chapman_code => @chapman_code, :data_present => true).all.order_by(place_name: 1)
     else
-       @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)     
+      @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)
     end
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -24,12 +24,12 @@ class PlacesController < ApplicationController
     get_user_info_from_userid
     @place.alternateplacenames.build
     @county = session[:county]
-   
+
   end
 
   def create
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @place = Place.new(params[:place])
+    @place = Place.new(place_params)
     @place.chapman_code = ChapmanCode.values_at(params[:place][:county])
     @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     #use the lat/lon if present if not calculate from the grid reference
@@ -50,7 +50,7 @@ class PlacesController < ApplicationController
   end
 
   def show
-    load(params[:id])   
+    load(params[:id])
   end
 
   def edit
@@ -80,11 +80,11 @@ class PlacesController < ApplicationController
 
   def update
     load(params[:id])
-   case
+    case
     when params[:commit] == 'Submit'
       @place.save_to_original
       @place.adjust_location_before_applying(params,session)
-      @place.update_attributes(params[:place])
+      @place.update_attributes(place_params)
       if @place.errors.any?  then
         flash[:notice] = 'The update of the Place was unsuccessful'
         render :action => 'edit'
@@ -117,7 +117,7 @@ class PlacesController < ApplicationController
       #we should never get here but just in case
       flash[:notice] = 'The change to the Place was unsuccessful'
       redirect_to place_path(@place)
-   end
+    end
   end
 
   def destroy
@@ -136,10 +136,10 @@ class PlacesController < ApplicationController
       redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
       return
     end
-     flash[:notice] = 'The disabling of the place was successful'
+    flash[:notice] = 'The disabling of the place was successful'
     redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
   end
-#additional controller actions
+  #additional controller actions
   def approve
     session[:return_to] = request.referer
     get_user_info_from_userid
@@ -148,7 +148,7 @@ class PlacesController < ApplicationController
     flash[:notice] = "Unapproved flag removed; Don't forget you now need to update the Grid Ref as well as check that county and country fields are set."
     redirect_to place_path(@place)
   end
-  
+
   def merge
     load(params[:id])
     success,message = @place.merge_places
@@ -160,7 +160,7 @@ class PlacesController < ApplicationController
     flash[:notice] = 'The merge of the Places was successful'
     redirect_to place_path(@place)
   end
- #controller methods 
+  #controller methods
   def load(place_id)
     @user = UseridDetail.where(:userid => session[:userid]).first
     @place = Place.id(place_id).first
@@ -175,7 +175,7 @@ class PlacesController < ApplicationController
       @first_name = session[:first_name]
     end
   end
-  
+
   def for_search_form
     if params[:search_query]
       chapman_codes = params[:search_query][:chapman_codes]
@@ -183,25 +183,26 @@ class PlacesController < ApplicationController
       log_possible_host_change
       chapman_codes = []
     end
-
     county_places = PlaceCache.in(:chapman_code => chapman_codes)
     county_response = ""
-    county_places.each { |pc| county_response << pc.places_json }
-
+    county_places.each  do |pc|
+      county_response << pc.places_json unless pc.nil?
+    end
     respond_to do |format|
       format.json do
         render :json => county_response
       end
     end
   end
-  
+
   def for_freereg_content_form
     unless params[:freereg_content].nil?
       chapman_codes = params[:freereg_content][:chapman_codes]
       county_response = ""
       county_places = PlaceCache.in(:chapman_code => chapman_codes)
-      county_places.each { |pc| county_response << pc.places_json }
-
+      county_places.each do |pc|
+        county_response << pc.places_json unless pc.nil?
+      end
       respond_to do |format|
         format.json do
           render :json => county_response
@@ -232,5 +233,8 @@ class PlacesController < ApplicationController
     flash[:notice] = 'The validation of Place failed when it should not have done'
     redirect_to places_path
   end
-
+  private
+  def place_params
+    params.require(:place).permit!
+  end
 end

@@ -53,7 +53,7 @@
         <td class="weight--semibold"><%= @entry.notes_from_transcriber%></td>
       </tr>
       
-      <% if current_refinery_user %>
+      <% if current_authentication_devise_user.present? %>
       <tr>
         <td class="weight--normal"> Line id </td>
         <td class="weight--semibold"><%= @entry.line_id %></td>

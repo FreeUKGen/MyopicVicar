@@ -21,7 +21,7 @@ class CountriesController < ApplicationController
   end
 
   def create
-    @country = Country.new(params[:country])
+    @country = Country.new(country_params)
     @country.save
     if @country.errors.any?
 
@@ -38,8 +38,8 @@ class CountriesController < ApplicationController
   def update
     load(params[:id])
     my_params = params[:country]
-    my_params = @country.update_fields_before_applying(my_params)
-    @country.update_attributes(my_params)
+    params[:country] = @country.update_fields_before_applying(my_params)
+    @country.update_attributes(country_params)
     if @country.errors.any?
 
       flash[:notice] = "The change to the country was unsuccessful"
@@ -80,6 +80,11 @@ class CountriesController < ApplicationController
     end
   end
 
+
+  private
+  def country_params
+    params.require(:country).permit!
+  end
 
 
 

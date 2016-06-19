@@ -5,13 +5,13 @@ class ChurchesController < ApplicationController
   require 'chapman_code'
 
   def show
-   @church = Church.id(params[:id]).first
+    @church = Church.id(params[:id]).first
     if @church.nil?
       go_back("church",params[:id])
     else
-     setup(params[:id])
-     @place = Place.find(session[:place_id])
-     @place_name = @place.place_name
+      setup(params[:id])
+      @place = Place.find(session[:place_id])
+      @place_name = @place.place_name
     end
   end
 
@@ -27,7 +27,7 @@ class ChurchesController < ApplicationController
   end
 
   def create
-    @church = Church.new(params[:church]) 
+    @church = Church.new(church_params)
     @church.church_name = Church.standardize_church_name(@church.church_name)
     @place = Place.find(session[:place_id])
     church_ok = @church.church_does_not_exist(@place)
@@ -39,7 +39,7 @@ class ChurchesController < ApplicationController
       get_user_info_from_userid
       flash[:notice] = "The addition of the Church was unsuccessful because #{church_ok[1]}"
       redirect_to new_church_path
-      return     
+      return
     end
   end
   def denomination_list
@@ -49,7 +49,7 @@ class ChurchesController < ApplicationController
     end
   end
 
-  def edit   
+  def edit
     get_user_info_from_userid
     @church = Church.id(params[:id]).first
     if @church.nil?
@@ -75,9 +75,9 @@ class ChurchesController < ApplicationController
       @user = UseridDetail.where(:userid => session[:userid]).first
       @records = 0
       @church.registers do |register|
-          register.freereg1_csv_files.each do |file|
-           @records = @records + file.freereg1_csv_entries.count
-          end
+        register.freereg1_csv_files.each do |file|
+          @records = @records + file.freereg1_csv_entries.count
+        end
       end
     end
   end
@@ -100,15 +100,15 @@ class ChurchesController < ApplicationController
       @user = UseridDetail.where(:userid => session[:userid]).first
       @records = 0
       @church.registers do |register|
-          register.freereg1_csv_files.each do |file|
-           @records = @records + file.freereg1_csv_entries.count
-          end
+        register.freereg1_csv_files.each do |file|
+          @records = @records + file.freereg1_csv_entries.count
+        end
       end
     end
   end
 
   def merge
-   @church = Church.id(params[:id]).first
+    @church = Church.id(params[:id]).first
     if @church.nil?
       go_back("church",params[:id])
     else
@@ -125,7 +125,7 @@ class ChurchesController < ApplicationController
   end
 
   def update
-   @church = Church.id(params[:id]).first
+    @church = Church.id(params[:id]).first
     if @church.nil?
       go_back("church",params[:id])
     else
@@ -133,7 +133,7 @@ class ChurchesController < ApplicationController
       case
       when params[:commit] == 'Submit'
         params[:church][:church_name] = params[:church][:church_name].strip unless params[:church][:church_name].blank?
-        @church.update_attributes(params[:church])
+        @church.update_attributes(church_params)
         if @church.errors.any?  then
           flash[:notice] = 'The update of the Church was unsuccessful'
           render :action => 'edit'
@@ -198,7 +198,7 @@ class ChurchesController < ApplicationController
       @church.destroy
       flash[:notice] = 'The deletion of the Church was successful'
       redirect_to place_path(return_location)
-  end
+    end
   end
 
   def record_cannot_be_deleted
@@ -209,5 +209,10 @@ class ChurchesController < ApplicationController
   def record_validation_errors
     flash[:notice] = 'The update of the children to Church with a church name change failed'
     redirect_to :action => 'show'
+  end
+
+  private
+  def church_params
+    params.require(:church).permit!
   end
 end

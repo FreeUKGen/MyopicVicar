@@ -4,6 +4,7 @@ class FreeregContent
   include Mongoid::Timestamps::Updated::Short
 
   require 'chapman_code'
+
   field :county, type: String#, :required => false
   field :chapman_codes,  type: Array, default: []
   validates_inclusion_of :county, :in => ChapmanCode::values+[nil]
@@ -12,7 +13,6 @@ class FreeregContent
   field :record_type, type: String#, :required => false
   field :place_ids, type: String
   attr_accessor :character
-  attr_accessible :chapman_codes
   validates_inclusion_of :record_type, :in => RecordType::ALL_FREEREG_TYPES+[nil]
   validate :county_is_valid
 
@@ -53,7 +53,7 @@ class FreeregContent
   end
   def self.determine_if_selection_needed(chapman,alphabet)
     number = 0
-    if alphabet.blank? 
+    if alphabet.blank?
       county = County.chapman_code(chapman).first
       number = county.total_records.to_i
       number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
@@ -61,7 +61,7 @@ class FreeregContent
     else
       number = alphabet
     end
-    number 
+    number
   end
   def self.get_header_information(chapman)
     page = Refinery::CountyPages::CountyPage.where(chapman_code: chapman).first
@@ -77,27 +77,27 @@ class FreeregContent
     record
   end
   def self.get_records_for_display(chapman)
-    places = Place.where(:chapman_code => chapman, :data_present => true, :disabled => 'false').all.order_by(place_name: 1) 
+    places = Place.where(:chapman_code => chapman, :data_present => true, :disabled => 'false').all.order_by(place_name: 1)
   end
   def self.get_places_for_display(chapman)
     places = Place.where(:chapman_code => chapman, :data_present => true,:disabled => 'false' ).all.order_by(place_name: 1)
     place_names = Array.new
-    places.each do |place| 
-     place_names << place.place_name
+    places.each do |place|
+      place_names << place.place_name
     end
     place_names
   end
-  def self.check_how_to_proceed(parameter) 
+  def self.check_how_to_proceed(parameter)
     if parameter.nil?
-     proceed = "no option"
+      proceed = "no option"
     elsif parameter[:place].present? && parameter[:character].present?
       proceed = "dual"
     elsif parameter[:place].present?
-      proceed = "place" 
-    elsif parameter[:character].present?  
-     proceed = "character"
+      proceed = "place"
+    elsif parameter[:character].present?
+      proceed = "character"
     else
-     proceed = "no option"
+      proceed = "no option"
     end
   end
   def self.get_decades(files)
@@ -119,7 +119,7 @@ class FreeregContent
   def self.get_transcribers(files)
     transcriber = ["","",""]
     transcriber[0]= files["ba"]["transcriber_name"].join(', ').to_s  if files["ba"].present?
-    transcriber[1]= files["ma"]["transcriber_name"].join(', ').to_s  if files["ma"].present?          
+    transcriber[1]= files["ma"]["transcriber_name"].join(', ').to_s  if files["ma"].present?
     transcriber[2]= files["bu"]["transcriber_name"].join(', ').to_s  if files["bu"].present?
     transcriber
   end

@@ -174,7 +174,8 @@ class SearchRecord
   def self.update_create_search_record(entry,search_version,place_id)
     search_record = entry.search_record
     if search_record.blank?
-      search_record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+      search_record = SearchRecord.new(search_record_parameters)
       search_record.freereg1_csv_entry = entry
       search_record.search_record_version = search_version
       search_record.transform
@@ -186,7 +187,8 @@ class SearchRecord
       digest = search_record.digest
       digest = search_record.cal_digest if digest.blank?
       #create a temporary search record with the new information; this will not be saved
-      new_search_record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+      search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+      new_search_record = SearchRecord.new(search_record_parameters)
       new_search_record.freereg1_csv_entry = entry
       new_search_record.place_id = place_id
       new_search_record.transform

@@ -64,9 +64,9 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    logger.warn("APP: current_refinery_user #{current_refinery_user}")
-    logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil?
-    @user = current_refinery_user.userid_detail
+    session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    #logger.warn("APP: current_refinery_user #{current_refinery_user}")
+    #logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil?
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
@@ -77,23 +77,40 @@ class ApplicationController < ActionController::Base
     place = church.place
     return place.id
   end
-
-  def  get_user_info_from_userid
-    if session[:userid].nil?
-      if current_refinery_user.nil?
+  def get_userid_from_current_authentication_devise_user
+    if session[:userid_detail_id].present?
+      @user = UseridDetail.id(session[:userid_detail_id]).first
+    else
+      if current_authentication_devise_user.blank?
+        flash[:notice] = 'You are not logged into the system'
         redirect_to refinery.login_path
         return
       else
-        @user = current_refinery_user.userid_detail
-        session[:userid] = @user.userid
+        @user = UseridDetail.find(current_authentication_devise_user.userid_detail_id)
       end
-    else
-      @user = UseridDetail.where(:userid => session[:userid]).first
     end
-    @userid = @user._id
+    @user_id = @user._id
+    @userid = @user.userid
     @first_name = @user.person_forename
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    u = Refinery::Authentication::Devise::User.where(:username => @user.userid).first
+    session[:userid] = @userid
+    session[:user_id] = @user_id
+    session[:first_name] = @first_name
+    session[:manager] = manager?(@user)
+    session[:role] = @user.person_role
+
+  end
+
+  def get_user_info_from_userid
+    @userid = session[:userid]
+    @user_id = session[:user_id]
+    @first_name = session[:first_name]
+    @manager = session[:manager]
+    @roles = session[:role]
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @roles = UseridRole::OPTIONS.fetch(session[:role])
   end
 
   def  get_user_info(userid,name)

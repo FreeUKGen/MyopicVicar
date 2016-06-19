@@ -18,14 +18,20 @@ class AtticFilesController < InheritedResources::Base
   def download
     file = AtticFile.find(params[:id])
     my_file =  File.join(Rails.application.config.datafiles, file.userid_detail.userid,".attic",file.name)
-    send_file( my_file, :filename => file.name)
+    if File.exists?(my_file)
+      send_file( my_file, :filename => file.name)
+      flash[:notice] = 'Download commenced'
+    else
+      flash[:notice] = 'The file does not exist!'
+    end
+    redirect_to :back
   end
   def destroy
-     file = AtticFile.find(params[:id])
-     user = file.userid_detail.userid
-     file.destroy
-     flash[:notice] = 'The destruction of the file was successful'
-     redirect_to attic_file_path(user)
+    file = AtticFile.find(params[:id])
+    user = file.userid_detail.userid
+    file.destroy
+    flash[:notice] = 'The destruction of the file was successful'
+    redirect_to attic_file_path(user)
   end
 
 

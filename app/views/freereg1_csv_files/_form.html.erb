@@ -1,29 +1,29 @@
 
-<%= semantic_form_for @freereg1_csv_file ,:html => { :class =>  "grid"} do |f| %>
-  <%= f.input :transcriber_name , :input_html => { :size => 30 }%>
-  <%= f.input :transcriber_email, :input_html => {:size => 40 } %>
-  <%= f.input :credit_name ,:label => 'Credit Person', :input_html => { :size => 30 }%>
-  <%= f.input :credit_email, :label => "Credit Person's email address",:input_html => { :size => 40 } %>
-  <%= f.input :first_comment, :label => 'Comments about the batch',:input_html => { :size => 50 }%>
-  <%= f.input :second_comment, :label => 'Additional comments about the batch',:input_html => {  :size => 50 }%>
-  <%= f.input :lds,{ :as => :select,:label => "Image numbers available with record",:include_blank => false,
-  :required => true, :collection => ['yes','no'], :size => 15 } %>
-  <%= f.input :transcription_date ,:input_html => { :size => 25  }%>
-  <%= f.input :modification_date ,:input_html => { :size => 25}%>
+<%= simple_form_for @freereg1_csv_file , :html => { :class => "grid"}  do |f| %> 
+  <%= f.input :transcriber_name , :input_html => {:class => " simple_form_bgcolour ",  :size => 30 }%>
+  <%= f.input :transcriber_email, :input_html => {:class => " simple_form_bgcolour ", :size => 30 } %>
+  <%= f.input :credit_name ,:label => 'Credit Person', :input_html => {:class => " simple_form_bgcolour ",  :size => 30 }%>
+  <%= f.input :credit_email, :label => "Credit Person's email address",:input_html => { :class => " simple_form_bgcolour  ", :size => 30 } %>
+  <%= f.input :first_comment, :label => 'Comments about the batch', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter your notes",  :size => "29x5" }%> 
+  <%= f.input :second_comment, :label => 'Additional comments about the batch', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter your notes",  :size => "29x5" }%> 
+  <%= f.input :lds,:label => "Image numbers available",:include_blank => false,
+   :collection => ['yes','no'], :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2  }%>
+  <%= f.input :transcription_date ,:input_html => {:class => "simple_form_bgcolour ", :size => 30  }%>
+  <%= f.input :modification_date ,:input_html => {:class => " simple_form_bgcolour ", :size => 30}%>
 
-  <% if session[:my_own] || session[:role] == "county_coordinator" || session[:role] == 'syndicate_coordinator'%>
-  <%= f.input :locked_by_transcriber, { :as => :select,:label => "Locked by transcriber :",:include_blank => false,
-  :required => true, :collection => [ 'true', 'false'], :size => 10 } %>
-      <% if session[:my_own]%>
-       <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
-       <%else%>
-       <%= f.input :locked_by_coordinator, { :as => :select,:label => "Locked by coordinator :",:include_blank => false,
-      :required => true, :collection => [ true, false], :size => 10 } %>
-     <% end %>
+  <% if session[:my_own] || session[:role] == "county_coordinator" || session[:role] == 'syndicate_coordinator' || session[:role] == 'system_administrator'%>
+    <% if session[:my_own]%>
+           <%= f.input :locked_by_coordinator, :input_html => {:class => "   overide_selection_field_width",:disabled => true, :size => 30 } %>
+    <%else%>
+           <%= f.input :locked_by_coordinator, :label => "Locked by coordinator ",:include_blank => false,
+          :required => true, :collection => [ true, false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 2} %>  %>
+    <% end %>
+    <%= f.input :locked_by_transcriber, :label => "Locked by transcriber ",:include_blank => false,
+      :collection => [ 'true', 'false'],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 2} %>
+          
 <%else%>
- <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 10 } %>
-  <%= f.input :locked_by_coordinator, :input_html => { :disabled => true, :size => 10 } %>
+   <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 30 } %>
+    <%= f.input :locked_by_coordinator, :input_html => {:disabled => true, :size => 30 } %>
 <% end %>
-
-<%= f.action :submit, :as => :input, :label => 'Submit'   %>
+<%= f.button :submit, 'Submit'   %>
 <% end %>

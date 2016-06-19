@@ -24,7 +24,7 @@ class Contact
   attr_accessor :action
 
   validates_presence_of :name, :email_address
-  validates :email_address,:format => {:with => /^[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}$/i}
+  validates :email_address,:format => {:with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i}
 
   mount_uploader :screenshot, ScreenshotUploader
 

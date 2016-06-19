@@ -10,10 +10,10 @@ class DenominationsController < ApplicationController
   end
   def show
     get_user_info_from_userid
-      @denomination = Denomination.id(params[:id]).first
-      if @denomination.blank?
-        go_back("denomination",params[:id])
-      end
+    @denomination = Denomination.id(params[:id]).first
+    if @denomination.blank?
+      go_back("denomination",params[:id])
+    end
   end
   def edit
     get_user_info_from_userid
@@ -24,14 +24,14 @@ class DenominationsController < ApplicationController
     end
   end
   def create
-    if params[:denomination].blank? 
+    if params[:denomination].blank?
       flash[:notice] = 'You must enter a field '
       redirect_to :back
       return
     end
-    @denomination  = Denomination.new(params[:denomination])
-    @denomination.save 
-    if @denomination.errors.any? 
+    @denomination  = Denomination.new(denomination_params)
+    @denomination.save
+    if @denomination.errors.any?
       flash[:notice] = "The creation of the new denomination was unsuccessful because #{@denomination.errors.messages}"
       get_userids_and_transcribers
       redirect_to :back
@@ -47,7 +47,7 @@ class DenominationsController < ApplicationController
     if @denomination.blank?
       go_back("denomination",params[:id])
     end
-    @denomination.update_attributes(params[:denomination] )
+    @denomination.update_attributes(denomination_params )
     flash[:notice] = 'The creation of the new denomination was successful'
     redirect_to :action => 'index'
     return
@@ -57,9 +57,14 @@ class DenominationsController < ApplicationController
     if @denomination.blank?
       go_back("denomination",params[:id])
     end
-    @denomination.delete 
+    @denomination.delete
     flash[:notice] = 'The destruction of the denomination was successful'
     redirect_to :action => 'index'
-    return   
+    return
   end
+  private
+  def denomination_params
+    params.require(:denomination).permit!
+  end
+
 end

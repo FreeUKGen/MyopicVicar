@@ -21,7 +21,7 @@ class CsvfilesController < ApplicationController
       return
     end
     get_user_info_from_userid
-    @csvfile  = Csvfile.new(params[:csvfile])
+    @csvfile  = Csvfile.new(csvfile_params)
     #if the process does not have a userid then the process has been initiated by the user on his own batches
     @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
     @csvfile.file_name = @csvfile.csvfile.identifier
@@ -40,14 +40,14 @@ class CsvfilesController < ApplicationController
           redirect_to :back
           return
         else
-          batch = setup[1]   
+          batch = setup[1]
         end
       end
     end
     #lets check for existing file, save if required
     proceed = @csvfile.check_for_existing_file
     @csvfile.save if proceed
-    if @csvfile.errors.any? 
+    if @csvfile.errors.any?
       flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
       get_userids_and_transcribers
       redirect_to :back
@@ -124,7 +124,7 @@ class CsvfilesController < ApplicationController
             return
           end
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
-          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."    
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
         else
         end #case
         @csvfile.delete
@@ -173,7 +173,11 @@ class CsvfilesController < ApplicationController
 
   def load_people(userids)
     userids.each do |ids|
-       @people << ids.userid
+      @people << ids.userid
     end
+  end
+  private
+  def csvfile_params
+    params.require(:csvfile).permit!
   end
 end

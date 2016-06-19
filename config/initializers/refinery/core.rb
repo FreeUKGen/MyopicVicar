@@ -2,7 +2,7 @@
 Refinery::Core.configure do |config|
   # When true will rescue all not found errors and display a friendly error page
   config.rescue_not_found = Rails.env.production?
-
+  config.mounted_path = "/cms"
   # When true this will force SSL redirection in all Refinery backend controllers.
   # config.force_ssl = false
 

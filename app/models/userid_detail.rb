@@ -40,9 +40,6 @@ class UseridDetail
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
 
-  attr_protected
-  #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
-
   has_many :search_queries
   has_many :freereg1_csv_files
   has_many :attic_files
@@ -118,16 +115,16 @@ class UseridDetail
 
   def save_to_refinery
     #avoid looping on password changes
-    u = Refinery::User.where(:username => self.userid).first
+    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     if u.nil?
-      u = Refinery::User.new
+      u = Refinery::Authentication::Devise::User.new
     end
     u.username = self.userid
     u.email = self.email_address
     u.password = 'Password' # no-op
     u.password_confirmation = 'Password' # no-op
     u.encrypted_password = self.password # actual encrypted password
-    u.reset_password_token= Refinery::User.reset_password_token
+    u.reset_password_token= u.generate_reset_password_token!
     u.reset_password_sent_at = Time.now
     u.userid_detail_id = self.id.to_s
     u.add_role('Refinery')
@@ -137,7 +134,7 @@ class UseridDetail
   end
 
   def update_refinery
-    u = Refinery::User.where(:username => self.userid).first
+    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     unless u.nil?
       u.email = self.email_address
       u.userid_detail_id = self.id.to_s
@@ -156,6 +153,7 @@ class UseridDetail
   end
 
   def send_invitation_to_reset_password
+    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     UserMailer.invitation_to_reset_password(self).deliver
 
   end
@@ -174,17 +172,17 @@ class UseridDetail
 
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exits") if Refinery::User.where(:username => self[:userid]).exists?
+    errors.add(:userid, "Refinery User Already exits") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
     errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
+    errors.add(:email_address, "Refinery email already exits") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
   end
 
   def email_address_does_not_exist
     if self.changed.include?('email_address')
       errors.add(:email_address, "Userid email already exits on change") if
-      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::User.where(:username => self[:userid]))
+      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
       errors.add(:email_address, "Refinery email already exits on change") if
-      Refinery::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::User.where(:username => self[:userid]))
+      Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
     end
   end
 
@@ -280,7 +278,7 @@ class UseridDetail
     return @userids
   end
   def delete_refinery_user_and_userid_folder
-    refinery_user = Refinery::User.where(:username => self.userid).first
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
@@ -299,11 +297,11 @@ class UseridDetail
     count
   end
   def check_exists_in_refinery
-    refinery_user = Refinery::User.where(:username => self.userid).first
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     if refinery_user.nil?
-      return[false,"There is no refinery entry"] 
+      return[false,"There is no refinery entry"]
     else
-      return[true] 
+      return[true]
     end
   end
 

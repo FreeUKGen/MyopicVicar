@@ -24,7 +24,6 @@ class Freereg1CsvFile
   require 'userid_role'
   require 'register_type'
   require 'csv'
-
   # Fields correspond to cells in CSV headers
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   #These field are there in the entry collection from the original files coming in as CSV file.
@@ -384,8 +383,14 @@ class Freereg1CsvFile
   def backup_file
     #this makes aback up copy of the file in the attic and creates a new one
     self.save_to_attic
+    file_folder = File.join(Rails.application.config.datafiles,self.userid)
     file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
-    self.write_csv_file(file_location)
+    success = false
+    if File.exists?(file_folder)
+      self.write_csv_file(file_location)
+      success = true
+    end
+    success
   end
 
   def write_csv_file(file_location)
@@ -491,35 +496,51 @@ class Freereg1CsvFile
     return csv_hold
   end
 
-  def self.update_location(file,param,myown)
-    old_location = file.old_location
-    if param[:place] == "Select Place" || param[:church_name] == "Select Church" || param[:county] == "Select County"
-      return[true, "You must make a selection"]
+  def missing_file
+
+  end
+
+  def self.file_update_location(file,param,session)
+    if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param[:register_type].blank?
+      return[true, "You are missing a selection"]
     end
-    #deal with absent county
-    param[:county] = old_location[:place].chapman_code if param[:county].blank?
-    update_county = true
-    update_county = false if  param[:county] == old_location[:place].chapman_code
-    new_location = file.new_location(param)
-    file.update_attributes(:place => param[:place], :church_name => param[:church_name], :register_type => param[:register_type],
-                           :county => param[:county],:alternate_register_name => new_location[:register].alternate_register_name,
-                           :register_id => new_location[:register]._id,)
-    if myown
-      file.update_attribute(:locked_by_transcriber, true)
+    place = Place.id(session[:selectplace]).first
+    church = Church.id(session[:selectchurch]).first
+    selected_register = nil
+    church.registers.each do |register|
+      selected_register = register if register.register_type == param[:register_type]
+    end
+    if selected_register.blank?
+      selected_register = Register.new(:register_type => param[:register_type],:church_id => church.id,:alternate_register_name => (church.church_name.to_s + " " + param[:register_type].to_s))
+      selected_register.save
+    end
+    file.place = place.place_name
+    file.place_name = place.place_name
+    file.church_name = church.church_name
+    file.register_type = param[:register_type]
+    file.county = session[:selectcounty]
+    file.country = session[:selectcountry]
+    file.alternate_register_name = church.church_name.to_s + " " + param[:register_type].to_s
+    file.register_id = selected_register.id
+    if session[:my_own]
+      file.locked_by_transcriber = true
     else
-      file.update_attribute(:locked_by_coordinator, true)
+      file.locked_by_coordinator =  true
     end
-    new_location[:place].update_attribute(:data_present, true)
-    new_location[:place].recalculate_last_amended_date
-    file.propogate_file_location_change(new_location)
-    PlaceCache.refresh(param[:county]) unless old_location[:place] == new_location[:place]
+    file.save
+    place.update_attribute(:data_present, true)
+    place.recalculate_last_amended_date
+    church.update_attribute(:place_name, place.place_name)
+    file.propogate_file_location_change(place.id)
+    PlaceCache.refresh(session[:selectcounty])
     return[false,""]
   end
-  def propogate_file_location_change(new_location)
+
+  def propogate_file_location_change(place_id)
     location_names =[]
-    place_name = new_location[:place].place_name
-    church_name = new_location[:church].church_name
-    register_type = RegisterType.display_name(new_location[:register].register_type)
+    place_name = self.place
+    church_name = self.church_name
+    register_type = RegisterType.display_name(self.register_type)
     location_names << "#{place_name} (#{church_name})"
     location_names  << " [#{register_type}]"
     self.freereg1_csv_entries.no_timeout.each do |entry|
@@ -528,46 +549,12 @@ class Freereg1CsvFile
       else
         entry.update_attributes(:place => place_name, :church_name => church_name)
         record = entry.search_record
-        record.update_attributes(:location_names => location_names, :chapman_code => new_location[:county])
-
-        if record.place_id != new_location[:place]._id
-          record.update_attribute(:place_id, new_location[:place]._id)
-        end
+        record.location_names = location_names
+        record.chapman_code = self.county
+        record.place_id = place_id
+        record.save
       end
     end
-  end
-  def old_location
-    old_register = self.register
-    old_church = old_register.church
-    old_place = old_church.place
-    location = {:register => old_register, :church => old_church, :place => old_place}
-  end
-
-  def new_location(param)
-    new_place = Place.where(:chapman_code => param[:county],:place_name => param[:place],:disabled => 'false', :error_flag.ne => "Place name is not approved").first
-    new_church = Church.where(:place_id =>  new_place._id, :church_name => param[:church_name]).first
-    if  new_church.nil?
-      new_church = Church.new(:place_id =>  new_place._id,:church_name => param[:church_name],:place_name => param[:place])  if  new_church.nil?
-    end
-    number_of_registers = new_church.registers.count
-    new_alternate_register_name = param[:church_name].to_s + ' ' + param[:register_type].to_s
-    if number_of_registers == 0
-      new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type])
-
-    else
-      if Register.where(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).count == 0
-        new_register = Register.new(:church_id => new_church._id,:alternate_register_name => new_alternate_register_name, :register_type =>param[:register_type])
-      else
-        new_register = Register.where(:church_id => new_church._id, :alternate_register_name => new_alternate_register_name, :register_type => param[:register_type]).first
-      end
-    end
-    new_register.freereg1_csv_files << self unless new_register._id == self.register_id
-    new_register.save
-    new_church.registers << new_register unless new_church._id == new_register.church_id
-    new_church.save
-    new_place.churches << new_church unless new_place._id == new_church.place_id
-    new_place.save
-    location = {:register => new_register, :church => new_church, :place => new_place, :county =>param[:county]}
   end
 
   def date_change(transcription_date,modification_date)
@@ -1018,18 +1005,19 @@ class Freereg1CsvFile
         return true, 'The removal of the batch entry was successful'
       end
     end
-    
-  def search_record_ids_with_wildcard_ucf
-    ids = []
-    self.freereg1_csv_entries.each do |entry|
-      ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
-      # if entry.search_record && entry.search_record.contains_wildcard_ucf?
-        # print "added #{entry.search_record.id} to ucf_list\n"
-      # else
-        # print "declined to add #{entry.search_record.id} to ucf_list\n"
-      # end
-    end
-    ids
-  end
 
-end
+    def search_record_ids_with_wildcard_ucf
+      ids = []
+      self.freereg1_csv_entries.each do |entry|
+        ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
+        # if entry.search_record && entry.search_record.contains_wildcard_ucf?
+        # print "added #{entry.search_record.id} to ucf_list\n"
+        # else
+        # print "declined to add #{entry.search_record.id} to ucf_list\n"
+        # end
+      end
+      ids
+    end
+
+
+  end

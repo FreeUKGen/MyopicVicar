@@ -44,7 +44,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
     params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
-    @freereg1_csv_entry = Freereg1CsvEntry.new(params[:freereg1_csv_entry])
+    @freereg1_csv_entry = Freereg1CsvEntry.new(freereg1_csv_entry_params)
 
     unless session[:error_id].nil?
       error_file = @freereg1_csv_file.batch_errors.find( session[:error_id])
@@ -135,7 +135,7 @@ class Freereg1CsvEntriesController < ApplicationController
       params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
       params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
       #update entry
-      @freereg1_csv_entry.update_attributes(params[:freereg1_csv_entry])
+      @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
       if @freereg1_csv_entry.errors.any?
         flash[:notice] = 'The update of the record was unsuccessful'
         render :action => 'edit'
@@ -243,4 +243,9 @@ class Freereg1CsvEntriesController < ApplicationController
     end
     year
   end
+  private
+  def freereg1_csv_entry_params
+    params.require(:freereg1_csv_entry).permit!
+  end
+
 end

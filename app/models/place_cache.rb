@@ -1,7 +1,7 @@
 class PlaceCache
   include Mongoid::Document
-  attr_accessible :chapman_code, :places_json
-
+  field :chapman_code, type: String
+  field :places_json, type: String
 
   def self.refresh(county)
     PlaceCache.where(:chapman_code => county).destroy_all
@@ -13,15 +13,15 @@ class PlaceCache
         county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
       end
     end
-    PlaceCache.create!({ :chapman_code => county, :places_json => county_response.to_json})
+    cache = PlaceCache.new
+    cache.update_attributes({ :chapman_code => county, :places_json => county_response.to_json})
+    cache.save!
   end
-
 
   def self.refresh_all
     destroy_all
     ChapmanCode::values.each do |chapman_code|
       refresh(chapman_code)
     end
-
   end
 end

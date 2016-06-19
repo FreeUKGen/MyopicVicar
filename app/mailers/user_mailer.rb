@@ -7,8 +7,8 @@ class UserMailer < ActionMailer::Base
     if @userid.present?
       emails = Array.new
       unless @userid.nil? || !@userid.active
-        user_email_with_name =  @userid.email_address    
-        emails <<  user_email_with_name  
+        user_email_with_name =  @userid.email_address
+        emails <<  user_email_with_name
       end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
@@ -31,13 +31,13 @@ class UserMailer < ActionMailer::Base
         end
       end
       if emails.length == 1
-         mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk", :to => emails[0],  :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
       elsif emails.length == 2
         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}") 
-      end 
+        mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} was processed by FreeReg at #{Time.now}")
+      end
     end
   end
 
@@ -47,8 +47,8 @@ class UserMailer < ActionMailer::Base
     if @userid.present?
       emails = Array.new
       unless @userid.nil? || !@userid.active
-        user_email_with_name = @userid.email_address    
-        emails <<  user_email_with_name  
+        user_email_with_name = @userid.email_address
+        emails <<  user_email_with_name
       end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
@@ -70,15 +70,15 @@ class UserMailer < ActionMailer::Base
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
         end
       end
-     
+
       if emails.length == 1
-         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0],  :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       elsif emails.length == 2
         mail(:from => "freereg-processing@freereg.org.uk",:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
         mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} failed to be processed by FreeReg at #{Time.now}")
-      end 
+      end
     end
   end
 
@@ -113,7 +113,7 @@ class UserMailer < ActionMailer::Base
   def invitation_to_reset_password(user)
     @user = user
     get_coordinator_name
-    get_token
+    #get_token
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password reset for FreeReg ")
   end
 
@@ -144,9 +144,9 @@ class UserMailer < ActionMailer::Base
   def notification_of_registration_completion(user)
     @user = user
     reg_manager = UseridDetail.userid("REGManager").first
-    get_coordinator_name 
+    get_coordinator_name
     if Time.now - 5.days <= @user.c_at
-      mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg registration completion") 
+      mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg registration completion")
     end
   end
 
@@ -185,13 +185,13 @@ class UserMailer < ActionMailer::Base
   end
 
   def website(contact,ccs)
-    @contact = contact 
+    @contact = contact
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
   end
 
   def feedback(contact,ccs)
-    @contact = contact 
+    @contact = contact
     @user = UseridDetail.userid(@contact.user_id).first
     get_attachment
     mail(:from => "freereg-feedback@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
@@ -203,7 +203,7 @@ class UserMailer < ActionMailer::Base
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
   end
- 
+
   def datamanager_data_question(contact,ccs)
     @contact = contact
     get_attachment
@@ -252,8 +252,8 @@ class UserMailer < ActionMailer::Base
   end
 
   def get_token
-    refinery_user = Refinery::User.where(:username => @user.userid).first
-    refinery_user.reset_password_token = Refinery::User.reset_password_token
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => @user.userid).first
+    refinery_user.reset_password_token = refinery_user.generate_reset_password_token!
     refinery_user.reset_password_sent_at = Time.now
     refinery_user.save!
     @user_token = refinery_user.reset_password_token

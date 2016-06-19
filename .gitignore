@@ -9,8 +9,6 @@
 /.project
 vendor/bundle/*
 
-# Ignore MD5
-lib/devise/encryptors/md5.rb
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
@@ -32,7 +30,7 @@ mongo.log
 *.out
 #ignore backup files in collections
 /db/collection/*.json
-/public/assets/images/working
+/public/assets/
 /test_data/warning/
 
 # Ignore RVM-related files

@@ -175,7 +175,7 @@ namespace :foo do
   task :testbed => [:environment] do |t,args|
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
+    db = Mongoid.clients[:default][:database]
     script_index_places = @mongodb_bin + "mongo #{db} --eval \"db.places.ensureIndex({place_name:1 })\""
     `#{script_index_places}`
     p "#{ Index creation failed $?.to_i}" unless $?.to_i == 0

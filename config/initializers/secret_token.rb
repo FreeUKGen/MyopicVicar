@@ -21,10 +21,11 @@
 MyopicVicar::Application.config.secret_token = if Rails.env.development? or Rails.env.test?
   ('x' * 30) # meets minimum requirement of 30 chars long
 else
-	secret_token = "#{Rails.root}/config/secrets.yml"
-	if File.exists?(secret_token)
-		YAML.load_file(secret_token)[Rails.env].each do |key, value|
+  secret_token = "#{Rails.root}/config/secrets.yml"
+  if File.exists?(secret_token)
+    YAML.load_file(secret_token)[Rails.env].each do |key, value|
       MyopicVicar::Application.config.secret_token = value
-		end
-	end
+    end
+  end
+  MyopicVicar::Application.config.secret_key_base = 'new secret key base'
 end

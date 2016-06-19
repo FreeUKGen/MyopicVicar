@@ -54,7 +54,7 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = Message.new(params[:message])
+    @message = Message.new(message_params)
     @message.file_name = @message.attachment_identifier
     if @message.save
       flash[:notice] = "Message created"
@@ -92,7 +92,7 @@ class MessagesController < ApplicationController
     if @message.present?
       case params[:commit]
       when "Submit"
-        @message.update_attributes(params[:message])
+        @message.update_attributes(message_params)
       when "Send"
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
         @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:message][:sent_message][:active])
@@ -106,7 +106,7 @@ class MessagesController < ApplicationController
     end
   end
 
-  def delete
+  def destroy
     @message = Message.id(params[:id]).first
     if @message.present?
       @message.destroy
@@ -116,5 +116,9 @@ class MessagesController < ApplicationController
     else
       go_back("message",params[:id])
     end
+  end
+  private
+  def message_params
+    params.require(:message).permit!
   end
 end

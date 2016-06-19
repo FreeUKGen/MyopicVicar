@@ -49,7 +49,7 @@ module Freereg1Translator
     # :witness2_forename => ,
     # :witness2_surname => ,
     # :line => ,
-    :file_line_number => :file_line_number,
+    #:file_line_number => :file_line_number,
   }
 
 
@@ -106,12 +106,11 @@ module Freereg1Translator
     KEY_MAP.keys.each do |key|
       new_attrs[KEY_MAP[key]] = entry[key] if entry[key]
     end
-
     new_attrs[:transcript_dates] = []
     ['baptism_date', 'burial_date', 'marriage_date', 'birth_date'].each do |date_key|
       new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
     end
-    new_attrs[:line_id] = entry.line_id
+    #new_attrs[:line_id] = entry.line_id
 
     new_attrs
   end

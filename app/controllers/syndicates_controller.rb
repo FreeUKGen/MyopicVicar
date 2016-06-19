@@ -1,7 +1,7 @@
 class SyndicatesController < ApplicationController
 
   def create
-    @syndicate = Syndicate.new(params[:syndicate])
+    @syndicate = Syndicate.new(syndicate_params)
     @syndicate.add_syndicate_to_coordinator(params[:syndicate][:syndicate_code],params[:syndicate][:syndicate_coordinator])
     @syndicate.upgrade_syndicate_coordinator_person_role(params[:syndicate][:syndicate_coordinator])
     @syndicate.save
@@ -40,7 +40,7 @@ class SyndicatesController < ApplicationController
   def edit
     load(params[:id])
     get_userids_and_transcribers
-  end 
+  end
 
   def get_userids_and_transcribers
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -80,11 +80,11 @@ class SyndicatesController < ApplicationController
     end
   end
 
-  def new  
+  def new
     get_user_info_from_userid
     @syndicate = Syndicate.new
     get_userids_and_transcribers
-  end  
+  end
 
   def select
     get_user_info_from_userid
@@ -156,8 +156,8 @@ class SyndicatesController < ApplicationController
   def update
     load(params[:id])
     my_params = params[:syndicate]
-    my_params = @syndicate.update_fields_before_applying(my_params)
-    @syndicate.update_attributes(my_params)
+    params[:syndicate] = @syndicate.update_fields_before_applying(my_params)
+    @syndicate.update_attributes(syndicate_params)
     if @syndicate.errors.any?
       get_userids_and_transcribers
       flash[:notice] = "The change to the Syndicate was unsuccessful"
@@ -169,5 +169,10 @@ class SyndicatesController < ApplicationController
       redirect_to syndicates_path
     end
 
+  end
+
+  private
+  def syndicate_params
+    params.require(:syndicate).permit!
   end
 end

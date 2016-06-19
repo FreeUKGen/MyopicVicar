@@ -13,7 +13,7 @@ class County
   field :files, type: String
   field :total_records, type: String
   field :baptism_records, type: String
-  field :burail_records, type: String
+  field :burial_records, type: String
   field :marriage_records, type: String
 
   before_save :add_lower_case_and_change_userid_fields
@@ -84,7 +84,7 @@ class County
     end
     coordinator_name
   end
-  
+
   def self.records(chapman)
     files = Freereg1CsvFile.county(chapman).all
     record = Array.new
@@ -110,6 +110,6 @@ class County
     record[2] = records_bu
     record[3] = records_ma
     record[4] = number_files
-    record  
+    record
   end
 end

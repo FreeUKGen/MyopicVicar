@@ -1,17 +1,17 @@
 # Copyright 2012 Trustees of FreeBMD
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -46,7 +46,9 @@ module MyopicVicar
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-
+    config.assets.enabled = true
+    config.assets.version = '1.0'
+    # Change the path that assets are served from config.assets.prefix = "/assets"
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
 
@@ -66,21 +68,11 @@ module MyopicVicar
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
 
-    # Enable the asset pipeline
-    config.assets.enabled = true
 
-    # Version of your assets, change this if you want to expire all your assets
-    config.assets.version = '1.0'
-
-    # make the designer's fonts available for the stylesheets
-    config.assets.paths << Rails.root.join('app', 'assets') 
-    config.assets.paths << Rails.root.join("app", "assets", "fonts")
-     
-    
     config.generators do |g|
-      g.orm :active_record
+      g.orm :mongoid
     end
-    
+
     config.before_configuration do
       env_file = Rails.root.join("config", 'application.yml').to_s
 
@@ -89,7 +81,7 @@ module MyopicVicar
           ENV[key.to_s] = value
         end # end YAML.load_file
       end # end if File.exists?
-      
+
       mongo_config = "#{Rails.root}/config/mongo_config.yml"
       if File.exists?(mongo_config)
         MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env]
