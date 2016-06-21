@@ -65,12 +65,8 @@
             <% church.registers.order_by(register_type: 1).each do |register| %>
             <% session[:placeid] = place.id%>
             <tr class="weight--semibold" id="<%=place.id%>">
-             
-                <td class="t15"> <%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </td>
-              
-              
-                <td class="t25"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
-               
+              <td class="t15"> <%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </td>            
+              <td class="t25"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
               <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
               <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
               <td class="t15"> <%= register.last_amended %> </td>
