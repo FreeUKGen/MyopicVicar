@@ -1,0 +1,262 @@
+/* Fonts */
+
+body,
+p, ol, ul, td /* to reset applications.css*/ {
+	font: 1em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+#header h1, #header h2, #header h3, #header h4, #header h5, #header h6 {
+	font-family: 'Corben', Georgia, "Times New Roman", Times, serif !important; 
+	/* Ideally would want to get rid of the !important, need to restructure CSS */
+	/* Corben is a google font, linked in header of HTML */
+}
+
+/* --------------------------
+ HTML Styles 
+ ----------------------------*/
+ 
+html {
+	background-color: #f7f7ec;
+	
+}
+
+body {
+	font-size: 16px;
+	border-right: 3px double #d7d7cc;
+	border: 3px double #d7d7cc;
+	background-color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6,
+#header h1, #header h2, #header h3, #header h4, #header h5, #header h6
+/* All #header specifications to override specificity rules in application.css stylesheet */ {
+	display: block;
+	float: none;
+	margin: 0;
+	padding: 0;
+	text-shadow: none;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	color: #5d6468;
+	line-height: 1.4em;
+	font-weight: normal;
+	font-style: normal;
+	text-decoration: none;
+	font-variant: normal;
+	letter-spacing: 0;
+	position: relative;
+	overflow: auto;
+}
+
+h1,
+#header h1 {
+	font-size: 2.4em;
+	margin: 0;
+	padding: 0;
+	height: auto;
+	
+}
+
+h2,
+#header h2 {
+
+}
+
+h3,
+#header h3 {
+	
+}
+
+h4,
+#header h4 {
+	
+}
+
+h5,
+#header h5 {
+	
+}
+
+h6,
+#header h6 {
+	
+}
+
+h1, h2, h3 {
+padding: 10px 0;
+
+}
+
+a, a:link, a:visited {
+  color: #38678b;
+  text-decoration: underline;
+}
+
+/* Table styles */
+
+table td {
+  padding: 5px;
+}
+
+thead td {
+	padding: 0;
+}
+
+thead th {
+  background: #fff;
+  border: none;
+  color: #5c6467;
+}
+
+table {
+	width: 100%;
+	margin: 0;
+}
+
+td {
+	border: 0;
+}
+
+tbody td {
+	border: 1px solid #d7d7cc;
+}
+
+
+
+/* Form styles */
+
+form fieldset.inputs {
+	background: none;
+	border: none;
+	box-shadow: none;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+}
+
+
+/* --------------------------
+ layout 
+ ----------------------------*/
+ 
+ body {
+	max-width: 1000px;
+	margin: 20px auto;
+	padding: 10px 30px 30px 30px;
+}
+ 
+ #container {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	width: 100%;
+}
+
+#content {
+	float: none;
+	display: block;
+	width: auto;
+	margin: 0;
+	padding: 0;
+}
+
+#header {
+	background: none;
+	background-image: none;
+	margin: -30px -30px 0 -30px;
+	padding: 20px 30px;
+	height: auto;
+	width: auto;
+	box-shadow: none;
+	border: none;
+	float: none;
+	border-bottom: 1px dotted #d7d7cc;
+	text-align: center;
+	position: relative;
+	overflow: auto;
+}
+
+#header h1 {
+	font-size: 4em;
+	text-shadow: none;
+	font-weight: normal;
+	font-style: normal;
+	font-weight:100;
+	overflow: hidden;
+}
+
+#header h2 {
+	font-size: 1.4em;
+	overflow: hidden;
+	
+}
+
+#nav {
+	float: none;
+	width: auto;
+	display: block;
+	margin: 0 -30px 0 -30px;
+	padding: 10px 30px;
+	background-color: none;
+	background: none;
+	clear: both;
+	overflow: auto;
+	border-bottom: 1px dotted #d7d7cc;
+	height: auto;
+}
+
+#nav ul {
+	margin: 0;
+	padding: 0;
+}
+
+#nav li {
+	display: inline;
+}
+
+#nav li a {
+	border: 1px dotted #d7d7cc;
+	padding: 10px;
+	float: left;
+	margin-right: 10px;
+}
+
+#nav li a:hover {
+	border: 1px dotted #d7d7cc;
+	background-color: #d7d7cc;
+	color: #286f07;
+}
+
+.content {
+	
+}
+
+.footer {
+	
+}
+
+
+/* Media query for smaller screen sizes - mostly so tables fit */
+
+@media only screen and (max-width: 40em) {
+	
+	body {
+		padding: 0;
+		font-size: .8em;
+	}
+
+	table td {
+		padding: 3px;
+	}
+	
+}
+
+.boldtable, .boldtable TD, .boldtable TH
+{
+font-family:sans-serif;
+font-size:10pt;
+
+}
+
+
+
+

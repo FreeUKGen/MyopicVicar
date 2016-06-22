@@ -1,7 +1,6 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-
   skip_before_filter :require_login, only: [:index,:new]
 
   def create
@@ -36,8 +35,8 @@ class ManageResourcesController < ApplicationController
     if @user.person_role == "researcher"  || @user.person_role == 'pending'
       flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
       redirect_to refinery.logout_path
-      return
     end
+
     #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
     if !Rails.application.config.member_open
       unless @user.person_role == "system_administrator"  || @user.person_role == 'technical'
@@ -46,6 +45,7 @@ class ManageResourcesController < ApplicationController
         return
       end
     end
+
     if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
       @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
     else
@@ -64,7 +64,15 @@ class ManageResourcesController < ApplicationController
       redirect_to :back
       return
     end
+  end
 
+  def create
+
+    @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
+    session[:userid] = @user.userid
+    session[:first_name] = @user.person_forename
+    session[:manager] = manager?(@user)
+    redirect_to manage_resource_path(@user)
   end
 
   def show

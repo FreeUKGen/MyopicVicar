@@ -1,0 +1,53 @@
+// Place all the styles related to the SearchRecords controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+/** { margin: 0; padding: 0; }*/
+/** {border: 1px solid #000;}*/
+/* line 9, ../../app/assets/stylesheets/search_records.css.scss */
+#container {
+  display: table;
+  width: 100%;
+}
+
+/* line 14, ../../app/assets/stylesheets/search_records.css.scss */
+#nav {
+  background: none repeat scroll 0 0 #aabbcc;
+  display: table-cell;
+  margin: 10px;
+  width: 20%;
+}
+
+/* line 21, ../../app/assets/stylesheets/search_records.css.scss */
+#content {
+  background: none repeat scroll 0 0 white;
+  display: table-cell;
+  margin: 10px;
+  width: 80%;
+}
+
+/* line 28, ../../app/assets/stylesheets/search_records.css.scss */
+#header {
+  height: 100px;
+  background-color: #000;
+}
+
+/* line 33, ../../app/assets/stylesheets/search_records.css.scss */
+table {
+  width: 800px;
+  margin: 40px auto;
+}
+
+/* line 38, ../../app/assets/stylesheets/search_records.css.scss */
+table td {
+  width: 50%;
+}
+
+/* line 42, ../../app/assets/stylesheets/search_records.css.scss */
+#nav ul {
+  list-style-type: none;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}

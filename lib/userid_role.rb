@@ -1,7 +1,7 @@
 module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
             'volunteer_coordinator','data_manager', 'technical','system_administrator', 'contacts_coordinator','project_manager','executive_director',
-            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator']
+            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator','computer']
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
     'trainee' => [ "Batches","Profile", "Batches","Roadmap"],
