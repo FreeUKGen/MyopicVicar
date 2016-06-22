@@ -29,8 +29,9 @@ class ManageSyndicatesController < ApplicationController
     @manage_syndicate = ManageSyndicate.new
     @options = @syndicates
     @prompt = 'You have access to multiple syndicates, please select one'
+    @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
   end
-  
+
   def create
     session[:syndicate] = params[:manage_syndicate][:syndicate]
     redirect_to :action => 'select_action'
@@ -49,6 +50,10 @@ class ManageSyndicatesController < ApplicationController
     @syndicate = session[:syndicate]
     @options= UseridRole::SYNDICATE_MANAGEMENT_OPTIONS
     @prompt = 'Select Action?'
+  end
+  def selected
+    session[:syndicate] = params[:id]
+    redirect_to :action => 'select_action'
   end
 
   def review_all_members
@@ -84,7 +89,7 @@ class ManageSyndicatesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
   def display_by_filename
-    
+
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = @user.person_forename
@@ -121,7 +126,7 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; sorted by oldest date of upload'
     session[:sort] = "uploaded_date ASC"
     session[:sorted_by] = @sorted_by
-   redirect_to freereg1_csv_files_path
+    redirect_to freereg1_csv_files_path
   end
   def review_a_specific_batch
     get_user_info_from_userid
@@ -141,8 +146,8 @@ class ManageSyndicatesController < ApplicationController
     syndicate = Syndicate.where(:syndicate_code => session[:syndicate]).first
     status = !syndicate.accepting_transcribers
     syndicate.update_attributes(:accepting_transcribers => status)
-    flash[:notice] = "Accepting volunteers is now #{status}" 
-    redirect_to :action => 'select_action'  
+    flash[:notice] = "Accepting volunteers is now #{status}"
+    redirect_to :action => 'select_action'
   end
 
   def get_syndicates_for_selection

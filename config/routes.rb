@@ -111,6 +111,8 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
+
+  get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   resources :manage_syndicates
 
@@ -164,11 +166,14 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
+  get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
+
   get 'manage_counties/select', :to =>'manage_counties#select', :as => :select_manage_counties
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
   resources :manage_counties
+
 
   get 'syndicates/display', :to =>'syndicates#display', :as => :display_syndicates
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates

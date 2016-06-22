@@ -125,6 +125,7 @@ class ManageCountiesController < ApplicationController
     @options = @counties
     @prompt = 'Please select one'
     @manage_county = ManageCounty.new
+    @location = 'location.href= "/manage_counties/" + this.value +/selected/'
   end
 
   def place_range
@@ -188,8 +189,12 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
 
-  def show
-    redirect_to :action => 'new'
+  def selected
+    session[:chapman_code] = params[:id]
+    @county = ChapmanCode.has_key(session[:chapman_code])
+    session[:county] = @county
+    redirect_to :action => 'select_action'
+
   end
 
   def selection
@@ -204,6 +209,11 @@ class ManageCountiesController < ApplicationController
     @options= UseridRole::COUNTY_MANAGEMENT_OPTIONS
     @prompt = 'Select Action?'
   end
+  def show
+    redirect_to :action => 'new'
+  end
+
+
 
   def upload_batch
     redirect_to new_csvfile_path
