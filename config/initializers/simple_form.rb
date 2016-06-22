@@ -6,7 +6,7 @@ SimpleForm.setup do |config|
   # stack. The options given below are used to wrap the
   # whole input.
   config.wrappers :default, :class => :input,
-    :hint_class => :field_with_hint, :error_class => :field_with_errors do |b|
+  :hint_class => :field_with_hint, :error_class => :field_with_errors do |b|
     ## Extensions enabled by default
     # Any of these extensions can be disabled for a
     # given input by passing: `f.input EXTENSION_NAME => false`.
@@ -117,7 +117,7 @@ SimpleForm.setup do |config|
   # to match as key, and the input type that will be used when the field name
   # matches the regexp as value.
   # config.input_mappings = { /count/ => :integer }
-
+  config.input_mappings = { /country/ => :string }
   # Custom wrappers for input types. This should be a hash containing an input
   # type as key and the wrapper that will be used for all inputs with specified type.
   # config.wrapper_mappings = { :string => :prepend }

@@ -43,14 +43,15 @@ class Country
         @old_userid.country_groups.delete_if {|code| code == self.country_code}
         @old_userid.save(:validate => false)  unless @old_userid.nil?
       end
-      if UseridDetail.where(:userid => parameters[:country_coordinator]).exists? then # make sure there is a new coordinator to upgrade
-        @new_userid = UseridDetail.where(:userid => parameters[:country_coordinator]).first
+      if UseridDetail.id(parameters[:country_coordinator]).exists? then # make sure there is a new coordinator to upgrade
+        @new_userid = UseridDetail.id(parameters[:country_coordinator]).first
         if @new_userid.country_groups.empty? || @new_userid.country_groups.length == 0 then
           @new_userid.person_role = 'country_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher' || @new_userid.person_role == 'county_coordinator' )
         end
         @new_userid.country_groups = self.counties_included
         @new_userid.country_groups = @new_userid.country_groups.compact
         @new_userid.save(:validate => false)  unless @new_userid.nil?
+        parameters[:country_coordinator] = @new_userid.userid
       end
     end
     parameters

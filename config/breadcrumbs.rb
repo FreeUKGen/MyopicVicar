@@ -441,8 +441,20 @@ crumb :select_attic_files do
   parent :root
 end
 crumb :show_attic_files do |user|
-  link "Listing of attic files", attic_files_path(user)
+  link "Listing of Attic Files", attic_files_path(user)
   parent :select_attic_files
+end
+crumb :countries do
+  link "Countries", countries_path
+  parent :root
+end
+crumb :show_countries do |country|
+  link "Show Country", country_path(country)
+  parent :countries
+end
+crumb :edit_country do |country|
+  link "Edit Country", edit_country_path(country)
+  parent :show_countries, country
 end
 
 # crumb :projects do

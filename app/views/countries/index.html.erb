@@ -1,11 +1,16 @@
-  <p style="text-align: center"><b>Listing of all countries</b></p>
+  <% breadcrumb :countries%>
+  <h2 class=" text--center">Listing of all countries</h2>
   <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
-    <% end %>  
- </div>
-<div id="main"style="color:black">
-<table  class="table--bordered  table--striped  table--data">
+    </div>
+  <% end %>  
+ 
+
+<div class="grid">
+  <section class="island  ">
+  <div class="grid__item one-whole" >
+<table  class="table--bordered   table--data">
   <tr>
     
     <th style="width:25%">Country</th>
@@ -21,10 +26,11 @@
    
    
    
-     <td><%= button_to 'Show', country_path(country), method: :get  %></td><td><%= button_to 'Edit details', edit_country_path(country), method: :get  %>
+     <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn weight--light btn--small" %></td><td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn weight--light btn--small" %></td>
+
   </tr>
-  <% end %>
-  
+  <% end %> 
 </table>
 </div>
-
+</section>
+</div>

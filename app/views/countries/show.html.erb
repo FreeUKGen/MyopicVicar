@@ -1,6 +1,7 @@
-<p style="text-align: center"><b>Details for a Country </p></b>
+<% breadcrumb :show_countries,  @country%>
+<h2 class=" text--center">Details for a Country </h2>
 
-<div style="text-align: center"> <%= button_to 'Edit Country', edit_country_path(@country), method: :get  %> </div>
+<div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn weight--light btn--small" %> </div>
 
   <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -10,7 +11,7 @@
 
 
 <div id="main"style="color:black">
-<table  class="table--bordered  table--striped  table--data">
+<table  class="table--bordered  table--data">
   <tr>
     
     <th style="width:25%">Field</th>

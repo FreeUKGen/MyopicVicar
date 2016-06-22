@@ -71,13 +71,7 @@ class CountriesController < ApplicationController
 
   def get_userids_and_transcribers
     @user = UseridDetail.where(:userid => session[:userid]).first
-
     @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-
-    @people =Array.new
-    @userids.each do |ids|
-      @people << ids.userid
-    end
   end
 
 
