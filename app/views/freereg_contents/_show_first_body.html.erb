@@ -29,18 +29,8 @@
             <% church.registers.order_by(register_type: 1).each do |register| %>
             <% session[:placeid] = @place.id%>
             <tr class="weight--semibold" id="<%=@place.id%>">
-              <% if @place.place_name != old_place_name %>
-                <td class="t15"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.place_name)) %> </td>
-                <% old_place_name = @place.place_name %>
-              <% else %>
-                <td class="t15"> " </td>
-              <% end%>
-              <% if church.church_name != old_church_name %>
-                <td class="t25"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
-                <% old_church_name = church.church_name %>
-              <% else %>
-                <td class="t25"> " </td>
-              <% end%>
+              <td class="t15"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.place_name)) %> </td>
+              <td class="t25"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>  
               <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
               <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
               <td class="t15"> <%= register.last_amended %> </td>

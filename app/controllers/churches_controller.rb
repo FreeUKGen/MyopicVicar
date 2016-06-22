@@ -27,6 +27,7 @@ class ChurchesController < ApplicationController
   end
 
   def create
+
     @church = Church.new(church_params)
     @church.church_name = Church.standardize_church_name(@church.church_name)
     @place = Place.find(session[:place_id])
@@ -74,7 +75,7 @@ class ChurchesController < ApplicationController
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
       @records = 0
-      @church.registers do |register|
+      @church.registers.each do |register|
         register.freereg1_csv_files.each do |file|
           @records = @records + file.freereg1_csv_entries.count
         end
@@ -99,7 +100,7 @@ class ChurchesController < ApplicationController
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
       @records = 0
-      @church.registers do |register|
+      @church.registers.each do |register|
         register.freereg1_csv_files.each do |file|
           @records = @records + file.freereg1_csv_entries.count
         end

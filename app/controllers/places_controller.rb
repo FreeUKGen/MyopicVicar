@@ -200,7 +200,7 @@ class PlacesController < ApplicationController
       chapman_codes = params[:freereg_content][:chapman_codes]
       county_response = ""
       county_places = PlaceCache.in(:chapman_code => chapman_codes)
-      county_places.each do |pc|
+      county_places.each  do |pc|
         county_response << pc.places_json unless pc.nil?
       end
       respond_to do |format|

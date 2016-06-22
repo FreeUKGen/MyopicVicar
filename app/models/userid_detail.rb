@@ -40,9 +40,12 @@ class UseridDetail
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
 
-  has_many :search_queries
-  has_many :freereg1_csv_files
-  has_many :attic_files
+  attr_protected
+  #attr_accessible :email_address, email_address_confirm, :userid,:syndicate,:person_surname,:person_forename,:address,:telephone_number,:skill_level, :person_role, :sig_up_date
+
+  has_many :search_queries, dependent: :restrict
+  has_many :freereg1_csv_files, dependent: :restrict
+  has_many :attic_files, dependent: :restrict
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
