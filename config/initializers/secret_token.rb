@@ -27,5 +27,5 @@ else
       MyopicVicar::Application.config.secret_token = value
     end
   end
-  MyopicVicar::Application.config.secret_key_base = 'new secret key base'
+
 end

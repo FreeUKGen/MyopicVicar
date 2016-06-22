@@ -16,6 +16,8 @@ development:
   github_issues_repo: #as stated
   days_to_retain_search_queries: #as stated
   max_search_time: #as stated
+  our_secret_key: #password secret key
+  secret_key_base: #secrets secret key base
 test:
   mongodb_bin_location: 
   datafiles: 
@@ -27,7 +29,9 @@ test:
   files_for_processing: 
   delete_list: 
   member_open: 
-
+  max_search_time: #as stated
+  our_secret_key: #password secret key
+  secret_key_base: #secrets secret key base
 production:
   mongodb_bin_location: 
   datafiles: 
@@ -44,4 +48,6 @@ production:
   github_issues_password: 
   github_issues_repo:
   days_to_retain_search_queries: 
-  max_search_time: 
+  max_search_time: #as stated
+  our_secret_key: #password secret key
+  secret_key_base: #secrets secret key base

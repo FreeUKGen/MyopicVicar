@@ -105,6 +105,7 @@ MyopicVicar::Application.configure do
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
+  config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   #rails 4 changes
   config.eager_load = true
   #config.serve_static_assets = false
