@@ -1,36 +1,31 @@
-  <% breadcrumb :countries%>
-  <h2 class=" text--center">Listing of all countries</h2>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-  <% end %>  
- 
-
+<% breadcrumb :countries%>
+<h2 class=" text--center">Listing of all countries</h2>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <br>
+</div>
+<% end %>
 <div class="grid">
   <section class="island  ">
-  <div class="grid__item one-whole" >
-<table  class="table--bordered   table--data">
-  <tr>
-    
-    <th style="width:25%">Country</th>
-    <th style="width:25">Country Coordinator</th>
-     <th style="width:25%">Show</th>
-    <th style="width:25%">Edit</th>
-  </tr>
-
-<% @counties.each do |country| %>
-  <tr id="<%=country.id%>">
-   <td > <%= country.country_code %>  </td>
-   <td > <%= country.country_coordinator %>  </td>   
-   
-   
-   
-     <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn weight--light btn--small" %></td><td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn weight--light btn--small" %></td>
-
-  </tr>
-  <% end %> 
-</table>
-</div>
-</section>
+    <div class="grid__item one-whole" >
+      <table  class="table--bordered   table--data">
+        <tr>
+          <th style="width:25%">Country</th>
+          <th style="width:25">Country Coordinator</th>
+          <th style="width:25%">Show</th>
+          <th style="width:25%">Edit</th>
+        </tr>
+        <% @counties.each do |country| %>
+        <tr id="<%=country.id%>">
+          <td > <%= country.country_code %>  </td>
+          <td > <%= country.country_coordinator %>  </td>
+          <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn weight--light btn--small" %>  </td>
+          <% if @user.person_role == 'system_administrator' %>
+          <td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn weight--light btn--small" %></td>
+          <% end %>
+        </tr>
+        <% end %>
+      </table>
+    </div>
+  </section>
 </div>

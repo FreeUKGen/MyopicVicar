@@ -3,7 +3,7 @@ class CountriesController < ApplicationController
 
   def index
     @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = UseridDetail.userid(session[:userid]).first
     @counties = Country.all.order_by(chapman_code: 1)
 
   end
@@ -59,6 +59,7 @@ class CountriesController < ApplicationController
     @person = person.person_forename + ' ' + person.person_surname unless person.nil?
     person = UseridDetail.where(:userid => @country.previous_country_coordinator).first
     @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
+    @user = UseridDetail.userid(session[:userid]).first
   end
 
   def load(id)
