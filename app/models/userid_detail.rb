@@ -147,9 +147,9 @@ class UseridDetail
 
   def send_invitation_to_create_password
     type = self.person_role
-    UserMailer.invitation_to_register_researcher(self).deliver if type == 'researcher'
-    UserMailer.invitation_to_register_transcriber(self).deliver if type == 'transcriber'
-    UserMailer.invitation_to_register_technical(self).deliver if type == 'technical'
+    UserMailer.invitation_to_register_researcher(self).deliver_now if type == 'researcher'
+    UserMailer.invitation_to_register_transcriber(self).deliver_now if type == 'transcriber'
+    UserMailer.invitation_to_register_technical(self).deliver_now if type == 'technical'
   end
 
   def send_invitation_to_reset_password
