@@ -1,50 +1,48 @@
-<p style="text-align: center"><b>Details for a County </p></b>
-
-<div style="text-align: center"> <%= button_to 'Edit details', edit_county_path(@county), method: :get  unless @user.person_role == "contacts_coordinator"%> </div>
-
+<% breadcrumb :show_counties,  @county%>
+<h2 class=" text--center">Details for <%= ChapmanCode.name_from_code(@county.chapman_code)%></h2>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %> <br>
 </div>
-<% end %>  
-
+<% end %>
+<% if @user.person_role == "system_administrator"%>
+<div style="text-align: center"> <%= link_to 'Edit details', edit_county_path(@county), method: :get , :class => "btn weight--light btn--small" %> </div>
+<% end %>
 <div id="main"style="color:black">
-  <table class="table--bordered  table--striped  table--data">
+  <table class="table--bordered    table--data">
     <tr>
       
       <th style="width:25%">Field</th>
       <th style="width:50">Value</th>
       
     </tr>
-
-    <tr> 
-     <td>County</td><td > <%= @county.chapman_code %>  </td>
-   </tr><tr>
-   <td>County Coordinator Userid</td><td > <%= @county.county_coordinator %>  </td>   
- </tr>
- <tr>
-   <td>County Coordinator Name</td><td > <%= @person unless @person.nil? %> </td>   
- </tr>
- <tr>
-   <td>Previous County Coordinator Userid</td><td > <%= @county.previous_county_coordinator %>  </td>   
- </tr>
- <tr>
-   <td>Previous County Coordinator Name</td><td > <%= @previous_person unless @previous_person.nil? %>  </td>   
- </tr>
- <tr>
-   <td>County Description</td><td > <%= @county.county_description %>  </td>   
- </tr>
- <tr>
-   <td>County Notes</td><td > <%= @county.county_notes %>  </td>   
- </tr>
- <tr>
-   <td>County Last Updated</td><td > <%= @county.u_at.strftime("%d %b %Y") unless @county.u_at.nil?%>  </td>   
- </tr>
- <tr><td>County Files</td><td > <%= @county.files %>  </td></tr>
- <tr><td>Total Records</td>       <td > <%= @county.total_records %>  </td></tr>
- <tr><td>Baptism Records</td>       <td > <%= @county.baptism_records %>  </td></tr>
- <tr><td>Burial Records</td>      <td > <%= @county.burial_records %>  </td></tr>
- <tr><td>Marriage Records</td>       <td > <%= @county.marriage_records %>  </td></tr>
+    <tr>
+      <td>County</td><td > <%= @county.chapman_code %>  </td>
+    </tr><tr>
+    <td>County Coordinator Userid</td><td > <%= @county.county_coordinator %>  </td>
+  </tr>
+  <tr>
+    <td>County Coordinator Name</td><td > <%= @person unless @person.nil? %> </td>
+  </tr>
+  <tr>
+    <td>Previous County Coordinator Userid</td><td > <%= @county.previous_county_coordinator %>  </td>
+  </tr>
+  <tr>
+    <td>Previous County Coordinator Name</td><td > <%= @previous_person unless @previous_person.nil? %>  </td>
+  </tr>
+  <tr>
+    <td>County Description</td><td > <%= @county.county_description %>  </td>
+  </tr>
+  <tr>
+    <td>County Notes</td><td > <%= @county.county_notes %>  </td>
+  </tr>
+  <tr>
+    <td>County Last Updated</td><td > <%= @county.u_at.strftime("%d %b %Y") unless @county.u_at.nil?%>  </td>
+  </tr>
+  <tr><td>County Files</td><td > <%= @county.files %>  </td></tr>
+  <tr><td>Total Records</td>       <td > <%= @county.total_records %>  </td></tr>
+  <tr><td>Baptism Records</td>       <td > <%= @county.baptism_records %>  </td></tr>
+  <tr><td>Burial Records</td>      <td > <%= @county.burial_records %>  </td></tr>
+  <tr><td>Marriage Records</td>       <td > <%= @county.marriage_records %>  </td></tr>
 </table>
 </div>
-

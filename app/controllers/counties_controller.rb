@@ -1,17 +1,22 @@
 class CountiesController < ApplicationController
 
   require 'county'
+
   def display
     get_user_info_from_userid
     @counties = County.all.order_by(chapman_code: 1)
     render :action => :index
   end
 
+  def edit
+    load(params[:id])
+    get_userids_and_transcribers
+  end
+
   def index
     @first_name = session[:first_name]
     @user = UseridDetail.where(:userid => session[:userid]).first
     @counties = County.all.order_by(chapman_code: 1)
-
   end
 
   def new
@@ -20,11 +25,6 @@ class CountiesController < ApplicationController
     get_userids_and_transcribers
   end
 
-  def edit
-    load(params[:id])
-    get_userids_and_transcribers
-
-  end
   def selection
     get_user_info(session[:userid],session[:first_name])
     session[:county] = 'all' if @user.person_role == 'system_administrator'
@@ -36,7 +36,6 @@ class CountiesController < ApplicationController
     when params[:county] == "Create county"
       redirect_to :action => 'new'
       return
-
     when params[:county] == "Edit specific county"
       counties = County.all.order_by(chapman_code: 1)
       @counties = Array.new
@@ -56,11 +55,11 @@ class CountiesController < ApplicationController
       redirect_to :back
       return
     end
-
     @prompt = 'Select county'
     params[:county] = nil
     @county = session[:county]
   end
+
   def select
     get_user_info(session[:userid],session[:first_name])
     case
@@ -85,19 +84,14 @@ class CountiesController < ApplicationController
       return
     end
   end
-  def create
-    @county = County.new(county_params)
-    @county.save
-    if @county.errors.any?
 
-      flash[:notice] = "The addition of the County was unsuccessful"
-      render :action => 'edit'
-      return
-    else
-      flash[:notice] = "The addition of the County was successful"
-      #Syndicate.change_userid_fields(params)
-      redirect_to counties_path
-    end
+  def show
+    load(params[:id])
+    person = UseridDetail.userid(@county.county_coordinator).first
+    @person = person.person_forename + ' ' + person.person_surname unless person.nil?
+    person = UseridDetail.userid(@county.previous_county_coordinator).first
+    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
+    @user = UseridDetail.userid(session[:userid]).first
   end
 
   def update
@@ -106,42 +100,12 @@ class CountiesController < ApplicationController
     params[:county] = @county.update_fields_before_applying(my_params)
     @county.update_attributes(county_params)
     if @county.errors.any?
-
       flash[:notice] = "The change to the county was unsuccessful"
       render :action => 'edit'
       return
     else
       flash[:notice] = "The change to the county was successful"
-
       redirect_to counties_path
-    end
-
-  end
-
-  def show
-    load(params[:id])
-    person = UseridDetail.where(:userid => @county.county_coordinator).first
-    @person = person.person_forename + ' ' + person.person_surname unless person.nil?
-    person = UseridDetail.where(:userid => @county.previous_county_coordinator).first
-    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
-  end
-
-  def load(id)
-    @first_name = session[:first_name]
-    @county = County.id(id).first
-    if @county.nil?
-      go_back("county",id)
-    end
-  end
-
-  def get_userids_and_transcribers
-    @user = UseridDetail.where(:userid => session[:userid]).first
-
-    @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-
-    @people =Array.new
-    @userids.each do |ids|
-      @people << ids.userid
     end
   end
 

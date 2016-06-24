@@ -456,6 +456,18 @@ crumb :edit_country do |country|
   link "Edit Country", edit_country_path(country)
   parent :show_countries, country
 end
+crumb :counties do
+  link "Counties", counties_path
+  parent :root
+end
+crumb :show_counties do |county|
+  link "Show County", county_path(county)
+  parent :counties
+end
+crumb :edit_county do |county|
+  link "Edit County", edit_county_path(county)
+  parent :show_counties, county
+end
 
 # crumb :projects do
 #   link "Projects", projects_path

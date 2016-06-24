@@ -145,5 +145,4 @@ module ApplicationHelper
     Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
   end
 
-
 end
