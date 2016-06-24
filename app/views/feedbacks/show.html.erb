@@ -1,27 +1,22 @@
 <% breadcrumb :show_feedback, @feedback %>
-
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-
-<p><b>Reference: <%= @feedback.identifier %>  </b></p>
+<h2 class=" text--center">Reference: <%= @feedback.identifier %>  </h2>
 <p>
   <b>Title:</b>
   <%= @feedback.title %>
 </p>
-
 <p>
   <b>Body:</b>
   <%= @feedback.body %>
 </p>
-
 <p>
   <b>Time:</b>
   <%= @feedback.feedback_time.strftime("%H:%M on %F") unless @feedback.feedback_time.nil? %>
 </p>
-
 <p>
   <b>User:</b>
   <%= @feedback.user_id %>
@@ -30,56 +25,45 @@
   <b>Email address:</b>
   <%= @feedback.email_address %>
 </p>
-
 <p>
   <b>Session ID:</b>
-  <%= @feedback.session_id %> 
+  <%= @feedback.session_id %>
   (View <%= link_to("search queries for this session", search_query_report_path(:feedback_id => @feedback, :session_id => @feedback.session_id)) %>.)
 </p>
-
 <p>
   <b>Problem page url:</b>
   <%= link_to @feedback.problem_page_url, @feedback.problem_page_url %>
 </p>
-
 <p>
   <b>Previous page url:</b>
   <%= link_to @feedback.previous_page_url, @feedback.previous_page_url %>
 </p>
-
 <p>
   <b>Type:</b>
   <%= @feedback.feedback_type %>
 </p>
-
 <% if  @feedback.github_issue_url %>
-            <p>Github Issue: <%= link_to  @feedback.github_issue_url,  @feedback.github_issue_url  %></p>
-            <p>Github Number: <%=  @feedback.github_number  %></p>
-            <p>Make Github Comment: <%= link_to  @feedback.github_comment_url,  @feedback.github_comment_url  %></p>
-          <% else %>
-            <% if Contact.github_enabled %>
-              <p><span  style="float:left;">
-              <%= button_to "Convert to Issue", convert_feedback_to_issue_path( @feedback)  %>
-              </span></p>
-            <% else %>
-              <p>Github integration is not set up on this site yet.</p>
-            <% end %>
-          <% end %>
-
+<p>Github Issue: <%= link_to  @feedback.github_issue_url,  @feedback.github_issue_url  %></p>
+<p>Github Number: <%=  @feedback.github_number  %></p>
+<p>Make Github Comment: <%= link_to  @feedback.github_comment_url,  @feedback.github_comment_url  %></p>
+<% else %>
+<% if Contact.github_enabled %>
+<p><span  style="float:left;">
+  <%= button_to "Convert to Issue", convert_feedback_to_issue_path( @feedback)  %>
+</span></p>
+<% else %>
+<p>Github integration is not set up on this site yet.</p>
+<% end %>
+<% end %>
 <p>
   <b>Screenshot:</b>
   <% if @feedback.screenshot_url %>
-	<%= image_tag @feedback.screenshot_url %>
+  <%= image_tag @feedback.screenshot_url %>
   <% else %>
-	No screenshot attached.
+  No screenshot attached.
   <% end %>
 </p>
-
 <p>
   <b>Session Data:</b>
   <%= debug @feedback.session_data %>
 </p>
-
-
-
-<%= link_to 'Back', feedbacks_path %>
