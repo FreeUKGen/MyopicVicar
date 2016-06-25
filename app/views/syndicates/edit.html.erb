@@ -1,5 +1,7 @@
+<% breadcrumb :edit_syndicate,  @syndicate%>
+<h2 class=" text--center">Editing <%= @syndicate%></h2>
 <section class="island  island--light">
-<p style="text-align: center"><b>Editing a Syndicate</b></p>
+
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>

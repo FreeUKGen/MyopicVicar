@@ -468,6 +468,23 @@ crumb :edit_county do |county|
   link "Edit County", edit_county_path(county)
   parent :show_counties, county
 end
+crumb :syndicates do
+  link "Syndicates", syndicates_path
+  parent :root
+end
+crumb :show_syndicate do |syndicate|
+  link "Show Syndicate", syndicate_path(syndicate)
+  parent :syndicates
+end
+crumb :edit_syndicate do |syndicate|
+  link "Edit Syndicate", edit_syndicate_path(syndicate)
+  parent :show_syndicate, syndicate
+end
+crumb :create_syndicate do |syndicate|
+  link "Create Syndicate", new_syndicate_path(syndicate)
+  parent :show_syndicate, syndicate
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path
