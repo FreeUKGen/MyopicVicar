@@ -38,7 +38,7 @@ class TransregCsvfilesController < ApplicationController
         range = File.join(@csvfile.userid,@csvfile.file_name)
         pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
         @result = "success"
-        @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."    
+        @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
       end
     end #errors
 
@@ -55,17 +55,17 @@ class TransregCsvfilesController < ApplicationController
     dest_file = File.join(Rails.application.config.datafiles, params[:transcriberid], params[:csvfile][:csvfile].original_filename)
     p @csvfile
 
-#    name_ok = @csvfile.check_name(session[:file_name])
-#    if !name_ok
-#      p session[:file_name]
-#      p session
+    #    name_ok = @csvfile.check_name(session[:file_name])
+    #    if !name_ok
+    #      p session[:file_name]
+    #      p session
 
-#      @result = 'failure'
-#      @message = 'The file you are replacing must have the same name'
-#      render(:text => {"result" => @result, "message" => @message}.to_xml({:dasherize => false, :root => 'replace'}))
-#      session.delete(:file_name)
-#      return
-#    end
+    #      @result = 'failure'
+    #      @message = 'The file you are replacing must have the same name'
+    #      render(:text => {"result" => @result, "message" => @message}.to_xml({:dasherize => false, :root => 'replace'}))
+    #      session.delete(:file_name)
+    #      return
+    #    end
 
     setup = @csvfile.setup_batch
     if !setup[0]
@@ -76,14 +76,17 @@ class TransregCsvfilesController < ApplicationController
       return
     end
 
-    batch = setup[1]   
+    batch = setup[1]
 
     #lets check for existing file, save if required
     proceed = @csvfile.check_for_existing_file
+    logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
+
     @csvfile.save if proceed
     if @csvfile.errors.any? || !proceed
       @result = 'failure'
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
+      logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
@@ -94,10 +97,25 @@ class TransregCsvfilesController < ApplicationController
         @csvfile.delete
       else
         @processing_time = @csvfile.estimate_time
-        range = File.join(@csvfile.userid,@csvfile.file_name)
-        pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
-        @result = 'success'
-        @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."    
+        logger.warn("FREEREG:UPLOAD: About to process the file #{@processing_time}")
+        if @processing_time <= 100
+          range = File.join(@csvfile.userid,@csvfile.file_name)
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
+          @result = 'success'
+          @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
+          logger.warn("FREEREG:UPLOAD: Task has been spun off")
+        else
+          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+          if batch.nil?
+            @message  = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
+            logger.warn("FREEREG:CSV_FAILURE: No file for #{session[:userid]}")
+            @csvfile.delete
+          end
+          batch.add_file("base")
+          @message =  "The file has been placed in the queue for overnight processing"
+          logger.warn("FREEREG:UPLOAD: File has been placed in queue")
+          batch.add_file("base")
+        end
       end
     end #errors
 
@@ -115,10 +133,10 @@ class TransregCsvfilesController < ApplicationController
       p @freereg1_csv_file.locked_by_coordinator
 
       ok_to_proceed = @freereg1_csv_file.check_file
-      if !ok_to_proceed[0] 
+      if !ok_to_proceed[0]
         render(:text => { "result" => "failure", "message" => "There is a problem with the file you are attempting to download. Contact a system administrator if you are concerned."}.to_xml({:root => 'delete'}))
       else
-        set_controls(@freereg1_csv_file) 
+        set_controls(@freereg1_csv_file)
 
         if @freereg1_csv_file.locked_by_transcriber  ||  @freereg1_csv_file.locked_by_coordinator
           @message = "The removal of the batch #{@freereg1_csv_file.file_name} was unsuccessful; the batch is locked."
@@ -133,7 +151,7 @@ class TransregCsvfilesController < ApplicationController
         render(:text => {"result" => "success", "message" => @message}.to_xml({:dasherize => false, :root => 'delete'}))
       end
     else
-        @message = "The file #{@freereg1_csv_file.file_name} that you want to delete does not exist"
+      @message = "The file #{@freereg1_csv_file.file_name} that you want to delete does not exist"
       render(:text => { "result" => "failure", "message" => @message}.to_xml({:root => 'delete'}))
     end
   end
