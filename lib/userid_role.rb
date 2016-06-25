@@ -49,7 +49,7 @@ module UseridRole
     "County Coordinators" => "/counties" ,
     "Country Coordinators" => "/countries" ,
     "Upload New Batch"  =>   "/csvfiles/new", #"/manage_counties/selection?option=Upload New Batch",
-    "RefineryCMS" =>  "/cms/refinery",
+    "RefineryCMS" =>  "/cms/refinery/pages",
     "Access Attic" => "/attic_files/select" ,
     "Physical Files" => "/physical_files/select_action",
     "Site Statistics" => "/site_statistics",
