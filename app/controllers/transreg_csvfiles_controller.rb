@@ -21,10 +21,12 @@ class TransregCsvfilesController < ApplicationController
 
     #lets check for existing file, save if required
     proceed = @csvfile.check_for_existing_file
+    logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
     @csvfile.save if proceed
     if @csvfile.errors.any? || !proceed
       @result = "failure"
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
+      logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
@@ -35,10 +37,25 @@ class TransregCsvfilesController < ApplicationController
         @csvfile.delete
       else
         @processing_time = @csvfile.estimate_time
-        range = File.join(@csvfile.userid,@csvfile.file_name)
-        pid1 = Kernel.spawn("rake build:freereg_update[#{range},\"search_records\",\"change\"]")
-        @result = "success"
-        @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
+        logger.warn("FREEREG:UPLOAD: About to process the file #{@processing_time}")
+        if @processing_time <= 100
+          range = File.join(@csvfile.userid,@csvfile.file_name)
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
+          @result = 'success'
+          @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
+          logger.warn("FREEREG:UPLOAD: Task has been spun off")
+        else
+          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+          if batch.nil?
+            @message  = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
+            logger.warn("FREEREG:CSV_FAILURE: No file for #{session[:userid]}")
+            @csvfile.delete
+          end
+          batch.add_file("base")
+          @message =  "The file has been placed in the queue for overnight processing"
+          logger.warn("FREEREG:UPLOAD: File has been placed in queue")
+          batch.add_file("base")
+        end
       end
     end #errors
 
@@ -80,13 +97,13 @@ class TransregCsvfilesController < ApplicationController
 
     #lets check for existing file, save if required
     proceed = @csvfile.check_for_existing_file
-    logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
+    logger.warn("FREEREG:REPLACE: About to save file #{proceed}")
 
     @csvfile.save if proceed
     if @csvfile.errors.any? || !proceed
       @result = 'failure'
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
-      logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
+      logger.warn("FREEREG:REPLACE: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
@@ -97,13 +114,13 @@ class TransregCsvfilesController < ApplicationController
         @csvfile.delete
       else
         @processing_time = @csvfile.estimate_time
-        logger.warn("FREEREG:UPLOAD: About to process the file #{@processing_time}")
+        logger.warn("FREEREG:REPACE: About to process the file #{@processing_time}")
         if @processing_time <= 100
           range = File.join(@csvfile.userid,@csvfile.file_name)
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
           @result = 'success'
           @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
-          logger.warn("FREEREG:UPLOAD: Task has been spun off")
+          logger.warn("FREEREG:REPLACE: Task has been spun off")
         else
           batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
           if batch.nil?
@@ -113,7 +130,7 @@ class TransregCsvfilesController < ApplicationController
           end
           batch.add_file("base")
           @message =  "The file has been placed in the queue for overnight processing"
-          logger.warn("FREEREG:UPLOAD: File has been placed in queue")
+          logger.warn("FREEREG:REPLACE: File has been placed in queue")
           batch.add_file("base")
         end
       end
