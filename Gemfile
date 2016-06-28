@@ -8,7 +8,7 @@ gem 'rails', '4.2.6'
 #gem 'activeadmin', github: 'activeadmin'
 gem 'tzinfo-data' #needed by windows
 gem 'protected_attributes' # smooth transition to rails 4
-gem 'mysql2', '~> 0.3.18'
+gem 'mysql2'
 #gem 'web-console', '~> 2.0'
 gem 'rails_12factor', group: :production
 
@@ -69,7 +69,6 @@ gem 'newrelic_rpm'
 gem 'octokit'
 
 gem 'traceroute'
-gem "rubycritic", :require => false
 
 # Gems used only for assets and not required
 # in production environments by default.
