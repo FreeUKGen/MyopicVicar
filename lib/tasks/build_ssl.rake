@@ -290,8 +290,11 @@ namespace :build_ssl do
       collections_to_save = args[:save].split("/")
       collections_to_save.each  do |col|
         coll  = col.to_i
-        collection = @mongodb_bin + EXPORT_COMMAND + $collections[coll] + EXPORT_OUT + @tmp_location + '/' + $collections[coll] + ".json"
-        puts "#{$collections[coll]} being saved in #{@tmp_location}"
+        location = File.join(@tmp_location, collection_array[coll] + ".json")
+        #saved_file = File.new(location,"w")
+        collection = @mongodb_bin + EXPORT_COMMAND  + collection_array[coll] + EXPORT_OUT + location
+        #saved_file.close
+        puts "#{collection_array[coll]} being saved in #{@tmp_location}"
         output =  `#{collection}`
         p output
       end

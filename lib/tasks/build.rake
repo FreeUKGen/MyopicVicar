@@ -107,8 +107,10 @@ namespace :build do
     p "using database #{db} on host #{host}"
     collections_to_save.each  do |col|
       coll  = col.to_i
-      collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --port #{args.port}  --collection " + collection_array[coll] + EXPORT_OUT + File.join(@tmp_location, collection_array[coll] + ".json")
-      puts "#{collection_array[coll]} being saved in #{@tmp_location}"
+      location = File.join(@tmp_location, collection_array[coll] + ".json")
+      saved_file = File.new(location,"w")
+      collection = @mongodb_bin + EXPORT_COMMAND + "#{@db}  --port #{args.port}  --collection " + collection_array[coll] + EXPORT_OUT + location
+      saved_file.close puts "#{collection_array[coll]} being saved in #{@tmp_location}"
       output =  `#{collection}`
       p output
     end
