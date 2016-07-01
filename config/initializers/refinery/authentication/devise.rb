@@ -20,7 +20,7 @@ module Devise
         OUR_SECRET_KEY = Rails.application.config.our_secret_key
 
         def self.digest(password, stretches, salt, pepper)
-          crypted_password = hex_to_base64_digest(OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('md5'),  OUR_SECRET_KEY, password))
+          crypted_password = hex_to_base64_digest(OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'),  OUR_SECRET_KEY, password))
           crypted_password.sub(/==$/, '')
         end
 
