@@ -181,6 +181,7 @@ class Freereg1CsvEntriesController < ApplicationController
   def set_up_error_display
     @freereg1_csv_file = @error_file.freereg1_csv_file
     @error_file.data_line[:record_type] = @error_file.record_type
+    @error_file.data_line.delete(:chapman_code)
     @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
     @error_line = @error_file.record_number
     @error_message = @error_file.error_message
