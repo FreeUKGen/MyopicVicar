@@ -11,11 +11,6 @@ module Refinery
           plugin.name = "county_pages"
           plugin.url = proc { Refinery::Core::Engine.routes.url_helpers.county_pages_admin_county_pages_path }
           plugin.pathname = root
-          plugin.activity = {
-            :class_name => :'refinery/county_pages/county_page',
-            :title => 'name'
-          }
-          
         end
       end
 
