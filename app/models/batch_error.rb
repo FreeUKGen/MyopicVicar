@@ -6,7 +6,7 @@ class BatchError
   field :error_message, type: String
   field :field, type: String
   field :error_type, type: String
-  field :data_line, type: Array
+  field :data_line, type: Hash
   field :entry_id, type: String
   belongs_to  :freereg1_csv_file, index: true
   index({entry_id:1})

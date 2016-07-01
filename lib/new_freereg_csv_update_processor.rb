@@ -366,6 +366,7 @@ class CsvFile < CsvFiles
       #p " check and create"
      if !project.force_rebuild
       #p "processing create_db_record_for_entry"
+      data_record.delete(:chapman_code)
        entry = Freereg1CsvEntry.new(data_record)
        #p "new entry"
        new_digest = entry.cal_digest       
@@ -540,6 +541,7 @@ class CsvFile < CsvFiles
     def create_db_record_for_entry(project,data_record,freereg1_csv_file)
      # TODO: bring data_record hash keys in line with those in Freereg1CsvEntry
       #p "creating new entry"
+      data_record.delete(:chapman_code)
      entry = Freereg1CsvEntry.new(data_record)
      if data_record[:record_type] == "ma"
        entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
@@ -766,6 +768,7 @@ class CsvFile < CsvFiles
     @data.each do |datakey,datarecord|
       if datarecord[:location] == key
         datarecord[:place] = datarecord[:place_name] #entry uses place
+        datarecord.delete(:place_name)
         records = records + 1
         success = self.check_and_create_db_record_for_entry(project,datarecord,freereg1_csv_file)
         #p "#{success} after check and create"
@@ -776,7 +779,7 @@ class CsvFile < CsvFiles
           not_changed = not_changed + 1
         else
           #p "deal with batch error"
-          batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number],error_message: success,record_type: freereg1_csv_file.record_type, data_line: datarecord)
+          batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number], error_message: success, record_type: freereg1_csv_file.record_type, data_line: datarecord)
           batch_error.freereg1_csv_file = freereg1_csv_file
           batch_error.save
           batch_errors = batch_errors + 1
@@ -1419,6 +1422,7 @@ class CsvRecord < CsvRecords
     @data_record[:chapman_code] = chapman_code
     @data_record[:county] = chapman_code
     @data_record[:place_name] = place_name
+    @data_record[:place] = place_name
     @data_record[:church_name] = church_name
     @data_record[:register_type] = register_type
     @data_record[:record_type] = csvfile.header[:record_type]

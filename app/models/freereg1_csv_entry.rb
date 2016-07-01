@@ -85,6 +85,9 @@ class Freereg1CsvEntry
   field :error_flag, type:String, default: 'false'
   field :record_type, type: String
   field :record_digest, type: String
+  field :location, type: String
+
+  alias_attribute :place_name, :place
 
   belongs_to :freereg1_csv_file, index: true
 

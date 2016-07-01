@@ -107,7 +107,5 @@ MyopicVicar::Application.configure do
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   #rails 4 changes
   config.eager_load = true
-  #config.serve_static_assets = false
-  config.serve_static_files = false
-  config.assets.compile = false
+
 end
