@@ -1,0 +1,30 @@
+nb:
+  refinery:
+    plugins:
+      county_pages:
+        title: County Pages
+    county_pages:
+      admin:
+        county_pages:
+          actions:
+            create_new: Lag en ny County Page
+            reorder: Endre rekkefølgen på County Pages
+            reorder_done: Ferdig å endre rekkefølgen County Pages
+          records:
+            title: County Pages
+            sorry_no_results: Beklager! Vi fant ikke noen resultater.
+            no_items_yet: Det er ingen County Pages enda. Klikk på "Lag en ny County Page" for å legge til din første county page.
+          county_page:
+            view_live_html: Vis hvordan denne county page ser ut offentlig <br/><em>(åpner i et nytt vindu)</em>
+            edit: Rediger denne county page
+            delete: Fjern denne county page permanent
+      county_pages:
+        show:
+          other: Andre County Pages
+  activerecord:
+    attributes:
+      'refinery/county_pages/county_page':
+        name: Name
+        chapman_code: Chapman Code
+        content: Content
+        position: Position

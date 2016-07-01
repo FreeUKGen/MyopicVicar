@@ -4,6 +4,12 @@ GIT
   specs:
     osgb (0.3.1)
 
+PATH
+  remote: vendor/extensions
+  specs:
+    refinerycms-county_pages (1.0)
+      refinerycms-core
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -70,9 +76,9 @@ GEM
       mongoid (>= 3.0, < 6.0)
       mongoid-grid_fs (>= 1.3, < 3.0)
     coderay (1.1.1)
-    coffee-rails (4.1.1)
+    coffee-rails (4.2.1)
       coffee-script (>= 2.2.0)
-      railties (>= 4.0.0, < 5.1.x)
+      railties (>= 4.0.0, < 5.2.x)
     coffee-script (2.4.1)
       coffee-script-source
       execjs
@@ -96,7 +102,7 @@ GEM
       rack (>= 1.3.0)
     email_veracity (0.6.0)
     erubis (2.7.0)
-    excon (0.49.0)
+    excon (0.50.1)
     execjs (2.7.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
@@ -139,7 +145,7 @@ GEM
     fog-atmos (0.1.0)
       fog-core
       fog-xml
-    fog-aws (0.9.3)
+    fog-aws (0.9.4)
       fog-core (~> 1.38)
       fog-json (~> 1.0)
       fog-xml (~> 0.1)
@@ -153,7 +159,7 @@ GEM
       fog-json (~> 1.0)
       fog-xml (~> 0.1)
       ipaddress (~> 0.8)
-    fog-core (1.40.0)
+    fog-core (1.40.1)
       builder
       excon (~> 0.49)
       formatador (~> 0.2)
@@ -173,8 +179,8 @@ GEM
       multi_json (~> 1.10)
     fog-local (0.3.0)
       fog-core (~> 1.27)
-    fog-openstack (0.1.6)
-      fog-core (>= 1.39)
+    fog-openstack (0.1.7)
+      fog-core (>= 1.40)
       fog-json (>= 1.0)
       ipaddress (>= 0.8)
     fog-powerdns (0.1.1)
@@ -294,7 +300,7 @@ GEM
     multi_json (1.12.1)
     multipart-post (2.0.0)
     mysql2 (0.4.4-x64-mingw32)
-    newrelic_rpm (3.15.2.317)
+    newrelic_rpm (3.16.0.318)
     nokogiri (1.6.8-x64-mingw32)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
@@ -425,8 +431,8 @@ GEM
     rspec-support (3.4.1)
     rubyzip (0.9.9)
     sass (3.4.22)
-    sass-rails (5.0.4)
-      railties (>= 4.0.0, < 5.0)
+    sass-rails (5.0.5)
+      railties (>= 4.0.0, < 6)
       sass (~> 3.1)
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
@@ -445,7 +451,7 @@ GEM
     sprockets (3.6.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.0.4)
+    sprockets-rails (3.1.1)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
@@ -508,6 +514,7 @@ DEPENDENCIES
   rails_12factor
   refinerycms (~> 3.0, >= 3.0.3)
   refinerycms-authentication-devise (~> 1.0.4)
+  refinerycms-county_pages!
   refinerycms-wymeditor (~> 1.0)
   rspec-rails
   rubyzip (~> 0.9.9)

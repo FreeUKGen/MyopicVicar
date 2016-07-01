@@ -100,4 +100,4 @@ gem 'jquery-rails'
 # gem 'ruby-debug'
 
 
-#gem 'refinerycms-county_pages', :path => 'vendor/extensions'
+gem 'refinerycms-county_pages', :path => 'vendor/extensions'
