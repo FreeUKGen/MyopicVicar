@@ -26,6 +26,8 @@ else
     YAML.load_file(secret_token)[Rails.env].each do |key, value|
       MyopicVicar::Application.config.secret_token = value
     end
+  else
+    MyopicVicar::Application.config.secret_token = ('x' * 30)
   end
 
 end
