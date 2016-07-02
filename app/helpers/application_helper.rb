@@ -111,13 +111,6 @@ module ApplicationHelper
   end
 
   def geo_near_distance(first,last,units)
-    p "distance"
-    p first
-    p last
-    p first.latitude
-    p first.longitude
-    p last.latitude
-    p last.longitude
     dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude], {:units => :mi}) if units == Place::MeasurementSystem::ENGLISH
     dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude],{:units => :km}) if units == Place::MeasurementSystem::SI
     dist
