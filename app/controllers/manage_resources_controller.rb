@@ -56,30 +56,31 @@ class ManageResourcesController < ApplicationController
       redirect_to new_transreg_user_path
       return
     end
-
-    def selection
-      if UseridRole::OPTIONS_TRANSLATION.has_key?(params[:option])
-        value = UseridRole::OPTIONS_TRANSLATION[params[:option]]
-        redirect_to value
-        return
-      else
-        flash[:notice] = 'Invalid option'
-        redirect_to :back
-        return
-      end
-    end
-
-    def create
-
-      @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
-      session[:userid] = @user.userid
-      session[:first_name] = @user.person_forename
-      session[:manager] = manager?(@user)
-      redirect_to manage_resource_path(@user)
-    end
-
-    def show
-      load(params[:id])
-    end
-
   end
+
+  def selection
+    if UseridRole::OPTIONS_TRANSLATION.has_key?(params[:option])
+      value = UseridRole::OPTIONS_TRANSLATION[params[:option]]
+      redirect_to value
+      return
+    else
+      flash[:notice] = 'Invalid option'
+      redirect_to :back
+      return
+    end
+  end
+
+  def create
+
+    @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
+    session[:userid] = @user.userid
+    session[:first_name] = @user.person_forename
+    session[:manager] = manager?(@user)
+    redirect_to manage_resource_path(@user)
+  end
+
+  def show
+    load(params[:id])
+  end
+
+end
