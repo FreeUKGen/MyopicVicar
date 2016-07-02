@@ -81,7 +81,7 @@ class ApplicationController < ActionController::Base
   def get_userid_from_current_authentication_devise_user
     if session[:userid_detail_id].present?
       @user = UseridDetail.id(session[:userid_detail_id]).first
-      logger.warn "FREREG::USER user #{@user}"
+      logger.warn "FREREG::USER user #{@user.userid}"
     else
       if current_authentication_devise_user.blank?
         flash[:notice] = 'You are not logged into the system'
@@ -90,7 +90,7 @@ class ApplicationController < ActionController::Base
       else
         logger.warn "FREREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
         @user = UseridDetail.find(current_authentication_devise_user.userid_detail_id)
-        logger.warn "FREREG::USER user #{@user}"
+        logger.warn "FREREG::USER user #{@user.userid}"
       end
     end
     @user_id = @user._id
