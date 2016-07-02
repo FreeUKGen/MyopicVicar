@@ -94,11 +94,13 @@ module ApplicationHelper
     display_map["County"] = counties if search_query.chapman_codes.size == 1
 
     if search_query.places.size > 0
-      place = search_query.places.first.place_name
+      first_place = search_query.places.first
+      place = first_place.place_name
       if search_query.all_radius_places.size > 0
+        last_place = search_query.all_radius_places.last
         place <<
         " (including #{search_query.all_radius_places.size} additional places within
-          #{search_query.all_radius_places.last.geo_near_distance.round(1)}
+          #{geo_near_distance(first_place,last_place,Place::MeasurementSystem::ENGLISH).round(1)}
           #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
       end
       display_map["Place"] = place if search_query.places.size > 0
@@ -106,6 +108,19 @@ module ApplicationHelper
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
 
     display_map
+  end
+
+  def geo_near_distance(first,last,units)
+    p "distance"
+    p first
+    p last
+    p first.latitude
+    p first.longitude
+    p last.latitude
+    p last.longitude
+    dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude], {:units => :mi}) if units == Place::MeasurementSystem::ENGLISH
+    dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude],{:units => :km}) if units == Place::MeasurementSystem::SI
+    dist
   end
 
   def display_banner

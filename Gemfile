@@ -42,6 +42,7 @@ gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
 gem 'kaminari'
 gem "gretel"
+gem 'geocoder'
 #gem 'activeadmin'
 #gem "meta_search",    '>= 1.1.0.pre'
 
