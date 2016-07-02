@@ -86,9 +86,9 @@ class ApplicationController < ActionController::Base
         redirect_to refinery.login_path
         return
       else
-        logger.warn "FREREG::USER #{current_authentication_devise_user.userid_detail_id}"
+        logger.warn "FREREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
         @user = UseridDetail.find(current_authentication_devise_user.userid_detail_id)
-        logger.warn "FREREG::USER #{@user}"
+        logger.warn "FREREG::USER user #{@user}"
       end
     end
     @user_id = @user._id
@@ -102,7 +102,7 @@ class ApplicationController < ActionController::Base
     session[:first_name] = @first_name
     session[:manager] = manager?(@user)
     session[:role] = @user.person_role
-    logger.warn "FREREG::USER #{@manager}"
+    logger.warn "FREREG::USER  manager #{@manager}"
 
   end
 
