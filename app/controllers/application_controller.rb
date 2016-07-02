@@ -65,6 +65,7 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    logger.warn "FREREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
     #logger.warn("APP: current_refinery_user #{current_refinery_user}")
     #logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil?
     scope = Devise::Mapping.find_scope!(resource_or_scope)
@@ -80,6 +81,7 @@ class ApplicationController < ActionController::Base
   def get_userid_from_current_authentication_devise_user
     if session[:userid_detail_id].present?
       @user = UseridDetail.id(session[:userid_detail_id]).first
+      logger.warn "FREREG::USER user #{@user}"
     else
       if current_authentication_devise_user.blank?
         flash[:notice] = 'You are not logged into the system'
@@ -128,6 +130,7 @@ class ApplicationController < ActionController::Base
     #sets the manager flag status
     a = true
     a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'data_manager' || user.person_role == 'technical')
+    return a
   end
 
   def log_possible_host_change
