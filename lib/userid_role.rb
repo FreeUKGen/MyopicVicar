@@ -4,6 +4,7 @@ module UseridRole
             'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator','computer']
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
+    'computer' => [ "Profile","Roadmap"],
     'trainee' => [ "Batches","Profile", "Batches","Roadmap"],
     'pending' => [ "Profile"],
     'transcriber' => [  "Batches","Profile", "Roadmap"],
@@ -11,10 +12,9 @@ module UseridRole
     'contacts_coordinator'=> ["Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Profile", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [ "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Roadmap"],
     'country_coordinator' => [   "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
-    'volunteer_coordinator' => [  "Access Attic", "Batches", "Contacts","Manage Syndicates", "Manage Userids","Profile","Roadmap"],
-    'data_manager' => [  "Batches",  "Contacts", "Denominations", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "Feedback",
-                         "Manage Counties","Manage Syndicates", "Physical Files", "Profile", "RefineryCMS", "Roadmap","Search Performance","System Documentation" ],
-    'technical' => [  "Access Attic","Access Profiles", "Batches", "Contacts", "Feedback", "Profile","RefineryCMS", "Roadmap" ,"Search Performance",  "Site Statistics",
+    'volunteer_coordinator' => [ "Batches", "Contacts","Manage Syndicates", "Manage Userids","Profile","Roadmap"],
+    'data_manager' => [ "Access Attic", "Batches",  "Denominations", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "Manage Counties", "Physical Files", "Profile", "Roadmap" ],
+    'technical' => [  "Access Attic", "Batches", "Contacts", "Feedback", "Profile","RefineryCMS", "Roadmap" ,"Search Performance",  "Site Statistics",
                       "System Documentation"],
     'system_administrator' =>[  "Access Attic","Batches", "Contacts", "County Coordinators", "Country Coordinators","Denominations","Feedback",
                                 "Manage Counties","Manage Countries", "Manage Syndicates" ,"Manage Userids",  "Message System",  "Physical Files","Profile","RefineryCMS","Roadmap","Search Performance","Site Statistics",
