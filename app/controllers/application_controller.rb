@@ -129,7 +129,7 @@ class ApplicationController < ActionController::Base
   def manager?(user)
     #sets the manager flag status
     a = true
-    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'data_manager' || user.person_role == 'technical')
+    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' ||  user.person_role == 'technical')
     return a
   end
 
