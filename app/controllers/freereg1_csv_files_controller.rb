@@ -14,6 +14,7 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_files = Freereg1CsvFile.userid(user.userid).all.order_by("file_name ASC", "userid_lower_case ASC").page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)  unless user.nil?
     render "index"
+    return
   end
 
   def change_userid
@@ -93,6 +94,7 @@ class Freereg1CsvFilesController < ApplicationController
     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     render "index"
+    return
   end
 
   def display_my_error_files
@@ -152,8 +154,6 @@ class Freereg1CsvFilesController < ApplicationController
       ok_to_proceed = @freereg1_csv_file.check_file
       if !ok_to_proceed[0]
         flash[:notice] =  "There is a problem with the file you are attempting to download; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
-        redirect_to :back
-        return
       else
         success = @freereg1_csv_file.backup_file
         if success
@@ -161,24 +161,19 @@ class Freereg1CsvFilesController < ApplicationController
           if File.file?(my_file)
             @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
             @freereg1_csv_file.force_unlock
-            send_file( my_file, :filename => @freereg1_csv_file.file_name,:x_sendfile=>true )
             flash[:notice] =  "The file has been downloaded to your computer"
-            redirect_to :back
-            return
+            send_file( my_file, :filename =>  @freereg1_csv_file.file_name,:x_sendfile=>true ) and return
           end
         else
           flash[:notice] =  "There was a problem saving the file prior to download. Please take this message to your coordinator"
-          redirect_to :back
-          return
         end
       end
     else
       flash[:notice] =  "The file has you are attempting to download does not exist"
-      redirect_to :back
-      return
     end
+    redirect_to :back
+    return
   end
-
 
   def edit
     #edit the headers for a batch
