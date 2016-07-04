@@ -1,13 +1,14 @@
 class TransregUsersController < ApplicationController
 
   def new
-  	if session[:userid].nil?
+    logger.warn "FREEREG::USER Entered transreg #{session[:userid]} #{@@userid}"
+    if session[:userid].nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
       return
-  	end
+    end
 
-  	@first_name = session[:first_name]
-  	@user = UseridDetail.where(:userid => session[:userid]).first
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first
     render(:text => { "result" => "Logged in", :userid_detail => @user.attributes}.to_xml({:dasherize => false, :root => 'login'}))
   end
 
