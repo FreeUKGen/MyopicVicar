@@ -45,13 +45,13 @@
                   <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>
                   <td class="t4"><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
                   <td class="t4"><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
-                  <td class="t4"><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to download this file?', method: :get  %></td>
+                  <td class="t4"><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
                   <td class="t4"><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
-                  <td  class="t4"><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to lock/unlock all of the batches associated with this file?' %>
+                  <td  class="t4"><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
                   </td>
-                  <td class="t4"><%= link_to 'DE', remove_freereg1_csv_file_path(freereg1_csv_file), confirm: 'Are you sure you want to delete this file? This may take a few minutes if there many records', method: :get   %></td>
+                  <td class="t4"><%= link_to 'DE', remove_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to delete this file? This may take a few minutes if there many records'}, method: :get   %></td>
                   </td>
-                  <td class="t4"><%= link_to 'RL', edit_csvfile_path(freereg1_csv_file), method: :get, confirm: 'Are you sure you want to replace these records?' %>
+                  <td class="t4"><%= link_to 'RL', edit_csvfile_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }%>
                   </td>
                 </tr>
               <% end %>

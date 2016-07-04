@@ -53,7 +53,7 @@
       <td><%= freereg1_csv_entry.mother_forename %></td>
       <td><%= freereg1_csv_entry.mother_surname %></td>
       
-      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+      <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete %></td>
       <% end %>
     </table>
     <% when @freereg1_csv_file.record_type == "bu" %>
@@ -94,7 +94,7 @@
           <td><%= freereg1_csv_entry.female_relative_forename %></td>
           <td><%= freereg1_csv_entry.relative_surname %></td>
           
-          <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+          <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete %></td>
         </tr>
       <% end %>
       </table>
@@ -137,7 +137,7 @@
             <td><%= freereg1_csv_entry.groom_forename %></td>
             
             <td><%= freereg1_csv_entry.groom_surname %></td>
-            <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete %></td>
+            <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete %></td>
           </tr>
           <% end %>
         </table>
