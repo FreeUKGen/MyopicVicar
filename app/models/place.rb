@@ -82,7 +82,7 @@ class Place
       'miles' => ENGLISH,
       'kilometers' => SI
     }
-     def self.system_to_units(system)
+    def self.system_to_units(system)
       OPTIONS.invert[system]
     end
   end
@@ -94,7 +94,7 @@ class Place
 
     def id(id)
       where(:id => id)
-    end 
+    end
 
     def chapman_code(chapman)
       where(:chapman_code => chapman)
@@ -253,7 +253,7 @@ class Place
     return [false, "This was the unapproved place name, merge into the other"] if self.error_flag == "Place name is not approved"
     all_places = Place.chapman_code(self.chapman_code).place(self.place_name).all
     all_places.each do |place|
-      unless place._id == self._id     
+      unless place._id == self._id
         if place.has_input?
           return [false, "a place being merged has input"]
         end
@@ -334,8 +334,8 @@ class Place
 
 
   def update_ucf_list(file)
-    ids = file.search_record_ids_with_wildcard_ucf  
-    self.ucf_list[file.id] = ids if ids && ids.size > 0
+    ids = file.search_record_ids_with_wildcard_ucf
+    self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
   end
 
   def recalculate_last_amended_date
@@ -350,7 +350,7 @@ class Place
         church.update_attribute(:last_amended, register.last_amended) if (Freereg1CsvFile.convert_date(register.last_amended ) > Freereg1CsvFile.convert_date(church.last_amended))
       end #end of register
       self.update_attribute(:last_amended, church.last_amended) if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(self.last_amended))
-    end #end of church 
+    end #end of church
     self.update_data_present
   end
 
@@ -402,9 +402,9 @@ class Place
       self.update_attribute(:data_present,false)
     end
   end
-  
+
   def update_places_cache
     PlaceCache.refresh(self.chapman_code)
   end
- 
+
 end
