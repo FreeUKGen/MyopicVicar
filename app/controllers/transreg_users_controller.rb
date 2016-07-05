@@ -6,8 +6,8 @@ class TransregUsersController < ApplicationController
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
       return
     end
-    if session[:userid].nil?
-      @user = UseridDetail.where(:userid => @@userid).first
+    if @@userid.present?
+      @user = UseridDetail.id(@@userid).first
     else
       @user = UseridDetail.where(:userid => session[:userid]).first
     end
