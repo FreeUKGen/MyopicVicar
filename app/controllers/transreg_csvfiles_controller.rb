@@ -14,7 +14,7 @@ class TransregCsvfilesController < ApplicationController
 
     p 'valid user'
 
-    @csvfile  = Csvfile.new(params[:csvfile])
+    @csvfile  = Csvfile.new(csvfile_params)
     @csvfile.userid = params[:transcriberid]
     @csvfile.file_name = @csvfile.csvfile.identifier
     uploaded_file = params[:csvfile][:csvfile].tempfile.path
@@ -65,7 +65,7 @@ class TransregCsvfilesController < ApplicationController
   def replace
     p 'valid user'
 
-    @csvfile  = Csvfile.new(params[:csvfile])
+    @csvfile  = Csvfile.new(csvfile_params)
     @csvfile.userid = params[:transcriberid]
     @csvfile.file_name = @csvfile.csvfile.identifier
     uploaded_file = params[:csvfile][:csvfile].tempfile.path
@@ -221,6 +221,10 @@ class TransregCsvfilesController < ApplicationController
     end
     @county =  @place.county
     @place_name = @place.place_name
+  end
+  private
+  def csvfile_params
+    params.require(:csvfile).permit!
   end
 
 end
