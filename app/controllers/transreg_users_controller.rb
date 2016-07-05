@@ -11,6 +11,8 @@ class TransregUsersController < ApplicationController
     else
       @user = UseridDetail.where(:userid => session[:userid]).first
     end
+    session[:userid] = @user.userid
+    get_userid_from_current_authentication_devise_user
     @first_name = @user.person_forename
     render(:text => { "result" => "Logged in", :userid_detail => @user.attributes}.to_xml({:dasherize => false, :root => 'login'}))
   end
