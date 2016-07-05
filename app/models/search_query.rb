@@ -348,6 +348,32 @@ class SearchQuery
     search_nearby_places
   end
 
+  def reduce_attributes
+    param = {}
+    param[:first_name] = self.first_name
+    param[:last_name] = self.last_name
+    param[:fuzzy] = self.fuzzy
+    param[:role] = self.role
+    param[:record_type] = self.record_type
+    param[:chapman_codes] = self.chapman_codes
+    param[:inclusive] = self.inclusive
+    param[:witness] = self.witness
+    param[:start_year] = self.start_year
+    param[:end_year] = self.end_year
+    param[:radius_factor] = self.radius_factor
+    param[:search_nearby_places] = self.search_nearby_places
+    param[:place_system] = self.place_system
+    param[:session_id] = self.session_id
+    param[:order_field] = self.order_field
+    param[:order_asc] = self.order_asc
+    param[:region] = self.region
+    param[:userid_detail_id] = self.userid_detail_id
+    param[:c_at] = self.c_at
+    param[:u_at] = Time.now
+    param[:place_ids] = self.place_ids
+    param
+  end
+
   def results
     records = fetch_records
     sort_results(records) unless records.nil?

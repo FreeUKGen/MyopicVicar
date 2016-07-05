@@ -2,7 +2,7 @@ class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
   skip_before_filter :require_cookie_directive, :only => :new
   before_filter :check_for_mobile, :only => :show
-  rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
+  #rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
   def about
@@ -31,12 +31,12 @@ class SearchQueriesController < ApplicationController
 
   def broaden
     old_query = SearchQuery.find(params[:id])
-    @search_query = SearchQuery.new(old_query.attributes)
+    new_parameters = old_query.reduce_attributes
+    @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor * 2
-    @search_query.search_result = nil
     @search_query.save
     @search_results = @search_query.search
-    redirect_to search_query_path(@search_query)
+    redirect_to search_query_path(@search_query.id)
   end
 
   def create
@@ -78,13 +78,14 @@ class SearchQueriesController < ApplicationController
   end
 
   def narrow
+
     old_query = SearchQuery.find(params[:id])
-    @search_query = SearchQuery.new(old_query.attributes)
+    new_parameters = old_query.reduce_attributes
+    @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor / 2
-    @search_query.search_result = nil
     @search_query.save
     @search_results = @search_query.search
-    redirect_to search_query_path(@search_query)
+    redirect_to search_query_path(@search_query.id)
   end
 
   def new
