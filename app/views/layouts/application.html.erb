@@ -97,7 +97,7 @@
         <% else %>
         <%= yield %>
         <% end %>
-        <% if  !current_refinery_user == 'Refinery::Authentication::Devise::NilUser' %>
+        <% if  !current_refinery_user == 'Refinery::Authentication::Devise::NilUser' || !session[:userid].nil?%>
         <div  style="float:left;">
           <%= form_tag(problem_url, :method=>:get) do %>
           <% problem_button_options.each_pair do |name, value| %>
