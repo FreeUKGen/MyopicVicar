@@ -2,66 +2,71 @@
 <%= render 'coordinator_header' unless session[:my_own]%>
 <% unless @freereg1_csv_files.nil? || @freereg1_csv_files.length == 0%>
 <%= paginate @freereg1_csv_files %>
-  <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
-  <div class="grid__item ">
-    <section class="island ">
-      <div style="overflow: hidden;">
-        <table class="my-width-min flush--bottom" >
-          <thead >
-            <tr>
-              <th class="t12">File</th>
-              <th class="t8">Cty</th>
-              <th class="t12">Place</th>
-              <% if session[:my_own]%>
-               <th class="t15">Church</th>
-              <% else%>
-               <th class="t15">Church</th>
-              <% end%>
-              <th class="t5">Reg</th>
+<div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
+<div class="grid__item ">
+  <section class="island ">
+    <div style="overflow: hidden;">
+      <table class="my-width-min flush--bottom" >
+        <thead >
+          <tr>
+            <th class="t12">File</th>
+            <th class="t8">Cty</th>
+            <th class="t12">Place</th>
+            <% if session[:my_own]%>
+            <th class="t15">Church</th>
+            <% else%>
+            <th class="t15">Church</th>
+            <% end%>
+            <th class="t5">Reg</th>
+            <% unless session[:my_own]%>
+            <th class="t8">User ID</th>
+            <% end%>
+            <th class="t10" >Loaded</th>
+            <th colspan = "2" class="t10">Locked<br> TR SCC</th>
+            <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
+          </tr>
+        </thead>
+      </table>
+      <div class="scrollable ">
+        <table class=" table--bordered my-width table--data just--left">
+          <tbody >
+            <% records = 0 %>
+            <% files = 0 %>
+            <% @freereg1_csv_files.each do |freereg1_csv_file| %>
+            <% files = files +1 %>
+            <%records = records + freereg1_csv_file.freereg1_csv_entries.count %>
+            <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
+              <td class="t12"><%= file_name(freereg1_csv_file)%></td>
+              <td class="t5"><%= chapman(freereg1_csv_file) %></td>
+              <td class="t8"><%= place_name(freereg1_csv_file) %></td>
+              <td class="t8"><%= church_name(freereg1_csv_file) %></td>
+              <td class="t8"><%= register_type(freereg1_csv_file) %></td>
               <% unless session[:my_own]%>
-                <th class="t8">User ID</th>
-              <% end%>           
-              <th class="t10" >Loaded</th>
-              <th colspan = "2" class="t10">Locked<br> TR SCC</th>
-              <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
-            </tr>
-          </thead>
-        </table>
-        <div class="scrollable ">
-          <table class=" table--bordered my-width table--data just--left">
-            <tbody >      
-              <% @freereg1_csv_files.each do |freereg1_csv_file| %>
-                <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
-                  <td class="t12"><%= file_name(freereg1_csv_file)%></td>
-                  <td class="t5"><%= chapman(freereg1_csv_file) %></td>
-                  <td class="t8"><%= place_name(freereg1_csv_file) %></td>
-                  <td class="t8"><%= church_name(freereg1_csv_file) %></td>
-                  <td class="t8"><%= register_type(freereg1_csv_file) %></td>
-                  <% unless session[:my_own]%>
-                    <td class="t10"><%= freereg1_csv_file.userid %></td>
-                  <% end %>
-                  <td class="t9"><%= uploaded_date(freereg1_csv_file)%></td>        
-                  <td class="t3"><%= locked_by_transcriber(freereg1_csv_file)%></td>
-                  <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>
-                  <td class="t4"><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
-                  <td class="t4"><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
-                  <td class="t4"><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
-                  <td class="t4"><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
-                  <td  class="t4"><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
-                  </td>
-                  <td class="t4"><%= link_to 'DE', remove_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to delete this file? This may take a few minutes if there many records'}, method: :get   %></td>
-                  </td>
-                  <td class="t4"><%= link_to 'RL', edit_csvfile_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }%>
-                  </td>
-                </tr>
+              <td class="t10"><%= freereg1_csv_file.userid %></td>
               <% end %>
-            </tbody> 
-          </table>
-        </div>
-        <%= paginate @freereg1_csv_files %>
-      </div>
-    </section> 
-  </div>    
-  <% else%>
-     <h3 style="text-align: center">  No files</h3>
-  <% end%>      
+              <td class="t9"><%= uploaded_date(freereg1_csv_file)%></td>
+              <td class="t3"><%= locked_by_transcriber(freereg1_csv_file)%></td>
+              <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>
+              <td class="t4"><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
+              <td class="t4"><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
+              <td class="t4"><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
+              <td class="t4"><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
+                <td  class="t4"><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
+                </td>
+                <td class="t4"><%= link_to 'DE', remove_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to delete this file? This may take a few minutes if there many records'}, method: :get   %></td>
+              </td>
+              <td class="t4"><%= link_to 'RL', edit_csvfile_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }%>
+              </td>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <h3 style="text-align: center"> <tr > There are <%= files %> files with <%= records %> records</tr> </h3>
+      <%= paginate @freereg1_csv_files %>
+    </div>
+  </div>
+</section>
+</div>
+<% else%>
+<h3 style="text-align: center">  No files</h3>
+<% end%>

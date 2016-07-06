@@ -2,18 +2,18 @@
 <section class="island  island--light">
   <div class="grid">
     <div style="text-align: center">
-    <% if session[:edit_userid] %>
-      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  weight--light btn--small " %> <%= link_to 'List Batches', by_userid_freereg1_csv_file_path(@userid), method: :get , :class => "btn weight--light  btn--small " %>    
+      <% if session[:edit_userid] %>
+      <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  weight--light btn--small " %> <%= link_to 'List Batches', by_userid_freereg1_csv_file_path(@userid), method: :get , :class => "btn weight--light  btn--small " %>
       <% if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role ==
-      'volunteer_coordinator'  ||  @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'  %> 
+      'volunteer_coordinator'  ||  @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'  %>
       
-         <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are sending a password reset email to the user. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %> <%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  weight--light btn--small "  %>
-      <% end %>  
-      <% if @user.person_role == 'system_administrator'%>
-        <%= link_to ' Change Userid', rename_userid_details_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  weight--light btn--small"  %>
-        
+      <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are sending a password reset email to the user. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %> <%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  weight--light btn--small "  %>
       <% end %>
-    <% end %>
+      <% if @user.person_role == 'system_administrator'%>
+      <%= link_to ' Change Userid', rename_userid_details_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  weight--light btn--small"  %>
+      
+      <% end %>
+      <% end %>
     </div>
     <div style="clear:both;"> </div>
     <% if flash[:notice] %>
@@ -59,15 +59,12 @@
       <td>Transcription agreement accepted:</td><td > <%= @userid.transcription_agreement%>  </td>
     </tr>
     <tr>
-     <% unless @userid.last_upload.nil?%>
+      <% unless @userid.last_upload.nil?%>
       <td>Last upload:</td><td > <%= @userid.last_upload.strftime("%d %b %Y") %>  </td>
-    <% end %>
+      <% end %>
     </tr>
     <tr>
       <td>Number of files loaded:</td><td > <%= @userid.freereg1_csv_files.count  %>  </td>
-    </tr>
-    <tr>
-      <td>Number of records loaded:</td><td > <%=@userid.compute_records%>  </td>
     </tr>
     <tr>
       <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
