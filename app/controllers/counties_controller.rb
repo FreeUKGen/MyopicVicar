@@ -19,6 +19,13 @@ class CountiesController < ApplicationController
     @counties = County.all.order_by(chapman_code: 1)
   end
 
+  def load(id)
+    @county = County.id(id).first
+    if @county.nil?
+      go_back("county",id)
+    end
+  end
+
   def new
     @first_name = session[:first_name]
     @county = County.new

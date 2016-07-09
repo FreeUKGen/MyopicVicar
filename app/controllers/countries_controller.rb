@@ -19,10 +19,6 @@ class CountriesController < ApplicationController
     get_userids_and_transcribers
   end
 
-  def get_userids_and_transcribers
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-  end
 
   def index
     @first_name = session[:first_name]
@@ -43,12 +39,6 @@ class CountriesController < ApplicationController
     @country = Country.new
     get_userids_and_transcribers
   end
-
-
-
-
-
-
 
   def show
     load(params[:id])

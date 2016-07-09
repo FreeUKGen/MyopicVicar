@@ -127,6 +127,12 @@ class ApplicationController < ActionController::Base
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
+  def get_userids_and_transcribers
+    @user = UseridDetail.where(:userid => session[:userid]).first
+    @userids = UseridDetail.all.order_by(userid_lower_case: 1)
+  end
+
+
   def manager?(user)
     #sets the manager flag status
     a = true
