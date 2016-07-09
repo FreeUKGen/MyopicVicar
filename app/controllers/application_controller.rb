@@ -33,35 +33,6 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def check_for_mobile
-    session[:mobile_override] = true if mobile_device?
-  end
-
-  def require_cookie_directive
-    if cookies[:cookiesDirective].blank?
-      flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
-      redirect_to main_app.new_search_query_path
-    end
-  end
-
-  helper_method :mobile_device?
-  def mobile_device?
-    # Season this regexp to taste. I prefer to treat iPad as non-mobile.
-    request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
-  end
-
-  helper_method :device_type
-  def device_type
-    request.env['mobvious.device_type']
-  end
-
-  def require_login
-    if session[:userid].nil?
-      flash[:error] = "You must be logged in to access this section"
-      redirect_to refinery.login_path # halts request cycle
-    end
-  end
-
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
@@ -73,12 +44,28 @@ class ApplicationController < ActionController::Base
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
   end
+
+  def check_for_mobile
+    session[:mobile_override] = true if mobile_device?
+  end
+
+
+
   def get_place_id_from_file(freereg1_csv_file)
     register = freereg1_csv_file.register
     church = register.church
     place = church.place
     return place.id
   end
+
+  def get_places_for_menu_selection
+    placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+    @placenames = Array.new
+    placenames.each do |placename|
+      @placenames << placename.place_name
+    end
+  end
+
   def get_userid_from_current_authentication_devise_user
     if session[:userid_detail_id].present?
       @user = UseridDetail.id(session[:userid_detail_id]).first
@@ -132,12 +119,16 @@ class ApplicationController < ActionController::Base
     @userids = UseridDetail.all.order_by(userid_lower_case: 1)
   end
 
+  def go_back(type,record)
+    flash[:notice] = "The #{type} document you are trying to access does not exist."
+    logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end
 
-  def manager?(user)
-    #sets the manager flag status
-    a = true
-    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' ||  user.person_role == 'technical')
-    return a
+  def log_messenger(message)
+    log_message = message
+    logger.warn(log_message)
   end
 
   def log_possible_host_change
@@ -154,18 +145,48 @@ class ApplicationController < ActionController::Base
     logger.warn(log_message)
   end
 
-  def log_messenger(message)
-    log_message = message
-    logger.warn(log_message)
+  def manager?(user)
+    #sets the manager flag status
+    a = true
+    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' ||  user.person_role == 'technical')
+    return a
   end
 
-  def get_places_for_menu_selection
-    placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
-    @placenames = Array.new
-    placenames.each do |placename|
-      @placenames << placename.place_name
+  def reject_assess(user,action)
+    flash[:notice] = "You are not permitted to use this action"
+    logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end
+
+  def require_cookie_directive
+    if cookies[:cookiesDirective].blank?
+      flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
+      redirect_to main_app.new_search_query_path
     end
   end
+
+  def require_login
+    if session[:userid].nil?
+      flash[:error] = "You must be logged in to access this section"
+      redirect_to refinery.login_path # halts request cycle
+    end
+  end
+
+
+  helper_method :mobile_device?
+  def mobile_device?
+    # Season this regexp to taste. I prefer to treat iPad as non-mobile.
+    request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
+  end
+
+  helper_method :device_type
+  def device_type
+    request.env['mobvious.device_type']
+  end
+
+
+
 
   def clean_session
     session.delete(:freereg1_csv_file_id)
@@ -270,17 +291,7 @@ class ApplicationController < ActionController::Base
     session.delete(:current_page)
   end
 
-  def go_back(type,record)
-    flash[:notice] = "The #{type} document you are trying to access does not exist."
-    logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
-    redirect_to main_app.new_manage_resource_path
-    return
-  end
-  def reject_assess(user,action)
-    flash[:notice] = "You are not permitted to use this action"
-    logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
-    redirect_to main_app.new_manage_resource_path
-    return
-  end
+
+
 
 end
