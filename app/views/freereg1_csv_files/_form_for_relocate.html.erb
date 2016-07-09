@@ -31,6 +31,6 @@ Please wait for selection boxes to fill after selecting the preceding option. Yo
 <%= f.input :register_type,:label => "Select Type of Register :",:include_blank => true, :required => true, :collection => @register_types, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}%>
 <% end %>
 <div style="text-align: center">
- <%= f.action :submit, :as => :button, :label => 'Relocate',:button_html => {:class => "btn  weight--light " } if @register_types.present? %>
+ <%= f.action :submit,  :label => 'Relocate', :as => :button, :button_html => {:class => "btn  weight--light " } if @register_types.present? %>
 </div>
 <% end %>
