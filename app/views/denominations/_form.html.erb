@@ -15,8 +15,8 @@
 <% end %>
 <div>
   <%= simple_form_for @denomination do |f| %>
-    <%= f.input :denomination, :label => "Denomination" %>
-    <%= f.input :notes, :label => "Notes" %>
-    <%= f.submit %>
+    <%= f.input :denomination, :label => "Denomination" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
+    <%= f.input :notes, :label => "Notes" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
+    <%= f.button :submit , :button_html => {:class => "btn  weight--light  btn--small" } %>
   <% end %>
 </div>

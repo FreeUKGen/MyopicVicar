@@ -1,28 +1,5 @@
 class DenominationsController < ApplicationController
-  def index
-    get_user_info_from_userid
-    @denominations = Denomination.all.order_by(denomination: 1)
-  end
-  def new
-    get_user_info_from_userid
-    reject_assess(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
-    @denomination = Denomination.new
-  end
-  def show
-    get_user_info_from_userid
-    @denomination = Denomination.id(params[:id]).first
-    if @denomination.blank?
-      go_back("denomination",params[:id])
-    end
-  end
-  def edit
-    get_user_info_from_userid
-    reject_assess(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
-    @denomination = Denomination.id(params[:id]).first
-    if @denomination.blank?
-      go_back("denomination",params[:id])
-    end
-  end
+
   def create
     if params[:denomination].blank?
       flash[:notice] = 'You must enter a field '
@@ -41,6 +18,45 @@ class DenominationsController < ApplicationController
     redirect_to :action => 'index'
     return
   end
+
+  def destroy
+    @denomination = Denomination.id(params[:id]).first
+    if @denomination.blank?
+      go_back("denomination",params[:id])
+    end
+    @denomination.delete
+    flash[:notice] = 'The destruction of the denomination was successful'
+    redirect_to :action => 'index'
+    return
+  end
+
+  def edit
+    get_user_info_from_userid
+    reject_assess(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    @denomination = Denomination.id(params[:id]).first
+    if @denomination.blank?
+      go_back("denomination",params[:id])
+    end
+  end
+
+  def index
+    get_user_info_from_userid
+    @denominations = Denomination.all.order_by(denomination: 1)
+  end
+
+  def new
+    get_user_info_from_userid
+    reject_assess(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    @denomination = Denomination.new
+  end
+  def show
+    get_user_info_from_userid
+    @denomination = Denomination.id(params[:id]).first
+    if @denomination.blank?
+      go_back("denomination",params[:id])
+    end
+  end
+
   def update
     get_user_info_from_userid
     @denomination = Denomination.id(params[:id]).first
@@ -52,16 +68,7 @@ class DenominationsController < ApplicationController
     redirect_to :action => 'index'
     return
   end
-  def destroy
-    @denomination = Denomination.id(params[:id]).first
-    if @denomination.blank?
-      go_back("denomination",params[:id])
-    end
-    @denomination.delete
-    flash[:notice] = 'The destruction of the denomination was successful'
-    redirect_to :action => 'index'
-    return
-  end
+
   private
   def denomination_params
     params.require(:denomination).permit!
