@@ -64,28 +64,6 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
-  def display_info
-    @freereg1_csv_file_id =   @freereg1_csv_file._id
-    @freereg1_csv_file_name = @freereg1_csv_file.file_name
-    @register = @freereg1_csv_file.register
-    if @register.blank?
-      go_back("register",@freereg1_csv_file)
-    end
-    @file_owner = @freereg1_csv_file.userid
-    @register_name = RegisterType.display_name(@register.register_type)
-    @church = @register.church
-    if @church.blank?
-      go_back("church",@register)
-    end
-    @church_name = @church.church_name
-    @place = @church.place
-    if @place.blank?
-      go_back("place", @church)
-    end
-    @county =  @place.county
-    @place_name = @place.place_name
-  end
-
   def display_my_own_files
     get_user_info_from_userid
     @who =  @first_name
@@ -312,22 +290,6 @@ class Freereg1CsvFilesController < ApplicationController
     render "index"
   end
 
-  def set_locations
-    @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
-    @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value'
-    @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
-    @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'
-  end
-
-  def show
-    #show an individual batch
-    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
-    if @freereg1_csv_file.present?
-      set_controls(@freereg1_csv_file)
-    else
-      go_back("batch",params[:id])
-    end
-  end
 
   def relocate
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
@@ -360,6 +322,7 @@ class Freereg1CsvFilesController < ApplicationController
         @counties = Array.new
         @placenames = Array.new
         @churches = Array.new
+
       end
     else
       go_back("batch",params[:id])
@@ -387,7 +350,6 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def set_controls(file)
-    display_info
     get_user_info_from_userid
     @physical_file = PhysicalFile.userid(file.userid).file_name(file.file_name).first
     @role = session[:role]
@@ -395,6 +357,24 @@ class Freereg1CsvFilesController < ApplicationController
     session[:freereg1_csv_file_id] =  file._id
     @return_location  = file.register.id
   end
+
+  def set_locations
+    @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
+    @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value'
+    @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
+    @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'
+  end
+
+  def show
+    #show an individual batch
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    if @freereg1_csv_file.present?
+      set_controls(@freereg1_csv_file)
+    else
+      go_back("batch",params[:id])
+    end
+  end
+
 
 
   def update_churches
@@ -408,7 +388,6 @@ class Freereg1CsvFilesController < ApplicationController
     @placenames = Array.new
     @placenames  << place.place_name
     @churches = place.churches.map{|a| [a.church_name, a.id]}
-    display_info
   end
 
 
@@ -421,7 +400,6 @@ class Freereg1CsvFilesController < ApplicationController
     @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, "Select County")
     @placenames = Array.new
     @churches = Array.new
-    display_info
   end
 
   def update_places
@@ -441,7 +419,6 @@ class Freereg1CsvFilesController < ApplicationController
     @counties << session[:selectcounty]
     @placenames = places.map{|a| [a.place_name, a.id]}
     @churches = []
-    display_info
   end
 
   def update_registers
@@ -458,7 +435,6 @@ class Freereg1CsvFilesController < ApplicationController
     @churches = Array.new
     @churches << church.church_name
     @register_types = RegisterType::APPROVED_OPTIONS
-    display_info
   end
 
   def update

@@ -1,6 +1,5 @@
 <% breadcrumb :change_userid,  @freereg1_csv_file%>
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
-
+<p style="text-align: center"><b><%= file_name(@freereg1_csv_file) %> (<%= userid(@freereg1_csv_file) %>) in <b><%= register_type(@freereg1_csv_file) %></b> of <b> <%= church_name(@freereg1_csv_file)%></b> in <b><%= place_name(@freereg1_csv_file) %></b> of <b><%= county_name(@freereg1_csv_file) %></b><br></p>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>

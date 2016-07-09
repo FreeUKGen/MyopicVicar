@@ -67,7 +67,7 @@ class Freereg1CsvEntry
   field :person_age, type: String
   field :person_forename, type: String
   field :person_sex, type: String
-  field :place, type: String
+  field :place, type: String #every where else this is place_name
   field :register, type: String
   field :register_entry_number, type: String
   field :register_type, type: String
@@ -86,8 +86,6 @@ class Freereg1CsvEntry
   field :record_type, type: String
   field :record_digest, type: String
   field :location, type: String
-
-  alias_attribute :place_name, :place
 
   belongs_to :freereg1_csv_file, index: true
 

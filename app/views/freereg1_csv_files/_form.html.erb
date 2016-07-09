@@ -16,7 +16,7 @@
            <%= f.input :locked_by_coordinator, :input_html => {:class => "   overide_selection_field_width",:disabled => true, :size => 30 } %>
     <%else%>
            <%= f.input :locked_by_coordinator, :label => "Locked by coordinator ",:include_blank => false,
-          :required => true, :collection => [ true, false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 2} %>  %>
+          :required => true, :collection => [ true, false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 2} %> 
     <% end %>
     <%= f.input :locked_by_transcriber, :label => "Locked by transcriber ",:include_blank => false,
       :collection => [ 'true', 'false'],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 2} %>

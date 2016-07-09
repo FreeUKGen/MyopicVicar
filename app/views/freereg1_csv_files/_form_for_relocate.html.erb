@@ -1,4 +1,4 @@
-<p style="text-align: center"><b><%= @freereg1_csv_file_name %> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
+<p style="text-align: center"><b><%= file_name(@freereg1_csv_file) %> (<%= userid(@freereg1_csv_file) %>) in <b><%= register_type(@freereg1_csv_file) %></b> of <b> <%= church_name(@freereg1_csv_file)%></b> in <b><%= place_name(@freereg1_csv_file) %></b> of <b><%= county_name(@freereg1_csv_file) %></b><br></p>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -7,7 +7,7 @@
 <% end %>
 <p><b>You may change the following parameters but do so with care as they will change where the batch is located. You are changing <%= session[:records]%> records so it may take some time.  </b></p>
 Please wait for selection boxes to fill after selecting the preceding option. You MUST select an option even if there is only one.
-<%= simple_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
+<%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
 
 <% if  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'%>
     <%= f.input :country,:label => "Select country from following list",:include_blank => true,
@@ -30,5 +30,7 @@ Please wait for selection boxes to fill after selecting the preceding option. Yo
 <% if @register_types.present? %>
 <%= f.input :register_type,:label => "Select Type of Register :",:include_blank => true, :required => true, :collection => @register_types, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}%>
 <% end %>
-<%= f.button :submit, 'Relocate'   %>
+<div style="text-align: center">
+ <%= f.action :submit, :as => :button, :label => 'Relocate',:button_html => {:class => "btn  weight--light " } if @register_types.present? %>
+</div>
 <% end %>
