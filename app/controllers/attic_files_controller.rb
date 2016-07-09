@@ -19,7 +19,7 @@ class AtticFilesController < InheritedResources::Base
     file = AtticFile.find(params[:id])
     my_file =  File.join(Rails.application.config.datafiles, file.userid_detail.userid,".attic",file.name)
     if File.exists?(my_file)
-      send_file( my_file, :filename => file.name)
+      send_file( my_file, :filename => file.name) and return
       flash[:notice] = 'Download commenced'
     else
       flash[:notice] = 'The file does not exist!'
