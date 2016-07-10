@@ -16,7 +16,8 @@ gem 'rails_12factor', group: :production
 
 gem 'refinerycms', '~> 3.0', '>= 3.0.3'
 gem 'refinerycms-authentication-devise', '~> 1.0.4'
-gem "refinerycms-wymeditor", "~> 1.0"
+gem 'refinerycms-wymeditor', '~> 1.0', '>= 1.0.6'
+
 #gem 'refinerycms', '~> 2.1.1'
 #gem 'refinerycms-authentication',  '~> 2.1.1'
 # MongoDB
