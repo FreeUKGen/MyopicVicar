@@ -293,8 +293,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def relocate
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    session[:return_to] = request.original_url
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
+      session[:initial_page] = @return_location
       session[:selectcountry] = nil
       session[:selectcounty] = nil
       @records = @freereg1_csv_file.freereg1_csv_entries.count
@@ -494,7 +496,7 @@ class Freereg1CsvFilesController < ApplicationController
           flash[:notice] = 'The relocation of the batch was successful'
         end
       end
-      redirect_to new_manage_resource_path
+      redirect_to session[:return_to]
       return
     else
       go_back("batch",params[:id])

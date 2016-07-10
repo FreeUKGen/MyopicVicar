@@ -205,6 +205,7 @@ class ApplicationController < ActionController::Base
     session.delete(:character)
     session.delete(:edit_userid)
     session.delete(:who)
+    session.delete(:redirect_to)
   end
 
   def clean_session_for_county

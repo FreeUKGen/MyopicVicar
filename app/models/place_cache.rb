@@ -24,4 +24,10 @@ class PlaceCache
       refresh(chapman_code)
     end
   end
+
+  def self.refresh_cache(place)
+    cache = PlaceCache.where(:chapman_code => place.chapman_code).first.places_json
+    PlaceCache.refresh(place.chapman_code) unless cache.include?(place.place_name)
+  end
+
 end

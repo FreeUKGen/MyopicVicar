@@ -185,7 +185,7 @@ class Place
       self.propogate_place_name_change
       self.propogate_batch_lock
       self.recalculate_last_amended_date
-      PlaceCache.refresh(self.chapman_code)
+      PlaceCache.refresh_cache(self)
     end
     return [false, ""]
   end
@@ -268,7 +268,7 @@ class Place
         place.delete
       end
     end
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh_cache(self)
     return [true, ""]
   end
 
@@ -377,7 +377,7 @@ class Place
       return [true, "Error in save of place; contact the webmaster"]
     end
     self.propogate_county_change
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh_cache(self)
     return [false, ""]
   end
 
@@ -404,7 +404,7 @@ class Place
   end
 
   def update_places_cache
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh_cache(self)
   end
 
 end

@@ -10,8 +10,8 @@ Please wait for selection boxes to fill after selecting the preceding option. Yo
 <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid"} do |f| %>
 
 <% if  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'%>
-    <%= f.input :country,:label => "Select country from following list",:include_blank => true,
-    :required => true, :collection => @countries,
+    <%= f.input :country,:label => "Select country from following list",
+    :required => true, :collection =>  options_for_select(@countries,''),
     :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' =>   @update_counties_location,:size => 3} %>
     <% if @counties.present? %>
         <%= f.input :county,:label => "Select county from following list",:include_blank => true,
@@ -31,6 +31,6 @@ Please wait for selection boxes to fill after selecting the preceding option. Yo
 <%= f.input :register_type,:label => "Select Type of Register :",:include_blank => true, :required => true, :collection => @register_types, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}%>
 <% end %>
 <div style="text-align: center">
- <%= f.action :submit,  :label => 'Relocate', :as => :button, :button_html => {:class => "btn  weight--light " } if @register_types.present? %>
+ <%= f.action :submit,  :label => 'Relocate', :as => :input, :button_html => {:class => "btn  weight--light " } if @register_types.present? %>
 </div>
 <% end %>
