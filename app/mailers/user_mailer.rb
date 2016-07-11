@@ -113,7 +113,7 @@ class UserMailer < ActionMailer::Base
   def invitation_to_reset_password(user)
     @user = user
     get_coordinator_name
-    #get_token
+    get_token
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Password reset for FreeReg ")
   end
 
