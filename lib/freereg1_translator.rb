@@ -15,42 +15,6 @@
 require 'name_role'
 
 module Freereg1Translator
-  KEY_MAP = {
-    #   :baptism_date => :transcript_date, #actual date as written
-    #  :birth_date => ,
-    # :bride_father_forename => :father_first_name,
-    # :bride_father_surname => :father_surname,
-    #    :bride_forename => :bride_first_name,
-    #  :bride_parish => ,
-    #    :bride_surname => :bride_last_name,
-    #   :burial_date => :transcript_date, #actual date as written
-    #    :burial_person_forename => :first_name,
-    #    :burial_person_surname => :last_name,
-    :county => :chapman_code,
-    # what should we do about the various relatives?  They should be put into family records.
-    :female_relative_forename => :mother_first_name,
-    # TODO refactor parentage to arrays
-    # :groom_father_forename => ,
-    # :groom_father_occupation => ,
-    # :groom_father_surname => ,
-    #    :groom_forename => :groom_first_name,
-    #  :groom_parish => ,
-    #    :groom_surname => :groom_last_name,
-    # what should we do about the various relatives?  They should be put into family records.
-    :male_relative_forename => :father_first_name,
-    #   :marriage_date => :transcript_date, #actual date as written
-    #    :person_forename => :first_name,
-    #  :register => ,
-    #  :register_type => ,
-    #  :relationship => ,
-    #    :relative_surname => :father_last_name,
-    # :witness1_forename => ,
-    # :witness1_surname => ,
-    # :witness2_forename => ,
-    # :witness2_surname => ,
-    # :line => ,
-    #:file_line_number => :file_line_number,
-  }
 
 
   def self.setup_benchmark
@@ -103,9 +67,7 @@ module Freereg1Translator
 
   def self.entry_attributes(entry)
     new_attrs = {}
-    KEY_MAP.keys.each do |key|
-      new_attrs[KEY_MAP[key]] = entry[key] if entry[key]
-    end
+    new_attrs[:chapman_code] = entry[:county]
     new_attrs[:transcript_dates] = []
     ['baptism_date', 'burial_date', 'marriage_date', 'birth_date'].each do |date_key|
       new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
