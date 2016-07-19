@@ -47,6 +47,8 @@ class SearchRecord
   # field :last_name, type: String#, :required => false
 
   #
+  field :line_id, type: String
+
   # It contains hashes with keys :first_name, :last_name, :role
   field :transcript_names, type: Array#, :required => true
 

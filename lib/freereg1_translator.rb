@@ -68,6 +68,8 @@ module Freereg1Translator
   def self.entry_attributes(entry)
     new_attrs = {}
     new_attrs[:chapman_code] = entry[:county]
+    new_attrs[:line_id] = entry[:line_id]
+
     new_attrs[:transcript_dates] = []
     ['baptism_date', 'burial_date', 'marriage_date', 'birth_date'].each do |date_key|
       new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
