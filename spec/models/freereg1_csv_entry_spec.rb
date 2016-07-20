@@ -198,6 +198,7 @@ describe Freereg1CsvEntry do
       result = q.results
 
       result.count.should be >= 1
+      binding.pry
       result.should be_in_result(entry)              
     end
   end

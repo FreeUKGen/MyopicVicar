@@ -93,7 +93,7 @@ class Freereg1CsvFile
 
   after_destroy :clean_up
 
-  has_many :freereg1_csv_entries, validate: false
+  has_many :freereg1_csv_entries, validate: false, order: :id.asc
   belongs_to :register, index: true
   belongs_to :userid_detail, index: true
 
