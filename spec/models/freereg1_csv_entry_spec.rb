@@ -198,7 +198,6 @@ describe Freereg1CsvEntry do
       result = q.results
 
       result.count.should be >= 1
-      binding.pry
       result.should be_in_result(entry)              
     end
   end
@@ -582,6 +581,7 @@ describe Freereg1CsvEntry do
           result = q.ucf_results
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
+#          binding.pry unless result
           result.count.should be >= 1
           result.should be_in_result(entry)
         end
