@@ -320,7 +320,7 @@ class Freereg1CsvEntry
   def multiple_witness_names?
     present = false
     self.multiple_witnesses.each do |witness|
-      if  witness.witness_forname.present? || witness.witness_surname.present?
+      if  witness.witness_forename.present? || witness.witness_surname.present?
         present = true
       end
     end

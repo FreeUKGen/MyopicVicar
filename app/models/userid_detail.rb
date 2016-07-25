@@ -50,9 +50,8 @@ class UseridDetail
   validate :email_address_does_not_exist, on: :update
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname
-  before_save :capitalize_forename, :captilaize_surname
-
   after_create :save_to_refinery
+  before_save :capitalize_forename, :captilaize_surname
   after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
@@ -74,43 +73,152 @@ class UseridDetail
     end
   end
 
+  def self.get_active_userids_for_display(syndicate)
+    @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
+  end
+
+  def self.get_emails_for_selection(syndicate)
+    users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
+    users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
+    @userids = Array.new
+    @userids << ''
+    users.each do |user|
+      @userids << user.email_address
+    end
+    return @userids
+  end
+
+  def self.get_names_for_selection(syndicate)
+    users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
+    users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
+    @userids = Array.new
+    @userids << ''
+    users.each do |user|
+      name = ""
+      name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
+      @userids << name
+    end
+    return @userids
+  end
+
+  def self.get_userids_for_display(syndicate)
+    @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
+  end
+
+  def self.get_userids_for_selection(syndicate)
+    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids = Array.new
+    users.each do |user|
+      @userids << user.userid
+    end
+    return @userids
+  end
+
+  def add_fields(type,syndicate)
+    self.syndicate = syndicate if self.syndicate.nil?
+    self.userid = self.userid.strip unless self.userid.nil?
+    self.sign_up_date =  DateTime.now
+    self.active = true
+    case
+    when type == 'Register Researcher'
+      self.person_role = 'researcher'
+      self.syndicate = 'Researcher'
+    when type == 'Register Transcriber'
+      self.person_role = 'transcriber'
+    when type == 'Technical Registration'
+      self.active  = false
+      self.person_role = 'technical'
+      self.syndicate = 'Technical'
+    end
+    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    self.password = password
+    self.password_confirmation = password
+  end
+
+  def add_lower_case_userid
+    self[:userid_lower_case] = self[:userid].downcase
+  end
+
+  def capitalize_forename
+    self.person_forename = self.person_forename.downcase.titleize
+  end
+
+  def captilaize_surname
+    self.person_surname = self.person_surname.downcase.titleize
+  end
+
+  def check_exists_in_refinery
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    if refinery_user.nil?
+      return[false,"There is no refinery entry"]
+    else
+      return[true]
+    end
+  end
+
+  def compute_records
+    count = 0
+    self.freereg1_csv_files.each do |file|
+      count = count + file.freereg1_csv_entries.count
+    end
+    count
+  end
+
+  def delete_refinery_user_and_userid_folder
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    refinery_user.destroy unless refinery_user.nil?
+    details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    FileUtils.rmdir(details_dir) if File.file?(details_dir)
+  end
+
+  def email_address_does_not_exist
+    if self.changed.include?('email_address')
+      errors.add(:email_address, "Userid email already exits on change") if
+      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+      errors.add(:email_address, "Refinery email already exits on change") if
+      Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+    end
+  end
+
+  def finish_creation_setup
+    UserMailer.notification_of_transcriber_creation(self).deliver_now
+  end
+
+  def finish_researcher_creation_setup
+    UserMailer.notification_of_researcher_registration(self).deliver_now
+  end
+  def finish_transcriber_creation_setup
+    UserMailer.notification_of_transcriber_registration(self).deliver_now
+  end
+  def finish_technical_creation_setup
+    UserMailer.notification_of_technical_registration(self).deliver_now
+  end
+
+  def has_files?
+    value = false
+    value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
+    value
+  end
+
   def remember_search(search_query)
     self.search_queries << search_query
   end
 
-  def write_userid_file
+  def save_to_attic
+    #to-do unix permissions
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
-    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
-    Dir.mkdir(change_details_dir)  unless Dir.exist?(change_details_dir)
     details_file = File.join(details_dir,".uDetails")
-    change_details_file = File.join(change_details_dir,".uDetails")
-    if File.file?(details_file)
-      save_to_attic
-    end
-    #we do not need a udetails file in the change set
-    details = File.new(details_file, "w")
-    details.puts "Surname:#{user.person_surname}"
-    details.puts "UserID:#{user.userid}"
-    details.puts "EmailID:#{user.email_address}"
-    details.puts "Password:#{user.password}"
-    details.puts "GivenName:#{user.person_forename}"
-    details.puts "Country:#{user.address}"
-    details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}"
-    details.puts "SyndicateName:#{user.syndicate}"
-    details.puts "SignUpDate:#{user.sign_up_date}"
-    details.puts "Person:#{user.person_role}"
-    unless user.active
-      details.puts "DisabledDate:#{user.disabled_date}"
-      details.puts "DisabledReason:#{user.disabled_reason}"
-      details.puts "Active:0"
-      details.puts "Disabled:1"
-    else
-      details.puts "Active:1"
-      details.puts "Disabled:0"
-    end
-    details.close
+    newdir = File.join(details_dir,'.attic')
+    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
+    File.rename(details_file,renamed_file)
+    FileUtils.mv(renamed_file,newdir)
   end
 
   def save_to_refinery
@@ -145,31 +253,6 @@ class UseridDetail
     end
   end
 
-  def send_invitation_to_create_password
-    type = self.person_role
-    UserMailer.invitation_to_register_researcher(self).deliver_now if type == 'researcher'
-    UserMailer.invitation_to_register_transcriber(self).deliver_now if type == 'transcriber'
-    UserMailer.invitation_to_register_technical(self).deliver_now if type == 'technical'
-  end
-
-  def send_invitation_to_reset_password
-    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
-    UserMailer.invitation_to_reset_password(self).deliver
-
-  end
-
-  def save_to_attic
-    #to-do unix permissions
-    user = self
-    details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    details_file = File.join(details_dir,".uDetails")
-    newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
-    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
-    File.rename(details_file,renamed_file)
-    FileUtils.mv(renamed_file,newdir)
-  end
-
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
     errors.add(:userid, "Refinery User Already exits") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
@@ -177,132 +260,36 @@ class UseridDetail
     errors.add(:email_address, "Refinery email already exits") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
   end
 
-  def email_address_does_not_exist
-    if self.changed.include?('email_address')
-      errors.add(:email_address, "Userid email already exits on change") if
-      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
-      errors.add(:email_address, "Refinery email already exits on change") if
-      Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+  def write_userid_file
+    user = self
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
+    details_file = File.join(details_dir,".uDetails")
+    if File.file?(details_file)
+      save_to_attic
     end
-  end
-
-  def add_lower_case_userid
-    self[:userid_lower_case] = self[:userid].downcase
-  end
-
-  def capitalize_forename
-    self.person_forename = self.person_forename.downcase.titleize
-  end
-
-  def captilaize_surname
-    self.person_surname = self.person_surname.downcase.titleize
-  end
-
-  def finish_creation_setup
-    UserMailer.notification_of_transcriber_creation(self).deliver
-  end
-
-  def finish_researcher_creation_setup
-    UserMailer.notification_of_researcher_registration(self).deliver
-  end
-  def finish_transcriber_creation_setup
-    UserMailer.notification_of_transcriber_registration(self).deliver
-  end
-  def finish_technical_creation_setup
-    UserMailer.notification_of_technical_registration(self).deliver
-  end
-
-  def add_fields(type,syndicate)
-    self.syndicate = syndicate if self.syndicate.nil?
-    self.userid = self.userid.strip unless self.userid.nil?
-    self.sign_up_date =  DateTime.now
-    self.active = true
-    case
-    when type == 'Register Researcher'
-      self.person_role = 'researcher'
-      self.syndicate = 'Researcher'
-    when type == 'Register Transcriber'
-      self.person_role = 'transcriber'
-    when type == 'Technical Registration'
-      self.active  = false
-      self.person_role = 'technical'
-      self.syndicate = 'Technical'
-    end
-    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
-    self.password = password
-    self.password_confirmation = password
-  end
-
-  def self.get_userids_for_display(syndicate)
-    @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids
-  end
-
-  def self.get_active_userids_for_display(syndicate)
-    @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids
-  end
-
-  def self.get_userids_for_selection(syndicate)
-    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids = Array.new
-    users.each do |user|
-      @userids << user.userid
-    end
-    return @userids
-  end
-
-  def self.get_emails_for_selection(syndicate)
-    users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
-    @userids = Array.new
-    @userids << ''
-    users.each do |user|
-      @userids << user.email_address
-    end
-    return @userids
-  end
-  def self.get_names_for_selection(syndicate)
-    users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
-    @userids = Array.new
-    @userids << ''
-    users.each do |user|
-      name = ""
-      name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
-      @userids << name
-    end
-    return @userids
-  end
-  def delete_refinery_user_and_userid_folder
-    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
-    refinery_user.destroy unless refinery_user.nil?
-    details_dir = File.join(Rails.application.config.datafiles,self.userid)
-    FileUtils.rmdir(details_dir) if File.file?(details_dir)
-  end
-  def has_files?
-    value = false
-    value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
-    value
-  end
-
-  def compute_records
-    count = 0
-    self.freereg1_csv_files.each do |file|
-      count = count + file.freereg1_csv_entries.count
-    end
-    count
-  end
-  def check_exists_in_refinery
-    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
-    if refinery_user.nil?
-      return[false,"There is no refinery entry"]
+    #we do not need a udetails file in the change set
+    details = File.new(details_file, "w")
+    details.puts "Surname:#{user.person_surname}"
+    details.puts "UserID:#{user.userid}"
+    details.puts "EmailID:#{user.email_address}"
+    details.puts "Password:#{user.password}"
+    details.puts "GivenName:#{user.person_forename}"
+    details.puts "Country:#{user.address}"
+    details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}"
+    details.puts "SyndicateName:#{user.syndicate}"
+    details.puts "SignUpDate:#{user.sign_up_date}"
+    details.puts "Person:#{user.person_role}"
+    unless user.active
+      details.puts "DisabledDate:#{user.disabled_date}"
+      details.puts "DisabledReason:#{user.disabled_reason}"
+      details.puts "Active:0"
+      details.puts "Disabled:1"
     else
-      return[true]
+      details.puts "Active:1"
+      details.puts "Disabled:0"
     end
+    details.close
   end
 
 end #end class

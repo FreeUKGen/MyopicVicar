@@ -16,21 +16,13 @@ class UseridDetailsController < ApplicationController
 
   def change_password
     load(params[:id])
-    success = @userid.check_exists_in_refinery
-    if success[0]
-      @userid.send_invitation_to_reset_password
-      flash[:notice] = 'An email with instructions to reset the password has been sent'
-      if @user.userid == @userid.userid
-        redirect_to refinery.logout_path
-        return
-      else
-        redirect_to :back
-        return
-      end
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+    refinery_user.send_reset_password_instructions
+    flash[:notice] = 'An email has been sent with instructions.'
+    if session[:my_own]
+      redirect_to refinery.logout_path and return
     else
-      flash[:notice] = "There was a problem with the reset: #{success[1]}"
-      redirect_to :back
-      return
+      redirect_to userid_detail_path(@userid) and return
     end
   end
 
@@ -39,8 +31,9 @@ class UseridDetailsController < ApplicationController
     @userid.add_fields(params[:commit],session[:syndicate])
     @userid.save
     if @userid.save
-      @userid.send_invitation_to_create_password
-      flash[:notice] = 'The initial registration was successful; an email has been sent to the new person to complete the process.'
+      refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+      refinery_user.send_reset_password_instructions
+      flash[:notice] = 'The initial registration was successful; an email has been sent to complete the process.'
       @userid.write_userid_file
       next_place_to_go_successful_create
     else
@@ -152,7 +145,6 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Submit'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
-    @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
 
@@ -385,8 +377,11 @@ class UseridDetailsController < ApplicationController
       return
     end
   end
+
   private
+
   def userid_details_params
     params.require(:userid_detail).permit!
   end
+
 end
