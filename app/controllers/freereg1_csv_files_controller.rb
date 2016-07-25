@@ -290,7 +290,6 @@ class Freereg1CsvFilesController < ApplicationController
     render "index"
   end
 
-
   def relocate
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     session[:return_to] = request.original_url
@@ -320,16 +319,20 @@ class Freereg1CsvFilesController < ApplicationController
         #setting these means that we are a DM
         session[:selectcountry] = nil
         session[:selectcounty] = nil
-        @countries = ['England', 'Islands', 'Scotland', 'Wales']
+        session[:selectplace] = session[:selectchurch] = nil
+        @countries = ['Select Country','England', 'Islands', 'Scotland', 'Wales']
         @counties = Array.new
         @placenames = Array.new
         @churches = Array.new
-
+        @register_types = []
+        @selected_place = @selected_church = @selected_register = ''
       end
     else
       go_back("batch",params[:id])
     end
   end
+
+
 
   def remove
     #this just removes a batch of records
@@ -390,6 +393,10 @@ class Freereg1CsvFilesController < ApplicationController
     @placenames = Array.new
     @placenames  << place.place_name
     @churches = place.churches.map{|a| [a.church_name, a.id]}
+    @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ""
+    @selected_place = session[:selectplace]
+    @register_types = RegisterType::APPROVED_OPTIONS
+    @selected_register = ''
   end
 
 
@@ -402,6 +409,9 @@ class Freereg1CsvFilesController < ApplicationController
     @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, "Select County")
     @placenames = Array.new
     @churches = Array.new
+    @register_types = RegisterType::APPROVED_OPTIONS
+    @selected_county = @freereg1_csv_file.county
+    @selected_place = @selected_church = @selected_register = ''
   end
 
   def update_places
@@ -417,10 +427,26 @@ class Freereg1CsvFilesController < ApplicationController
       #we are a CC
       places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
     end
+    p "**************************************PLACE"
+    p @freereg1_csv_file.county
+    p session[:selectcounty]
     @counties = Array.new
+    if @freereg1_csv_file.county == session[:selectcounty]
+      @selected_place = @freereg1_csv_file.place
+      @selected_church = @freereg1_csv_file.church_name
+    else
+      @selected_place = @selected_church = ""
+    end
     @counties << session[:selectcounty]
     @placenames = places.map{|a| [a.place_name, a.id]}
-    @churches = []
+    @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
+    if @placechurches.present?
+      @churches = @placechurches.churches.map{|a| [a.church_name, a.id]}
+    else
+      @churches =[]
+    end
+    @register_types = RegisterType::APPROVED_OPTIONS
+    @selected_register = ''
   end
 
   def update_registers
@@ -437,6 +463,9 @@ class Freereg1CsvFilesController < ApplicationController
     @churches = Array.new
     @churches << church.church_name
     @register_types = RegisterType::APPROVED_OPTIONS
+    @selected_place = session[:selectplace]
+    @selected_church = session[:selectchurch]
+    @selected_register = @freereg1_csv_file.register_type
   end
 
   def update
