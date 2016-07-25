@@ -66,12 +66,11 @@ class ApplicationController < ActionController::Base
 
   def get_user_info_from_userid
     @userid = session[:userid]
-    @user_id = session[:user_id]
-    @first_name = session[:first_name]
-    @manager = session[:manager]
-    @roles = session[:role]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @roles = UseridRole::OPTIONS.fetch(session[:role])
+    @user = UseridDetail.userid(@userid).first
+    @user_id = @user.id
+    @first_name = @user.person_forename
+    @manager = manager?(@user)
+    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
   def  get_user_info(userid,name)
