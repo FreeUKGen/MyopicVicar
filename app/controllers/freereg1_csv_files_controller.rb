@@ -383,89 +383,108 @@ class Freereg1CsvFilesController < ApplicationController
 
 
   def update_churches
-    get_user_info_from_userid
-    set_locations
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @countries = [session[:selectcountry]]
-    @counties = [session[:selectcounty]]
-    place = Place.id(params[:place]).first
-    session[:selectplace] = params[:place]
-    @placenames = Array.new
-    @placenames  << place.place_name
-    @churches = place.churches.map{|a| [a.church_name, a.id]}
-    @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ""
-    @selected_place = session[:selectplace]
-    @register_types = RegisterType::APPROVED_OPTIONS
-    @selected_register = ''
+    if params[:place].blank? ||  params[:place] == "Select Place"
+      flash[:notice] = "You made an incorrect place selection "
+      redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
+    else
+      get_user_info_from_userid
+      set_locations
+      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @countries = [session[:selectcountry]]
+      @counties = [session[:selectcounty]]
+      place = Place.id(params[:place]).first
+      session[:selectplace] = params[:place]
+      @placenames = Array.new
+      @placenames  << place.place_name
+      @churches = place.churches.map{|a| [a.church_name, a.id]}.insert(0, "Select Church")
+      @churches[1] = "Has no churches" if place.churches.blank?
+      @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ""
+      @selected_place = session[:selectplace]
+      @register_types = RegisterType::APPROVED_OPTIONS
+      @selected_register = ''
+    end
   end
 
 
   def update_counties
-    get_user_info_from_userid
-    set_locations
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @countries = [params[:country]]
-    session[:selectcountry] = params[:country]
-    @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, "Select County")
-    @placenames = Array.new
-    @churches = Array.new
-    @register_types = RegisterType::APPROVED_OPTIONS
-    @selected_county = @freereg1_csv_file.county
-    @selected_place = @selected_church = @selected_register = ''
+    if params[:country].blank? || params[:country] == "Select Country"
+      flash[:notice] = "You made an incorrect country selection "
+      redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
+    else
+      get_user_info_from_userid
+      set_locations
+      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @countries = [params[:country]]
+      session[:selectcountry] = params[:country]
+      @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, "Select County")
+      @placenames = Array.new
+      @churches = Array.new
+      @register_types = RegisterType::APPROVED_OPTIONS
+      @selected_county = @freereg1_csv_file.county
+      @selected_place = @selected_church = @selected_register = ''
+    end
   end
 
   def update_places
-    get_user_info_from_userid
-    set_locations
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @countries = [session[:selectcountry]]
-    if session[:selectcounty].nil?
-      #means we are a DM selecting the county
-      session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
-      places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+    if session[:selectcounty].nil? && (params[:county].blank? || params[:county] == "Select County")
+      flash[:notice] = "You made an incorrect county selection "
+      redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
-      #we are a CC
-      places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+      get_user_info_from_userid
+      set_locations
+      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @countries = [session[:selectcountry]]
+      if session[:selectcounty].nil?
+
+        #means we are a DM selecting the county
+        session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
+        places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+      else
+        #we are a CC
+        places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
+      end
+      @counties = Array.new
+      if @freereg1_csv_file.county == session[:selectcounty]
+        @selected_place = @freereg1_csv_file.place
+        @selected_church = @freereg1_csv_file.church_name
+      else
+        @selected_place = @selected_church = ""
+      end
+      @counties << session[:selectcounty]
+      @placenames = places.map{|a| [a.place_name, a.id]}.insert(0, "Select Place")
+      @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
+      if @placechurches.present?
+        @churches = @placechurches.churches.map{|a| [a.church_name, a.id]}
+      else
+        @churches = []
+      end
+      @register_types = RegisterType::APPROVED_OPTIONS
+      @selected_register = ''
     end
-    p "**************************************PLACE"
-    p @freereg1_csv_file.county
-    p session[:selectcounty]
-    @counties = Array.new
-    if @freereg1_csv_file.county == session[:selectcounty]
-      @selected_place = @freereg1_csv_file.place
-      @selected_church = @freereg1_csv_file.church_name
-    else
-      @selected_place = @selected_church = ""
-    end
-    @counties << session[:selectcounty]
-    @placenames = places.map{|a| [a.place_name, a.id]}
-    @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
-    if @placechurches.present?
-      @churches = @placechurches.churches.map{|a| [a.church_name, a.id]}
-    else
-      @churches =[]
-    end
-    @register_types = RegisterType::APPROVED_OPTIONS
-    @selected_register = ''
   end
 
   def update_registers
-    get_user_info_from_userid
-    set_locations
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @countries = [session[:selectcountry]]
-    @counties = [session[:selectcounty]]
-    church = Church.id(params[:church]).first
-    session[:selectchurch] = params[:church]
-    place = church.place
-    @placenames = Array.new
-    @placenames  << place.place_name
-    @churches = Array.new
-    @churches << church.church_name
-    @register_types = RegisterType::APPROVED_OPTIONS
-    @selected_place = session[:selectplace]
-    @selected_church = session[:selectchurch]
-    @selected_register = @freereg1_csv_file.register_type
+    if params[:church].blank? || params[:church] == "Has no churches" || params[:church] == "Select Church"
+      flash[:notice] = "You made an incorrect church selection "
+      redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
+    else
+      get_user_info_from_userid
+      set_locations
+      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @countries = [session[:selectcountry]]
+      @counties = [session[:selectcounty]]
+      church = Church.id(params[:church]).first
+      session[:selectchurch] = params[:church]
+      place = church.place
+      @placenames = Array.new
+      @placenames  << place.place_name
+      @churches = Array.new
+      @churches << church.church_name
+      @register_types = RegisterType::APPROVED_OPTIONS
+      @selected_place = session[:selectplace]
+      @selected_church = session[:selectchurch]
+      @selected_register = ''
+    end
   end
 
   def update
