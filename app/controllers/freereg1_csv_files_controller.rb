@@ -20,6 +20,7 @@ class Freereg1CsvFilesController < ApplicationController
   def change_userid
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
+      session[:return_to] = request.original_url
       set_controls(@freereg1_csv_file)
       set_locations
       @records = @freereg1_csv_file.freereg1_csv_entries.count
@@ -157,6 +158,7 @@ class Freereg1CsvFilesController < ApplicationController
     #edit the headers for a batch
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
+
       set_controls(@freereg1_csv_file)
       unless session[:error_line].nil?
         flash[:notice] = "Header and Place name errors can only be corrected by correcting the file and either replacing or uploading a new file"
@@ -544,6 +546,7 @@ class Freereg1CsvFilesController < ApplicationController
           flash[:notice] = 'The relocation of the batch was successful'
         end
       end
+      p session[:return_to]
       redirect_to session[:return_to]
       return
     else
