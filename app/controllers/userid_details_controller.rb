@@ -349,6 +349,7 @@ class UseridDetailsController < ApplicationController
 
   def update
     load(params[:id])
+    changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
     success = Array.new
     success[0] = true
     case
@@ -366,7 +367,8 @@ class UseridDetailsController < ApplicationController
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
-      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if !@userid.previous_syndicate == @userid.syndicate
+
+      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
       flash[:notice] = 'The update of the profile was successful'
       redirect_to userid_detail_path(@userid)
       return

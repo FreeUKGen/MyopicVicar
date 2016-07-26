@@ -152,6 +152,11 @@ class UseridDetail
     self.person_surname = self.person_surname.downcase.titleize
   end
 
+  def changed_syndicate?(new_syndicate)
+    self.syndicate == new_syndicate ? change = false : change = true
+    change
+  end
+
   def check_exists_in_refinery
     refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     if refinery_user.nil?
