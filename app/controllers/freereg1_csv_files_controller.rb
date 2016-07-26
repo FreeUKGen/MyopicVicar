@@ -158,7 +158,7 @@ class Freereg1CsvFilesController < ApplicationController
     #edit the headers for a batch
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
-
+      session[:return_to] = request.original_url
       set_controls(@freereg1_csv_file)
       unless session[:error_line].nil?
         flash[:notice] = "Header and Place name errors can only be corrected by correcting the file and either replacing or uploading a new file"
