@@ -2,7 +2,7 @@ class SearchQueriesController < ApplicationController
   skip_before_filter :require_login
   skip_before_filter :require_cookie_directive, :only => :new
   before_filter :check_for_mobile, :only => :show
-  #rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
+  rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
   def about
