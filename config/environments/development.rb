@@ -43,7 +43,7 @@ MyopicVicar::Application.configure do
   config.assets.compress = false
 
   # Expands the lines which load the assets
-  config.assets.debug = false
+  config.assets.debug = true
   config.assets.raise_runtime_errors = true
   config.assets.compile = true
   # Raise exception on mass assignment protection for Active Record models
