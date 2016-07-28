@@ -228,6 +228,16 @@ class Place
     @names
   end
 
+  def get_correct_place_country
+    chapman = self.chapman_code
+    ChapmanCode::CODES.each_pair do |key,value|
+      if value.has_value?(chapman)
+        country = key
+        return country
+      end
+    end
+  end
+
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location
     if self[:grid_reference].blank?
