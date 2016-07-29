@@ -324,8 +324,14 @@ class Freereg1CsvFile
   end
 
   def self.file_update_location(file,param,session)
-    if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param[:register_type].blank?
-      return[true, "You are missing a selection"]
+    if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param.blank? || param[:register_type].blank?
+      message = ""
+      message = message + ": country" if session[:selectcountry].blank?
+      message = message + ": county" if session[:selectcounty].blank?
+      message = message + ": place" if session[:selectplace].blank?
+      message = message + ": church" if session[:selectchurch].blank?
+      message = message + ": register" if param.blank? || param[:register_type].blank?
+      return[true, "You are missing a selection of #{message}"]
     end
     place = Place.id(session[:selectplace]).first
     church = Church.id(session[:selectchurch]).first
