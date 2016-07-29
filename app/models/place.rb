@@ -190,6 +190,11 @@ class Place
     return [false, ""]
   end
 
+  def check_place_country?
+    self.country.present? ? result = true : result = false
+    result
+  end
+
   def data_contents
     min = Time.new.year
     max = 1500
