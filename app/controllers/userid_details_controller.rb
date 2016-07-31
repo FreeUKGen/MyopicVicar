@@ -50,7 +50,7 @@ class UseridDetailsController < ApplicationController
       flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
       redirect_to :action => 'options'
     else
-      Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
+      Freereg1CsvFile.delete_userid_folder(@userid.userid) unless @userid.nil?
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
       redirect_to :action => 'options'

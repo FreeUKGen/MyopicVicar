@@ -121,30 +121,21 @@ class Freereg1CsvFile
   }
 
   class << self
-    def syndicate(name)
-      where(:transcriber_syndicate => name)
-    end
-    def county(name)
-      where(:county => name)
-    end
-    def place(name)
-      where(:place => name)
-    end
     def chapman_code(name)
       #note chapman is county in file
       where(:county => name)
     end
-    def record_type(name)
-      where(:record_type => name)
-    end
-    def userid(name)
-      where(:userid => name)
-    end
     def church_name(name)
       where(:church_name => name)
     end
-    def register_type(name)
-      where(:register_type => name)
+    def coordinator_lock
+      where(:locked_by_coordinator => true)
+    end
+    def county(name)
+      where(:county => name)
+    end
+    def errors
+      where(:error.gt => 0)
     end
     def file_name(name)
       where(:file_name => name)
@@ -152,15 +143,37 @@ class Freereg1CsvFile
     def id(id)
       where(:id => id)
     end
-    def errors
-      where(:error.gt => 0)
+    def place(name)
+      where(:place => name)
+    end
+    def record_type(name)
+      where(:record_type => name)
+    end
+    def register_type(name)
+      where(:register_type => name)
+    end
+    def syndicate(name)
+      where(:transcriber_syndicate => name)
     end
     def transcriber_lock
       where(:locked_by_transcriber => true)
     end
-    def coordinator_lock
-      where(:locked_by_coordinator => true)
+    def userid(name)
+      where(:userid => name)
     end
+    def delete_file(file)
+      file.save_to_attic
+      #first the entries
+      Freereg1CsvEntry.delete_entries_for_a_file(file._id)
+      Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
+        f.delete unless f.nil?
+      end
+    end
+    def delete_userid_folder(userid)
+      folder_location = File.join(Rails.application.config.datafiles,userid)
+      FileUtils.rm_rf(folder_location)
+    end
+
   end
 
 
@@ -170,32 +183,21 @@ class Freereg1CsvFile
     @message = ""
     new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
     old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
-    new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
-    old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
+
     if Dir.exist?(new_folder_location)
       @message = "Folder with that name already exists for #{new_userid} in the base"
       success = false
     else
       Dir.mkdir(new_folder_location,0774)
     end
-    if Dir.exist?(new_change_folder_location)
-      @message = "Folder with that name already exists for #{new_userid} in the change set"
-      success = false
-    else
-      Dir.mkdir(new_change_folder_location,0774)
-    end
+
     if Dir.exist?(old_folder_location) && success
       Dir.glob(File.join(old_folder_location, '*')).each do |file|
         FileUtils.move file, File.join(new_change_folder_location, File.basename(file))
       end
       FileUtils.remove_dir(old_folder_location, :force => true,:verbose => true)
     end
-    if Dir.exist?(old_change_folder_location) && success
-      Dir.glob(File.join(old_change_folder_location, '*')).each do |file|
-        FileUtils.move file, File.join(new_folder_location, File.basename(file))
-      end
-      FileUtils.remove_dir(old_change_folder_location, :force => true,:verbose => true)
-    end
+
     if success
       userid = UseridDetail.userid(old_userid).first
       userid.update_attribute(:userid,new_userid)
@@ -305,23 +307,8 @@ class Freereg1CsvFile
     my_days
   end
 
-  def self.delete_file(file)
-    file.save_to_attic
-    p "Deleting file and entries"
-    Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
-      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-      p "#{entries.length}" unless entries.nil?
-      entries.destroy_all
-      f.delete unless f.nil?
-    end
-  end
 
-  def self.delete_userid(userid)
-    folder_location = File.join(Rails.application.config.datafiles,userid)
-    change_folder_location = File.join(Rails.application.config.datafiles_changeset,userid)
-    FileUtils.remove_dir(folder_location, :force => true)
-    FileUtils.remove_dir(change_folder_location, :force => true)
-  end
+
 
   def self.file_update_location(file,param,session)
     if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param.blank? || param[:register_type].blank?
