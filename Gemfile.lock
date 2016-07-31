@@ -270,8 +270,6 @@ GEM
     kaminari (0.17.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    kaminari-mongoid (0.1.2)
-      kaminari
     libv8 (3.16.14.15)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
@@ -499,7 +497,7 @@ DEPENDENCIES
   inherited_resources (~> 1.6)
   jquery-rails
   json
-  kaminari-mongoid
+  kaminari
   libv8 (~> 3.16.14.7)
   mail-logger
   mobvious
@@ -519,7 +517,7 @@ DEPENDENCIES
   refinerycms (~> 3.0, >= 3.0.3)
   refinerycms-authentication-devise (~> 1.0.4)
   refinerycms-county_pages!
-  refinerycms-wymeditor (~> 1.0, >= 1.0.6)
+  refinerycms-wymeditor (~> 1.0)
   rspec-rails
   rubyzip (~> 0.9.9)
   sass-rails
