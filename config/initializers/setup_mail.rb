@@ -1,4 +1,5 @@
-if Rails.env.development? && Rails.application.config.mongodb_bin_location == 'd:/mongodb/bin/'
+if Rails.env.development? && (Rails.application.config.mongodb_bin_location == "D:\\Program Files\\MongoDB\\Server\\3.2\\bin\\" ||
+                              Rails.application.config.mongodb_bin_location == "d:\\mongodb\\3.2\\bin\\")
   ActionMailer::Base.delivery_method = :smtp
   # SMTP settings for gmail
   ActionMailer::Base.smtp_settings = {
