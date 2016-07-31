@@ -174,7 +174,6 @@ class Freereg1CsvEntriesController < ApplicationController
     file_line_number = @freereg1_csv_file.records.to_i + 1
     line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
-
     @freereg1_csv_entry.multiple_witnesses.build
   end
 
@@ -182,6 +181,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_file = @error_file.freereg1_csv_file
     @error_file.data_line[:record_type] = @error_file.record_type
     @error_file.data_line.delete(:chapman_code)
+    @error_file.data_line.delete(:place_name)
     @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
     @error_line = @error_file.record_number
     @error_message = @error_file.error_message
