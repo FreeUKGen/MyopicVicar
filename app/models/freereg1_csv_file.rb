@@ -183,21 +183,32 @@ class Freereg1CsvFile
     @message = ""
     new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
     old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
-
+    new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
+    old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
     if Dir.exist?(new_folder_location)
       @message = "Folder with that name already exists for #{new_userid} in the base"
       success = false
     else
       Dir.mkdir(new_folder_location,0774)
     end
-
+    if Dir.exist?(new_change_folder_location)
+      @message = "Folder with that name already exists for #{new_userid} in the change set"
+      success = false
+    else
+      Dir.mkdir(new_change_folder_location,0774)
+    end
     if Dir.exist?(old_folder_location) && success
       Dir.glob(File.join(old_folder_location, '*')).each do |file|
         FileUtils.move file, File.join(new_change_folder_location, File.basename(file))
       end
       FileUtils.remove_dir(old_folder_location, :force => true,:verbose => true)
     end
-
+    if Dir.exist?(old_change_folder_location) && success
+      Dir.glob(File.join(old_change_folder_location, '*')).each do |file|
+        FileUtils.move file, File.join(new_folder_location, File.basename(file))
+      end
+      FileUtils.remove_dir(old_change_folder_location, :force => true,:verbose => true)
+    end
     if success
       userid = UseridDetail.userid(old_userid).first
       userid.update_attribute(:userid,new_userid)
