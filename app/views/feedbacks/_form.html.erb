@@ -1,3 +1,4 @@
+
 <% if @feedback.errors.any? %>
     <div id="error_explanation" style="color:red">
       <h2><%= pluralize(@feedback.errors.count, "error") %> prohibited your feedback from being reported:</h2>
@@ -22,7 +23,7 @@
     <%= f.input :feedback_time, :as => :hidden %>
     <%= f.input :user_id , :as => :hidden %>
     <%= f.input :session_id, :as => :hidden %>
-    <%= f.input :problem_page_url, :as => :hidden %>
+    <%= f.input :problem_page_url,  :as => :hidden %>
     <%= f.input :previous_page_url, :as => :hidden %>
     <%= f.input :feedback_type, :as => :hidden %>
 	

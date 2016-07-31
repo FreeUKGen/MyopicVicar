@@ -1,5 +1,9 @@
 <% breadcrumb :feedback_form%>
-
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
 <% if @feedback.feedback_type == Feedback::FeedbackType::ISSUE %>
 <h1 style="text-align: center">Problem Report</h1>
 <div class="grid">
