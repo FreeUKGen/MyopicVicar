@@ -17,6 +17,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 #require 'rspec/autorun'
+
 require 'record_type'
 
 require 'new_freereg_csv_update_processor'
@@ -46,6 +47,7 @@ RSpec.configure do |config|
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
+
   config.infer_base_class_for_anonymous_controllers = false
 end
 

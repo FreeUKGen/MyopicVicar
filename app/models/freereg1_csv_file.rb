@@ -165,11 +165,12 @@ class Freereg1CsvFile
     def delete_file(file)
       file.save_to_attic
       #first the entries
-      Freereg1CsvEntry.delete_entries_for_a_file(file._id)
       Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
+        Freereg1CsvEntry.delete_entries_for_a_file(f._id)
         f.delete unless f.nil?
       end
     end
+
     def delete_userid_folder(userid)
       folder_location = File.join(Rails.application.config.datafiles,userid)
       FileUtils.rm_rf(folder_location)
@@ -235,7 +236,7 @@ class Freereg1CsvFile
   end
 
   def self.convert_date(date_field)
-    #use a custom date covertion to number of days for comparison purposes only
+    #use a custom date conversion to number of days for comparison purposes only
     #dates provided vary in format
     date_day = 0
     date_month = 0
