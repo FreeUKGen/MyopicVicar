@@ -23,47 +23,4 @@ class FreecenParmsController < ApplicationController
     end
   end
 
-  ######### The rest of the actions are not used yet. I had started doing the
-  ######### parms editing as uploads, but we decided to switch to an
-  ######### online-editing instead, so I did not finish the changes 
-
-#   def create
-#     #check the uploaded file to make sure it is the correct type (csv with
-#     #a header specifying which year and county it is for in third col
-# 
-#     #see if uploaded file is new, or replacing information already in DB
-#     @freecen_parms_precreate = @freecen_parms if @freecen_parms.present?
-# 
-#     #for debug
-#     @params = params
-#     @freecen_parms = FreecenParms.new(params[:freecen_parms])
-#     @freecen_parms_upl = params[:freecen_parms][:freecen_parms_upl]
-#     
-#     @original_filename = @freecen_parms_upl.original_filename
-#     #    @freecen_parms.freecen_parms_upl.original_filename += '_test'
-#     @tempfile = @freecen_parms_upl.tempfile
-#     
-#     @upload_pathname = @freecen_parms.freecen_parms_upl.to_s
-# 
-#     @check_parms_results = FreecenParms.load_parms_csv(@upload_pathname)
-# 
-# 
-#     @freecen_parms.save
-# 
-#     flash[:notice] = 'The upload of the file was successful'
-# #    render 'process'
-#   end #method
-# 
-#   def index
-#     get_user_info_from_userid
-#     @freecen_parms_all = FreecenParms.all
-#   end
-# 
-#   def new
-#     #get @userid
-#     get_user_info_from_userid
-#     @freecen_parms = FreecenParms.new(:userid  => session[:userid])
-#   end
-
-
 end

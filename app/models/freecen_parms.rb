@@ -1,4 +1,4 @@
-class FreecenParms # < CarrierWave::Uploader::Base
+class FreecenParms
   require 'freecen_constants'
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
