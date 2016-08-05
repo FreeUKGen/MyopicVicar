@@ -10,6 +10,7 @@ class FreecenCoverage
     end
     FreecenPiece.each do |piece|
       yy = piece[:year]
+      next if yy.blank?
       cc = piece[:chapman_code]
       cty = ChapmanCode.name_from_code(cc)
       if all_years[yy]['counties'][cty].nil?
@@ -72,20 +73,22 @@ class FreecenCoverage
     end
     FreecenPiece.where(chapman_code: chapman).asc(:year, :piece_number, :suffix, :district_name, :subplaces_sort).each do |piece|
       yy = piece[:year]
+      next if yy.blank?
       all_years[yy]['stats']['num_pieces'] += 1
       piece_rec = piece[:num_individuals]
       piece_idx = all_years[yy]['pieces'].length
       display_piece = "#{piece.piece_number}"
       display_piece += "/#{piece.suffix}" if !piece.suffix.blank?
-      subplaces=''
-      piece.subplaces.each do |sp|
-        subplaces += ', ' if ''!= subplaces && !sp.nil? && sp != ''
-        subplaces += sp if !sp.nil? && sp != ''
-        p "nil subplace! piece id=#{piece._id}" if sp.nil?
-        p "empty subplace! piece id=#{piece._id}" if ''==sp
+      subplaces=[]
+      if piece.subplaces.kind_of?(Array) #in case mangled into a string by form
+        piece.subplaces.each do |sp|
+          subplaces << sp unless sp.nil? || sp['name'].blank?
+          p "nil subplace! piece id=#{piece._id}" if sp.nil? || sp['name'].nil?
+          p "empty subplace! piece id=#{piece._id}" if !sp.nil? && sp['name'].blank?
+        end
       end
       all_years[yy]['pieces'][piece_idx] = {'display_piece'=>display_piece,
-        'country'=>piece.place.country,'place_name'=>piece.place.place_name,'subplace_names'=>subplaces,'status'=>piece.status,'remarks'=>piece.remarks,'parish_number'=>piece.parish_number,'online_time'=>piece.online_time,'yy'=>yy,'district_name'=>piece.district_name,'place_id'=>piece.place._id,'piece_id'=>piece._id}
+        'country'=>piece.place_country,'latitude'=>piece.place_latitude,'longitude'=>piece.place_longitude,'subplaces'=>subplaces,'status'=>piece.status,'remarks'=>piece.remarks,'parish_number'=>piece.parish_number,'online_time'=>piece.online_time,'yy'=>yy,'district_name'=>piece.district_name,'place_id'=>piece.place._id,'piece_id'=>piece._id}
       if piece_rec > 0
         all_years[yy]['stats']['num_rec'] += piece_rec
         all_years[yy]['stats']['num_online'] += 1
@@ -202,5 +205,6 @@ class FreecenCoverage
     # return the computed parameters to be used in the graph
     {'first_time_adjusted'=>first_timestamp, 'last_time_adjusted'=>last_timestamp,'num_x_ticks'=>x_ticks,'x_ticks'=>x_tick_labels,'max_y_adjusted'=>max_y_adjusted, 'y_ticks'=>y_ticks}
   end
+
 
 end

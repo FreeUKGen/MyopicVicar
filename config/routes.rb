@@ -19,8 +19,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
-  resources :freecen_pieces
-
 
   resources :freecen1_fixed_dat_files
 
@@ -116,6 +114,20 @@ MyopicVicar::Application.routes.draw do
   get 'csvfiles/:id/error(.:format)', :to => 'csvfiles#replace', :as => :replace_csvfile
   get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
 
+  resources :freecen_parms
+  get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
+
+  resources :freecen_pieces
+  get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
+  get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
+
+  get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
+  get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
+  get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
+  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :show_freecen_coverage
+
+
+
   resources :countries
 
   get 'counties/display', :to =>'counties#display', :as => :display_counties
@@ -185,10 +197,6 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
   resources :freereg_contents
 
-  get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
-  get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
-  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :show_freecen_coverage
-
   get 'churches/:id/rename', :to => 'churches#rename', :as => :rename_church
   get 'churches/:id/merge(.:format)', :to => 'churches#merge', :as => :merge_church
   get 'churches/:id/relocate(.:format)', :to => 'churches#relocate', :as => :relocate_church
@@ -207,6 +215,7 @@ MyopicVicar::Application.routes.draw do
   get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place
   get 'places/for_search_form(.:format)', :to => 'places#for_search_form', :as => :places_for_search_form
   get 'places/for_freereg_content_form(.:format)', :to => 'places#for_freereg_content_form', :as => :places_for_freereg_content_form
+  get 'places/for_freecen_piece_form(.:format)', :to => 'places#for_freecen_piece_form', :as => :places_for_freecen_piece_form
   resources :places
 
   resources :church_names

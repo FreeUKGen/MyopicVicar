@@ -1,4 +1,5 @@
 class PlaceCache
+  require 'freecen_constants'
   include Mongoid::Document
   attr_accessible :chapman_code, :places_json
 
@@ -20,12 +21,12 @@ class PlaceCache
       places.each do |place|
         if place.data_present
           cen_years_with_data = ""
-          [1841,1851,1861,1871,1881,1891].each do |yy|
+          Freecen::CENSUS_YEARS_ARRAY.each do |yy|
             if !place.cen_data_years.nil? && place.cen_data_years.include?(yy)
               if(""==cen_years_with_data)
                 cen_years_with_data += " #{yy}"
               else
-                cen_years_with_data += ",'#{yy-1800}"
+                cen_years_with_data += ",'#{yy}"
               end
             end
           end

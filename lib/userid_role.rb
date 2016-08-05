@@ -60,7 +60,8 @@ module UseridRole
     "System Documentation" => "../system-documents",
     "Roadmap" => "../system-documents/development-roadmap",
     "Logout" => "/refinery/logout",
-    "Message System" => "/messages"
+    "Message System" => "/messages",
+    "Manage Pieces" => "/freecen_coverage/edit"
   }
   USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Create userid"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
@@ -171,9 +172,14 @@ module UseridRole
         opts.delete("Physical Files")
       end
       if opts.include?('Manage Counties')
-        opts.delete("Manage Counties")
+#        opts.delete("Manage Counties")
+      end
+      if opts.include?('Denominations')
+        opts.delete("Denominations")
       end
     end
+    OPTIONS['system_administrator'] << 'Manage Pieces'
+    OPTIONS['technical'] << 'Manage Pieces'
     self.send(:remove_const, :FILE_MANAGEMENT_OPTIONS)
     FILE_MANAGEMENT_OPTIONS = []
     COUNTY_MANAGEMENT_OPTIONS.reverse_each do |val|

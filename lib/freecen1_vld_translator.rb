@@ -91,8 +91,8 @@ module Freecen
         record.place.data_present = true
         place_save_needed = true
       end
-      if !record.place.cen_data_years.include?(full_year.to_i)
-        record.place.cen_data_years << full_year.to_i
+      if !record.place.cen_data_years.include?(full_year)
+        record.place.cen_data_years << full_year
         place_save_needed = true
       end
       record.place.save! if place_save_needed

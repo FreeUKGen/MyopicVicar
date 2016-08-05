@@ -155,6 +155,7 @@ class ApplicationController < ActionController::Base
     session.delete(:character)
     session.delete(:edit_userid)
     session.delete(:who)
+    session.delete(:edit_freecen_pieces)
   end
 
   def clean_session_for_county
@@ -195,7 +196,7 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_userid)
     session.delete(:record)
     session.delete(:current_page)
-
+    session.delete(:edit_freecen_pieces)
   end
 
   def clean_session_for_syndicate
@@ -239,6 +240,7 @@ class ApplicationController < ActionController::Base
     session.delete(:record)
     session.delete(:select_place)
     session.delete(:current_page)
+    session.delete(:edit_freecen_pieces)
   end
 
   def go_back(type,record)

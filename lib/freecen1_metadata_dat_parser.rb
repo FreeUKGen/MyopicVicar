@@ -8,6 +8,7 @@ module Freecen
     end
   
     def persist_to_database(filename, file_hash, entry_hash_array)
+      dat_entry_num = 1
       file = Freecen1FixedDatFile.new(file_hash)
       file.save!
 
@@ -18,13 +19,17 @@ module Freecen
           # this is a new piece
           #
           # save the old one if needed
-          entry.save! if entry 
+          
+          entry.save! if entry
           
           # now create a new one
           entry = Freecen1FixedDatEntry.new
+          entry.entry_number = dat_entry_num
+          dat_entry_num += 1
           entry.freecen1_fixed_dat_file = file
           entry.district_name = hash[:distname]
           entry.subplaces = []
+          entry.lds_film_number = hash[:a_lds_film_num]
           if is_scotland? file
             entry.piece_number = hash[:a_sct_piecenum].to_i
             entry.suffix = hash[:a_sct_suffix]
@@ -55,6 +60,9 @@ module Freecen
             # For example ABD1861 has an a record followed by several b records
             # that are each for a different file, each of which should be
             # treated as if it has that same a record before it.
+            freecen_filename = hash[:b_filename]
+            freecen_filename.strip! unless freecen_filename.nil?
+            puts "*** sct entry missing freecen_filename #{entry.piece_number}" if freecen_filename.blank?
             suffix = hash[:b_sct_suffix]
             suffix.strip! unless suffix.nil?
             suffix = nil if suffix.blank?
@@ -65,21 +73,25 @@ module Freecen
               paroff = 1
             end
             parish_number = (parish_number.to_i + paroff*10)
-
+            entry.freecen_filename = freecen_filename if entry.freecen_filename.blank? && !freecen_filename.blank?
             if parish_number != a_entry.parish_number
               # a different split file, save the entry and create a new one
               entry.save! if entry 
               entry = Freecen1FixedDatEntry.new
+              entry.entry_number = dat_entry_num
+              dat_entry_num += 1
               entry.piece_number = a_entry.piece_number
               entry.parish_number = parish_number
               entry.suffix = suffix
               entry.freecen1_fixed_dat_file = file
               entry.district_name = a_entry.district_name
+              entry.lds_film_number = a_entry.lds_film_number
+              entry.freecen_filename = freecen_filename
               entry.subplaces = []
             end
           end
           # sub place for an existing piece
-          entry.subplaces << hash[:distname]
+          entry.subplaces << {'name'=>hash[:distname],'lat'=>0.0,'long'=>0.0}
         end
           
       end
@@ -138,7 +150,7 @@ module Freecen
       :a_sct_paroff_cond_a => [93,1],
       :a_sct_paroff_cond_b => [96,1],
       :a_sct_paroff_a_and_b => [95,1],
-      :lds_film_num => [28,8],
+      :a_lds_film_num => [28,8],
       
       :b_suffix => [60,3],
       :b_sct_suffix => [60,3],
@@ -146,7 +158,7 @@ module Freecen
       :b_sct_paroff_cond_a => [29,1],
       :b_sct_paroff_cond_b => [32,1],
       :b_sct_paroff_a_and_b => [31,1],
-      :b_file_name => [28,8]
+      :b_filename => [28,8]
      
     }
     

@@ -1,6 +1,7 @@
 class FreecenCoverageController < ApplicationController
   require 'chapman_code'
   require 'freecen_piece'
+  require 'freecen_constants'
   skip_before_filter :require_login
 
   def index
@@ -13,9 +14,21 @@ class FreecenCoverageController < ApplicationController
     @all_pieces = Rails.cache.fetch("freecen_coverage_index", :expires_in => 5.minutes) do
       FreecenCoverage.get_index_stats
     end
+
+    @roles=[]
+    get_user_info_from_userid unless current_refinery_user.nil?
+    @manage_pieces = (@manager || (@roles.present? &&@roles.include?('Manage Pieces'))) ? true : false
+    @editing = (@manage_pieces && session[:edit_freecen_pieces]=='edit')
   end
 
   def show
+    @roles=[]
+    get_user_info_from_userid unless current_refinery_user.nil? #for parms
+    @manage_pieces = (@manager || (@roles.present? &&@roles.include?('Manage Pieces'))) ? true : false
+    session[:edit_freecen_pieces]='edit' if @manage_pieces && (params[:act]=='edit' || params[:chapman_code]=='edit')
+    session.delete(:edit_freecen_pieces) if @manage_pieces && session[:edit_freecen_pieces].present? && (params[:act]=='edit_done' || params[:chapman_code]=='edit_done')
+    @editing = (@manage_pieces && session[:edit_freecen_pieces]=='edit')
+
     @chapman_code = params[:chapman_code]
     @county = ChapmanCode.name_from_code(@chapman_code) if !@chapman_code.nil?
     if @county.nil? 
@@ -33,7 +46,7 @@ class FreecenCoverageController < ApplicationController
     
     redirect_to freecen_coverage_path if 'ind'!=@graph_type&&'pct'!=@graph_type
     redirect_to freecen_coverage_path if @county.nil?
-    unless ['1841','1851','1861','1871','1881','1891','all'].include? @year
+    unless Freecen::CENSUS_YEARS_ARRAY.include?(@year) || 'all' == @year
       redirect_to freecen_coverage_path
     end
     # @graph_data =FreecenCoverage.get_county_year_graph_data(@chapman_code,@year)

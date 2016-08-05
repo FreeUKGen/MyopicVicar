@@ -1,0 +1,23 @@
+<section>
+This is file app/views/freecen_parms/new.html.erb<br>
+
+<p style="text-align: center"><b>Upload a new Piece List (ctyPARMS.csv) to FreeCen</b></p>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+<ul>
+  <% @freecen_parms.errors.full_messages.each do |msg| %>
+    <li><%= msg %></li>
+  <% end %>
+</ul>
+<div class="grid">
+  <%= simple_form_for @freecen_parms, url:'/freecen_parms', html: { multipart: true ,:class => "grid"} do |f| %>
+    <%= f.input :freecen_parms_upl, :label => "Please select the ctyPARMS.CSV file to upload", :hint => "Locate the file on your device." %><br>
+    <%= f.button :submit, 'Upload'   %>
+  <% end %>
+</div>
+
+<%= @freecen_parms.inspect %>
+</section>

@@ -51,5 +51,6 @@ module Freecen
     }
   end
   
+  CENSUS_YEARS_ARRAY = ['1841','1851','1861','1871','1881','1891']
   
 end

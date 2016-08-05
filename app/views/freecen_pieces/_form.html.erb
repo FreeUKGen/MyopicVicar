@@ -1,18 +1,130 @@
-<%= simple_form_for(@freecen_piece) do |f| %>
-  <%= f.error_notification %>
-
+<%= semantic_form_for(@freecen_piece) do |f| %>
   <div class="form-inputs">
-    <%= f.input :chapman_code %>
-    <%= f.input :piece_number %>
-    <%= f.input :district_name %>
-    <%= f.input :subplaces %>
-    <%= f.input :parish_number %>
-    <%= f.input :suffix %>
-    <%= f.association :freecen1_fixed_dat_entry %>
-    <%= f.association :place %>
-  </div>
 
+
+
+<%= f.inputs do %>
+<% if @piece_params_errors.present? && @piece_params_errors.any? %>
+  <% @piece_params_errors.each do |ee| %>
+  <span style="color:red;"><%= ee %></span>
+  <% end %><br>
+<% end %>
+
+Year: <%= @freecen_piece[:year]%><br>
+<input id="freecen_piece_year" name="freecen_piece[year]" type="hidden" value="<%= @freecen_piece[:year]%>">
+Chapman Code: <%= @freecen_piece[:chapman_code]%><br>
+<input id="freecen_piece_chapman_code" name="freecen_piece[chapman_code]" type="hidden" value="<%= @freecen_piece[:chapman_code]%>">
+Piece Number: <input id="freecen_piece_piece_number" name="freecen_piece[piece_number]" value="<%= @freecen_piece[:piece_number].to_i %>"> ex: for piece '168/b' enter '168'<br>
+Piece Number Suffix: <input id="freecen_piece_suffix" name="freecen_piece[suffix]" value="<%= @freecen_piece[:suffix].blank? ? '' : @freecen_piece[:suffix] %>"> ex: for piece '168/b' enter 'b' (leave blank if no suffix)<br>
+Par number: <input id="freecen_piece_parish_number" name="freecen_piece[parish_number]" value="<%= @freecen_piece[:parish_number].blank? ? '' : @freecen_piece[:parish_number] %>"> (currently only used for Scotland, leave blank for ENG/WLS)<br>
+District name (Place for search): <input id="freecen_piece_district_name" name="freecen_piece[district_name]" value="<%= @freecen_piece[:district_name].blank? ? '' : @freecen_piece[:district_name] %>" onchange="update_place();" required>
+<div id="place_message_div" name="place_message_div" style="margin-left:2em;inline:block;">&nbsp;</div>
+LDS Film Number: <input id="freecen_piece_film_number" name="freecen_piece[film_number]" value="<%= @freecen_piece[:film_number].blank? ? '' : @freecen_piece[:film_number] %>"><br>
+FreeCen1 Filename: <input id="freecen_piece_freecen1_filename" name="freecen_piece[freecen1_filename]" value="<%= @freecen_piece[:freecen1_filename].blank? ? '' : @freecen_piece[:freecen1_filename] %>"><br>
+Remarks (public): <input id="freecen_piece_remarks" name="freecen_piece[remarks]" value="<%= @freecen_piece[:remarks].blank? ? '' : @freecen_piece[:remarks] %>"><br>
+Remarks (coords-only): <input id="freecen_piece_remarks_coord" name="freecen_piece[remarks_coord]" value="<%= @freecen_piece[:remarks_coord].blank? ? '' : @freecen_piece[:remarks_coord] %>"><br>
+<% if @freecen_piece[:num_individuals].to_i>0 %>
+<div style="color:red;">Warning: Records are already loaded for this piece. Edits could impact existing records.</div>
+<% end %>
+Number of records already loaded for this piece: <%=@freecen_piece[:num_individuals]%>
+<br>
+Online time: <%=@freecen_piece[:online_time]%><br>
+Status: <%@freecen_piece[:status]%><br>
+<div id="freecen_pieces_form_subplaces_div" style="border:thin;">
+<h3>Sub-places:</h3>
+  <input id="freecen_piece_subplaces_max_id" name="freecen_piece[subplaces_max_id]" type="hidden" value="<%= @freecen_piece[:subplaces].blank? ? -1 : (@freecen_piece[:subplaces].length-1) %>">
+<% @freecen_piece[:subplaces].each_with_index do |sp,sp_idx| %>
+ <div id="freecen_piece_sp_<%=sp_idx%>_div">
+  <% next if sp.blank? %>
+  <% sp_name = sp['name'] %>
+  <% sp_lat = sp['lat'] %>
+  <% sp_long = sp['long'] %>
+  Name: <input id="freecen_piece_subplaces_<%=sp_idx%>_name]" name="freecen_piece[subplaces_<%=sp_idx%>_name]" type="text" value="<%=sp_name%>">
+  Lat: <input id="freecen_piece_subplaces_<%=sp_idx%>_lat]" name="freecen_piece[subplaces_<%=sp_idx%>_lat]" type="text" value="<%=sp_lat%>">
+  Long: <input id="freecen_piece_subplaces_<%=sp_idx%>_long]" name="freecen_piece[subplaces_<%=sp_idx%>_long]" type="text" value="<%=sp_long%>">
+  <a href="#" onclick="remove_subplace_from_form('freecen_piece_sp_<%=sp_idx%>_div');return false;">Remove this subplace</a>
+ </div>
+<% end %>
+</div>
+<br>
+<a href="#" onclick="add_subplace_to_form();return false;">Add a new subplace</a><br>
+</div><%# form inputs div %>
   <div class="form-actions">
-    <%= f.button :submit %>
+
+  <%= f.action :submit, :as => :button, :label => 'Update',:button_html => { :class => "btn" , "data-style" => "contract"},:wrapper_html => { :class => "grid__item  one-quarter text--center " } %>
   </div>
 <% end %>
+<% end %>
+
+
+<br>
+<script>
+var first_place_check=true, freecen_piece_form_subplace_max_id=<%= @freecen_piece[:subplaces].present? ? (@freecen_piece[:subplaces].length-1) : -1 %>;
+function add_subplace_to_form(){
+  var sp_div=document.getElementById('freecen_pieces_form_subplaces_div'),sp_max_id_field=document.getElementById('freecen_piece_subplaces_max_id'), new_div=null,new_html='',sp_id=null;
+  if(sp_div){
+    ++freecen_piece_form_subplace_max_id;
+    sp_id = freecen_piece_form_subplace_max_id;
+    new_div = document.createElement('div');
+    new_html='Name: <input id="freecen_piece_subplaces_'+sp_id+'_name]" name="freecen_piece[subplaces_'+sp_id+'_name]" type="text" value=""> ';
+    new_html+='Lat: <input id="freecen_piece_subplaces_'+sp_id+'_lat]" name="freecen_piece[subplaces_'+sp_id+'_lat]" type="text" value="0.0"> ';
+    new_html+='Long: <input id="freecen_piece_subplaces_'+sp_id+'_long]" name="freecen_piece[subplaces_'+sp_id+'_long]" type="text" value="0.0"> ';
+    new_html+='<a href="#" onclick="remove_subplace_from_form(\'freecen_piece_sp_'+sp_id+'_div\');return false;">Remove this subplace</a> ';
+    new_div.innerHTML = new_html;
+    new_div.id = 'freecen_piece_sp_'+sp_id+'_div';
+    sp_div.appendChild(new_div);
+    if(sp_max_id_field)
+      sp_max_id_field.value = ''+freecen_piece_form_subplace_max_id;
+  }
+}
+function remove_subplace_from_form(stDivNode){
+  var e=document.getElementById('freecen_pieces_form_subplaces_div'),sp=document.getElementById(stDivNode);
+  if(e && sp){
+    e.removeChild(sp);
+    sp=null;
+  }
+}
+
+function update_place(){
+  var dist_field=document.getElementById('freecen_piece_district_name'), data_obj={}, e=null;
+  if(dist_field){
+    if(dist_field.value!=''){
+      data_obj={freecen_piece : {chapman_code: '<%=@freecen_piece[:chapman_code]%>', place_name: dist_field.value}};
+      $.ajax({url: '/places/for_freecen_piece_form',
+              success: place_update_callback,
+              error: place_update_error_callback,
+              cache:false,
+              type:'GET',
+              data: data_obj,
+              processData:true});
+    }
+    else if(!first_place_check){
+      e=document.getElementById('place_message_div');
+      if(e){
+        e.innerHTML='<span style="color:red;">District (place) name is required.</span>';
+      }
+    }
+  }
+  first_place_check = false;
+}
+
+
+function place_update_callback(result){
+  var e=document.getElementById('place_message_div');
+  if(e){
+    if(result && result.place_id){
+      e.innerHTML='Existing Place found. <a href="/places/'+result.place_id+'/edit">Click to edit Place</a> (affects all <%=@freecen_piece[:chapman_code]%> pieces linked to this place name)';
+    }
+    else{
+      e.innerHTML='<span style="color:red;">Place name not found. A new Place will be created (verify capitalization and spelling)</span>';
+    }
+  }
+}
+function place_update_error_callback(result){
+  var e=document.getElementById('place_message_div');
+  if(e){
+    e.innerHTML='<span style="color:red;">Could not verify place - notify administrator if error continues</span>';
+  }
+}
+$('document').ready(update_place);
+</script>

@@ -13,7 +13,7 @@ class County
   field :files, type: String
   field :total_records, type: String
   field :baptism_records, type: String
-  field :burail_records, type: String
+  field :burial_records, type: String
   field :marriage_records, type: String
 
   before_save :add_lower_case_and_change_userid_fields

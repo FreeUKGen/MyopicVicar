@@ -1,10 +1,21 @@
 <h1 class="title text--center">Database Coverage</h1>
 
+<% if @manage_pieces %>
+  <% if @editing %>
+    <% url = "/freecen_coverage/#{@chapman_code}/edit_done" %>
+    <a href="<%=url%>">Done editing</a> &nbsp;&nbsp;
+  <% else %>
+    <% url = "/freecen_coverage/#{@chapman_code}/edit" %>
+    <a href="<%=url%>">Edit counties and pieces</a>
+  <% end %>
+  <br>&nbsp;<br>
+<% end %>
+
 <section class="island  " >
 <p style="margin-top:-40px;">* Only a few counties are loaded for testing (those with darker text). Visit the <a href="http://www.freecen.org.uk" target="_blank">old site</a> for the rest.</p>
 
-<% ['1841','1851','1861','1871','1881','1891'].each do |yy| %>
-  <% unless @all_pieces.nil? || @all_pieces[yy].nil? %>
+<% Freecen::CENSUS_YEARS_ARRAY.each do |yy| %>
+  <% unless !@editing && (@all_pieces.nil? || @all_pieces[yy].nil?) %>
     <% yyhash = @all_pieces[yy] %>
     <a name="<%= yy %>"></a>
     <center><h3><%= yy %></h3></center>
@@ -19,7 +30,14 @@
 	 <col class="t10">
        </colgroup>
        <thead>
-         <th>County &nbsp;&nbsp; (Chapman Code)</th>
+         <th>County &nbsp;&nbsp; (Chapman Code)
+<% if @manage_pieces %>
+  <% if @editing %>
+    <% url = "/freecen_pieces/#{yy}/select_new_county" %>
+    <br><a href="<%=url%>">Add new county for <%=yy%></a>
+  <% end %>
+<% end %>
+</th>
          <th>Number of Individuals</th>
          <th>% Online</th>
          <th>&nbsp;</th>
