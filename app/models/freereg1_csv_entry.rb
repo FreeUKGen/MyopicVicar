@@ -119,6 +119,20 @@ class Freereg1CsvEntry
       p "#{entries.length}" unless entries.nil?
       entries.destroy_all
     end
+    def update_entries_userid(userid,batch)
+      batch.freereg1_csv_entries.each do |entry|
+        line = entry.line_id
+        if line.present?
+          line_parts = line.split('.')
+          line_parts[0] = userid
+          line = line_parts.join('.')
+        else
+          line = (userid + "." + self.file_name + "." + entry.file_line_number.to_s).to_s
+        end
+        entry.update_attribute(:line_id,line)
+      end
+      true
+    end
   end
 
   def extract_year(date_string)

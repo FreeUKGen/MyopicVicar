@@ -72,20 +72,20 @@ class NewFreeregCsvUpdateProcessor
       @csvfile = CsvFile.new(file)
       success, @records_processed,@data_errors = @csvfile.a_single_csv_file_process(@project)
       if success
-        p "processed file"
+        #p "processed file"
         @project.total_records = @project.total_records + @records_processed unless @records_processed.nil?
         @project.total_data_errors = @project.total_data_errors + data_errors unless @data_errors
         @project.total_files =  @project.total_files  + 1
       else
-        p "failed to process file"
+        #p "failed to process file"
         @csvfile.communicate_failure_to_member(@project,@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
     end
-    p "manager communication"
+    # p "manager communication"
     @project.communicate_to_managers(@csvfile) unless @project.type_of_project == "individual"
     at_exit do
-      p "goodbye"
+      # p "goodbye"
     end
   end
 
@@ -160,7 +160,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
   end
 
   def get_the_files_to_be_processed(project)
-    p "Getting files"
+  #  p "Getting files"
     case project.type_of_project
     when "waiting"
       files = self.get_the_waiting_files_to_be_processed(project)     
@@ -180,22 +180,22 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
 
   # GetFile is a lib task
   def get_the_individual_file_to_be_processed(project)
-    p "individual file selection"
+    #p "individual file selection"
     files = GetFiles.get_all_of_the_filenames(project.freereg_files_directory,project.file_range)
     return files
   end
 
   def get_the_range_files_to_be_processed(project)
-    p "range file selection"
+    #p "range file selection"
     files = GetFiles.get_all_of_the_filenames(project.freereg_files_directory,project.file_range)
     return files
   end
   def get_the_special_selection_1_files_to_be_processed(project)
-    p "special selection 1 files"
+    #p "special selection 1 files"
     time_start = Time.utc(2016,"apr",29,01,23,0)
     time_end = Time.utc(2016,"may",02,0,30,0)
-    p time_start
-    p time_end
+    #p time_start
+    #p time_end
     time_start = time_start.to_f
     time_end = time_end.to_f
     files = Array.new
@@ -212,15 +212,15 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
           end
         end
     end
-    p "#{files.length} met the selection criteria with #{total_entries} entries"
+    #p "#{files.length} met the selection criteria with #{total_entries} entries"
     return files
   end
   def get_the_special_selection_2_files_to_be_processed(project)
-    p "special selection 2 files"
+    #p "special selection 2 files"
     time_start = Time.utc(2016,"may",02,0,19,1)
     time_end = Time.utc(2016,"may",04,0,30,0,)
-    p time_start
-    p time_end
+    #p time_start
+    #p time_end
     time_start = time_start.to_f
     time_end = time_end.to_f
     files = Array.new
@@ -237,13 +237,13 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
         end
       end
     end
-    p "#{files.length} met the selection criteria with #{total_entries} entries"
+    #p "#{files.length} met the selection criteria with #{total_entries} entries"
     return files
   end
 
 
   def get_the_waiting_files_to_be_processed(project)
-    p "waiting file selection"
+    #p "waiting file selection"
     physical_waiting_files = PhysicalFile.waiting.all
     files = Array.new
     physical_waiting_files.each do |file|
@@ -303,37 +303,37 @@ class CsvFile < CsvFiles
   end
 
   def a_single_csv_file_process(project)
-    p "single csv file"
+    #p "single csv file"
     success = true
     project.member_message_file = self.define_member_message_file
     @file_start = Time.new
     project.write_log_file("******************************************************************* <br>")
     project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
     success, message = self.ensure_processable?(project) unless project.force_rebuild
-    p "finished file checking #{message}. <br>"
+    #p "finished file checking #{message}. <br>"
     return false, message unless success
     success, message  = self.slurp_the_csv_file(project)
-    p "finished slurp #{success} #{message}"
+    #p "finished slurp #{success} #{message}"
     return false,message unless success
     @csv_records = CsvRecords.new(@array_of_data_lines)
     success, message = @csv_records.separate_into_header_and_data_lines(self,project)
-    p "got header and data lines"
+    #p "got header and data lines"
     return false,"lines not extracted #{message}. <br>" unless success
     success, message = @csv_records.get_the_file_information_from_the_headers(self,project)
-    p "finished header"
+    #p "finished header"
     return success,"header errors" unless success
     success,@records_processed = @csv_records.extract_the_data(self,project)
-    p "finished data"
+    #p "finished data"
     return success,"Data not extracted #{@records_processed}. <br>" unless success
     success,@records_processed,@data_errors = self.process_the_data(project) if success
     return success,"Data not processed #{@records_processed}. <br>" unless success
     success, message = self.clean_up_supporting_information(project)
-    p "finished clean up"
+    #p "finished clean up"
     time = ((Time.new.to_i  - @file_start.to_i)*1000)/@total_records unless @total_records == 0
     project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)   
     return success,"clean up failed #{message}. <br>" unless success
     success, message = self.communicate_file_processing_results(project)
-    p "finished com"
+    #p "finished com"
     return success,"communication failed #{message}. <br>" unless success
     return true,@total_records ,@total_data_errors 
   end
@@ -469,11 +469,11 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)     
-      File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file)
+      File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
   end
 
   def clean_up_physical_files_after_failure(message)
-      p "clean up after failure"
+      #p "clean up after failure"
       batch = PhysicalFile.userid(@userid).file_name(@file_name).first
       return true if batch.blank? || message.blank? 
       PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("file is older than one on system. ")
@@ -493,7 +493,7 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_unused_batches(project)  
-    p "cleaning up batches and records"
+    #p "cleaning up batches and records"
     counter = 0
     files = Array.new
     @all_existing_records.each do |record,value|
@@ -521,7 +521,7 @@ class CsvFile < CsvFiles
   end
 
   def communicate_failure_to_member(project,message)
-      p "communicating failure"
+      #p "communicating failure"
       file = project.member_message_file
       file.close
       UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
@@ -530,7 +530,7 @@ class CsvFile < CsvFiles
   end
 
   def communicate_file_processing_results(project)
-    p "communicating success"
+    #p "communicating success"
     file = project.member_message_file
     file.close
     UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
@@ -663,7 +663,7 @@ class CsvFile < CsvFiles
   end
 
   def get_batch_locations_and_records_for_existing_file
-    p "getting existing locations"
+    #p "getting existing locations"
     locations = Hash.new
     all_records_hash = Hash.new
     freereg1_csv_files = Freereg1CsvFile.where(:file_name => @header[:file_name], :userid => @header[:userid]).all
@@ -705,7 +705,7 @@ class CsvFile < CsvFiles
   end
 
   def physical_file_clean_up_on_success(project)
-    p "physical file clean up on success"
+    #p "physical file clean up on success"
     batch = PhysicalFile.userid(@header[:userid]).file_name( @header[:file_name] ).first
     if batch.nil?
       batch = PhysicalFile.new(:userid => @header[:userid], :file_name => @header[:file_name],:base => true, :base_uploaded_date => Time.new)
@@ -728,7 +728,7 @@ class CsvFile < CsvFiles
   end
 
   def process_the_data(project)
-    p "Processing the data records"
+    #p "Processing the data records"
     @unique_existing_locations, @all_existing_records = self.get_batch_locations_and_records_for_existing_file
     message = "There are #{@unique_locations.length} locations and #{@all_existing_records.length} existing records corresponding to the new file. <p>"
     project.write_messages_to_all(message,false) if @unique_locations.length >= 2 || @all_existing_records.length >= 1
@@ -745,7 +745,7 @@ class CsvFile < CsvFiles
       project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
       update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
     end
-    p "after process"
+    #p "after process"
     counter = self.clean_up_unused_batches(project)
     message = "There were #{counter} entries in the original file that did not exist in the new one and hence were deleted. <br>"
     project.write_messages_to_all(message,false) unless counter == 0
@@ -760,7 +760,7 @@ class CsvFile < CsvFiles
   end
 
   def process_the_records_for_this_batch_into_the_database(project,key,freereg1_csv_file)
-    p "processing batch records"
+    #p "processing batch records"
     not_changed = 0
     batch_errors = 0
     records = 0
@@ -788,12 +788,12 @@ class CsvFile < CsvFiles
         end #end success  no change
       end #end record
     end
-    p "this batch processed"
+    #p "this batch processed"
     return records, batch_errors, not_changed
   end
 
   def setup_batch_for_processing(project,thiskey,thisvalue)
-    p "setting up the batch"
+    #p "setting up the batch"
     batch_header = @header
     batch_header[:county] = thisvalue[:chapman_code]
     batch_header[:chapman_code] = thisvalue[:chapman_code]
@@ -805,13 +805,13 @@ class CsvFile < CsvFiles
     freereg1_csv_file = Freereg1CsvFile.where(:userid => @header[:userid],:file_name => @header[:file_name],:county => thisvalue[:chapman_code], :place => thisvalue[:place_name], :church_name => thisvalue[:church_name], :register_type => thisvalue[:register_type], :record_type =>@header[:record_type]).first
     #:place => value[:place_name], :church_name => value[:church_name], :register_type => value[:register_type], :record_type =>@header[:record_type]
     if freereg1_csv_file.nil?
-      p "creating new"
+      #p "creating new"
       freereg1_csv_file = Freereg1CsvFile.new(batch_header)
       freereg1_csv_file.update_register
       message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
       freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def])
-      p "using current"
+      #p "using current"
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
       #remove batch errors for this location
       freereg1_csv_file.error = 0
@@ -824,7 +824,7 @@ class CsvFile < CsvFiles
   end
 
   def slurp_the_csv_file(project)
-    p "starting the slurp"
+    #p "starting the slurp"
     #read entire .csv as binary text (no encoding/conversion)
     begin
       success = true
@@ -863,7 +863,7 @@ class CsvFile < CsvFiles
   end
 
   def update_the_file_information(project,freereg1_csv_file,records,batch_errors)
-    p "update_the_file_information"
+    #p "update_the_file_information"
     @total_records = @total_records + records
     @total_data_errors = @total_data_errors + batch_errors
     freereg1_csv_file.calculate_distribution
@@ -886,7 +886,7 @@ class CsvRecords <  CsvFile
   end
 
   def separate_into_header_and_data_lines(csvfile,project)
-    p "Getting header and data lines"
+    #p "Getting header and data lines"
     n = 0
     @array_of_lines.each do |line|
       n = n + 1
@@ -1260,7 +1260,7 @@ class CsvRecords <  CsvFile
   end
 
   def get_the_file_information_from_the_headers(csvfile,project)
-    p "Extracting header information"
+    #p "Extracting header information"
     success1 = success2 = success3 = success4 = true
     success = false
     csvfile.header_error << "There are no valid header lines. <br>" if @header_lines.length == 0

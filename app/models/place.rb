@@ -57,7 +57,7 @@ class Place
 
   validate :grid_reference_or_lat_lon_present_and_valid
 
-  before_save :add_location_if_not_present
+  before_save :add_location_if_not_present, :add_country
 
   after_create :update_places_cache
 
@@ -123,6 +123,10 @@ class Place
 
   def ucf_record_ids
     self.ucf_list.values.inject([]) { |accum, value| accum + value }
+  end
+
+  def add_country
+    self.country = self.get_correct_place_country
   end
 
   def add_location_if_not_present

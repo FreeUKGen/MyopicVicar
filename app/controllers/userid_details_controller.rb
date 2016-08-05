@@ -353,9 +353,7 @@ class UseridDetailsController < ApplicationController
     success = Array.new
     success[0] = true
     case
-    when params[:commit] == "Rename"
-      success[0] = false if UseridDetail.where(:userid => params[:userid_detail][:userid]).exists?
-      success = Freereg1CsvFile.change_userid(params[:id], @userid.userid, params[:userid_detail][:userid]) if success[0]
+
     when params[:commit] == "Disable"
       params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
       params[:userid_detail][:active]  = false

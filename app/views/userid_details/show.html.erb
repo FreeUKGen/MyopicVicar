@@ -9,10 +9,7 @@
       
       <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are sending a password reset email to the user. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %> <%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  weight--light btn--small "  %>
       <% end %>
-      <% if @user.person_role == 'system_administrator'%>
-      <%= link_to ' Change Userid', rename_userid_details_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  weight--light btn--small"  %>
       
-      <% end %>
       <% end %>
     </div>
     <div style="clear:both;"> </div>
