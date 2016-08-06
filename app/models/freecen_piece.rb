@@ -1,5 +1,6 @@
 class FreecenPiece
   include Mongoid::Document
+  include Mongoid::Timestamps::Short
   field :chapman_code, type: String
   field :piece_number, type: Integer
   field :district_name, type: String #same as place.name, copied for performance
