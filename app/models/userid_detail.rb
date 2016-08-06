@@ -112,11 +112,11 @@ class UseridDetail
   def self.get_userids_for_selection(syndicate)
     users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
     users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids = Array.new
+    userids = Array.new
     users.each do |user|
-      @userids << user.userid
+      userids << user.userid
     end
-    return @userids
+    return userids
   end
 
   def add_fields(type,syndicate)
