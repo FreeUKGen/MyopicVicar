@@ -21,7 +21,6 @@ class AtticFile
   field :userid, type: String
   belongs_to :userid_detail, index: true
 
-
   class << self
     def userid(user)
       where(:userid_detail_id => user)
