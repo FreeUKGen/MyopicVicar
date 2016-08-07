@@ -277,6 +277,7 @@ class Freereg1CsvFile
 
 
   def self.file_update_location(file,param,session)
+    #rspeced
     if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param.blank? || param[:register_type].blank?
       message = ""
       message = message + ": country" if session[:selectcountry].blank?
@@ -618,6 +619,7 @@ def force_unlock
     batch.update_attributes(:locked_by_transcriber => false)
   end
 end
+
 
 def lock(type)
   batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all

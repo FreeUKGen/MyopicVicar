@@ -55,7 +55,6 @@ def clean_freereg1_csv_file_document(file)
   Freereg1CsvFile.file_name(file[:file]).userid(file[:user]).delete
 end
 def clean_database
-  p 'clean'
   PhysicalFile.delete_all
   AtticFile.delete_all
   SearchRecord.delete_all
@@ -126,22 +125,34 @@ end
 
 
 def process_test_file(file)
-
   userid = create_stub_userid(file)
   place = create_stub_place(file)
   church = create_stub_church(file)
   NewFreeregCsvUpdateProcessor.activate_project('create_search_records','individual','force_rebuild',file[:filename])
-  Freereg1CsvFile.last
+  freereg1_csv_file = Freereg1CsvFile.userid(file[:user]).file_name(file[:file]).first
 end
 
 
 def setup_userids
-
   Dir.glob(File.join(Rails.root, 'test_data', 'freereg1_csvs', '*')).
     map{|fn| File.basename(fn)}.
     each{|uid| UseridDetail.create!(:userid => uid, :password => uid, :encrypted_password => uid, :email_address => "#{uid}@example.com", :person_surname => uid, :person_forename => uid, :syndicate => 'test') unless UseridDetail.where(:userid => uid).first}
-
 end
+
+def set_up_new_location(file)
+  register = file.register
+  church = register.church
+  place = church.place
+  sess = {}
+  par ={}
+  sess[:selectcountry] = file.country
+  sess[:selectcounty] = file.county
+  sess[:selectplace] = place.id
+  sess[:selectchurch] = church.id
+  par[:register_type] = file.register_type
+  return par,sess
+end
+
 def write_new_copy(user,file_name)
   #this is used to replace the removed file
   userid = UseridDetail.userid(user).first

@@ -142,6 +142,30 @@ describe Freereg1CsvFile, '.delete_userid_folder' do
   end
 end
 
+describe Freereg1CsvFile, '.file_update_location' do
+  #create a file
+  file1 = process_test_file(FREEREG1_CSV_FILES[0])
+  file2 = process_test_file(FREEREG1_CSV_FILES[3])
+  par,sess = set_up_new_location(file2)
+  result = Freereg1CsvFile.file_update_location(file1,par,sess)
+  parnew,sessnew = set_up_new_location(file2)
+  it "should have changed the country " do
+    expect(sess[:selectcountry]).to eq (sessnew[:selectcountry])
+  end
+  it "should have changed the county " do
+    expect(sess[:selectcounty]).to eq (sessnew[:selectcounty])
+  end
+  it "should have changed the place " do
+    expect(sess[:selectplace]).to eq (sessnew[:selectplace])
+  end
+  it "should have changed the church " do
+    expect(sess[:selectchurch]).to eq (sessnew[:selectchurch])
+  end
+  it "should have changed the register " do
+    expect(par[:register_type]).to eq (parnew[:register_type])
+  end
+end
+
 
 describe Freereg1CsvFile, '#add_lower_case_userid_to_file' do
   Freereg1CsvFile.userid("RspecUserid").first.delete if Freereg1CsvFile.userid("RspecUserid").exists?
