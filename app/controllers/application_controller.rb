@@ -38,8 +38,6 @@ class ApplicationController < ActionController::Base
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     @@userid = current_authentication_devise_user.userid_detail_id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
-    #logger.warn("APP: current_refinery_user #{current_refinery_user}")
-    #logger.warn("APP: current_refinery_user.userid_detail #{current_refinery_user.userid_detail.id}") unless current_refinery_user.nil? || current_refinery_user.userid_detail.nil?
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
@@ -66,44 +64,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def get_userid_from_current_authentication_devise_user
-    if session[:userid_detail_id].present?
-      @user = UseridDetail.id(session[:userid_detail_id]).first
-      logger.warn "FREEREG::USER user #{@user.userid}"
-    else
-      logger.warn "FREEREG::USER No session "
-      if @@userid.blank?
-        logger.warn "FREEREG::USER No session and no @@userid"
-        flash[:notice] = 'You are not logged into the system'
-        redirect_to refinery.logout_path
-        return
-      else
-        @user = UseridDetail.find(@@userid)
-        logger.warn "FREEREG::USER user #{@user.userid}"
-      end
-    end
-    @user_id = @user._id
-    @userid = @user.userid
+  def get_user_info_from_userid
+    @userid = session[:userid]
+    @user = UseridDetail.userid(@userid).first
+    @user_id = @user.id
     @first_name = @user.person_forename
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
-    session[:userid] = @userid
-    session[:user_id] = @user_id
-    session[:first_name] = @first_name
-    session[:manager] = manager?(@user)
-    session[:role] = @user.person_role
-    logger.warn "FREEREG::USER  manager #{@manager}"
-
-  end
-
-  def get_user_info_from_userid
-    @userid = session[:userid]
-    @user_id = session[:user_id]
-    @first_name = session[:first_name]
-    @manager = session[:manager]
-    @roles = session[:role]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @roles = UseridRole::OPTIONS.fetch(session[:role])
   end
 
   def  get_user_info(userid,name)

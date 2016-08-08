@@ -1,4 +1,5 @@
-if ENV['gmail_username'].present? && Rails.env.development? && Rails.application.config.mongodb_bin_location == 'd:/mongodb/bin/'
+if Rails.env.development? && (Rails.application.config.mongodb_bin_location == "D:\\Program Files\\MongoDB\\Server\\3.2\\bin\\" ||
+                              Rails.application.config.mongodb_bin_location == "d:\\mongodb\\3.2\\bin\\")
   ActionMailer::Base.delivery_method = :smtp
   # SMTP settings for gmail
   ActionMailer::Base.smtp_settings = {
@@ -14,10 +15,7 @@ else
   ActionMailer::Base.perform_deliveries = true
   ActionMailer::Base.raise_delivery_errors = true
 end
+ActionMailer::Base.default_url_options[:host] = Rails.application.config.website
 if Rails.env.development?
-    ActionMailer::Base.default_url_options[:host] = "http://test2.freereg.org.uk"
-    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
-end
-if Rails.env.production?
-    ActionMailer::Base.default_url_options[:host] = "http://freereg2.freereg.org.uk"
+  ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
 end

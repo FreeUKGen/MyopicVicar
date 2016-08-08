@@ -41,7 +41,7 @@ gem 'pry'
 gem 'pry-byebug'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
-gem 'kaminari'
+gem 'kaminari-mongoid'
 gem "gretel"
 gem 'geocoder'
 #gem 'activeadmin'

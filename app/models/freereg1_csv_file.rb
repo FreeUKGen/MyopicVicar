@@ -77,7 +77,7 @@ class Freereg1CsvFile
   index({file_name:1,error:1})
   index({error:1, file_name:1})
 
-  before_save :add_lower_case_userid
+  before_save :add_lower_case_userid_to_file, :add_country_to_file
   after_save :recalculate_last_amended, :update_number_of_files
 
   before_destroy do |file|
@@ -121,30 +121,21 @@ class Freereg1CsvFile
   }
 
   class << self
-    def syndicate(name)
-      where(:transcriber_syndicate => name)
-    end
-    def county(name)
-      where(:county => name)
-    end
-    def place(name)
-      where(:place => name)
-    end
     def chapman_code(name)
       #note chapman is county in file
       where(:county => name)
     end
-    def record_type(name)
-      where(:record_type => name)
-    end
-    def userid(name)
-      where(:userid => name)
-    end
     def church_name(name)
       where(:church_name => name)
     end
-    def register_type(name)
-      where(:register_type => name)
+    def coordinator_lock
+      where(:locked_by_coordinator => true)
+    end
+    def county(name)
+      where(:county => name)
+    end
+    def errors
+      where(:error.gt => 0)
     end
     def file_name(name)
       where(:file_name => name)
@@ -152,62 +143,39 @@ class Freereg1CsvFile
     def id(id)
       where(:id => id)
     end
-    def errors
-      where(:error.gt => 0)
+    def place(name)
+      where(:place => name)
+    end
+    def record_type(name)
+      where(:record_type => name)
+    end
+    def register_type(name)
+      where(:register_type => name)
+    end
+    def syndicate(name)
+      where(:transcriber_syndicate => name)
     end
     def transcriber_lock
       where(:locked_by_transcriber => true)
     end
-    def coordinator_lock
-      where(:locked_by_coordinator => true)
+    def userid(name)
+      where(:userid => name)
     end
-  end
 
-
-
-  def self.change_userid(id,old_userid, new_userid)
-    success = true
-    @message = ""
-    new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
-    old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
-    new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
-    old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
-    if Dir.exist?(new_folder_location)
-      @message = "Folder with that name already exists for #{new_userid} in the base"
-      success = false
-    else
-      Dir.mkdir(new_folder_location,0774)
-    end
-    if Dir.exist?(new_change_folder_location)
-      @message = "Folder with that name already exists for #{new_userid} in the change set"
-      success = false
-    else
-      Dir.mkdir(new_change_folder_location,0774)
-    end
-    if Dir.exist?(old_folder_location) && success
-      Dir.glob(File.join(old_folder_location, '*')).each do |file|
-        FileUtils.move file, File.join(new_change_folder_location, File.basename(file))
-      end
-      FileUtils.remove_dir(old_folder_location, :force => true,:verbose => true)
-    end
-    if Dir.exist?(old_change_folder_location) && success
-      Dir.glob(File.join(old_change_folder_location, '*')).each do |file|
-        FileUtils.move file, File.join(new_folder_location, File.basename(file))
-      end
-      FileUtils.remove_dir(old_change_folder_location, :force => true,:verbose => true)
-    end
-    if success
-      userid = UseridDetail.userid(old_userid).first
-      userid.update_attribute(:userid,new_userid)
-      userid.write_userid_file
-      files = Freereg1CsvFile.where(:userid_detail_id => id).all
-      files.each do |file|
-        physical_file = PhysicalFile.userid(old_userid).file_name(file.file_name).first
-        physical_file.update_userid(new_userid) if physical_file.present?
-        file.promulgate_userid_change(new_userid,old_userid)
+    def delete_file(file)
+      file.save_to_attic
+      #first the entries
+      Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
+        Freereg1CsvEntry.delete_entries_for_a_file(f._id)
+        f.delete unless f.nil?
       end
     end
-    return[success,@message]
+
+    def delete_userid_folder(userid)
+      folder_location = File.join(Rails.application.config.datafiles,userid)
+      FileUtils.rm_rf(folder_location)
+    end
+
   end
 
   def self.combine_files(all_files)
@@ -268,7 +236,7 @@ class Freereg1CsvFile
   end
 
   def self.convert_date(date_field)
-    #use a custom date covertion to number of days for comparison purposes only
+    #use a custom date conversion to number of days for comparison purposes only
     #dates provided vary in format
     date_day = 0
     date_month = 0
@@ -305,27 +273,19 @@ class Freereg1CsvFile
     my_days
   end
 
-  def self.delete_file(file)
-    file.save_to_attic
-    p "Deleting file and entries"
-    Freereg1CsvFile.where(:userid  => file.userid, :file_name => file.file_name).all.each do |f|
-      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-      p "#{entries.length}" unless entries.nil?
-      entries.destroy_all
-      f.delete unless f.nil?
-    end
-  end
 
-  def self.delete_userid(userid)
-    folder_location = File.join(Rails.application.config.datafiles,userid)
-    change_folder_location = File.join(Rails.application.config.datafiles_changeset,userid)
-    FileUtils.remove_dir(folder_location, :force => true)
-    FileUtils.remove_dir(change_folder_location, :force => true)
-  end
+
 
   def self.file_update_location(file,param,session)
-    if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param[:register_type].blank?
-      return[true, "You are missing a selection"]
+    #rspeced
+    if session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? ||  session[:selectchurch].blank? || param.blank? || param[:register_type].blank?
+      message = ""
+      message = message + ": country" if session[:selectcountry].blank?
+      message = message + ": county" if session[:selectcounty].blank?
+      message = message + ": place" if session[:selectplace].blank?
+      message = message + ": church" if session[:selectchurch].blank?
+      message = message + ": register" if param.blank? || param[:register_type].blank?
+      return[true, "You are missing a selection of #{message}"]
     end
     place = Place.id(session[:selectplace]).first
     church = Church.id(session[:selectchurch]).first
@@ -384,13 +344,25 @@ class Freereg1CsvFile
     names
   end
 
-  def add_lower_case_userid
+  def add_country_to_file
+    #rspec tested during  csv processing
+    chapman = self.chapman_code
+    ChapmanCode::CODES.each_pair do |key,value|
+      if value.has_value?(chapman)
+        country = key
+        self.country = key
+        return
+      end
+    end
+  end
+
+  def add_lower_case_userid_to_file
+    #rspec tested directly
     self[:userid_lower_case] = self[:userid].downcase
   end
 
-
-
   def add_to_rake_delete_list
+    #respected as part of remove batch
     processing_file = Rails.application.config.delete_list
     File.open(processing_file, 'a') do |f|
       f.write("#{self.id},#{self.userid},#{self.file_name}\n")
@@ -463,6 +435,37 @@ class Freereg1CsvFile
   success = false if self.errors.any?
   return success
 end
+
+def change_owner_of_file(new_userid)
+  #rspec tested
+  #first step is to move the files
+  old_userid = self.userid
+  file_name = self.file_name
+  result = [true,""]
+  new_userid_folder_location = physical_userid_location(new_userid)
+  old_userid_folder_location = physical_userid_location(old_userid)
+  if Dir.exist?(old_userid_folder_location)
+    unless Dir.exist?(new_userid_folder_location)
+      Dir.mkdir(new_userid_folder_location,0774)
+    end
+    self.save_to_attic
+    new_physical_file_location = physical_file_location(new_userid,file_name)
+    old_physical_file_location = physical_file_location(old_userid,file_name)
+    self.write_csv_file(new_physical_file_location)
+    FileUtils.remove(old_physical_file_location, :force => true,:verbose => true) if File.exist?(old_physical_file_location)
+  else
+    result = [false, "Old userid does not exist"]
+  end
+  if result[0]
+    physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
+    if physical_file.present?
+      physical_file.update_userid(new_userid)
+    end
+    self.promulgate_userid_change(new_userid,old_userid)
+  end
+  return result
+end
+
 
 def check_batch
   success = Array.new
@@ -617,6 +620,7 @@ def force_unlock
   end
 end
 
+
 def lock(type)
   batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
   set_transciber_lock = !self.locked_by_transcriber
@@ -687,100 +691,13 @@ end
 def missing_file
 
 end
-
-def move_file_between_userids(new_userid)
-  #first step is to move the files
-  old_userid = self.userid
-  success = true
-  message = ""
-  new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
-  old_folder_location = File.join(Rails.application.config.datafiles,old_userid)
-  new_change_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
-  old_change_folder_location = File.join(Rails.application.config.datafiles_changeset,old_userid)
-  if Dir.exist?(new_folder_location)
-    if Dir.exist?(old_folder_location)
-      old_file_location = File.join(Rails.application.config.datafiles,old_userid,self.file_name)
-      self.save_to_attic
-      self.write_csv_file(old_file_location)
-      result = self.move_fr2_file(new_userid,old_userid,self.file_name)
-      message = result[1]
-      return[result[0],result[1]] if !result[0]
-    else
-      success = false
-      message = "No FR2 folder for the old userid"
-    end
-    if Dir.exist?(new_change_folder_location)
-      if Dir.exist?(old_change_folder_location)
-        result = self.move_fr1_file(new_userid,old_userid,self.file_name)
-        message = result[1]
-        return[result[0],result[1]] if !result[0]
-      else
-        success = true
-        message= "No FR1 folder for the old userid"
-      end
-    else
-      message = "No FR1 folder for the new userid"
-      success = true
-    end
-  else
-    message = "No FR2 folder for the new userid"
-    success = false
-  end
-  if success
-    #now we update the system information
-    physical_file = PhysicalFile.userid(old_userid).file_name(self.file_name).first
-    if physical_file.present?
-      physical_file.update_userid(new_userid)
-      if message == "No FR1 folder for the old userid" || message == message = "No FR1 folder for the new userid"
-        physical_file.update_change(new_userid)
-      end
-    end
-    self.promulgate_userid_change(new_userid,old_userid)
-  end
-  return[success,message]
+def physical_userid_location(userid)
+  location = File.join(Rails.application.config.datafiles,userid)
+end
+def physical_file_location(userid,file_name)
+  location = File.join(Rails.application.config.datafiles,userid,file_name)
 end
 
-def move_fr1_file(new_userid,old_userid,file_name)
-  success = true
-  message = ""
-  new_file_location = File.join(Rails.application.config.datafiles_changeset,new_userid,file_name)
-  new_folder_location = File.join(Rails.application.config.datafiles_changeset,new_userid)
-  old_file_location = File.join(Rails.application.config.datafiles_changeset,old_userid,file_name)
-  if File.file?(old_file_location)
-    if File.file?(new_file_location)
-      success = false
-      message = "File already exists in FR1 folder for the new userid"
-    else
-      FileUtils.cp(old_file_location, new_folder_location, :verbose => true)
-      #must not remove the old file or the rsync will add it back
-      #FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
-    end
-  else
-    success = true
-    message = "File does not exist in FR1 folder for the old userid"
-  end
-  return[success,message]
-end
-
-def move_fr2_file(new_userid,old_userid,file_name)
-  success = true
-  message = ""
-  new_file_location = File.join(Rails.application.config.datafiles,new_userid,file_name)
-  new_folder_location = File.join(Rails.application.config.datafiles,new_userid)
-  old_file_location = File.join(Rails.application.config.datafiles,old_userid,file_name)
-  if File.file?(old_file_location)
-    if  File.file?(new_file_location)
-      success = false
-      message = "File already exists in FR2 folder for the new userid"
-    else
-      FileUtils.mv(old_file_location, new_folder_location, :force => true,:verbose => true)
-      FileUtils.remove(old_file_location, :force => true,:verbose => true) if File.exist?(old_file_location)
-    end
-  else
-    message = "File does not exist in FR2 folder for the old userid"
-  end
-  return[success,message]
-end
 
 def old_place
   reg_id = self.register_id
@@ -790,11 +707,10 @@ end
 
 def promulgate_userid_change(new_userid,old_userid)
   #since a file may have many batches we must change them all as we have moved the file
-  batches = Freereg1CsvFile.userid(old_userid).file_name(self.file_name).all
-  batches.each do |batch|
-    success = batch.update_entries_userid(new_userid)
-    batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase) if success
-    batch.update_userids_with_change(new_userid) if success
+  new_userid_detail = UseridDetail.userid(new_userid).first
+  Freereg1CsvFile.userid(old_userid).file_name(self.file_name).each do |batch|
+    success = Freereg1CsvEntry.update_entries_userid(new_userid,batch)
+    batch.update_attributes(:userid => new_userid, :userid_lower_case => new_userid.downcase, :userid_detail_id =>new_userid_detail.id) if success
   end
 end
 
@@ -830,6 +746,8 @@ def recalculate_last_amended
 end
 
 def remove_batch
+  #rspect
+  #This deletes the document and defers deletion of entries/search records to overnight rake task
   if self.locked_by_transcriber  ||  self.locked_by_coordinator
     return false,'The removal of the batch was unsuccessful; the batch is locked'
   else
@@ -838,18 +756,14 @@ def remove_batch
     self.save_to_attic
     self.delete
     #deal with the Physical Files collection
-    physical_file = PhysicalFile.userid(self.userid).file_name(self.file_name).first
-    if physical_file.present?
-      physical_file.remove_processed_flag
-      physical_file.remove_base_flag
-      physical_file.destroy if physical_file.empty?
-    end
+    PhysicalFile.delete_document(self.userid, self.file_name)
     return true, 'The removal of the batch entry was successful'
   end
 end
 
 def save_to_attic
-  p "Saving to attic"
+  #rspected with removal
+  # p "Saving to attic"
   #to-do unix permissions
   file = self.file_name
   file_location = File.join(Rails.application.config.datafiles,self.userid,file)
@@ -896,20 +810,7 @@ def to_register
     }
 end
 
-def update_entries_userid(userid)
-  self.freereg1_csv_entries.each do |entry|
-    line = entry.line_id
-    if line.present?
-      line_parts = line.split('.')
-      line_parts[0] = userid
-      line = line_parts.join('.')
-    else
-      line = (userid + "." + self.file_name + "." + entry.file_line_number.to_s).to_s
-    end
-    entry.update_attribute(:line_id,line)
-  end
-  true
-end
+
 
 def update_number_of_files
   #this code although here and works produces values in fields that are no longer being used
@@ -936,13 +837,9 @@ def update_register
   Register.update_or_create_register(self)
 end
 
-def update_userids_with_change(new_userid)
-  new_userid_detail = UseridDetail.userid(new_userid).first
-  self.update_attribute(:userid_detail_id,new_userid_detail.id)
-end
-
 
 def write_csv_file(file_location)
+  #rspected with removal
   file = self
   #since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
   file_parts = Freereg1CsvFile.where(:file_name => file.file_name, :userid => file.userid).all

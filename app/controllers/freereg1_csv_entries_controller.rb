@@ -4,40 +4,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
   skip_before_filter :require_login, only: [:show]
 
-  def index
-    display_info
-    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
-  end
-
-  def show
-    @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
-    if @freereg1_csv_entry.present?
-      get_user_info_from_userid
-      session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
-      display_info
-      @forenames = Array.new
-      @surnames = Array.new
-    else
-      go_back("entry",params[:id])
-    end
-  end
-
-  def error
-    @error_file = BatchError.id(params[:id]).first
-    if @error_file.present?
-      get_user_info_from_userid
-      session[:error_id] = params[:id]
-      set_up_error_display
-      if @freereg1_csv_file.nil?
-        flash[:notice] = "The error appears to have become disconnected from its file. Contact system administration"
-        redirect_to :action => 'show'
-        return
-      end
-    else
-      go_back("error",params[:id])
-    end
-  end
-
   def create
     get_user_info_from_userid
     @user = UseridDetail.where(:userid => session[:userid]).first
@@ -53,7 +19,7 @@ class Freereg1CsvEntriesController < ApplicationController
     else
       file_line_number = @freereg1_csv_file.records.to_i + 1
       line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
-      @freereg1_csv_file.update_attributes(:record => file_line_number)
+      @freereg1_csv_file.update_attributes(:records => file_line_number)
     end
     @freereg1_csv_entry.update_attributes(:line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
     #need to deal with change in place
@@ -107,15 +73,53 @@ class Freereg1CsvEntriesController < ApplicationController
     end
   end
 
-  def new
-    session[:error_id] = nil
-    display_info
-    file_line_number = @freereg1_csv_file.records.to_i + 1
-    line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
-    @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
-
-    @freereg1_csv_entry.multiple_witnesses.build
+  def destroy
+    @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
+    if @freereg1_csv_entry.present?
+      freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+      freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
+      @freereg1_csv_entry.destroy
+      freereg1_csv_file.calculate_distribution
+      freereg1_csv_file.recalculate_last_amended
+      freereg1_csv_file.update_number_of_files
+      flash[:notice] = 'The deletion of the record was successful'
+      redirect_to freereg1_csv_file_path(freereg1_csv_file)
+      return
+    else
+      go_back("entry",params[:id])
+    end
   end
+
+  def display_info
+    if @freereg1_csv_entry.nil?
+      @freereg1_csv_file = Freereg1CsvFile.id(session[:freereg1_csv_file_id]).first
+    else
+      @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    end
+
+    if @freereg1_csv_file.nil?
+      flash[:notice] = "The entry you are trying to access is not found in the database. The entry or batch may have been deleted."
+      redirect_to main_app.new_manage_resource_path
+      return
+    end
+
+    @freereg1_csv_file_id =  @freereg1_csv_file.id
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @file_owner = @freereg1_csv_file.userid
+    @register = @freereg1_csv_file.register
+    #@register_name = @register.register_name
+    #@register_name = @register.alternate_register_name if @register_name.nil?
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = @register.church #id?
+    @church_name = @church.church_name
+    @place = @church.place #id?
+    @county =  @place.county
+    @place_name = @place.place_name
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+  end
+
+
 
   def edit
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
@@ -123,6 +127,91 @@ class Freereg1CsvEntriesController < ApplicationController
       session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
       display_info
       @freereg1_csv_entry.multiple_witnesses.build
+    else
+      go_back("entry",params[:id])
+    end
+  end
+
+
+  def error
+    @error_file = BatchError.id(params[:id]).first
+    if @error_file.present?
+      get_user_info_from_userid
+      session[:error_id] = params[:id]
+      set_up_error_display
+      if @freereg1_csv_file.nil?
+        flash[:notice] = "The error appears to have become disconnected from its file. Contact system administration"
+        redirect_to :action => 'show'
+        return
+      end
+    else
+      go_back("error",params[:id])
+    end
+  end
+
+  def get_year(param)
+    case param[:record_type]
+    when "ba"
+      year = FreeregValidations.year_extract(param[:baptism_date]) if  param[:baptism_date].present?
+      year = FreeregValidations.year_extract(param[:birth_date]) if param[:birth_date].present? && year.blank?
+    when "bu"
+      year = FreeregValidations.year_extract(param[:burial_date]) if  param[:burial_date].present?
+    when "ma"
+      year = FreeregValidations.year_extract(param[:marriage_date]) if  param[:marriage_date].present?
+    end
+    year
+  end
+
+
+  def index
+    display_info
+    @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
+  end
+
+  def new
+    session[:error_id] = nil
+    display_info
+    file_line_number = @freereg1_csv_file.records.to_i + 1
+    line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
+    @freereg1_csv_entry = Freereg1CsvEntry.new(:record_type  => @freereg1_csv_file.record_type, :line_id => line_id, :file_line_number => file_line_number )
+    @freereg1_csv_entry.multiple_witnesses.build
+  end
+
+  def set_up_error_display
+    @freereg1_csv_file = @error_file.freereg1_csv_file
+    @error_file.data_line[:record_type] = @error_file.record_type
+    @error_file.data_line.delete(:chapman_code)
+    @error_file.data_line.delete(:place_name)
+    @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
+    @error_line = @error_file.record_number
+    @error_message = @error_file.error_message
+    @place_names = Array.new
+    Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
+      @place_names << place.place_name
+    end
+    unless @freereg1_csv_file.nil?
+      @freereg1_csv_file_name = @freereg1_csv_file.file_name
+      @file_owner = @freereg1_csv_file.userid
+      @register = @freereg1_csv_file.register
+      @register_name = RegisterType.display_name(@register.register_type)
+      @church = @register.church #id?
+      @church_name = @church.church_name
+      @place = @church.place #id?
+      @county =  @place.county
+      @place_name = @place.place_name
+    end
+    @first_name = session[:first_name]
+    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+  end
+
+  def show
+    @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
+    if @freereg1_csv_entry.present?
+      get_user_info_from_userid
+      session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
+      display_info
+      @forenames = Array.new
+      @surnames = Array.new
     else
       go_back("entry",params[:id])
     end
@@ -161,91 +250,8 @@ class Freereg1CsvEntriesController < ApplicationController
     end
   end
 
-  def destroy
-    @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
-    if @freereg1_csv_entry.present?
-      freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
-      freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
-      @freereg1_csv_entry.destroy
-      freereg1_csv_file.calculate_distribution
-      freereg1_csv_file.recalculate_last_amended
-      freereg1_csv_file.update_number_of_files
-      flash[:notice] = 'The deletion of the record was successful'
-      redirect_to freereg1_csv_file_path(freereg1_csv_file)
-      return
-    else
-      go_back("entry",params[:id])
-    end
-  end
-
-  def set_up_error_display
-    @freereg1_csv_file = @error_file.freereg1_csv_file
-    @error_file.data_line[:record_type] = @error_file.record_type
-    @error_file.data_line.delete(:chapman_code)
-    @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
-    @error_line = @error_file.record_number
-    @error_message = @error_file.error_message
-    @place_names = Array.new
-    Place.where(:chapman_code => session[:chapman_code], :disabled.ne => "true").all.each do |place|
-      @place_names << place.place_name
-    end
-    unless @freereg1_csv_file.nil?
-      @freereg1_csv_file_name = @freereg1_csv_file.file_name
-      @file_owner = @freereg1_csv_file.userid
-      @register = @freereg1_csv_file.register
-      @register_name = RegisterType.display_name(@register.register_type)
-      @church = @register.church #id?
-      @church_name = @church.church_name
-      @place = @church.place #id?
-      @county =  @place.county
-      @place_name = @place.place_name
-    end
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
-  end
-
-  def display_info
-    if @freereg1_csv_entry.nil?
-      @freereg1_csv_file = Freereg1CsvFile.id(session[:freereg1_csv_file_id]).first
-    else
-      @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
-    end
-
-    if @freereg1_csv_file.nil?
-      flash[:notice] = "The entry you are trying to access is not found in the database. The entry or batch may have been deleted."
-      redirect_to main_app.new_manage_resource_path
-      return
-    end
-
-    @freereg1_csv_file_id =  @freereg1_csv_file.id
-    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
-    @file_owner = @freereg1_csv_file.userid
-    @register = @freereg1_csv_file.register
-    #@register_name = @register.register_name
-    #@register_name = @register.alternate_register_name if @register_name.nil?
-    @register_name = RegisterType.display_name(@register.register_type)
-    @church = @register.church #id?
-    @church_name = @church.church_name
-    @place = @church.place #id?
-    @county =  @place.county
-    @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
-  end
-
-  def get_year(param)
-    case param[:record_type]
-    when "ba"
-      year = FreeregValidations.year_extract(param[:baptism_date]) if  param[:baptism_date].present?
-      year = FreeregValidations.year_extract(param[:birth_date]) if param[:birth_date].present? && year.blank?
-    when "bu"
-      year = FreeregValidations.year_extract(param[:burial_date]) if  param[:burial_date].present?
-    when "ma"
-      year = FreeregValidations.year_extract(param[:marriage_date]) if  param[:marriage_date].present?
-    end
-    year
-  end
   private
+
   def freereg1_csv_entry_params
     params.require(:freereg1_csv_entry).permit!
   end

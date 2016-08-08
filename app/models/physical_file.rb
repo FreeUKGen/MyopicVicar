@@ -74,6 +74,10 @@ class PhysicalFile
       batch = PhysicalFile.userid(id).file_name(file).first
       batch.update_attributes(:file_processed => true) if batch.present?
     end
+    def delete_document(userid,file_name)
+      physical_file = PhysicalFile.userid(userid).file_name(file_name).first
+      physical_file.destroy if physical_file.present?
+    end
     def as_csv(batch,sorted,who,county)
       header = Array.new
       row = 0
@@ -94,6 +98,7 @@ class PhysicalFile
       end
     end
   end
+
   def remove_base_flag
     self.update_attributes(:change => false, :change_uploaded_date => nil)
   end
@@ -147,7 +152,5 @@ class PhysicalFile
   def update_userid(new_userid)
     self.update_attribute(:userid, new_userid)
   end
-  def update_change(new_userid)
-    self.update_attributes(:change => false, :change_uploaded_date => nil)
-  end
+
 end

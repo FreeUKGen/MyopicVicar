@@ -102,7 +102,7 @@ module UseridRole
     'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
     'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
     'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
-    'List files waiting to be processed' => "/freereg1_csv_files/selection?option=List files waiting to be processed",
+    'List files waiting to be processed' => "/manage_counties/display_files_waiting_to_be_processed",
     'Upload New Batch' =>  "/csvfiles/new"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',

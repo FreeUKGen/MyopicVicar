@@ -21,10 +21,11 @@ class FeedbacksController < ApplicationController
   end
 
   def create
+
     @feedback = Feedback.new(feedback_params)
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
-    @feedback.session_data = session
+    @feedback.session_data = session.to_hash
     @feedback.save
     if @feedback.errors.any?
       flash.notice = "There was a problem reporting your feedback!"
@@ -33,7 +34,7 @@ class FeedbacksController < ApplicationController
     end
     flash.notice = "Thank you for your feedback!"
     @feedback.communicate
-    redirect_to :action => 'new'
+    redirect_to session.delete(:return_to)
   end
 
   def destroy
@@ -49,6 +50,7 @@ class FeedbacksController < ApplicationController
   end
 
   def edit
+    session[:return_to] ||= request.referer
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       if @feedback.github_issue_url.present?
@@ -90,7 +92,9 @@ class FeedbacksController < ApplicationController
   end
 
   def new
-    @feedback = Feedback.new
+    session[:return_to] ||= request.referer
+    get_user_info_from_userid
+    @feedback = Feedback.new(new_params)
   end
 
   def select_by_identifier
@@ -130,5 +134,10 @@ class FeedbacksController < ApplicationController
   def feedback_params
     params.require(:feedback).permit!
   end
-
+  def new_params
+    params.delete('utf8')
+    params.delete('controller')
+    params.delete('action')
+    params.permit!
+  end
 end

@@ -57,7 +57,7 @@ class Place
 
   validate :grid_reference_or_lat_lon_present_and_valid
 
-  before_save :add_location_if_not_present
+  before_save :add_location_if_not_present, :add_country
 
   after_create :update_places_cache
 
@@ -125,6 +125,10 @@ class Place
     self.ucf_list.values.inject([]) { |accum, value| accum + value }
   end
 
+  def add_country
+    self.country = self.get_correct_place_country
+  end
+
   def add_location_if_not_present
     if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
@@ -190,6 +194,11 @@ class Place
     return [false, ""]
   end
 
+  def check_place_country?
+    self.country.present? ? result = true : result = false
+    result
+  end
+
   def data_contents
     min = Time.new.year
     max = 1500
@@ -226,6 +235,16 @@ class Place
       @names << name
     end
     @names
+  end
+
+  def get_correct_place_country
+    chapman = self.chapman_code
+    ChapmanCode::CODES.each_pair do |key,value|
+      if value.has_value?(chapman)
+        country = key
+        return country
+      end
+    end
   end
 
   def grid_reference_or_lat_lon_present_and_valid
