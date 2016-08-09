@@ -271,6 +271,8 @@ GEM
     kaminari (0.17.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
+    kaminari-mongoid (0.1.2)
+      kaminari
     libv8 (3.16.14.15)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
@@ -504,7 +506,7 @@ DEPENDENCIES
   inherited_resources (~> 1.6)
   jquery-rails
   json
-  kaminari
+  kaminari-mongoid
   libv8 (~> 3.16.14.7)
   mail-logger
   mobvious
