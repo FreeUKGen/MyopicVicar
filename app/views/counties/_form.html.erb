@@ -1,0 +1,7 @@
+<%= simple_form_for @county do |f| %>
+
+<%= f.input :county_coordinator, { :as => :select,  :collection => @userids,:label_method => :userid, :value_method => :id,  :include_blank => true, :label => "Select coordinator :", :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5}}%>
+<%= f.input :county_description,:label => "County description :",:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+<%= f.input :county_notes,:label => "County notes :",:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+<%= f.button :submit, "Update" %>
+<% end %>

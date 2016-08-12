@@ -36,10 +36,9 @@ class FreeregContentsController < ApplicationController
   end
 
   def create
-
-    case 
+    case
     when params.present? && params[:freereg_content].present? && params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
-      @freereg_content = FreeregContent.new(params[:freereg_content])
+      @freereg_content = FreeregContent.new(freereg_content_params)
       @chapman_code = params[:freereg_content][:chapman_codes][1]
       session[:chapman_code] = @chapman_code
       if  @freereg_content.save
@@ -55,13 +54,13 @@ class FreeregContentsController < ApplicationController
     when params[:action] == "create"
       proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
       case proceed
-       when "dual"
+      when "dual"
         flash[:notice] = "Only a place or a character can be selected not both"
         redirect_to freereg_contents_path and return
       when "no option"
         flash[:notice] = "You must select either a place or a character"
         redirect_to freereg_contents_path and return
-      when "place"   
+      when "place"
         redirect_to freereg_content_path(params[:freereg_content][:place]) and return
       when "character"
         session[:character] = params[:freereg_content][:character]
@@ -73,7 +72,7 @@ class FreeregContentsController < ApplicationController
     if params[:id].present?
       @county = session[:county]
       @chapman_code = session[:chapman_code]
-      @character = session[:character] 
+      @character = session[:character]
       if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
         @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
         @page = FreeregContent.get_header_information(session[:chapman_code])
@@ -95,9 +94,9 @@ class FreeregContentsController < ApplicationController
       return
     end
   end
-  
+
   def select_places
-    @character = session[:character] 
+    @character = session[:character]
     @show_alphabet = session[:show_alphabet]
     @county = session[:county]
     @chapman_code = session[:chapman_code]
@@ -131,7 +130,7 @@ class FreeregContentsController < ApplicationController
     end
   end
 
-  def show_church 
+  def show_church
     @church = Church.id(params[:id]).first
     if @church.nil?
       flash[:notice] = "No church was selected while reviewing the content; you will need to start again"
@@ -153,7 +152,7 @@ class FreeregContentsController < ApplicationController
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
 
-  def show_register 
+  def show_register
     @register = Register.id(params[:id]).first
     if @register.nil?
       flash[:notice] = "No register was selected while reviewing the content; you will need to start again"
@@ -200,5 +199,9 @@ class FreeregContentsController < ApplicationController
       flash[:notice] = "Non existent place has been selected."
       redirect_to :back and return
     end
+  end
+  private
+  def freereg_content_params
+    params.require(:freereg_content).permit!
   end
 end

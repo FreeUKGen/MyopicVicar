@@ -16,32 +16,24 @@ class UseridDetailsController < ApplicationController
 
   def change_password
     load(params[:id])
-    success = @userid.check_exists_in_refinery
-    if success[0]
-      @userid.send_invitation_to_reset_password
-      flash[:notice] = 'An email with instructions to reset the password has been sent'
-      if @user.userid == @userid.userid
-        redirect_to refinery.logout_path
-        return
-      else
-        redirect_to :back
-        return
-      end
+    refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+    refinery_user.send_reset_password_instructions
+    flash[:notice] = 'An email has been sent with instructions.'
+    if session[:my_own]
+      redirect_to refinery.logout_path and return
     else
-      flash[:notice] = "There was a problem with the reset: #{success[1]}"
-      redirect_to :back
-      return
+      redirect_to userid_detail_path(@userid) and return
     end
   end
 
   def create
-    session[:refinery] = current_refinery_user
-    @userid = UseridDetail.new(params[:userid_detail])
+    @userid = UseridDetail.new(userid_details_params)
     @userid.add_fields(params[:commit],session[:syndicate])
     @userid.save
     if @userid.save
-      @userid.send_invitation_to_create_password
-      flash[:notice] = 'The initial registration was successful; an email has been sent to the new person to complete the process.'
+      refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+      refinery_user.send_reset_password_instructions
+      flash[:notice] = 'The initial registration was successful; an email has been sent to complete the process.'
       @userid.write_userid_file
       next_place_to_go_successful_create
     else
@@ -59,7 +51,7 @@ class UseridDetailsController < ApplicationController
       redirect_to :action => 'options'
     else
       if MyopicVicar::Application.config.template_set != 'freecen'
-        Freereg1CsvFile.delete_userid(@userid.userid) unless @userid.nil?
+        Freereg1CsvFile.delete_userid_folder(@userid.userid) unless @userid.nil?
       end
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
@@ -155,11 +147,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Submit'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
-    @userid.finish_transcriber_creation_setup if params[:commit] == 'Register Transcriber'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
-    #sending out the password reset destroys the current_user
-    current_refinery_user = session[:refinery]
-    session.delete(:refinery)
     case
 
     when params[:commit] == "Submit"
@@ -363,6 +351,7 @@ class UseridDetailsController < ApplicationController
 
   def update
     load(params[:id])
+    changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
     success = Array.new
     success[0] = true
     case 
@@ -377,14 +366,13 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     when params[:commit] == "Update"
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
-      note_to_send_email_to_sc = false
-      note_to_send_email_to_sc = true if params[:userid_detail][:syndicate] != @userid.syndicate
     end
-    @userid.update_attributes(params[:userid_detail])
+    @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
-      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver if note_to_send_email_to_sc
+
+      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
       flash[:notice] = 'The update of the profile was successful'
       redirect_to userid_detail_path(@userid)
       return
@@ -395,4 +383,11 @@ class UseridDetailsController < ApplicationController
       return
     end
   end
+
+  private
+
+  def userid_details_params
+    params.require(:userid_detail).permit!
+  end
+
 end

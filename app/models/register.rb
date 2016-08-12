@@ -50,11 +50,12 @@ class Register
     #also refresh the cache if the place is newly active
     place = self.church.place
     refresh_cache = false
-    cache = PlaceCache.where(:chapman_code => place.chapman_code).first.places_json 
+    cache = PlaceCache.where(:chapman_code => place.chapman_code).first.places_json
     refresh_cache = true unless cache.include?(place.place_name)
     place.update_attribute(:data_present, true)
     PlaceCache.refresh(true, place.chapman_code) if refresh_cache
   end
+
   def update_userid_with_new_file(file)
     user =UseridDetail.where(:userid => file.userid).first
     user.freereg1_csv_files << file
@@ -80,7 +81,8 @@ class Register
       my_place.churches << @@my_church
     end
     #now create the register
-    register = Register.new(args)
+    register_parameters = Hash[:register_type => args[:register_type],:alternate_register_name => args[:alternate_register_name],:last_amended => args[:last_amended]]
+    register = Register.new(register_parameters)
     register.freereg1_csv_files << freereg1_csv_file
     @@my_church.registers << register
     @@my_church.save

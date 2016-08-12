@@ -18,12 +18,11 @@ Refinery::Resources.configure do |config|
   # config.s3_region = ENV['S3_REGION']
 
   # Configure Dragonfly
-  # This is where in the middleware stack to insert the Dragonfly middleware
-  # config.dragonfly_insert_before = "ActionDispatch::Callbacks"
-  # config.dragonfly_secret = "8cd59fb8eda9ae131b031d210828c4d8b12151ef4ce25011"
-  # config.dragonfly_url_format = "/system/resources/:job/:basename.:format"
+  # config.dragonfly_verify_urls = true
+  # config.dragonfly_secret = "2fc1ff00f06e0e6634d3155e87cf28b546ab51934ba1a351"
+  # config.dragonfly_url_format = "/system/resources/:job/:basename.:ext"
   # config.dragonfly_url_host = ""
-  # config.datastore_root_path = "/home/benwbrum/dev/clients/freeukgen/MyopicVicar/public/system/refinery/resources"
+  # config.datastore_root_path = "/home/benwbrum/dev/clients/freeukgen/scratch/test_for_refinery/public/system/refinery/resources"
   # config.content_disposition = :attachment
 
   # Configure Dragonfly custom storage backend

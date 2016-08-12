@@ -23,7 +23,7 @@ module Freecen
           individual_from_entry(entry, dwelling)
           unless piece.nil?
             piece.status = 'Online' if piece.status != 'Online'
-            piece.inc(:num_individuals, 1)
+            piece.inc(:num_individuals => 1)
           end
         end
       end

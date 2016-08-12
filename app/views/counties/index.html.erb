@@ -1,10 +1,10 @@
-<p style="text-align: center"><b>Listing of all counties</b></p>
+<% breadcrumb :counties%>
+<h2 class=" text--center">Listing of all counties</h2>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
   </div>
 <% end %>
-<p>
 <div id="main" style="color:black">
    <table class="table--bordered table--data ">
     <tr>
@@ -29,7 +29,9 @@
         <td > <%= county.baptism_records %>  </td>
         <td > <%= county.burial_records %>  </td>
         <td > <%= county.marriage_records %>  </td>
-        <td><%= link_to 'SH', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'ED', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get  if @user.person_role == "system_administrator"%></td>
+        <% if @user.person_role == "system_administrator"%>
+        <td><%= link_to 'SH', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'ED', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get %></td>
+        <% end%>
       </tr>
     <% end %>
   </table>

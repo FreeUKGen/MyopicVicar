@@ -1,22 +1,36 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.21'
+gem 'rails', '4.2.6'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
+#changes demanded by rails 4
+#gem 'activeadmin', github: 'activeadmin'
+gem 'tzinfo-data' #needed by windows
+gem 'protected_attributes' # smooth transition to rails 4
+gem 'mysql2'
+#gem 'web-console', '~> 2.0'
+gem 'rails_12factor', group: :production
 
+#gem 'mysql2', '0.3.12'
 
-gem 'mysql2', '0.3.12'
-gem 'refinerycms', '~> 2.1.1'
-gem 'refinerycms-authentication',  '~> 2.1.1'
+gem 'refinerycms', '~> 3.0', '>= 3.0.3'
+gem 'refinerycms-authentication-devise', '~> 1.0.4'
+gem 'refinerycms-wymeditor', '~> 1.0', '>= 1.0.6'
+
+#gem 'refinerycms', '~> 2.1.1'
+#gem 'refinerycms-authentication',  '~> 2.1.1'
 # MongoDB
 #gem 'bson_ext'
-gem "mongoid", "~> 3.1"
-gem "moped", "~> 1"
+gem 'mongoid', '~> 5.0'
+gem 'mongo', '~> 2.1'
+#gem "mongoid", "~> 3.1"
+#gem "moped", "~> 1"
 gem 'execjs'
 gem 'libv8', '~>3.16.14.7'
 gem 'mobvious'
-
+gem 'formtastic', '~> 3.1'
+gem 'inherited_resources', '~> 1.6'
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'airbrake', '~> 3.1.14'
@@ -28,13 +42,15 @@ gem 'pry-byebug'
 gem 'pry-stack_explorer'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
-gem 'kaminari'
+gem 'kaminari-mongoid'
 gem "gretel"
-gem 'activeadmin'
-gem "meta_search",    '>= 1.1.0.pre'
+gem 'geocoder'
+#gem 'activeadmin'
+#gem "meta_search",    '>= 1.1.0.pre'
+
 gem 'bourbon', '~> 2.1'
 gem 'mail-logger'
-gem 'activeadmin-mongoid'
+#gem 'activeadmin-mongoid', '~> 0.3.0'#
 gem 'devise'
 gem 'devise-encryptable'
 gem 'nokogiri'
@@ -52,23 +68,22 @@ gem 'simple_form'
 
 
 gem 'newrelic_rpm'
-gem 'newrelic_moped'
+#gem 'newrelic_moped'
 gem 'octokit'
 
 gem 'traceroute'
-gem "rubycritic", :require => false
 
 # Gems used only for assets and not required
 # in production environments by default.
-group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
+#group :assets do removed for rails 4
+gem 'sass-rails' #,   '~> 3.2.3'
+gem 'coffee-rails'#, '~> 3.2.1'
 
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-  # gem 'therubyracer', :platform => :ruby
+# See https://github.com/sstephenson/execjs#readme for more supported runtimes
+# gem 'therubyracer', :platform => :ruby
 
-  gem 'uglifier', '>= 1.0.3'
-end
+gem 'uglifier'#, '>= 1.0.3'
+#end
 
 gem 'jquery-rails'
 

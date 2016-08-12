@@ -6,15 +6,15 @@ class CheckRefineryEntries
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
     limit = limit.to_i
-    
+
     puts "checking #{limit} documents for missing refinery entries "
     record_number = 0
     missing_records = 0
     process_records = 0
     UseridDetail.no_timeout.each do |userid|
       record_number = record_number + 1
-      break if record_number == limit 
-      u = Refinery::User.where(:username => userid.userid).first
+      break if record_number == limit
+      u = Refinery::Authentication::Devise::User.where(:username => userid.userid).first
       if u.nil?
         missing_records = missing_records + 1
         message_file.puts " #{userid.userid},missing"

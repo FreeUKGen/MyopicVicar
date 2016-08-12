@@ -111,13 +111,22 @@ crumb :waiting do |file|
   if session[:my_own]
     parent :my_own_files
   else
-     parent :files, file   
+    parent :files, file
   end
 end
 crumb :change_userid do |file|
   link "Changing owner"
   parent :show_file, file
 end
+crumb :select_file do |user|
+  link "Selecting file"
+  if session[:my_own]
+    parent :my_own_files
+  else
+    parent :files, file
+  end
+end
+
 
 
 #record or entry
@@ -154,21 +163,21 @@ crumb :county_options do |county|
 end
 crumb :place_range_options do |county,active|
   if session[:active_place]
-    link "Range Selection", selection_manage_counties_path(:option =>'Work with Active Places')  
+    link "Range Selection", selection_active_manage_counties_path(:option =>'Work with Active Places')
   else
-     link "Range Selection", selection_manage_counties_path(:option =>'Work with All Places') 
-  end 
+    link "Range Selection", selection_all_manage_counties_path(:option =>'Work with All Places')
+  end
   parent :county_options, county
 end
 
 crumb :places do |county,place|
   case
-    when session[:character].present? 
-      link "Places", place_range_manage_counties_path
-    when place.blank?
-      link "Places", places_path
-    when place.present?
-      link "Places", places_path(:anchor => "session[place.id]")
+  when session[:character].present?
+    link "Places", place_range_manage_counties_path
+  when place.blank?
+    link "Places", places_path
+  when place.present?
+    link "Places", places_path(:anchor => "session[place.id]")
   end
   if session[:character].present?
     parent :place_range_options, county,session[:active]
@@ -176,20 +185,20 @@ crumb :places do |county,place|
     parent :county_options, county
   end
 end
- 
+
 crumb :places_range do |county,place|
-link "Places", places_path
- parent :place_range_options, county,session[:active]
+  link "Places", places_path
+  parent :place_range_options, county,session[:active]
 end
 
 crumb :show_place do |county,place|
   link "Place Information", place_path(place)
-  case 
-    when session[:select_place] || place.blank?
-      parent :county_options, session[:county] if session[:county].present?
-      parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
-    when place.present?    
-      parent :places, county, place  
+  case
+  when session[:select_place] || place.blank?
+    parent :county_options, session[:county] if session[:county].present?
+    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+  when place.present?
+    parent :places, county, place
   end
 
 end
@@ -321,9 +330,9 @@ crumb :rename_userid do |user|
   link "Rename Userid", rename_userid_details_path
   parent :userid_detail, user.syndicate,user
 end
-crumb :role_listing do 
+crumb :role_listing do
   link "Role Listing"
-  parent :regmanager_userid_options 
+  parent :regmanager_userid_options
 end
 
 #Physical Files
@@ -427,6 +436,56 @@ crumb :create_denomination do |denomination|
   link "Create Denomination", new_denomination_path(denomination)
   parent :denominations
 end
+crumb :select_attic_files do
+  link "Select Userid", select_attic_files_path
+  parent :root
+end
+crumb :show_attic_files do |user|
+  link "Listing of Attic Files", attic_files_path(user)
+  parent :select_attic_files
+end
+crumb :countries do
+  link "Countries", countries_path
+  parent :root
+end
+crumb :show_countries do |country|
+  link "Show Country", country_path(country)
+  parent :countries
+end
+crumb :edit_country do |country|
+  link "Edit Country", edit_country_path(country)
+  parent :show_countries, country
+end
+crumb :counties do
+  link "Counties", counties_path
+  parent :root
+end
+crumb :show_counties do |county|
+  link "Show County", county_path(county)
+  parent :counties
+end
+crumb :edit_county do |county|
+  link "Edit County", edit_county_path(county)
+  parent :show_counties, county
+end
+crumb :syndicates do
+  link "Syndicates", syndicates_path
+  parent :root
+end
+crumb :show_syndicate do |syndicate|
+  link "Show Syndicate", syndicate_path(syndicate)
+  parent :syndicates
+end
+crumb :edit_syndicate do |syndicate|
+  link "Edit Syndicate", edit_syndicate_path(syndicate)
+  parent :show_syndicate, syndicate
+end
+crumb :create_syndicate do |syndicate|
+  link "Create Syndicate", new_syndicate_path(syndicate)
+  parent :show_syndicate, syndicate
+end
+
+
 # crumb :projects do
 #   link "Projects", projects_path
 # end

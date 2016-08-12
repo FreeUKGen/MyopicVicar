@@ -4,7 +4,7 @@
    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
    <% end %>  
-<%= simple_form_for @place, :html => { :class => "grid"}  do |f| %> 
+<%= semantic_form_for @place, :html => { :class => "grid"}  do |f| %> 
 
       <% if controller.action_name == 'new' || controller.action_name == 'create'%>
           <%# This option is only for data manager%> 
@@ -31,8 +31,8 @@
       
       <%= f.input :last_amended, :label => "Date when place records were updated", :hint =>"System generated ",:input_html => { :disabled => true, :size => 30  }%>
   
-  <%= f.button :submit, 'Submit'   %>
-  
+ 
+   <%= f.action :submit,  :label => 'Submit', :as => :button, :button_html => {:class => "btn  weight--light " }  %>
 
 <% end %>
 </div>

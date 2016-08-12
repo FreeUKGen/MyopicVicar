@@ -159,8 +159,8 @@ field :name, type: String#, :required => true
   field :end_date, type: String#, :length=>10
   field :difficulty
   field :image_file_ids, type: Array #, :typecast => 'ObjectId'
-  field :template, type: Moped::BSON::ObjectId
-  field :asset_collection, type: Moped::BSON::ObjectId
+  field :template, type: BSON::ObjectId
+  field :asset_collection, type: BSON::ObjectId
 has_many :image_files, :as => :image_file_ids
 ImageDir Fields
 field :name, type: String

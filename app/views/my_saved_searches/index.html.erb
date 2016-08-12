@@ -9,7 +9,8 @@
     <th>&nbsp;</th>
   </thead>
   <tbody>
-    <% current_refinery_user.userid_detail.search_queries.each do |query| %>
+    <% get_user_info_from_userid%>
+    <%@user.search_queries.each do |query| %>
     <tr>
       <td>
         <% search_params_for_display(query).each do |name, value| %>

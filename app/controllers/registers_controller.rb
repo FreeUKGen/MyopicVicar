@@ -91,7 +91,7 @@ class RegistersController < ApplicationController
         return
       end #if
     end #do
-    @register = Register.new(params[:register])
+    @register = Register.new(register_params)
     @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
     @church.registers << @register
     @church.save
@@ -116,7 +116,7 @@ class RegistersController < ApplicationController
       redirect_to :back
       return
     when params[:commit] == 'Submit'
-      @register.update_attributes(params[:register])
+      @register.update_attributes(register_params)
       if @register.errors.any?  then
         flash[:notice] = 'The update of the Register was unsuccessful'
         render :action => 'edit'
@@ -181,5 +181,10 @@ class RegistersController < ApplicationController
   def record_validation_errors
     flash[:notice] = 'The update of the children to Register with a register name change failed'
     redirect_to register_path(@register)
+  end
+
+  private
+  def register_params
+    params.require(:register).permit!
   end
 end

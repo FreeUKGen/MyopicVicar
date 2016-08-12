@@ -29,12 +29,12 @@
 <% end %>
     <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
     <!--[if lt IE 9]>
-    <%= javascript_include_tag "design/scripts/dist/html5shiv.js" %>
+    <%= javascript_include_tag "html5shiv" %>
     <![endif]-->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="568">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%= favicon_link_tag image_path('favicon.ico')%>
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/assets/apple-touch-icon-152x152-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144x144-precomposed.png">
@@ -44,21 +44,21 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/apple-touch-icon-72x72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/assets/apple-touch-icon-precomposed.png">
     <script type="text/javascript">
-    /* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
-    window.grunticon = function(e) {
-    if (e && 3 === e.length) {
-    var t = window, n = !(!t.document.createElementNS || !t.document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect || !document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1") || window.opera && -1 === navigator.userAgent.indexOf("Chrome")), o = function(o) {
-    var r = t.document.createElement("link"), a = t.document.getElementsByTagName("script")[0];
-    r.rel = "stylesheet", r.href = e[o && n ? 0 : o ? 1 : 2], a.parentNode.insertBefore(r, a)
-    }, r = new t.Image;
-    r.onerror = function() {
-    o(!1)
-    }, r.onload = function() {
-    o(1 === r.width && 1 === r.height)
-    }, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-    }
-    };
-    grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
+      /* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
+      window.grunticon = function(e) {
+        if (e && 3 === e.length) {
+          var t = window, n = !(!t.document.createElementNS || !t.document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect || !document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1") || window.opera && -1 === navigator.userAgent.indexOf("Chrome")), o = function(o) {
+            var r = t.document.createElement("link"), a = t.document.getElementsByTagName("script")[0];
+            r.rel = "stylesheet", r.href = e[o && n ? 0 : o ? 1 : 2], a.parentNode.insertBefore(r, a)
+          }, r = new t.Image;
+          r.onerror = function() {
+            o(!1)
+          }, r.onload = function() {
+            o(1 === r.width && 1 === r.height)
+          }, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+        }
+      };
+      grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
     </script>
     <noscript>
     <link rel="stylesheet" type="text/css" href="styles/css/icons.fallback.css">
@@ -94,35 +94,33 @@
       
       <main  class="site__content  icon__honeycomb--top-right">
       <div class="container">
-        
-        <% if current_refinery_user || !session[:userid].nil?%>
-        <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
-        controller_name == "pages"%>
-        <% end%>
-        
+     
+      <% if !current_refinery_user == 'Refinery::Authentication::Devise::NilUser' || !session[:userid].nil?%>
+         <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+         controller_name == "pages"%>
+      <% end%>
+     
         <% if content_for? :sidebar %>
         <div class="grid">
-          <div class="grid__item  four-fifths  lap-three-fifths  palm-one-whole ">
+          <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
             <%= yield %>
           </div>
-          <div class="grid__item  one-fifth  lap-two-fifths  palm-one-whole  push-half--top float--right">
+          <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
             <%= yield :sidebar %>
           </div>
         </div>
         <% else %>
         <%= yield %>
         <% end %>
-        <% if current_refinery_user 
-          unless controller_name == 'feedbacks' || controller_name == 'contacts'   %>
-            <div  style="float:left;">
-              <%= form_tag(problem_url, :method=>:get) do %>
-                <% problem_button_options.each_pair do |name, value| %>
-                <%= hidden_field_tag(name, value)%>
-              <% end %>
-              <input type="submit" value="Report a Problem"  class = "btn weight--light btn--small"/>
-              <% end %>
-            </div>
+        <% if  !current_refinery_user == 'Refinery::Authentication::Devise::NilUser' || !session[:userid].nil?%>
+        <div  style="float:left;">
+          <%= form_tag(problem_url, :method=>:get) do %>
+          <% problem_button_options.each_pair do |name, value| %>
+          <%= hidden_field_tag(name, value)%>
           <% end %>
+          <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
+          <% end %>
+        </div>
         <% end %>
       </div>
       </main>
@@ -133,16 +131,17 @@
     
     <script type="text/javascript">
     var el = document.getElementById("trigger-offcanvas");
-    var switchOffCanvas = function() {
-    classie.toggle(document.body, 'offcanvas--active');
-    classie.toggle(el, 'site__header__menu-btn--active');
-    }
-    if (el.addEventListener) {
-    el.addEventListener('click', switchOffCanvas, false);
-    } else if (el.attachEvent) {
-    el.attachEvent('onclick', switchOffCanvas);
-    }
-    </script>
+        var switchOffCanvas = function() {
+          classie.toggle(document.body, 'offcanvas--active');
+          classie.toggle(el, 'site__header__menu-btn--active');
+        }
+        if (el.addEventListener) {
+          el.addEventListener('click', switchOffCanvas, false);
+        } else if (el.attachEvent) {
+          el.attachEvent('onclick', switchOffCanvas);
+        }
+    </script> 
+
     <script type="text/javascript">
     $(document).ready(function() {
     $.cookiesDirective({

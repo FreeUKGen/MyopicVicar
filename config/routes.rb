@@ -13,6 +13,31 @@
 # limitations under the License.
 #
 MyopicVicar::Application.routes.draw do
+
+  root :to => 'search_queries#new'
+
+  # Mikes winfreereg request
+
+  get 'transreg_csvfiles/delete'
+  post 'transreg_csvfiles/upload'
+  post 'transreg_csvfiles/replace'
+
+  get 'transreg_batches/list'
+  get 'transreg_batches/download'
+  get 'transreg_churches/list'
+  get 'transreg_places/list'
+  get 'transreg_counties/register_types'
+  get 'transreg_counties/list'
+  get 'transreg_users/refreshuser'
+  get 'transreg_users/authenticate'
+
+  resources :transreg_counties
+  resources :transreg_users
+
+  # end mikes request
+
+
+
   get 'software_versions/:id/commitments(.:format)',  :to => 'software_versions#commitments', :as => :commitments_software_versions
   resources :software_versions
 
@@ -107,6 +132,8 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
+
+  get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   resources :manage_syndicates
 
@@ -117,14 +144,15 @@ MyopicVicar::Application.routes.draw do
   resources :freecen_parms
   get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
 
-  resources :freecen_pieces
+  resources :freecen_pieces, except: :new
   get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
   get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
 
   get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
   get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
-  get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
-  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :show_freecen_coverage
+# DOUG TO FIX
+#  get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
+#  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :show_freecen_coverage
 
 
 
@@ -156,29 +184,31 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
-  get 'userid_details/:id/rename(.:format)', :to =>'userid_details#rename', :as => :rename_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
 
 
-  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_manage_counties
-  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_all_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_active_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_filename', constraints: ManageCountiesDisplayByFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
-  get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
+  get  'manage_counties/display_files_waiting_to_be_processed',  :to => 'manage_counties#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
+  get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
   get 'manage_counties/select', :to =>'manage_counties#select', :as => :select_manage_counties
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
   resources :manage_counties
+
 
   get 'syndicates/display', :to =>'syndicates#display', :as => :display_syndicates
   get 'syndicates/select', :to =>'syndicates#select', :as => :select_syndicates
@@ -237,13 +267,13 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
   get 'freereg1_csv_files/my_own',  :to => 'freereg1_csv_files#my_own', :as => :my_own_freereg1_csv_file
   get 'freereg1_csv_files/:id/by_userid',  :to => 'freereg1_csv_files#by_userid', :as => :by_userid_freereg1_csv_file
-  get 'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_error_files', constraints: ErrorsNameConstraint, :as => :selection_freereg1_csv_file
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files', constraints: MyFilesAlphabeticalConstraint, :as => :selection_freereg1_csv_file
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_descending_uploaded_date', constraints: MyFilesDescendingUploadConstraint, :as => :selection_freereg1_csv_file
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', constraints: MyFilesAscendingUploadConstraint, :as => :selection_freereg1_csv_file
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', constraints: MyFilesSelectionConstraint, :as => :selection_freereg1_csv_file
-  get  'freereg1_csv_files/selection',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', constraints: MyFilesWaitingConstraint, :as => :selection_freereg1_csv_file
-  get  'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_error_files',  :to => 'freereg1_csv_files#display_my_error_files', :as => :display_my_error_files
+  get 'freereg1_csv_files/display_my_own_files',  :to => 'freereg1_csv_files#display_my_own_files', :as => :display_my_own_files_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_own_files_by_descending_uploaded_date',  :to => 'freereg1_csv_files#display_my_own_files_by_descending_uploaded_date',  :as => :display_my_own_files_by_descending_uploaded_date_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_own_files_by_ascending_uploaded_date',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', :as => :display_my_own_files_by_ascending_uploaded_date_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_own_files_by_selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freereg1_csv_file
+  get 'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
   resources :freereg1_csv_files
 
   resources :emendation_types
@@ -282,7 +312,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :image_lists
 
-  root :to => 'search_queries#new'
+
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
@@ -290,11 +320,11 @@ MyopicVicar::Application.routes.draw do
   #
   # We ask that you don't use the :as option here, as Refinery relies on it being the default of "refinery"
 
-  mount Refinery::Core::Engine, :at => '/'
+  mount Refinery::Core::Engine, :at => '/cms'
 
-  ActiveAdmin.routes(self)
+  #ActiveAdmin.routes(self)
 
-  devise_for :admin_users, ActiveAdmin::Devise.config
+  #devise_for :admin_users, ActiveAdmin::Devise.config
 
 
 

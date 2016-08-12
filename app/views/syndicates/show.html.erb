@@ -1,8 +1,8 @@
-
-<p style="text-align: center"><b>Details for a Syndicate </p></b>
-
-<div style="text-align: center"> <%= button_to 'Edit details', edit_syndicate_path(@syndicate), method: :get  unless @user.person_role == "contacts_coordinator"%> <%= button_to 'Destroy syndicate', syndicate_path(@syndicate), method: :delete, data: { confirm: 'Are you sure you want to delete this syndicate' } unless @user.person_role == "contacts_coordinator"%></div>
-
+<% breadcrumb :show_syndicate,  @syndicate%>
+<h2 class=" text--center">Details for <%= @syndicate.syndicate_code%></h2>
+<%if @user.person_role == "system_administrator"%>
+<div style="text-align: center"> <%= link_to 'Edit details', edit_syndicate_path(@syndicate), method: :get, :class => "btn  weight--light btn--small" %> <%= link_to 'Destroy syndicate', syndicate_path(@syndicate), method: :delete,  :class => "btn  weight--light btn--small" ,data: { confirm: 'Are you sure you want to delete this syndicate'} %></div>
+<% end%>
  <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -11,7 +11,7 @@
 
 
 <div id="main"style="color:black">
-<table   class="table--bordered  table--striped  table--data">
+<table   class="table--bordered    table--data">
   <tr>
     
     <th style="width:25%">Field</th>

@@ -28,7 +28,7 @@
             <td><%= freereg1_csv_entry.bride_surname %></td>
             <td><%= freereg1_csv_entry.groom_forename %></td>
             <td><%= freereg1_csv_entry.groom_surname %></td>
-            <td><%= link_to 'SH', freereg1_csv_entry %>  <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %>  <%= link_to 'DE', freereg1_csv_entry, confirm: 'Are you sure?', method: :delete   %></td>
+            <td><%= link_to 'SH', freereg1_csv_entry %>  <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry) %>  <%= link_to 'DE', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete   %></td>
           </tr>
         <% end %>
       </tbody>

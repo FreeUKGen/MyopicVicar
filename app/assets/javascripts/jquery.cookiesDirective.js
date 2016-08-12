@@ -21,8 +21,8 @@
 			// Styling
 			fontFamily: 'helvetica',
 			fontColor: '#FFFFFF',
-			fontSize: '13px',
-			backgroundColor: '#000000',
+			fontSize: '10px',
+			backgroundColor: '#24C950',
 			backgroundOpacity: '80',
 			linkColor: '#CA0000'
 		}, options);

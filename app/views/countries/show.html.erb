@@ -1,16 +1,17 @@
-<p style="text-align: center"><b>Details for a Country </p></b>
-
-<div style="text-align: center"> <%= button_to 'Edit Country', edit_country_path(@country), method: :get  %> </div>
+<% breadcrumb :show_countries,  @country%>
+<h2 class=" text--center">Details for a Country </h2>
+<% if @user.person_role == "system_administrator"%>
 
   <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
     </div>
    <% end %>  
-
+<div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn weight--light btn--small" %> </div>
+<% end%>
 
 <div id="main"style="color:black">
-<table  class="table--bordered  table--striped  table--data">
+<table  class="table--bordered  table--data">
   <tr>
     
     <th style="width:25%">Field</th>

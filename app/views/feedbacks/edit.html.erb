@@ -1,5 +1,5 @@
 <% breadcrumb :edit_feedback,  @feedback%>
-<h4 style="text-align: center">Editing feedback entry <%= @feedback.identifier %></h4>
+<h2 class=" text--center">Editing feedback entry <%= @feedback.identifier %></h2>
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>
@@ -9,10 +9,10 @@
 
 <%= simple_form_for  @feedback   do |f| %>
 
-<%= f.input :title,  :label => "Title ", :input_html => { :size => 42, :placeholder => @feedback.title} %>
+<%= f.input :title,  :label => "Title ", :input_html => { :class => " simple_form_bgcolour  ",:size => 30, :placeholder => @feedback.title} %>
 
 
-<%= f.input :body, :label => "Comments ",as: :text, :input_html => { :rows => 5, :columns =>40 , :placeholder => @feedback.body} %>
+<%= f.input :body, :label => "Comments ",as: :text, :input_html => {:class => "simple_form_bgcolour overide_selection_field_width", :rows => 5, :columns =>50 , :placeholder => @feedback.body} %>
 
  <%= f.button :submit, 'Submit'   %>
   

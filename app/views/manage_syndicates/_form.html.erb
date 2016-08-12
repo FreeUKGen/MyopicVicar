@@ -6,6 +6,5 @@
 
 <%= simple_form_for @manage_syndicate do |f| %>
 <%= f.input :syndicate, { :as => :select,   
- :label => "Make a Selection",:required => true, :collection => @options,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%> 
- <%= f.submit  'Select'   %>
+ :label => "Make a Selection",:required => true, :collection => @options,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5,'onchange' => @location} }%>
 <% end %></div>

@@ -1,6 +1,6 @@
 development:
   # Configure available database sessions. (required)
-  sessions:
+  clients:
     ################################
     # F2-specific notes:
     ################################
@@ -58,7 +58,7 @@ development:
         # retry_interval: 1
 production:
   # Configure available database sessions. (required)
-  sessions:
+  clients:
     ################################
     # F2-specific notes:
     ################################
@@ -167,10 +167,7 @@ production:
     # Ensure all times are UTC in the app side. (default: false)
     # use_utc: false
 test:
-  sessions:
-    ############################
-    # Used by spec tests
-    ############################    
+  clients:
     default:
       database: myopic_vicar_test
       hosts: 

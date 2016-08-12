@@ -11,7 +11,7 @@ class UpdateSearchRecords
     software_version = SoftwareVersion.control.first
     version = software_version.version
     search_version  = software_version.last_search_record_version if search_version.blank?
-    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version}"
+    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} "
     message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version}"
     records = 0
     updated_records = 0
@@ -21,6 +21,8 @@ class UpdateSearchRecords
     files_bypassed = 0
     n = 0
     time_start = Time.new
+    p "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
+    message_file.puts "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
     Freereg1CsvFile.record_type(record_type).all.no_timeout.each do |file|
       n = n + 1
       break if n == limit.to_i
@@ -49,8 +51,8 @@ class UpdateSearchRecords
               no_update = no_update + 1 if result == "no update"
             end
           end
-          message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_records_update}/#{file_records_not_updated} and #{files_bypassed} files bypassed with #{records} records total, #{updated_records} updated and #{no_update} unchanged todate"
-          p "#{file.userid}/#{file.file_name}/#{recs}/#{file_records_update}/#{file_records_not_updated} and #{files_bypassed} files bypassed with #{records} records total, #{updated_records} updated and #{no_update} unchanged todate"
+          message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records}  records total, #{updated_records} updated and #{no_update} unchanged todate"
+          p "#{file.userid}/#{file.file_name}/#{recs}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records} records total, #{updated_records} updated and #{no_update} unchanged todate"
           file.update_attributes(:software_version => version, :search_record_version => search_version)
         else
           message_file.puts "No entries"

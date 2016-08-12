@@ -17,7 +17,7 @@ class Church
 
   belongs_to :place, index: true
   index({ place_id: 1, church_name: 1 })
- 
+
 
   class << self
     def id(id)
@@ -31,7 +31,7 @@ class Church
     self.church_name = self.church_name.strip
     place.churches.each do |church|
       if church.church_name == self.church_name
-         return false, "Church of that name already exits"
+        return false, "Church of that name already exits"
       end
     end
     return true, "OK"
@@ -54,25 +54,25 @@ class Church
     place = self.place
     place_name = place.place_name
     self.registers.no_timeout.each do |register|
-        location_names = []
-        location_names << "#{place_name} (#{self.church_name})"
-        location_names  << " [#{RegisterType.display_name(register.register_type)}]"
-        register.freereg1_csv_files.no_timeout.each do |file|
-          file.freereg1_csv_entries.no_timeout.each do |entry|
-            if entry.search_record.nil?
-              logger.info "FREEREG:search record missing for entry #{entry._id}" 
-            else 
-              entry.update_attributes(:place => place_name, :church_name => self.church_name)
-              record  = entry.search_record
-              record.update_attributes(:location_names => location_names,:place_id => place.id, :chapman_code => place.chapman_code)
-            end
+      location_names = []
+      location_names << "#{place_name} (#{self.church_name})"
+      location_names  << " [#{RegisterType.display_name(register.register_type)}]"
+      register.freereg1_csv_files.no_timeout.each do |file|
+        file.freereg1_csv_entries.no_timeout.each do |entry|
+          if entry.search_record.nil?
+            logger.info "FREEREG:search record missing for entry #{entry._id}"
+          else
+            entry.update_attributes(:place => place_name, :church_name => self.church_name)
+            record  = entry.search_record
+            record.update_attributes(:location_names => location_names,:place_id => place.id, :chapman_code => place.chapman_code)
           end
-          file.update_attributes(:place => place_name, :church_name => self.church_name)
-        end 
+        end
+        file.update_attributes(:place => place_name, :church_name => self.church_name)
       end
- 
+    end
+
   end
- 
+
   def change_name(param)
     unless self.church_name == param[:church_name]
       param[:church_name] = Church.standardize_church_name(param[:church_name])
@@ -117,7 +117,7 @@ class Church
       return [true, "Error in save of church; contact the webmaster"] if self.errors.any?
     end
     self.propogate_church_name_change
-    PlaceCache.refresh(new_place.chapman_code)
+    PlaceCache.refresh_cache(new_place)
     return [false, ""]
   end
 

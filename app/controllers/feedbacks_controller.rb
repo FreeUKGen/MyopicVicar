@@ -3,7 +3,7 @@ class FeedbacksController < ApplicationController
   skip_before_filter :require_login
 
   def convert_to_issue
-   @feedback = Feedback.id(params[:id]).first
+    @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       if @feedback.github_issue_url.blank?
         @feedback.github_issue
@@ -14,26 +14,27 @@ class FeedbacksController < ApplicationController
         flash.notice = "Issue has already been created on Github."
         redirect_to :action => "show"
         return
-      end 
+      end
     else
       go_back("feedback",params[:id])
     end
   end
 
   def create
-    @feedback = Feedback.new(params[:feedback])
+
+    @feedback = Feedback.new(feedback_params)
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
-    @feedback.session_data = session
+    @feedback.session_data = session.to_hash
     @feedback.save
     if @feedback.errors.any?
-       flash.notice = "There was a problem reporting your feedback!"
+      flash.notice = "There was a problem reporting your feedback!"
       render :action => 'new'
       return
     end
     flash.notice = "Thank you for your feedback!"
     @feedback.communicate
-    redirect_to :action => 'new'
+    redirect_to session.delete(:return_to)
   end
 
   def destroy
@@ -45,22 +46,23 @@ class FeedbacksController < ApplicationController
       return
     else
       go_back("feedback",params[:id])
-    end 
+    end
   end
 
   def edit
+    session[:return_to] ||= request.referer
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       if @feedback.github_issue_url.present?
         flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
         redirect_to :action => 'show'
         return
-      end 
+      end
     else
       go_back("feedback",params[:id])
-    end   
+    end
   end
-  
+
   def index
     @feedbacks = Feedback.all.order_by(feedback_time: -1)
   end
@@ -90,7 +92,9 @@ class FeedbacksController < ApplicationController
   end
 
   def new
-    @feedback = Feedback.new(params)
+    session[:return_to] ||= request.referer
+    get_user_info_from_userid
+    @feedback = Feedback.new(new_params)
   end
 
   def select_by_identifier
@@ -104,7 +108,7 @@ class FeedbacksController < ApplicationController
     @prompt = 'Select Identifier'
     render '_form_for_selection'
   end
- 
+
   def show
     get_user_info_from_userid
     @feedback = Feedback.id(params[:id]).first
@@ -112,18 +116,28 @@ class FeedbacksController < ApplicationController
       @feedback
     else
       go_back("feedback",params[:id])
-    end 
+    end
   end
- 
+
   def update
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
-      @feedback.update_attributes(params[:feedback])
+      @feedback.update_attributes(feedback_params)
       redirect_to :action => 'show'
       return
     else
       go_back("feedback",params[:id])
-    end     
+    end
   end
 
+  private
+  def feedback_params
+    params.require(:feedback).permit!
+  end
+  def new_params
+    params.delete('utf8')
+    params.delete('controller')
+    params.delete('action')
+    params.permit!
+  end
 end

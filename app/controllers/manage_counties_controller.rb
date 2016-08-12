@@ -52,7 +52,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = "uploaded_date DESC"
-   redirect_to freereg1_csv_files_path
+    redirect_to freereg1_csv_files_path
   end
 
   def display_by_filename
@@ -62,7 +62,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = "file_name ASC"
-    redirect_to freereg1_csv_files_path 
+    redirect_to freereg1_csv_files_path
   end
 
 
@@ -76,11 +76,20 @@ class ManageCountiesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
 
+  def display_files_waiting_to_be_processed
+    @batches = ManageCounty.get_waiting_files_for_county(session[:county])
+    @number = @batches.length if @batches.present?
+    @person = session[:county]
+    @sorted_by = "; waiting to be processed "
+    render 'physical_files/index'
+  end
+
+
   def get_counties_for_selection
     @counties = @user.county_groups
     @countries = @user.country_groups
-    if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || 
-      @user.person_role == 'documentation_coordinator' || @user.person_role == "contacts_coordinator"
+    if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' ||
+        @user.person_role == 'documentation_coordinator' || @user.person_role == "contacts_coordinator"
       @countries = Array.new
       counties = County.all.order_by(chapman_code: 1)
       counties.each do |county|
@@ -125,6 +134,7 @@ class ManageCountiesController < ApplicationController
     @options = @counties
     @prompt = 'Please select one'
     @manage_county = ManageCounty.new
+    @location = 'location.href= "/manage_counties/" + this.value +/selected/'
   end
 
   def place_range
@@ -141,7 +151,7 @@ class ManageCountiesController < ApplicationController
       end
     else
       flash[:notice] = 'You did not make a range selection'
-       redirect_to :action => 'select_action'
+      redirect_to :action => 'select_action'
       return
     end
   end
@@ -188,14 +198,18 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
 
-  def show
-    redirect_to :action => 'new'
+  def selected
+    session[:chapman_code] = params[:id]
+    @county = ChapmanCode.has_key(session[:chapman_code])
+    session[:county] = @county
+    redirect_to :action => 'select_action'
+
   end
 
   def selection
     redirect_to :action => 'new'
   end
- 
+
   def select_action
     clean_session_for_county
     get_user_info_from_userid
@@ -204,6 +218,11 @@ class ManageCountiesController < ApplicationController
     @options= UseridRole::COUNTY_MANAGEMENT_OPTIONS
     @prompt = 'Select Action?'
   end
+  def show
+    redirect_to :action => 'new'
+  end
+
+
 
   def upload_batch
     redirect_to new_csvfile_path
@@ -254,4 +273,5 @@ class ManageCountiesController < ApplicationController
     @prompt = 'Select Place'
     render '_form_for_selection'
   end
+
 end

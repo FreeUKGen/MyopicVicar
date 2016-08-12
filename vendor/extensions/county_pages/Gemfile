@@ -2,7 +2,9 @@ source "http://rubygems.org"
 
 gemspec
 
-gem 'refinerycms', '~> 2.1.0'
+gem 'refinerycms', '~> 3.0', '>= 3.0.3'
+
+gem "refinerycms-wymeditor", "~> 1.0"
 
 # Database Configuration
 platforms :jruby do

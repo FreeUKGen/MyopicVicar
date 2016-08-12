@@ -57,7 +57,7 @@ class Place
 
   validate :grid_reference_or_lat_lon_present_and_valid
 
-  before_save :add_location_if_not_present
+  before_save :add_location_if_not_present, :add_country
 
   after_create :update_places_cache
 
@@ -85,7 +85,7 @@ class Place
       'miles' => ENGLISH,
       'kilometers' => SI
     }
-     def self.system_to_units(system)
+    def self.system_to_units(system)
       OPTIONS.invert[system]
     end
   end
@@ -97,7 +97,7 @@ class Place
 
     def id(id)
       where(:id => id)
-    end 
+    end
 
     def chapman_code(chapman)
       where(:chapman_code => chapman)
@@ -126,6 +126,10 @@ class Place
 
   def ucf_record_ids
     self.ucf_list.values.inject([]) { |accum, value| accum + value }
+  end
+
+  def add_country
+    self.country = self.get_correct_place_country
   end
 
   def add_location_if_not_present
@@ -200,9 +204,14 @@ class Place
       self.propogate_place_name_change
       self.propogate_batch_lock
       self.recalculate_last_amended_date
-      PlaceCache.refresh(self.chapman_code)
+      PlaceCache.refresh_cache(self)
     end
     return [false, ""]
+  end
+
+  def check_place_country?
+    self.country.present? ? result = true : result = false
+    result
   end
 
   def data_contents
@@ -243,6 +252,16 @@ class Place
     @names
   end
 
+  def get_correct_place_country
+    chapman = self.chapman_code
+    ChapmanCode::CODES.each_pair do |key,value|
+      if value.has_value?(chapman)
+        country = key
+        return country
+      end
+    end
+  end
+
   def grid_reference_or_lat_lon_present_and_valid
     #in addition to checking for validities it also sets the location
     if self[:grid_reference].blank?
@@ -270,7 +289,7 @@ class Place
     return [false, "This was the unapproved place name, merge into the other"] if self.error_flag == "Place name is not approved"
     all_places = Place.chapman_code(self.chapman_code).place(self.place_name).all
     all_places.each do |place|
-      unless place._id == self._id     
+      unless place._id == self._id
         if place.has_input?
           return [false, "a place being merged has input"]
         end
@@ -285,7 +304,7 @@ class Place
         place.delete
       end
     end
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh_cache(self)
     return [true, ""]
   end
 
@@ -357,8 +376,8 @@ class Place
 
 
   def update_ucf_list(file)
-    ids = file.search_record_ids_with_wildcard_ucf  
-    self.ucf_list[file.id] = ids if ids && ids.size > 0
+    ids = file.search_record_ids_with_wildcard_ucf
+    self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
   end
 
   def recalculate_last_amended_date
@@ -373,7 +392,7 @@ class Place
         church.update_attribute(:last_amended, register.last_amended) if (Freereg1CsvFile.convert_date(register.last_amended ) > Freereg1CsvFile.convert_date(church.last_amended))
       end #end of register
       self.update_attribute(:last_amended, church.last_amended) if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(self.last_amended))
-    end #end of church 
+    end #end of church
     self.update_data_present
   end
 
@@ -400,7 +419,7 @@ class Place
       return [true, "Error in save of place; contact the webmaster"]
     end
     self.propogate_county_change
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh_cache(self)
     return [false, ""]
   end
 
@@ -425,6 +444,10 @@ class Place
       self.update_attribute(:data_present,false)
     end
   end
-  
- 
+
+
+  def update_places_cache
+    PlaceCache.refresh_cache(self)
+  end
+
 end

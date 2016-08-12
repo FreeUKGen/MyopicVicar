@@ -1,6 +1,6 @@
 <% breadcrumb :denominations%>
 <h2 class="text--center"> List of Denominations</h2>
-<div style="text-align: center"><%= link_to 'Create New Denomination', new_denomination_path %></div>
+<div style="text-align: center"><%= link_to 'Create New Denomination',new_denomination_path, method: :get , :class => "btn weight--light btn--small"  %></div>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>

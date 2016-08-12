@@ -23,13 +23,12 @@ MyopicVicar::Application.configure do
   config.action_controller.perform_caching = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_assets = false
-
+  config.serve_static_files = false
   # Compress JavaScripts and CSS
   config.assets.compress = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Generate digests for assets URLs
   config.assets.digest = true
@@ -45,7 +44,7 @@ MyopicVicar::Application.configure do
   # config.force_ssl = true
 
   # See everything in the log (default is :info)
-  #config.log_level = :warn
+  config.log_level = :info
 
   # Prepend all log lines with the following tags
   #config.log_tags = [ :subdomain, :uuid ]
@@ -60,7 +59,7 @@ MyopicVicar::Application.configure do
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-  # config.assets.precompile += %w( search.js )
+  #config.assets.precompile += %w( search.js )
 
   # Disable delivery errors, bad email addresses will be ignored
   if config.respond_to?(:action_mailer)
@@ -103,6 +102,13 @@ MyopicVicar::Application.configure do
   config.member_open = MyopicVicar::MongoConfig['member_open']
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
   config.fc_parms_upload_dir = MyopicVicar::MongoConfig['fc_parms_upload_dir'] unless MyopicVicar::MongoConfig['fc_parms_upload_dir'].blank?
-  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
+  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support'] unless MyopicVicar::MongoConfig['wildcard_support'].blank?
+  config.ucf_support = MyopicVicar::MongoConfig['ucf_support'] unless MyopicVicar::MongoConfig['ucf_support'].blank?
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
+  config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
+  config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
+  config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
+  #rails 4 changes
+  config.eager_load = true
+
 end

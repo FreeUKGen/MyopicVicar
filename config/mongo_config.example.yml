@@ -9,13 +9,15 @@ development:
   files_for_processing: # location of file to hold list of files for overnight processing eg 'm:/processing.delta'
   delete_list: #location of a file to hold the list of files for overnight deletion of entries and search records eg 'm:/delete_list.txt'
   member_open: # a value of true means system is open for login; false it is under maintenance. SA and technical can still login
-  wildcard_support: # true of false for wildcard UI
+  ucf_support: # true of false for wildcard UI
   witness_support: # true of false for witness UI
   github_issues_login: #login for issues
   github_issues_password: #password for issues
   github_issues_repo: #as stated
   days_to_retain_search_queries: #as stated
-
+  max_search_time: #as stated
+  our_secret_key: #password secret key
+  secret_key_base: #secrets secret key base
 test:
   mongodb_bin_location: 
   datafiles: 
@@ -27,7 +29,9 @@ test:
   files_for_processing: 
   delete_list: 
   member_open: 
-
+  max_search_time: #as stated
+  our_secret_key: #password secret key
+  secret_key_base: #secrets secret key base
 production:
   mongodb_bin_location: 
   datafiles: 
@@ -39,8 +43,11 @@ production:
   files_for_processing: 
   delete_list: 
   member_open:
-  wildcard_support: 
+  ucf_support: 
   github_issues_login: 
   github_issues_password: 
   github_issues_repo:
   days_to_retain_search_queries: 
+  max_search_time: #as stated
+  our_secret_key: #password secret key
+  secret_key_base: #secrets secret key base

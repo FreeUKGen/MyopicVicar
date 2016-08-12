@@ -177,7 +177,7 @@ describe Freecen1VldFile do
       dwelling.freecen_individuals.each_with_index do |individual,i|
         query_params = { :first_name => individual.forenames,
                          :last_name => individual.surname,
-                         :record_types => [record_type],
+                         :record_type => record_type,
                          :inclusive => false }
         q = SearchQuery.new(query_params)
         q.save!(:validate => false)
@@ -220,7 +220,7 @@ describe Freecen1VldFile do
         result = q.results
  
 #        print "#{index} => #{individual.search_record.search_dates.first[0..3]}, # #{individual.age}#{individual.age_unit}\n"
-        binding.pry if result.count == 0
+        binding.pry if result.count == 0 && false
         result.count.should be >= 1
         SearchRecord.delete_all
       end

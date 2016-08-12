@@ -18,13 +18,11 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-MyopicVicar::Application.config.secret_token = if Rails.env.development? or Rails.env.test?
-  ('x' * 30) # meets minimum requirement of 30 chars long
+secret_token = "#{Rails.root}/config/secrets.yml"
+if File.exists?(secret_token)
+  YAML.load_file(secret_token)[Rails.env].each do |key, value|
+    MyopicVicar::Application.config.secret_token = value
+  end
 else
-	secret_token = "#{Rails.root}/config/secrets.yml"
-	if File.exists?(secret_token)
-		YAML.load_file(secret_token)[Rails.env].each do |key, value|
-      MyopicVicar::Application.config.secret_token = value
-		end
-	end
+  MyopicVicar::Application.config.secret_token = ('x' * 30)
 end

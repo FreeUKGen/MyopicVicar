@@ -1,8 +1,8 @@
 class PlaceCache
   require 'freecen_constants'
   include Mongoid::Document
-  attr_accessible :chapman_code, :places_json
-
+  field :chapman_code, type: String
+  field :places_json, type: String
 
   def self.refresh(inspect_churches, county)
     PlaceCache.where(:chapman_code => county).destroy_all
@@ -38,7 +38,9 @@ class PlaceCache
         end
       end
     end
-    PlaceCache.create!({ :chapman_code => county, :places_json => county_response.to_json})
+    cache = PlaceCache.new
+    cache.update_attributes({ :chapman_code => county, :places_json => county_response.to_json})
+    cache.save!
   end
 
 
@@ -47,6 +49,11 @@ class PlaceCache
     ChapmanCode::values.each do |chapman_code|
       refresh(inspect_churches, chapman_code)
     end
-
   end
+
+  def self.refresh_cache(place)
+    cache = PlaceCache.where(:chapman_code => place.chapman_code).first
+    PlaceCache.refresh(false, place.chapman_code) if cache.blank? || !cache.places_json.include?(place.place_name)
+  end
+
 end

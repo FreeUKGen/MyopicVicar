@@ -67,7 +67,8 @@ class Freereg1CsvEntry
   field :person_age, type: String
   field :person_forename, type: String
   field :person_sex, type: String
-  field :place, type: String
+  field :place, type: String #every where else this is place_name
+
   field :register, type: String
   field :register_entry_number, type: String
   field :register_type, type: String
@@ -85,6 +86,7 @@ class Freereg1CsvEntry
   field :error_flag, type:String, default: 'false'
   field :record_type, type: String
   field :record_digest, type: String
+  field :location, type: String
 
   belongs_to :freereg1_csv_file, index: true
 
@@ -111,6 +113,25 @@ class Freereg1CsvEntry
   class << self
     def id(id)
       where(:id => id)
+    end
+    def delete_entries_for_a_file(fileid)
+      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => fileid).all.no_timeout
+      p "#{entries.length}" unless entries.nil?
+      entries.destroy_all
+    end
+    def update_entries_userid(userid,batch)
+      batch.freereg1_csv_entries.each do |entry|
+        line = entry.line_id
+        if line.present?
+          line_parts = line.split('.')
+          line_parts[0] = userid
+          line = line_parts.join('.')
+        else
+          line = (userid + "." + self.file_name + "." + entry.file_line_number.to_s).to_s
+        end
+        entry.update_attribute(:line_id,line)
+      end
+      true
     end
   end
 
@@ -319,7 +340,7 @@ class Freereg1CsvEntry
   def multiple_witness_names?
     present = false
     self.multiple_witnesses.each do |witness|
-      if  witness.witness_forname.present? || witness.witness_surname.present?
+      if  witness.witness_forename.present? || witness.witness_surname.present?
         present = true
       end
     end

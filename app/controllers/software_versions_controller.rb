@@ -57,7 +57,7 @@ class SoftwareVersionsController < ApplicationController
     get_user_info_from_userid
     @software = SoftwareVersion.id(params[:id]).first
     if  @software.present?
-      @software.update_attributes(params[:software_version])
+      @software.update_attributes(software_version_params)
       if @software.errors.any?
         flash[:notice] = 'The update of the Version was unsuccessful'
         render :action => 'edit'
@@ -71,5 +71,8 @@ class SoftwareVersionsController < ApplicationController
       go_back("software",params[:id])
     end
   end
-
+  private
+  def software_version_params
+    params.require(:software_version).permit!
+  end
 end

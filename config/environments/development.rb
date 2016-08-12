@@ -37,22 +37,21 @@ MyopicVicar::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
-
+  config.serve_static_files = true
 
   # Do not compress assets
   config.assets.compress = false
 
   # Expands the lines which load the assets
-  config.assets.debug = false
+  config.assets.debug = true
   config.assets.raise_runtime_errors = true
-
-
+  config.assets.compile = true
   # Raise exception on mass assignment protection for Active Record models
-  config.active_record.mass_assignment_sanitizer = :strict
+
 
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
-  config.active_record.auto_explain_threshold_in_seconds = 0.5
+
   #where to store the collections PlaceChurch
   config.mongodb_collection_temp = File.join(Rails.root,'tmp')
   #Where the collections are stored
@@ -77,6 +76,14 @@ MyopicVicar::Application.configure do
   config.member_open = MyopicVicar::MongoConfig['member_open']
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
   config.fc_parms_upload_dir = MyopicVicar::MongoConfig['fc_parms_upload_dir'] unless MyopicVicar::MongoConfig['fc_parms_upload_dir'].blank?
-  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support']
+  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support'] unless MyopicVicar::MongoConfig['wildcard_support'].blank?
+  config.ucf_support = MyopicVicar::MongoConfig['ucf_support'] unless MyopicVicar::MongoConfig['ucf_support'].blank?
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
+  config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
+  config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
+  config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
+  #rails 4 changes
+  config.eager_load = false
+  #config.active_record.auto_explain_threshold_in_seconds = 0.5
+  #config.active_record.mass_assignment_sanitizer = :strict
 end

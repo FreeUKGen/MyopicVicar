@@ -1,36 +1,36 @@
-<p style="text-align: center"><b>Syndicate Detail Management</b></p>
-
+<% breadcrumb :syndicates%>
+<h2 class=" text--center">Listing of all syndicates</h2>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+<%= flash[:notice] %>  <% flash[:notice] = nil%> <br></div>
 <% end %>
+<div style="text-align: center"> <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn weight--light btn--small" if @user.person_role == "system_administrator"%></div>
+<div class="grid">
+  <section class="island  ">
+    <div class="grid__item one-whole" >
+      <table  class="table--bordered   table--data">
+        <tr>
+          <th class="t8">Syndicate</th>
+          <th class="t8">Syndicate Coordinator</th>
+          <th class="t8">email address</th>
+          <th class="t8">Accepting Transcribers?</th>
+          <% if @user.person_role == "system_administrator"%>
+          <th class="t8">Show</th>
+          <th class="t8">Edit</th>
+          <% end%>
+        </tr>
+        <% @syndicates.each do |syndicate| %>
+        <tr id="<%=syndicate.id%>">
+          <td > <%= syndicate.syndicate_code %>  </td>
+          <td > <%= syndicate.syndicate_coordinator %>  </td>
+          <td > <%= email_address(syndicate.syndicate_coordinator) %>  </td>
+          <td > <%= syndicate.accepting_transcribers %>  </td>
+          <% if @user.person_role == "system_administrator"%>
+          <td><%= link_to 'Show', syndicate_path(syndicate), method: :get , :class => "btn weight--light btn--small" %></td><td><%= link_to 'Edit details', edit_syndicate_path(syndicate), method: :get, :class => "btn weight--light btn--small" %></td>
+        </tr>
+        <% end %>
+        <% end %>
+      </table>
+    </div>
+  </section>  
 </div>
- <div style="text-align: center"> <%= button_to 'Create new syndicate', new_syndicate_path, method: :get  if @user.person_role == "system_administrator"%></div>
- 
-<div id="main"style="color:black">
-  <table  class="table--bordered  table--striped  table--data">
-    <tr>
-
-      <th class="t8">Syndicate</th>
-      <th class="t8">Syndicate Coordinator</th>
-      <th class="t8">email address</th>
-      <th class="t8">Accepting Transcribers?</th>
-      <th class="t8">Show</th>
-      <th class="t8">Edit</th>
-    </tr>
-
-    <% @syndicates.each do |syndicate| %>
-    <tr id="<%=syndicate.id%>">
-     <td > <%= syndicate.syndicate_code %>  </td>
-     <td > <%= syndicate.syndicate_coordinator %>  </td>
-     <td > <%= email_address(syndicate.syndicate_coordinator) %>  </td>   
-     <td > <%= syndicate.accepting_transcribers %>  </td>   
-     <td><%= button_to 'Show', syndicate_path(syndicate), method: :get  %></td><td><%= button_to 'Edit details', edit_syndicate_path(syndicate), method: :get  if @user.person_role == "system_administrator"%>
-    </tr>
-   <% end %>
-
- </table>
-</div>
-
-
-

@@ -23,7 +23,7 @@ task :delete_file,[:limit] => [:environment] do |t, args|
     p "starting"
     delete_files.each  do |line|
       files = files + 1
-      break if files == args.limit.to_i 
+      break if files == args.limit.to_i
       parts = line.split(",")
       line = line.chomp
       p " Starting #{files}  #{parts[0]},#{parts[1]},#{parts[2]}"
@@ -33,12 +33,12 @@ task :delete_file,[:limit] => [:environment] do |t, args|
           record_number = record_number + 1
           output_file.puts "#{entry.line_id},#{entry.county}, #{entry.place},#{entry.church_name}, #{entry.register_type}, #{entry.record_type}" if record_number == 1
           entry.destroy
-          sleep(sleep_time_twenty)
+          sleep(Rails.application.config.sleep.to_f)
         end
         output_file.puts "#{record_number} records deleted for #{line}"
         puts "#{record_number} records deleted for #{line}"
         total_records = total_records + record_number
-        sleep(sleep_time_one_hundred)
+        sleep(sleep_time_twenty)
       else
         p "no records for that file id"
         output_file.puts "no records for that file id"

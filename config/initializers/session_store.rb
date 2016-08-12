@@ -14,12 +14,12 @@
 #
 # Be sure to restart your server when you modify this file.
 
-MyopicVicar::Application.config.session_store :cookie_store, key: '_MyopicVicar_session'
+MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeReg_session'
 
 if Rails.env.production?
   MyopicVicar::Application.config.session_store :cookie_store,
-     :key => '_MyopicVicar_session',
-     :expire_after => 2.hours
+    :key => 'FreeReg_session',
+    :expire_after => 2.hours
 end
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information
