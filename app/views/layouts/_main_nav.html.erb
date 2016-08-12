@@ -21,20 +21,20 @@
         <li>
           <% get_user_info_from_userid %>
           <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
-            <%= link_to "Help", "../cms/information-for-transcribers" %>
+            <%= link_to "Help", "/cms/information-for-transcribers" %>
           <% elsif @user.person_role == 'researcher'%>
-            <%= link_to "Help", "../cms/registered-researchers" %>
+            <%= link_to "Help", "/cms/registered-researchers" %>
           <% else %>
-            <%= link_to "Help", "../cms/information-for-coordinators" %>
+            <%= link_to "Help", "/cms/information-for-coordinators" %>
           <% end %>
         </li>
         <% else %>
         <li>
-          <%= link_to "About", "../cms/about" %>
+          <%= link_to "About", "/cms/about" %>
         </li>
         <!-- TODO: Convert remainder to refinery page references -->
         <li>
-          <%= link_to "Donate", "../cms/donate" %>
+          <%= link_to "Donate", "/cms/donate" %>
         </li>
         <li>
           <%= link_to "Volunteer", main_app.transcriber_registration_userid_detail_path %>
@@ -43,7 +43,7 @@
           <%= link_to "Members", refinery.login_path %>
         </li>     
         <li>
-          <%= link_to "Help", "../cms/help" %>
+          <%= link_to "Help", "/cms/help" %>
         </li>
         <% end %>
       </ul>
