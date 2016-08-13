@@ -10,7 +10,7 @@ class FreecenParms
   field :file_name,type: String
   field :process,type: String, default: "Process tonight"
   field :warnings, type: Array, default: []
-  field :errors, type: Array, default: []
+# BWB mongoid error  field :errors, type: Array, default: []
   field :locked, type: Boolean, default: false
   # files are stored in Rails.application.config.datafiles_changeset
   #validate :csvfile_already_exists, on: :create
