@@ -103,7 +103,7 @@ MyopicVicar::Application.configure do
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
   config.fc_parms_upload_dir = MyopicVicar::MongoConfig['fc_parms_upload_dir'] unless MyopicVicar::MongoConfig['fc_parms_upload_dir'].blank?
   config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support'] unless MyopicVicar::MongoConfig['wildcard_support'].blank?
-  config.ucf_support = MyopicVicar::MongoConfig['ucf_support'] unless MyopicVicar::MongoConfig['ucf_support'].blank?
+  config.ucf_support = MyopicVicar::MongoConfig['ucf_support']
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
