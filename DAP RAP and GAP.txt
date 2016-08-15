@@ -5,7 +5,7 @@ The current data model for Freereg2 supports searches of Events(1) that occurred
 (2) Transcription. A TWYS digital version of the original event
 (3) Physical File. A set of unprocessed original transcriptions of events in a CSV data interchange format. A file only has one event type. The size of the set is from a few hundred to 2 thousand.
 (4) Batch. A group of processed transcription for the same register/church/place. There can be 1 or more batches in a physical file
-(5) Register. The original document that contained events. Its description include a name, alternate name and type as well as other information.
+(5) Register. The original document that contained events. Its description include a name, alternate name and type as well as other information. As part of the RAP a register could have many books and a book can have many chapters and a chapter can have many sections and a section many images.
 (6) Church. A religious institution or entity that has created Register(s) of Events
 (7) Place. A physical location in the UK. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/)
 
