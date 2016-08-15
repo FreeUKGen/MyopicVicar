@@ -1,0 +1,26 @@
+The current data model for Freereg2 supports searches of Events(1) that occurred for person somewhere in the UK. It was built as a database of Transcriptions(2) of these events. These transcriptions are organized into Physical File(3) by the transcriber with each file containing a set of transcriptions for a single type of event; these are produced either off-line or on-line. A physical file is processed into Batches(3) of events for the same register/church/place. A batch belongs to a Register(5). Each register belongs to a Church (6) and a church can have many registers. A church is located in a specific Place (7) 
+
+
+(1) Event: an occurrence of a baptism (birth), marriage or burial (death) for a person that usually specified a date
+(2) Transcription. A TWYS digital version of the original event
+(3) Physical File. A set of unprocessed original transcriptions of events in a CSV data interchange format. A file only has one event type. The size of the set is from a few hundred to 2 thousand.
+(4) Batch. A group of processed transcription for the same register/church/place. There can be 1 or more batches in a physical file
+(5) Register. The original document that contained events. Its description include a name, alternate name and type as well as other information.
+(6) Church. A religious institution or entity that has created Register(s) of Events
+(7) Place. A physical location in the UK. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/)
+
+To met a researchers' need to know if we have actually transcribed events that might contain events that are of interest to them. We provide the  (Data Availability Pages) DAP. From those pages the researcher can get the number of transcribed events by type and decade for every Place/Church/Register for which we have data as well as by whom. A similar system provides county coordinators with the ability to determine what has been transcribed and when.
+
+The researcher also has a need to know if we have and/or are transcribing other events and the date range of those events for Places and Churches of interest to them. This is currently not supported but has been termed the (Register or Record Availability Pages) RAP. In addition the researcher needs to know if there are gaps in a register for whatever reason that might be the reason that they were unable to find an event in the records. This has been termed the GAP
+
+RAP Requirements.
+
+Researcher needs to find out R1) what registers are currently available to FR and not being transcribed and for which Place and Church; R2) the date range of events for each of those register; R3) what registers are currently being transcribed and for which Place and Church; R4) the date range of events for each of those register.
+Transcriber needs to find out R1) and R2) above; they also need to know R5) the complexity or skill requirement to transcribe specific data ranges; and R6) who to approach to get part of the register assigned to them for transcription.
+Coordinator needs to find out/set R1),R2), R3), R4) and R5) above. In addition they need to set ownership and any copyright/licensing information for the register. They MAY need/wish to create subsets of a register.
+
+GAP Requirements.
+(We need to define what a GAP is)
+Researcher need to know G1) the range of dates for which events in a register may not exist, for what reason and for which Place and Church.
+Transcriber needs to be able to record the G1)  
+Coordinator needs to be able to record the G1)
