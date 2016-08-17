@@ -8,15 +8,15 @@
       <i class="icon__cancel" aria-hidden="true"></i>
     </button>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-      <%= link_to root_url, class: "site__header__logo  icon__freereg" do %>
+      <%= link_to '/', class: "site__header__logo  icon__freereg" do %>
         <h1 class="accessibility">FreeReg</h1>
       <% end %>
     <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-      <%= link_to root_url, class: "site__header__logo  icon__freecen" do %>
+      <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
         <h1 class="accessibility">FreeCen</h1>
       <% end %>
     <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-      <%= link_to root_url, class: "site__header__logo  icon__freebmd" do %>
+      <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
         <h1 class="accessibility">FreeBMD</h1>
       <% end %>
     <% end %>
