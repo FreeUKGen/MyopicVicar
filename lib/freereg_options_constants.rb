@@ -123,8 +123,8 @@ module FreeregOptionsConstants
     'Wilfreds' => 'Wilfred',
     'Wilfrid\'s' => 'Wilfrid',
     'Cemetry' => 'Cemetery',
-    'Marys' => 'Mary',
-    "Mary\'s" => 'Mary',
+#    'Marys' => 'Mary',      #duplicate key
+#    "Mary\'s" => 'Mary',    #duplicate key
     "Marys\'" => 'Mary',
     'Nicholas\'' => 'Nicholas'
   }
