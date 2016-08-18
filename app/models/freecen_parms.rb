@@ -1,20 +1,15 @@
 class FreecenParms
   require 'freecen_constants'
+  require 'csv'
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   field :userid, type: String # person who uploaded it
   field :year, type: String
   field :chapman, type: String
-  field :parms_type, type: String # dat, csv, or csv_fc2 (includes lat/long)
   field :file_name,type: String
   field :process,type: String, default: "Process tonight"
-  field :warnings, type: Array, default: []
-# BWB mongoid error  field :errors, type: Array, default: []
   field :locked, type: Boolean, default: false
-  # files are stored in Rails.application.config.datafiles_changeset
-  #validate :csvfile_already_exists, on: :create
-#  mount_uploader :freecen_parms_upl, FreecenParmsUploader
 
   #load a freecen1 ctyPARMS.CSV file and check the format, returning a list
   #of errors or warnings about non-conformance to the defined file format.
@@ -27,11 +22,6 @@ class FreecenParms
     parm_lines = CSV.parse(raw_file)
     parse_result = parse_parms_csv_lines(parm_lines)
     return parse_result
-    # {'chapman'=>chapman, 'year'=>year, 'errors'=>parm_errors, 'warnings'=>parm_warnings, 'info'=>parm_info, 'add'=>parm_additions, 'change'=>parm_changes, 'delete'=>parm_deletions, 'data'=>parm_lines}
-  end
-
-  def self.get_parms_lines_changes(parms_lines_old, parms_lines_new)
-    
   end
 
   def self.parse_parms_csv_lines(parm_lines, fc1_errors=true)
@@ -126,16 +116,15 @@ class FreecenParms
 
   #this function converts a FreeCen1 parms.dat string into ctyPARMS.CSV format
   # (the inverse operation of PARMSBLD.BAS). This is for convenience and debug
-  # purposes only.  No error checking is done. The result is a hash including
-  # the resulting csv string, csv array of line arrays, list of errors, and
-  # list of warnings
+  # purposes only.  The result is a hash including
+  # the resulting csv string, csv array of line arrays, list of errors
   def self.parms_csv_and_errors_from_parms_dat(parms_dat_string)
     csv_lines = []
     csv_string = ''
-    errors = []
+    dat_errors = []
     numlines = (parms_dat_string / 64).to_i
     if numlines != parms_dat_string / 64.0
-      errors[errors.length] = "Invalid parms.dat input- length must be a multiple of 64 characters."
+      dat_errors[dat_errors.length] = "Invalid parms.dat input- length must be a multiple of 64 characters."
     else
       [0..numlines-1].each do |i|
         line = parms_dat_string[i*64, 64]
@@ -150,11 +139,11 @@ class FreecenParms
         elsif 'b'==a_or_b
           csv_lines[i][3] = line[8,20].strip
         else
-          errors << "Line #{i} does not specify a or b record. Assuming b."
+          dat_errors << "Line #{i} does not specify a or b record. Assuming b."
           csv_lines[i][3] = line[8,20].strip
           a_or_b = 'b'
         end
-        errors << "Line #{i} columns 3 and 4 both empty" if csv_lines[i][2].blank? && csv_lines[i][3].blank? && 0!=i
+        dat_errors << "Line #{i} columns 3 and 4 both empty" if csv_lines[i][2].blank? && csv_lines[i][3].blank? && 0!=i
         csv_lines[i][4] = [28,8].strip
         csv_lines[i][5] = [36,24].strip
         csv_lines[i][6] = [60,3].strip
@@ -170,7 +159,7 @@ class FreecenParms
         end
       end
     end
-    return {'csv_lines'=>csv_lines, 'csv_string'=>csv_string,'errors'=>errors}
+    return {'csv_lines'=>csv_lines, 'csv_string'=>csv_string,'errors'=>dat_errors}
   end
 
   def self.parms_dat_from_parms_csv_lines(parms_lines)
