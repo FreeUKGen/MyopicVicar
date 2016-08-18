@@ -26,57 +26,62 @@ class County
   index ({ chapman_code: 1, previous_county_coordinator: 1 })
 
   class << self
-    def id(id)
-      where(:id => id)
-    end
 
     def chapman_code(chapman)
       where(:chapman_code => chapman)
     end
-  end
 
-  def self.coordinator_name(chapman_code)
-    if chapman_code.nil?
-      #test needed as bots are coming through without a session and hence no chapman code is set
-      coordinator_name = ""
-    else
-      coordinator_userid = County.where(:chapman_code => chapman_code ).first.county_coordinator
-      coordinator_id = UseridDetail.where(:userid => coordinator_userid).first
-      if coordinator_id.nil?
-        coordinator_name = nil
+    def coordinator_name(chapman_code)
+      if chapman_code.nil?
+        #test needed as bots are coming through without a session and hence no chapman code is set
+        coordinator_name = ""
       else
-        coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
+        coordinator_userid = County.where(:chapman_code => chapman_code ).first.county_coordinator
+        coordinator_id = UseridDetail.where(:userid => coordinator_userid).first
+        if coordinator_id.nil?
+          coordinator_name = nil
+        else
+          coordinator_name = coordinator_id.person_forename + "  " + coordinator_id.person_surname
+        end
       end
+      coordinator_name
     end
-    coordinator_name
+
+    def id(id)
+      where(:id => id)
+    end
+
+    def records(chapman)
+      files = Freereg1CsvFile.county(chapman).all
+      record = Array.new
+      records = 0
+      records_ma = 0
+      records_ba = 0
+      records_bu = 0
+      number_files = 0
+      files.each do |file|
+        records = records.to_i + file.records.to_i unless file.records.nil?
+        case file.record_type
+        when "ba"
+          records_ba = records_ba + file.records.to_i unless file.records.nil?
+        when "ma"
+          records_ma = records_ma + file.records.to_i unless file.records.nil?
+        when "bu"
+          records_bu = records_bu + file.records.to_i unless file.records.nil?
+        end
+      end
+      number_files = files.length unless files.blank?
+      record[0] = records
+      record[1] = records_ba
+      record[2] = records_bu
+      record[3] = records_ma
+      record[4] = number_files
+      record
+    end
   end
 
-  def self.records(chapman)
-    files = Freereg1CsvFile.county(chapman).all
-    record = Array.new
-    records = 0
-    records_ma = 0
-    records_ba = 0
-    records_bu = 0
-    number_files = 0
-    files.each do |file|
-      records = records.to_i + file.records.to_i unless file.records.nil?
-      case file.record_type
-      when "ba"
-        records_ba = records_ba + file.records.to_i unless file.records.nil?
-      when "ma"
-        records_ma = records_ma + file.records.to_i unless file.records.nil?
-      when "bu"
-        records_bu = records_bu + file.records.to_i unless file.records.nil?
-      end
-    end
-    number_files = files.length unless files.blank?
-    record[0] = records
-    record[1] = records_ba
-    record[2] = records_bu
-    record[3] = records_ma
-    record[4] = number_files
-    record
+  def  add_lower_case_and_change_userid_fields
+    self.county_coordinator_lower_case = self.county_coordinator.downcase
   end
 
   def update_fields_before_applying(parameters)
@@ -113,8 +118,5 @@ class County
     end #no change in coordinator
     parameters
   end
-  protected
-
-
 
 end
