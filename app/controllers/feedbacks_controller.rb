@@ -26,10 +26,12 @@ class FeedbacksController < ApplicationController
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
     @feedback.session_data = session.to_hash
-    p @feedback.session_data
-    @feedback.session_data["warden.user.authentication_devise_user.key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0]
+
+    @feedback.session_data["warden.user.authentication_devise_user.key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "")
+
     @feedback.session_data["warden.user.authentication_devise_user.key_value"] = @feedback.session_data["warden.user.authentication_devise_user.key"][1]
     @feedback.session_data.delete("warden.user.authentication_devise_user.key")
+    p @feedback.session_data
     @feedback.session_id = session.to_hash["session_id"]
     @feedback.save
     if @feedback.errors.any?
