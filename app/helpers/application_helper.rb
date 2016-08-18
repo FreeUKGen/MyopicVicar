@@ -21,7 +21,7 @@ module ApplicationHelper
     @manager = session[:manager]
     @roles = session[:role]
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @roles = UseridRole::OPTIONS.fetch(session[:role])
+    @roles = UseridRole::OPTIONS.fetch(session[:role]) unless session[:role].blank?
   end
 
 
