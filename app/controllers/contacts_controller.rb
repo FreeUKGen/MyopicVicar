@@ -26,16 +26,14 @@ class ContactsController < ApplicationController
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
       session.delete(:flash)
-      p session
-
       @contact.session_data = session.to_hash
+      #avoid invalid character in warden.user.authentication_devise_user.key key
+      @contact.session_data["warden.user.authentication_devise_user.key_key"] = @contact.session_data["warden.user.authentication_devise_user.key"][0]
+      @contact.session_data["warden.user.authentication_devise_user.key_value"] = @contact.session_data["warden.user.authentication_devise_user.key"][1]
+      @contact.session_data.delete("warden.user.authentication_devise_user.key")
       @contact.session_id = session.to_hash["session_id"]
-      p @contact.session_data
-      p @contact.session_id
       @contact.previous_page_url= request.env['HTTP_REFERER']
-      p @contact
       if @contact.save
-        p @contact
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
         if @contact.query
