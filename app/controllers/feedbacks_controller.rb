@@ -27,11 +27,9 @@ class FeedbacksController < ApplicationController
     session.delete(:flash)
     @feedback.session_data = session.to_hash
 
-    @feedback.session_data["warden.user.authentication_devise_user.key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "")
-
-    @feedback.session_data["warden.user.authentication_devise_user.key_value"] = @feedback.session_data["warden.user.authentication_devise_user.key"][1]
+    @feedback.session_data["warden_user_authentication_devise_user_key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "")
+    @feedback.session_data["warden_user_authentication_devise_user_key_value"] = @feedback.session_data["warden.user.authentication_devise_user.key"][1]
     @feedback.session_data.delete("warden.user.authentication_devise_user.key")
-    p @feedback.session_data
     @feedback.session_id = session.to_hash["session_id"]
     @feedback.save
     if @feedback.errors.any?
