@@ -26,9 +26,16 @@ class ContactsController < ApplicationController
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
       session.delete(:flash)
-      @contact.session_data = session
+      p session
+
+      @contact.session_data = session.to_hash
+      @contact.session_id = session.to_hash["session_id"]
+      p @contact.session_data
+      p @contact.session_id
       @contact.previous_page_url= request.env['HTTP_REFERER']
+      p @contact
       if @contact.save
+        p @contact
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
         if @contact.query

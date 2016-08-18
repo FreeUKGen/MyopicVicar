@@ -80,7 +80,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.website(self,ccs).deliver
+    UserMailer.website(self,ccs).deliver_now
   end
 
   def communicate_data_question
@@ -93,7 +93,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.datamanager_data_question(self,ccs).deliver
+    UserMailer.datamanager_data_question(self,ccs).deliver_now
   end
 
   def communicate_data_problem
@@ -103,7 +103,7 @@ class Contact
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
-    UserMailer.coordinator_data_problem(self,ccs).deliver
+    UserMailer.coordinator_data_problem(self,ccs).deliver_now
   end
 
 
@@ -120,7 +120,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.publicity(self,ccs).deliver
+    UserMailer.publicity(self,ccs).deliver_now
   end
 
   def communicate_genealogical_question
@@ -136,7 +136,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.genealogy(self,ccs).deliver
+    UserMailer.genealogy(self,ccs).deliver_now
   end
 
   def communicate_enhancement_suggestion
@@ -152,7 +152,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.enhancement(self,ccs).deliver
+    UserMailer.enhancement(self,ccs).deliver_now
   end
 
   def communicate_volunteering
@@ -168,7 +168,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.volunteer(self,ccs).deliver
+    UserMailer.volunteer(self,ccs).deliver_now
   end
 
   def communicate_general
@@ -181,7 +181,7 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.general(self,ccs).deliver
+    UserMailer.general(self,ccs).deliver_now
   end
 
   def get_coordinator
