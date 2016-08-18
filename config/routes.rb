@@ -150,9 +150,8 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
   get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
-# DOUG TO FIX
-#  get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
-#  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :show_freecen_coverage
+  get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_edit_freecen_coverage
+  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :graph_freecen_coverage
 
 
 
