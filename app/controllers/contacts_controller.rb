@@ -28,9 +28,9 @@ class ContactsController < ApplicationController
       session.delete(:flash)
       @contact.session_data = session.to_hash
       #avoid invalid character in warden.user.authentication_devise_user.key key
-      @contact.session_data["warden_user_authentication_devise_user_key_key"] = @contact.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "")
-      @contact.session_data["warden_user_authentication_devise_user_key_value"] = @contact.session_data["warden.user.authentication_devise_user.key"][1]
-      @contact.session_data.delete("warden.user.authentication_devise_user.key")
+      @contact.session_data["warden_user_authentication_devise_user_key_key"] = @contact.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "") unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
+      @contact.session_data["warden_user_authentication_devise_user_key_value"] = @contact.session_data["warden.user.authentication_devise_user.key"][1] unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
+      @contact.session_data.delete("warden.user.authentication_devise_user.key")  unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
       if @contact.save
