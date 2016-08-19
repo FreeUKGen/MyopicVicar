@@ -20,7 +20,7 @@
         </li>
         <li>
           <% get_user_info_from_userid %>
-          <% if  @user.person_role.present? %>
+          <% if @user.present? && @user.person_role.present? %>
           <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
           <%= link_to "Help", "/cms/information-for-transcribers" %>
           <% elsif @user.person_role == 'researcher'%>
