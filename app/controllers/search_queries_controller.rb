@@ -1,7 +1,8 @@
 class SearchQueriesController < ApplicationController
-  skip_before_filter :require_login
-  skip_before_filter :require_cookie_directive, :only => :new
-  before_filter :check_for_mobile, :only => :show
+  skip_before_action :require_login
+  skip_before_action :require_cookie_directive, :only => :new
+  skip_before_action :verify_authenticity_token
+  before_action :check_for_mobile, :only => :show
   rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
@@ -164,8 +165,9 @@ class SearchQueriesController < ApplicationController
 
   def search_taking_too_long
     @search_query = SearchQuery.find(session[:query])
+    logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long")
     session[:query] = nil
-    flash[:notice] = "Your search is running too long. We suggest you change some of the parameters"
+    flash[:notice] = "Your search was running too long. We suggest you change some of the parameters"
     redirect_to new_search_query_path(:search_id => @search_query)
   end
 
