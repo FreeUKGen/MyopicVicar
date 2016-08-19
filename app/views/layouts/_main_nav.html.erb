@@ -1,7 +1,7 @@
 <div class="site__header__nav  offcanvas__secondary">
   <div class="site__header__nav__inner">
     <nav class="main-nav" >
-      <ul> 
+      <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
         <li>
           <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
@@ -20,14 +20,20 @@
         </li>
         <li>
           <% get_user_info_from_userid %>
+          <% if  @user.person_role.present? %>
           <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
-            <%= link_to "Help", "/cms/information-for-transcribers" %>
+          <%= link_to "Help", "/cms/information-for-transcribers" %>
           <% elsif @user.person_role == 'researcher'%>
-            <%= link_to "Help", "/cms/registered-researchers" %>
+          <%= link_to "Help", "/cms/registered-researchers" %>
           <% else %>
-            <%= link_to "Help", "/cms/information-for-coordinators" %>
+          <%= link_to "Help", "/cms/information-for-coordinators" %>
           <% end %>
         </li>
+        <% else %>
+        <li>
+          <%= link_to "About", "/cms/about" %>
+        </li>
+        <% end%>
         <% else %>
         <li>
           <%= link_to "About", "/cms/about" %>
@@ -38,10 +44,10 @@
         </li>
         <li>
           <%= link_to "Volunteer", main_app.transcriber_registration_userid_detail_path %>
-        </li> 
+        </li>
         <li>
           <%= link_to "Members", refinery.login_path %>
-        </li>     
+        </li>
         <li>
           <%= link_to "Help", "/cms/help" %>
         </li>
