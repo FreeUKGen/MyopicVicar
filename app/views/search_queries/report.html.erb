@@ -2,18 +2,21 @@
 <div id="nav">
   <ul>
     <% if @session_id %>
-    <% if @feedback %>
-    <li>
-      <%= link_to("Feedback #{@feedback.title}", feedback_path(@feedback))%>
-    </li>
-    <% end %>
+      <% if @feedback %>
+        <li>
+          <%= link_to("Feedback #{@feedback.title}", feedback_path(@feedback))%>
+        </li>
+      <% end %>
     <% else %>
-    <li>
-      <%= link_to("Previous Day", search_query_report_path(:day => @previous_day))%>
-    </li>
-    <li>
-      <%= link_to("Next Day", search_query_report_path(:day => @next_day))%>
-    </li>
+      <li>
+        <%= link_to("Previous Day", search_query_report_path(:day => @previous_day))%>
+      </li>
+      <li>
+        <%= link_to("Next Day", search_query_report_path(:day => @next_day))%>
+      </li>
+      <li>
+        <%= link_to("Select Specific Query", select_search_query_report_path)%>
+      </li>
     <% end %>
   </ul>
 </div>

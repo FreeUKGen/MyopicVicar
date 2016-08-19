@@ -68,6 +68,7 @@ class SearchQuery
   validate :wildcard_is_appropriate
 
   before_validation :clean_blanks
+  attr_accessor :action
 
 
   index({ c_at: 1},{background: true })

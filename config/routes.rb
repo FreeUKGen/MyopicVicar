@@ -259,6 +259,7 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/remember(.:format)', :to => 'search_queries#remember', :as => :remember_search_query
   get 'search_queries/:id/reorder(.:format)', :to => 'search_queries#reorder', :as => :reorder_search_query
   get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
+  get 'search_queries/selection',  :to => 'search_queries#selection', :as => :select_search_query_report
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   resources :search_queries
 

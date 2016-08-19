@@ -171,6 +171,18 @@ class SearchQueriesController < ApplicationController
     redirect_to new_search_query_path(:search_id => @search_query)
   end
 
+  def selection
+    @search_queries = SearchQuery.all.order_by("_id ASC")
+    @searches = Hash.new
+    @search_queries.each do |search|
+      @searches[":#{search.id}"] = search._id
+    end
+    @search_query = SearchQuery.new
+    @options = @searches
+    @location = 'location.href= "/search_queries/" + this.value + "/show_query?"'
+    @prompt = 'Select query'
+    render '_form_for_selection'
+  end
   def show
     if params[:id].present?
       @search_query = SearchQuery.where(:id => params[:id]).first
