@@ -165,7 +165,7 @@ class SearchQueriesController < ApplicationController
 
   def search_taking_too_long
     @search_query = SearchQuery.find(session[:query])
-    logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long")
+    logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
     session[:query] = nil
     flash[:notice] = "Your search was running too long. We suggest you change some of the parameters"
     redirect_to new_search_query_path(:search_id => @search_query)
