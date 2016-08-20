@@ -281,7 +281,7 @@ class SearchQuery
     record
   end
 
-  def persist_results(results,index)
+  def persist_results(results)
     # finally extract the records IDs and persist them
     records = Array.new
     results.each do |rec|
@@ -290,7 +290,6 @@ class SearchQuery
     self.search_result =  SearchResult.new(records: records)
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
-    self.search_index = index
     self.day = Time.now.strftime("%F")
     self.save
   end
@@ -384,8 +383,9 @@ class SearchQuery
 
   def search
     search_index = SearchRecord.index_hint(search_params)
+    self.update_attribute(:search_index,search_index)
     records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    self.persist_results(records,search_index)
+    self.persist_results(records)
     search_ucf
     records
   end

@@ -165,6 +165,8 @@ class SearchQueriesController < ApplicationController
 
   def search_taking_too_long
     @search_query = SearchQuery.find(session[:query])
+    runtime = 999999
+    @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
     logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
     session[:query] = nil
     flash[:notice] = "Your search was running too long. Possibly as the result of including a date range. The search currently performs better using location criteria."
