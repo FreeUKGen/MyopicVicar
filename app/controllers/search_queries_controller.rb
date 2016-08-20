@@ -174,7 +174,12 @@ class SearchQueriesController < ApplicationController
   end
 
   def selection
-    @search_queries = SearchQuery.all.order_by("_id ASC")
+    if day_param = params[:day]
+      @start_day = DateTime.parse(day_param).strftime("%F")
+    else
+      @start_day = DateTime.now.strftime("%F")
+    end
+    @search_queries = SearchQuery.where(:day => @start_day).order_by("_id ASC")
     @searches = Hash.new
     @search_queries.each do |search|
       @searches[":#{search.id}"] = search._id
