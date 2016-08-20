@@ -1,4 +1,5 @@
 class SoftwareVersionsController < ApplicationController
+  skip_before_action :require_login
   def commitments
     @software = SoftwareVersion.id(params[:id]).first
     if  @software.present?
