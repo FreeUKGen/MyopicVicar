@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
 
   def load_last_stat
-    @site_stat = SiteStatistic.last
+    @site_stat = SiteStatistic.all.order_by(interval_end: -1).first
   end
 
   private
