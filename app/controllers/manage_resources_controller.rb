@@ -78,7 +78,7 @@ class ManageResourcesController < ApplicationController
       end
     else
       logger.warn "FREEREG::USER No session "
-      if @@userid.blank?
+      if defined?(@@userid).nil? || @@userid.blank?
         logger.warn "FREEREG::USER No session and no @@userid"
         flash[:notice] = 'You are not logged into the system'
         continue = false
