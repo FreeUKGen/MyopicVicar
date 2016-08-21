@@ -160,7 +160,8 @@
 			:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff"},
 			:wrapper_html => { :class => "grid__item  one-quarter text--center " }  %>
 	  <% end %>
-    <p> Please do not restart the search once it is working as this will actually slow the process.</p>
+    <% x = Rails.application.config.max_search_time/1000 %>
+    <p> Searches are limited to <%= x %> sec. Please do not restart the search once it is working as this will actually slow the process.</p>
 	<% end %>
 </section>
 <script type="text/javascript">
