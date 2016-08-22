@@ -54,6 +54,7 @@ class UpdateSearchRecords
           message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records}  records total, #{updated_records} updated and #{no_update} unchanged todate"
           p "#{file.userid}/#{file.file_name}/#{recs}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records} records total, #{updated_records} updated and #{no_update} unchanged todate"
           file.update_attributes(:software_version => version, :search_record_version => search_version)
+          sleep(20*(Rails.application.config.sleep.to_f))
         else
           message_file.puts "No entries"
         end
