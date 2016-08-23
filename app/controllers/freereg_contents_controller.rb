@@ -3,38 +3,6 @@ class FreeregContentsController < ApplicationController
   require 'freereg_options_constants'
   skip_before_filter :require_login
 
-  def index
-    session[:character] = nil
-    if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
-      @show_alphabet = FreeregContent.determine_if_selection_needed(session[:chapman_code],session[:character])
-      @page = FreeregContent.get_header_information(session[:chapman_code])
-      @coordinator = County.coordinator_name(session[:chapman_code])
-      @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
-      if @show_alphabet == 0
-        @places = FreeregContent.get_records_for_display(session[:chapman_code])
-      else
-        @freereg_content = FreeregContent.new
-        @options = FreeregOptionsConstants::ALPHABETS[@show_alphabet]
-        @places = FreeregContent.get_places_for_display(session[:chapman_code])
-      end
-      session[:show_alphabet] = @show_alphabet
-      @county = session[:county]
-      @chapman_code = session[:chapman_code]
-      @character = session[:character]
-    else
-      flash[:notice] = "You have not selected a county"
-      redirect_to :action => :new
-    end
-  end
-
-  def new
-    session[:character] = nil
-    session[:county] = nil
-    session[:chapman_code] = nil
-    @freereg_content = FreeregContent.new
-    @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
-  end
-
   def create
     case
     when params.present? && params[:freereg_content].present? && params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
@@ -68,6 +36,75 @@ class FreeregContentsController < ApplicationController
       end
     end
   end
+
+  def index
+    session[:character] = nil
+    if session[:chapman_code].present? && ChapmanCode::values.include?(session[:chapman_code])
+      @show_alphabet = FreeregContent.determine_if_selection_needed(session[:chapman_code],session[:character])
+      @page = FreeregContent.get_header_information(session[:chapman_code])
+      @coordinator = County.coordinator_name(session[:chapman_code])
+      @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
+      if @show_alphabet == 0
+        @places = FreeregContent.get_records_for_display(session[:chapman_code])
+      else
+        @freereg_content = FreeregContent.new
+        @options = FreeregOptionsConstants::ALPHABETS[@show_alphabet]
+        @places = FreeregContent.get_places_for_display(session[:chapman_code])
+      end
+      session[:show_alphabet] = @show_alphabet
+      @county = session[:county]
+      @chapman_code = session[:chapman_code]
+      @character = session[:character]
+    else
+      flash[:notice] = "You have not selected a county"
+      redirect_to :action => :new
+    end
+  end
+
+  def new
+    session[:character] = nil
+    session[:county] = nil
+    session[:chapman_code] = nil
+    @freereg_content = FreeregContent.new
+    @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+  end
+
+  def place
+    @place = Place.id(params[:id]).first
+    if @place.present?
+      @character =  nil
+      @county = @place.place_name
+      @chapman_code = @place.chapman_code
+      @coordinator = County.coordinator_name(@chapman_code)
+      @place_name = @place.place_name
+      @names = @place.get_alternate_place_names
+      @stats = @place.data_contents
+    else
+      flash[:notice] = "Non existent place has been selected."
+      redirect_to :back and return
+    end
+  end
+
+  def select_places
+    @character = session[:character]
+    @show_alphabet = session[:show_alphabet]
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    if @chapman_code.present? &&  @county.present? && @character.present?
+      @coordinator = County.coordinator_name(@chapman_code)
+      @page = FreeregContent.get_header_information(@chapman_code)
+      @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+      @records = FreeregContent.number_of_records_in_county(@chapman_code)
+      render  '_show_body'
+      return
+    else
+      flash[:notice] = "Problem with your selection."
+      redirect_to :action => 'new' and return
+    end
+
+  end
+
+
   def show
     if params[:id].present?
       @county = session[:county]
@@ -95,42 +132,6 @@ class FreeregContentsController < ApplicationController
     end
   end
 
-  def select_places
-    @character = session[:character]
-    @show_alphabet = session[:show_alphabet]
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    if @chapman_code.present? &&  @county.present? && @character.present?
-      @coordinator = County.coordinator_name(@chapman_code)
-      @page = FreeregContent.get_header_information(@chapman_code)
-      @places = Place.county(@county).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
-      @records = FreeregContent.number_of_records_in_county(@chapman_code)
-      render  '_show_body'
-      return
-    else
-      flash[:notice] = "Problem with your selection."
-      redirect_to :action => 'new' and return
-    end
-
-  end
-
-
-  def show_place
-    @character =  session[:character]
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
-    @coordinator = County.coordinator_name(@chapman_code)
-    if @place.present?
-      @place_name = @place.place_name
-      @names = @place.get_alternate_place_names
-      @stats = @place.data_contents
-    else
-      flash[:notice] = "None existent place has been selected."
-      redirect_to :action => 'new' and return
-    end
-  end
-
   def show_church
     @church = Church.id(params[:id]).first
     if @church.nil?
@@ -152,6 +153,24 @@ class FreeregContentsController < ApplicationController
     @church_name = @church.church_name
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
+
+  def show_place
+    @character =  session[:character]
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
+    @coordinator = County.coordinator_name(@chapman_code)
+    if @place.present?
+      @place_name = @place.place_name
+      @names = @place.get_alternate_place_names
+      @stats = @place.data_contents
+    else
+      flash[:notice] = "None existent place has been selected."
+      redirect_to :action => 'new' and return
+    end
+  end
+
+
 
   def show_register
     @register = Register.id(params[:id]).first
@@ -186,21 +205,7 @@ class FreeregContentsController < ApplicationController
     end
   end
 
-  def place
-    @place = Place.id(params[:id]).first
-    if @place.present?
-      @character =  nil
-      @county = @place.place_name
-      @chapman_code = @place.chapman_code
-      @coordinator = County.coordinator_name(@chapman_code)
-      @place_name = @place.place_name
-      @names = @place.get_alternate_place_names
-      @stats = @place.data_contents
-    else
-      flash[:notice] = "Non existent place has been selected."
-      redirect_to :back and return
-    end
-  end
+
   private
   def freereg_content_params
     params.require(:freereg_content).permit!

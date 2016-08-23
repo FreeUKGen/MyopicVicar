@@ -42,7 +42,10 @@ class Place
   field :data_present, type: Boolean, default: false
   field :alternate, type: String, default: ""
   field :ucf_list, type: Hash, default: {}
-
+  field :records, type: String
+  field :datemin, type: String
+  field :datemax, type: String
+  field :daterange, type: Hash
 
   embeds_many :alternateplacenames
 
@@ -87,6 +90,7 @@ class Place
     end
   end
 
+  ############################################################## class methods
   class << self
     def approved
       where(:error_flag.ne => "Place name is not approved")
@@ -121,9 +125,7 @@ class Place
 
   end
 
-  def ucf_record_ids
-    self.ucf_list.values.inject([]) { |accum, value| accum + value }
-  end
+  ############################################################### instance methods
 
   def add_country
     self.country = self.get_correct_place_country
@@ -155,6 +157,31 @@ class Place
 
   def approve
     self.update_attributes(:error_flag => nil,:modified_place_name => self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)
+  end
+
+  def calculate_place_numbers
+    individual_churches = self.churches
+    records = 0
+    total_hash = Hash.new
+    total_hash["ba"] = Array.new(50,0)
+    total_hash["bu"] = Array.new(50,0)
+    total_hash["ma"] = Array.new(50,0)
+    total_hash["total"] = Array.new(50,0)
+    datemax = FreeregValidations::YEAR_MIN
+    datemin = FreeregValidations::YEAR_MAX
+    if individual_churches.present?
+      individual_churches.each do |church|
+        if !church.records.nil? && church.records.to_i > 0
+          records = records + church.records.to_i unless church.records.blank?
+          datemax = church.datemax.to_i if church.datemax.to_i > datemax && church.datemax.to_i < FreeregValidations::YEAR_MAX unless church.datemax.blank?
+          datemin = church.datemin.to_i if church.datemin.to_i < datemin unless church.datemin.blank?
+          FreeregContent.calculate_date_range(church, total_hash,"church")
+        end
+      end
+    end
+    datemax = '' if datemax == FreeregValidations::YEAR_MIN
+    datemin = '' if datemin == FreeregValidations::YEAR_MAX
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash)
   end
 
   def change_grid_reference(grid)
@@ -351,12 +378,6 @@ class Place
     end
   end
 
-
-  def update_ucf_list(file)
-    ids = file.search_record_ids_with_wildcard_ucf
-    self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
-  end
-
   def recalculate_last_amended_date
     self.churches.each do |church|
       church.registers.each do |register|
@@ -414,6 +435,10 @@ class Place
     end
   end
 
+  def ucf_record_ids
+    self.ucf_list.values.inject([]) { |accum, value| accum + value }
+  end
+
   def update_data_present
     if self.data_present?
       self.update_attribute(:data_present,true)
@@ -424,6 +449,11 @@ class Place
 
   def update_places_cache
     PlaceCache.refresh_cache(self)
+  end
+
+  def update_ucf_list(file)
+    ids = file.search_record_ids_with_wildcard_ucf
+    self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
   end
 
 end
