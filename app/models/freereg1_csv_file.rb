@@ -607,29 +607,27 @@ class Freereg1CsvFile
     end
 
     def date_change(transcription_date,modification_date)
-      A = /^Header_Error,The transcription date/
-               B = /^Header_Error,The modification date/
                error = self.error
                if error > 0
                  lines = self.batch_errors.all
                  lines.each do |line|
                    if line.error_type == 'Header_Error'
-                     if A =~ line.error_message
-                       unless self.transcription_date == transcription_date
-                         line.destroy
-                         error = error - 1
-                         self.update_attributes(:error => error)
-                       end
-                     end
-                     if B =~ line.error_message
-                       unless self.modification_date == modification_date
-                         line.destroy
-                         error = error - 1
-                         self.update_attributes(:error => error)
-                       end
-                     end
-                   end
+                     if /^Header_Error,The transcription date/ =~ line.error_message
+               unless self.transcription_date == transcription_date
+                 line.destroy
+                 error = error - 1
+                 self.update_attributes(:error => error)
+               end
+               end
+               if /^Header_Error,The modification date/ =~ line.error_message
+                 unless self.modification_date == modification_date
+                   line.destroy
+                   error = error - 1
+                   self.update_attributes(:error => error)
                  end
+               end
+               end
+               end
                end
                end
 
