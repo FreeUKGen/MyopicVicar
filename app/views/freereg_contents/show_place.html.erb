@@ -39,10 +39,10 @@
           <tr><td>Location on map :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
           <tr><td>Last changed:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>
               </tr>
-          <tr><td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td></tr>
-          <tr><td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td></tr>
-          <tr><td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td></tr>
         </tbody>
-      </table>   
+      </table> 
+       <h4 class=" delta text--center">Numbers of transcriptions </h4>
+    <p class=" delta text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+       <%= render 'decade' %>  
   </section>
 </div>

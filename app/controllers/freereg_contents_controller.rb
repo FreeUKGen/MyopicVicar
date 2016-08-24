@@ -147,10 +147,11 @@ class FreeregContentsController < ApplicationController
     @county = session[:county]
     @character =  session[:character]
     @chapman_code = session[:chapman_code]
-    @stats = @church.data_contents
     @place_name = @church.place.place_name
     @place = @church.place
     @church_name = @church.church_name
+    @decade = @church.daterange
+    @transcribers = [ '','','']
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
 
@@ -163,14 +164,13 @@ class FreeregContentsController < ApplicationController
     if @place.present?
       @place_name = @place.place_name
       @names = @place.get_alternate_place_names
-      @stats = @place.data_contents
+      @decade = @place.daterange
+      @transcribers = [ '','','']
     else
       flash[:notice] = "None existent place has been selected."
       redirect_to :action => 'new' and return
     end
   end
-
-
 
   def show_register
     @register = Register.id(params[:id]).first
@@ -194,11 +194,9 @@ class FreeregContentsController < ApplicationController
       @register_name = @register.register_name
       @register_name = @register.alternate_register_name if @register_name.nil?
       @church_name = @church.church_name
-      individual_files = Freereg1CsvFile.where(:register_id =>params[:id]).order_by(:record_types.asc, :start_year.asc).all
-      @files = Freereg1CsvFile.combine_files(individual_files)
-      @transcribers = FreeregContent.get_transcribers(@files)
-      @decade = FreeregContent.get_decades(@files)
       @register_type = RegisterType.display_name(@register.register_type)
+      @decade = @register.daterange
+      @transcribers = [ '','','']
     else
       flash[:notice] = "The register has no church; you will need to start again"
       redirect_to :back and return

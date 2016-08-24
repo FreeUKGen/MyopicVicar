@@ -40,11 +40,11 @@
           <tr><td>The Church Website :</td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
           <tr><td>Notes about the Church :</td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
           <tr><td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
-          <tr><td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td></tr>
-          <tr><td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td></tr>
-          <tr><td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td></tr>
         </tbody>
       </table>
     </div>
+     <h4 class=" delta text--center">Numbers of transcriptions </h4>
+    <p class=" delta text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+     <%= render 'decade' %>
   </section>
 </div>

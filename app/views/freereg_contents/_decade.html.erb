@@ -33,14 +33,13 @@
         <% decade_total = 0 %>
         <% next_total = 0 %>
         <% while current_index < @decade["ba"].count %>
-          <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
           <% if decade_total > 0 then %>
             <tr >
             <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
             <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
             <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
             <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-            <td><%= display_number(decade_total) %></td>
+            <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
             </tr>
             <% decade_start += 10 %>
             <% decade_end += 10 %>
@@ -55,7 +54,7 @@
                   <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
                   <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
                   <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                  <td><%= display_number(decade_total) %></td>
+                  <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
                 </tr>
                 <% current_index += 1 %>
                 <% decade_start = decade_end + 1 %>
@@ -70,7 +69,7 @@
                 <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
                 <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
                 <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                <td><%= display_number(decade_total) %></td>
+                <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
                 </tr>
                 <% current_index += 1 %>
                 <% decade_start = decade_end + 1 %>
