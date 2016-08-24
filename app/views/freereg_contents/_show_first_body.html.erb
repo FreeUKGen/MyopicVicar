@@ -34,9 +34,9 @@
               <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
               <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
               <td class="t15"> <%= register.last_amended %> </td>
-              <td class="t12"> <%= display_number(number_of_records_in_register(register)) %> </td>
-              <td class="t8"> <%= first_year_in_register(register) %> </td>
-              <td class="t7"> <%= last_year_in_register(register) %> </td>
+              <td class="t12"> <%= display_number(register.records) %> </td>
+              <td class="t8"> <%= display_number(register.datemin) %> </td>
+              <td class="t7"> <%= display_number(register.datemax) %> </td>
               <% clear(register) %>
             </tr>
             <% end%>
