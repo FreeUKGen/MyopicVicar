@@ -67,10 +67,16 @@ class ApplicationController < ActionController::Base
   def get_user_info_from_userid
     @userid = session[:userid]
     @user = UseridDetail.userid(@userid).first
-    @user_id = @user.id
-    @first_name = @user.person_forename
-    @manager = manager?(@user)
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    unless @user.present?
+      flash[:error] = "You must be logged in to access this section"
+      redirect_to refinery.login_path # halts request cycle
+    end
+    else
+      @user_id = @user.id
+      @first_name = @user.person_forename
+      @manager = manager?(@user)
+      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    end
   end
 
   def  get_user_info(userid,name)
