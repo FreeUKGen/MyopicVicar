@@ -12,9 +12,10 @@
     <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
     <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn weight--light  btn--small" %>     
     </div><br>
-    <h4 class=" delta text--center">Number of transcriptions in <%= @register_type %> registers for <%= @church_name %> of <%= @place_name %> within <%= @county %>  </h4>
+    <h2 class=" gamma text--center">Transcriptions for the <%= @register_type %> registers in <%=@church.church_name %> of <%= @place_name %> within <%= @county %> </h2>
+    <%= render 'register_information' %>
+      <h4 class=" delta text--center">Number of transcriptions  </h4>
     <p class=" delta text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
     <%= render 'decade' %>
-    <%= render 'register_information' %>
   </section>
 </div>
