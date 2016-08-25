@@ -70,7 +70,6 @@ class ApplicationController < ActionController::Base
     unless @user.present?
       flash[:error] = "You must be logged in to access this section"
       redirect_to refinery.login_path # halts request cycle
-    end
     else
       @user_id = @user.id
       @first_name = @user.person_forename
