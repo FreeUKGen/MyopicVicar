@@ -24,7 +24,7 @@ class Freereg1CsvFilesController < ApplicationController
       set_controls(@freereg1_csv_file)
       set_locations
       @records = @freereg1_csv_file.freereg1_csv_entries.count
-      @userids = UseridDetails.get_userids_for_selection("all")
+      @userids = UseridDetail.get_userids_for_selection("all")
     else
       go_back("batch",params[:id])
     end
