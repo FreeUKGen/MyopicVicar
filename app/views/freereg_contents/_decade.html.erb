@@ -3,11 +3,11 @@
    <div class="table-wrapper">
     <table class="table--bordered table--data" >
       <colgroup >
-        <col class="t15">
-        <col class="t25">
-        <col class="t25">
-        <col class="t25 ">
-        <col class="t10">
+        <col class="t20">
+        <col class="t20">
+        <col class="t20">
+        <col class="t20 ">
+        <col class="t20">
       </colgroup>
       <thead >
         <tr style="font-size: 20px; font-weight: bold">
@@ -21,10 +21,17 @@
       <tbody >
         <tr style="font-size: 16px; font-weight: bold">
           <td>Transcribed by</td>
-          <td ><%= @transcribers[0] %></td>
-          <td ><%= @transcribers[1] %></td>
-          <td ><%= @transcribers[2] %></td>
-          <td><%= ""%></td>
+          <td ><%= @transcribers["ba"].join(",") %></td>
+          <td ><%= @transcribers["ma"].join(",") %></td>
+          <td ><%= @transcribers["bu"].join(",") %></td>
+          <td ><%= @transcribers["total"].join(",") %></td>
+        </tr>
+        <tr style="font-size: 16px; font-weight: bold">
+          <td>Contribution by these people or organizations is acknowledged</td>
+          <td ><%= @contributors["ba"].join(",") %></td>
+          <td ><%= @contributors["ma"].join(",") %></td>
+          <td ><%= @contributors["bu"].join(",") %></td>
+          <td ><%= @contributors["total"].join(",") %></td>
         </tr>
         <% decade_start = 1530%>
         <% decade_end = 1539%>

@@ -25,6 +25,8 @@ class Register
   field :datemin, type: String
   field :datemax, type: String
   field :daterange, type: Hash
+  field :transcribers, type: Hash
+  field :contributors, type: Hash
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
@@ -104,15 +106,13 @@ class Register
   ######################################################################## instance methods
 
   def calculate_register_numbers
-    individual_files = self.freereg1_csv_files
+
     records = 0
-    total_hash = Hash.new
-    total_hash["ba"] = Array.new(50,0)
-    total_hash["bu"] = Array.new(50,0)
-    total_hash["ma"] = Array.new(50,0)
-    total_hash["total"] = Array.new(50,0)
+    total_hash = FreeregContent.setup_total_hash
+    transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    individual_files = self.freereg1_csv_files
     if individual_files.present?
       individual_files.each do |file|
         if !file.records.nil? &&  file.records.to_i > 0
@@ -120,12 +120,13 @@ class Register
           datemax = file.datemax.to_i if file.datemax.to_i > datemax && file.datemax.to_i < FreeregValidations::YEAR_MAX unless file.datemax.blank?
           datemin = file.datemin.to_i if file.datemin.to_i < datemin unless file.datemin.blank?
           FreeregContent.calculate_date_range(file, total_hash,"file")
+          FreeregContent.get_transcribers(file, transcriber_hash,"file")
         end
       end
     end
-    datemax = '' if datemax == FreeregValidations::YEAR_MIN
-    datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash)
+    datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
+    datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
   end
 
   def change_type(type)
@@ -202,6 +203,7 @@ class Register
     end
     records
   end
+
 
   def update_data_present_in_place(file)
     #also refresh the cache if the place is newly active

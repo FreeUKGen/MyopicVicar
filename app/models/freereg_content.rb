@@ -17,8 +17,11 @@ class FreeregContent
   validate :county_is_valid
 
   before_validation :clean_blanks
+
   ######################################################################## class methods
+
   class << self
+
     def calculate_freereg_content
       Register.no_timeout.all.each do |register|
         register.calculate_register_numbers
@@ -112,12 +115,45 @@ class FreeregContent
       places = Place.where(:chapman_code => chapman, :data_present => true, :disabled => 'false').all.order_by(place_name: 1)
     end
 
-    def get_transcribers(files)
-      transcriber = ["","",""]
-      transcriber[0]= files["ba"]["transcriber_name"].join(', ').to_s  if files["ba"].present?
-      transcriber[1]= files["ma"]["transcriber_name"].join(', ').to_s  if files["ma"].present?
-      transcriber[2]= files["bu"]["transcriber_name"].join(', ').to_s  if files["bu"].present?
-      transcriber
+    def get_transcribers(individual,my_hash,file)
+      keys = ["ba","bu","ma"]
+      total_keys = ["ba","bu","ma", "total"]
+      if file == "file"
+        keys.each do |key|
+          my_hash["transcriber"][key] << individual.transcriber_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') if individual.transcriber_name.present? && individual.record_type == key
+          my_hash["contributor"][key] << individual.credit_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') if individual.credit_name.present? && individual.record_type == key
+        end
+        keys.each do |key|
+          my_hash["transcriber"]["total"] = my_hash["transcriber"]["total"] + my_hash["transcriber"][key] if  my_hash["transcriber"][key].present?
+          my_hash["contributor"]["total"] = my_hash["contributor"]["total"] +  my_hash["contributor"][key] if my_hash["contributor"][key].present?
+        end
+
+        keys.each do |key|
+          my_hash["transcriber"][key] =  my_hash["transcriber"][key].uniq
+          my_hash["contributor"][key] = my_hash["contributor"][key].uniq
+          my_hash["transcriber"][key].each do |entry|
+            my_hash["contributor"][key].delete_if{ |value| value == entry}
+          end
+        end
+        my_hash["transcriber"]["total"] = my_hash["transcriber"]["total"].uniq
+        my_hash["contributor"]["total"] = my_hash["contributor"]["total"].uniq
+        my_hash["transcriber"]["total"].each do |entry|
+          my_hash["contributor"]["total"].delete_if{ |value| value == entry}
+        end
+      else
+        total_keys.each do |key|
+          my_hash["transcriber"][key] = my_hash["transcriber"][key] + individual["transcribers"][key] if individual["transcribers"][key].present?
+          my_hash["contributor"][key] = my_hash["contributor"][key] + individual["contributors"][key] if individual["contributors"][key].present?
+        end
+        total_keys.each do |key|
+          my_hash["transcriber"][key] = my_hash["transcriber"][key].uniq
+          my_hash["contributor"][key] = my_hash["contributor"][key].uniq
+          my_hash["transcriber"][key].each do |entry|
+            my_hash["contributor"][key].delete_if{ |value| value == entry}
+          end
+        end
+      end
+
     end
 
     def number_of_records_in_county(chapman)
@@ -128,6 +164,29 @@ class FreeregContent
       record[2] = county.burial_records
       record[3] = county.marriage_records
       record
+    end
+    def setup_total_hash
+      total_hash = Hash.new
+      total_hash["ba"] = Array.new(50,0)
+      total_hash["bu"] = Array.new(50,0)
+      total_hash["ma"] = Array.new(50,0)
+      total_hash["total"] = Array.new(50,0)
+      return total_hash
+    end
+
+    def setup_transcriber_hash
+      transcriber_hash = Hash.new
+      transcriber_hash["transcriber"] = Hash.new
+      transcriber_hash["transcriber"]["ba"] = Array.new
+      transcriber_hash["transcriber"]["bu"] = Array.new
+      transcriber_hash["transcriber"]["ma"] = Array.new
+      transcriber_hash["transcriber"]["total"] = Array.new
+      transcriber_hash["contributor"] = Hash.new
+      transcriber_hash["contributor"]["ba"] = Array.new
+      transcriber_hash["contributor"]["bu"] = Array.new
+      transcriber_hash["contributor"]["ma"] = Array.new
+      transcriber_hash["contributor"]["total"] = Array.new
+      return transcriber_hash
     end
   end #self
 

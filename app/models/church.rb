@@ -15,6 +15,8 @@ class Church
   field :datemin, type: String
   field :datemax, type: String
   field :daterange, type: Hash
+  field :transcribers, type: Hash
+  field :contributors, type: Hash
   has_many :registers, dependent: :restrict
 
   embeds_many :alternatechurchnames
@@ -60,15 +62,12 @@ class Church
   ############################################################################## instance methods
 
   def calculate_church_numbers
-    individual_registers = self.registers
     records = 0
-    total_hash = Hash.new
-    total_hash["ba"] = Array.new(50,0)
-    total_hash["bu"] = Array.new(50,0)
-    total_hash["ma"] =Array.new(50,0)
-    total_hash["total"] =Array.new(50,0)
-    datemax = FreeregValidations::YEAR_MIN
-    datemin = FreeregValidations::YEAR_MAX
+    total_hash = FreeregContent.setup_total_hash
+    transcriber_hash = FreeregContent.setup_transcriber_hash
+    datemax = FreeregValidations::YEAR_MIN.to_i
+    datemin = FreeregValidations::YEAR_MAX.to_i
+    individual_registers = self.registers
     if individual_registers.present?
       individual_registers.each do |register|
         if !register.records.nil? &&  register.records.to_i > 0
@@ -76,12 +75,13 @@ class Church
           datemax = register.datemax.to_i if register.datemax.to_i > datemax && register.datemax.to_i < FreeregValidations::YEAR_MAX unless register.datemax.blank?
           datemin = register.datemin.to_i if register.datemin.to_i < datemin unless register.datemin.blank?
           FreeregContent.calculate_date_range(register, total_hash,"register")
+          FreeregContent.get_transcribers(register, transcriber_hash,"register")
         end
       end
     end
-    datemax = '' if datemax == FreeregValidations::YEAR_MIN
-    datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash)
+    datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
+    datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
   end
 
   def change_name(param)

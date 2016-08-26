@@ -46,6 +46,8 @@ class Place
   field :datemin, type: String
   field :datemax, type: String
   field :daterange, type: Hash
+  field :transcribers, type: Hash
+  field :contributors, type: Hash
 
   embeds_many :alternateplacenames
 
@@ -160,15 +162,12 @@ class Place
   end
 
   def calculate_place_numbers
-    individual_churches = self.churches
     records = 0
-    total_hash = Hash.new
-    total_hash["ba"] = Array.new(50,0)
-    total_hash["bu"] = Array.new(50,0)
-    total_hash["ma"] = Array.new(50,0)
-    total_hash["total"] = Array.new(50,0)
-    datemax = FreeregValidations::YEAR_MIN
-    datemin = FreeregValidations::YEAR_MAX
+    total_hash = FreeregContent.setup_total_hash
+    transcriber_hash = FreeregContent.setup_transcriber_hash
+    datemax = FreeregValidations::YEAR_MIN.to_i
+    datemin = FreeregValidations::YEAR_MAX.to_i
+    individual_churches = self.churches
     if individual_churches.present?
       individual_churches.each do |church|
         if !church.records.nil? && church.records.to_i > 0
@@ -176,12 +175,13 @@ class Place
           datemax = church.datemax.to_i if church.datemax.to_i > datemax && church.datemax.to_i < FreeregValidations::YEAR_MAX unless church.datemax.blank?
           datemin = church.datemin.to_i if church.datemin.to_i < datemin unless church.datemin.blank?
           FreeregContent.calculate_date_range(church, total_hash,"church")
+          FreeregContent.get_transcribers(church, transcriber_hash,"register")
         end
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash)
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
   end
 
   def change_grid_reference(grid)

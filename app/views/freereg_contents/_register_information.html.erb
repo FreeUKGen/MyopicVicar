@@ -14,8 +14,6 @@
         <tr><td>Notes</td> <td class="weight--semibold"><%= add_blank(@register.register_notes) %></td></tr>
         <tr><td>Status</td>        <td class="weight--semibold"><%= add_blank(@register.status) %></td></tr>
         <tr><td>Source</td>        <td class="weight--semibold"><%= add_blank(@register.source) %></td></tr>
-        <tr><td>Credit these people/organizations for this register transcription</td> <td class="weight--semibold"><%= add_blank(credit(@register)) %></td></tr>
-        <tr><td>Also credit these additional people/organizations</td> <td class="weight--semibold"><%= add_blank(credit_files(@files))   %></td></tr>
         <tr><td>Last changed</td>  <td class="weight--semibold"><%= @register.last_amended %></td></tr>
         <tr><td>First official year for Register</td>    <td class="weight--semibold"><%= add_blank(@register.minimum_year_for_register)  %></td></tr>
         <tr><td>Last official year for Register</td><td class="weight--semibold"><%= add_blank(@register.maximum_year_for_register) %>
