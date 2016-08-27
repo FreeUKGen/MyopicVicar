@@ -43,7 +43,7 @@ module FreeregOptionsConstants
     ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
     ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]
   ]
-  RECORDS_PER_RANGE = 500000
+  RECORDS_PER_RANGE = 100000
   FILES_PER_PAGE = 500
   MAX_RECORDS_COORDINATOR = 4000
   MAX_RECORDS_DATA_MANAGER = 15000
