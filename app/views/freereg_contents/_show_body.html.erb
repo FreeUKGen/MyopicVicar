@@ -59,7 +59,7 @@
     <table class=" my-width table--data">
       <tbody >
         <% old_place_name = nil %>
-        <% @places.no_timeout.order_by(place_name: 1).each do |place| %>
+        <% @places.each do |place| %>
           <% old_church_name = nil %>
           <% place.churches.order_by(church_name: 1).each do |church| %>
             <% church.registers.order_by(register_type: 1).each do |register| %>
