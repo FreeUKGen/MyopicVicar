@@ -196,7 +196,7 @@ class Freereg1CsvFile
 
     def calculate_range_distribution(entries)
       number_of_records = 0
-      daterange = Array.new(50*0)
+      daterange = Array.new(50,0)
       entries.each do |entry|
         xx = entry.year
         if xx.present? && entry.enough_name_fields?
