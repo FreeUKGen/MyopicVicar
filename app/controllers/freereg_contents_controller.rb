@@ -98,8 +98,6 @@ class FreeregContentsController < ApplicationController
       allplaces.each do |place|
         @places << place if place.place_name =~  /^[#{@character}]/i
       end
-      p @character
-      p @places
       @records = FreeregContent.number_of_records_in_county(@chapman_code)
       render  '_show_body'
       return
