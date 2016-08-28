@@ -68,8 +68,8 @@ class ApplicationController < ActionController::Base
     @userid = session[:userid]
     @user = UseridDetail.userid(@userid).first
     unless @user.present?
-      flash[:error] = "You must be logged in to access this section"
-      redirect_to refinery.login_path # halts request cycle
+      flash[:notice] = "You must be logged in to access that action"
+      redirect_to new_search_query_path # halts request cycle
     else
       @user_id = @user.id
       @first_name = @user.person_forename
@@ -140,8 +140,8 @@ class ApplicationController < ActionController::Base
 
   def require_login
     if session[:userid].nil?
-      flash[:error] = "You must be logged in to access this section"
-      redirect_to refinery.login_path # halts request cycle
+      flash[:notice] = "You must be logged in to access that action"
+      redirect_to new_search_query_path  # halts request cycle
     end
   end
 
