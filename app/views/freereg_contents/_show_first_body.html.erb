@@ -35,8 +35,8 @@
               <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
               <td class="t15"> <%= register.last_amended %> </td>
               <td class="t12"> <%= display_number(register.records) %> </td>
-              <td class="t8"> <%= display_number(register.datemin) %> </td>
-              <td class="t7"> <%= display_number(register.datemax) %> </td>
+              <td class="t8"> <%= register.datemin %> </td>
+              <td class="t7"> <%= register.datemax %> </td>
               <% clear(register) %>
             </tr>
             <% end%>
