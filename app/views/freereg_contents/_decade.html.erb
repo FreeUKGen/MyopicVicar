@@ -21,17 +21,17 @@
       <tbody >
         <tr style="font-size: 16px; font-weight: bold">
           <td>Transcribed by</td>
-          <td ><%= @transcribers["ba"].join(",") %></td>
-          <td ><%= @transcribers["ma"].join(",") %></td>
-          <td ><%= @transcribers["bu"].join(",") %></td>
-          <td ><%= @transcribers["total"].join(",") %></td>
+          <td ><%= @transcribers["ba"].join(",")  unless  @transcribers.nil? %></td>
+          <td ><%= @transcribers["ma"].join(",") unless  @transcribers.nil?%></td>
+          <td ><%= @transcribers["bu"].join(",") unless  @transcribers.nil?%></td>
+          <td ><%= @transcribers["total"].join(",") unless  @transcribers.nil?%></td>
         </tr>
         <tr style="font-size: 16px; font-weight: bold">
           <td>Contribution by these people or organizations is acknowledged</td>
-          <td ><%= @contributors["ba"].join(",") %></td>
-          <td ><%= @contributors["ma"].join(",") %></td>
-          <td ><%= @contributors["bu"].join(",") %></td>
-          <td ><%= @contributors["total"].join(",") %></td>
+          <td ><%= @contributors["ba"].join(",") unless @contributors.nil? %>  </td>
+          <td ><%= @contributors["ma"].join(",") unless @contributors.nil? %></td>
+          <td ><%= @contributors["bu"].join(",") unless @contributors.nil? %></td>
+          <td ><%= @contributors["total"].join(",") unless @contributors.nil? %></td>
         </tr>
         <% decade_start = 1530%>
         <% decade_end = 1539%>
