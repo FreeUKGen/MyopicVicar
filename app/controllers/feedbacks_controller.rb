@@ -28,6 +28,8 @@ class FeedbacksController < ApplicationController
     @feedback.session_data["warden_user_authentication_devise_user_key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "") unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
     @feedback.session_data["warden_user_authentication_devise_user_key_value"] = @feedback.session_data["warden.user.authentication_devise_user.key"][1] unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
     @feedback.session_data.delete("warden.user.authentication_devise_user.key") unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
+    @feedback.session_data["warden_user_authentication_devise_user_key_session"] = @feedback.session_data["warden.user.authentication_devise_user.session"]
+    @feedback.session_data.delete("warden.user.authentication_devise_user.session") unless @feedback.session_data["warden.user.authentication_devise_user.session"].blank?
     @feedback.session_id = session.to_hash["session_id"]
     @feedback.save
     if @feedback.errors.any?
