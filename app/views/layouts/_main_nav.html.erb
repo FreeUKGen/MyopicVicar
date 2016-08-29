@@ -11,7 +11,7 @@
           <%= link_to("Search",  main_app.new_search_query_path) %>
         </li>
         <% end%>
-        <% if  current_authentication_devise_user.present? %>
+                <% if  session[:userid_detail_id] %>
         <li>
           <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
         </li>
