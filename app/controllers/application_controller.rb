@@ -15,7 +15,7 @@
 
 class ApplicationController < ActionController::Base
 
-  protect_from_forgery
+  protect_from_forgery :with => :reset_session
   before_filter :require_login
   before_filter :require_cookie_directive
   before_filter :load_last_stat
@@ -34,7 +34,10 @@ class ApplicationController < ActionController::Base
   private
 
   def after_sign_in_path_for(resource_or_scope)
+    #empty current session
+    reset_session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
+    #start new session
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     @@userid = current_authentication_devise_user.userid_detail_id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
