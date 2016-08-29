@@ -209,10 +209,14 @@ class Register
     #also refresh the cache if the place is newly active
     place = self.church.place
     refresh_cache = false
-    cache = PlaceCache.where(:chapman_code => place.chapman_code).first.places_json
-    refresh_cache = true unless cache.include?(place.place_name)
-    place.update_attribute(:data_present, true)
-
+    if place.present?
+      cache = PlaceCache.where(:chapman_code => place.chapman_code).first
+      place.update_attribute(:data_present, true)
+      if cache.present?
+        cache.places_json
+        refresh_cache = true unless cache.include?(place.place_name)
+      end
+    end
     PlaceCache.refresh(place.chapman_code) if refresh_cache
   end
 
