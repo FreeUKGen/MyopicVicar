@@ -33,7 +33,6 @@ class ContactsController < ApplicationController
       @contact.session_data.delete("warden.user.authentication_devise_user.key")  unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
       @contact.session_data["warden_user_authentication_devise_user_key_session"] = @contact.session_data["warden.user.authentication_devise_user.session"]
       @contact.session_data.delete("warden.user.authentication_devise_user.session") unless @contact.session_data["warden.user.authentication_devise_user.session"].blank?
-
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
       if @contact.save

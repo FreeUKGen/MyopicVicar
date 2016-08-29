@@ -28,16 +28,16 @@
   </li>
   
   <li class="grid__item  one-third  palm-one-whole push--bottom">
-    <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select the image you wish to upload (txt, html, htm, log or rtf only)</span></a></label>
+    <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the image you wish to upload (txt, html, htm, log or rtf only)</span></a></label>
     <input name="message[attachment]" type="file" >
   </li>
   <li class="grid__item  one-third  palm-one-whole push--bottom">
-    <label>Image Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >Please select the image you wish to upload (jpg, gif)</span></a></label>
+    <label>Image Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the image you wish to upload (jpg, gif)</span></a></label>
     <input name="message[images]" type="file" >
   </li>
   
   <li class="grid__item  one-whole  palm-one-whole push--bottom">
-    <label>Message<a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >You should include a salutation at the start</span></a></label>
+    <label>Message<a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >You should include a salutation at the start</span></a></label>
     <% if @message.body.nil? %>
       <textarea name="message[body]"  style="width: 100%;"  rows="8" ></textarea>
     <% else%>
