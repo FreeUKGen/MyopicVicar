@@ -11,7 +11,7 @@
   <%= f.fields_for :sent_message do |multiple| %>     
     <%= f.hidden_field :action%>     
       <li  class="grid__item  one-third  palm-one-whole push--bottom " id="message_recipients">
-        <label class="label" for="recipients"> Recipients <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png"> <span  >You may elect multiple recipients</span></a></label>
+        <label class="label" for="recipients"> Recipients <a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %> <span  >You may elect multiple recipients</span></a></label>
         <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="3">
         <% @options.each do |value| %>
           <% if value == @sent_message.recipients %>
