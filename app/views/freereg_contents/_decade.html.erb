@@ -41,6 +41,7 @@
         <% next_total = 0 %>
         <% unless @decade.nil? %>
           <% while current_index < @decade["ba"].count %>
+          <% decade_total = @decade["total"][current_index] %>
             <% if decade_total > 0 then %>
               <tr >
               <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
@@ -55,7 +56,7 @@
             <% else %>
               <% next_index = current_index + 1 %>
               <% if next_index < @decade["ba"].count then %>
-                <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
+                <% next_total = @decade["total"][next_index]  %>
                 <% if next_total > 0 then %>
                   <tr>
                     <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>

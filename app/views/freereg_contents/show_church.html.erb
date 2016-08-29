@@ -40,6 +40,9 @@
           <tr><td>The Church Website :</td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
           <tr><td>Notes about the Church :</td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
           <tr><td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
+           <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @church.records %></td></tr>
+        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @church.datemin %></td></tr>
+        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @church.datemax %></td></tr>
         </tbody>
       </table>
     </div>
