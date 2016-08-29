@@ -1,17 +1,12 @@
 class TransregUsersController < ApplicationController
   skip_before_filter :require_login, only: [:new]
   def new
-    logger.warn "FREEREG::USER Entered transreg session #{session[:userid]} or @@userid #{@@userid}"
-    if session[:userid].nil? && @@userid.nil?
+    logger.warn "FREEREG::USER Entered transreg session #{session[:userid_detail_id] } "
+    if session[:userid_detail_id] .nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
       return
     end
-    if @@userid.present?
-      @user = UseridDetail.id(@@userid).first
-    else
-      @user = UseridDetail.where(:userid => session[:userid]).first
-    end
-    session[:userid] = @user.userid
+    @user = UseridDetail.id(session[:userid_detail_id]).first
     get_user_info_from_userid
     render(:text => { "result" => "Logged in", :userid_detail => @user.attributes}.to_xml({:dasherize => false, :root => 'login'}))
   end

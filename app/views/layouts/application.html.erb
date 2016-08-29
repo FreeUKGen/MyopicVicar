@@ -80,7 +80,7 @@
       <main  class="site__content  icon__honeycomb--top-right">
       <div class="container">
      
-      <% if !current_refinery_user == 'Refinery::Authentication::Devise::NilUser' || !session[:userid].nil?%>
+      <% if session[:userid_detail_id].present?%>
          <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
          controller_name == "pages"%>
       <% end%>
@@ -97,7 +97,7 @@
         <% else %>
         <%= yield %>
         <% end %>
-        <% if  !current_refinery_user == 'Refinery::Authentication::Devise::NilUser' || !session[:userid].nil?%>
+        <% if  session[:userid_detail_id].present?%>
         <div  style="float:left;">
           <%= form_tag(problem_url, :method=>:get) do %>
           <% problem_button_options.each_pair do |name, value| %>

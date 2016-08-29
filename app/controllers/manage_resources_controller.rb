@@ -20,6 +20,11 @@ class ManageResourcesController < ApplicationController
     @user = UseridDetail.find(userid_id)
   end
 
+  def logout
+    reset_session
+    redirect_to refinery.logout_path
+  end
+
   def new
     clean_session
     clean_session_for_syndicate
@@ -77,19 +82,8 @@ class ManageResourcesController < ApplicationController
         continue = false
       end
     else
+      continue = false
       logger.warn "FREEREG::USER No session "
-      if defined?(@@userid).nil? || @@userid.blank?
-        logger.warn "FREEREG::USER No session and no @@userid"
-        flash[:notice] = 'You are not logged into the system'
-        continue = false
-      else
-        @user = UseridDetail.find(@@userid)
-        if @user.blank?
-          logger.warn "FREEREG::USER userid not found #{session[:userid_detail_id]}"
-          flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
-          continue = false
-        end
-      end
     end
     case
     when @user.blank?

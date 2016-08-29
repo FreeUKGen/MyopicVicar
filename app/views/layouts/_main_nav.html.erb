@@ -11,12 +11,12 @@
           <%= link_to("Search",  main_app.new_search_query_path) %>
         </li>
         <% end%>
-                <% if  session[:userid_detail_id] %>
+                <% if  session[:userid_detail_id].present? %>
         <li>
           <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
         </li>
         <li>
-          <%= link_to "Logout", refinery.logout_path%>
+          <%= link_to "Logout", main_app.logout_manage_resources_path %>
         </li>
         <li>
           <% get_user_info_from_userid %>
