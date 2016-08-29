@@ -213,8 +213,8 @@ class Register
       cache = PlaceCache.where(:chapman_code => place.chapman_code).first
       place.update_attribute(:data_present, true)
       if cache.present?
-        cache.places_json
-        refresh_cache = true unless cache.include?(place.place_name)
+        actual_cache = cache.places_json
+        refresh_cache = true unless actual_cache.include?(place.place_name)
       end
     end
     PlaceCache.refresh(place.chapman_code) if refresh_cache
