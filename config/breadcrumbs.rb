@@ -482,7 +482,7 @@ crumb :edit_syndicate do |syndicate|
 end
 crumb :create_syndicate do |syndicate|
   link "Create Syndicate", new_syndicate_path(syndicate)
-  parent :show_syndicate, syndicate
+  parent :syndicates
 end
 
 
