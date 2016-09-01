@@ -1,7 +1,7 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:index,:new]
+  skip_before_filter :require_login, only: [:index,:new, :pages]
 
   def create
     @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -46,6 +46,11 @@ class ManageResourcesController < ApplicationController
         return
       end
     end
+  end
+
+  def pages
+    current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
+    redirect_to '/cms/refinery/pages'
   end
 
   def selection

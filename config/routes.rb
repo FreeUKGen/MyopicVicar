@@ -130,6 +130,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :my_saved_searches
 
+  get 'manage_resources/pages', :to =>'manage_resources#pages', :as => :pages_manage_resources
   get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources

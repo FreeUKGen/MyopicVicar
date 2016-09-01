@@ -35,10 +35,10 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     #empty current session
-    reset_session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     #start new session
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
