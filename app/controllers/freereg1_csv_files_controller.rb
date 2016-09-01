@@ -44,6 +44,12 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to :back
         return
       end
+      register = @freereg1_csv_file.register
+      register.calculate_register_numbers
+      church = register.church
+      church.calculate_church_numbers
+      place = church.place
+      place.calculate_place_numbers
       #save a copy to attic and delete all batches
       @physical_file.file_delete
       @physical_file.delete
