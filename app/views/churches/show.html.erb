@@ -49,7 +49,14 @@
           <tr>
             <td>Date when an entry/search record was last amended:</td><td class="weight--semibold"> <%= @church.last_amended %></td>
           </tr>
+          
+           <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @church.records %></td></tr>
+        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @church.datemin %></td></tr>
+        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @church.datemax %></td></tr>
       </table>
     </div>
+      <h3 class=" text--center">Numbers of transcriptions. </h3>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+     <%= render :partial => '/freereg_contents/decade' %>
   </section>
 </div>
