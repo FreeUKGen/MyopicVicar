@@ -1,7 +1,7 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  #skip_before_filter :require_login, only: [:index,:new, :pages]
+  skip_before_filter :require_login, only: [:index,:new, :pages]
 
 
   def create
