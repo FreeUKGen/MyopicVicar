@@ -2,7 +2,7 @@ class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
   skip_before_filter :require_login, only: [:index,:new, :pages]
-  skip_before_action :verify_authenticity_token , only: [:index,:new]
+
 
   def create
     @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -27,7 +27,6 @@ class ManageResourcesController < ApplicationController
   end
 
   def new
-    p session
 
     if !is_ok_to_render_actions?
       stop_processing and return
@@ -91,7 +90,7 @@ class ManageResourcesController < ApplicationController
       end
     else
       continue = false
-      logger.warn "FREEREG::USER No session entry for userid "
+      logger.warn "FREEREG::USER No session "
     end
     case
     when @user.blank?
