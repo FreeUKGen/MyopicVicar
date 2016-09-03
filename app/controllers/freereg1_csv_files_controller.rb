@@ -238,7 +238,10 @@ class Freereg1CsvFilesController < ApplicationController
     when session[:county].present? &&
         (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == 'data_manager' ||
          session[:role] == "country_coordinator" || session[:role] == "documentation_coordinator")
-        @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+        time_start = Time.now
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      time_to_process = Time.now - time_start
+      logger.warn "FREEREG::FILES::INDEX time to retrieve #{time_to_process}  sort #{session[:sort]}"
     end
     session[:current_page] = @freereg1_csv_files.current_page unless @freereg1_csv_files.nil?
   end

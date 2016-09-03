@@ -1,6 +1,7 @@
 <%= render 'my_own_header' if session[:my_own]%>
 <%= render 'coordinator_header' unless session[:my_own]%>
 <% unless @freereg1_csv_files.nil? || @freereg1_csv_files.length == 0%>
+<% time_start = Time.now %>
 <%= paginate @freereg1_csv_files %>
 <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
 <div class="grid__item ">
@@ -34,13 +35,13 @@
             <% files = 0 %>
             <% @freereg1_csv_files.each do |freereg1_csv_file| %>
             <% files = files +1 %>
-            <%records = records + freereg1_csv_file.freereg1_csv_entries.count %>
+            <%records = records + freereg1_csv_file.records.to_i %>
             <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
               <td class="t12"><%= file_name(freereg1_csv_file)%></td>
-              <td class="t5"><%= chapman(freereg1_csv_file) %></td>
-              <td class="t8"><%= place_name(freereg1_csv_file) %></td>
-              <td class="t8"><%= church_name(freereg1_csv_file) %></td>
-              <td class="t8"><%= register_type(freereg1_csv_file) %></td>
+              <td class="t5"><%= freereg1_csv_file.county %></td>
+              <td class="t8"><%= freereg1_csv_file.place %></td>
+              <td class="t8"><%= freereg1_csv_file.church_name %></td>
+              <td class="t8"><%= freereg1_csv_file.register_type %></td>
               <% unless session[:my_own]%>
               <td class="t10"><%= freereg1_csv_file.userid %></td>
               <% end %>
@@ -62,6 +63,8 @@
           </tbody>
         </table>
       <h3 style="text-align: center"> <tr > There are <%= files %> files with <%= records %> records</tr> </h3>
+      <% time_to_display = Time.now - time_start%>
+      <% logger.warn "FREEREG::FILES::INDEX time to display #{time_to_display} " %>
       <%= paginate @freereg1_csv_files %>
     </div>
   </div>
