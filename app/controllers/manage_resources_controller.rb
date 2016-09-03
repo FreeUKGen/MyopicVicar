@@ -1,7 +1,8 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:index,:new, :pages]
+  #skip_before_filter :require_login, only: [:index,:new, :pages]
+
 
   def create
     @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -26,9 +27,7 @@ class ManageResourcesController < ApplicationController
   end
 
   def new
-    clean_session
-    clean_session_for_syndicate
-    clean_session_for_county
+
     if !is_ok_to_render_actions?
       stop_processing and return
     else
@@ -36,6 +35,9 @@ class ManageResourcesController < ApplicationController
         go_to_computer_code
         return
       else
+        clean_session
+        clean_session_for_syndicate
+        clean_session_for_county
         if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
           @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
         else

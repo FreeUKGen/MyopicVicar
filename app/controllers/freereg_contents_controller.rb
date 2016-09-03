@@ -2,7 +2,7 @@ class FreeregContentsController < ApplicationController
   require 'chapman_code'
   require 'freereg_options_constants'
   skip_before_filter :require_login
-
+  skip_before_action :verify_authenticity_token
   def create
     case
     when params.present? && params[:freereg_content].present? && params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"

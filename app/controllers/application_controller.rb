@@ -141,7 +141,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    if session[:userid].nil?
+    if session[:userid_detail_id].nil?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path  # halts request cycle
     end

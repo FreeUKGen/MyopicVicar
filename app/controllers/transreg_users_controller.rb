@@ -1,5 +1,5 @@
 class TransregUsersController < ApplicationController
-  skip_before_filter :require_login, only: [:new]
+  skip_before_action :verify_authenticity_token
   def new
     logger.warn "FREEREG::USER Entered transreg session #{session[:userid_detail_id] } "
     if session[:userid_detail_id] .nil?
