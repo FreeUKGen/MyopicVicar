@@ -1,8 +1,8 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:index,:new, :pages]
-
+  skip_before_filter :require_login, only: [:new, :pages]
+  skip_before_action :verify_authenticity_token
 
   def create
     @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -27,7 +27,6 @@ class ManageResourcesController < ApplicationController
   end
 
   def new
-
     if !is_ok_to_render_actions?
       stop_processing and return
     else
@@ -84,13 +83,28 @@ class ManageResourcesController < ApplicationController
     if session[:userid_detail_id].present?
       @user = UseridDetail.id(session[:userid_detail_id]).first
       if @user.blank?
-        logger.warn "FREEREG::USER userid not found #{session[:userid_detail_id]}"
+        logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
         flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
         continue = false
       end
+      cookies.delete  [:userid_detail_id]
     else
-      continue = false
-      logger.warn "FREEREG::USER No session "
+      if cookies[:userid_detail_id].present?
+        @user = UseridDetail.id(cookies[:userid_detail_id]).first
+        if @user.blank?
+          logger.warn "FREEREG::USER userid not found in cookie #{cookies[:userid_detail_id]}"
+          flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
+          continue = false
+        else
+          reset_session
+          session[:userid_detail_id] = cookies[:userid_detail_id]
+        end
+
+      else
+        logger.warn "FREEREG::USER userid not found in session or cookie "
+        flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
+        continue = false
+      end
     end
     case
     when @user.blank?
@@ -124,6 +138,7 @@ class ManageResourcesController < ApplicationController
     session[:role] = @user.person_role
     logger.warn "FREEREG::USER user #{@user.userid}"
     logger.warn "FREEREG::USER  manager #{@manager}"
+
   end
 
   def stop_processing

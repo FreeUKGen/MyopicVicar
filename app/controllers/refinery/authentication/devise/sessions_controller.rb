@@ -4,6 +4,7 @@ module Refinery
       class SessionsController < ::Devise::SessionsController
         helper Refinery::Core::Engine.helpers
         layout 'refinery/layouts/login'
+        skip_before_action :verify_authenticity_token
         before_action :clear_unauthenticated_flash, :only => [:new]
         before_action :force_signup_when_no_users!
         skip_before_action :require_login
