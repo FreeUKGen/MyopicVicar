@@ -21,8 +21,8 @@
     <meta name="MobileOptimized" content="568">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="msapplication-config" content="none"/>
-    <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <link rel="shortcut icon" href="<%= asset_path 'favicon.ico' %>" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/assets/apple-touch-icon-152x152-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144x144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/assets/apple-touch-icon-120x120-precomposed.png">
@@ -45,10 +45,10 @@
           }, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
         }
       };
-      grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
+      grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "<%= path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
     </script>
     <noscript>
-    <link rel="stylesheet" type="text/css" href="styles/css/icons.fallback.css">
+    <link rel="stylesheet" type="text/css" href="<%= path_to_stylesheet('styles/css/icons.fallback.css') %>">
     </noscript>
     
     <!-- Styles -->
