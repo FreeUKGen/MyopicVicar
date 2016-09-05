@@ -30,7 +30,7 @@ MyopicVicar::Application.routes.draw do
   get 'transreg_counties/list'
   get 'transreg_users/refreshuser'
   get 'transreg_users/authenticate'
-
+  get 'transreg_users/computer'
   resources :transreg_counties
   resources :transreg_users
 

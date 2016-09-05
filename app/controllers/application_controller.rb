@@ -142,7 +142,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    if session[:userid_detail_id].nil?
+    if session[:userid_detail_id].nil? ||  cookies[:userid_detail_id]
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path  # halts request cycle
     end
