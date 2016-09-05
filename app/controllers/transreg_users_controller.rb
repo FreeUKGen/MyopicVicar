@@ -1,5 +1,5 @@
 class TransregUsersController < ApplicationController
-  skip_before_action :require_login, only: [:new,:refresher]
+  skip_before_action :require_login
   skip_before_action :verify_authenticity_token
   def new
     logger.warn "FREEREG::USER Entered transreg session #{session[:userid_detail_id]}  cookie #{cookies[:userid_detail_id] }"
@@ -9,8 +9,9 @@ class TransregUsersController < ApplicationController
     end
     @user = UseridDetail.id(session[:userid_detail_id]).first unless session[:userid_detail_id].nil?
     @user = UseridDetail.id(cookies[:userid_detail_id]).first if session[:userid_detail_id].nil?
-    cookies.delete  [:userid_detail_id]
+
     render(:text => { "result" => "Logged in", :userid_detail => @user.attributes}.to_xml({:dasherize => false, :root => 'login'}))
+
   end
 
   def index
@@ -30,10 +31,12 @@ class TransregUsersController < ApplicationController
   # AUTHENTICATE - Authenticates a subscriber's userid and password
   #
   def authenticate
+    p "authenticate"
+    p params
     @transcriber_id = params[:transcriberid]
     @transcriber_password = params[:transcriberpassword]
 
-    if session[:userid].nil?
+    if session[:userid_detail_id].nil? && cookies[:userid_detail_id].nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'authentication'}))
       return
     end
