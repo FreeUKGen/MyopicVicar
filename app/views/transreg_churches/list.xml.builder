@@ -1,4 +1,5 @@
 xml.ChurchesTable do
+  if @churches.present?
 	@churches.each do |church|
 	 	xml.church do
 			xml.PlaceName church.place_name
@@ -10,4 +11,5 @@ xml.ChurchesTable do
 			xml.Notes church.church_notes
 		end
 	end
+  end
 end
