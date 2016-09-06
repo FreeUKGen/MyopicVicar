@@ -1,4 +1,5 @@
 xml.PlacesTable do
+  if @places.present?
 	@places.each do |place|
 	 	xml.place do
 			xml.ChapmanCode place.chapman_code
@@ -8,4 +9,5 @@ xml.PlacesTable do
 			xml.Notes       place.place_notes
 		end
 	end
+  end
 end

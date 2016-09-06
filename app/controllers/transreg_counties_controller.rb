@@ -1,24 +1,24 @@
 class TransregCountiesController < ApplicationController
 
   def list
-  	if session[:userid].nil?
+    if session[:userid_detail_id].nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'list'}))
       return
-  	end
+    end
 
-  	@first_name = session[:first_name]
-  	@user = UseridDetail.where(:userid => session[:userid]).first
+    @first_name = session[:first_name]
+    @user = UseridDetail.id(session[:userid_detail_id]).first
 
-  	@counties = County.all.order_by(chapman_code: 1)
+    @counties = County.all.order_by(chapman_code: 1)
 
-  	respond_to do |format|
-  		format.html
-  		format.xml
-  	end
+    respond_to do |format|
+      format.html
+      format.xml
+    end
   end
 
   def register_types
-    if session[:userid].nil?
+    if session[:userid_detail_id].nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'register_types'}))
       return
     end

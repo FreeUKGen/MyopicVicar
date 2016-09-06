@@ -1,4 +1,5 @@
 xml.BatchesTable do
+  if @batches.present?
 	@batches.each do |batch|
 	 	xml.Batch do
 	 		xml.ID batch._id
@@ -35,4 +36,5 @@ xml.BatchesTable do
 			xml.CsvFile batch.csvfile
 		end
 	end
+  end
 end
