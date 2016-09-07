@@ -134,11 +134,17 @@ module ApplicationHelper
     end
     banner.html_safe
   end
+
   def title(title = nil)
     if title.present?
       content_for :title, title
+    elsif content_for?(:title)
+      title = content_for(:title) +  ' | ' + "FreeReg"
+
+    elsif  page_title.present?
+      title = page_title + ' | '  + "FreeReg"
     else
-      content_for?(:title) ?  content_for(:title) +  ' | ' + "FreeReg"  : "FreeReg"
+      title = "FreeReg"
     end
   end
   def display_number(num)
