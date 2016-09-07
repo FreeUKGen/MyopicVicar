@@ -29,10 +29,10 @@ Refinery::Authentication::Devise::User.class_eval do
   end
 
   def inform_coordinator_of_completion
-    userid = UseridDetail.find(self.userid_detail_id)
+    userid = UseridDetail.find(self.userid_detail_id).first
     userid.finish_transcriber_creation_setup if userid.person_role == 'transcriber' &&
       self.encrypted_password != Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil) &&
-      userid.password == Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+      userid.password_confirmation == Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
   end
 
   def save_password_and_send_notification
