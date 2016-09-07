@@ -174,6 +174,7 @@ class Place
           records = records + church.records.to_i unless church.records.blank?
           datemax = church.datemax.to_i if church.datemax.to_i > datemax && church.datemax.to_i < FreeregValidations::YEAR_MAX unless church.datemax.blank?
           datemin = church.datemin.to_i if church.datemin.to_i < datemin unless church.datemin.blank?
+          church.daterange = FreeregContent.setup_total_hash if  church.daterange.blank?
           FreeregContent.calculate_date_range(church, total_hash,"church")
           FreeregContent.get_transcribers(church, transcriber_hash,"register")
         end

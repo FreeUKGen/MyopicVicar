@@ -119,6 +119,7 @@ class Register
           records = records + file.records.to_i unless file.records.blank?
           datemax = file.datemax.to_i if file.datemax.to_i > datemax && file.datemax.to_i < FreeregValidations::YEAR_MAX unless file.datemax.blank?
           datemin = file.datemin.to_i if file.datemin.to_i < datemin unless file.datemin.blank?
+          file.daterange = FreeregContent.setup_array if  file.daterange.blank?
           FreeregContent.calculate_date_range(file, total_hash,"file")
           FreeregContent.get_transcribers(file, transcriber_hash,"file")
         end
