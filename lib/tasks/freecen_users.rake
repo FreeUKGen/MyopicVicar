@@ -17,7 +17,7 @@ task :load_freecen_users, [:in_json,:in_sql] => :environment do |t, args|
     puts rv
 
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
+    db = Mongoid.clients[:default][:database]
     puts "emptying the refinery_users table"
     UseridDetail.all.each do |detail|
       detail.delete #destroy would call callbacks, so just delete
@@ -54,17 +54,23 @@ task :save_freecen_users, [:out_json,:out_sql] => :environment do |t, args|
     dbname = Rails.configuration.database_configuration[Rails.env]["database"]
     dbuser = Rails.configuration.database_configuration[Rails.env]["username"]
     dbpw = Rails.configuration.database_configuration[Rails.env]["password"]
-    puts "saving refinery_users, refinery_roles_users, refinery_roles, and refinery_user_plugins sql"
+#    puts "saving refinery_users, refinery_roles_users, refinery_roles, and refinery_user_plugins sql"
+    puts "saving refinery users sql. (..._users, roles, roles_users, and user_plugins)"
     puts "*** please enter the mysql password for the freecen2 user ***"
+#    cmd = "mysqldump --opt -u #{dbuser} -p #{dbname} " + \
+#          "refinery_users refinery_roles refinery_roles_users " + \
+#	  "refinery_user_plugins > #{args[:out_sql]}"
     cmd = "mysqldump --opt -u #{dbuser} -p #{dbname} " + \
-          "refinery_users refinery_roles refinery_roles_users " + \
-	  "refinery_user_plugins > #{args[:out_sql]}"
+          "refinery_authentication_devise_users " + \
+          "refinery_authentication_devise_roles " + \
+          "refinery_authentication_devise_roles_users " + \
+	  "refinery_authentication_devise_user_plugins > #{args[:out_sql]}"
     rv = `#{cmd}`
     puts rv
 
     puts "saving the mongo userid_details collection"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
+    db = Mongoid.clients[:default][:database]
     cmd = Rails.application.config.mongodb_bin_location + \
           "mongoexport --db #{db} --collection userid_details " + \
           "--out #{args[:out_json]}"
@@ -81,7 +87,7 @@ task :initialize_freecen_counties_and_coords => [:environment] do
   sure=STDIN.gets.chomp
   if 'y'==sure || 'Y'==sure
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
+    db = Mongoid.clients[:default][:database]
     puts "emptying counties collection"
     County.all.each do |cty|
       cty.delete
@@ -113,7 +119,7 @@ task :save_freecen_counties, [:out_json] => :environment do |t, args|
   else
     puts "saving the mongo counties collection"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
+    db = Mongoid.clients[:default][:database]
     cmd = Rails.application.config.mongodb_bin_location + \
           "mongoexport --db #{db} --collection counties " + \
           "--out #{args[:out_json]}"
@@ -125,7 +131,7 @@ end
 task :load_freecen_counties, [:in_json] => :environment do |t, args|
   if !args[:in_json].nil? && File.exists?(args[:in_json])
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.sessions[:default][:database]
+    db = Mongoid.clients[:default][:database]
     puts "emptying the counties collection"
     Counties.all.each do |cty|
       cty.delete #destroy would call callbacks, so just delete
