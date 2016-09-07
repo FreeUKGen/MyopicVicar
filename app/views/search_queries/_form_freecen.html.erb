@@ -121,6 +121,16 @@
 				</a>
 			<% end %>
 		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<%= f.label :search_nearby_places do %>
+				<%= f.check_box :search_nearby_places, { :tabindex => 9 }, "true", "false" %>
+			Nearby places
+				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+					<span>Check to search places in the vicinity of the selected starting place. (Up to 40 additional places will be included.)</span>
+				</a>
+			<% end %>
+		</li>
+
 		<%= f.action :submit,
 			:as => :button,
 			:label => 'Search',
