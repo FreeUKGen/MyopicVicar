@@ -138,7 +138,7 @@ module ApplicationHelper
     if title.present?
       content_for :title, title
     else
-      content_for?(:title) ? "FreeReg" + ' | ' + content_for(:title) : "FreeReg"
+      content_for?(:title) ?  content_for(:title) +  ' | ' + "FreeReg"  : "FreeReg"
     end
   end
   def display_number(num)
