@@ -20,7 +20,7 @@ Refinery::Authentication::Devise::User.class_eval do
     UseridDetail.find(self.userid_detail_id)
   end
   def timeout_in
-    30.minute
+    120.minute
   end
 
 
