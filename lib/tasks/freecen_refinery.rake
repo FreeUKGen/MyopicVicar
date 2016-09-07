@@ -12,8 +12,11 @@ task :save_freecen_refinery_pages, [:out_sql] => :environment do |t, args|
     puts "saving all of the refinery tables except the users and roles"
     puts "*** please enter the mysql password for the freecen2 user ***"
     cmd = "mysqldump --opt -u #{dbuser} -p #{dbname} " + \
-          "refinery_county_pages refinery_images refinery_page_part_translations refinery_page_parts refinery_page_translations refinery_pages refinery_resources seo_meta " \
-          "> #{args[:out_sql]}"
+     "--ignore-table=#{dbname}.refinery_authentication_devise_roles " + \
+     "--ignore-table=#{dbname}.refinery_authentication_devise_roles_users " + \
+     "--ignore-table=#{dbname}.refinery_authentication_devise_user_plugins " + \
+     "--ignore-table=#{dbname}.refinery_authentication_devise_users" + \
+     "> #{args[:out_sql]}"
     rv = `#{cmd}`
     puts rv
   end
