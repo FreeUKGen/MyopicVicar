@@ -380,7 +380,9 @@ dl.table-display
 .ttip .ttip__text {
   font-weight: normal;
   visibility: hidden;
-  width: 250px;
+  width: 350px;
+  max-width: 100%;
+  max-width: calc(100% + 28px);
   background-color: #444;
   color: #f4f4f4;
   padding: 10px;
