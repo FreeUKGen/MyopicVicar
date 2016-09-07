@@ -6,7 +6,7 @@ module FreeregOptionsConstants
   MAXIMUM_NUMBER_OF_RESULTS = 250
   MAXIMUM_NUMBER_OF_SCANS = 500
   DATERANGE_MINIMUM = 1530
-  ISSUES = ['Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank-you' ,'General Comment']
+  ISSUES = ['General Comment ','Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank you' ]
   FORCE_SEARCH_RECORD_RECREATE = [
     "baptism_date",
     "birth_date",
