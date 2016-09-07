@@ -95,7 +95,7 @@ class FreeregContentsController < ApplicationController
     if @chapman_code.present? &&  @county.present? && @character.present?
       @coordinator = County.coordinator_name(@chapman_code)
       @page = FreeregContent.get_header_information(@chapman_code)
-      allplaces = Place.county(@county).not_disabled.data_present.all.order_by(place_name: 1)
+      allplaces = Place.chapman_code(@chapman_code).not_disabled.data_present.all.order_by(place_name: 1)
       @places = Array.new
       allplaces.each do |place|
         @places << place if place.place_name =~  /^[#{@character}]/i
