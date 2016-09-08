@@ -165,6 +165,11 @@ class FreeregContent
       record[3] = county.marriage_records
       record
     end
+    def setup_array
+      file_array = Array.new(50,0)
+      return file_array
+    end
+
     def setup_total_hash
       total_hash = Hash.new
       total_hash["ba"] = Array.new(50,0)

@@ -11,7 +11,7 @@ class UpdateSearchRecords
     software_version = SoftwareVersion.control.first
     version = software_version.version
     search_version  = software_version.last_search_record_version if search_version.blank?
-    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} "
+    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f}"
     message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version}"
     records = 0
     updated_records = 0
@@ -31,7 +31,7 @@ class UpdateSearchRecords
         church = register.church if register.present?
         place = church.place if church.present?
         if place.present?
-          recs = file.freereg1_csv_entries.count
+          recs = file.records.to_i
 
           message_file.puts "#{file.userid}/#{file.file_name}/#{recs}"
           p "#{file.userid}/#{file.file_name}/#{recs}"

@@ -78,7 +78,9 @@ class FreeregContentsController < ApplicationController
       @coordinator = County.coordinator_name(@chapman_code)
       @place_name = @place.place_name
       @names = @place.get_alternate_place_names
-      @stats = @place.data_contents
+      @decade = @place.daterange
+      @transcribers = @place.transcribers
+      @contributors = @place.contributors
     else
       flash[:notice] = "Non existent place has been selected."
       redirect_to :back and return
@@ -93,7 +95,7 @@ class FreeregContentsController < ApplicationController
     if @chapman_code.present? &&  @county.present? && @character.present?
       @coordinator = County.coordinator_name(@chapman_code)
       @page = FreeregContent.get_header_information(@chapman_code)
-      allplaces = Place.county(@county).not_disabled.data_present.all.order_by(place_name: 1)
+      allplaces = Place.chapman_code(@chapman_code).not_disabled.data_present.all.order_by(place_name: 1)
       @places = Array.new
       allplaces.each do |place|
         @places << place if place.place_name =~  /^[#{@character}]/i
@@ -173,7 +175,7 @@ class FreeregContentsController < ApplicationController
       @transcribers = @place.transcribers
       @contributors = @place.contributors
     else
-      flash[:notice] = "None existent place has been selected."
+      flash[:notice] = "Non existent place has been selected."
       redirect_to :action => 'new' and return
     end
   end
