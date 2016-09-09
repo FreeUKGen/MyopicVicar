@@ -468,6 +468,21 @@ WILDCARD_UCF =
   :user => 'artificial'
 }
 
+BAPTISM_BIRTH =
+{
+  :filename => "artificial/birth_date_ba.csv",
+  :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+  :file => "birth_date_ba.csv",
+  :chapman_code => 'KEN',
+  :placename => 'Stone in Oxney',
+  :churchname => 'St Mary',
+  :entry_count => 1,
+  :register_type => "TR",
+  :minimum_date => "1553",
+  :maximum_date => "1653",
+  :user => 'artificial'
+}
+
 
 
 
