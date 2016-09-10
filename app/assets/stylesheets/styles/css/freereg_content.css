@@ -374,3 +374,38 @@ dl.table-display
 .table--data--bold{
    font: 12px/1.5 bold sans-serif;
 }
+.ttip { position: relative; }
+.ttip img { cursor: help; padding: 0 5px; }
+
+.ttip .ttip__text {
+  font-weight: normal;
+  visibility: hidden;
+  width: 350px;
+  max-width: 100%;
+  max-width: calc(100% + 28px);
+  background-color: #444;
+  color: #f4f4f4;
+  padding: 10px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  top: 120%;
+  left: 20px;
+}
+.ttip .ttip__text::after {
+  content: " ";
+  position: absolute;
+  bottom: 100%;
+  left: 10%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #444 transparent;
+}
+.ttip img:hover + .ttip__text, .ttip:focus .ttip__text {
+  visibility: visible;
+}
+
+input::-webkit-input-placeholder { color: #585858; font-style: italic; opacity: 1 ! important; }
+input::-moz-placeholder          { color: #585858; font-style: italic; opacity: 1 ! important; }
+input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 1 ! important; }
+input::placeholder               { color: #585858; font-style: italic; opacity: 1 ! important; }

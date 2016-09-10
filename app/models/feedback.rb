@@ -66,7 +66,7 @@ class Feedback
         ccs << person.email_address
       end
     end
-    UserMailer.feedback(self,ccs).deliver
+    UserMailer.feedback(self,ccs).deliver_now
   end
 
   def github_issue

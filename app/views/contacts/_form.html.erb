@@ -13,70 +13,93 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-<section class="island  island--light ">
-<%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
-  <%= f.hidden_field :contact_time %>
-  <%= f.hidden_field :session_id %>
-  <%= f.hidden_field :problem_page_url %>
-  <%= f.hidden_field :previous_page_url %>
-  <li  class="grid__item  one-half  palm-one-whole  push--bottom" id="name_input" >
-    <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>For when we contact you; it will not be made public</span></a>
-    </label>
-  <% if @contact.name.nil? %>
-    <input name="contact[name]" type="text" class="text-input" placeholder="Mandatory" required="required" >
-  <% else %>
-    <input name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
-  <% end %>
-  </li>
-  <li  class="grid__item  two-fifths  palm-one-whole  push--bottom" id="email_address_input">
-      <label class="label" for="email_address">Your email address <a href="#" class="left_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>So we can contact you; it will not be made public</span></a></label>
-  <% if @contact.email_address.nil? %>
-    <input name="contact[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
-  <% else%>
-    <input name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
-  <% end%>
-  </li>
+<div class="grid">
+  <div class="grid__item one-whole">
+    <section class="island island--light">
+    <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
+      <%= f.hidden_field :contact_time %>
+      <%= f.hidden_field :session_id %>
+      <%= f.hidden_field :problem_page_url %>
+      <%= f.hidden_field :previous_page_url %>
+      <ul style="margin-left: -28px;">
+        <li class="grid__item one-half palm-one-whole push--bottom" id="name_input">
+          <label tabindex="0" for="name" class="label ttip">Your name 
+            <%= image_tag 'info.png', alt: 'Information', height: '16' %> 
+            <span class="ttip__text">Required: for when we contact you; it will not be made public</span>
+          </label>
+        <% if @contact.name.nil? %>
+          <input id="name" name="contact[name]" type="text" class="text-input" placeholder="Required" required="required">
+        <% else %>
+          <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
+        <% end %>
+        </li>
+        <li class="grid__item two-fifths palm-one-whole push--bottom" id="email_address_input">
+          <label tabindex="0" for="email_address" class="label ttip">Your email address 
+              <%= image_tag 'info.png', alt: 'Information', height: '16' %> 
+              <span class="ttip__text">Required: so we can contact you; it will not be made public</span>
+          </label>
+        <% if @contact.email_address.nil? %>
+          <input name="contact[email_address]" id="email_address" type="text" class="text-input" placeholder="Required" required="required">
+        <% else%>
+          <input name="contact[email_address]" id="email_address" type="text" class="text-input" value="<%=@contact.email_address%>">
+        <% end%>
+        </li>
   
-  <li class="grid__item  one-half  palm-one-whole push--bottom">
-    <label>Comment or question<a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>If you want more information on volunteering to transcribe please indicate the county that is of most interest. If wanting to assist in the project management or development please indicate your area of expertise. </span></a></label>
-    <% if @contact.body.nil? %>
-      <textarea name="contact[body]"  style="width: 100%;"  rows="8" ></textarea>
-    <% else%>
-      <textarea name="contact[body]"  style="width: 100%;"  rows="8" ><%=@contact.body%></textarea>
-    <% end%>
-  </li>
-  <li  class="grid__item  one-third  palm-one-whole push--bottom" id="contact_type_input">
-    <label class="label" for="contact_type">
-      Nature of contact <a href="#" class="left_tooltip"> <img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please select the type of contact you are making so we may refer it to the correct person. <b>Data problems are best reported from the specific record from your search</b></span></a></label>
-    <select id="contact_type" name="contact[contact_type]" class="select" required="required" size="7">
-    <% @options.each do |value| %>
-      <% if value == @contact.contact_type %>
-        <option value="<%=value%>" selected="selected" ><%=value%></option>
-      <% else %>
-        <option value="<%=value%>" ><%=value%></option>
-      <% end %>
+        <li class="grid__item one-half palm-one-whole push--bottom">
+          <label tabindex="0" for="body" class="ttip">Comment or question
+            <%= image_tag 'info.png', alt: 'Information', height: '16' %> 
+            <span class="ttip__text">If you want more information on volunteering to transcribe, please indicate the county that is of most interest. If wanting to assist in the project management or development, please indicate your area of expertise. </span>
+          </label>
+        <% if @contact.body.nil? %>
+          <textarea name="contact[body]" id="body" style="width: 100%;" rows="8"></textarea>
+        <% else%>
+          <textarea name="contact[body]" id="body" style="width: 100%;" rows="8"><%=@contact.body%></textarea>
+        <% end%>
+        </li>
+        <li class="grid__item one-third lap-one-half palm-one-whole push--bottom" id="contact_type_input">
+          <label tabindex="0" for="contact_type" class="label ttip">Nature of contact 
+            <%= image_tag 'info.png', alt: 'Information', height: '16' %>
+            <span class="ttip__text">Required. Please select the type of contact you are making so we may refer it to the correct person. <em>Data problems</em> are best reported from the specific record in your search results.</span>
+          </label>
+          <select name="contact[contact_type]" id="contact_type" class="select" required="required" size="7">
+          <% @options.each do |value| %>
+            <% if value == @contact.contact_type %>
+              <option value="<%=value%>" selected="selected"><%=value%></option>
+            <% else %>
+              <option value="<%=value%>"><%=value%></option>
+            <% end %>
+          <% end %>
+          </select>
+        </li>
+
+	<% if 'freecen' == MyopicVicar::Application.config.template_set %>
+        <li class="grid__item one-half palm-one-whole push--bottom">
+	  <label tabindex="0" for="selected_county" class="ttip">Contact a specific county <span class="weight--normal"> (optional) </span> 
+	    <%= image_tag 'info.png', alt: 'Information', height: '16' %>
+	    <span class="ttip__text">If you wish to contact a coordinator for one specific county, please select the county here.</span>
+	  </label>
+	  <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+	  <select name="contact[selected_county]" id="selected_county" class="select" size="5">
+	    <option value="nil">No specific county</option>
+	    <%= grouped_options_for_select(grouped_options) %>
+	  </select>
+	</li>
+	<% end %>
+
+        <li class="grid__item one-half palm-one-whole push--bottom">
+          <label tabindex="0" for="screenshot" class="ttip">Screenshot or image <span class="weight--normal"> (optional) </span> 
+            <%= image_tag 'info.png', alt: 'Information', height: '16' %>
+            <span class="ttip__text">Please select the image you wish to upload (jpg, jpeg or gif only)</span>
+          </label>
+          <input name="contact[screenshot]" id="screenshot" type="file">
+        </li>
+        <li class="betterstyling">
+          <label for="name2">Please add your name again:</label>
+          <input type="text" name="contact[contact_name]" id="name2">
+        </li>
+        <%= f.action :submit, :as => :input,  :label => 'Submit' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-third" }  %>
+      </ul>
     <% end %>
-    </select>
-  </li>
-
-<% if 'freecen' == MyopicVicar::Application.config.template_set %>
-  <li class="grid__item  one-half  palm-one-whole">
-    <label>Contact a specific county (Optional) <a href="#" class="top_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>If you wish to contact a coordinator for one specific county, please select the county here.</span></a></label>
-    <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-    <select class="select" id="selected_county" name="contact[selected_county]"  size="5">
-      <option value="nil">No specific county</option>
-      <%= grouped_options_for_select(grouped_options) %>
-    </select>
-  </li>
-<% end %>
-
-<li class="grid__item  one-half  palm-one-whole push--bottom">
-    <label>Screenshot or image<span  class="weight--normal"> (optional)</span> <a href="#" class="right_tooltip"><img alt="Information" height="16" src="/assets/refinery/icons/information.png" onclick="return false;"> <span>Please select the image you wish to upload (jpg, jpeg, png, bmp or gif)</span></a></label>
-    <input name="contact[screenshot]" type="file" >
-</li>
-
-  <p class="betterstyling">Please add your name again: </p><input class= "betterstyling" type="text" name="contact[contact_name]">
-  <%= f.action :submit, :as => :input,  :label => 'Submit' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-third text--left" }  %>
-
-<% end %>
-</section>
+    </section>
+  </div>
+</div>

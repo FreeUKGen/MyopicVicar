@@ -24,7 +24,7 @@ class Freereg1CsvFilesController < ApplicationController
       set_controls(@freereg1_csv_file)
       set_locations
       @records = @freereg1_csv_file.freereg1_csv_entries.count
-      @userids = UseridDetails.get_userids_for_selection("all")
+      @userids = UseridDetail.get_userids_for_selection("all")
     else
       go_back("batch",params[:id])
     end
@@ -44,6 +44,12 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to :back
         return
       end
+      register = @freereg1_csv_file.register
+      register.calculate_register_numbers
+      church = register.church
+      church.calculate_church_numbers
+      place = church.place
+      place.calculate_place_numbers
       #save a copy to attic and delete all batches
       @physical_file.file_delete
       @physical_file.delete
@@ -232,7 +238,10 @@ class Freereg1CsvFilesController < ApplicationController
     when session[:county].present? &&
         (session[:role] == 'county_coordinator' || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == 'data_manager' ||
          session[:role] == "country_coordinator" || session[:role] == "documentation_coordinator")
-        @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+        time_start = Time.now
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      time_to_process = Time.now - time_start
+      logger.warn "FREEREG::FILES::INDEX time to retrieve #{time_to_process}  sort #{session[:sort]}"
     end
     session[:current_page] = @freereg1_csv_files.current_page unless @freereg1_csv_files.nil?
   end

@@ -1,0 +1,15 @@
+
+<h2 class=" text--center">Select the search to be displayed</h2>
+<div class="island  island--light">
+ <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+   <% end %>  
+<%= semantic_form_for @search_query, :html => { :class => "grid"}  do |f| %>
+<%= f.input :action,  
+    { :as => :select, :include_blank => true,  :label => "Make a Selection", :required => false, :collection => @options,:width => 10 ,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 10 ,'onchange' => @location} }%>
+
+<% end %>
+</div>
+ 

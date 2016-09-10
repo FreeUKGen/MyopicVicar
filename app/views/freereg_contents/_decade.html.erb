@@ -3,11 +3,11 @@
    <div class="table-wrapper">
     <table class="table--bordered table--data" >
       <colgroup >
-        <col class="t15">
-        <col class="t25">
-        <col class="t25">
-        <col class="t25 ">
-        <col class="t10">
+        <col class="t20">
+        <col class="t20">
+        <col class="t20">
+        <col class="t20 ">
+        <col class="t20">
       </colgroup>
       <thead >
         <tr style="font-size: 20px; font-weight: bold">
@@ -21,10 +21,17 @@
       <tbody >
         <tr style="font-size: 16px; font-weight: bold">
           <td>Transcribed by</td>
-          <td ><%= @transcribers[0] %></td>
-          <td ><%= @transcribers[1] %></td>
-          <td ><%= @transcribers[2] %></td>
-          <td><%= ""%></td>
+          <td ><%= @transcribers["ba"].join(",")  unless  @transcribers.nil? %></td>
+          <td ><%= @transcribers["ma"].join(",") unless  @transcribers.nil?%></td>
+          <td ><%= @transcribers["bu"].join(",") unless  @transcribers.nil?%></td>
+          <td ><%= @transcribers["total"].join(",") unless  @transcribers.nil?%></td>
+        </tr>
+        <tr style="font-size: 16px; font-weight: bold">
+          <td>Contribution by these people or organizations is acknowledged</td>
+          <td ><%= @contributors["ba"].join(",") unless @contributors.nil? %>  </td>
+          <td ><%= @contributors["ma"].join(",") unless @contributors.nil? %></td>
+          <td ><%= @contributors["bu"].join(",") unless @contributors.nil? %></td>
+          <td ><%= @contributors["total"].join(",") unless @contributors.nil? %></td>
         </tr>
         <% decade_start = 1530%>
         <% decade_end = 1539%>
@@ -32,52 +39,56 @@
         <% next_index = 0 %>
         <% decade_total = 0 %>
         <% next_total = 0 %>
-        <% while current_index < @decade["ba"].count %>
-          <% decade_total = @decade["ba"][current_index] + @decade["ma"][current_index] + @decade["bu"][current_index] %>
-          <% if decade_total > 0 then %>
-            <tr >
-            <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
-            <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
-            <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
-            <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-            <td><%= display_number(decade_total) %></td>
-            </tr>
-            <% decade_start += 10 %>
-            <% decade_end += 10 %>
-            <% current_index += 1 %>
-          <% else %>
-            <% next_index = current_index + 1 %>
-            <% if next_index < @decade["ba"].count then %>
-              <% next_total = @decade["ba"][next_index] + @decade["ma"][next_index] + @decade["bu"][next_index] %>
-              <% if next_total > 0 then %>
-                <tr>
-                  <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>
-                  <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
-                  <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
-                  <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                  <td><%= display_number(decade_total) %></td>
-                </tr>
-                <% current_index += 1 %>
-                <% decade_start = decade_end + 1 %>
-                <% decade_end += 10 %>
+        <% unless @decade.nil? %>
+          <% while current_index < @decade["ba"].count %>
+          <% decade_total = @decade["total"][current_index] %>
+            <% if decade_total > 0 then %>
+              <tr >
+              <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
+              <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              </tr>
+              <% decade_start += 10 %>
+              <% decade_end += 10 %>
+              <% current_index += 1 %>
+            <% else %>
+              <% next_index = current_index + 1 %>
+              <% if next_index < @decade["ba"].count then %>
+                <% next_total = @decade["total"][next_index]  %>
+                <% if next_total > 0 then %>
+                  <tr>
+                    <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>
+                    <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
+                    <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
+                    <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                    <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  </tr>
+                  <% current_index += 1 %>
+                  <% decade_start = decade_end + 1 %>
+                  <% decade_end += 10 %>
+                  <% else %>
+                  <% decade_end += 10 %>
+                  <% current_index = next_index %>
+                  <% end %>
                 <% else %>
-                <% decade_end += 10 %>
-                <% current_index = next_index %>
+                  <tr>
+                  <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
+                  <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  </tr>
+                  <% current_index += 1 %>
+                  <% decade_start = decade_end + 1 %>
+                  <% decade_end += 10 %>
                 <% end %>
-              <% else %>
-                <tr>
-                <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
-                <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                <td><%= display_number(decade_total) %></td>
-                </tr>
-                <% current_index += 1 %>
-                <% decade_start = decade_end + 1 %>
-                <% decade_end += 10 %>
               <% end %>
-            <% end %>
-        <% end %>
+           <% end %>
+        <%else%>
+         <td colspan= "4"> No entries </td>
+       <% end %> 
       </tbody>
     </table>
   </div>

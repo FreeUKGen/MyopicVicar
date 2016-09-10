@@ -1,27 +1,56 @@
 class TransregUsersController < ApplicationController
-  skip_before_filter :require_login, only: [:new]
+  skip_before_action :require_login
   def new
-    logger.warn "FREEREG::USER Entered transreg session #{session[:userid]} or @@userid #{@@userid}"
-    if session[:userid].nil? && @@userid.nil?
+    logger.warn "FREEREG::USER Entered transreg session #{session[:userid_detail_id]}  cookie #{cookies[:userid_detail_id] }"
+    if session[:userid_detail_id].nil? && cookies[:userid_detail_id].nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
       return
     end
-    if @@userid.present?
-      @user = UseridDetail.id(@@userid).first
-    else
-      @user = UseridDetail.where(:userid => session[:userid]).first
-    end
-    session[:userid] = @user.userid
-    get_user_info_from_userid
+    @user = UseridDetail.id(session[:userid_detail_id]).first unless session[:userid_detail_id].nil?
+    @user = UseridDetail.id(cookies[:userid_detail_id]).first if session[:userid_detail_id].nil?
+
     render(:text => { "result" => "Logged in", :userid_detail => @user.attributes}.to_xml({:dasherize => false, :root => 'login'}))
+
   end
 
   def index
   end
 
+  def computer
+    @computer_id = params[:computerid]
+    @computer_password =  Devise::Encryptable::Encryptors::Freereg.digest(params[:computeridpassword],nil,nil,nil)
+    @computer = UseridDetail.userid(@computer_id).first
+    unless @computer.present? && @computer_id == "transreg" && @computer_password == @computer.password
+      logger.warn "FREEREG::COMPUTER failed to enter transreg  with #{@scomputer_id}   #{@computer_password }"
+      render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
+      return
+    end
+    logger.warn "FREEREG::COMPUTER logged in with #{@computer_id}   #{@computer_password }"
+    session[:userid_detail_id] = @computer.id
+    @transcriber_id = params[:transcriberid]
+    @transcriber_password = Devise::Encryptable::Encryptors::Freereg.digest(params[:transcriberpassword],nil,nil,nil)
+    @user = UseridDetail.where(:userid => @transcriber_id).first
+    logger.warn "FREEREG::COMPUTER for user #{@transcriber_id}   #{@transcriber_password }"
+
+    if @user.nil? then
+      p "Unknown User"
+      render(:text => { "result" => "unknown_user" }.to_xml({:root => 'authentication'}))
+    else
+      p "Known Transcriber"
+      if @transcriber_password == @user.password then
+        p "Password matches"
+        render(:text => {"result" => "success", :userid_detail => @user}.to_xml({:dasherize => false, :root => 'authentication'}))
+      else
+        p "No match on Password"
+        render(:text => { "result" => "no_match" }.to_xml({:root => 'authentication'}))
+      end
+    end
+  end
+
   def refreshuser
     @transcriber_id = params[:transcriberid]
     @user = UseridDetail.where(:userid => @transcriber_id).first
+    logger.warn "FREEREG::COMPUTER refreshed user #{@transcriber_id} "
     if @user.nil? then
       render(:text => { "result" => "failure", "message" => "Invalid transcriber id"}.to_xml({:root => 'refresh'}))
     else
@@ -32,25 +61,19 @@ class TransregUsersController < ApplicationController
   # AUTHENTICATE - Authenticates a subscriber's userid and password
   #
   def authenticate
+
     @transcriber_id = params[:transcriberid]
-    @transcriber_password = params[:transcriberpassword]
-
-    if session[:userid].nil?
-      render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'authentication'}))
-      return
-    end
-
+    @transcriber_password = Devise::Encryptable::Encryptors::Freereg.digest(params[:transcriberpassword],nil,nil,nil)
     @user = UseridDetail.where(:userid => @transcriber_id).first
-
     if @user.nil? then
       p "Unknown User"
       render(:text => { "result" => "unknown_user" }.to_xml({:root => 'authentication'}))
     else
       p "Known Transcriber"
-      password = Devise::Encryptable::Encryptors::Freereg.digest(@transcriber_password,nil,nil,nil)
-      if password == @user.password then
+      if @transcriber_password == @user.password then
         p "Password matches"
         render(:text => {"result" => "success", :userid_detail => @user}.to_xml({:dasherize => false, :root => 'authentication'}))
+        p session[:userid_detail_id]
       else
         p "No match on Password"
         render(:text => { "result" => "no_match" }.to_xml({:root => 'authentication'}))

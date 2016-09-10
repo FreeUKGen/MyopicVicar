@@ -30,7 +30,7 @@ MyopicVicar::Application.routes.draw do
   get 'transreg_counties/list'
   get 'transreg_users/refreshuser'
   get 'transreg_users/authenticate'
-
+  get 'transreg_users/computer'
   resources :transreg_counties
   resources :transreg_users
 
@@ -165,6 +165,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :my_saved_searches
 
+  get 'manage_resources/pages', :to =>'manage_resources#pages', :as => :pages_manage_resources
+  get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
 
@@ -197,6 +199,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_counties/display_files_waiting_to_be_processed',  :to => 'manage_counties#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
@@ -294,6 +297,7 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/remember(.:format)', :to => 'search_queries#remember', :as => :remember_search_query
   get 'search_queries/:id/reorder(.:format)', :to => 'search_queries#reorder', :as => :reorder_search_query
   get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
+  get 'search_queries/selection',  :to => 'search_queries#selection', :as => :select_search_query_report
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   resources :search_queries
 

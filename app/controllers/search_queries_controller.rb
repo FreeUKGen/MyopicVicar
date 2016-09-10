@@ -1,7 +1,8 @@
 class SearchQueriesController < ApplicationController
-  skip_before_filter :require_login
-  skip_before_filter :require_cookie_directive, :only => :new
-  before_filter :check_for_mobile, :only => :show
+  skip_before_action :require_login
+  skip_before_action :require_cookie_directive, :only => :new
+  skip_before_action :verify_authenticity_token
+  before_action :check_for_mobile, :only => :show
   rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
@@ -164,11 +165,31 @@ class SearchQueriesController < ApplicationController
 
   def search_taking_too_long
     @search_query = SearchQuery.find(session[:query])
+    runtime = Rails.application.config.max_search_time
+    @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
+    logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
     session[:query] = nil
-    flash[:notice] = "Your search is running too long. We suggest you change some of the parameters"
+    flash[:notice] = 'Your search was running too long. Please review your search criteria. Advise is contained in the Help pages.'
     redirect_to new_search_query_path(:search_id => @search_query)
   end
 
+  def selection
+    if day_param = params[:day]
+      @start_day = DateTime.parse(day_param).strftime("%F")
+    else
+      @start_day = DateTime.now.strftime("%F")
+    end
+    @search_queries = SearchQuery.where(:day => @start_day).order_by("_id ASC")
+    @searches = Hash.new
+    @search_queries.each do |search|
+      @searches[":#{search.id}"] = search._id
+    end
+    @search_query = SearchQuery.new
+    @options = @searches
+    @location = 'location.href= "/search_queries/" + this.value + "/show_query?"'
+    @prompt = 'Select query'
+    render '_form_for_selection'
+  end
   def show
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if params[:id].present?

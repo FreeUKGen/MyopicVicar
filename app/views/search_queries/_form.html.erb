@@ -19,9 +19,8 @@
 		<li class="grid__item  one-quarter  palm-one-whole">
 			<label>
 				Surname
-				<a href="#" class="left_tooltip"  onclick="return false;">
-					<%= image_tag 'info.png', alt: 'Information', height: '16' %>
-					<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name. If no surname is entered you MUST enter a County, Forename and a Record Type</span>
+				<a href="#" class="right_tooltip"  onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+					<span>The surname can be upper or lower case. If no surname is entered you MUST enter a County, Forename and a Record Type</span>
 				</a>
 			</label>
 	    <% if @search_query.last_name.nil? %>
@@ -76,7 +75,7 @@
 			<input name="search_query[chapman_codes][]" type="hidden" value="" >
 			<label class=" label" for="search_query_chapman_codes">
 				County
-				<a href="#" class="left_tooltip"  onclick="return false;">
+				<a href="#" class="right_tooltip"  onclick="return false;">
 					<%= image_tag 'info.png', alt: 'Information', height: '16' %>
 					<span>These are the county boundaries as specified in 1831. Note if multiple counties are selected, all places within those counties will be searched.</span>
 				</a><small class="additional">Select one to three (hold Ctrl for multiple)</small>
@@ -166,7 +165,8 @@
 			:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff"},
 			:wrapper_html => { :class => "grid__item  one-quarter text--center " }  %>
 	  <% end %>
-    <p> Please do not restart the search once it is working as this will actually slow the process.</p>
+    <% x = Rails.application.config.max_search_time/1000 %>
+    <p> Searches are limited to <%= x %> sec. Please do not restart the search once it is working as this will actually slow the process.</p>
 	<% end %>
 </section>
 <script type="text/javascript">

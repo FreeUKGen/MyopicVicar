@@ -15,7 +15,7 @@
 
 class ApplicationController < ActionController::Base
 
-  protect_from_forgery
+  protect_from_forgery :with => :reset_session
   before_filter :require_login
   before_filter :require_cookie_directive
   before_filter :load_last_stat
@@ -28,15 +28,18 @@ class ApplicationController < ActionController::Base
 
 
   def load_last_stat
-    @site_stat = SiteStatistic.last
+    @site_stat = SiteStatistic.all.order_by(interval_end: -1).first
   end
 
   private
 
   def after_sign_in_path_for(resource_or_scope)
+    #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
+    #start new session
+    cookies[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
-    @@userid = current_authentication_devise_user.userid_detail_id
+    session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
@@ -67,10 +70,15 @@ class ApplicationController < ActionController::Base
   def get_user_info_from_userid
     @userid = session[:userid]
     @user = UseridDetail.userid(@userid).first
-    @user_id = @user.id
-    @first_name = @user.person_forename
-    @manager = manager?(@user)
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    unless @user.present?
+      flash[:notice] = "You must be logged in to access that action"
+      redirect_to new_search_query_path # halts request cycle
+    else
+      @user_id = @user.id
+      @first_name = @user.person_forename
+      @manager = manager?(@user)
+      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    end
   end
 
   def  get_user_info(userid,name)
@@ -135,9 +143,9 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    if session[:userid].nil?
-      flash[:error] = "You must be logged in to access this section"
-      redirect_to refinery.login_path # halts request cycle
+    if session[:userid_detail_id].nil?
+      flash[:notice] = "You must be logged in to access that action"
+      redirect_to new_search_query_path  # halts request cycle
     end
   end
 

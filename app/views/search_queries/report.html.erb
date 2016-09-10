@@ -2,18 +2,21 @@
 <div id="nav">
   <ul>
     <% if @session_id %>
-    <% if @feedback %>
-    <li>
-      <%= link_to("Feedback #{@feedback.title}", feedback_path(@feedback))%>
-    </li>
-    <% end %>
+      <% if @feedback %>
+        <li>
+          <%= link_to("Feedback #{@feedback.title}", feedback_path(@feedback))%>
+        </li>
+      <% end %>
     <% else %>
-    <li>
-      <%= link_to("Previous Day", search_query_report_path(:day => @previous_day))%>
-    </li>
-    <li>
-      <%= link_to("Next Day", search_query_report_path(:day => @next_day))%>
-    </li>
+      <li>
+        <%= link_to("Previous Day", search_query_report_path(:day => @previous_day))%>
+      </li>
+      <li>
+        <%= link_to("Next Day", search_query_report_path(:day => @next_day))%>
+      </li>
+      <li>
+        <%= link_to("Select Specific Query", select_search_query_report_path)%>
+      </li>
     <% end %>
   </ul>
 </div>
@@ -31,7 +34,8 @@
   <b><%= @start_day %></b><br />
 </p>
 <% end %>
-<p>The 'Analyze' button will re-execute the query and analyze it.</p>
+<p>The 'Analyze' button will re-execute the query and analyze it. The maximum permitted search time is <%= Rails.application.config.max_search_time%> ms</p>
+
 <h2>Queries</h2>
 <table>
   <thead>

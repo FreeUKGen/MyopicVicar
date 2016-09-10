@@ -1,7 +1,7 @@
 <div class="site__header__nav  offcanvas__secondary">
   <div class="site__header__nav__inner">
     <nav class="main-nav" >
-      <ul> 
+      <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
           <% if MyopicVicar::Application.config.template_set == 'freereg' %>
             <li>
@@ -19,40 +19,51 @@
           </li>
         <% end %>
 
-        <% if  current_authentication_devise_user.present? %>
+        <% if  session[:userid_detail_id].present? %>
         <li>
           <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
         </li>
         <li>
-          <%= link_to "Logout", refinery.logout_path%>
+          <%= link_to "Logout", main_app.logout_manage_resources_path %>
         </li>
         <li>
           <% get_user_info_from_userid %>
+          <% if @user.present? && @user.person_role.present? %>
           <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
-            <%= link_to "Help", "../cms/information-for-transcribers" %>
+          <%= link_to "Help", "/cms/information-for-transcribers" %>
           <% elsif @user.person_role == 'researcher'%>
-            <%= link_to "Help", "../cms/registered-researchers" %>
+          <%= link_to "Help", "/cms/registered-researchers" %>
           <% else %>
-            <%= link_to "Help", "../cms/information-for-coordinators" %>
+          <%= link_to "Help", "/cms/information-for-coordinators" %>
           <% end %>
         </li>
         <% else %>
         <li>
 	  <% if false %>
-          <%= link_to "About", "../cms/about" %>
+          <%= link_to "About", "/cms/about" %>
+	  <% end %>
+        </li>
+        <% end%>
+        <% else %>
+        <li>
+	  <% if false %>
+          <%= link_to "About", "/cms/about" %>
 	  <% end %>
         </li>
         <!-- TODO: Convert remainder to refinery page references -->
         <li>
-          <%= link_to "Donate", "../cms/donate" %>
+          <%= link_to "Donate", "/cms/donate" %>
         </li>
     <% if false %>
         <li>
+          <%= link_to "Volunteer", main_app.transcriber_registration_userid_detail_path %>
+        </li>
+        <li>
           <%= link_to "Members", refinery.login_path %>
-        </li>     
+        </li>
     <% end %>
         <li>
-          <%= link_to "Help", "../cms/help" %>
+          <%= link_to "Help", "/cms/help" %>
         </li>
         <% end %>
       </ul>

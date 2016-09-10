@@ -64,6 +64,19 @@
           <td>Source:</td><td class="weight--semibold"> <%= @place.source %></td>
         </tr>
         <tr>
+          <td>Data present for this place:</td><td class="weight--semibold"> <%= @place.data_present %></td>
+        </tr>
+        <tr>
+          <td>Date when record last amended:</td><td class="weight--semibold"> <%= @place.last_amended %></td>
+        </tr>
+                <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @place.records %></td></tr>
+        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @place.datemin %></td></tr>
+        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @place.datemax %></td></tr>
+
+        <tr style= "color:red">
+          <td >Error in place</td><td class="weight--semibold">  <%= @place.error_flag %> </td>
+        </tr>
+        <tr>
           <td>Original place name:</td><td class="weight--semibold"> <%= @place.original_place_name %></td>
         </tr>
         <tr>
@@ -90,22 +103,14 @@
         <tr>
           <td>Another reason for changes:</td><td class="weight--semibold"> <%= @place.other_reason_for_change %></td>
         </tr>
-        <tr>
-          <td>Date when record last amended:</td><td class="weight--semibold"> <%= @place.last_amended %></td>
-        </tr>
-        <% unless @place.error_flag.nil? %>
-        <tr style= "color:red">
-          <td >Error in place</td><td class="weight--semibold">  <%= @place.error_flag %> </td>
-        </tr>
-        <%else%>
-        <tr style= "color:black">
-        </tr>
-        <% end%>
+
         
-        <tr>
-          <td>Data present for this place:</td><td class="weight--semibold"> <%= @place.data_present %></td>
-        </tr>
+        
       </table>
+
     </div>
-  </section>
+    <h3 class=" text--center">Numbers of transcriptions </h4>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+       <%= render :partial => '/freereg_contents/decade' %>
+  </section
 </div>

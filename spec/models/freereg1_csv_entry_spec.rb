@@ -166,7 +166,8 @@ describe Freereg1CsvEntry do
     Freereg1CsvEntry.count.should eq(0)
     (FREEREG1_CSV_FILES+[NO_BURIAL_FORENAME,NO_RELATIVE_SURNAME,NO_BAPTISMAL_NAME]).each_with_index do |file, index|
       file_record = process_test_file(file)
-      
+      binding.pry unless file_record
+
       file_record.freereg1_csv_entries.each do |entry|
         name_count = entry.search_record.search_names.count
         unique_names = entry.search_record.search_names.to_a.map{ |name| { :fn => name.first_name, :ln => name.last_name, :role => name.role} }.uniq
@@ -554,6 +555,7 @@ describe Freereg1CsvEntry do
 
   it "should find wildcard UCF" do
     filespec = WILDCARD_UCF
+    Rails.application.config.ucf_support = true
 
     file_record = process_test_file(filespec)
     
@@ -562,8 +564,8 @@ describe Freereg1CsvEntry do
     place.ucf_list.values.first.should_not eq([])
     
     file_record.freereg1_csv_entries.each do |entry|
-      p entry.search_record.transcript_names
-      pp entry.search_record.search_names
+      # p entry.search_record.transcript_names
+      # pp entry.search_record.search_names
       place.ucf_list.values.first.should include(entry.search_record.id)
     end
 
@@ -580,7 +582,6 @@ describe Freereg1CsvEntry do
           result = q.ucf_results
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
-#          binding.pry unless result
           result.count.should be >= 1
           result.should be_in_result(entry)
         end

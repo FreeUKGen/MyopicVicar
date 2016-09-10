@@ -117,8 +117,8 @@ class FreeregCsvUpdateProcessor
     'Wilfreds' => 'Wilfred',
     'Wilfrid\'s' => 'Wilfrid',
     'Cemetry' => 'Cemetery',
-    'Marys' => 'Mary',
-    "Mary\'s" => 'Mary',
+#    'Marys' => 'Mary',   #duplicate key (Marys is already included above)
+#    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
     "Marys\'" => 'Mary',
   'Nicholas\'' => 'Nicholas'}
   COMMON_WORD_EXPANSIONS = {

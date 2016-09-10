@@ -66,9 +66,12 @@
           <tr>
             <td>Status of the transcriptions :</td><td class="weight--semibold"><%= @register.status %> </td>
           </tr>
-          <tr>
-            <td>Record last amended :</td><td class="weight--semibold"><%= @register.last_amended %> </td>
-          </tr>
+            <td>Date when record last amended:</td><td class="weight--semibold"> <%= @register.last_amended %></td>
+        </tr>
+                <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @register.records %></td></tr>
+        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @register.datemin %></td></tr>
+        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @register.datemax %></td></tr>
+
           <tr>
             <td>First permitted year :</td><td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
           </tr>
@@ -77,6 +80,10 @@
           </tr>
         </table>   
       </div>
+
+       <h3 class=" text--center">Numbers of transcriptions </h4>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+    <%= render :partial => '/freereg_contents/decade' %>
     </section>
   </div>
 <% end%>

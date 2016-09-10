@@ -1,7 +1,7 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:index,:new]
+  skip_before_filter :require_login, only: [:new, :pages]
 
   def create
     @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -20,10 +20,12 @@ class ManageResourcesController < ApplicationController
     @user = UseridDetail.find(userid_id)
   end
 
+  def logout
+    reset_session
+    redirect_to refinery.logout_path
+  end
+
   def new
-    clean_session
-    clean_session_for_syndicate
-    clean_session_for_county
     if !is_ok_to_render_actions?
       stop_processing and return
     else
@@ -31,6 +33,9 @@ class ManageResourcesController < ApplicationController
         go_to_computer_code
         return
       else
+        clean_session
+        clean_session_for_syndicate
+        clean_session_for_county
         if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
           @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
         else
@@ -41,6 +46,11 @@ class ManageResourcesController < ApplicationController
         return
       end
     end
+  end
+
+  def pages
+    current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
+    redirect_to '/cms/refinery/pages'
   end
 
   def selection
@@ -72,23 +82,9 @@ class ManageResourcesController < ApplicationController
     if session[:userid_detail_id].present?
       @user = UseridDetail.id(session[:userid_detail_id]).first
       if @user.blank?
-        logger.warn "FREEREG::USER userid not found #{session[:userid_detail_id]}"
+        logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
         flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
         continue = false
-      end
-    else
-      logger.warn "FREEREG::USER No session "
-      if @@userid.blank?
-        logger.warn "FREEREG::USER No session and no @@userid"
-        flash[:notice] = 'You are not logged into the system'
-        continue = false
-      else
-        @user = UseridDetail.find(@@userid)
-        if @user.blank?
-          logger.warn "FREEREG::USER userid not found #{session[:userid_detail_id]}"
-          flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
-          continue = false
-        end
       end
     end
     case
@@ -133,6 +129,4 @@ class ManageResourcesController < ApplicationController
     @user.person_role == "computer" ? result = true : result = false
     result
   end
-
-
 end

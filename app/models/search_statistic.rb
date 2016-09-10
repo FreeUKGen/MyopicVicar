@@ -163,8 +163,8 @@ class SearchStatistic
     end
 
     def this_db
-      db = Mongoid.sessions[SearchQuery.storage_options[:session]][:database]
-      host = Mongoid.sessions[SearchQuery.storage_options[:session]][:hosts].first
+      db = Mongoid.clients[SearchQuery.storage_options[:client]][:database]
+      host = Mongoid.clients[SearchQuery.storage_options[:client]][:hosts].first
       if host.match(/localhost/)  # most servers use identical mongoid.yml config files
         "#{Socket.gethostname}/#{db}"
       else

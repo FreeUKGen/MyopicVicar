@@ -727,6 +727,15 @@ class CsvFile < CsvFiles
     place.save
   end
 
+  def update_freereg_contents_after_processing(freereg1_csv_file)
+    register = freereg1_csv_file.register
+    register.calculate_register_numbers
+    church = register.church
+    church.calculate_church_numbers
+    place = church.place
+    place.calculate_place_numbers
+  end
+
   def process_the_data(project)
     #p "Processing the data records"
     @unique_existing_locations, @all_existing_records = self.get_batch_locations_and_records_for_existing_file
@@ -744,6 +753,7 @@ class CsvFile < CsvFiles
       PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
       project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
       update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
+      update_freereg_contents_after_processing(freereg1_csv_file)
     end
     #p "after process"
     counter = self.clean_up_unused_batches(project)
@@ -1380,7 +1390,12 @@ class CsvRecord < CsvRecords
 
   def extract_register_location(csvrecords,csvfile,project,line)
     #p "Extracting location"
-    cleaningsuccess = success1 = success2 = success3 = success4 = success5 = false
+    cleaningsuccess = false
+    success1 = false
+    success2 = false
+    success3 = false
+    success4 = false
+    success5 = false
     register_location = Hash.new
     if no_location_fields?(@data_line,csvrecords,csvfile)
       project.write_messages_to_all("The line #{line} has no location information ie no place/church/register. <br>", true)

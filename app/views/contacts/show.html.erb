@@ -23,7 +23,7 @@
           <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
         </tr>
         <tr>
-        <td>Reference : </td> <td class="weight--semibold"> <%= @contact.identifier %>  </td>
+          <td>Reference : </td> <td class="weight--semibold"> <%= @contact.identifier %>  </td>
         </tr>
 	<% if @contact.selected_county.present? %>
 	<tr>
@@ -52,31 +52,31 @@
         <tr>
           <td>Explanation:</td><td class="weight--semibold"><%= @contact.body %></td>
         </tr>
+        
         <tr>
-          <td>Session ID:</td><td class="weight--semibold"> <%= @contact.session_id %> </td>
+          <td>Session Data:</td><td class="weight--semibold"> <%= @contact.session_data %> </td>
         </tr>
         
-        
-          <% if @contact.github_issue_url %>
-            <tr><td>Github Issue:</td><td class="weight--semibold"> <%= link_to @contact.github_issue_url, @contact.github_issue_url  %></td></tr>
-            <tr><td>Github Number:</td><td class="weight--semibold"> <%= @contact.github_number  %></td></tr>
-            <tr><td>Make Github Comment:</td><td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td></tr>
-          <% else %>
-            <% if Contact.github_enabled %>
-              <tr><span  style="float:left;">
+        <% if @contact.github_issue_url %>
+          <tr><td>Github Issue:</td><td class="weight--semibold"> <%= link_to @contact.github_issue_url, @contact.github_issue_url  %></td></tr>
+          <tr><td>Github Number:</td><td class="weight--semibold"> <%= @contact.github_number  %></td></tr>
+          <tr><td>Make Github Comment:</td><td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td></tr>
+        <% else %>
+          <% if Contact.github_enabled %>
+            <tr><span  style="float:left;">
               <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>
-              </span></tr>
-            <% else %>
-              <tr>Github integration is not set up on this site yet.</tr>
-            <% end %>
+            </span></tr>
+          <% else %>
+            <tr>Github integration is not set up on this site yet.</tr>
           <% end %>
-      </table>
-      <b>Screenshot:</b>
-      <% if @contact.screenshot_url %>
-        <%= image_tag @contact.screenshot_url %>
-      <% else %>
-        No screenshot attached.
-      <% end %>
-    </div>
-  </section>
+        <% end %>
+    </table>
+    <b>Screenshot:</b>
+    <% if @contact.screenshot_url %>
+      <%= image_tag @contact.screenshot_url %>
+    <% else %>
+      No screenshot attached.
+    <% end %>
+  </div>
+</section>
 </div>

@@ -21,11 +21,16 @@ class FeedbacksController < ApplicationController
   end
 
   def create
-
     @feedback = Feedback.new(feedback_params)
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
     @feedback.session_data = session.to_hash
+    @feedback.session_data["warden_user_authentication_devise_user_key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "") unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
+    @feedback.session_data["warden_user_authentication_devise_user_key_value"] = @feedback.session_data["warden.user.authentication_devise_user.key"][1] unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
+    @feedback.session_data.delete("warden.user.authentication_devise_user.key") unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
+    @feedback.session_data["warden_user_authentication_devise_user_key_session"] = @feedback.session_data["warden.user.authentication_devise_user.session"]
+    @feedback.session_data.delete("warden.user.authentication_devise_user.session") unless @feedback.session_data["warden.user.authentication_devise_user.session"].blank?
+    @feedback.session_id = session.to_hash["session_id"]
     @feedback.save
     if @feedback.errors.any?
       flash.notice = "There was a problem reporting your feedback!"
@@ -34,7 +39,11 @@ class FeedbacksController < ApplicationController
     end
     flash.notice = "Thank you for your feedback!"
     @feedback.communicate
-    redirect_to session.delete(:return_to)
+    if session[:return_to].present?
+      redirect_to session.delete(:return_to)
+    else
+      redirect_to :action => 'new'
+    end
   end
 
   def destroy

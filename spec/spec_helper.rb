@@ -128,6 +128,7 @@ def process_test_file(file)
   userid = create_stub_userid(file)
   place = create_stub_place(file)
   church = create_stub_church(file)
+  Rails.application.config.datafiles = file[:basedir]
   NewFreeregCsvUpdateProcessor.activate_project('create_search_records','individual','force_rebuild',file[:filename])
   freereg1_csv_file = Freereg1CsvFile.userid(file[:user]).file_name(file[:file]).first
 end
@@ -408,7 +409,7 @@ NO_BAPTISMAL_NAME =
 
 NO_BURIAL_FORENAME =
 {
-  :filename => "artificial/1boy7girls/LINBEEBU.CSV",
+  :filename => "1boy7girls/LINBEEBU.CSV",
   :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/",
   :file => "LINBEEBU.CSV",
   :chapman_code => 'LIN',
@@ -423,7 +424,7 @@ NO_BURIAL_FORENAME =
 
 NO_RELATIVE_SURNAME =
 {
-  :filename => "artificial/brilyn/NFKWYMBU.CSV",
+  :filename => "brilyn/NFKWYMBU.CSV",
   :basedir => "#{Rails.root}/test_data/freereg1_csvs/artificial/",
   :file => "NFKWYMBU.CSV",
   :chapman_code => 'NFK',

@@ -11,11 +11,11 @@
     <% end%>
     <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
     </div><br>
-    <h2 class=" gamma text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> within <%= @county %> </h2>
-    <h4 class=" delta text--center">The Church has the following register(s):
+    <h1 class=" text--center">Transcriptions<h1> <h2 class=" text--center"><%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
+    <h3 class=" text--center">The Church has the following register(s):
     <% @registers.each do |register| %>
       <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn weight--light  btn--small") %>
-    <% end %></h4>
+    <% end %></h3>
     <div class="table-wrapper">
       <table  class=" table--bordered ">
         <colgroup >
@@ -40,11 +40,14 @@
           <tr><td>The Church Website :</td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
           <tr><td>Notes about the Church :</td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
           <tr><td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
-          <tr><td>Number of records:</td><td class="weight--semibold" > <%= display_number(@stats[0]) %></td></tr>
-          <tr><td>First year of records:</td><td class="weight--semibold" > <%= @stats[1] unless @stats[0] == 0%></td></tr>
-          <tr><td>Last year of records:</td><td class="weight--semibold" > <%= @stats[2] unless @stats[0] == 0%></td></tr>
+           <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @church.records %></td></tr>
+        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @church.datemin %></td></tr>
+        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @church.datemax %></td></tr>
         </tbody>
       </table>
     </div>
+     <h3 class=" text--center">Numbers of transcriptions. </h3>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+     <%= render 'decade' %>
   </section>
 </div>

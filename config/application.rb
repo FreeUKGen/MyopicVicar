@@ -67,7 +67,7 @@ module MyopicVicar
     # This is necessary if your schema can't be completely dumped by the schema dumper,
     # like if you have constraints or database-specific column types
     # config.active_record.schema_format = :sql
-    config.assets.paths << Rails.root.join("app", "assets", "fonts")
+    #config.assets.paths << Rails.root.join("app", "assets", "fonts")
     # Enforce whitelist mode for mass assignment.
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
@@ -87,10 +87,12 @@ module MyopicVicar
     end
 
     # Enable the asset pipeline
-    config.assets.enabled = true
+    # config.assets.enabled = true  # commented out because already set above
 
     # Version of your assets, change this if you want to expire all your assets
-    config.assets.version = '1.0'
+    # config.assets.version = '1.0' # commented out because already set above
+
+    config.api_only = false
 
     # make the designer's fonts available for the stylesheets
     config.assets.paths << Rails.root.join('app', 'assets') 

@@ -4,16 +4,6 @@ class ChurchesController < ApplicationController
 
   require 'chapman_code'
 
-  def show
-    @church = Church.id(params[:id]).first
-    if @church.nil?
-      go_back("church",params[:id])
-    else
-      setup(params[:id])
-      @place = Place.find(session[:place_id])
-      @place_name = @place.place_name
-    end
-  end
 
   def new
     @church = Church.new
@@ -43,6 +33,7 @@ class ChurchesController < ApplicationController
       return
     end
   end
+
   def denomination_list
     @denominations = Array.new
     Denomination.all.order_by(denomination: 1).each do |denomination|
@@ -50,6 +41,17 @@ class ChurchesController < ApplicationController
     end
   end
 
+  def destroy
+    @church = Church.id(params[:id]).first
+    if @church.nil?
+      go_back("church",params[:id])
+    else
+      return_location = @church.place
+      @church.destroy
+      flash[:notice] = 'The deletion of the Church was successful'
+      redirect_to place_path(return_location)
+    end
+  end
   def edit
     get_user_info_from_userid
     @church = Church.id(params[:id]).first
@@ -63,24 +65,31 @@ class ChurchesController < ApplicationController
     denomination_list
   end
 
-
-  def rename
-    get_user_info_from_userid
+  def merge
     @church = Church.id(params[:id]).first
     if @church.nil?
       go_back("church",params[:id])
     else
       setup(params[:id])
-      @county = session[:county]
-      @first_name = session[:first_name]
-      @user = UseridDetail.where(:userid => session[:userid]).first
-      @records = 0
-      @church.registers.each do |register|
-        register.freereg1_csv_files.each do |file|
-          @records = @records + file.freereg1_csv_entries.count
-        end
+      errors = @church.merge_churches
+      if errors[0]  then
+        flash[:notice] = "Church Merge unsuccessful; #{errors[1]}"
+        render :action => 'show'
+        return
       end
+      flash[:notice] = 'The merge of the Church was successful'
+      redirect_to church_path(@church)
     end
+  end
+
+  def record_cannot_be_deleted
+    flash[:notice] = 'The deletion of the Church was unsuccessful because there were dependant documents; please delete them first'
+    redirect_to :action => 'show'
+  end
+
+  def record_validation_errors
+    flash[:notice] = 'The update of the children to Church with a church name change failed'
+    redirect_to :action => 'show'
   end
 
   def relocate
@@ -108,20 +117,52 @@ class ChurchesController < ApplicationController
     end
   end
 
-  def merge
+  def rename
+    get_user_info_from_userid
     @church = Church.id(params[:id]).first
     if @church.nil?
       go_back("church",params[:id])
     else
       setup(params[:id])
-      errors = @church.merge_churches
-      if errors[0]  then
-        flash[:notice] = "Church Merge unsuccessful; #{errors[1]}"
-        render :action => 'show'
-        return
+      @county = session[:county]
+      @first_name = session[:first_name]
+      @user = UseridDetail.where(:userid => session[:userid]).first
+      @records = 0
+      @church.registers.each do |register|
+        register.freereg1_csv_files.each do |file|
+          @records = @records + file.freereg1_csv_entries.count
+        end
       end
-      flash[:notice] = 'The merge of the Church was successful'
-      redirect_to church_path(@church)
+    end
+  end
+
+  def setup(church_id)
+    @church = Church.id(church_id).first
+    @first_name = session[:first_name]
+    session[:church_id] = @church._id
+    @church_name = @church.church_name
+    session[:church_name] = @church_name
+    @place_id = @church.place
+    session[:place_id] = @place_id._id
+    @place = Place.find(@place_id)
+    @place_name = @place.place_name
+    session[:place_name] =  @place_name
+    @county = ChapmanCode.has_key(@place.chapman_code)
+    session[:county] = @county
+    @user = UseridDetail.where(:userid => session[:userid]).first
+  end
+
+  def show
+    @church = Church.id(params[:id]).first
+    if @church.nil?
+      go_back("church",params[:id])
+    else
+      setup(params[:id])
+      @place = Place.find(session[:place_id])
+      @place_name = @place.place_name
+      @decade = @church.daterange
+      @transcribers = @church.transcribers
+      @contributors = @church.contributors
     end
   end
 
@@ -171,46 +212,12 @@ class ChurchesController < ApplicationController
 
       end
     end
-
   end # end of update
 
-  def setup(church_id)
-    @church = Church.id(church_id).first
-    @first_name = session[:first_name]
-    session[:church_id] = @church._id
-    @church_name = @church.church_name
-    session[:church_name] = @church_name
-    @place_id = @church.place
-    session[:place_id] = @place_id._id
-    @place = Place.find(@place_id)
-    @place_name = @place.place_name
-    session[:place_name] =  @place_name
-    @county = ChapmanCode.has_key(@place.chapman_code)
-    session[:county] = @county
-    @user = UseridDetail.where(:userid => session[:userid]).first
-  end
 
-  def destroy
-    @church = Church.id(params[:id]).first
-    if @church.nil?
-      go_back("church",params[:id])
-    else
-      return_location = @church.place
-      @church.destroy
-      flash[:notice] = 'The deletion of the Church was successful'
-      redirect_to place_path(return_location)
-    end
-  end
 
-  def record_cannot_be_deleted
-    flash[:notice] = 'The deletion of the Church was unsuccessful because there were dependant documents; please delete them first'
-    redirect_to :action => 'show'
-  end
 
-  def record_validation_errors
-    flash[:notice] = 'The update of the children to Church with a church name change failed'
-    redirect_to :action => 'show'
-  end
+
 
   private
   def church_params

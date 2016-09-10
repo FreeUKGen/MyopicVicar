@@ -6,7 +6,7 @@ module FreeregOptionsConstants
   MAXIMUM_NUMBER_OF_RESULTS = 250
   MAXIMUM_NUMBER_OF_SCANS = 500
   DATERANGE_MINIMUM = 1530
-  ISSUES = ['General Comment ','Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank you' ]
+  ISSUES = ['Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank-you' ,'General Comment']
   FORCE_SEARCH_RECORD_RECREATE = [
     "baptism_date",
     "birth_date",
@@ -43,7 +43,7 @@ module FreeregOptionsConstants
     ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
     ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]
   ]
-  RECORDS_PER_RANGE = 500000
+  RECORDS_PER_RANGE = 100000
   FILES_PER_PAGE = 500
   MAX_RECORDS_COORDINATOR = 4000
   MAX_RECORDS_DATA_MANAGER = 15000
@@ -123,8 +123,8 @@ module FreeregOptionsConstants
     'Wilfreds' => 'Wilfred',
     'Wilfrid\'s' => 'Wilfrid',
     'Cemetry' => 'Cemetery',
-#    'Marys' => 'Mary',      #duplicate key
-#    "Mary\'s" => 'Mary',    #duplicate key
+#    'Marys' => 'Mary',   #duplicate key (Marys is already included above)
+#    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
     "Marys\'" => 'Mary',
     'Nicholas\'' => 'Nicholas'
   }

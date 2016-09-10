@@ -29,7 +29,7 @@ module ApplicationHelper
     @manager = session[:manager]
     @roles = session[:role]
     @user = UseridDetail.where(:userid => session[:userid]).first
-    @roles = UseridRole::OPTIONS.fetch(session[:role])
+    @roles = UseridRole::OPTIONS.fetch(session[:role]) unless session[:role].blank?
   end
 
   def problem_url
@@ -140,11 +140,17 @@ module ApplicationHelper
     end
     banner.html_safe
   end
+
   def title(title = nil)
     if title.present?
       content_for :title, title
+    elsif content_for?(:title)
+      title = content_for(:title) +  ' | ' + "FreeReg"
+
+    elsif  page_title.present?
+      title = page_title + ' | '  + "FreeReg"
     else
-      content_for?(:title) ? "FreeReg" + ' | ' + content_for(:title) : "FreeReg"
+      title = "FreeReg"
     end
   end
   def display_number(num)

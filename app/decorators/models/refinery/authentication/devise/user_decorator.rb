@@ -3,7 +3,7 @@
 
 Refinery::Authentication::Devise::User.class_eval do
   attr_accessible :userid_detail_id, :reset_password_token, :reset_password_sent_at
-  devise :encryptable, :encryptor => :freereg
+  devise :timeoutable , :encryptable, :encryptor => :freereg
   before_update :inform_coordinator_of_completion
   after_update :save_password_and_send_notification
 
@@ -19,6 +19,9 @@ Refinery::Authentication::Devise::User.class_eval do
 
     UseridDetail.find(self.userid_detail_id)
   end
+  def timeout_in
+    120.minute
+  end
 
 
   def downcase_username
@@ -26,10 +29,12 @@ Refinery::Authentication::Devise::User.class_eval do
   end
 
   def inform_coordinator_of_completion
-    userid = UseridDetail.find(self.userid_detail_id)
-    userid.finish_transcriber_creation_setup if userid.person_role == 'transcriber' &&
-      self.encrypted_password != Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil) &&
-      userid.password == Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    if self.changed.include?('encrypted_password')
+      userid = UseridDetail.id(self.userid_detail_id).first
+      userid.finish_transcriber_creation_setup if userid.person_role == 'transcriber' &&
+        self.encrypted_password != Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil) &&
+        userid.password_confirmation == Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    end
   end
 
   def save_password_and_send_notification
