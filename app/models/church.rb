@@ -70,7 +70,7 @@ class Church
     individual_registers = self.registers
     if individual_registers.present?
       individual_registers.each do |register|
-        if !register.records.nil? &&  register.records.to_i > 0
+        if !register.records.nil? &&  register.records.to_i > 0 & register["transcribers"] && register["contributors"]
           records = records + register.records.to_i unless register.records.blank?
           datemax = register.datemax.to_i if register.datemax.to_i > datemax && register.datemax.to_i < FreeregValidations::YEAR_MAX unless register.datemax.blank?
           datemin = register.datemin.to_i if register.datemin.to_i < datemin unless register.datemin.blank?
