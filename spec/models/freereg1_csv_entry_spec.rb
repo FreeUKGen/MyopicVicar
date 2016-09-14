@@ -589,6 +589,21 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should handle birth and baptismal dates correctly" do
+    Freereg1CsvEntry.count.should eq(0)
+
+    file_record = process_test_file(BAPTISM_BIRTH)
+
+    entry = file_record.freereg1_csv_entries.first
+    first_name = entry.person_forename
+    last_name = entry.father_surname
+
+
+    check_record(entry, first_name, last_name, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
+    check_record(entry, first_name, last_name, false, { :start_year => entry.baptism_date,:end_year => entry.baptism_date }, true)
+  end
+
+
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required
       query_params = additional.merge({:first_name => entry[first_name_key],
