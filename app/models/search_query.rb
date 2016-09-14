@@ -54,6 +54,7 @@ class SearchQuery
   field :region, type: String #bot honeypot
   field :search_index, type: String
   field :day, type:String
+  field :use_decomposed_dates, type: Boolean, default: false
 
   has_and_belongs_to_many :places, inverse_of: nil
 
@@ -173,9 +174,14 @@ class SearchQuery
     params = Hash.new
     if start_year || end_year
       date_params = Hash.new
+      
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lte"] = DateParser::end_search_date(end_year) if end_year
-      params[:search_dates] = { "$elemMatch" => date_params }
+      if self.use_decomposed_dates
+        params[:search_date] = date_params
+      else
+        params[:search_dates] = { "$elemMatch" => date_params }        
+      end
     end
     params
   end
@@ -279,6 +285,20 @@ class SearchQuery
     return nil if idx.nil?
     record = record_ids_sorted[idx+1]
     record
+  end
+
+  def persist_additional_results(results)
+    return unless results
+    # finally extract the records IDs and persist them
+    records = Array.new
+    results.each do |rec|
+      records << rec["_id"].to_s
+    end
+    self.search_result =  SearchResult.new(:records => self.search_result.records + records)
+    self.result_count = self.search_result.records.length
+    self.runtime = (Time.now.utc - self.updated_at) * 1000
+    self.day = Time.now.strftime("%F")
+    self.save
   end
 
   def persist_results(results)
@@ -386,8 +406,27 @@ class SearchQuery
     self.update_attribute(:search_index,search_index)
     records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
+    self.persist_additional_results(secondary_date_results)
     search_ucf
     records
+  end
+
+  def secondary_date_results
+    return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    return nil unless secondary_date_query_required
+    
+    secondary_search_params = search_params
+    secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
+    secondary_search_params.delete(:search_date)
+    
+    search_index = SearchRecord.index_hint(secondary_search_params)
+    secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+
+    secondary_records
+  end
+
+  def secondary_date_query_required
+    self.use_decomposed_dates && search_params[:search_date] && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
   end
 
   def search_params
@@ -414,6 +453,7 @@ class SearchQuery
     end
 
   end
+
 
   def sort_results(results)
     # next reorder in memory

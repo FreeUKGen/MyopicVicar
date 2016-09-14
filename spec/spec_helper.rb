@@ -483,6 +483,20 @@ BAPTISM_BIRTH =
   :user => 'artificial'
 }
 
+CHANGELESS_FILE =
+{
+  :filename => "jelit/SSXSESBU.CSV",
+  :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+  :file => "SSXSESBU.CSV",
+  :chapman_code => 'SSX',
+  :placename => 'Selsey',
+  :churchname => 'St Peter',
+  :entry_count => 835,
+  :register_type => "PR",
+  :minimum_date => "1813",
+  :maximum_date => "1866",
+  :user => 'jelit'
+}
 
 
 

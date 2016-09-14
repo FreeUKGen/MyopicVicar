@@ -3,6 +3,7 @@ require 'record_type'
 require 'new_freereg_csv_update_processor'
 require 'pp'
 require 'get_software_version'
+require 'update_search_records'
 
 RSpec::Matchers.define :be_in_result do |entry|
   match do |results|
@@ -593,15 +594,45 @@ describe Freereg1CsvEntry do
   it "should handle birth and baptismal dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
 
+    # test freshly created records
     file_record = process_test_file(BAPTISM_BIRTH)
-
+    
     entry = file_record.freereg1_csv_entries.first
-    first_name = entry.person_forename
-    last_name = entry.father_surname
+    birth_date = entry.birth_date.sub(/\w\w\s\w\w\w\s/, '')
+    baptism_date = entry.baptism_date.sub(/\w\w\s\w\w\w\s/, '')
+
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
+    
+    # now test the old algorithm against old records
+    create_old_style_search_record(entry)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true) # search secondary year
+    
+    
+    # test the new algorithm against upgraded records
+    old_version = entry.search_record.search_record_version
+
+    UpdateSearchRecords.process(1000,'ba',1)
+    entry.search_record.reload
+    new_version = entry.search_record.search_record_version
+    old_version.should_not == new_version
+
+    # test the upgrade updated the date strings
+    entry.search_record.search_date.should eq entry.search_record.search_dates[0] 
+    entry.search_record.secondary_search_date.should eq entry.search_record.search_dates[1] 
 
 
-    check_record(entry, first_name, last_name, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
-    check_record(entry, first_name, last_name, false, { :start_year => entry.baptism_date,:end_year => entry.baptism_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
+
+    # test the new algorithm against new records
+    check_record(entry, :person_forename, :father_surname, false, { :use_decomposed_dates => true, :start_year => baptism_date,:end_year => baptism_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :use_decomposed_dates => true, :start_year => birth_date,:end_year => birth_date }, true)
+    
+    
+    # test the new algorithm against cleaned records
+    
   end
 
 
@@ -613,6 +644,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save(:validate => false)
       q.search
+      
       result = q.results
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
@@ -626,6 +658,44 @@ describe Freereg1CsvEntry do
         result.should_not be_in_result(entry)            
       end
     end    
+  end
+
+
+  OLD_SEARCH_RECORD_ATTRIBUTES = 
+    {"transcript_dates"=>["05 Nov 1553", "05 Nov 1653"],
+     "search_dates"=>["1553-11-05", "1653-11-05"],
+     "location_names"=>["Stone in Oxney (St Mary)", " [Transcript]"],
+     "search_soundex"=>[{"first_name"=>"W450", "last_name"=>"F236", "type"=>"f"}],
+     "record_type"=>"ba",
+     "search_record_version"=>nil,
+     "chapman_code"=>"KEN",
+     "line_id"=>"artificial.birth_date_ba.csv.1",
+     "transcript_names"=>
+      [{"role"=>"ba", "type"=>"primary", "first_name"=>"", "last_name"=>"FOSTER"},
+       {"role"=>"f", "type"=>"other", "first_name"=>"William", "last_name"=>"FOSTER"}],
+     "place_id"=>BSON::ObjectId('57d2f9eda020dd401c6a54fb'), #invalid
+     "digest"=>"vpTiqWA8s6iXhCDCdGpJgw==", # probably invalid
+     "search_names"=>
+      [{"_id"=>BSON::ObjectId('57d2f9eda020dd401c6a5501'), # possibly invalid
+        "first_name"=>"nameless",
+        "last_name"=>"foster",
+        "origin"=>"transcript",
+        "type"=>"p",
+        "role"=>"ba",
+        "gender"=>"f"},
+       {"_id"=>BSON::ObjectId('57d2f9eda020dd401c6a5502'),# possibly invalid
+        "first_name"=>"william",
+        "last_name"=>"foster",
+        "origin"=>"transcript",
+        "type"=>"f",
+        "role"=>"f",
+        "gender"=>"m"}]}
+
+  def create_old_style_search_record(entry)
+    entry.search_record.delete
+    search_record = SearchRecord.new(OLD_SEARCH_RECORD_ATTRIBUTES)
+    search_record.freereg1_csv_entry = entry
+    search_record.save!    
   end
 
 
