@@ -1,5 +1,5 @@
 <% if flash[:notice] %>
-<div class="weight--semibold text--center" style="color:red"><br>
+<div class="weight--semibold text--center"><br>
 	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
@@ -99,7 +99,7 @@
 				Census year
 				<a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The specific census year to search. Leave blank to search all.</span></a><small class="additional">Leave blank to search all</small>
 			</label>
-			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]" size="4" tabindex="6">
+			<select id="search_query_record_type" name="search_query[record_type]" class="select" size="4" tabindex="6">
 				<option value="">--</option>
 				<% RecordType.options.each_pair do |name, value| %>
 			      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
