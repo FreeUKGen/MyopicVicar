@@ -11,12 +11,14 @@ class SearchQuery
   module SearchOrder
     TYPE='record_type'
     DATE='search_date'
-    COUNTY='chapman_code'
+    BIRTH_COUNTY='chapman_code'
+    COUNTY='birth_chapman_code'
     LOCATION='location'
     NAME="transcript_names"
 
     ALL_ORDERS = [
       TYPE,
+      BIRTH_COUNTY,
       DATE,
       COUNTY,
       LOCATION,
@@ -328,6 +330,7 @@ class SearchQuery
       params[:place_id] = { "$in" => search_place_ids }
     else
       params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
     end
     params
   end

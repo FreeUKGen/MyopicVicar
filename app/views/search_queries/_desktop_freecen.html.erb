@@ -22,6 +22,12 @@
             <% end %>
           </th>
           <th>
+            <%= link_to('Birth County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BIRTH_COUNTY)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16', onclick: 'return false;' %><span>County of birth. Click heading to sort by the birth county</span></a>
+            <% end %>
+          </th>
+          <th>
             <%= link_to('Birth Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
             <% unless print_friendly %>
               <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16', onclick: 'return false;' %><span>Approximate birth year. Click heading to sort by the date</span></a>
@@ -30,13 +36,13 @@
           <th>
             <%= link_to('Census Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
             <% unless print_friendly %>
-              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16', onclick: 'return false;' %><span>Census Year.  Click heading to sort by the cencus year</span></a>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16', onclick: 'return false;' %><span>Census Year.  Click heading to sort by the census year</span></a>
             <% end %>
           </th>
           <th>
-            <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
+            <%= link_to('Census County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
             <% unless print_friendly %>
-              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16', onclick: 'return false;' %><span>County in which event was recorded. Click heading to sort by the county</span></a>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16', onclick: 'return false;' %><span>County in which the census was enumerated. Click heading to sort by census county</span></a>
             <% end %>
           </th>
           <th>
@@ -63,6 +69,9 @@
               <% end%>
             </td>
             
+            <td>
+              <%= ChapmanCode::name_from_code(search_record.birth_chapman_code) %>
+            </td>
             <td>
               <%= format_freecen_birth_year(search_record.transcript_dates.first, search_record.record_type) %>
             </td>
