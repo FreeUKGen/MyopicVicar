@@ -29,6 +29,15 @@ module ChapmanCode
         value.delete_if {|key, value| key == country }
       end
     end
+    
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+      hash.delete("'England and Wales Shipping'")
+      hash.delete("'Out of County'")
+      hash.delete("'Overseas British'")
+      hash.delete("'Overseas Foreign'")
+      hash.delete("'Scottish Shipping'")
+    end
+    
     hash
   end
 
@@ -190,29 +199,35 @@ module ChapmanCode
      'Western Isles' => 'WIS',
      'Wigtownshire' => 'WIG'},
     "Wales" =>
-    {'Wales' => 'WLS',
-     'Anglesey' => 'AGY',
-     'Brecknockshire' => 'BRE',
-     'Caernarfonshire' => 'CAE',
-     'Cardiganshire' => 'CGN',
-     'Carmarthenshire' => 'CMN',
-     'Clwyd' => 'CWD',
-     'Denbighshire' => 'DEN',
-     'Dyfed' => 'DFD',
-     'Flintshire' => 'FLN',
-     'Glamorgan' => 'GLA',
-     'Mid Glamorgan' => 'MGM',
-     'South Glamorgan' => 'SGM',
-     'West Glamorgan' => 'WGM',
-     'Gwent' => 'GNT',
-     'Gwynedd' => 'GWN',
-     'Merionethshire' => 'MER',
-     'Monmouthshire' => 'MON',
-     'Montgomeryshire' => 'MGY',
-     'Pembrokeshire' => 'PEM',
-     'Powys' => 'POW',
-     'Radnorshire' => 'RAD',
-     'Unknown' => 'UNK'}
+      {'Wales' => 'WLS',
+       'Anglesey' => 'AGY',
+       'Brecknockshire' => 'BRE',
+       'Caernarfonshire' => 'CAE',
+       'Cardiganshire' => 'CGN',
+       'Carmarthenshire' => 'CMN',
+       'Clwyd' => 'CWD',
+       'Denbighshire' => 'DEN',
+       'Dyfed' => 'DFD',
+       'Flintshire' => 'FLN',
+       'Glamorgan' => 'GLA',
+       'Mid Glamorgan' => 'MGM',
+       'South Glamorgan' => 'SGM',
+       'West Glamorgan' => 'WGM',
+       'Gwent' => 'GNT',
+       'Gwynedd' => 'GWN',
+       'Merionethshire' => 'MER',
+       'Monmouthshire' => 'MON',
+       'Montgomeryshire' => 'MGY',
+       'Pembrokeshire' => 'PEM',
+       'Powys' => 'POW',
+       'Radnorshire' => 'RAD' },
+     "Special" => {
+       'Unknown' => 'UNK',
+       'England and Wales Shipping' => 'EWS',
+       'Out of County' => 'OUC',
+       'Overseas British' => 'OVB',
+       'Overseas Foreign' => 'OVF',
+       'Scottish Shipping' => 'SCS'}
   }
 
 

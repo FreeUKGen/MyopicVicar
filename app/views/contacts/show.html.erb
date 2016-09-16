@@ -25,6 +25,12 @@
         <tr>
           <td>Reference : </td> <td class="weight--semibold"> <%= @contact.identifier %>  </td>
         </tr>
+	<% if @contact.selected_county.present? %>
+	<tr>
+	  <td>County user selected to Contact:</td>
+	  <td class="weight--semibold"><%= @contact.selected_county %></td>
+	</tr>
+	<% end %>
         <tr>
           <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
         </tr>
@@ -36,8 +42,12 @@
         </tr>
         <% if @contact.contact_type = 'Data Problem' &&  @contact.entry_id.present?%>
         <tr><td>Record :</td><td class="weight--semibold"> <%= @contact.line_id %> </td></tr>
-        <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
-        <tr><td>County :</td><td class="weight--semibold"> <%= @contact.county %> </td></tr>
+	<% if 'freecen' == MyopicVicar::Application.config.template_set %>
+          <tr><td>Data Record :</td><td class="weight--semibold"><%= link_to(' Record in question', search_record_path(@contact.record_id, :search_id => @contact.query), method: :get)%></td></tr>
+	<% elsif 'freereg' == MyopicVicar::Application.config.template_set %>
+          <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
+	<% end %>
+        <tr><td>Data County :</td><td class="weight--semibold"> <%= @contact.county %> </td></tr>
         <% end%>
         <tr>
           <td>Explanation:</td><td class="weight--semibold"><%= @contact.body %></td>

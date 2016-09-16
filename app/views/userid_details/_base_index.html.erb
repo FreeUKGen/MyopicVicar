@@ -16,8 +16,10 @@
               <th class="t13">Surname</th>
               <th class="t20">Email</th>
               <th class="t5">Active</th>
-              <th class="t6">Upload</th>
-              <th class="t5">Files </th>
+              <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
+                <th class="t6">Upload</th>
+                <th class="t5">Files </th>
+              <% end %>
               <th colspan="4"class="t12">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show profile details; ED: Edit the profile; LB: List their batches; IN: Inactivate the userid OR ACT:Activate the userid. (You will have either IN or ACT in the field)</span></a></th>
             </tr>
           </thead>
@@ -32,8 +34,10 @@
                   <td class="t15"> <%= userid.person_surname %>  </td>
                   <td class="t25"> <%= userid.email_address %> </td>
                   <td class="t3">     <% if userid.active %> <%="Y" %>    <% else%>    <%="N" %>     <% end%>     </td>
-                  <td class="t10"> <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td>
-                  <td class="t4"> <%= userid.freereg1_csv_files.count %>  </td>
+      <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
+                    <td class="t10"> <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td>
+                    <td class="t4"> <%= userid.freereg1_csv_files.count %>  </td>
+      <% end %>
                   <td class="t4"><%= link_to 'SH', userid_detail_path(userid), method: :get  %></td>
                   <td class="t4"><%= link_to 'ED', edit_userid_detail_path(userid), method: :get  %></td>
                   <td class="t4"><%= link_to 'LB', by_userid_freereg1_csv_file_path(userid), method: :get  %>   </td>    

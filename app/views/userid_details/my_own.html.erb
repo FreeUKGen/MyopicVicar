@@ -48,6 +48,7 @@
     <tr>
       <td>Transcription agreement accepted:</td><td > <%= @userid.transcription_agreement%>  </td>
     </tr>
+    <% unless MyopicVicar::Application.config.template_set == 'freecen' %>
     <tr>
      <% unless @userid.last_upload.nil?%>
       <td>Last upload:</td><td > <%= @userid.last_upload.strftime("%d %b %Y") %>  </td>
@@ -59,8 +60,9 @@
     <tr>
       <td>Number of records loaded:</td><td ><%=@userid.compute_records%>  </td>
     </tr>
+    <% end %>
     <tr>
-      <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
+      <td>Role in <%= MyopicVicar::Application.config.freexxx_display_name %>:</td><td > <%=@userid.person_role%>  </td>
     </tr>
     
   <tr>

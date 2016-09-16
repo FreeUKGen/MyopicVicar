@@ -22,6 +22,7 @@ Rails.application.configure do
   config.assets.precompile += %w( html5shiv.js )
   config.assets.precompile += %w( spin.min.js)
   config.assets.precompile += %w( ladda.min.js)
+  config.assets.precompile += %w( freecen_coverage_graph.js)
 
 
 end

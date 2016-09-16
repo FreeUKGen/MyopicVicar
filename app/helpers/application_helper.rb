@@ -14,6 +14,14 @@
 #
 module ApplicationHelper
 
+  def app_specific_partial(partial)
+    template_set = MyopicVicar::Application.config.template_set
+    base_template = File.basename(partial)
+    app_specific_template = base_template.sub(/$/, "_#{template_set}")
+
+    app_specific_template    
+  end
+
   def get_user_info_from_userid
     @userid = session[:userid]
     @user_id = session[:user_id]
@@ -23,8 +31,6 @@ module ApplicationHelper
     @user = UseridDetail.where(:userid => session[:userid]).first
     @roles = UseridRole::OPTIONS.fetch(session[:role]) unless session[:role].blank?
   end
-
-
 
   def problem_url
     # construct url parameters for problem reports

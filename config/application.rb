@@ -24,6 +24,12 @@ if defined?(Bundler)
 end
 
 module MyopicVicar
+  module TemplateSet
+    FREEREG='freereg'
+    FREECEN='freecen'
+    FREEBMD='freebmd'
+  end
+  
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -67,8 +73,31 @@ module MyopicVicar
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
+
+    # set config.template_set before asset directories are selected
+    config.template_set = TemplateSet::FREECEN
+
+    #set config.freexxx_display_name based on the template_set
+    if config.template_set == TemplateSet::FREECEN
+      config.freexxx_display_name = "FreeCen"
+    elsif config.template_set == TemplateSet::FREEREG
+      config.freexxx_display_name = "FreeReg"
+    elsif config.template_set == TemplateSet::FREEBMD
+      config.freexxx_display_name = "FreeBMD"
+    end
+
+    # Enable the asset pipeline
+    # config.assets.enabled = true  # commented out because already set above
+
+    # Version of your assets, change this if you want to expire all your assets
+    # config.assets.version = '1.0' # commented out because already set above
+
     config.api_only = false
 
+    # make the designer's fonts available for the stylesheets
+    config.assets.paths << Rails.root.join('app', 'assets') 
+    config.assets.paths << Rails.root.join("app", "assets", "fonts")
+    
     config.generators do |g|
       g.orm :mongoid
     end
@@ -86,6 +115,7 @@ module MyopicVicar
       if File.exists?(mongo_config)
         MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env]
       end
+      
     end # end config.before_configuration
   end
 end

@@ -20,6 +20,8 @@ class Contact
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
+  field :selected_county, type: String # user-selected county to contact in FC2
+  field :fc_individual_id, type: String
   field :identifier, type: String
   attr_accessor :action
 
@@ -72,6 +74,8 @@ class Contact
 
   def communicate_website_problem
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -85,6 +89,8 @@ class Contact
 
   def communicate_data_question
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -98,8 +104,10 @@ class Contact
 
   def communicate_data_problem
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if self.record_id.present?
+    ccs << coordinator.email_address if coordinator.present?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -109,6 +117,8 @@ class Contact
 
   def communicate_publicity
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'publicity_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -125,6 +135,8 @@ class Contact
 
   def communicate_genealogical_question
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'genealogy_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -141,6 +153,8 @@ class Contact
 
   def communicate_enhancement_suggestion
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -157,6 +171,8 @@ class Contact
 
   def communicate_volunteering
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -173,6 +189,8 @@ class Contact
 
   def communicate_general
     ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
     end
@@ -185,26 +203,50 @@ class Contact
   end
 
   def get_coordinator
-    entry = SearchRecord.find(self.record_id).freereg1_csv_entry
-    record = Freereg1CsvEntry.find(entry)
-    file = record.freereg1_csv_file
-    county = file.county #this is chapman code
-    coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
-    return coordinator
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      entry = SearchRecord.find(self.record_id).freereg1_csv_entry
+      record = Freereg1CsvEntry.find(entry)
+      file = record.freereg1_csv_file
+      county = file.county #this is chapman code
+      coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+      return coordinator
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      coord = nil
+      rec_county = SearchRecord.find(self.record_id).chapman_code
+      if rec_county.present?
+        c = County.where(:chapman_code => rec_county).first
+        return nil if c.nil?
+        cc_id = c.county_coordinator
+        coord = UseridDetail.where(:userid => cc_id).first unless cc_id.nil?
+      end
+      return coord
+    end
+  end
+
+  # used by freecen if user selects to contact coordinator for a specific county
+  def get_coordinator_for_selected_county
+    return nil if MyopicVicar::Application.config.template_set != 'freecen'
+    return nil if nil == self.selected_county || ''==self.selected_county
+    c = County.where(:chapman_code => self.selected_county).first
+    return nil if c.nil?
+    cc_userid = c.county_coordinator
+    coord = UseridDetail.where(:userid => cc_userid).first unless cc_userid.nil?
+    coord
   end
 
   def github_issue
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if Contact.github_enabled
       Octokit.configure do |c|
         c.login = Rails.application.config.github_issues_login
         c.password = Rails.application.config.github_issues_password
       end
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
-      logger.info("FREEREG:GITHUB response: #{response}")
+      logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
     else
-      logger.error("FREEREG:Tried to create an issue, but Github integration is not enabled!")
+      logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
   end
 
@@ -219,6 +261,13 @@ class Contact
   def issue_body
     issue_body = ApplicationController.new.render_to_string(:partial => 'contacts/github_issue_body.txt', :locals => {:feedback => self})
     issue_body
+  end
+
+  def contact_screenshot_url
+    return nil unless screenshot.present?
+    cid=self._id.to_s unless self._id.nil?
+    ss=File.basename(screenshot.to_s)
+    MyopicVicar::Application.config.website + "/uploads/contact/screenshot/#{cid}/#{ss}"
   end
 
 end

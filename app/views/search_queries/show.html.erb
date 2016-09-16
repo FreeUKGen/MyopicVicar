@@ -43,8 +43,15 @@
   </div>
   <% end %>
 </section>
+
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+  <% contents_link = link_to "Database Contents" , "/freereg_contents" %>
+<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+  <% contents_link = link_to "Database Coverage" , freecen_coverage_path %>
+<% end %>
+
 <% if @search_results.size == 0 %>
-    <p>No results found. This could be because there are no transcriptions for the Places you were searching; review our <%= link_to "Transcriptions" , "/freereg_contents/new" %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/cms/help" %> for advice on how to get the most out of your searches. </p>
+    <p>No results found. This could be because there are no transcriptions completed yet for the Places and dates you were searching; review our <%= contents_link %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/cms/help" %> for advice on how to get the most out of your searches. </p>
   <% else %>
     <% if device_type == :desktop || device_type == :tablet%>
       <%= render(:partial => "desktop", :locals => {:search_results => @search_results}) %>
@@ -56,7 +63,7 @@
   <br>
   <% if @ucf_results %>
     <% if @ucf_results.size == 0 %>
-        <p>No partially-readable results found. This could be because there are no transcriptions for the Places you were searching; review our <%= link_to "Transcriptions" , "/freereg_contents/new" %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/cms/help" %> for advice on how to get the most out of your searches. </p>
+        <p>No partially-readable results found. This could be because there are no transcriptions completed yet for the Places and dates you were searching; review our <%= contents_link %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/cms/help" %> for advice on how to get the most out of your searches. </p>
       <% else %>
         <p>These entries with partly-readable names could be relevant:</p>
         <% if device_type == :desktop || device_type == :tablet%>
@@ -86,5 +93,5 @@
   <% end %>
 <% end %>
 <% else%>
- <p>No results found. This could be because there are no transcriptions for the Places you were searching; review our <%= link_to "Database Contents" , "/freereg_contents" %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/cms/help" %> for advice on how to get the most out of your searches. </p>
+ <p>No results found. This could be because there are no transcriptions completed yet for the Places and dates you were searching; review our <%= contents_link %> for what has been transcribed. Alternatively you may need to recast your search options; see our <%= link_to "Tips for Searching", "/cms/help" %> for advice on how to get the most out of your searches. </p>
 <% end%>

@@ -68,7 +68,6 @@ class Register
       register
     end
 
-
     def find_register(args)
       @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
       if @@my_church

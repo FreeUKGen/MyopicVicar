@@ -191,10 +191,11 @@ class SearchQueriesController < ApplicationController
     render '_form_for_selection'
   end
   def show
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if params[:id].present?
       @search_query = SearchQuery.where(:id => params[:id]).first
     else
-      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
+      logger.warn("#{appname}:SEARCH_ERROR:nil parameter condition occurred")
       go_back
       return
     end
@@ -202,12 +203,12 @@ class SearchQueriesController < ApplicationController
       @search_results =   @search_query.results
       @ucf_results = @search_query.ucf_results
     else
-      logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
+      logger.warn("#{appname}:SEARCH_ERROR:search query no longer present")
       go_back
       return
     end
     if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+      logger.warn("#{appname}:SEARCH_ERROR:search results no longer present")
       go_back
       return
     end
@@ -215,22 +216,23 @@ class SearchQueriesController < ApplicationController
 
   def show_print_version
     @printable_format = true;
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if params[:id].present?
       @search_query = SearchQuery.where(:id => params[:id]).first
     else
-      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
+      logger.warn("#{appname}:SEARCH_ERROR:nil parameter condition occurred")
       go_back
       return
     end
     if @search_query.present?
       @search_results =   @search_query.results
     else
-      logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
+      logger.warn("#{appname}:SEARCH_ERROR:search query no longer present")
       go_back
       return
     end
     if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+      logger.warn("#{appname}:SEARCH_ERROR:search results no longer present")
       go_back
       return
     end

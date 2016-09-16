@@ -375,7 +375,6 @@ describe Freereg1CsvEntry do
     result.should be_in_result(entry)
   end
 
-
   it "should filter by place" do
     # first create something to test against
     different_filespec = FREEREG1_CSV_FILES[2]

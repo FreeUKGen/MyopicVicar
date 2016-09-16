@@ -55,6 +55,9 @@ class SearchQuery
   field :search_index, type: String
   field :day, type:String
 
+  field :birth_chapman_codes, type: Array, default: []
+  field :birth_place_name, type: String
+  
   has_and_belongs_to_many :places, inverse_of: nil
 
   belongs_to :userid_detail
@@ -109,6 +112,24 @@ class SearchQuery
 
   def can_be_narrowed?
     radius_search? && radius_factor > 2
+  end
+
+
+  def fetch_records
+    return @search_results if @search_results
+    if self.search_result.present?
+      records = self.search_result.records
+      begin
+        @search_results = SearchRecord.find(records)
+      rescue Mongoid::Errors::DocumentNotFound
+        appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+        logger.warn("#{appname}:SEARCH_ERROR:search record in search results went missing")
+        @search_results = nil
+      end
+    else
+      @search_results = nil
+    end
+    @search_results
   end
 
   def can_query_ucf?
@@ -255,6 +276,8 @@ class SearchQuery
       name_params["last_name"] = wildcard_to_regex(last_name.downcase) if last_name
       params["search_names"] =  { "$elemMatch" => name_params}
     else
+      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
         name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
@@ -322,6 +345,15 @@ class SearchQuery
     record
   end
 
+
+  def next_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+  end
   def query_contains_wildcard?
     (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))
   end
@@ -524,6 +556,36 @@ class SearchQuery
         # wildcard is in first name only -- no worries
         #end
       end
+    end
+  end
+
+
+  def county_is_valid
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
+        errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+      end
+      if chapman_codes.length > 3
+        if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
+          errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+        end
+      end
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      # don't require date range for now. may need to add back in later.
+    end
+  end
+
+  def date_range_is_valid
+    if !start_year.blank? && !end_year.blank?
+      if start_year.to_i > end_year.to_i
+        errors.add(:end_year, "First year must precede last year.")
+      end
+    end
+  end
+
+  def radius_is_valid
+    if search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end
 

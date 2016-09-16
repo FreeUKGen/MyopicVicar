@@ -1,0 +1,114 @@
+<h1 class="title text--center">Database Coverage</h1>
+
+<% if @manage_pieces %>
+  <% if @editing %>
+    <% url = "/freecen_coverage/#{@chapman_code}/edit_done" %>
+    <a href="<%=url%>">Done editing</a> &nbsp;&nbsp;
+  <% else %>
+    <% url = "/freecen_coverage/#{@chapman_code}/edit" %>
+    <a href="<%=url%>">Edit counties and pieces</a>
+  <% end %>
+  <br>&nbsp;<br>
+<% end %>
+
+<section class="island  " >
+<p style="margin-top:-40px;">* Only a few counties are loaded for testing (those with darker text). Visit the <a href="http://www.freecen.org.uk" target="_blank">old site</a> for the rest.</p>
+
+<% Freecen::CENSUS_YEARS_ARRAY.each do |yy| %>
+  <% unless !@editing && (@all_pieces.nil? || @all_pieces[yy].nil?) %>
+    <% yyhash = @all_pieces[yy] %>
+    <a name="<%= yy %>"></a>
+    <center><h3><%= yy %></h3></center>
+    <div class="table-wrapper" style="margin-top:-20px;">
+     <table class="table--bordered table--data" >
+       <colgroup >
+	 <col class="t35">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+       </colgroup>
+       <thead>
+         <th>County &nbsp;&nbsp; (Chapman Code)
+<% if @manage_pieces %>
+  <% if @editing %>
+    <% url = "/freecen_pieces/#{yy}/select_new_county" %>
+    <br><a href="<%=url%>">Add new county for <%=yy%></a>
+  <% end %>
+<% end %>
+</th>
+         <th>Number of Individuals</th>
+         <th>% Online</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+       </thead>
+       <tbody>
+	 <% yyhash['counties'].each do |ctykey,cty| %>
+	 <tr <%if 0==cty['pct_online']%>style="color:#aaaaaa;"<%end%>>
+	   <td><%= cty['cty'] %> &nbsp;&nbsp; (<%= cty['cc'] %>)</td>
+	   <td><%= number_with_delimiter(cty['num_rec']) %></td>
+	   <td><%= (cty['pct_online'] > 0)? "%.1f" % cty['pct_online'] : 0 %></td>
+	   <% detail_href="/freecen_coverage/#{cty['cc']}" %>
+	   <% detail_href+="##{cty['yy']}" unless '1841'==cty['yy'] %>
+	   <td><%= link_to "Details", detail_href %></td>
+	   <% graph_href="/freecen_coverage_graph/ind/#{cty['cc']}/#{cty['yy']}" %>
+	   <td><%= link_to "Totals Graph", graph_href %></td>
+	   <% graph_href="/freecen_coverage_graph/pct/#{cty['cc']}/#{cty['yy']}" %>
+	   <td><%= link_to "Percentage Graph", graph_href %></td>
+	 </tr>
+	 <% end %>
+	 <tr>
+	   <td><b>Subtotal for <%=yy%></b></td>
+	   <td><%= number_with_delimiter(yyhash['subtot_records_online']) %></td>
+	   <td><%= (yyhash['subtot_pct_pieces_online'] > 0)? "%.1f" % yyhash['subtot_pct_pieces_online'] : 0 %></td>
+	   <td>&nbsp;</td>
+	   <% graph_href="/freecen_coverage_graph/ind/all/#{yy}" %>
+	   <td><%= link_to "Totals Graph", graph_href %></td>
+	   <td>&nbsp;</td>
+	 </tr>
+
+       </tbody>
+     </table>
+   </div><!-- table-wrapper -->
+   <% end %>
+ <% end %>
+
+    <center><h3>All Years</h3></center>
+    <div class="table-wrapper" style="margin-top:-20px;">
+     <table class="table--bordered table--data" >
+       <colgroup >
+	 <col class="t35">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+	 <col class="t10">
+       </colgroup>
+       <thead>
+         <th>&nbsp;</th>
+         <th>Number of Individuals</th>
+         <th>% Online</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+       </thead>
+       <tbody>
+	 <tr>
+	   <td><b>Grand Total</b></td>
+	   <td><%= number_with_delimiter(@all_pieces['tot_records_online']) %></td>
+	   <td><%= (@all_pieces['tot_pct_pieces_online'] > 0)? "%.1f" % @all_pieces['tot_pct_pieces_online'] : 0 %></td>
+	   <td>&nbsp;</td>
+	   <% graph_href="/freecen_coverage_graph/ind/all/all" %>
+	   <td><%= link_to "Totals Graph", graph_href %></td>
+	   <td>&nbsp;</td>
+	 </tr>
+
+       </tbody>
+     </table>
+   </div><!-- table-wrapper -->
+
+
+</section>
+

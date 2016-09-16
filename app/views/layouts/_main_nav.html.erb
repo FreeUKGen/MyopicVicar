@@ -3,15 +3,23 @@
     <nav class="main-nav" >
       <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
-        <li>
-          <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
-        </li>
+          <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+            <li>
+              <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
+            </li>
+          <% end %>
         <% else%>
         <li>
           <%= link_to("Search",  main_app.new_search_query_path) %>
         </li>
         <% end%>
-                <% if  session[:userid_detail_id].present? %>
+        <% if MyopicVicar::Application.config.template_set == 'freecen' && (controller_name != 'freecen_coverage' || @chapman_code != nil)%>
+          <li>
+            <%=link_to("Database Coverage",main_app.freecen_coverage_path)%>
+          </li>
+        <% end %>
+
+        <% if  session[:userid_detail_id].present? %>
         <li>
           <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
         </li>
@@ -31,23 +39,29 @@
         </li>
         <% else %>
         <li>
+	  <% if false %>
           <%= link_to "About", "/cms/about" %>
+	  <% end %>
         </li>
         <% end%>
         <% else %>
         <li>
+	  <% if false %>
           <%= link_to "About", "/cms/about" %>
+	  <% end %>
         </li>
         <!-- TODO: Convert remainder to refinery page references -->
         <li>
           <%= link_to "Donate", "/cms/donate" %>
         </li>
+    <% if false %>
         <li>
           <%= link_to "Volunteer", main_app.transcriber_registration_userid_detail_path %>
         </li>
         <li>
           <%= link_to "Members", refinery.login_path %>
         </li>
+    <% end %>
         <li>
           <%= link_to "Help", "/cms/help" %>
         </li>

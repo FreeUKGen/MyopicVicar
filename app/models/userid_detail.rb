@@ -73,6 +73,46 @@ class UseridDetail
     end
   end
 
+  def remember_search(search_query)
+    self.search_queries << search_query
+  end
+
+  def write_userid_file
+    return if MyopicVicar::Application.config.template_set == 'freecen'
+    user = self
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
+    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
+    Dir.mkdir(change_details_dir)  unless Dir.exist?(change_details_dir)
+    details_file = File.join(details_dir,".uDetails")
+    change_details_file = File.join(change_details_dir,".uDetails")
+    if File.file?(details_file)
+      save_to_attic
+    end
+    #we do not need a udetails file in the change set
+    details = File.new(details_file, "w")
+    details.puts "Surname:#{user.person_surname}"
+    details.puts "UserID:#{user.userid}"
+    details.puts "EmailID:#{user.email_address}"
+    details.puts "Password:#{user.password}"
+    details.puts "GivenName:#{user.person_forename}"
+    details.puts "Country:#{user.address}"
+    details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}"
+    details.puts "SyndicateName:#{user.syndicate}"
+    details.puts "SignUpDate:#{user.sign_up_date}"
+    details.puts "Person:#{user.person_role}"
+    unless user.active
+      details.puts "DisabledDate:#{user.disabled_date}"
+      details.puts "DisabledReason:#{user.disabled_reason}"
+      details.puts "Active:0"
+      details.puts "Disabled:1"
+    else
+      details.puts "Active:1"
+      details.puts "Disabled:0"
+    end
+    details.close
+  end
+
   def self.get_active_userids_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
@@ -101,6 +141,38 @@ class UseridDetail
       @userids << name
     end
     return @userids
+  end
+
+  def send_invitation_to_create_password
+    type = self.person_role
+    UserMailer.invitation_to_register_researcher(self).deliver if type == 'researcher'
+    UserMailer.invitation_to_register_transcriber(self).deliver if type == 'transcriber'
+    UserMailer.invitation_to_register_technical(self).deliver if type == 'technical'
+  end
+
+  def send_invitation_to_reset_password
+    UserMailer.invitation_to_reset_password(self).deliver
+
+  end
+
+  def save_to_attic
+    return if MyopicVicar::Application.config.template_set == 'freecen'
+    #to-do unix permissions
+    user = self
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    details_file = File.join(details_dir,".uDetails")
+    newdir = File.join(details_dir,'.attic')
+    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
+    File.rename(details_file,renamed_file)
+    FileUtils.mv(renamed_file,newdir)
+  end
+
+  def userid_and_email_address_does_not_exist
+    errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
+    errors.add(:userid, "Refinery User Already exits") if Refinery::User.where(:username => self[:userid]).exists?
+    errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
+    errors.add(:email_address, "Refinery email already exits") if Refinery::User.where(:email => self[:email_address]).exists?
   end
 
   def self.get_userids_for_display(syndicate)
@@ -178,6 +250,7 @@ class UseridDetail
     refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
 

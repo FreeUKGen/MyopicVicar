@@ -169,11 +169,13 @@ production:
 test:
   clients:
     default:
-      database:
-      hosts:
+      database: myopic_vicar_test
+      hosts: 
+        - localhost:27017
       options:
-        consistency:
-        # In the test environment we lower the retries and retry interval to
-        # low amounts for fast failures.
-        max_retries:
-        retry_interval:
+    local_writable:
+      database: writable_development
+      hosts:
+        - localhost:27017
+      options:
+  options:

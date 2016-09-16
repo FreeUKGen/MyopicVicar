@@ -35,6 +35,9 @@ class ContactsController < ApplicationController
       @contact.session_data.delete("warden.user.authentication_devise_user.session") unless @contact.session_data["warden.user.authentication_devise_user.session"].blank?
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
+      if @contact.selected_county == 'nil'
+        @contact.selected_county = nil
+      end
       if @contact.save
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
@@ -129,10 +132,32 @@ class ContactsController < ApplicationController
     @contact.contact_type = 'Data Problem'
     @contact.query = params[:query]
     @contact.record_id = params[:id]
-    @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
-    @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
-    @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
-    @contact.line_id  = @freereg1_csv_entry.line_id
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
+      @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
+      @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
+      @contact.line_id  = @freereg1_csv_entry.line_id
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      rec = SearchRecord.where("id" => @contact.record_id).first
+      unless rec.nil?
+        ind_id = rec.freecen_individual_id if rec.freecen_individual_id.present?
+        @contact.fc_individual_id = ind_id.to_s unless ind_id.nil?
+        @contact.county = rec.chapman_code
+        fc_ind = FreecenIndividual.where("id" => ind_id).first if ind_id.present?
+        if fc_ind.present?
+          @contact.entry_id = fc_ind.freecen1_vld_entry_id.to_s unless fc_ind.freecen1_vld_entry_id.nil?
+          if @contact.entry_id.present?
+            ent = Freecen1VldEntry.where("id" => @contact.entry_id).first
+            if ent.present?
+              if ent.freecen1_vld_file.present?
+                vldfname = ent.freecen1_vld_file.file_name
+              end
+              @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.dwelling_number.to_s unless  ent.dwelling_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
+            end #ent.present
+          end # @contact.entry_id.present?
+        end # fc_ind.present    
+      end # unless rec.nil?
+    end # elsif freecen
   end
 
   def select_by_identifier
@@ -156,13 +181,15 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
-    church = file.register.church
-    place = church.place
-    session[:freereg1_csv_file_id] = file._id
-    session[:freereg1_csv_file_name] = file.file_name
-    session[:place_name] = place.place_name
-    session[:church_name] = church.church_name
-    session[:county] = place.county
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      church = file.register.church
+      place = church.place
+      session[:freereg1_csv_file_id] = file._id
+      session[:freereg1_csv_file_name] = file.file_name
+      session[:place_name] = place.place_name
+      session[:church_name] = church.church_name
+      session[:county] = place.county
+    end
   end
 
   def show

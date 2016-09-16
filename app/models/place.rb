@@ -40,6 +40,7 @@ class Place
   field :master_place_lon, type: String
   field :error_flag,type: String, default: nil
   field :data_present, type: Boolean, default: false
+  field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :alternate, type: String, default: ""
   field :ucf_list, type: Hash, default: {}
   field :records, type: String
@@ -77,6 +78,9 @@ class Place
 
   has_many :churches, dependent: :restrict
   has_many :search_records
+  has_many :freecen_pieces
+  has_many :freecen_dwellings
+
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
@@ -144,6 +148,10 @@ class Place
     end
   end
 
+  def update_places_cache
+    PlaceCache.refresh(false, self.chapman_code)
+  end
+
   def adjust_location_before_applying(params,session)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
     self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
@@ -205,6 +213,14 @@ class Place
       self.location = [self.longitude.to_f,self.latitude.to_f]
     end
     self.save(:validate => false)
+    # update freecen pieces
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      self.freecen_pieces.no_timeout.each do |piece|
+        piece.place_latitude = self.latitude
+        piece.place_longitude = self.longitude
+        piece.save
+      end
+    end
   end
 
   def change_name(param)
@@ -281,8 +297,10 @@ class Place
       if (self[:latitude].blank? || self[:longitude].blank?)
         errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
       else
-        errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
-        errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+        if MyopicVicar::Application.config.template_set != 'freecen'
+          errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
+          errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+        end
       end
     else
       errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
@@ -377,6 +395,12 @@ class Place
         end
       end
     end
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      self.freecen_pieces.no_timeout.each do |piece|
+        piece.district_name = self.place_name
+        piece.save
+      end
+    end
   end
 
   def recalculate_last_amended_date
@@ -447,6 +471,7 @@ class Place
       self.update_attribute(:data_present,false)
     end
   end
+
 
   def update_places_cache
     PlaceCache.refresh_cache(self)

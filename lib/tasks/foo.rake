@@ -201,8 +201,12 @@ namespace :foo do
 
 
   desc "Refresh the places cache"
-  task :refresh_places_cache => [:environment] do |t,args|
-    PlaceCache.refresh_all
+  task :refresh_places_cache, [:inspect_churches] => [:environment] do |t,args|
+    if args[:inspect_churches]
+      PlaceCache.refresh_all(args.inspect_churches == "true")
+    else
+      PlaceCache.refresh_all
+    end
   end
 
 
