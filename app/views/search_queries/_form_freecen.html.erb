@@ -1,9 +1,9 @@
 <% if flash[:notice] %>
-<div class="weight--semibold text--center" style="color:red"><br>
+<div class="weight--semibold text--center"><br>
 	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<% if @search_query.errors.any? %>
+<% if @search_query.errors.present? && @search_query.errors.any? %>
 <h4 class="text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h4>
 <ul class="validation-list" >
 	<% @search_query.errors.messages.each do |key, msg| %>
@@ -19,7 +19,7 @@
 			<label>
 				Surname
 				<a href="#" class="right_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-					<span>The surname can be upper or lower case; there is no wildcard but see Soundex option below for variations of the name. If no surname is entered you MUST enter a County, Forename and a Record Type</span>
+					<span>The surname can be upper or lower case. If no surname is entered you MUST enter a County, Forename, and Place</span>
 				</a>
 			</label>
 	    <% if @search_query.last_name.nil? %>
@@ -101,7 +101,6 @@
 			<%= grouped_options_for_select(grouped_options, selected_key = key) %>
 		</select>
 		</li>
-		<% if true %>
 		<li class="grid__item  two-fifths  palm-one-whole"  id="search_query_places_input">
 			<label class=" label" for="search_query_place_ids">
 				Census Place
@@ -110,17 +109,16 @@
 				</a><small class="additional">Select nothing or one place</small>
 			</label>
 			<select id="search_query_place_ids" name="search_query[place_ids][]" class="select"  size="4" tabindex="6">
-				<option value="">--</option>
+				<option value="">List will fill when single county selected</option>
 			</select>
 		</li>
-		<% end %>
 		<li class="grid__item  one-fifth  palm-one-whole optional" id="search_query_record_type_input">
 			<label class=" label" for="search_query_record_type">
 				Census year
-				<a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The specific census year to search. Leave blank to search all.</span></a><small class="additional">Select one or none</small>
+				<a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The specific census year to search. Leave blank to search all.</span></a><small class="additional">Leave blank to search all</small>
 			</label>
-			<select id="search_query_record_type" name="search_query[record_type]" class="select" selected="@search_query.chapman_codes[]"  tabindex="6">
-				<option value=""></option>
+			<select id="search_query_record_type" name="search_query[record_type]" class="select" size="4" tabindex="6">
+				<option value="">--</option>
 				<% RecordType.options.each_pair do |name, value| %>
 			      <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
 			    		<option value="<%= value %>" selected="selected"> <%= name %></option>
@@ -131,15 +129,6 @@
 			</select>
 		</li>
 		<li class="grid__item  one-quarter  palm-one-whole">
-			<%= f.label :fuzzy do %>
-				<%= f.check_box :fuzzy, { :tabindex => 9 }, "true", "false" %>
-				Soundex on Names
-				<a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-					<span>Check to include Soundex equivalent of the name, it is applied to both surname and forename(if entered).</span>
-				</a>
-			<% end %>
-		</li>
-		<li class="grid__item  one-quarter  palm-one-whole">
 			<%= f.label :search_nearby_places do %>
 				<%= f.check_box :search_nearby_places, { :tabindex => 9 }, "true", "false" %>
 			Nearby places
@@ -148,15 +137,29 @@
 				</a>
 			<% end %>
 		</li>
+		<li class="grid__item  one-quarter  palm-one-whole">
+			<%= f.label :fuzzy do %>
+				<%= f.check_box :fuzzy, { :tabindex => 10 }, "true", "false" %>
+				Soundex on Names
+				<a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+					<span>Check to include Soundex equivalent of the name, it is applied to both surname and forename(if entered).</span>
+				</a>
+			<% end %>
+		</li>
 
 		<%= f.action :submit,
 			:as => :button,
 			:label => 'Search',
-			:button_html => { :class => "btn", :type => 'submit', :tabindex => 10  },
-			:wrapper_html => { :class => "grid__item  one-quarter text--right" }  %>
+		        :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"cen" , "data-size" => "l", "data-spinner-color" => "#ffffff"},
+			:wrapper_html => { :class => "grid__item  one-quarter text--center" }  %>
 	  <% end %>
+    <% x = Rails.application.config.max_search_time/1000 %>
+    <p> Searches are limited to <%= x %> sec. Please do not restart the search once it is working as this will actually slow the process.</p>
 	<% end %>
 </section>
+<script type="text/javascript">
+      Ladda.bind( 'button[type=submit]' );
+</script>
 
 <% if true %>
 <script type="text/javascript" charset="utf-8" >

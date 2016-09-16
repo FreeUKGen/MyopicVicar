@@ -4,7 +4,7 @@
 	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<% if @search_query.errors.present? || @search_query.errors.any? %>
+<% if @search_query.errors.present? && @search_query.errors.any? %>
 <h4 class="text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h4>
 <ul class="validation-list" >
 	<% @search_query.errors.messages.each do |key, msg| %>
