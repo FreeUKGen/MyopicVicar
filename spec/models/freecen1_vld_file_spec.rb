@@ -202,12 +202,14 @@ describe Freecen1VldFile do
     YEAR_VLD_FILES.each_pair do |record_type, filename|
       clean_database
       process_file(filename)
-      individuals = FreecenIndividual.all.limit(100).to_a
+      individuals = FreecenIndividual.all.limit(1000).to_a
       YEAR_BIRTH_DATE[record_type].each_pair do |index, year|
         individual = individuals[index]
         dwelling = individual.freecen_dwelling
         translator = Freecen::Freecen1VldTranslator.new
         translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
+        birth_date = translator.translate_date(individual, record_type)
+        year = birth_date.match(/\d\d\d\d/)[0]
     
         query_params = { :first_name => individual.forenames,
                          :last_name => individual.surname,
@@ -220,7 +222,7 @@ describe Freecen1VldFile do
         result = q.results
  
 #        print "#{index} => #{individual.search_record.search_dates.first[0..3]}, # #{individual.age}#{individual.age_unit}\n"
-        binding.pry if result.count == 0 && false
+        binding.pry if result.count == 0 && true
         result.count.should be >= 1
         SearchRecord.delete_all
       end
