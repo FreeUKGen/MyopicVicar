@@ -30,5 +30,18 @@ class TransregCountiesController < ApplicationController
       format.xml
     end
   end
+  def all_register_types
+    if session[:userid_detail_id].nil?
+      render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'register_types'}))
+      return
+    end
+
+    @types = RegisterType::OPTIONS
+
+    respond_to do |format|
+      format.html
+      format.xml
+    end
+  end
 
 end
