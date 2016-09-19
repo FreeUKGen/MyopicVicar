@@ -12,6 +12,7 @@ gem 'mysql2'
 #gem 'web-console', '~> 2.0'
 gem 'rails_12factor', group: :production
 
+#gem 'actionpack-xml_parser', '~> 2.0'
 #gem 'mysql2', '0.3.12'
 
 gem 'refinerycms', '~> 3.0', '>= 3.0.3'
