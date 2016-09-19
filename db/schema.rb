@@ -13,21 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20160611162608) do
 
-  create_table "active_admin_comments", force: :cascade do |t|
-    t.string   "resource_id",   limit: 255,   null: false
-    t.string   "resource_type", limit: 255,   null: false
-    t.integer  "author_id",     limit: 4
-    t.string   "author_type",   limit: 255
-    t.text     "body",          limit: 65535
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.string   "namespace",     limit: 255
-  end
-
-  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
-  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
-  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_admin_notes_on_resource_type_and_resource_id", using: :btree
-
   create_table "refinery_authentication_devise_roles", force: :cascade do |t|
     t.string "title", limit: 255
   end
@@ -61,8 +46,8 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.datetime "remember_created_at"
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "slug",                   limit: 255
     t.string   "userid_detail_id",       limit: 255
     t.string   "password_salt",          limit: 255
@@ -77,8 +62,8 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.string   "chapman_code", limit: 255
     t.text     "content",      limit: 65535
     t.integer  "position",     limit: 4
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "refinery_image_translations", force: :cascade do |t|
@@ -100,14 +85,14 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.integer  "image_width",     limit: 4
     t.integer  "image_height",    limit: 4
     t.string   "image_uid",       limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "image_title",     limit: 255
     t.string   "image_alt",       limit: 255
   end
 
   create_table "refinery_page_part_translations", force: :cascade do |t|
-    t.integer  "refinery_page_part_id", limit: 4
+    t.integer  "refinery_page_part_id", limit: 4,     null: false
     t.string   "locale",                limit: 255,   null: false
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
@@ -122,8 +107,8 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.string   "slug",             limit: 255
     t.text     "body",             limit: 65535
     t.integer  "position",         limit: 4
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "title",            limit: 255
   end
 
@@ -131,7 +116,7 @@ ActiveRecord::Schema.define(version: 20160611162608) do
   add_index "refinery_page_parts", ["refinery_page_id"], name: "index_refinery_page_parts_on_refinery_page_id", using: :btree
 
   create_table "refinery_page_translations", force: :cascade do |t|
-    t.integer  "refinery_page_id", limit: 4
+    t.integer  "refinery_page_id", limit: 4,   null: false
     t.string   "locale",           limit: 255, null: false
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
@@ -159,8 +144,8 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.integer  "depth",               limit: 4
     t.string   "view_template",       limit: 255
     t.string   "layout_template",     limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_slug",         limit: 255
   end
 
@@ -187,8 +172,8 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.integer  "file_size",      limit: 4
     t.string   "file_uid",       limit: 255
     t.string   "file_ext",       limit: 255
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "seo_meta", force: :cascade do |t|
@@ -196,8 +181,8 @@ ActiveRecord::Schema.define(version: 20160611162608) do
     t.string   "seo_meta_type",    limit: 255
     t.string   "browser_title",    limit: 255
     t.text     "meta_description", limit: 65535
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "seo_meta", ["id"], name: "index_seo_meta_on_id", using: :btree
