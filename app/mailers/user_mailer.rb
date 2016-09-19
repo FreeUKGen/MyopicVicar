@@ -160,8 +160,9 @@ class UserMailer < ActionMailer::Base
   end
   def notification_of_technical_registration(user)
     @user = user
+    reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg technical registration notification") unless @coordinator.nil?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg technical registration notification") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_creation(user)
@@ -172,8 +173,9 @@ class UserMailer < ActionMailer::Base
 
   def notification_of_transcriber_registration(user)
     @user = user
+    reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name
-    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg transcriber registration") unless @coordinator.nil?
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
