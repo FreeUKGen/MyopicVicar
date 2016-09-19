@@ -81,17 +81,18 @@
         <% when  @freereg1_csv_file.error > 0 %>
         <tr id="<%= @freereg1_csv_file.id%>"  style="color:red" >
           <% end %>
-          <td>Number of errors</td><td class="weight--semibold"> <%= link_to(@freereg1_csv_file.error , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>
+          <td>Number of errors</td><td class="weight--semibold"> <%= link_to(errors(@freereg1_csv_file) , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>
         </tr>
         
-        <%if @freereg1_csv_file.locked_by_transcriber  %>
+        <%if @freereg1_csv_file.locked_by_transcriber ||  !@freereg1_csv_file.locked_by_transcriber == "false"%>
         <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
           <%else%>
           <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
             <% end %>
             <td>Batch is locked from overriding by Transcriber</td><td class="weight--semibold"> <%= @freereg1_csv_file.locked_by_transcriber %></td>
           </tr>
-          <%if @freereg1_csv_file.locked_by_coordinator  %>
+          <%if !@freereg1_csv_file.locked_by_coordinator == "false" || @freereg1_csv_file.locked_by_coordinator  %>
+
           <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
             <%else%>
             <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
