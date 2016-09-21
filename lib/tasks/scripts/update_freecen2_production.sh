@@ -1,68 +1,90 @@
-#!/usr/bin/env bash
+#!/usr/bin/env /usr/local/bin/bash
+# note: on ubuntu dev machine, needed to set up a link to /bin/bash
 
-# This script updates the freereg2 production database
+# This script updates the freecen2 production database
+# It just rsyncs the data from FC1 to FC2 on the local machine before
+# running the rake task that updates the database.
+#
+# To manually rsync the data from freecen production server to test2 server:
+#  ssh -A user@test2host
+#  rsync -avz --delete user@productionhost:/raid/freecen/fixed /raid/freecen2/freecen1/
+#  rsync -avz --delete user@productionhost:/raid/freecen/pieces /raid/freecen/
+#  rsync -avz user@productionhost:/home/apache/hosts/freecen/status/db-stats /raid/freecen2/freecen1/
+#  check permisions and ownership
+
 set -uo pipefail
 IFS=$'\n\t'
 
+HN=$( hostname -s )
 trace() {
   NOW=$( date +'%Y-%m-%d %H:%M:%S' )
-  echo "[update-freecen2_production_database] ${NOW} $@" >&2
+  echo "[update_freecen2_production.sh][${HN}] ${NOW} $@" >&2
 }
 
-fail() {
-  sudo /root/bin/searchctl.sh enable
-  trace "FATAL $@"
+#fail() {
+#  sudo /root/bin/searchctl.sh enable
+#  trace "FATAL $@"
+#  exit 1
+#}
+#trap fail ERR
+
+FC1_DATA=/raid/freecen
+FC1_STAT_FILE=/home/apache/hosts/freecen/status/db-stats
+FC2_DATA=/raid/freecen2
+LOG_DIR=${FC2_DATA}/log
+APP_ROOT=/home/apache/hosts/freecen2/production
+WEB_USER=webserv
+#different directories on development machine (pass in "development" as arg 2)
+if [ $# -ge 1 ] && [ $1 == "development" ]; then
+  trace "***NOTICE: using local development machine directory structure"
+  FC1_DATA=~/freeUKGEN/data/update_test_fc1
+  FC1_STAT_FILE=/home/apache/hosts/freecen/status/db-stats #ok if doesn't exist
+  FC2_DATA=~/freeUKGEN/data/update_test_fc2
+  LOG_DIR=/tmp
+  APP_ROOT=~/freeUKGEN/MyopicVicar
+  WEB_USER=$( whoami )
+fi
+
+if [[ ! -d ${FC1_DATA} ]] ; then
+  trace "***ERROR: couldn't find FC1 source directory for rsync (${FC1_DATA})"
   exit 1
-}
-trap fail ERR
-
-#[dougkdev] exit early -- I haven't updated the script for freecen2 yet,
-#just setting up the crontab to call this script and make sure the MAILTO works
-trace "this is a test. this is only a test."
-trace "Exit early because the rest of the script isn't ready yet."
-exit 1
-
-DATA_ROOT=/raid/freereg2
-FREEREG2=${DATA_ROOT}/freereg1/users
-FREEREG2_DELTA=${DATA_ROOT}/log
-ROOT=/home/apache/hosts/freereg2/production
-LOG_DIR=${DATA_ROOT}/log
-PROCESS=${LOG_DIR}/processing_delta
+fi
+cd ${APP_ROOT}
 umask 0002
-if [[ ! -d ${FREEREG2} ]] ; then
-  # create target if absent (or we could call fail() to stop here)
-  trace "${FREEREG2} doesn't exist, creating"
-  mkdir -p ${FREEREG2}
+
+# create target directories if absent
+if [[ ! -d ${FC2_DATA}/freecen1 ]] ; then
+  trace "${FC2_DATA}/freecen1 doesn't exist, creating"
+  mkdir -p ${FC2_DATA}/freecen1
 fi
-if [[ ! -d ${FREEREG2_DELTA} ]] ; then
-  # create target if absent (or we could call fail() to stop here)
-  trace "${FREEREG2_DELTA} doesn't exist, creating"
-  mkdir -p ${FREEREG2_DELTA}
+if [[ ! -d ${LOG_DIR} ]] ; then
+  trace "${LOG_DIR} doesn't exist, creating"
+  mkdir -p ${LOG_DIR}
 fi
-if [[ ! -e ${PROCESS} ]] ; then
-  # create target if absent (or we could call fail() to stop here)
-  trace "${PROCESS} doesn't exist, creating"
-  touch ${PROCESS}
+
+# rsync the FC2 data from FC1 data directories
+trace "doing rsync of FreeCen1 metadata (ctyPARMS.DAT) files into FreeCen2"
+sudo -u ${WEB_USER} rsync -avz --delete ${FC1_DATA}/fixed ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freecen1.delta
+
+trace "doing rsync of FreeCen1 validated piece (.VLD) files into FreeCen2"
+sudo -u ${WEB_USER} rsync -avz --delete ${FC1_DATA}/pieces ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
+
+if [[ -f ${FC1_STAT_FILE} ]] ; then
+  trace "doing rsync of FreeCen1 db-status file into FreeCen2"
+  sudo -u ${WEB_USER} rsync -avz ${FC1_STAT_FILE} ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
+else
+  trace "***WARNING: not doing rsync of status file because ${FC1_STAT_FILE} not found"
 fi
-trace "disable of searches"
-sudo /root/bin/searchctl.sh disable
-cd ${ROOT}
-trace "write the REG_users file for the image servers"
-sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
-trace "process the waiting uploads"
-sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_new_update[create_search_records,waiting,no_force,a-9] --trace
-trace "update county stats"
-sudo -u webserv bundle exec rake RAILS_ENV=production extract_county_stats --trace
-trace "delete entries and records for removed files"
-sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
-#disable the FR1 to FR sync and update
-#trace "doing rsync of freereg1 data into freereg2"
-#sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
-#trace "update of the database2"
-#sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
-trace "re enable searches"
-sudo /root/bin/searchctl.sh enable
+
+#Do we need to disable/enable searches below using /root/bin/searchctl.sh?
+#It was in the FreeReg2 script, but I don't think we need it. If we do, then
+#uncomment the lines and also uncomment the fail()/trap above.
+
+#trace "disable of searches"
+#sudo /root/bin/searchctl.sh disable
+trace "running rake task to update the freecen database"
+sudo -u ${WEB_USER} bundle exec rake RAILS_ENV=production build:freecen_update["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
+#trace "re enable searches"
+#sudo /root/bin/searchctl.sh enable
 trace "finished"
 exit
-
-
