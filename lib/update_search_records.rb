@@ -9,8 +9,9 @@ class UpdateSearchRecords
       return
     end
     software_version = SoftwareVersion.control.first
-    version = software_version.version
-    search_version  = software_version.last_search_record_version if search_version.blank?
+    version = software_version.version unless software_version.nil?
+    search_version  = software_version.last_search_record_version if search_version.blank? && software_version.last_search_record_version.present?
+    search_version = 1 if search_version.blank?
     p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f}"
     message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version}"
     records = 0
@@ -24,8 +25,8 @@ class UpdateSearchRecords
     p "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
     message_file.puts "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
     Freereg1CsvFile.record_type(record_type).all.no_timeout.each do |file|
-      n = n + 1
       break if n == limit.to_i
+      n = n + 1
       if file.search_record_version.blank? || file.search_record_version < search_version
         register = file.register
         church = register.church if register.present?

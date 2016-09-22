@@ -56,7 +56,7 @@ class SearchRecord
   field :transcript_dates, type: Array, default: [] #, :required => false
 
   field :search_dates, type: Array, default: [] #, :required => false
-  
+
   field :search_date, type: String
   field :secondary_search_date, type: String
 
@@ -132,14 +132,16 @@ class SearchRecord
     string = string + self.add_location_string
     string = string + self.add_soundex_string
     string = string + self.add_search_name_string
+    string = string + self.add_search_dates_string
     string = string + self.add_search_date_string
+    string = string + self.add_secondary_search_date_string
     md5 = OpenSSL::Digest::MD5.new
     if string.nil?
       p "#{self._id}, nil string for MD5"
     else
       the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
     end
-    print "\t#{the_digest} from #{string}\n"
+    #print "\t#{the_digest} from #{string}\n"
     return the_digest
   end
   def add_location_string
@@ -167,29 +169,41 @@ class SearchRecord
     end
     return string
   end
-  
-  def add_search_date_string
+
+  def add_search_dates_string
     string = ""
     self.search_dates.each do |date|
       string = string + date if date.present?
     end
     return string
   end
-  
+  def add_search_date_string
+    string = ""
+    string = string + self.search_date if self.search_date.present?
+    return string
+  end
+
+  def add_secondary_search_date_string
+    string = ""
+    string = string + self.secondary_search_date if self.secondary_search_date.present?
+    return string
+  end
+
   def hex_to_base64_digest(hexdigest)
     [[hexdigest].pack("H*")].pack("m").strip
   end
 
-  
+
   def upgrade_search_date!(search_version)
+
     needs_upgrade = self.search_dates.size > 0 && self.search_date.blank?
+
     if needs_upgrade
+      p "update search date"
       self.search_date = self.search_dates[0]
-      self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1  
-      self.search_record_version = search_version
-      self.save
+      self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
     end
-    
+
     needs_upgrade
   end
 
@@ -205,8 +219,13 @@ class SearchRecord
       search_record.place_id = place_id
       search_record.digest = search_record.cal_digest
       search_record.save
+      p "record created"
+      p search_record
       return "created"
     else
+      p "record update"
+      p search_record
+
       digest = search_record.digest
       digest = search_record.cal_digest if digest.blank?
       #create a temporary search record with the new information; this will not be saved
@@ -216,6 +235,8 @@ class SearchRecord
       new_search_record.place_id = place_id
       new_search_record.transform
       brand_new_digest = new_search_record.cal_digest
+      p digest
+      p brand_new_digest
       if  brand_new_digest != digest
         #we have to update the current search record
         #add the search version and digest
@@ -227,15 +248,17 @@ class SearchRecord
         search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
         #update the soundex if it has changed
         search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
-        #update the search date
+        #update the search dates
         search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
+        search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
         #create a hash of search names from the original search names
         search_record.adjust_search_names(new_search_record)
+        search_record.save
+        p search_record
+
         return "updated"
       else
-        if search_record.upgrade_search_date!(search_version)
-          return "updated"
-        end
+
         #unless search_record.search_record_version == search_version && search_record.digest == digest
         #search_record.search_record_version = search_version
         #search_record.digest = digest
@@ -246,7 +269,7 @@ class SearchRecord
       end
     end
   end
-  
+
   def soundex_names_equal?(new_search_record)
     names = self.search_soundex
     new_names = new_search_record.search_soundex
