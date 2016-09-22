@@ -244,8 +244,8 @@ class SearchRecord
         search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
         search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
         #create a hash of search names from the original search names
+        #note adjust_search_names does a save of the search record
         search_record.adjust_search_names(new_search_record)
-        search_record.save
         return "updated"
       else
 
