@@ -219,13 +219,8 @@ class SearchRecord
       search_record.place_id = place_id
       search_record.digest = search_record.cal_digest
       search_record.save
-      p "record created"
-      p search_record
       return "created"
     else
-      p "record update"
-      p search_record
-
       digest = search_record.digest
       digest = search_record.cal_digest if digest.blank?
       #create a temporary search record with the new information; this will not be saved
@@ -235,8 +230,6 @@ class SearchRecord
       new_search_record.place_id = place_id
       new_search_record.transform
       brand_new_digest = new_search_record.cal_digest
-      p digest
-      p brand_new_digest
       if  brand_new_digest != digest
         #we have to update the current search record
         #add the search version and digest
@@ -254,8 +247,6 @@ class SearchRecord
         #create a hash of search names from the original search names
         search_record.adjust_search_names(new_search_record)
         search_record.save
-        p search_record
-
         return "updated"
       else
 
