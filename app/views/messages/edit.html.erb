@@ -10,7 +10,7 @@
 <%= simple_form_for  @message   do |f| %>
 
 
-<%= f.input :body, :label => "Message ",as: :text, :input_html => { :rows => 5, :columns =>80 , :placeholder => @message.body} %>
+<%= f.input :body, :label => "Message ",as: :text, :input_html => { :rows => 15, :style => 'width: 100%' , :placeholder => @message.body} %>
 
  <%= f.button :submit, 'Submit'   %>
   

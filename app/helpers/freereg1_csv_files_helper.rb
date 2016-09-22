@@ -98,5 +98,13 @@ module Freereg1CsvFilesHelper
   def waiting_date(file)
     file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
   end
+  def errors(file)
+    if file.error >= 0
+      errors = file.error
+    else
+      errors = 0
+    end
+    errors
+  end
 
 end

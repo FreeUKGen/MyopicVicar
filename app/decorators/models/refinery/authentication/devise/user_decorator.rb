@@ -31,7 +31,8 @@ Refinery::Authentication::Devise::User.class_eval do
   def inform_coordinator_of_completion
     if self.changed.include?('encrypted_password')
       userid = UseridDetail.id(self.userid_detail_id).first
-      userid.finish_transcriber_creation_setup if userid.person_role == 'transcriber' &&
+      logger.warn "FREEREG::USER updating encrypted_password for #{userid.userid}"
+      userid.finish_transcriber_creation_setup if userid.present? && userid.person_role == 'transcriber' &&
         self.encrypted_password != Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil) &&
         userid.password_confirmation == Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     end

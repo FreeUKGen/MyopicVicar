@@ -27,6 +27,7 @@ MyopicVicar::Application.routes.draw do
   get 'transreg_churches/list'
   get 'transreg_places/list'
   get 'transreg_counties/register_types'
+  get 'transreg_counties/all_register_types'
   get 'transreg_counties/list'
   get 'transreg_users/refreshuser'
   get 'transreg_users/authenticate'
