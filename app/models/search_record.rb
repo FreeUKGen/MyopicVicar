@@ -199,7 +199,6 @@ class SearchRecord
     needs_upgrade = self.search_dates.size > 0 && self.search_date.blank?
 
     if needs_upgrade
-      p "update search date"
       self.search_date = self.search_dates[0]
       self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
     end
