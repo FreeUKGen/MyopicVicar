@@ -68,7 +68,7 @@ class SearchRecord
   field :search_soundex, type: Array, default: []
 
 
-  INDEXES = {
+  PRE_SEARCH_DATE_INDEXES = {
     'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
     "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
     "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name", "search_date"],
@@ -80,6 +80,23 @@ class SearchRecord
     "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
     "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
   }
+  POST_SEARCH_DATE_INDEXES = {
+    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
+    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "secondary_search_date"],
+    "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
+    "county_ln_sd" => ["chapman_code", "search_names.last_name", "secondary_search_date"],
+    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name"],
+    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "search_date"],
+    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "secondary_search_date"],
+    "place_ln" => ["place_id", "search_names.last_name"],
+    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name"],
+    "place_lnsdx" => ["place_id", "search_soundex.last_name"],
+    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name"],
+    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name"],
+    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name"]
+  }
+  INDEXES = PRE_SEARCH_DATE_INDEXES
+  
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
