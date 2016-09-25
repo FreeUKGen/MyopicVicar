@@ -11,6 +11,7 @@ class Freecen1VldFile
   field :piece, type: Integer
   field :series, type: String
   field :sctpar, type: String
+  field :file_digest, type: String
   
   def chapman_code
     self.dir_name
