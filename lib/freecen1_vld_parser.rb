@@ -80,6 +80,7 @@ module Freecen
     def process_vld_filename(filepath)
           # $centype = substr($file,0,2);
       filename = File.basename(filepath)
+      file_digest = Digest::MD5.file filepath rescue nil
       centype = filename[0,2]
           # if (uc($centype) eq "HO") {
       centype.upcase!
@@ -177,7 +178,7 @@ module Freecen
       full_year = year*10 + 1831
       sctpar = sctpar.to_i
       sctpar = nil if 0==sctpar
-      {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype, :sctpar => sctpar }
+      {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype, :sctpar => sctpar, :file_digest => file_digest }
     end
     
     VLD_RECORD_LENGTH = 299
