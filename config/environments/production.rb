@@ -108,5 +108,6 @@ MyopicVicar::Application.configure do
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   #rails 4 changes
   config.eager_load = true
+  config.use_decomposed_dates = MyopicVicar::MongoConfig['use_decomposed_dates']
 
 end

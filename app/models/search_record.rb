@@ -82,38 +82,46 @@ class SearchRecord
   }
   POST_SEARCH_DATE_INDEXES = {
     'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
-    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "secondary_search_date"],
+    'county_fn_ln_ssd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "secondary_search_date"],
     "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
-    "county_ln_sd" => ["chapman_code", "search_names.last_name", "secondary_search_date"],
-    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name"],
+    "county_ln_ssd" => ["chapman_code", "search_names.last_name", "secondary_search_date"],
+    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name","search_date"],
+    "county_lnsdx_fnsdx_ssd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name", "secondary_search_date"],
     "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "search_date"],
-    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "secondary_search_date"],
-    "place_ln" => ["place_id", "search_names.last_name"],
-    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name"],
-    "place_lnsdx" => ["place_id", "search_soundex.last_name"],
-    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name"],
-    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name"],
-    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name"]
+    "county_fnsdx_ssd" => ["chapman_code", "search_soundex.first_name", "secondary_search_date"],
+    "place_ln" => ["place_id", "search_names.last_name","search_date"],
+    "place_ln_ssd" => ["place_id", "search_names.last_name", "secondary_search_date"],
+    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name","search_date"],
+    "place_ln_fn_ssd" => ["place_id","search_names.first_name", "search_names.last_name", "secondary_search_date"],
+    "place_lnsdx" => ["place_id", "search_soundex.last_name","search_date"],
+    "place_lnsdx_ssd" => ["place_id", "search_soundex.last_name", "secondary_search_date"],
+    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name","search_date"],
+    "place_fnsdx_lnsdx_ssd" => ["place_id", "search_soundex.first_name", "search_soundex.last_name", "secondary_search_date"],
+    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name","search_date"],
+    "ln_rt_fn_ssd" => ["search_names.last_name", "record_type", "search_names.first_name", "secondary_search_date"],
+    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name","search_date"],
+    "lnsdx_rt_fnsdx_ssd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "secondary_search_date"]
   }
-  INDEXES = PRE_SEARCH_DATE_INDEXES
-  
+  INDEXES = PRE_SEARCH_DATE_INDEXES.merge(POST_SEARCH_DATE_INDEXES)
+
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
     index(field_spec, {:name => name, background: true })
   end
   def self.index_hint(search_params)
-    candidates = INDEXES.keys
+    Rails.application.config.use_decomposed_dates ? candidates = POST_SEARCH_DATE_INDEXES.keys : candidates = PRE_SEARCH_DATE_INDEXES.keys
     scores = {}
     search_fields = fields_from_params(search_params)
     candidates.each { |name| scores[name] = index_score(name,search_fields)}
     #    pp scores
     best = scores.max_by { |k,v| v}
     best[0]
+
   end
 
   def self.index_score(index_name, search_fields)
-    fields = INDEXES[index_name]
+    Rails.application.config.use_decomposed_dates ? fields = POST_SEARCH_DATE_INDEXES[index_name] : fields = PRE_SEARCH_DATE_INDEXES[index_name]
     best_score = -1
     fields.each_with_index do |field, i|
       if search_fields.any? { |param| param == field }
@@ -226,7 +234,10 @@ class SearchRecord
 
   def self.update_create_search_record(entry,search_version,place_id)
     search_record = entry.search_record
+    #p search_record
+
     if search_record.blank?
+      #p "creating"
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = SearchRecord.new(search_record_parameters)
       search_record.freereg1_csv_entry = entry
@@ -235,8 +246,10 @@ class SearchRecord
       search_record.place_id = place_id
       search_record.digest = search_record.cal_digest
       search_record.save
+      #p search_record
       return "created"
     else
+      #p "updating"
       digest = search_record.digest
       digest = search_record.cal_digest if digest.blank?
       #create a temporary search record with the new information; this will not be saved
@@ -246,6 +259,8 @@ class SearchRecord
       new_search_record.place_id = place_id
       new_search_record.transform
       brand_new_digest = new_search_record.cal_digest
+      #p digest
+      #p brand_new_digest
       if  brand_new_digest != digest
         #we have to update the current search record
         #add the search version and digest
@@ -263,6 +278,7 @@ class SearchRecord
         #create a hash of search names from the original search names
         #note adjust_search_names does a save of the search record
         search_record.adjust_search_names(new_search_record)
+        #p search_record
         return "updated"
       else
 

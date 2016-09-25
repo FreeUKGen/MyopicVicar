@@ -174,14 +174,9 @@ class SearchQuery
     params = Hash.new
     if start_year || end_year
       date_params = Hash.new
-      
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lte"] = DateParser::end_search_date(end_year) if end_year
-      if self.use_decomposed_dates
-        params[:search_date] = date_params
-      else
-        params[:search_dates] = { "$elemMatch" => date_params }        
-      end
+      Rails.application.config.use_decomposed_dates ? params[:search_date] = date_params : params[:search_date] #params[:search_dates] = { "$elemMatch" => date_params }
     end
     params
   end
@@ -414,11 +409,11 @@ class SearchQuery
   def secondary_date_results
     return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     return nil unless secondary_date_query_required
-    
+
     secondary_search_params = search_params
     secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
     secondary_search_params.delete(:search_date)
-    
+
     search_index = SearchRecord.index_hint(secondary_search_params)
     secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
 
@@ -426,7 +421,7 @@ class SearchQuery
   end
 
   def secondary_date_query_required
-    self.use_decomposed_dates && search_params[:search_date] && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
+    Rails.application.config.use_decomposed_dates && search_params[:search_date] && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
   end
 
   def search_params
