@@ -67,11 +67,11 @@ class UpdateSearchRecords
           file.update_attributes(:software_version => version, :search_record_version => search_version)
           sleep(20*(Rails.application.config.emmendation_sleep.to_f))
         else
-          p "No place"
+          p "No place #{file.userid}/#{file.file_name}"
           message_file.puts "No place"
         end
       else
-        p "bypassed"
+        p "bypassed #{file.search_record_version }"
         files_bypassed = files_bypassed + 1
       end
     end
