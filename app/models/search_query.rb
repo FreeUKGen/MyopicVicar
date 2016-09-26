@@ -398,10 +398,7 @@ class SearchQuery
   end
 
   def search
-    p "search"
-    p self
     search_index = SearchRecord.index_hint(search_params)
-    p search_index
     self.update_attribute(:search_index,search_index)
     records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
@@ -417,9 +414,6 @@ class SearchQuery
     secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
     secondary_search_params.delete(:search_date)
     search_index = SearchRecord.index_hint(secondary_search_params)
-    p "secondary search"
-    p secondary_search_params
-    p search_index
     secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
@@ -431,11 +425,9 @@ class SearchQuery
   def search_params
     params = Hash.new
     params[:record_type] = record_type if record_type
-    p "search params"
     params.merge!(place_search_params)
     params.merge!(date_search_params)
     params.merge!(name_search_params)
-    p params
     params
   end
 
@@ -446,7 +438,6 @@ class SearchQuery
       ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
       self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
-
       self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
       self.ucf_result_ms = (Time.now.utc - start_ucf_time) * 1000
       self.save

@@ -116,8 +116,6 @@ class SearchRecord
     candidates.each { |name| scores[name] = index_score(name,search_fields)}
     #    pp scores
     best = scores.max_by { |k,v| v}
-    p "search hint"
-    p best[0]
     best[0]
 
   end
