@@ -83,6 +83,8 @@ class SearchQuery
     end
   end
 
+  ############################################################################# instance methods #####################################################
+
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
   end

@@ -109,89 +109,267 @@ class SearchRecord
     fields.each { |field| field_spec[field] = 1 }
     index(field_spec, {:name => name, background: true })
   end
-  def self.index_hint(search_params)
-    Rails.application.config.use_decomposed_dates ? candidates = POST_SEARCH_DATE_INDEXES.keys : candidates = PRE_SEARCH_DATE_INDEXES.keys
-    scores = {}
-    search_fields = fields_from_params(search_params)
-    candidates.each { |name| scores[name] = index_score(name,search_fields)}
-    #    pp scores
-    best = scores.max_by { |k,v| v}
-    best[0]
 
-  end
-
-  def self.index_score(index_name, search_fields)
-    Rails.application.config.use_decomposed_dates ? fields = POST_SEARCH_DATE_INDEXES[index_name] : fields = PRE_SEARCH_DATE_INDEXES[index_name]
-    best_score = -1
-    fields.each_with_index do |field, i|
-      if search_fields.any? { |param| param == field }
-        best_score = i
-      else
-        break #bail since leading terms haven't been found
-      end
-    end
-    best_score
-  end
   class << self
-    def marriages
-      where(:record_type => "ma")
-    end
+
     def baptisms
       where(:record_type => "ba")
     end
     def burials
       where(:record_type => "bu")
     end
-    def record_id(id)
-      where(:id => id)
-    end
     def chapman_code(code)
       where(:chapman_code => code)
     end
+    def marriages
+      where(:record_type => "ma")
+    end
+    def record_id(id)
+      where(:id => id)
+    end
+
+    def delete_freereg1_csv_entries
+      SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
+    end
+
+    def extract_fields(fields, params, current_field)
+      if params.is_a?(Hash)
+        # walk down the syntax tree
+        params.each_pair do |key,value|
+          #ignore operators
+          if key.to_s =~ /\$/
+            new_field = String.new(current_field)
+          else
+            new_field = String.new(current_field + "." + key.to_s)
+          end
+          extract_fields(fields, value, new_field)
+        end
+      else
+        # terminate
+        if indexable_value?(params)
+          fields << current_field
+        end
+      end
+    end
+
+    def fields_from_params(search_params)
+      fields = []
+
+      search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
+
+      fields.uniq
+    end
+
+    def from_annotation(annotation)
+      Rails.logger.debug("from_annotation processing #{annotation.inspect}")
+
+      # find an existing search record
+      record = SearchRecord.find_by_annotation_ids(annotation.id)
+
+      unless record
+        record = SearchRecord.new(annotation[:data])
+        record.record_type = annotation.entity.search_record_type
+
+        # denormalize from other record types
+        record.asset_id = annotation.transcription.asset.id
+        record.chapman_code = annotation.transcription.asset.asset_collection.chapman_code
+
+        record.annotation_ids << annotation.id
+        record.save!
+
+      end
+      # TODO: Deal with existing search records, given duplicate save calls
+    end
+
+    def from_freereg1_csv_entry(entry)
+      #   # assumes no existing entries for this line
+      @@file = nil if (defined?(@@file)).nil?
+      @@owner = nil if (defined?(@@owner)).nil?
+      @@places = nil if (defined?(@@places)).nil?
+
+      record = nil
+      if defined? @tts
+        @@tts[:translate_tts] += Benchmark.measure { record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry)) }
+
+        @@tts[:place_lookup_tts] += Benchmark.measure do
+          record.freereg1_csv_entry = entry
+          file = entry.freereg1_csv_file
+          if @@file.nil? || @@owner.nil?
+            places = file.register.church.place
+            @@places = places
+            @@file = file.file_name
+            @@owner = file.userid
+          else
+            if @@file == file.file_name && @@owner == file.userid
+              places = @@places
+            else
+              places = file.register.church.place
+              @@places = places
+              @@file = file.file_name
+              @@owner = file.userid
+            end
+          end
+          record.place = places
+        end
+
+        @@tts[:total_save_tts] += Benchmark.measure do
+          record.save!
+        end
+      else
+        record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+        record.freereg1_csv_entry = entry
+        file = entry.freereg1_csv_file
+        if @@file.nil? || @@owner.nil?
+          places = file.register.church.place
+          @@places = places
+          @@file = file.file_name
+          @@owner = file.userid
+        else
+          if @@file == file.file_name && @@owner == file.userid
+            places = @@places
+          else
+            places = file.register.church.place
+            @@places = places
+            @@file = file.file_name
+            @@owner = file.userid
+          end
+        end
+        record.place = places
+        record.save!
+      end
+    end
+
+    def index_hint(search_params)
+      Rails.application.config.use_decomposed_dates ? candidates = POST_SEARCH_DATE_INDEXES.keys : candidates = PRE_SEARCH_DATE_INDEXES.keys
+      scores = {}
+      search_fields = fields_from_params(search_params)
+      candidates.each { |name| scores[name] = index_score(name,search_fields)}
+      #    pp scores
+      best = scores.max_by { |k,v| v}
+      best[0]
+    end
+
+    def index_score(index_name, search_fields)
+      Rails.application.config.use_decomposed_dates ? fields = POST_SEARCH_DATE_INDEXES[index_name] : fields = PRE_SEARCH_DATE_INDEXES[index_name]
+      best_score = -1
+      fields.each_with_index do |field, i|
+        if search_fields.any? { |param| param == field }
+          best_score = i
+        else
+          break #bail since leading terms haven't been found
+        end
+      end
+      best_score
+    end
+
+    def indexable_value?(param)
+      if param.is_a? Regexp
+        # does this begin with a wildcard?
+
+        param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl
+      else
+        true
+      end
+    end
+
+    def setup_benchmark
+      unless defined? @@tts
+        @@tts = {}
+        @@tts[:populate_tts] = Benchmark.measure {}
+        @@tts[:downcase_tts] = Benchmark.measure {}
+        @@tts[:separate_tts] = Benchmark.measure {}
+        @@tts[:emend_tts] = Benchmark.measure {}
+        @@tts[:transform_ucf_tts] = Benchmark.measure {}
+        @@tts[:soundex_tts] = Benchmark.measure {}
+        @@tts[:date_tts] = Benchmark.measure {}
+        @@tts[:location_tts] = Benchmark.measure {}
+
+        @@tts[:translate_tts] = Benchmark.measure {}
+        @@tts[:place_lookup_tts] = Benchmark.measure {}
+        @@tts[:total_save_tts] = Benchmark.measure {}
+      end
+    end
+
+    def report_benchmark
+      print "Phase\tUser\tSystem\tReal\n"
+      @@tts.each_pair do |k,v|
+        print "#{k}\t"
+        print "#{v.format}"
+      end
+    end
+
+    def update_create_search_record(entry,search_version,place_id)
+      search_record = entry.search_record
+      #p search_record
+      if search_record.blank?
+        #p "creating"
+        search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+        search_record = SearchRecord.new(search_record_parameters)
+        search_record.freereg1_csv_entry = entry
+        search_record.search_record_version = search_version
+        search_record.transform
+        search_record.place_id = place_id
+        search_record.digest = search_record.cal_digest
+        search_record.save
+        #p search_record
+        return "created"
+      else
+        #p "updating"
+        digest = search_record.digest
+        digest = search_record.cal_digest if digest.blank?
+        #create a temporary search record with the new information; this will not be saved
+        search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+        new_search_record = SearchRecord.new(search_record_parameters)
+        new_search_record.freereg1_csv_entry = entry
+        new_search_record.place_id = place_id
+        new_search_record.transform
+        brand_new_digest = new_search_record.cal_digest
+        #p digest
+        #p brand_new_digest
+        if  brand_new_digest != digest
+          #we have to update the current search record
+          #add the search version and digest
+          search_record.search_record_version = search_version
+          search_record.digest = brand_new_digest
+          #update the transcript names if it has changed
+          search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
+          #update the location if it has changed
+          search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
+          #update the soundex if it has changed
+          search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
+          #update the search dates
+          search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
+          search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
+          #create a hash of search names from the original search names
+          #note adjust_search_names does a save of the search record
+          search_record.adjust_search_names(new_search_record)
+          #p search_record
+          return "updated"
+        else
+          #unless search_record.search_record_version == search_version && search_record.digest == digest
+          #search_record.search_record_version = search_version
+          #search_record.digest = digest
+          #search_record.save
+          #return "digest added"
+          #end
+          return "no update"
+        end
+      end
+    end
+
   end
+
+  ############################################################################# instance methods ####################################################################
+
   def add_digest
     self.digest = self.cal_digest
   end
-  def cal_digest
-    string = ''
-    string = string + self.add_location_string
-    string = string + self.add_soundex_string
-    string = string + self.add_search_name_string
-    string = string + self.add_search_dates_string
-    string = string + self.add_search_date_string
-    string = string + self.add_secondary_search_date_string
-    md5 = OpenSSL::Digest::MD5.new
-    if string.nil?
-      p "#{self._id}, nil string for MD5"
-    else
-      the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
-    end
-    #print "\t#{the_digest} from #{string}\n"
-    return the_digest
-  end
+
   def add_location_string
     string = ""
     location = self.location_names
     string = string + location[0].gsub(/\s+/, '') if location.present? && location[0].present?
     string = string + location[1].gsub(/\s+/, '').gsub(/\[/, '').gsub(/\]/,'') if location.present? && location[1].present?
-    return string
-  end
-  def add_soundex_string
-    string = ""
-    self.search_soundex.each do |name|
-      string = string + name["first_name"] if name["first_name"].present?
-      string = string + name[:first_name] if name[:first_name].present?
-      string = string + name["last_name"] if name["last_name"].present?
-      string = string + name[:last_name] if name[:last_name].present?
-    end
-    return string
-  end
-  def add_search_name_string
-    string = ""
-    self.search_names.each do |name|
-      string = string + name[:first_name] if name[:first_name].present?
-      string = string + name[:last_name] if name[:last_name].present?
-    end
     return string
   end
 
@@ -202,9 +380,19 @@ class SearchRecord
     end
     return string
   end
+
   def add_search_date_string
     string = ""
     string = string + self.search_date if self.search_date.present?
+    return string
+  end
+
+  def add_search_name_string
+    string = ""
+    self.search_names.each do |name|
+      string = string + name[:first_name] if name[:first_name].present?
+      string = string + name[:last_name] if name[:last_name].present?
+    end
     return string
   end
 
@@ -214,105 +402,15 @@ class SearchRecord
     return string
   end
 
-  def hex_to_base64_digest(hexdigest)
-    [[hexdigest].pack("H*")].pack("m").strip
-  end
-
-
-  def upgrade_search_date!(search_version)
-
-    needs_upgrade = self.search_dates.size > 0 && self.search_date.blank?
-
-    if needs_upgrade
-      self.search_date = self.search_dates[0]
-      self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
+  def add_soundex_string
+    string = ""
+    self.search_soundex.each do |name|
+      string = string + name["first_name"] if name["first_name"].present?
+      string = string + name[:first_name] if name[:first_name].present?
+      string = string + name["last_name"] if name["last_name"].present?
+      string = string + name[:last_name] if name[:last_name].present?
     end
-
-    needs_upgrade
-  end
-
-
-  def self.update_create_search_record(entry,search_version,place_id)
-    search_record = entry.search_record
-    #p search_record
-
-    if search_record.blank?
-      #p "creating"
-      search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-      search_record = SearchRecord.new(search_record_parameters)
-      search_record.freereg1_csv_entry = entry
-      search_record.search_record_version = search_version
-      search_record.transform
-      search_record.place_id = place_id
-      search_record.digest = search_record.cal_digest
-      search_record.save
-      #p search_record
-      return "created"
-    else
-      #p "updating"
-      digest = search_record.digest
-      digest = search_record.cal_digest if digest.blank?
-      #create a temporary search record with the new information; this will not be saved
-      search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-      new_search_record = SearchRecord.new(search_record_parameters)
-      new_search_record.freereg1_csv_entry = entry
-      new_search_record.place_id = place_id
-      new_search_record.transform
-      brand_new_digest = new_search_record.cal_digest
-      #p digest
-      #p brand_new_digest
-      if  brand_new_digest != digest
-        #we have to update the current search record
-        #add the search version and digest
-        search_record.search_record_version = search_version
-        search_record.digest = brand_new_digest
-        #update the transcript names if it has changed
-        search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
-        #update the location if it has changed
-        search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
-        #update the soundex if it has changed
-        search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
-        #update the search dates
-        search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
-        search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
-        #create a hash of search names from the original search names
-        #note adjust_search_names does a save of the search record
-        search_record.adjust_search_names(new_search_record)
-        #p search_record
-        return "updated"
-      else
-
-        #unless search_record.search_record_version == search_version && search_record.digest == digest
-        #search_record.search_record_version = search_version
-        #search_record.digest = digest
-        #search_record.save
-        #return "digest added"
-        #end
-        return "no update"
-      end
-    end
-  end
-
-  def soundex_names_equal?(new_search_record)
-    names = self.search_soundex
-    new_names = new_search_record.search_soundex
-    new_names = new_names.each { |hash| hash.stringify_keys!}
-    names == new_names ? result = true : result = false
-    result
-  end
-  def location_names_equal?(new_search_record)
-    location_names = self.location_names
-    new_location_names = new_search_record.location_names
-    location_names[0] == new_location_names[0] && location_names[1].strip == new_location_names[1].strip ? result = true : result = false
-    result
-  end
-
-  def transcript_names_equal?(new_search_record)
-    names = self.transcript_names
-    new_names = new_search_record.transcript_names
-    new_names = new_names.each { |hash| hash.stringify_keys!}
-    names == new_names ? result = true : result = false
-    result
+    return string
   end
 
   def adjust_search_names(new_search_record)
@@ -333,66 +431,22 @@ class SearchRecord
     self.save
   end
 
-  def get_search_names_hash(names)
-    original = {}
-    names.search_names.each do |name|
-      original[name._id] = JSON.parse(name.to_json(:except => :_id))
-    end
-    return original
-  end
-
-  def update_location(entry,file)
-    place = file.register.church.place
-    location_names =[]
-    place_name = entry[:place]
-    church_name = entry[:church_name]
-    register_type = RegisterType.display_name(entry[:register_type])
-    location_names << "#{place_name} (#{church_name})"
-    location_names  << " [#{register_type}]"
-    self.update_attribute(:location_names, location_names)
-    if self.place_id != place.id
-      self.update_attribute(:place_id, place.id)
-    end
-
-  end
-
-  def self.fields_from_params(search_params)
-    fields = []
-
-    search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
-
-    fields.uniq
-  end
-
-  def self.extract_fields(fields, params, current_field)
-    if params.is_a?(Hash)
-      # walk down the syntax tree
-      params.each_pair do |key,value|
-        #ignore operators
-        if key.to_s =~ /\$/
-          new_field = String.new(current_field)
-        else
-          new_field = String.new(current_field + "." + key.to_s)
-        end
-        extract_fields(fields, value, new_field)
-      end
+  def cal_digest
+    string = ''
+    string = string + self.add_location_string
+    string = string + self.add_soundex_string
+    string = string + self.add_search_name_string
+    string = string + self.add_search_dates_string
+    string = string + self.add_search_date_string
+    string = string + self.add_secondary_search_date_string
+    md5 = OpenSSL::Digest::MD5.new
+    if string.nil?
+      p "#{self._id}, nil string for MD5"
     else
-      # terminate
-      if indexable_value?(params)
-        fields << current_field
-      end
+      the_digest  =  hex_to_base64_digest(md5.hexdigest(string))
     end
-
-  end
-
-  def self.indexable_value?(param)
-    if param.is_a? Regexp
-      # does this begin with a wildcard?
-
-      param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl
-    else
-      true
-    end
+    #print "\t#{the_digest} from #{string}\n"
+    return the_digest
   end
 
   def comparable_name
@@ -401,10 +455,36 @@ class SearchRecord
     end
   end
 
-  def location_names
-    return self[:location_names] if self[:location_names] && self[:location_names].size > 0
+  def contains_wildcard_ucf?
+    search_names.detect do |name|
+      name.contains_wildcard_ucf?
+    end
+  end
 
-    self[:location_names] = format_location
+  def copy_name(name)
+    if name
+      String.new(name)
+    else
+      nil
+    end
+  end
+
+  def create_soundex
+    search_names.each do |name|
+      sdx = soundex_name_type_triple(name)
+      search_soundex << sdx unless sdx[:first_name].nil? || sdx[:last_name].nil?
+    end
+  end
+
+  def downcase_all
+    search_names.each do |name|
+      name[:first_name].downcase! if name[:first_name]
+      name[:last_name].downcase! if name[:last_name]
+    end
+  end
+
+  def emend_all
+    self.search_names = Emendor.emend(self.search_names)
   end
 
   def format_location
@@ -420,6 +500,64 @@ class SearchRecord
     location_array << "#{place_name} (#{church_name})"
     location_array << " [#{register_type}]"
     location_array
+  end
+
+  def gender_from_role(role)
+    if 'f'==role||'h'==role||'g'==role||'bf'==role||'gf'==role||'mr'==role
+      return 'm'
+    elsif 'm'==role||'w'==role||'b'==role||'bm'==role||'gm'==role||'fr'==role
+      return 'f'
+    elsif 'ba'==role
+      if !self.freereg1_csv_entry.nil? && !self.freereg1_csv_entry.person_sex.nil?
+        sex = self.freereg1_csv_entry.person_sex.downcase
+        if 'm'==sex || 'f'==sex
+          return sex
+        end
+      end
+    elsif 'bu'==role
+      if self.freereg1_csv_entry.relationship
+        case
+        when self.freereg1_csv_entry.relationship.downcase =~ /son/
+          sex = 'm'
+        when  self.freereg1_csv_entry.relationship.downcase =~ /dau/ || self.freereg1_csv_entry.relationship.downcase =~ /wife/ || self.freereg1_csv_entry.relationship.downcase =~ /wid/
+          sex = 'f'
+        else
+          sex = nil
+        end
+      end
+      return sex
+    end
+    nil
+  end
+
+  def get_search_names_hash(names)
+    original = {}
+    names.search_names.each do |name|
+      original[name._id] = JSON.parse(name.to_json(:except => :_id))
+    end
+    return original
+  end
+
+  def hex_to_base64_digest(hexdigest)
+    [[hexdigest].pack("H*")].pack("m").strip
+  end
+
+  def is_surname_stopword(namepart)
+    ['da','de','del','della','der','des','di','du','la','le','mc','mac','o','of','or','van','von','y'].include?(namepart)
+  end
+
+  def location_names
+    return self[:location_names] if self[:location_names] && self[:location_names].size > 0
+
+    self[:location_names] = format_location
+  end
+
+
+  def location_names_equal?(new_search_record)
+    location_names = self.location_names
+    new_location_names = new_search_record.location_names
+    location_names[0] == new_location_names[0] && location_names[1].strip == new_location_names[1].strip ? result = true : result = false
+    result
   end
 
   def ordered_display_fields
@@ -445,96 +583,38 @@ class SearchRecord
     order
   end
 
-  def self.setup_benchmark
-    unless defined? @@tts
-      @@tts = {}
-      @@tts[:populate_tts] = Benchmark.measure {}
-      @@tts[:downcase_tts] = Benchmark.measure {}
-      @@tts[:separate_tts] = Benchmark.measure {}
-      @@tts[:emend_tts] = Benchmark.measure {}
-      @@tts[:transform_ucf_tts] = Benchmark.measure {}
-      @@tts[:soundex_tts] = Benchmark.measure {}
-      @@tts[:date_tts] = Benchmark.measure {}
-      @@tts[:location_tts] = Benchmark.measure {}
-
-      @@tts[:translate_tts] = Benchmark.measure {}
-      @@tts[:place_lookup_tts] = Benchmark.measure {}
-      @@tts[:total_save_tts] = Benchmark.measure {}
-    end
-  end
-
-  def self.report_benchmark
-    print "Phase\tUser\tSystem\tReal\n"
-    @@tts.each_pair do |k,v|
-      print "#{k}\t"
-      print "#{v.format}"
-    end
-  end
-
-  def transform
-    if defined? @@tts
-      @@tts[:populate_tts] += Benchmark.measure { populate_search_from_transcript }
-      @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
-      @@tts[:separate_tts] += Benchmark.measure { separate_all }
-      @@tts[:emend_tts] += Benchmark.measure { emend_all }
-      @@tts[:transform_ucf_tts] += Benchmark.measure { transform_ucf }
-      @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
-      @@tts[:date_tts] += Benchmark.measure { transform_date }
-      @@tts[:location_tts] += Benchmark.measure { populate_location }
-    else
-      populate_search_from_transcript
-      downcase_all
-      separate_all
-      emend_all
-      transform_ucf
-      create_soundex
-      transform_date
-      populate_location
-    end
+  def populate_location
+    self.location_names = format_location
   end
 
   def populate_search_from_transcript
     populate_search_names
   end
 
-  def transform_date
-    self.search_dates = transcript_dates.map { |t_date| DateParser::searchable(t_date) }
-    self.search_date = self.search_dates[0]
-    self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
-  end
-
-  def populate_location
-    self.location_names = format_location
-  end
-
-  def create_soundex
-    search_names.each do |name|
-      sdx = soundex_name_type_triple(name)
-      search_soundex << sdx unless sdx[:first_name].nil? || sdx[:last_name].nil?
+  def populate_search_names
+    if transcript_names && transcript_names.size > 0
+      transcript_names.each_with_index do |name_hash|
+        person_type=PersonType::FAMILY
+        if name_hash[:type] == 'primary'
+          person_type=PersonType::PRIMARY
+        end
+        if name_hash[:type] == 'witness'
+          person_type=PersonType::WITNESS
+        end
+        person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
+        person_gender = gender_from_role(person_role)
+        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
+        search_names << name if name
+      end
     end
   end
 
-  def soundex_name_type_triple(name)
-    return {
-      :first_name => Text::Soundex.soundex(name[:first_name]),
-      :last_name => Text::Soundex.soundex(name[:last_name]),
-      :type => name[:type]
-    }
-  end
-
-  def downcase_all
-    search_names.each do |name|
-      name[:first_name].downcase! if name[:first_name]
-      name[:last_name].downcase! if name[:last_name]
+  def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
+    name = nil
+    unless last_name.blank?
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
-  end
-
-  def emend_all
-    self.search_names = Emendor.emend(self.search_names)
-  end
-
-  def transform_ucf
-    self.search_names = UcfTransformer.transform(self.search_names)
+    name
   end
 
   def separate_all
@@ -572,161 +652,84 @@ class SearchRecord
     names_array << separated_names
   end
 
-  def is_surname_stopword(namepart)
-    ['da','de','del','della','der','des','di','du','la','le','mc','mac','o','of','or','van','von','y'].include?(namepart)
+  def soundex_names_equal?(new_search_record)
+    names = self.search_soundex
+    new_names = new_search_record.search_soundex
+    new_names = new_names.each { |hash| hash.stringify_keys!}
+    names == new_names ? result = true : result = false
+    result
   end
 
-  def populate_search_names
-    if transcript_names && transcript_names.size > 0
-      transcript_names.each_with_index do |name_hash|
-        person_type=PersonType::FAMILY
-        if name_hash[:type] == 'primary'
-          person_type=PersonType::PRIMARY
-        end
-        if name_hash[:type] == 'witness'
-          person_type=PersonType::WITNESS
-        end
-        person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
-        person_gender = gender_from_role(person_role)
-        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
-        search_names << name if name
-      end
-    end
+  def soundex_name_type_triple(name)
+    return {
+      :first_name => Text::Soundex.soundex(name[:first_name]),
+      :last_name => Text::Soundex.soundex(name[:last_name]),
+      :type => name[:type]
+    }
   end
 
-  def gender_from_role(role)
-    if 'f'==role||'h'==role||'g'==role||'bf'==role||'gf'==role||'mr'==role
-      return 'm'
-    elsif 'm'==role||'w'==role||'b'==role||'bm'==role||'gm'==role||'fr'==role
-      return 'f'
-    elsif 'ba'==role
-      if !self.freereg1_csv_entry.nil? && !self.freereg1_csv_entry.person_sex.nil?
-        sex = self.freereg1_csv_entry.person_sex.downcase
-        if 'm'==sex || 'f'==sex
-          return sex
-        end
-      end
-    elsif 'bu'==role
-      if self.freereg1_csv_entry.relationship
-        case
-        when self.freereg1_csv_entry.relationship.downcase =~ /son/
-          sex = 'm'
-        when  self.freereg1_csv_entry.relationship.downcase =~ /dau/ || self.freereg1_csv_entry.relationship.downcase =~ /wife/ || self.freereg1_csv_entry.relationship.downcase =~ /wid/
-          sex = 'f'
-        else
-          sex = nil
-        end
-      end
-      return sex
-    end
-    nil
-  end
-
-  def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
-    name = nil
-    unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
-    end
-    name
-  end
-
-  def copy_name(name)
-    if name
-      String.new(name)
+  def transform
+    if defined? @@tts
+      @@tts[:populate_tts] += Benchmark.measure { populate_search_from_transcript }
+      @@tts[:downcase_tts] += Benchmark.measure { downcase_all }
+      @@tts[:separate_tts] += Benchmark.measure { separate_all }
+      @@tts[:emend_tts] += Benchmark.measure { emend_all }
+      @@tts[:transform_ucf_tts] += Benchmark.measure { transform_ucf }
+      @@tts[:soundex_tts] += Benchmark.measure { create_soundex }
+      @@tts[:date_tts] += Benchmark.measure { transform_date }
+      @@tts[:location_tts] += Benchmark.measure { populate_location }
     else
-      nil
+      populate_search_from_transcript
+      downcase_all
+      separate_all
+      emend_all
+      transform_ucf
+      create_soundex
+      transform_date
+      populate_location
     end
   end
 
-  def contains_wildcard_ucf?
-    search_names.detect do |name|
-      name.contains_wildcard_ucf?
-    end
+  def transform_date
+    self.search_dates = transcript_dates.map { |t_date| DateParser::searchable(t_date) }
+    self.search_date = self.search_dates[0]
+    self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
   end
 
-
-  def self.from_annotation(annotation)
-    Rails.logger.debug("from_annotation processing #{annotation.inspect}")
-
-    # find an existing search record
-    record = SearchRecord.find_by_annotation_ids(annotation.id)
-
-    unless record
-      record = SearchRecord.new(annotation[:data])
-      record.record_type = annotation.entity.search_record_type
-
-      # denormalize from other record types
-      record.asset_id = annotation.transcription.asset.id
-      record.chapman_code = annotation.transcription.asset.asset_collection.chapman_code
-
-      record.annotation_ids << annotation.id
-      record.save!
-
-    end
-    # TODO: Deal with existing search records, given duplicate save calls
+  def transform_ucf
+    self.search_names = UcfTransformer.transform(self.search_names)
   end
 
-  def self.from_freereg1_csv_entry(entry)
-
-    #   # assumes no existing entries for this line
-    @@file = nil if (defined?(@@file)).nil?
-    @@owner = nil if (defined?(@@owner)).nil?
-    @@places = nil if (defined?(@@places)).nil?
-
-    record = nil
-    if defined? @tts
-      @@tts[:translate_tts] += Benchmark.measure { record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry)) }
-
-      @@tts[:place_lookup_tts] += Benchmark.measure do
-        record.freereg1_csv_entry = entry
-        file = entry.freereg1_csv_file
-        if @@file.nil? || @@owner.nil?
-          places = file.register.church.place
-          @@places = places
-          @@file = file.file_name
-          @@owner = file.userid
-        else
-          if @@file == file.file_name && @@owner == file.userid
-            places = @@places
-          else
-            places = file.register.church.place
-            @@places = places
-            @@file = file.file_name
-            @@owner = file.userid
-          end
-        end
-        record.place = places
-      end
-
-      @@tts[:total_save_tts] += Benchmark.measure do
-        record.save!
-      end
-    else
-      record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
-      record.freereg1_csv_entry = entry
-      file = entry.freereg1_csv_file
-      if @@file.nil? || @@owner.nil?
-        places = file.register.church.place
-        @@places = places
-        @@file = file.file_name
-        @@owner = file.userid
-      else
-        if @@file == file.file_name && @@owner == file.userid
-          places = @@places
-        else
-          places = file.register.church.place
-          @@places = places
-          @@file = file.file_name
-          @@owner = file.userid
-        end
-      end
-      record.place = places
-      record.save!
-    end
+  def transcript_names_equal?(new_search_record)
+    names = self.transcript_names
+    new_names = new_search_record.transcript_names
+    new_names = new_names.each { |hash| hash.stringify_keys!}
+    names == new_names ? result = true : result = false
+    result
   end
 
-  def self.delete_freereg1_csv_entries
-    SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
+  def update_location(entry,file)
+    place = file.register.church.place
+    location_names =[]
+    place_name = entry[:place]
+    church_name = entry[:church_name]
+    register_type = RegisterType.display_name(entry[:register_type])
+    location_names << "#{place_name} (#{church_name})"
+    location_names  << " [#{register_type}]"
+    self.update_attribute(:location_names, location_names)
+    if self.place_id != place.id
+      self.update_attribute(:place_id, place.id)
+    end
+
+  end
+
+  def upgrade_search_date!(search_version)
+    needs_upgrade = self.search_dates.size > 0 && self.search_date.blank?
+    if needs_upgrade
+      self.search_date = self.search_dates[0]
+      self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
+    end
+    needs_upgrade
   end
 
 end
