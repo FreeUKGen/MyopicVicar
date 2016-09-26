@@ -176,7 +176,7 @@ class SearchQuery
       date_params = Hash.new
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lte"] = DateParser::end_search_date(end_year) if end_year
-      Rails.application.config.use_decomposed_dates ? params[:search_date] = date_params : params[:search_date] #params[:search_dates] = { "$elemMatch" => date_params }
+      Rails.application.config.use_decomposed_dates ? params[:search_date] = date_params : params[:search_dates] = { "$elemMatch" => date_params }
     end
     params
   end
@@ -287,11 +287,12 @@ class SearchQuery
     # finally extract the records IDs and persist them
     records = Array.new
     results.each do |rec|
-      records << rec["_id"].to_s
+      a = rec["_id"].to_s
+      records << a unless self.search_result.records.include?(a)
     end
     self.search_result =  SearchResult.new(:records => self.search_result.records + records)
     self.result_count = self.search_result.records.length
-    self.runtime = (Time.now.utc - self.updated_at) * 1000
+    self.runtime = (Time.now.utc - self.updated_at) * 1000 + self.runtime
     self.day = Time.now.strftime("%F")
     self.save
   end
@@ -397,7 +398,10 @@ class SearchQuery
   end
 
   def search
+    p "search"
+    p self
     search_index = SearchRecord.index_hint(search_params)
+    p search_index
     self.update_attribute(:search_index,search_index)
     records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
@@ -409,14 +413,14 @@ class SearchQuery
   def secondary_date_results
     return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     return nil unless secondary_date_query_required
-
     secondary_search_params = search_params
     secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
     secondary_search_params.delete(:search_date)
-
     search_index = SearchRecord.index_hint(secondary_search_params)
+    p "secondary search"
+    p secondary_search_params
+    p search_index
     secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-
     secondary_records
   end
 
@@ -427,10 +431,11 @@ class SearchQuery
   def search_params
     params = Hash.new
     params[:record_type] = record_type if record_type
+    p "search params"
     params.merge!(place_search_params)
     params.merge!(date_search_params)
     params.merge!(name_search_params)
-
+    p params
     params
   end
 
