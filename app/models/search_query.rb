@@ -140,6 +140,7 @@ class SearchQuery
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
+    birth_chapman_codes.delete_if { |x| x.blank? }
   end
 
   def compare_location(x,y)
@@ -356,7 +357,12 @@ class SearchQuery
     records_sorted.each do |rec|
       record_ids_sorted << rec["_id"].to_s
     end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil?
+    record = record_ids_sorted[idx+1]
+    record
   end
+
   def query_contains_wildcard?
     (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))
   end
@@ -391,6 +397,7 @@ class SearchQuery
     param[:role] = self.role
     param[:record_type] = self.record_type
     param[:chapman_codes] = self.chapman_codes
+    param[:birth_chapman_codes] = self.birth_chapman_codes
     param[:inclusive] = self.inclusive
     param[:witness] = self.witness
     param[:start_year] = self.start_year
