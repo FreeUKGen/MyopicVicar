@@ -39,10 +39,10 @@
       <% end %>
       <% if @search_query.inclusive || @search_query.witness %>
       	This search will match against the primary names in the record (i.e. baptisee, bride and groom, or deceased).  In addition, it will search 
-      	<% if @search_query.inclusive %> other family members mentioned (father, mother, etc) <% end %>
+      	<% if @search_query.inclusive %> for other <b>family members</b>  (father, mother, etc) <% end %>
       	<% if @search_query.inclusive && @search_query.witness %> and <% end %>
-      	<% if @search_query.witness %> witnesses mentioned<% end %>
-      	on the record.
+      	<% if @search_query.witness %> <b>witnesses</b> <% end %>
+      	mentioned in a record.
       	
       <% end %>
     </p>

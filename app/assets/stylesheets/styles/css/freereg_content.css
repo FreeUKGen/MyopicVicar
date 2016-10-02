@@ -374,6 +374,19 @@ dl.table-display
 .table--data--bold{
    font: 12px/1.5 bold sans-serif;
 }
+
+form#new_search_query fieldset.inputs + ol {
+  margin-left: -28px;
+}
+fieldset.choices {
+  border: none;
+  margin: 0;
+  padding: 14px 0 0 0;
+}
+legend.label { font-weight: bold; }
+ol.choices-group { list-style-type: none; margin-right: 0; }
+li.choice label { font-weight: normal; margin-bottom: 7px; }
+
 .ttip { position: relative; }
 .ttip img { cursor: help; padding: 0 5px; }
 
@@ -382,13 +395,12 @@ dl.table-display
   visibility: hidden;
   width: 350px;
   max-width: 100%;
-  max-width: calc(100% + 28px);
   background-color: #444;
   color: #f4f4f4;
   padding: 10px;
   border-radius: 6px;
   position: absolute;
-  z-index: 1;
+  z-index: 1000;
   top: 120%;
   left: 20px;
 }
@@ -404,7 +416,6 @@ dl.table-display
 .ttip img:hover + .ttip__text, .ttip:focus .ttip__text {
   visibility: visible;
 }
-
 input::-webkit-input-placeholder { color: #585858; font-style: italic; opacity: 1 ! important; }
 input::-moz-placeholder          { color: #585858; font-style: italic; opacity: 1 ! important; }
 input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 1 ! important; }

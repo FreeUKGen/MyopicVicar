@@ -1,9 +1,4 @@
 <% title "Search Query" %>
-<% unless @page.nil?%>
-  <div class="weight--semibold">
-    <%= @page%>
-  </div>
-<% end%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -11,3 +6,8 @@
 <% end %>
 <h1 class="title text--center">Search our Parish Registers</h1>
 <%= render 'form' %>
+<% unless @page.nil?%>
+  <div class="weight--semibold">
+    <%= @page%>
+  </div>
+<% end%>
