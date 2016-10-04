@@ -401,6 +401,7 @@ class SearchQuery
 
   def search
     search_index = SearchRecord.index_hint(search_params)
+    logger.warn("FREEREG:SEARCH_HINT: #{search_index}")
     self.update_attribute(:search_index,search_index)
     records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
@@ -416,6 +417,7 @@ class SearchQuery
     secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
     secondary_search_params.delete(:search_date)
     search_index = SearchRecord.index_hint(secondary_search_params)
+    logger.warn("FREEREG:SECONDARY_SEARCH_HINT: #{search_index}")
     secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
