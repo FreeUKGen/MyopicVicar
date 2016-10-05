@@ -202,7 +202,11 @@ namespace :foo do
 
   desc "Refresh the places cache"
   task :refresh_places_cache => [:environment] do |t,args|
-    PlaceCache.refresh_all
+    if args.extras.count == 0
+       PlaceCache.refresh_all
+    else
+      args.extras.each { |a| PlaceCache.refresh(a.to_s) }
+    end
   end
 
 
