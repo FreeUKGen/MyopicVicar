@@ -213,7 +213,11 @@ class Freecen1UpdateProcessor
     return false
   end
 
-
+  def self.need_early_exit?()
+    return false if File.exist?(MyopicVicar::Application.config.fc_update_processor_status_file)
+    log_message("*** skipping some processing due to need_early_exit? == true (file '#{MyopicVicar::Application.config.fc_update_processor_status_file}' no longer exists)\n")
+    return true
+  end
 
   def self.update_all(parms_dir, vld_dir)
     update_err_messages = []
@@ -260,6 +264,7 @@ class Freecen1UpdateProcessor
 
     log_message("\n---2----Deleting deleted VLDs from database:")
     deleted_vlds.each do |vld|
+      break if self.need_early_exit?
       begin
         self.delete_vld_from_db(vld['vld_file_id'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
@@ -271,6 +276,7 @@ class Freecen1UpdateProcessor
     log_message("\n---3----Deleting duplicate VLDs from database to try to fix:")
     #for each duplicate: delete all that match, (will reload valid ones later)
     multiple_vlds.each do |vld|
+      break if self.need_early_exit?
       begin
         self.delete_vld_from_db(vld['vld_file_id'])
       rescue
@@ -281,6 +287,7 @@ class Freecen1UpdateProcessor
 
     log_message("\n---4----Dropping deleted PARMS (and all associated VLDs):")
     deleted_parms.each do |dp|
+      break if self.need_early_exit?
       begin
         self.delete_parms_and_associated_vlds_from_db(dp['year'], dp['chapman'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
@@ -291,6 +298,7 @@ class Freecen1UpdateProcessor
 
     log_message("\n---5----Dropping duplicate PARMS (and all associated VLDs):")
     multiple_parms.each do |dp|
+      break if self.need_early_exit?
       begin
         self.delete_parms_and_associated_vlds_from_db(dp['year'], dp['chapman'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
@@ -301,6 +309,7 @@ class Freecen1UpdateProcessor
 
     log_message("\n---6----Dropping modified PARMS (and all associated VLDs):")
     modified_parms.each do |dp|
+      break if self.need_early_exit?
       begin
         self.delete_parms_and_associated_vlds_from_db(dp['year'], dp['chapman'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
@@ -316,6 +325,7 @@ class Freecen1UpdateProcessor
     parms_changes = self.get_parms_changes_info(parms_dir) rescue []
     new_parms = parms_changes['new_parms']
     new_parms.each do |np|
+      break if self.need_early_exit?
       begin
         self.process_parms_file(np['file'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
@@ -329,6 +339,7 @@ class Freecen1UpdateProcessor
     vld_changes = self.get_vld_changes_info(vld_dir)
     new_vlds = vld_changes['new_vlds']
     new_vlds.each do |nv|
+      break if self.need_early_exit?
       begin
         self.process_vld_file(nv['file'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
@@ -338,11 +349,17 @@ class Freecen1UpdateProcessor
     end
 
     log_message("\n---9---Update piece subplaces geolocation info for PARMS that were loaded")
-    
-
     log_message("*** Not implemented within scope of story #61 (version 1.1). Should be done as a story in version 1.2")
 
-    log_message("\n---10--updating places cache")
+    #delete the update processor status file so processor will run next time
+    if File.exist?(MyopicVicar::Application.config.fc_update_processor_status_file)
+      File.delete(MyopicVicar::Application.config.fc_update_processor_status_file)
+    end
+
+    # update places cache is currently done by calling the rake task separately
+    # from the script /lib/tasks/scripts/update_freecen2_production.sh
+    # In a future version, we may want to only update those portions of the
+    # places cache that correspond to changes made in this update
 
     log_message("\n---DONE---emailing report to admins, manager")
     # send update_err_messages and rest of report to admins, manager
@@ -351,10 +368,6 @@ class Freecen1UpdateProcessor
 
     log_message("lib/freecen1_update_processor.rb self.process_all() finished")
 
-    #delete the update processor status file so processor will run next time
-    if File.exist?(MyopicVicar::Application.config.fc_update_processor_status_file)
-      File.delete(MyopicVicar::Application.config.fc_update_processor_status_file)
-    end
   end
 
   #delete a Freecen1VldFile from the database, along with its vld entries,
