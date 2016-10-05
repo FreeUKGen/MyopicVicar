@@ -109,7 +109,7 @@ module Freecen
       filename = File.basename(filepath)
       dirname = File.basename(File.dirname(filepath))
       chapman_code = filename[0,3]
-      file_digest = Digest::MD5.file filepath rescue nil
+      file_digest = Digest::MD5.file(filepath).to_s rescue nil
 
       { :chapman_code => chapman_code, :year => dirname, :filename => filename, :dirname => dirname, :file_digest => file_digest }
     end

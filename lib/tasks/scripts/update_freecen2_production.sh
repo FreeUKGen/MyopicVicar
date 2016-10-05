@@ -34,7 +34,8 @@ FC2_DATA=/raid/freecen2
 LOG_DIR=${FC2_DATA}/log
 APP_ROOT=/home/apache/hosts/freecen2/production
 WEB_USER=webserv
-#different directories on development machine (pass in "development" as arg 2)
+BUNDLE=bundle
+#different directories on development machine (pass in "development" as arg 1)
 if [ $# -ge 1 ] && [ $1 == "development" ]; then
   trace "***NOTICE: using local development machine directory structure"
   FC1_DATA=~/freeUKGEN/data/update_test_fc1
@@ -43,6 +44,7 @@ if [ $# -ge 1 ] && [ $1 == "development" ]; then
   LOG_DIR=/tmp
   APP_ROOT=~/freeUKGEN/MyopicVicar
   WEB_USER=$( whoami )
+  BUNDLE=~/.rvm/gems/ruby-2.2.5/bin/bundle
 fi
 
 if [[ ! -d ${FC1_DATA} ]] ; then
@@ -83,7 +85,7 @@ fi
 #trace "disable of searches"
 #sudo /root/bin/searchctl.sh disable
 trace "running rake task to update the freecen database"
-sudo -u ${WEB_USER} bundle exec rake RAILS_ENV=production build:freecen_update["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
+sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production build:freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
 #trace "re enable searches"
 #sudo /root/bin/searchctl.sh enable
 trace "finished"

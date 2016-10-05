@@ -289,6 +289,14 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
   end
 
+  def update_report_to_freecen_manager(report,user,ccs)
+    attachments["report.txt"] = {:mime_type => 'text/plain', :content => report}
+    #attachments["report.log"] = report
+    @person_forename = user.person_forename
+    @email_address = user.email_address
+    mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCen update processing report")
+  end
+
   def volunteer(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact

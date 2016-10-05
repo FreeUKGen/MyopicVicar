@@ -80,7 +80,7 @@ module Freecen
     def process_vld_filename(filepath)
           # $centype = substr($file,0,2);
       filename = File.basename(filepath)
-      file_digest = Digest::MD5.file filepath rescue nil
+      file_digest = Digest::MD5.file(filepath).to_s rescue nil
       centype = filename[0,2]
           # if (uc($centype) eq "HO") {
       centype.upcase!
