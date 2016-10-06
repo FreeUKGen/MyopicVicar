@@ -522,6 +522,8 @@ class Freecen1UpdateProcessor
     ccs = nil if ccs.length < 1
     report = @@log
     puts " calling UserMailer.update_report_to_freecen_manager(report,user,ccs)"
+
+    ccs = nil # don't CC all admins until development done and roles set
     UserMailer.update_report_to_freecen_manager(report,user,ccs).deliver_now
     puts " done calling UserMailer.update_report_to_freecen_manager()"
   end
