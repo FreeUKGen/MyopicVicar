@@ -199,6 +199,7 @@ class Freecen1UpdateProcessor
   def self.check_and_set_update_running
     if !MyopicVicar::Application.config.fc_update_processor_status_file.present?
       log_message("***ERROR: MyopicVicar::Application.config.fc_update_processor_status_file is not defined!")
+      return true
     elsif File.exist?(MyopicVicar::Application.config.fc_update_processor_status_file)
       #status file just has unix timestamp of last start time
       update_start_i = File.read(MyopicVicar::Application.config.fc_update_processor_status_file).to_i rescue 0

@@ -85,7 +85,7 @@ fi
 #trace "disable of searches"
 #sudo /root/bin/searchctl.sh disable
 trace "running rake task to update the freecen database"
-sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production build:freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
+sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
 trace "running rake task to update the places cache"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production foo:refresh_places_cache["false"] --trace
 
