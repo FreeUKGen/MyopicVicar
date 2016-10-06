@@ -377,7 +377,7 @@ class Freecen1UpdateProcessor
     piece = nil
     vld = Freecen1VldFile.where("_id" => vld_id).first
     unless vld.nil?
-      log_message("  delete from db: (#{vld.full_year}-#{vld.dir_name} #{File.basename(vld.file_name)}")
+      log_message("  delete from db: #{vld.full_year}-#{vld.dir_name} #{File.basename(vld.file_name)}")
       #freecen1_vld_file freecen1_vld_entry freecen_dwelling freecen_individual
       #search_record(each individual)
       #freecen_piece place? freecen1_fixed_dat_entry
@@ -411,7 +411,7 @@ class Freecen1UpdateProcessor
         ve.delete # delete entry that wasn't an individual
         tot_other += 1
       end unless vld_entries.nil?
-      log_message(" deleted individuals:#{tot_indiv}  other entries:#{tot_other}  dwellings:#{tot_dwel}")
+      log_message("    deleted individuals:#{tot_indiv}  other entries:#{tot_other}  dwellings:#{tot_dwel}")
 
       # update the count of individuals in the piece
       piece.inc(:num_individuals => -1*tot_indiv) unless piece.nil?
