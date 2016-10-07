@@ -223,7 +223,10 @@ class Freecen1UpdateProcessor
   def self.update_all(parms_dir, vld_dir)
     update_err_messages = []
     #p "lib/freecen1_update_processor.rb self.update_all() started"
-    return if self.check_and_set_update_running #return early if already running
+    if self.check_and_set_update_running #return early if already running
+      self.send_update_report()
+      return
+    end
     start_time = Time.now
     log_message("start time=#{start_time.to_s}\n")
 
@@ -449,6 +452,7 @@ class Freecen1UpdateProcessor
       parm_vlds = Freecen1VldFile.where(:dir_name => chapman, :full_year => year).entries
       log_message("  (and #{parm_vlds.length} associated VLDs)") unless parm_vlds.blank?
       parm_vlds.each do |parm_vld|
+        return if self.need_early_exit?
         self.delete_vld_from_db(parm_vld._id)
       end unless parm_vlds.blank?
       self.delete_parms_from_db(pmatch._id)
