@@ -18,10 +18,14 @@ class PlaceCache
     cache.save!
   end
 
-  def self.refresh_all
-    destroy_all
-    ChapmanCode::values.each do |chapman_code|
-      refresh(chapman_code)
+  def self.refresh_all(county = '')
+    if county == ''
+      destroy_all
+      ChapmanCode::values.each do |chapman_code|
+        refresh(chapman_code)
+      end
+    else
+       refresh(county)
     end
   end
 
