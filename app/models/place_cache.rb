@@ -20,7 +20,6 @@ class PlaceCache
 
   def self.refresh_all(county = '')
     if county == ''
-      destroy_all
       ChapmanCode::values.each do |chapman_code|
         refresh(chapman_code)
       end
