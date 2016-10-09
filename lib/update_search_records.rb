@@ -62,8 +62,10 @@ class UpdateSearchRecords
             p "No entries"
             message_file.puts "No entries"
           end
-          message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records}  records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate"
-          p "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records} records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate"
+          process_time = (Time.new - time_start)
+          rate = process_time* 1000/ records
+          message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records}  records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate at rate #{rate}"
+          p "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records} records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate at rate #{rate}"
           file.update_attributes(:software_version => version, :search_record_version => search_version)
           sleep(20*(Rails.application.config.emmendation_sleep.to_f))
         else
