@@ -16,7 +16,7 @@ class Freecen1UpdateProcessor
   # check the .../fixed/ directory for 18?1/ctyPARMS.DAT metadata files and
   # return an array of hashes with info about each PARMS.DAT file, including an
   # md5 hash digest of the file for checking if file changed since last update
-  def self.get_parms_files_info(parms_dir)
+  def self.get_parms_files_info(parms_dir, log_messages = true)
     parms_info = []
     Freecen::CENSUS_YEARS_ARRAY.each do |yy|
       yy_pattern = File.join(parms_dir,yy,'*PARMS.[Dd][Aa][Tt]')
@@ -24,7 +24,7 @@ class Freecen1UpdateProcessor
       all_files = Dir.glob(File.join(parms_dir,yy,'*')) rescue []
       unknown_files = all_files - yy_files
       unknown_files.sort_by{|f| f.upcase}.each do |unk_file|
-        log_message("***WARNING: SKIPPING metadata with bad FILENAME '#{unk_file}' (should be 'ctyPARMS.DAT', where 'cty' is Chapman code, all upper-case)")
+        log_message("***WARNING: SKIPPING metadata with bad FILENAME '#{unk_file}' (should be 'ctyPARMS.DAT', where 'cty' is Chapman code, all upper-case)") if log_messages
       end
       yy_files.each do |yy_file|
         dig = Digest::MD5.file(yy_file).to_s rescue nil
@@ -32,7 +32,7 @@ class Freecen1UpdateProcessor
         chap = bn[0,3].upcase rescue nil
         #p "  #{yy} file='#{bn}' chap=#{chap} dig=#{dig}"
         if chap.blank? || bn.blank? || dig.blank? || !ChapmanCode::values.include?(chap)
-          log_message("***WARNING: SKIPPING parms file for unrecognized CHAPMAN CODE or failed to compute md5 (possibly a permissions issue?) '#{chap}' ('#{yy_file}')")
+          log_message("***WARNING: SKIPPING parms file for unrecognized CHAPMAN CODE or failed to compute md5 (possibly a permissions issue?) '#{chap}' ('#{yy_file}')") if log_messages
         else
           parms_info << {'year' => yy, 'chapman' => chap, 'file' => yy_file, 'base' => bn, 'digest' => dig}
         end
@@ -46,14 +46,14 @@ class Freecen1UpdateProcessor
   #call self.get_parms_files_info to get list of all ctyPARMS.DAT files, then
   #compare list to database to see which files have been added, deleted,
   #modified, or stayed the same
-  def self.get_parms_changes_info(parms_dir)
+  def self.get_parms_changes_info(parms_dir, log_messages = true)
     deleted_parms = [] # parms no longer found in file list
     multiple_parms = [] # if the parm has been added multiple times to database, all versions need to be removed and re-loaded
     new_parms = [] # for new parms.dat files
     modified_parms = [] # if digests don't match
     unchanged_parms = []
     
-    parms_info = self.get_parms_files_info(parms_dir) rescue []
+    parms_info = self.get_parms_files_info(parms_dir, log_messages) rescue []
     #p "#{parms_info.length} ctyPARMS.DAT files found"
 
     #for each yy/cty pair parms file in database, if not found in the
@@ -97,33 +97,35 @@ class Freecen1UpdateProcessor
   # check the .../pieces/ directory for CTY/*.VLD validated piece files and
   # return an array of hashes with info about each VLD.DAT file, including an
   # md5 hash digest of the file for checking if file changed since last update
-  def self.get_vld_files_info(vld_dir)
+  def self.get_vld_files_info(vld_dir, log_messages=true)
     vld_info = []
     all_dirs = Dir.glob(File.join(vld_dir,'*')) rescue []
     all_dirs.sort_by{|f| f.upcase}.each do |dd|
       dd_base = File.basename(dd)
       unless ChapmanCode::values.include?(dd_base)
-        log_message("***WARNING: SKIPPING VLD directory '#{dd}' because '#{dd_base}' is not a known Chapman code")
+        log_message("***WARNING: SKIPPING VLD directory '#{dd}' because '#{dd_base}' is not a known Chapman code") if log_messages
       end
     end
-    ChapmanCode::values.sort.each do |chap|
+    ChapmanCode::values.uniq.sort.each do |chap|
       vld_pattern = File.join(vld_dir,chap,'*.[Vv][Ll][Dd]')
       vld_files = Dir.glob(vld_pattern).sort_by{|f| f.upcase} rescue []
       #puts "#{vld_files.length} VLD files found in #{chap} directory" if vld_files.length > 0
+      dat_pattern = File.join(vld_dir,chap,chap+'18[456789]1.[Dd][Aa][Tt]')
+      dat_files = Dir.glob(dat_pattern).sort_by{|f| f.upcase} rescue []
       all_files = Dir.glob(File.join(vld_dir,chap,'*')) rescue []
-      unknown_files = all_files - vld_files
+      unknown_files = all_files - vld_files - dat_files
       unknown_files.sort_by{|f| f.upcase}.each do |unk_file|
-        log_message("***WARNING: SKIPPING file not named *.VLD '#{unk_file}'")
+        log_message("***WARNING: SKIPPING file not named *.VLD '#{unk_file}'") if log_messages
       end
       chap_vlds = []
       vld_files.each do |vld_file|
         dig = Digest::MD5.file(vld_file).to_s rescue nil
         bn = File.basename(vld_file) rescue nil
         if bn.blank? || dig.blank?
-          log_message("***ERROR: SKIPPING VLD file because failed to compute md5 (possibly a permissions issue?) '#{vld_file}'")
+          log_message("***ERROR: SKIPPING VLD file because failed to compute md5 (possibly a permissions issue?) '#{vld_file}'") if log_messages
         else
           if chap_vlds.include?(bn.upcase)
-            log_message("***ERROR: SKIPPING VLD file '#{vld_file}' because same filename (except for capitalization) was already read in #{chap} directory")
+            log_message("***ERROR: SKIPPING VLD file '#{vld_file}' because same filename (except for capitalization) was already read in #{chap} directory") if log_messages
           else
             vld_info << {'chapman' => chap, 'file' => vld_file, 'base' => bn, 'base_up'=>bn.upcase, 'digest' => dig}
             chap_vlds << bn.upcase
@@ -139,15 +141,15 @@ class Freecen1UpdateProcessor
   #call self.get_vld_files_info to get list of all *.VLD validated piece files,
   #then compare list to database to see which files have been added, deleted,
   #modified, or stayed the same
-  def self.get_vld_changes_info(vld_dir)
+  def self.get_vld_changes_info(vld_dir, log_messages=true)
     deleted_vlds = []
     multiple_vlds = []
     new_vlds = []
     modified_vlds = []
     unchanged_vlds = []
 
-    vld_info = self.get_vld_files_info(vld_dir) rescue []
-    p "#{vld_info.length} .VLD files found"
+    vld_info = self.get_vld_files_info(vld_dir, log_messages) rescue []
+    log_message("#{vld_info.length} .VLD files found") if log_messages
     #for each chapman/vld file in the database, if not found in the vld_info
     #list then add it to deleted (the file is no longer there or has been
     #moved to a different county directory)
@@ -159,7 +161,7 @@ class Freecen1UpdateProcessor
       vld_info.each_with_index do |vinfo,idx|
         if db_file.file_name.upcase==vinfo['base_up'] && db_file.chapman_code==vinfo['chapman']
           if vinfo['stat']
-            log_message("***ERROR: multiple Freecen1VldFiles for #{vinfo['chapman']}-#{vinfo['base_up']} in database. Will drop all then reload to try to fix.")
+            log_message("***ERROR: multiple Freecen1VldFiles for #{vinfo['chapman']}-#{vinfo['base_up']} in database. Will drop all then reload to try to fix.") if log_messages
             multiple_vlds << {'chapman'=>vinfo['chapman'],'year'=>vinfo['base_up'],'vld_file_id'=>vinfo['db_id']} # the previous one
             multiple_vlds << {'chapman'=>vinfo['chapman'],'year'=>vinfo['base_up'],'vld_file_id'=>db_file_id}
           end
@@ -236,7 +238,7 @@ class Freecen1UpdateProcessor
       return
     end
     log_message("\n--------reading ctyPARMS.dat files")
-    parms_changes = self.get_parms_changes_info(parms_dir) rescue []
+    parms_changes = self.get_parms_changes_info(parms_dir, true) rescue []
 
     deleted_parms = parms_changes['deleted_parms']
     multiple_parms = parms_changes['multiple_parms']
@@ -250,7 +252,7 @@ class Freecen1UpdateProcessor
     log_message("----UNCHANGED PARMS (#{unchanged_parms.length})--\n (not listing unchanged parms)\n")
 
     log_message("\n--------reading .VLD validated piece files")
-    vld_changes = self.get_vld_changes_info(vld_dir)
+    vld_changes = self.get_vld_changes_info(vld_dir, true)
     #puts "self.get_vld_changes_info() done"
     deleted_vlds = vld_changes['deleted_vlds']
     multiple_vlds = vld_changes['multiple_vlds']
@@ -326,7 +328,7 @@ class Freecen1UpdateProcessor
 
     log_message("\n---7---Loading/Reloading new and modified PARMS files:")
     #check changes again, all that need to be reloaded should also be "new" now
-    parms_changes = self.get_parms_changes_info(parms_dir) rescue []
+    parms_changes = self.get_parms_changes_info(parms_dir, false) rescue []
     new_parms = parms_changes['new_parms']
     new_parms.each do |np|
       break if self.need_early_exit?
@@ -340,7 +342,7 @@ class Freecen1UpdateProcessor
 
 
     log_message("\n---8---Load new VLDs, and reload any dropped due to modifications:")
-    vld_changes = self.get_vld_changes_info(vld_dir)
+    vld_changes = self.get_vld_changes_info(vld_dir, false)
     new_vlds = vld_changes['new_vlds']
     new_vlds.each do |nv|
       break if self.need_early_exit?
