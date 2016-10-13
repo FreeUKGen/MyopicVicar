@@ -49,6 +49,8 @@ trace "update county stats"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_county_stats --trace
 trace "delete entries and records for removed files"
 sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
+trace "updating freeereg content"
+sudo -u webserv bundle exec rake RAILS_ENV=production freereg:calculate_freereg_content --trace
 #disable the FR1 to FR sync and update
 #trace "doing rsync of freereg1 data into freereg2"
 #sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta

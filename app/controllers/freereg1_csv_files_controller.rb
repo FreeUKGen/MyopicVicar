@@ -44,12 +44,7 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to :back
         return
       end
-      register = @freereg1_csv_file.register
-      register.calculate_register_numbers
-      church = register.church
-      church.calculate_church_numbers
-      place = church.place
-      place.calculate_place_numbers
+      @freereg1_csv_file.update_freereg_contents_after_processing
       #save a copy to attic and delete all batches
       @physical_file.file_delete
       @physical_file.delete
@@ -271,6 +266,7 @@ class Freereg1CsvFilesController < ApplicationController
         return
       end
       success = @freereg1_csv_file.calculate_distribution
+      @freereg1_csv_file.update_freereg_contents_after_processing
       if success
         flash[:notice] = 'The merge of the batches was successful'
       else
@@ -518,6 +514,7 @@ class Freereg1CsvFilesController < ApplicationController
         @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
         @freereg1_csv_file.update_attributes(freereg1_csv_file_params)
         @freereg1_csv_file.update_attributes(:modification_date => Time.now.strftime("%d %b %Y"))
+        @freereg1_csv_file.update_freereg_contents_after_processing
         if @freereg1_csv_file.errors.any?  then
           flash[:notice] = 'The update of the batch was unsuccessful'
           render :action => 'edit'

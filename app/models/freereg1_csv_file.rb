@@ -303,6 +303,7 @@ class Freereg1CsvFile
         church.update_attribute(:place_name, place.place_name)
         file.propogate_file_location_change(place.id)
         PlaceCache.refresh_cache(place)
+        file.update_freereg_contents_after_processing
         return[false,""]
       end
 
@@ -789,7 +790,14 @@ class Freereg1CsvFile
           }
       end
 
-
+      def  update_freereg_contents_after_processing
+        register = self.register
+        register.calculate_register_numbers
+        church = register.church
+        church.calculate_church_numbers
+        place = church.place
+        place.calculate_place_numbers
+      end
 
       def update_number_of_files
         #this code although here and works produces values in fields that are no longer being used
