@@ -87,8 +87,10 @@ class FreecenCoverage
           p "empty subplace! piece id=#{piece._id}" if !sp.nil? && sp['name'].blank?
         end
       end
+      place_id = nil
+      place_id = piece.place._id unless piece.place.nil?
       all_years[yy]['pieces'][piece_idx] = {'display_piece'=>display_piece,
-        'country'=>piece.place_country,'latitude'=>piece.place_latitude,'longitude'=>piece.place_longitude,'subplaces'=>subplaces,'status'=>piece.status,'remarks'=>piece.remarks,'parish_number'=>piece.parish_number,'online_time'=>piece.online_time,'yy'=>yy,'district_name'=>piece.district_name,'place_id'=>piece.place._id,'piece_id'=>piece._id}
+        'country'=>piece.place_country,'latitude'=>piece.place_latitude,'longitude'=>piece.place_longitude,'subplaces'=>subplaces,'status'=>piece.status,'remarks'=>piece.remarks,'parish_number'=>piece.parish_number,'online_time'=>piece.online_time,'yy'=>yy,'district_name'=>piece.district_name,'place_id'=>place_id,'piece_id'=>piece._id}
       if piece_rec > 0
         all_years[yy]['stats']['num_rec'] += piece_rec
         all_years[yy]['stats']['num_online'] += 1
