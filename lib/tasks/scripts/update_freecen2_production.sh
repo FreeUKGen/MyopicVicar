@@ -29,22 +29,30 @@ trace() {
 #trap fail ERR
 
 FC1_DATA=/raid/freecen
-FC1_STAT_FILE=/home/apache/hosts/freecen/status/db-stats
+FC1_STAT_FILE=/home/apache/hosts/freecen/status/db-stats #fc1_coverage_stats value in config/mongo_config.yml should match
 FC2_DATA=/raid/freecen2
 LOG_DIR=${FC2_DATA}/log
 APP_ROOT=/home/apache/hosts/freecen2/production
+UPDATE_RUNNING_STATUS_FILE=${APP_ROOT}/tmp/fc_update_processing.txt #fc_update_processor_status_file value in config/mongo_config.yml needs to match
 WEB_USER=webserv
 BUNDLE=bundle
 #different directories on development machine (pass in "development" as arg 1)
 if [ $# -ge 1 ] && [ $1 == "development" ]; then
   trace "***NOTICE: using local development machine directory structure"
   FC1_DATA=~/freeUKGEN/data/update_test_fc1
-  FC1_STAT_FILE=/home/apache/hosts/freecen/status/db-stats #ok if doesn't exist
+  FC1_STAT_FILE=/home/apache/hosts/freecen/status/db-stats #ok if doesn't exist, just won't update the graphs without it.  Should match fc1_coverage_stats value in config/mongo_config.yml
   FC2_DATA=~/freeUKGEN/data/update_test_fc2
   LOG_DIR=/tmp
   APP_ROOT=~/freeUKGEN/MyopicVicar
+  UPDATE_RUNNING_STATUS_FILE=/tmp/fc_update_processing.txt #fc_update_processor_status_file value in config/mongo_config.yml needs to match
   WEB_USER=$( whoami )
   BUNDLE=~/.rvm/gems/ruby-2.2.5/bin/bundle
+fi
+
+# if another update process is currently running, exit early
+if [[ -f ${UPDATE_RUNNING_STATUS_FILE} ]] ; then
+  trace "***ERROR: There seems to be an update process already running because file '${UPDATE_RUNNING_STATUS_FILE}' exists. Calling exit now to avoid interfering with the other update process."
+  exit 1
 fi
 
 if [[ ! -d ${FC1_DATA} ]] ; then
@@ -86,6 +94,7 @@ fi
 #sudo /root/bin/searchctl.sh disable
 trace "running rake task to update the freecen database"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
+
 trace "running rake task to update the places cache"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production foo:refresh_places_cache["false"] --trace
 
