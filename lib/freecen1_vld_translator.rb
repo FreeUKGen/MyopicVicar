@@ -74,7 +74,6 @@ module Freecen
                             :chapman_code => chapman_code, 
                             :record_type => full_year})
       record.place = individual.freecen_dwelling.place
-      
       if !individual.birth_county.blank?
         record.birth_chapman_code = individual.birth_county
       end
@@ -87,6 +86,9 @@ module Freecen
       record.add_digest
       record.save! 
       
+      if record.place.nil?
+        raise "\n\n***ERROR! place was nil for #{full_year}-#{chapman_code} individual=#{individual.inspect}\n  dwelling=#{individual.freecen_dwelling.inspect unless individual.freecen_dwelling.nil?}\n\n"
+      end
       if record.place.data_present == false
         record.place.data_present = true
         place_save_needed = true
