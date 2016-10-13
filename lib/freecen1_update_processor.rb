@@ -24,7 +24,7 @@ class Freecen1UpdateProcessor
       all_files = Dir.glob(File.join(parms_dir,yy,'*')) rescue []
       unknown_files = all_files - yy_files
       unknown_files.sort_by{|f| f.upcase}.each do |unk_file|
-        log_message("***WARNING: SKIPPING metadata with bad FILENAME '#{unk_file}' (should be 'ctyPARMS.DAT', where 'cty' is Chapman code, all upper-case)") if log_messages
+        log_message("***WARNING: SKIPPING metadata with bad FILENAME '#{unk_file}' (should be 'ctyPARMS.DAT', where 'cty' is a valid Chapman code, all upper-case)") if log_messages
       end
       yy_files.each do |yy_file|
         dig = Digest::MD5.file(yy_file).to_s rescue nil
@@ -237,6 +237,11 @@ class Freecen1UpdateProcessor
       log_message("***ERROR: freecen1_update_processor started but app='#{app_name}'")
       return
     end
+
+    log_message("\n---0---Doing some consistency checks on the database data before starting update")
+    self.database_consistency_checks()
+
+
     log_message("\n--------reading ctyPARMS.dat files")
     parms_changes = self.get_parms_changes_info(parms_dir, true) rescue []
 
@@ -245,11 +250,11 @@ class Freecen1UpdateProcessor
     new_parms = parms_changes['new_parms']
     modified_parms = parms_changes['modified_parms']
     unchanged_parms = parms_changes['unchanged_parms']
-    log_message("----DELETED PARMS (#{deleted_parms.length})--\n#{deleted_parms.inspect}")
-    log_message("----MULTIPLE PARMS (#{multiple_parms.length})--\n#{multiple_parms.inspect}")
-    log_message("----NEW PARMS (#{new_parms.length})--\n#{new_parms.inspect}")
-    log_message("----MODIFIED PARMS (#{modified_parms.length})--\n#{modified_parms.inspect}")
-    log_message("----UNCHANGED PARMS (#{unchanged_parms.length})--\n (not listing unchanged parms)\n")
+    log_message("\n----DELETED PARMS (count: #{deleted_parms.length})--\n#{deleted_parms.inspect}")
+    log_message("----MULTIPLE PARMS (count: #{multiple_parms.length})--\n#{multiple_parms.inspect}")
+    log_message("----NEW PARMS (count: #{new_parms.length})--\n#{new_parms.inspect}")
+    log_message("----MODIFIED PARMS (count: #{modified_parms.length})--\n#{modified_parms.inspect}")
+    log_message("----UNCHANGED PARMS (count: #{unchanged_parms.length})--\n (not listing unchanged parms)\n")
 
     log_message("\n--------reading .VLD validated piece files")
     vld_changes = self.get_vld_changes_info(vld_dir, true)
@@ -259,67 +264,77 @@ class Freecen1UpdateProcessor
     new_vlds = vld_changes['new_vlds']
     modified_vlds = vld_changes['modified_vlds']
     unchanged_vlds = vld_changes['unchanged_vlds']
-    log_message("----DELETED VLDS (#{deleted_vlds.length})--\n#{deleted_vlds.inspect}")
-    log_message("----MULTIPLE VLDS (#{multiple_vlds.length})--\n#{multiple_vlds.inspect}")
-    log_message("----NEW VLDS (#{new_vlds.length})--\n#{new_vlds.inspect}")
-    log_message("----MODIFIED VLDS (#{modified_vlds.length})--\n#{modified_vlds.inspect}")
-    log_message("----UNCHANGED VLDS (#{unchanged_vlds.length})--\n (not listing unchanged VLDs)")
+    log_message("\n----DELETED VLDS (count: #{deleted_vlds.length})--\n#{deleted_vlds.inspect}")
+    log_message("----MULTIPLE VLDS (count: #{multiple_vlds.length})--\n#{multiple_vlds.inspect}")
+    log_message("----NEW VLDS (count: #{new_vlds.length})--\n#{new_vlds.inspect}")
+    log_message("----MODIFIED VLDS (count: #{modified_vlds.length})--\n#{modified_vlds.inspect}")
+    log_message("----UNCHANGED VLDS (count: #{unchanged_vlds.length})--\n (not listing unchanged VLDs)")
     
     log_message("\n---1----Saving edited geolocation info from deleted and modified PARMS pieces:")
     log_message("*** Not implemented within scope of story #61 (version 1.1). Should be done as a story in version 1.2")
 
     log_message("\n---2----Deleting deleted VLDs from database:")
+    log_message("  (none to delete)") if deleted_vlds.length < 1
     deleted_vlds.each do |vld|
       break if self.need_early_exit?
       begin
         self.delete_vld_from_db(vld['vld_file_id'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
       end
     end
 
     log_message("\n---3----Deleting duplicate VLDs from database to try to fix:")
+    log_message("  (none to delete)") if multiple_vlds.length < 1
     #for each duplicate: delete all that match, (will reload valid ones later)
     multiple_vlds.each do |vld|
       break if self.need_early_exit?
       begin
         self.delete_vld_from_db(vld['vld_file_id'])
       rescue
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
       end
     end
 
     log_message("\n---4----Dropping deleted PARMS (and all associated VLDs):")
+    log_message("  (none to delete)") if deleted_parms.length < 1
     deleted_parms.each do |dp|
       break if self.need_early_exit?
       begin
         self.delete_parms_and_associated_vlds_from_db(dp['year'], dp['chapman'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
       end
     end
 
     log_message("\n---5----Dropping duplicate PARMS (and all associated VLDs):")
+    log_message("  (none to drop)") if multiple_parms.length < 1
     multiple_parms.each do |dp|
       break if self.need_early_exit?
       begin
         self.delete_parms_and_associated_vlds_from_db(dp['year'], dp['chapman'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
       end
     end
 
     log_message("\n---6----Dropping modified PARMS (and all associated VLDs):")
+    log_message("  (none to drop)") if modified_parms.length < 1
     modified_parms.each do |dp|
       break if self.need_early_exit?
       begin
         self.delete_parms_and_associated_vlds_from_db(dp['year'], dp['chapman'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
       end
     end
@@ -330,13 +345,22 @@ class Freecen1UpdateProcessor
     #check changes again, all that need to be reloaded should also be "new" now
     parms_changes = self.get_parms_changes_info(parms_dir, false) rescue []
     new_parms = parms_changes['new_parms']
+    log_message("  (none to load)") if new_parms.length < 1
     new_parms.each do |np|
       break if self.need_early_exit?
       begin
         self.process_parms_file(np['file'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
+        #remove the parms from the database because it didn't load properly
+        begin
+          self.delete_parms_and_associated_vlds_from_db(np['year'], np['chapman'])
+        rescue => e
+          log_message("  ***EXCEPTION CAUGHT while trying to clean up during rescue from previous exception! The database may not have been fully cleaned up for this PARMS file.\n  #{e.message}")
+          log_message(e.backtrace.inspect)
+        end
       end
     end
 
@@ -344,13 +368,24 @@ class Freecen1UpdateProcessor
     log_message("\n---8---Load new VLDs, and reload any dropped due to modifications:")
     vld_changes = self.get_vld_changes_info(vld_dir, false)
     new_vlds = vld_changes['new_vlds']
+    log_message("  (none to load)") if new_vlds.length < 1
     new_vlds.each do |nv|
       break if self.need_early_exit?
       begin
         self.process_vld_file(nv['file'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
-        log_message(e.message)
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
         update_err_messages << e.message
+        #remove the vld from the database because it didn't load properly
+        begin
+          vld_id = Freecen1VldFile.where(:dir_name => nv['chapman'], :file_name => nv['base']).first
+          self.delete_vld_from_db(vld_id) unless vld_id.nil?
+        rescue => e
+          log_message("  ***EXCEPTION CAUGHT while trying to clean up during rescue from previous exception! The database may not have been fully cleaned up for VLD file #{nv['file']}.\n  #{e.message}")
+          log_message(e.backtrace.inspect)
+        end
+        
       end
     end
 
@@ -361,6 +396,9 @@ class Freecen1UpdateProcessor
     if File.exist?(MyopicVicar::Application.config.fc_update_processor_status_file)
       File.delete(MyopicVicar::Application.config.fc_update_processor_status_file)
     end
+
+    log_message("\n---10---Do some consistency checks on the database data")
+    self.database_consistency_checks()
 
     # update places cache is currently done by calling the rake task separately
     # from the script /lib/tasks/scripts/update_freecen2_production.sh
@@ -483,9 +521,9 @@ class Freecen1UpdateProcessor
           log_message("***ERROR: num_individuals for piece==#{pc.num_individuals} (expected 0)")
         end
         pc.delete #delete the freecen_piece from database
-      end
+      end unless pieces.blank?
       fe.delete #delete the Freecen1FixedDatEntry from database
-    end
+    end unless fixed_entries.blank?
     
     #  sanity check: verify that no vld files for this year/county still exist
     vlds = Freecen1VldFile.where(:full_year => parms.year, :dir_name => parms.chapman_code).entries
@@ -495,7 +533,6 @@ class Freecen1UpdateProcessor
 
     parms.delete #delete the freecen1_fixed_dat_file from database
   end
-
 
   def self.process_parms_file(parms_pathname)
     log_message("starting self.process_parms_file() for #{parms_pathname}")
@@ -532,6 +569,38 @@ class Freecen1UpdateProcessor
     ccs = nil # don't CC all admins until development done and roles set
     UserMailer.update_report_to_freecen_manager(report,user,ccs).deliver_now
     puts " done calling UserMailer.update_report_to_freecen_manager()"
+  end
+
+  def self.database_consistency_checks()
+    # check for multiple pieces with the same year/chapman/piecenum/parnum combo
+    all_pieces = []
+    num_collisions = 0
+    FreecenPiece.each do |pc|
+      pc_key = "#{pc.chapman_code}-#{pc.year}-#{pc.piece_number}-#{pc.parish_number}"
+      if all_pieces[pc_key].nil?
+        all_pieces[pc_key] = 1
+      else
+        log_message("***ERROR: multiple pieces with same combination of county/year/piece/par! #{pc.chapman_code} #{pc.year} piece:#{pc.piece_number} par:#{pc.parish_number}")
+        num_collisions += 1
+      end
+    end unless all_pieces.blank?
+    if 0==num_collisions
+      log_message(">>>check pieces for year/cty/piece/par uniqueness: PASSED")
+    else
+      log_message(">>>check pieces for year/cty/piece/par uniqueness: #{num_collisions} FAILURES")
+    end
+    all_pieces = nil
+    
+    # check for pieces with nil place
+    pieces = FreecenPiece.where(:place_id => nil).entries
+    pieces.each do |pc|
+      log_message("***ERROR: no place_id for piece! #{pc.chapman_code} #{pc.year} piece:#{pc.piece_number} par:#{pc.parish_number} _id:#{pc._id}")
+    end unless pieces.blank?
+    if pieces.blank? || pieces.length == 0
+      log_message(">>>check for non-null place_id in all pieces: PASSED")
+    else
+      log_message(">>>check for non-null place_id in all pieces: #{pieces.length} FAILURES")
+    end
   end
 
 end
