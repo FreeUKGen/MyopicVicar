@@ -164,7 +164,6 @@ class SearchQueriesController < ApplicationController
   end
 
   def search_taking_too_long
-    p self
     @search_query = SearchQuery.find(session[:query])
     runtime = Rails.application.config.max_search_time
     @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
@@ -191,6 +190,7 @@ class SearchQueriesController < ApplicationController
     @prompt = 'Select query'
     render '_form_for_selection'
   end
+
   def show
     if params[:id].present?
       @search_query = SearchQuery.where(:id => params[:id]).first

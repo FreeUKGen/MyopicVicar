@@ -727,14 +727,8 @@ class CsvFile < CsvFiles
     place.save
   end
 
-  def update_freereg_contents_after_processing(freereg1_csv_file)
-    register = freereg1_csv_file.register
-    register.calculate_register_numbers
-    church = register.church
-    church.calculate_church_numbers
-    place = church.place
-    place.calculate_place_numbers
-  end
+
+
 
   def process_the_data(project)
     #p "Processing the data records"
@@ -753,7 +747,7 @@ class CsvFile < CsvFiles
       PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
       project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
       update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
-      update_freereg_contents_after_processing(freereg1_csv_file)
+      freereg1_csv_file.update_freereg_contents_after_processing
     end
     #p "after process"
     counter = self.clean_up_unused_batches(project)

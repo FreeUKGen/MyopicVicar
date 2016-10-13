@@ -128,6 +128,19 @@ class SearchRecord
       where(:id => id)
     end
 
+    def create_search_record(entry,search_version,place_id)
+      search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+      search_record = SearchRecord.new(search_record_parameters)
+      search_record.freereg1_csv_entry = entry
+      search_record.search_record_version = search_version
+      search_record.transform
+      search_record.place_id = place_id
+      search_record.digest = search_record.cal_digest
+      search_record.save
+      #p search_record
+      return "created"
+    end
+
     def delete_freereg1_csv_entries
       SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
     end
@@ -299,9 +312,10 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place_id)
+
       search_record = entry.search_record
       #p search_record
-      if search_record.blank?
+      if  search_record.blank?
         #p "creating"
         search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
         search_record = SearchRecord.new(search_record_parameters)

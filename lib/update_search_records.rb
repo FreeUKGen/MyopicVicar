@@ -1,5 +1,5 @@
 class UpdateSearchRecords
-  def self.process(limit,record_type,search_version)
+  def self.process(limit,record_type,search_version,force)
     file_for_warning_messages = "log/search_record_digest.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
     message_file = File.new(file_for_warning_messages, "a")
@@ -12,7 +12,7 @@ class UpdateSearchRecords
     version = software_version.version unless software_version.nil?
     search_version  = software_version.last_search_record_version if search_version.blank? && software_version.last_search_record_version.present?
     search_version = 1 if search_version.blank?
-    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f}"
+    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f} and a force #{force}"
     message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version}"
     records = 0
     updated_records = 0
@@ -35,7 +35,6 @@ class UpdateSearchRecords
         place = church.place if church.present?
         if place.present?
           recs = file.records.to_i
-
           message_file.puts "#{file.userid}/#{file.file_name}/#{recs}"
           p "#{file.userid}/#{file.file_name}/#{recs}"
           p file.search_record_version
@@ -46,15 +45,23 @@ class UpdateSearchRecords
           file_created_records = 0
           if file.freereg1_csv_entries.count >= 1
             Freereg1CsvEntry.where(:freereg1_csv_file_id => file.id).all.no_timeout.each do |entry|
-              result = SearchRecord.update_create_search_record(entry,search_version,place.id)
+              result = SearchRecord.update_create_search_record(entry,search_version,place.id) unless force
+              result = SearchRecord.create_search_record(entry,search_version,place.id) if force
               #p result
-              sleep(Rails.application.config.emmendation_sleep.to_f) if result == "updated" ||  result == "created"
-              updated_records = updated_records + 1 if result == "updated"
-              file_records_update = file_records_update + 1 if result == "updated"
-              file_records_not_updated = file_records_not_updated + 1 if result == "no update"
-              file_created_records = file_created_records + 1 if result == "created"
-              file_digest_added = file_digest_added + 1 if result == "digest_added"
-              no_update = no_update + 1 if result == "no update"
+              case result
+              when "updated"
+                sleep(Rails.application.config.emmendation_sleep.to_f)
+                updated_records = updated_records + 1
+                file_records_update = file_records_update + 1
+              when "created"
+                sleep(Rails.application.config.emmendation_sleep.to_f)
+                file_created_records = file_created_records + 1
+              when "no update"
+                file_records_not_updated = file_records_not_updated + 1
+                no_update = no_update + 1
+              when "digest_added"
+                file_digest_added = file_digest_added + 1
+              end
             end
             created_records = created_records + file_created_records
             digest_added = digest_added + file_digest_added
@@ -62,8 +69,10 @@ class UpdateSearchRecords
             p "No entries"
             message_file.puts "No entries"
           end
-          message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records}  records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate"
-          p "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records} records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate"
+          process_time = (Time.new - time_start)
+          rate = process_time* 1000/ records
+          message_file.puts "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records}  records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate at rate #{rate}"
+          p "#{file.userid}/#{file.file_name}/#{recs}/#{file_created_records}/#{file_records_update}/#{file_records_not_updated} and #{n} files processed (#{files_bypassed} files bypassed) with #{records} records total, #{created_records} created, #{updated_records} updated and #{no_update} unchanged todate at rate #{rate}"
           file.update_attributes(:software_version => version, :search_record_version => search_version)
           sleep(20*(Rails.application.config.emmendation_sleep.to_f))
         else

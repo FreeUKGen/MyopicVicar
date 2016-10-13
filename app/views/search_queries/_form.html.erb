@@ -1,4 +1,3 @@
-
 <% if flash[:notice] %>
 <div class="weight--semibold text--center" ><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
@@ -14,193 +13,197 @@
 </ul>
 <% @search_query.errors.clear %>
 <% end %>
-<div class="grid">
-  <div class="grid__item one-whole">
-    <section class="island  island--light ">
-      <%= semantic_form_for(@search_query) do |f| %>
-        <%= f.inputs "Search fields" do %>
-          <li class="grid__item one-quarter lap-one-half palm-one-whole">
-            <label class="ttip" for="last_name" tabindex="0">
-    				  Surname
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">If no surname is entered you <em>must</em> enter a Forename, select a County and a single Record type. The surname can be upper or lower case.</span>
-            </label>
-            <% if @search_query.last_name.nil? %>
-            	<input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional", style="width: auto; max-width: 80%;">
-    		<% else %>
-    			<input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>", style="width: auto; max-width: 80%;">
-            <% end%>
-          </li>
-
-          <li class="grid__item one-quarter lap-one-half palm-one-whole">
-            <label class="ttip" for="first_name" tabindex="0">
-              Forename(s)
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">The optional forename can be upper or lower case. Abbreviations and Latin versions of the forename will be included automatically.</span>
-            </label>
-            <% if @search_query.first_name.nil? %>
-            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional", style="width: auto; max-width: 80%;">
-            <% else %>
-    				<input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>", style="width: auto; max-width: 80%;">
-            <% end %>
-          </li>
-
-          <li class="grid__item one-quarter lap-one-half palm-one-whole">
-            <label class="ttip" for="start_year" tabindex="0">
-              First year
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">The first year for which records are to be included in the results.</span>
-            </label>
-            <% if @search_query.start_year.nil? %>
-    				<input id="start_year" name="search_query[start_year]" type="text"  class="text-input" placeholder="YYYY Optional" style="width: auto; max-width: 80%;">
-            <% else %>
-            <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>" style="width: auto; max-width: 80%;">
-    			  <% end %>
-          </li>
-
-          <li class="grid__item one-quarter lap-one-half palm-one-whole">
-            <label class="ttip" for="end_year" tabindex="0">
-              Last year
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">The last year for which records are to be included in the results.</span>
-            </label>
-            <% if @search_query.end_year.nil? %>
-            <input id="end_year" name="search_query[end_year]" type="text"   class="text-input" placeholder="YYYY Optional", style="width: auto; max-width: 80%;">
-            <% else %>
-            <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>", style="width: auto; max-width: 80%;">
-            <% end %>
-          </li>
-
-          <li class="grid__item two-fifths lap-one-whole palm-one-whole" id="search_query_chapman_codes_input">
-            <input name="search_query[chapman_codes][]" type="hidden" value="" >
-            <label class="ttip label" for="search_query_chapman_codes" tabindex="0">
-              County
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">Multiple counties may be selected and <em>all</em> places within those counties will be searched. In Windows use Ctrl on selection. County boundaries from 1831 are used. </span>
-            </label>
-            <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-            <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]" style="width: auto; max-width: 80%;">
-
-              <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil? %>
-    			    <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-            </select>
-          </li>
-
-          <li class="grid__item two-fifths lap-one-whole palm-one-whole"  id="search_query_places_input">
-      			<label class="ttip label" for="search_query_place_ids" tabindex="0">
-              Place
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">This box only fills when a <em>single</em> county is selected. Leave blank to select <em>all</em> the places in a county. A single place may be selected. To search additional places nearby your selected place then tick the "Nearby places", option below.</span>
-            </label>
-      			<select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4" style="width: auto; max-width: 80%;">
-      			<% field = "List fills after county selected" %>
-              <option value=""> <%= field%></option>
-            </select>
-          </li>
-
-          <li class="grid__item one-fifth lap-one-half palm-one-whole" id="search_query_record_type_input">
-            <fieldset class="choices">
-              <legend class="label">Record type</legend>
-              <ol class="choices-group">
-                <li class="choice">
-                  <label for="all">
-                  <% if @search_query.record_type.blank?  %>
-                    <input id="all" name="search_query[record_type]" type="radio" value="" checked>
-                  <% else %>
-                    <input id="all" name="search_query[record_type]" type="radio" value="">
-                  <% end %>
-                    All three types
-                  </label>
-                </li>
-                <% RecordType.options.each_pair do |name, value| %>
-                <li class="choice">
-                  <label for="<%= value %>">
-                  <% if @search_query.record_type.present? && @search_query.record_type.include?(value) %>
-                    <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>" checked>
-                  <% else %>
-                    <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>">
-                  <% end %>
-                    <%= name %>
-                  </label>
-                </li>
-                <% end %>
-              </ol>
-            </fieldset>
-          </li>
-        <% end %>
-
-       <%= f.inputs "Search options" do %>
-          <li class="grid__item  one-third lap-one-whole palm-one-whole">
-      			<%= f.label :inclusive, { :class => "ttip", :tabindex => "0" } do %>
-              <%= f.check_box :inclusive, {}, true, false %>
-              Family members
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">Select to extend the search to include the persons role as a family member or relative. eg spouse or parent</span>
-            <% end %>
-          </li>
-
-          <% if witness_search_enabled? %>
-          <li class="grid__item  one-third lap-one-whole palm-one-whole">          
-            <%= f.label :witness, { :class => "ttip", :tabindex => "0" } do %>
-              <%= f.check_box :witness,	{}, "true", "false" %>
-              Witnesses
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">Select to extend the search to include the persons role as a witness in a marriage.</span>
-            <% end %>
-          </li>
+<div class="island island--light">
+  <%= semantic_form_for(@search_query) do |f| %>
+    <fieldset class="inputs">
+      <legend>Search fields</legend>
+      <ol class="grid">
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="last_name" tabindex="0">
+            Surname
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
+          </label>
+          <% if @search_query.last_name.nil? %>
+          <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
+          <% else %>
+          <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
           <% end %>
+        </li>
 
-          <li class="grid__item  one-third lap-one-whole palm-one-whole">
-            <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
-              <%= f.check_box :search_nearby_places, {}, "true", "false" %>
-              Nearby places
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-    					<span class="ttip__text">Select to search places in the vicinity of the selected starting place. (Up to 40 additional places will be included.) The search can be subsequently narrowed</span>
-            <% end %>
-          </li>
-      
-          <li class="grid__item  one-third lap-one-whole palm-one-whole">
-            <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
-              <%= f.check_box :fuzzy, {}, "true", "false" %>
-              Soundex on Names
-              <%= image_tag 'info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">Check to include Soundex equivalent of the name. Soundex is applied to both surname and forename (if entered).</span>
-            <% end %>
-          </li>
-   
-          <li class="betterstyling grid__item  one-quarter  palm-one-whole">
-            <label for="region"> Region </label> <input id="region" name="search_query[region]" type="text">
-          </li>
-    
-          <%= f.action :submit,
-            :as => :button,
-            :label => 'Search ',
-            :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
-            :wrapper_html => { :class => "grid__item  one-whole push-half--top" } %>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="first_name" tabindex="0">
+            Forename(s)
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
+          </label>
+          <% if @search_query.first_name.nil? %>
+          <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
+          <% else %>
+          <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
+          <% end %>
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="start_year" tabindex="0">
+            First year
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
+          </label>
+          <% if @search_query.start_year.nil? %>
+          <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+          <% else %>
+          <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
+          <% end %>
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="end_year" tabindex="0">
+            Last year
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional, YYYY. The last year you want to search</span>
+          </label>
+          <% if @search_query.end_year.nil? %>
+          <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+          <% else %>
+          <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
+          <% end %>
+        </li>
+
+        <li class="grid__item three-eighths lap-one-half palm-one-whole" id="search_query_chapman_codes_input">
+          <input name="search_query[chapman_codes][]" type="hidden" value="">
+          <label class="ttip label" for="search_query_chapman_codes" tabindex="0">
+            County
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">If you select multiple counties, <em>all</em> places within those counties will be searched. We use the county boundaries as they were in 1831</span>
+            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+          </label>
+          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+          <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
+            <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil? %>
+            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+          </select>
+        </li>
+
+        <li class="grid__item three-eighths lap-one-half palm-one-whole"  id="search_query_places_input">
+          <label class="ttip label" for="search_query_place_ids" tabindex="0">
+            Place
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby places&rdquo; option, below</span>
+            <small class="additional">Select one place or none</small>
+          </label>
+          <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4" style="width: auto; max-width: 100%; min-width: 250px;">
+            <option value="">List fills when you select one county</option>
+          </select>
+        </li>
+  
+        <li class="grid__item one-quarter lap-one-whole palm-one-whole" id="search_query_record_type_input">
+          <fieldset class="choices">
+            <legend class="label">Record type</legend>
+            <ol class="choices-group">
+              <li class="choice">
+                <label for="all">
+                <% if @search_query.record_type.blank?  %>
+                  <input id="all" name="search_query[record_type]" type="radio" value="" checked>
+                <% else %>
+                  <input id="all" name="search_query[record_type]" type="radio" value="">
+                <% end %>
+                  All three types
+                </label>
+              </li>
+              <% RecordType.options.each_pair do |name, value| %>
+              <li class="choice">
+                <label for="<%= value %>">
+                <% if @search_query.record_type.present? && @search_query.record_type.include?(value) %>
+                  <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>" checked>
+                <% else %>
+                  <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>">
+                <% end %>
+                  <%= name %>
+                </label>
+              </li>
+              <% end %>
+            </ol>
+          </fieldset>
+        </li>
+      </ol>
+    </fieldset>
+    <fieldset class="inputs">
+      <legend>Search options</legend>
+      <ol class="grid">
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :inclusive, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :inclusive, {}, true, false %>
+            Family members
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to extend the search to include the person&rsquo;s role as a family member or relative: for example, a spouse or parent</span>
+          <% end %>
+        </li>
+
+        <% if witness_search_enabled? %>
+        <li class="grid__item one-third lap-one-whole palm-one-whole">          
+          <%= f.label :witness, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :witness, {}, true, false  %>
+            Witnesses
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to extend the search to include the person&rsquo;s role as a witness to a marriage</span>
+          <% end %>
+        </li>
         <% end %>
-        <% x = Rails.application.config.max_search_time/1000 %>
-        <p> Searches are limited to <%= x %> seconds. Please do not restart the search once it is working.</p>
-      <% end %>
-    </section>
-  </div>
+
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :search_nearby_places, {},  true, false %>
+            Nearby places
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total). You can narrow your search after it has run</span>
+          <% end %>
+        </li>
+  
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :fuzzy, {},  true, false %>
+            Soundex on names
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+          <% end %>
+        </li>
+
+        <li class="betterstyling grid__item  one-quarter  palm-one-whole">
+          <label for="region"> Region </label> <input id="region" name="search_query[region]" type="text">
+        </li>
+        <%= f.action :submit,
+        :as => :button,
+        :label => 'Search ',
+        :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
+        :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
+
+        <li class="grid__item one-whole clear--left">
+          <% x = Rails.application.config.max_search_time/1000 %>
+          <small class="additional push-half--ends">Search times are limited to <%= x %> seconds. <br>Please do not restart the search once it is working as this will actually slow the process.</small>
+        </li>
+      </ol>
+    </fieldset>
+  <% end %>
 </div>
 
 <script type="text/javascript">
       Ladda.bind( 'button[type=submit]' );
 </script>
 <script type="text/javascript" >
-	<% if @search_query && @search_query.chapman_codes.size > 0 %>
-		var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
-		<% if @search_query.places.size > 0 %>
-			selection["selected"]="<%= @search_query.places.first.id %>";
-		<% end %>
-	<% end %>
-	(function($) {$("#search_query_place_ids").remoteChained({
-		parents : "#search_query_chapman_codes",
-		url : "/places/for_search_form.json",
-		loading : "Loading..."
-		<% if @search_query && @search_query.chapman_codes.size == 1 %>
-			, bootstrap: selection
-		<% end %>
-	});})(jQuery);
+  <% if @search_query && @search_query.chapman_codes.size > 0 %>
+    var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+    <% if @search_query.places.size > 0 %>
+      selection["selected"]="<%= @search_query.places.first.id %>";
+    <% end %>
+  <% end %>
+  (function($) {$("#search_query_place_ids").remoteChained({
+    parents : "#search_query_chapman_codes",
+    url : "/places/for_search_form.json",
+    loading : "Loading..."
+    <% if @search_query && @search_query.chapman_codes.size == 1 %>
+      , bootstrap: selection
+    <% end %>
+  });})(jQuery);
 </script>
+  
