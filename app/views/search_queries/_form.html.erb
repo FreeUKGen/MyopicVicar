@@ -5,7 +5,7 @@
 <% end %>
 
 <% if @search_query.errors.present? || @search_query.errors.any? %>
-<h4 class="text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h4>
+<h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
 <ul class="validation-list" >
   <% @search_query.errors.messages.each do |key, msg| %>
   <li class="validation-list__error text--center" ><%= msg[0] %></li>
@@ -70,7 +70,7 @@
           <% end %>
         </li>
 
-        <li class="grid__item three-eighths lap-one-half palm-one-whole" id="search_query_chapman_codes_input">
+        <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
           <input name="search_query[chapman_codes][]" type="hidden" value="">
           <label class="ttip label" for="search_query_chapman_codes" tabindex="0">
             County
@@ -85,14 +85,14 @@
           </select>
         </li>
 
-        <li class="grid__item three-eighths lap-one-half palm-one-whole"  id="search_query_places_input">
+        <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
           <label class="ttip label" for="search_query_place_ids" tabindex="0">
             Place
             <%= image_tag 'info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby places&rdquo; option, below</span>
             <small class="additional">Select one place or none</small>
           </label>
-          <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4" style="width: auto; max-width: 100%; min-width: 250px;">
+          <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4">
             <option value="">List fills when you select one county</option>
           </select>
         </li>
@@ -163,7 +163,7 @@
         <li class="grid__item one-third lap-one-whole palm-one-whole">
           <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :fuzzy, {},  true, false %>
-            Soundex on names
+             Name Soundex
             <%= image_tag 'info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
           <% end %>
