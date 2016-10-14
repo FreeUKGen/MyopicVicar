@@ -68,8 +68,11 @@ class UseridDetail
     def role(role)
       where(:person_role => role)
     end
-    def active(role)
-      where(:active => role)
+    def active(active)
+      where(:active => active)
+    end
+    def reason(reason)
+      where(:disabled_reason_standard => reason)
     end
   end
 

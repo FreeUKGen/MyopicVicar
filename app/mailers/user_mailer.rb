@@ -197,10 +197,11 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of syndicate") unless @coordinator.blank?
   end
 
-  def send_message(mymessage,ccs)
+  def send_message(mymessage,ccs,from)
     @message = mymessage
+    from = "freereg-contacts@freereg.org.uk" if from.blank?
     get_message_attachment if @message.attachment.present? ||  @message.images.present?
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
+    mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
   def update_report_to_freereg_manager(file,user)
