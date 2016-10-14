@@ -34,6 +34,7 @@ FC2_DATA=/raid/freecen2
 LOG_DIR=${FC2_DATA}/log
 APP_ROOT=/home/apache/hosts/freecen2/production
 UPDATE_RUNNING_STATUS_FILE=${APP_ROOT}/tmp/fc_update_processing.txt #fc_update_processor_status_file value in config/mongo_config.yml needs to match
+GEOLOCATION_FILE=${APP_ROOT}/test_data/Place_and_church_name_resources/places_from_public_domain_data.csv
 WEB_USER=webserv
 BUNDLE=bundle
 #different directories on development machine (pass in "development" as arg 1)
@@ -45,6 +46,7 @@ if [ $# -ge 1 ] && [ $1 == "development" ]; then
   LOG_DIR=/tmp
   APP_ROOT=~/freeUKGEN/MyopicVicar
   UPDATE_RUNNING_STATUS_FILE=/tmp/fc_update_processing.txt #fc_update_processor_status_file value in config/mongo_config.yml needs to match
+  #GEOLOCATION_FILE is the same on development as above
   WEB_USER=$( whoami )
   BUNDLE=~/.rvm/gems/ruby-2.2.5/bin/bundle
 fi
@@ -94,6 +96,12 @@ fi
 #sudo /root/bin/searchctl.sh disable
 trace "running rake task to update the freecen database"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
+
+trace "running rake task to initialize pieces subplace geolocation for new pieces"
+sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production initialize_pieces_subplaces_geo[${GEOLOCATION_FILE},true] --trace
+
+trace "running rake task to initialize places geolocation based on subplaces, only for those not already set"
+sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production initialize_places_geo[${GEOLOCATION_FILE},true,use_subplaces] --trace
 
 trace "running rake task to update the places cache"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production foo:refresh_places_cache["false"] --trace
