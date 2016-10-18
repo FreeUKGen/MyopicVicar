@@ -89,7 +89,7 @@
   <tr>
     <% unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
-    <% end%>
+   
   </tr>
   <tr>
     <td>Reason for making inactive (standardized):</td><td > <%=UseridRole::REASONS_FOR_INACTIVATING.key(@userid.disabled_reason_standard) unless @userid.nil? || @userid.disabled_reason.nil? %>  </td>
@@ -97,7 +97,7 @@
   <tr>
     <td>Reason for making inactive (explanation):</td><td > <%=@userid.disabled_reason %>  </td>
   </tr>
-  
+  <% end%>
   <% end%>
   <% end%>
 </table><br>
