@@ -85,7 +85,7 @@
   <tr>
     <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>
   </tr>
-  <% unless  @userid.active %>
+  
   <tr>
     <% unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
@@ -97,7 +97,7 @@
   <tr>
     <td>Reason for making inactive (explanation):</td><td > <%=@userid.disabled_reason %>  </td>
   </tr>
-  <% end%>
+  
   <% end%>
   <% end%>
 </table><br>
