@@ -176,7 +176,7 @@ task :initialize_pieces_subplaces_geo, [:csv_file,:keep_existing] => :environmen
       num_found += 1 if true==found
       if false==found
         num_not_found += 1
-        chap_name = "#{pp.chapman_code}-#{pp.district_name.downcase}"
+        chap_name = "#{pp.chapman_code}-#{pp.district_name.downcase unless pp.district_name.nil?}"
         not_found << chap_name
       end
     end
