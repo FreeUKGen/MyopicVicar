@@ -122,7 +122,7 @@ class FreecenCoverage
     first_time = 0
     max_value = 0
     prev_value = 0
-    lines = File.readlines(stats_file)
+    lines = File.readlines(stats_file) rescue []
     lines.each do |line|
       tstamp = line.to_i
       first_time = tstamp if 0==first_time
@@ -138,8 +138,9 @@ class FreecenCoverage
         prev_value = value
         max_value = value if value > max_value
       end
-    end
+    end unless lines.blank?
     values_at_time = values_at_time.sort_by {|k| k[0]}
+    first_time = 1057060800 if 0==first_time #2003 instead of 1969 if no data
     {'values_at_time'=>values_at_time, 'max'=>max_value, 'first_time'=>first_time, 'chapman'=>chapman, 'year'=>year}
   end
 
@@ -166,8 +167,8 @@ class FreecenCoverage
       yearmax = maxyear
       monmax = (maxmon+xinterval-1)/xinterval*xinterval + 1
       if monmax > 12
-        monmax -= 12
-        yearmax += 1
+        yearmax += monmax / 12
+        monmax %= 12
       end
       last_timestamp = Time.utc(yearmax,monmax,1,12).to_i
       x_ticks = (yearmax*12 + monmax - minyear*12 - monmin)/xinterval
