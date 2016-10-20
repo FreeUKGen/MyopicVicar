@@ -375,7 +375,9 @@ class Freecen1UpdateProcessor
         self.process_vld_file(nv['file'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
-        log_message(e.backtrace.inspect)
+        unless e.message && e.message.include? "***No FreecenPiece found"
+          log_message(e.backtrace.inspect)
+        end
         update_err_messages << e.message
         #remove the vld from the database because it didn't load properly
         begin
