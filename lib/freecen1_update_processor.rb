@@ -375,7 +375,7 @@ class Freecen1UpdateProcessor
         self.process_vld_file(nv['file'])
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
-        unless e.message && e.message.include? "***No FreecenPiece found"
+        unless e.message && e.message.include?("***No FreecenPiece found")
           log_message(e.backtrace.inspect)
         end
         update_err_messages << e.message
