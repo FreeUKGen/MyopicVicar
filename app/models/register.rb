@@ -190,10 +190,11 @@ class Register
         if entry.search_record.nil?
           logger.info "FREEREG:search record missing for entry #{entry._id}. \r\n"
         else
-          entry.update_attribute(:register_type,register_type)
+          entry.update_attribute(:register_type,self.register_type)
           entry.search_record.update_attribute(:location_names, location_names)
         end
       end
+      file.update_attribute(:register_type,self.register_type)
     end
   end
 

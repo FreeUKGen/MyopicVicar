@@ -20,6 +20,7 @@ module Freereg1CsvFilesHelper
     if register_type.blank?
       register = get_register_object(file)
       register_type = RegisterType.display_name(register.register_type) unless register.blank?
+      file.update_attribute(:register_type, register_type) unless register.blank?
     else
       register_type = RegisterType.display_name(register_type)
     end
