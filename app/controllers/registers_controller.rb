@@ -151,9 +151,11 @@ class RegistersController < ApplicationController
 
   def show
     load(params[:id])
-    @decade = @register.daterange
-    @transcribers = @register.transcribers
-    @contributors = @register.contributors
+    unless @register.nil?
+      @decade = @register.daterange
+      @transcribers = @register.transcribers
+      @contributors = @register.contributors
+    end
   end
 
   def update
