@@ -8,7 +8,6 @@ class UpdateSearchRecords
       p "Invalid record type #{record_type} it must be one of#{RecordType.all_types}"
       return
     end
-    p order
     unless order == "-1" || order == "1"
       p "Invalid order it must be either 1 or -1"
       return
@@ -26,7 +25,6 @@ class UpdateSearchRecords
     created_records = 0
     files_bypassed = 0
     order == "1" ? order = 1 : order = -1
-    p order
     n = 0
     time_start = Time.new
     p "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
