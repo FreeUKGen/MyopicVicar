@@ -386,7 +386,7 @@ class Freereg1CsvFilesController < ApplicationController
 
 
   def update_churches
-    if params[:place].blank? ||  params[:place] == "Select Place"
+    if update_churches_not_ok?(params[:place])
       flash[:notice] = "You made an incorrect place selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -406,6 +406,12 @@ class Freereg1CsvFilesController < ApplicationController
       @register_types = RegisterType::APPROVED_OPTIONS
       @selected_register = ''
     end
+  end
+
+  def update_churches_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Select Place" || session[:selectcountry].blank? || session[:selectcounty].blank?
+    result
   end
 
 
@@ -428,6 +434,7 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
+
   def update_places
     if session[:selectcounty].nil? && (params[:county].blank? || params[:county] == "Select County")
       flash[:notice] = "You made an incorrect county selection "
@@ -438,7 +445,6 @@ class Freereg1CsvFilesController < ApplicationController
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
       @countries = [session[:selectcountry]]
       if session[:selectcounty].nil?
-
         #means we are a DM selecting the county
         session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
         places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
@@ -467,7 +473,7 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def update_registers
-    if params[:church].blank? || params[:church] == "Has no churches" || params[:church] == "Select Church"
+    if update_registers_not_ok?(params[:church])
       flash[:notice] = "You made an incorrect church selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -488,6 +494,12 @@ class Freereg1CsvFilesController < ApplicationController
       @selected_church = session[:selectchurch]
       @selected_register = ''
     end
+  end
+
+  def update_registers_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Has no churches" || param == "Select Church" || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank?
+    result
   end
 
   def update

@@ -146,6 +146,7 @@ class Church
         place.churches.delete(church)
       end
     end
+    self.calculate_church_numbers
     return [false, ""]
   end
 
@@ -181,6 +182,8 @@ class Church
       self.update_attributes(:place_id => new_place._id, :place_name => param[:place_name])
       new_place.update_attribute(:data_present, true) if new_place.search_records.exists? && new_place.data_present == false
       new_place.recalculate_last_amended_date
+      new_place.calculate_place_numbers
+      self.calculate_place_numbers
       return [true, "Error in save of church; contact the webmaster"] if self.errors.any?
     end
     self.propogate_church_name_change
