@@ -156,13 +156,18 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
-    church = file.register.church
+    register = file.register
+    return false if register.blank?
+    church = register.church
+    return false if church.blank?
     place = church.place
+    return false if place.blanks?
     session[:freereg1_csv_file_id] = file._id
     session[:freereg1_csv_file_name] = file.file_name
     session[:place_name] = place.place_name
     session[:church_name] = church.church_name
     session[:county] = place.county
+    return true
   end
 
   def show
@@ -170,7 +175,8 @@ class ContactsController < ApplicationController
     if @contact.present?
       if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
         file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
-        set_session_parameters_for_record(file)
+        result = set_session_parameters_for_record(file)
+        go_back("contact",params[:id]) unless result
       else
         set_nil_session_parameters
       end
