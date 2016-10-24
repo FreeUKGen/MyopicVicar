@@ -52,5 +52,5 @@ Refinery::Images.configure do |config|
   # The custom_backend setting by default defers to the core setting for this but can be set just for images.
   # config.custom_backend_class = nil
   # config.custom_backend_opts = {}
-
+  Dragonfly.logger = Rails.logger
 end
