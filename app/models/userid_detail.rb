@@ -43,6 +43,8 @@ class UseridDetail
   has_many :search_queries, dependent: :restrict
   has_many :freereg1_csv_files, dependent: :restrict
   has_many :attic_files, dependent: :restrict
+  has_many :assignments
+  
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp

@@ -20,7 +20,9 @@ class Source
   field :end_date, type: Date
   field :url, type: String # If the source is locatable online, this is the URL for the top-level (not single-page) webpage for it
   belongs_to :place
+  belongs_to :register 
   has_many :pages
+  has_many :gaps
   
   # TODO: name for "Great Register" vs "Baptsm" -- use RecordType?  Extend it?
 end
