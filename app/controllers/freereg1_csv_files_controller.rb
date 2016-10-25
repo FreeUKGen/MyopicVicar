@@ -410,13 +410,13 @@ class Freereg1CsvFilesController < ApplicationController
 
   def update_churches_not_ok?(param)
     result = false
-    result = true if param.blank? || param == "Select Place" || session[:selectcountry].blank? || session[:selectcounty].blank?
+    result = true if param.blank? || param == "Select Place" || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:freereg1_csv_file_id].blank?
     result
   end
 
 
   def update_counties
-    if params[:country].blank? || params[:country] == "Select Country"
+    if update_counties_not_ok?(params[:country])
       flash[:notice] = "You made an incorrect country selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -434,9 +434,15 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
+  def update_counties_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Select Country"  || session[:freereg1_csv_file_id].blank?
+    result
+  end
+
 
   def update_places
-    if session[:selectcounty].nil? && (params[:county].blank? || params[:county] == "Select County")
+    if update_places_not_ok?(params[:county])
       flash[:notice] = "You made an incorrect county selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -472,6 +478,13 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
+  def update_places_not_ok?(param)
+    result = false
+    result = true if param.blank?  || param == "Select County" || session[:selectcountry].blank?  || session[:freereg1_csv_file_id].blank?
+    result
+  end
+
+
   def update_registers
     if update_registers_not_ok?(params[:church])
       flash[:notice] = "You made an incorrect church selection "
@@ -498,7 +511,7 @@ class Freereg1CsvFilesController < ApplicationController
 
   def update_registers_not_ok?(param)
     result = false
-    result = true if param.blank? || param == "Has no churches" || param == "Select Church" || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank?
+    result = true if param.blank? || param == "Has no churches" || param == "Select Church" || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? || session[:freereg1_csv_file_id].blank?
     result
   end
 
