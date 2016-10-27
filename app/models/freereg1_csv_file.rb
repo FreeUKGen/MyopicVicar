@@ -841,7 +841,7 @@ class Freereg1CsvFile
           # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
           csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
           #eg +LDS,,,,
-          csv << ['+LDS'] if file.lds || file.lds =='yes'
+          csv << ['+LDS'] if file.lds =='yes'
 
 
           register = file.register
