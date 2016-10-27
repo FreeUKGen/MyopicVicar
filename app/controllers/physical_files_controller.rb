@@ -19,17 +19,17 @@ class PhysicalFilesController < ApplicationController
 
     when @sorted_by == '(File not processed)'
       # @batches = PhysicalFile.not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
-      @batches = PhysicalFile.not_processed.not_waiting.all
+      @batches = PhysicalFile.not_processed.not_waiting.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
       @number = PhysicalFile.not_processed.not_waiting.count
-      @batches = sorted_by_base_uploaded_date(@batches) unless @batches.nil?
+      #@batches = sorted_by_base_uploaded_date(@batches) unless @batches.nil?
     when @sorted_by ==  "Not Processed" && session[:who].present?
-      @batches = PhysicalFile.userid(session[:who]).not_processed.not_waiting.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      @batches = PhysicalFile.userid(session[:who]).not_processed.not_waiting.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
       @number = PhysicalFile.userid(session[:who]).not_processed.not_waiting.count
     when @sorted_by ==  "Not Processed" && session[:county].present?
       # @batches = PhysicalFile.county(session[:county]).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
-      @batches = PhysicalFile.county(session[:county]).not_processed.not_waiting.all.order_by(userid: 1,base_uploaded_date: 1)
+      @batches = PhysicalFile.county(session[:county]).not_processed.not_waiting.all.order_by(base_uploaded_date: 1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
       @number = PhysicalFile.not_processed.not_waiting.count
-      @batches = @batches.sorted_by_base_uploaded_date unless @batches.nil?
+      #@batches = @batches.sorted_by_base_uploaded_date unless @batches.nil?
     when   @sorted_by == '(Processed but no file in FR2)'
       @batches = PhysicalFile.processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
       @number = PhysicalFile.processed.not_uploaded_into_base.count
