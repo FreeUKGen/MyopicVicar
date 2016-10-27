@@ -916,7 +916,9 @@ class CsvRecords <  CsvFile
     csvfile.header_error << "Invalid file type #{header_field[4]} in first line of header. <br>" if header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
     # canonicalize record type
     scrubbed_record_type = Unicode::upcase(header_field[4]).gsub(/\s/, '') unless header_field[4].blank?
-    csvfile.header[:record_type] =  FreeregOptionsConstants::RECORD_TYPE_TRANSLATION[scrubbed_record_type] unless header_field[4].blank?
+    csvfile.header[:record_type] =  FreeregOptionsConstants::RECORD_TYPE_TRANSLATION[scrubbed_record_type] unless header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
+    #assumes Baptism to allow processing of rest of headers to proceed
+    csvfile.header[:record_type] = "ba" if  header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
     if csvfile.header_error.present?
       return false
     else
