@@ -161,7 +161,7 @@ class ContactsController < ApplicationController
     church = register.church
     return false if church.blank?
     place = church.place
-    return false if place.blanks?
+    return false if place.blank?
     session[:freereg1_csv_file_id] = file._id
     session[:freereg1_csv_file_name] = file.file_name
     session[:place_name] = place.place_name
