@@ -19,12 +19,12 @@ class PhysicalFilesController < ApplicationController
 
     when @sorted_by == '(File not processed)'
       # @batches = PhysicalFile.not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
-      @batches = PhysicalFile.not_processed.not_waiting.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
-      @number = PhysicalFile.not_processed.not_waiting.count
+      @batches = PhysicalFile.uploaded_into_base.not_processed.not_waiting.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      @number = PhysicalFile.uploaded_into_base.not_processed.not_waiting.count
       #@batches = sorted_by_base_uploaded_date(@batches) unless @batches.nil?
     when @sorted_by ==  "Not Processed" && session[:who].present?
-      @batches = PhysicalFile.userid(session[:who]).not_processed.not_waiting.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
-      @number = PhysicalFile.userid(session[:who]).not_processed.not_waiting.count
+      @batches = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.not_waiting.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      @number = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.not_waiting.count
     when @sorted_by ==  "Not Processed" && session[:county].present?
       # @batches = PhysicalFile.county(session[:county]).not_processed.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
       @batches = PhysicalFile.county(session[:county]).not_processed.not_waiting.all.order_by(base_uploaded_date: 1, userid: 1).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
@@ -108,6 +108,7 @@ class PhysicalFilesController < ApplicationController
     get_user_info_from_userid
     load(params[:id])
   end
+
   def create
     case
     when params[:commit] == "Select Userid"

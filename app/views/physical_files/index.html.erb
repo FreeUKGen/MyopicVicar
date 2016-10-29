@@ -19,6 +19,7 @@
 				
 				<th >Last Processed into Database</th>
         <th >Waiting Date</th>
+         <th >Show</th>
         <th >Process file</th>
         <th >Download</th>
 				<th >Delete File and Entries</th>
@@ -39,11 +40,12 @@
 			
 				<td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed && !batch.file_processed_date.nil?%>  </td>
         <td > <%= batch.waiting_date.strftime("%d %b %Y") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
-				
-				<td><%= link_to 'FR2', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"})  ,method: :get  %></td>
+
+				<td><%= link_to 'SH', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
+				<td><%= link_to 'FR2', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
        
-        <td><%= link_to 'FR2', download_physical_file_path(batch,   :params=> {:loc => "FR2"})  ,method: :get  %></td>
-				<td><%= link_to 'Delete', physical_file_path(batch), data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
+        <td><%= link_to 'FR2', download_physical_file_path(batch,   :params=> {:loc => "FR2"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
+				<td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn weight--light  btn--small",data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
 				<% end %>
 				<% end %>
 			</table>
