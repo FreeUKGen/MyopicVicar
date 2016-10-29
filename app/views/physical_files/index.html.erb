@@ -1,6 +1,6 @@
 <% breadcrumb :physical_files%>
 <h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @person %> </h2>
-  <p style="text-align: center"> Number of files <%= @number if @number.present?%>.  Download report as: <%= link_to "CSV", physical_files_path(format: "csv") %> </p>
+  <p style="text-align: center"> Number of files <%= @number if @number.present?%>.  Download first page of report as: <%= link_to "CSV", physical_files_path(format: "csv") %> </p>
 
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
