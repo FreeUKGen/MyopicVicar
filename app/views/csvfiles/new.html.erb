@@ -10,10 +10,12 @@
     <li><%= msg %></li>
   <% end %>
 </ul>
-<div class="grid">
-  <%= simple_form_for @csvfile, html: { multipart: true ,:class => "grid"} do |f| %>
+<div >
+  <%= simple_form_for @csvfile, html: { multipart: true } do |f| %>
     <%= f.input :csvfile, :label => "Please select file to upload", :hint => "Locate the file on your device." %><br>
-    <%= f.input :userid, :collection => @people,:include_blank => false,:label => "Userid where file is to be stored", :hint => "Your own userid has been preselected. Select another userid if you wish.",  :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 },:selected => @user.userid unless session[:my_own] %><br>
+    <%= f.input :userid, :collection => @people,:include_blank => false,:label => "Userid where file is to be stored", :hint => "Your own userid has been preselected. Select another userid if you wish.",  :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 },:selected => @user.userid unless session[:my_own] %>
+
+    <p class="text--center text--negative push-half--bottom"> <b> Change of procedure<br>After selecting your file when you click the Upload button your file will be immediately submitted for processing, either As Soon As Possible (if small enough) or for overnight processing (if too large)</b></p><br>
     <%= f.button :submit, 'Upload'   %>
   <% end %>
 </div>
