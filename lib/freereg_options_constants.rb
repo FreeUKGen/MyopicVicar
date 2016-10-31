@@ -123,8 +123,8 @@ module FreeregOptionsConstants
     'Wilfreds' => 'Wilfred',
     'Wilfrid\'s' => 'Wilfrid',
     'Cemetry' => 'Cemetery',
-#    'Marys' => 'Mary',   #duplicate key (Marys is already included above)
-#    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
+    #    'Marys' => 'Mary',   #duplicate key (Marys is already included above)
+    #    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
     "Marys\'" => 'Mary',
     'Nicholas\'' => 'Nicholas'
   }
@@ -245,4 +245,5 @@ module FreeregOptionsConstants
   CONTAINS_PERIOD = /\./
   ST_PERIOD = /\A[Ss][Tt]\z/
   TEST = {:fieldset => "mine", otherset: "yours"}
+  CONFIRM_EMAIL_ADDRESS = 120
 end
