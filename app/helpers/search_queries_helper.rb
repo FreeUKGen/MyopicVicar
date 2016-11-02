@@ -11,10 +11,10 @@ module SearchQueriesHelper
   def format_end_date(year)
     Date.parse(DateParser::end_search_date(year)).strftime("%B %d, %Y")
   end
-  
-  def format_for_line_breaks(names)
-    raw(names.map{ |name| name.gsub(' ', '&nbsp;')}.join(' '))
-  end
+
+  #def format_for_line_breaks(names)
+  #raw(names.map{ |name| name.gsub(' ', '&nbsp;')}.join(' '))
+  #end
 
   def format_location(search_record)
     if search_record.respond_to? :location_name
@@ -29,11 +29,18 @@ module SearchQueriesHelper
   def county(search_record)
     chapman = search_record.chapman_code
     if chapman.present?
-       county = ChapmanCode.has_key(chapman)
+      county = ChapmanCode.has_key(chapman)
     else
       county = search_record.place.county
     end
     county
+  end
+
+  def format_for_line_breaks (names)
+    (place, church) = names[0].split(' (')
+    church = church[0..-2]
+    register_type = names[1].gsub('[', '').gsub(']', '')
+    loc = [place, church, register_type].join(' : ')
   end
 
 end

@@ -338,11 +338,10 @@ class Freereg1CsvFilesController < ApplicationController
 
 
   def remove
-    #this just removes a batch of records
+    #this just removes a batch of records it leaves the entries and search records there to be removed by a rake task
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
-
       success, message = @freereg1_csv_file.remove_batch
       if success
         flash[:notice] = 'The removal of the batch entry was successful'
