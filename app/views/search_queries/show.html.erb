@@ -46,7 +46,7 @@
       <p class="read-length">Please refine (narrow down) your search.<br>We limit the number of results to <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS%> to avoid overloading your device with too much information at one time.</p>
     </div>
   <% else %>
-    <% if @n == 0 || (ucf_wildcards_enabled? && @ucf_results && @ucf_results.size == 0) %>
+    <% if @n == 0 && (ucf_wildcards_enabled? && @ucf_results && @ucf_results.size == 0) %>
     <div class="island">
       <h2 class="gamma text--negative push-half--bottom">No results found</h2>
       <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
@@ -57,8 +57,8 @@
       <% else %>
         <%= render(:partial => "mobile", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <% end %>  
-      <% if ucf_wildcards_enabled? && @ucf_results.size >= 1 %>
-        <p>These entries with partly-readable names could be relevant:</p>
+      <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
+        <p>These additional entries with partly-readable names could be relevant:</p>
         <% if device_type == :desktop || device_type == :tablet %>
           <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results}) %>
         <% else %>
