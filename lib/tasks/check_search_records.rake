@@ -33,14 +33,14 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
   last_file_name = "old"
   delete_files.each do |delete_file|
     my_file = Freereg1CsvFile.userid(delete_file[0]).file_name(delete_file[1]).first
-    processing = processing + 1
-    number_processed = number_processed + 1
-    file_number = file_number + 1
-    break if file_number == limit
-    break if file_number == files
-    file_name = my_file.file_name
-    owner = my_file.userid
     if my_file.present?
+      processing = processing + 1
+      number_processed = number_processed + 1
+      file_number = file_number + 1
+      break if file_number == limit
+      break if file_number == files
+      file_name = my_file.file_name
+      owner = my_file.userid
       my_file.freereg1_csv_entries.each do |entry|
         entries = entries + 1
         record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).count
@@ -54,7 +54,7 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
           record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).first
           record.destroy if fix
         end
-        if processing == 100
+        if processing == 10
           processed_time = Time.now
           processing_time = (processed_time - start)*1000/entries
           p  "#{entries} entries processed at a rate of #{processing_time} ms/entry #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
@@ -63,6 +63,6 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
       end
     end
   end
-  puts "checked #{file_number} files there were #{missing_search_record} missing records and #{duplicate_search_records } "
+  puts "checked #{file_number} files there were #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
   message_file.close
 end
