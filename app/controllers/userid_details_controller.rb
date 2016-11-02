@@ -25,6 +25,14 @@ class UseridDetailsController < ApplicationController
       redirect_to userid_detail_path(@userid) and return
     end
   end
+  def confirm_email_address
+    get_user_info_from_userid
+    session[:edit_userid] = true
+    session[:return_to] = '/manage_resources/new'
+    @userid = @user
+    @current = @user.email_address
+    @options = [true,false]
+  end
 
   def create
     @userid = UseridDetail.new(userid_details_params)
@@ -353,14 +361,25 @@ class UseridDetailsController < ApplicationController
     success = Array.new
     success[0] = true
     case
-
     when params[:commit] == "Disable"
       params[:userid_detail][:disabled_date]  = DateTime.now if  @userid.disabled_date.nil?
       params[:userid_detail][:active]  = false
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     when params[:commit] == "Update"
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
+    when params[:commit] == "Confirm"
+      if params[:userid_detail][:email_address_valid] == 'true'
+        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new)
+        redirect_to '/manage_resources/new'
+        return
+      else
+        session[:my_own] = true
+        redirect_to :action => 'edit'
+        return
+      end
     end
+    params[:userid_detail][:email_address_last_confirmned]  = Time.now
+    params[:userid_detail][:email_address_valid]  = true
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery

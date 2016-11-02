@@ -3,6 +3,7 @@ class ManageResourcesController < ApplicationController
   require 'userid_role'
   skip_before_filter :require_login, only: [:new, :pages]
 
+
   def create
     @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
     session[:userid] = @user.userid
@@ -13,68 +14,6 @@ class ManageResourcesController < ApplicationController
 
   def index
     redirect_to :new
-  end
-
-  def load(userid_id)
-    @first_name = session[:first_name]
-    @user = UseridDetail.find(userid_id)
-  end
-
-  def logout
-    reset_session
-    redirect_to refinery.logout_path
-  end
-
-  def new
-    if !is_ok_to_render_actions?
-      stop_processing and return
-    else
-      if user_is_computer?
-        go_to_computer_code
-        return
-      else
-        clean_session
-        clean_session_for_syndicate
-        clean_session_for_county
-        if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
-          @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
-        else
-          @page = ""
-        end
-        @manage_resources = ManageResource.new
-        render 'actions'
-        return
-      end
-    end
-  end
-
-  def pages
-    current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
-    redirect_to '/cms/refinery/pages'
-  end
-
-  def selection
-    if UseridRole::OPTIONS_TRANSLATION.has_key?(params[:option])
-      value = UseridRole::OPTIONS_TRANSLATION[params[:option]]
-      redirect_to value
-      return
-    else
-      flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return
-    end
-  end
-
-
-  def show
-    load(params[:id])
-  end
-
-  private
-
-  def go_to_computer_code
-    redirect_to new_transreg_user_path
-    return
   end
 
   def is_ok_to_render_actions?
@@ -105,6 +44,58 @@ class ManageResourcesController < ApplicationController
     continue
   end
 
+  def load(userid_id)
+    @first_name = session[:first_name]
+    @user = UseridDetail.find(userid_id)
+  end
+
+  def logout
+    reset_session
+    redirect_to refinery.logout_path
+  end
+
+  def new
+    case
+    when !is_ok_to_render_actions?
+      stop_processing and return
+    when @user.need_to_confirm_email_address?
+      p "redirecting"
+      redirect_to '/userid_details/confirm_email_address'
+      return
+    when user_is_computer?
+      go_to_computer_code
+      return
+    else
+      clean_session
+      clean_session_for_syndicate
+      clean_session_for_county
+      if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
+        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
+      else
+        @page = ""
+      end
+      @manage_resources = ManageResource.new
+      render 'actions'
+      return
+    end
+  end
+
+  def pages
+    current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
+    redirect_to '/cms/refinery/pages'
+  end
+
+  def selection
+    if UseridRole::OPTIONS_TRANSLATION.has_key?(params[:option])
+      value = UseridRole::OPTIONS_TRANSLATION[params[:option]]
+      redirect_to value
+      return
+    else
+      flash[:notice] = 'Invalid option'
+      redirect_to :back
+      return
+    end
+  end
 
   def set_session
     @user_id = @user._id
@@ -121,12 +112,31 @@ class ManageResourcesController < ApplicationController
     logger.warn "FREEREG::USER  manager #{@manager}"
   end
 
+  def show
+    load(params[:id])
+  end
+
+
   def stop_processing
     redirect_to refinery.logout_path and return
+  end
+
+  def update
+
+
   end
 
   def user_is_computer?
     @user.person_role == "computer" ? result = true : result = false
     result
   end
+
+
+  private
+
+  def go_to_computer_code
+    redirect_to new_transreg_user_path
+    return
+  end
+
 end

@@ -131,11 +131,14 @@ MyopicVicar::Application.routes.draw do
 
   resources :my_saved_searches
 
+
   get 'manage_resources/pages', :to =>'manage_resources#pages', :as => :pages_manage_resources
   get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
 
+
+  get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
   get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail
   get 'userid_details/person_roles', :to =>'userid_details#person_roles', :as => :person_roles_userid_detail
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail
