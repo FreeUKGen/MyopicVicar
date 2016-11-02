@@ -1,0 +1,70 @@
+digraph G {
+
+	subgraph cluster_0 {
+		node [style=filled,color=gold,shape=rect];
+		original[label="Original Register (OR)"];
+		bt[label="Bishop's Transcripts (BT)"];
+		at[label="Archdeacon's Transcripts (AT)"];
+		edition[label="Antiquarian Editions (AE)\nDwelly's, Philimore's, etc"];
+		original -> bt;
+		original -> at;
+		original -> edition;
+		bt -> edition;
+		at -> edition;
+		label = "Paper Versions";
+	}
+
+	subgraph cluster_5 {
+		node [color="gray",style=filled,shape=Msquare];
+		original_m [label="OR (microform)"];
+		bt_m [label="BT (microform)"];
+		at_m [label="AT (microform)"];
+		ae_m [label="AE (microform)"];
+		original -> original_m;
+		bt -> bt_m;
+		at -> at_m;
+		edition -> ae_m;
+		label = "Microfiche/Microfilm";
+	}
+	subgraph cluster_6 {
+		node [color="lightblue",style=filled,shape=folder];
+		original_ms [label="Scanned OR (microform)"];
+		bt_ms [label="Scanned BT (microform)"];
+		at_ms [label="Scanned AT (microform)"];
+		ae_ms [label="Scanned AE (microform)"];
+		node [color="khaki",style=filled];
+		original_s [label="Scanned OR"];
+		bt_s [label="Scanned BT"];
+		at_s [label="Scanned AT"];
+		ae_s [label="Scanned AE"];
+		original -> original_s [style=dashed];
+		bt -> bt_s [style=dashed];
+		at -> at_s [style=dashed];
+		edition -> ae_s [style=bold];
+		original_m -> original_ms [style=bold];
+		bt_m -> bt_ms;
+		at_m -> at_ms;
+		ae_m -> ae_ms [style=dashed];
+		label = "Digital Facsimiles";
+	}
+	event [label="Event: Baptism\nMarriage,Burial", shape=tripleoctagon];
+	entry [label="Entry: Written\nRecord Describing\nthe Event (i.e. Text)", shape=none];
+	event -> entry;
+	entry -> original;
+	transcript [label="Transcripts",color="red",shape=tab];
+	original -> transcript [style=dashed];
+	bt -> transcript [style=dashed];
+	at -> transcript [style=dashed];
+	edition -> transcript;
+	original_m -> transcript;
+	at_m -> transcript;
+	bt_m -> transcript;
+	original_ms -> transcript [style=bold];
+	bt_ms -> transcript [style=bold];
+	at_ms -> transcript [style=bold];
+	ae_ms -> transcript [style=dashed];
+	original_s -> transcript [style=dashed];
+	bt_s -> transcript [style=dashed];
+	at_s -> transcript [style=dashed];
+	ae_s -> transcript [style=bold];
+}
