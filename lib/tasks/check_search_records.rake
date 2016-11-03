@@ -41,7 +41,7 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
       break if file_number == files
       file_name = my_file.file_name
       owner = my_file.userid
-      my_file.freereg1_csv_entries.each do |entry|
+      my_file.freereg1_csv_entries.no_timeout.each do |entry|
         entries = entries + 1
         record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).count
         if record == 0
