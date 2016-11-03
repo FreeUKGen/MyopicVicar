@@ -423,10 +423,11 @@ input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 
 input::placeholder               { color: #585858; font-style: italic; opacity: 1 ! important; }
 /* Last edited 25 Oct 2016 */
 /* Tables - accessibility changes - 03 Nov 2016 */
+/* Tables - accessibility changes - 03 Nov 2016 */
 #search-result .table--data { line-height: 1.3; width: auto; margin: 0 auto; } 
 #search-result table.table--bordered td, 
 #search-result table.table--bordered th { padding: 14px 5px; }
-caption .additional {
+caption .additional, h3 + .additional {
   font-size: 0.8rem;
   color: #444;
   background-color: transparent;
@@ -443,3 +444,6 @@ caption .additional {
   margin-right: 0.5em;
   white-space: nowrap;
 }
+dl.table-display { width: 100%; }
+dl.table-display dt { width: 4em; }
+dl.table-display dd { width: calc(100% - 4em); }
