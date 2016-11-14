@@ -441,11 +441,13 @@ class Freereg1CsvFilesController < ApplicationController
 
 
   def update_places
-    if update_places_not_ok?(params[:county])
-      flash[:notice] = "You made an incorrect county selection "
-      redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
-    else
       get_user_info_from_userid
+    if  (@user.person_role == 'system_administrator' || @user.person_role == 'data_manager')
+      if update_places_not_ok?(params[:county])
+        flash[:notice] = "You made an incorrect county selection "
+        redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
+      end
+    end     
       set_locations
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
       @countries = [session[:selectcountry]]
@@ -474,13 +476,13 @@ class Freereg1CsvFilesController < ApplicationController
       end
       @register_types = RegisterType::APPROVED_OPTIONS
       @selected_register = ''
-    end
+   
   end
 
   def update_places_not_ok?(param)
     result = false
-    result = true if param.blank?  || param == "Select County" || session[:selectcountry].blank?  || session[:freereg1_csv_file_id].blank?
-    result
+    result = true if param.blank? || param == "Select County" || session[:selectcountry].blank?  || session[:freereg1_csv_file_id].blank?
+    return result
   end
 
 
