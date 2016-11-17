@@ -7,6 +7,8 @@ require 'date_parser'
 
 class SearchRecord
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
   #before_save :add_digest
