@@ -12,6 +12,7 @@ class Freecen1VldFile
   field :series, type: String
   field :sctpar, type: String
   field :file_digest, type: String
+  field :file_errors, type: Array
   
   def chapman_code
     self.dir_name

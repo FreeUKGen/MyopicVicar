@@ -223,7 +223,6 @@ class Freecen1UpdateProcessor
   end
 
   def self.update_all(parms_dir, vld_dir)
-    update_err_messages = []
     #p "lib/freecen1_update_processor.rb self.update_all() started"
     if self.check_and_set_update_running #return early if already running
       self.send_update_report()
@@ -270,10 +269,10 @@ class Freecen1UpdateProcessor
     log_message("----MODIFIED VLDS (count: #{modified_vlds.length})--\n#{modified_vlds.inspect}")
     log_message("----UNCHANGED VLDS (count: #{unchanged_vlds.length})--\n (not listing unchanged VLDs)")
     
-    log_message("\n---1----Saving edited geolocation info from deleted and modified PARMS pieces:")
-    log_message("*** Not implemented within scope of story #61 (version 1.1). Should be done as a story in version 1.2")
+#    log_message("\n---1----Saving edited geolocation info from deleted and modified PARMS pieces:")
+#    log_message("*** Not implemented within scope of story #61 (version 1.1). Should be done as a story in version 1.2")
 
-    log_message("\n---2----Deleting deleted VLDs from database:")
+    log_message("\n---1----Deleting deleted VLDs from database:")
     log_message("  (none to delete)") if deleted_vlds.length < 1
     deleted_vlds.each do |vld|
       break if self.need_early_exit?
@@ -282,7 +281,18 @@ class Freecen1UpdateProcessor
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
         log_message(e.backtrace.inspect)
-        update_err_messages << e.message
+      end
+    end
+
+    log_message("\n---2----Deleting modified VLDs from database to be reloaded:")
+    log_message("  (none to delete)") if modified_vlds.length < 1
+    modified_vlds.each do |vld|
+      break if self.need_early_exit?
+      begin
+        self.delete_vld_from_db(vld['vld_file_id'])
+      rescue => e #rescue any exceptions and continue processing the other VLDs
+        log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+        log_message(e.backtrace.inspect)
       end
     end
 
@@ -296,7 +306,6 @@ class Freecen1UpdateProcessor
       rescue
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
         log_message(e.backtrace.inspect)
-        update_err_messages << e.message
       end
     end
 
@@ -309,7 +318,6 @@ class Freecen1UpdateProcessor
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
         log_message(e.backtrace.inspect)
-        update_err_messages << e.message
       end
     end
 
@@ -322,7 +330,6 @@ class Freecen1UpdateProcessor
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
         log_message(e.backtrace.inspect)
-        update_err_messages << e.message
       end
     end
 
@@ -335,7 +342,6 @@ class Freecen1UpdateProcessor
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
         log_message(e.backtrace.inspect)
-        update_err_messages << e.message
       end
     end
 
@@ -355,7 +361,6 @@ class Freecen1UpdateProcessor
         unless e.message && e.message.include?("Place name can't be blank")
           log_message(e.backtrace.inspect)
         end
-        update_err_messages << e.message
         #remove the parms from the database because it didn't load properly
         begin
           self.delete_parms_and_associated_vlds_from_db(np['year'], np['chapman'])
@@ -375,16 +380,32 @@ class Freecen1UpdateProcessor
       break if self.need_early_exit?
       begin
         self.process_vld_file(nv['file'])
+        #update the corresponding piece status to 'Online'
+        vld = Freecen1VldFile.where(:dir_name => nv['chapman'], :file_name => nv['base']).first
+        unless vld.blank?
+          pc = FreecenPiece.where(:year => vld[:full_year], :chapman_code => nv['chapman'], :piece_number => vld[:piece], :parish_number => vld[:sctpar]).first
+          unless pc.blank?
+            pc.status = 'Online'
+            pc.save!
+          end
+        end
       rescue => e #rescue any exceptions and continue processing the other VLDs
         log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
         unless e.message && e.message.include?("***No FreecenPiece found")
           log_message(e.backtrace.inspect)
         end
-        update_err_messages << e.message
         #remove the vld from the database because it didn't load properly
         begin
-          vld_id = Freecen1VldFile.where(:dir_name => nv['chapman'], :file_name => nv['base']).first
-          self.delete_vld_from_db(vld_id) unless vld_id.nil?
+          vld = Freecen1VldFile.where(:dir_name => nv['chapman'], :file_name => nv['base']).first
+          #update the corresponding piece (if found) status to 'Error'
+          unless vld.blank?
+            pc = FreecenPiece.where(:year => vld[:full_year], :chapman_code => nv['chapman'], :piece_number => vld[:piece], :parish_number => vld[:sctpar]).first
+            unless pc.blank?
+              pc.status = 'Error'
+              pc.save!
+            end
+          end
+          self.delete_vld_from_db(vld) unless vld.nil?
         rescue => e
           log_message("  ***EXCEPTION CAUGHT while trying to clean up during rescue from previous exception! The database may not have been fully cleaned up for VLD file #{nv['file']}.\n  #{e.message}")
           log_message(e.backtrace.inspect)
@@ -395,6 +416,7 @@ class Freecen1UpdateProcessor
 
     log_message("\n---9---Update piece subplaces geolocation info for PARMS that were loaded")
     log_message("*** Not implemented within scope of story #61 (version 1.1). Should be done as a story in version 1.2")
+    #currently calling a separate rake task to do the geolocation
 
     #delete the update processor status file so processor will run next time
     if File.exist?(MyopicVicar::Application.config.fc_update_processor_status_file)
@@ -404,13 +426,27 @@ class Freecen1UpdateProcessor
     log_message("\n---10---Do some consistency checks on the database data")
     self.database_consistency_checks()
 
+    log_message("\n---11---List of errors detected in loaded VLD files:")
+    begin
+      vlds = Freecen1VldFile.where(:file_errors.ne => nil).all
+      vlds.each do |vld|
+        vld.file_errors.each do |ferr|
+          log_message(ferr) unless ferr.blank?
+        end unless vld.file_errors.blank?
+      end unless vlds.blank?
+    rescue => e #rescue any exceptions and continue processing the other VLDs
+      log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+      log_message(e.backtrace.inspect)
+    end
+    
+
     # update places cache is currently done by calling the rake task separately
     # from the script /lib/tasks/scripts/update_freecen2_production.sh
     # In a future version, we may want to only update those portions of the
     # places cache that correspond to changes made in this update
 
     log_message("\n---DONE---emailing report to admins, manager")
-    # send update_err_messages and rest of report to admins, manager
+    # send update report to admins, manager
     log_message("end time=#{Time.now.to_s}")
     self.send_update_report()
 
@@ -553,6 +589,16 @@ class Freecen1UpdateProcessor
     log_message("\t#{parms_pathname} contained #{file_record.freecen1_fixed_dat_entries.count} entries")
   end
 
+  #set a freecen1_vld_file's file_digest to nil so it will reload on next update
+  def self.clear_vld_digest(vld_basename)
+    vlds=Freecen1VldFile.where(:file_name => vld_basename).all
+    vlds.each do |vld|
+      puts "set digest to nil for ObjectId(\"#{vld._id}\")"
+      vld.file_digest = nil
+      vld.save
+    end unless vlds.blank?
+  end
+
   def self.send_update_report()
     user = UseridDetail.where(userid: "CENManager").first
     admins = UseridDetail.where(person_role: "system_administrator").entries
@@ -605,6 +651,24 @@ class Freecen1UpdateProcessor
     else
       log_message(">>>check for non-null place_id in all pieces: #{pieces.length} FAILURES")
     end
+
+    # check for pieces marked as Online that have 0 individuals
+    pieces = FreecenPiece.where(:status => "Online", :num_individuals.in => [0,nil]).entries
+    pieces.each do |pc|
+      log_message("***ERROR: piece status is 'Online' but num_individuals==0! #{pc.chapman_code} #{pc.year} piece:#{pc.piece_number} par:#{pc.parish_number} _id:#{pc._id}")
+    end unless pieces.blank?
+    if pieces.blank? || pieces.length == 0
+      log_message(">>>check for 'Online' pieces with no individuals: PASSED")
+    else
+      log_message(">>>check for 'Online' pieces with no individuals: #{pieces.length} FAILURES")
+    end
+
+    # additional checks we may wish to do:
+    # check for vld files with piece that is not 'Online' status
+    # check for dwellings with missing piece or piece that is not 'Online'
+    # check for individuals without a search record
+    # check for search records that are orphaned
+    
   end
 
 end

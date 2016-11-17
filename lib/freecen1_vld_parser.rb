@@ -1,24 +1,29 @@
 module Freecen
   class Freecen1VldParser
-      
+
+    #note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS"
+    @@valid_birth_counties = ChapmanCode::values + ["ANT", "ARM", "AVN", "CAR", "CAV", "CLA", "CLV", "CMA", "CNN", "COR", "DON", "DOW", "DUB", "ENW", "FER", "GAL", "GTL", "GTM", "HUM", "HWR", "IRL", "KER", "KID", "KIK", "LDY", "LEN", "LET", "LEX", "LIM", "LOG", "LOU", "MAY", "MEA", "MOG", "MSY", "MUN", "NIR", "NYK", "OFF", "ROS", "SLI", "SXE", "SXW", "SYK", "TIP", "TWR", "TYR", "UIE", "WAL", "WAT", "WEM", "WEX", "WIC", "WMD", "WYK"] # adding all chapman codes listed in the FreeUKGENconst mysql database that weren't in ChapmanCode::values. ('OUC','OVF','OVB','UNK' are already in ChapmanCode::values). Do we want to flag these birth counties that are inconsistent with FC1?
+    
     def process_vld_file(filename)
+      chapman_code = File.basename(File.dirname(filename))
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename)
-
+      entry_errors = check_vld_records_for_errors(entry_records, chapman_code, File.basename(filename))
       # do not persist if piece not found. raise exception so we can notify
       # person loading the files that either the PARMS.DAT or .VLD file needs
       # to be fixed
-      chapman_code = File.basename(File.dirname(filename))
       if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
-        raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nRun rake freecen:process_freecen1_metadat_dat for the appropriate county if it hasn't been run, verify that the PARMS.DAT file is correct, verify that the .VLD file is in the correct directory and named correctly.\n"
+        raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nVerify that the PARMS.DAT file is correct and has been loaded by the update task, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
-      persist_to_database(filename, file_record, entry_records)
+
+      persist_to_database(filename, file_record, entry_records, entry_errors)
     end
   
-    def persist_to_database(filename, file_hash, entry_hash_array)
+    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)
       file = Freecen1VldFile.new(file_hash)
       file.file_name = File.basename(filename)
       file.dir_name = File.basename(File.dirname(filename))
+      file.file_errors = entry_errors unless entry_errors.blank?
       file.save!
       
       entry_hash_array.each do |hash|
@@ -160,7 +165,8 @@ module Freecen
         piece = filename[5,3]
           # } else {
       else
-        print "Invalid Census Type in file #{filename}\n"
+        # print "Invalid Census Type in file #{filename}\n"
+        raise "***Invalid Census Type (#{centype.nil? ? 'nil' : centype}) in file #{filename}.\n"
               # print E "<tr><td>".substr($dirname,-3)."<td>$file<td>Invalid Census Type";
               # next;
               
@@ -182,12 +188,13 @@ module Freecen
     end
     
     VLD_RECORD_LENGTH = 299
-    
+
     def process_vld_contents(filename)
       # open the file
       raw_file = File.read(filename)
       # loop through each 299-byte substring
       record_count = raw_file.length / VLD_RECORD_LENGTH
+
       contents = []
       (0...record_count).to_a.each do |i|
         contents << process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH])
@@ -306,17 +313,40 @@ module Freecen
         record[:sch_n] = (1000+record[:sch_n].to_i).to_s
       end
           
+      record[:t_born_cty] = 'UNK' if record[:t_born_cty].blank?
       [:t_born_cty, :born_cty].each do |key|
-        record[key] = 'WAL' if record[key] == 'WLS'
+        record[key] = 'WAL' if record[key] == 'WLS'#note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS". should we be consistent going forward?
         record[key] = 'KCD' if record[key] == 'KIN'
-        record[key] = 'UNK' if record[key] == ''
       end
-  
+
       record[:notes] = '' if record[:notes] =~ /\[see mynotes.txt\]/
-    
+
+      if record[:born_cty].blank?
+        record[:born_cty] = record[:t_born_cty]
+        record[:born_place] = record[:t_born_place]
+      end
+      
       # nil out blanks
       
       record
     end
+
+    def check_vld_records_for_errors(records, chapman_code, vld_file_name)
+      record_errors = []
+      records.each_with_index do |rcd,idx|
+        line_label = "#{chapman_code}/#{vld_file_name} entry #{idx}"
+        entry_details = "ED:#{rcd[:enum_n] unless rcd[:enum_n].blank?}#{rcd[:enum_a] unless rcd[:enum_a].blank?} Schedule:#{rcd[:sch_n] unless rcd[:sch_n].blank?}#{rcd[:sch_a] unless rcd[:sch_a].blank?} Record:#{rcd[:seq_in_household] unless rcd[:seq_in_household].blank?}, #{rcd[:s_name] unless rcd[:s_name].blank?}, #{rcd[:f_name] unless rcd[:f_name].blank?}"
+        if '-'==rcd[:prem_flag] || 'x'==rcd[:prem_flag]
+          unless @@valid_birth_counties.include?(rcd[:born_cty])
+            record_errors << "#{line_label}: Invalid birth county #{rcd[:born_cty] unless rcd[:born_cty].blank?} (#{entry_details})"
+          end
+          unless rcd[:age] =~ /^\s*\d+\s*$/
+            record_errors << "#{line_label}: Invalid age #{rcd[:age] unless rcd[:age].blank?} (#{entry_details})"
+          end
+        end
+      end
+      record_errors
+    end
+
   end
 end

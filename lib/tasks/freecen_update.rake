@@ -13,3 +13,15 @@ task :freecen_update_from_FC1,[:parms_dir,:vld_dir] => [:environment] do |t,args
   p ">>>freecen_update.rake freecen_update_from_FC1 task finished"
 end
 
+#the vld_basename is case-sensitive and does not include the full path,
+#for example: rg121798.vld or HS411168.VLD
+#You can enter a single filename or a comma-separated list.
+task :freecen_vld_clear_digest,[:vld_basename] => [:environment] do |t,args|
+  require 'freecen1_update_processor'
+  Freecen1UpdateProcessor.clear_vld_digest(args[:vld_basename])
+  if args.extras.present?
+    args.extras.each do |aa|
+      Freecen1UpdateProcessor.clear_vld_digest(aa)
+    end
+  end
+end

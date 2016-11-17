@@ -22,7 +22,8 @@ module Freecen
         unless dwelling.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
           individual_from_entry(entry, dwelling)
           unless piece.nil?
-            piece.status = 'Online' if piece.status != 'Online'
+#            piece.status = 'Online' if piece.status != 'Online'
+            piece.status = 'Loading' if piece.status != 'Loading'
             piece.inc(:num_individuals => 1)
           end
         end
