@@ -312,7 +312,6 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place_id)
-
       search_record = entry.search_record
       #p search_record
       if  search_record.blank?
