@@ -213,6 +213,7 @@ class Freereg1CsvEntry
     return string
   end
   def create_marriage_string
+   
     string = ''
     string = string + self.groom_forename.strip + "groom" unless  self.groom_forename.nil?
     string = string + self.groom_surname.strip + "groomsurname" unless self.groom_surname.nil?
@@ -264,6 +265,7 @@ class Freereg1CsvEntry
   end
 
   def self.compare_baptism_fields?(one, two)
+    #used in  task check_record_digest
     if one.person_forename == two.person_forename &&
         one.baptism_date == two.baptism_date &&
         one.birth_date == two.birth_date &&
@@ -285,6 +287,7 @@ class Freereg1CsvEntry
     equal
   end
   def self.compare_marriage_fields?(one, two)
+      #used in  task check_record_digest
     if one.groom_forename  ==  two.groom_forename             &&
         one.groom_surname  ==  two.groom_surname            &&
         one.groom_age  ==            two.groom_age  &&
@@ -318,6 +321,7 @@ class Freereg1CsvEntry
     equal
   end
   def self.compare_burial_fields?(one, two)
+      #used in  task check_record_digest
     if one.burial_person_forename == two.burial_person_forename &&
         one.burial_date == two.burial_date &&
         one.burial_person_surname  == two.burial_person_surname &&
@@ -397,6 +401,7 @@ class Freereg1CsvEntry
   end
 
   def embed_witness
+    #does not appear to be called
     if self.record_type == 'ma'
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}] unless self[:witness1_forename].blank? &&  self[:witness1_surname].blank?
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?

@@ -29,7 +29,12 @@ namespace :foo do
     require 'correct_witness_records'
     CorrectWitnessRecords.process(args.limit,args.range)
   end
-
+  
+ desc "Correct the multiple witness records"
+  task :correct_multiple_witness_records,[:limit,:range,:fix] => :environment do |t, args|
+    require 'correct_multiple_witness_records'
+    CorrectMultipleWitnessRecords.process(args.limit,args.range,args.fix)
+  end
 
   desc "Initialize the Physical files collection"
   task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
