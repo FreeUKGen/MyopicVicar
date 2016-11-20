@@ -83,6 +83,7 @@ class CorrectMultipleWitnessRecords
                   result = SearchRecord.update_create_search_record(entry,search_version,place.id) if fix && place.present?
                   message_file.puts "result of update #{result}" unless result == 'updated'
                   sleep_time = (Rails.application.config.emmendation_sleep.to_f).to_f
+                  sleep(sleep_time) if result == 'updated'
                 else
                    message_file.puts "Missing file for #{entry.id}"
                  end
