@@ -377,7 +377,7 @@ class Place
             end
             entry.update_attributes(:place => place_name)
           end
-          file.update_attributes(:place_name => place_name)
+          file.update_attributes(:place => place_name)
         end
       end
       church.update_attributes(:place_id => place_id, :place_name => place_name)
