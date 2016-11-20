@@ -352,7 +352,9 @@ class Place
             else
               entry.search_record.update_attribute(:chapman_code, self.chapman_code)
             end
+            entry.search_record.update_attribute(:county, self.chapman_code)
           end
+          file.update_attribute(:county => self.chapman_code)
         end
       end
     end
@@ -373,7 +375,7 @@ class Place
             else
               entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
             end
-            entry.update_attributes(:place_name => place_name)
+            entry.update_attributes(:place => place_name)
           end
           file.update_attributes(:place_name => place_name)
         end
