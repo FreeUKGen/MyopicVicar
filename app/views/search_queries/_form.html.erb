@@ -13,7 +13,7 @@
 </ul>
 <% @search_query.errors.clear %>
 <% end %>
-<div class="island island--light">
+<div class="push soft--top palm-flush--bottom">
   <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="inputs">
       <legend>Search fields</legend>
@@ -96,7 +96,7 @@
             <option value="">List fills when you select one county</option>
           </select>
         </li>
-  
+
         <li class="grid__item one-quarter lap-one-whole palm-one-whole" id="search_query_record_type_input">
           <fieldset class="choices">
             <legend class="label">Record type</legend>
@@ -141,7 +141,7 @@
         </li>
 
         <% if witness_search_enabled? %>
-        <li class="grid__item one-third lap-one-whole palm-one-whole">          
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
           <%= f.label :witness, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :witness, {}, true, false  %>
             Witnesses
@@ -159,7 +159,7 @@
             <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total). You can narrow your search after it has run</span>
           <% end %>
         </li>
-  
+
         <li class="grid__item one-third lap-one-whole palm-one-whole">
           <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :fuzzy, {},  true, false %>
@@ -206,4 +206,3 @@
     <% end %>
   });})(jQuery);
 </script>
-  
