@@ -81,7 +81,9 @@ class CorrectMultipleWitnessRecords
                   church = register.church if register.present?
                   place = church.place if church.present?
                   result = SearchRecord.update_create_search_record(entry,search_version,place.id) if fix && place.present?
-                  message_file.puts "result of update #{result}" unless result == 'update'
+                  message_file.puts "result of update #{result}" unless result == 'updated'
+                  sleep_time = (Rails.application.config.emmendation_sleep.to_f).to_f
+                  sleep(sleep_time) if result == 'updated'
                 else
                    message_file.puts "Missing file for #{entry.id}"
                  end
@@ -102,8 +104,7 @@ class CorrectMultipleWitnessRecords
           end
           message_file.puts "Processed #{file.userid} #{file.file_name} #{num_marriages} marriages #{num_witnesses} with witnesses #{multiple_forenames} multiple forenames and #{corrected} corrected"
           p "Processed #{file.userid} #{file.file_name} #{num_marriages} marriages #{num_witnesses} with witnesses #{multiple_forenames} multiple forenames and #{corrected} corrected"
-          sleep_time = 20*(Rails.application.config.emmendation_sleep.to_f).to_f
-          sleep(sleep_time) 
+          
         end
       end
 

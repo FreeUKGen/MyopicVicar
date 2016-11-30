@@ -352,7 +352,9 @@ class Place
             else
               entry.search_record.update_attribute(:chapman_code, self.chapman_code)
             end
+            entry.search_record.update_attribute(:county, self.chapman_code)
           end
+          file.update_attribute(:county => self.chapman_code)
         end
       end
     end
@@ -360,8 +362,8 @@ class Place
 
   def propogate_place_name_change
     place_id = self._id
+    place_name = self.place_name
     self.churches.no_timeout.each do |church|
-      church.update_attribute(:place_id, place_id)
       church.registers.no_timeout.each do |register|
         location_names =[]
         location_names << "#{place_name} (#{church.church_name})"
@@ -373,9 +375,12 @@ class Place
             else
               entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
             end
+            entry.update_attributes(:place => place_name)
           end
+          file.update_attributes(:place => place_name)
         end
       end
+      church.update_attributes(:place_id => place_id, :place_name => place_name)
     end
   end
 
