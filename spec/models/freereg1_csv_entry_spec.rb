@@ -638,6 +638,19 @@ describe Freereg1CsvEntry do
     
   end
 
+  it "should find wildcard dates" do
+    filespec = WILDCARD_DATES
+    Rails.application.config.ucf_support = true
+
+    file_record = process_test_file(filespec)
+ 
+    file_record.freereg1_csv_entries.each_with_index do |entry,i|
+      binding.pry
+      check_record(entry, :person_forename, :father_surname, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
+    end
+  end
+
+
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
     unless entry[first_name_key].blank? ||required
