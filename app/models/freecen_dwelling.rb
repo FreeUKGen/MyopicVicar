@@ -17,18 +17,18 @@ class FreecenDwelling
   belongs_to :place
   belongs_to :freecen_piece
 
+  index({freecen_piece_id: 1,dwelling_number: 1},{background: true})
+
   # previous / next dwelling in census (not previous/next search result)
   def prev_next_dwelling_ids
     prev_id = nil
     next_id = nil
-    numDwellings = self.freecen_piece.freecen_dwellings.length
-    idx = self.dwelling_number
-    if idx && idx > 0
-      prev_dwel = self.freecen_piece.freecen_dwellings.where(dwelling_number: idx - 1).only(:FreecenDwelling_id).first
+    idx = self.dwelling_number.to_i
+    pc_id = self.freecen_piece_id
+    if idx && idx >= 0
+      prev_dwel = FreecenDwelling.where(freecen_piece_id: pc_id, dwelling_number: (idx - 1)).first
       prev_id = prev_dwel[:_id] unless prev_dwel.nil?
-    end
-    if idx && idx < numDwellings - 1
-      next_dwel = self.freecen_piece.freecen_dwellings.where(dwelling_number: idx + 1).only(:FreecenDwelling_id).first
+      next_dwel = FreecenDwelling.where(freecen_piece_id: pc_id, dwelling_number: (idx + 1)).first
       next_id = next_dwel[:_id] unless next_dwel.nil?
     end
     [prev_id, next_id]

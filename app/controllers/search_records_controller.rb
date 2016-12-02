@@ -48,8 +48,10 @@ class SearchRecordsController < ApplicationController
     @entry = @search_record.freereg1_csv_entry
     begin
       @search_query = SearchQuery.find(params[:search_id])
-      @previous_record = @search_query.previous_record(params[:id])
-      @next_record = @search_query.next_record(params[:id])
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        @previous_record = @search_query.previous_record(params[:id])
+        @next_record = @search_query.next_record(params[:id])
+      end
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
@@ -100,8 +102,10 @@ class SearchRecordsController < ApplicationController
     end
     begin
       @search_query = SearchQuery.find(params[:search_id])
-      @previous_record = @search_query.previous_record(params[:id])
-      @next_record = @search_query.next_record(params[:id])
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        @previous_record = @search_query.previous_record(params[:id])
+        @next_record = @search_query.next_record(params[:id])
+      end
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
