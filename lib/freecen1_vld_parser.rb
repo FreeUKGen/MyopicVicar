@@ -3,11 +3,11 @@ module Freecen
 
     #note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS"
     @@valid_birth_counties = ChapmanCode::values + ["ANT", "ARM", "AVN", "CAR", "CAV", "CLA", "CLV", "CMA", "CNN", "COR", "DON", "DOW", "DUB", "ENW", "FER", "GAL", "GTL", "GTM", "HUM", "HWR", "IRL", "KER", "KID", "KIK", "LDY", "LEN", "LET", "LEX", "LIM", "LOG", "LOU", "MAY", "MEA", "MOG", "MSY", "MUN", "NIR", "NYK", "OFF", "ROS", "SLI", "SXE", "SXW", "SYK", "TIP", "TWR", "TYR", "UIE", "WAL", "WAT", "WEM", "WEX", "WIC", "WMD", "WYK"] # adding all chapman codes listed in the FreeUKGENconst mysql database that weren't in ChapmanCode::values. ('OUC','OVF','OVB','UNK' are already in ChapmanCode::values). Do we want to flag these birth counties that are inconsistent with FC1?
-    
+
     def process_vld_file(filename)
       chapman_code = File.basename(File.dirname(filename))
       file_record = process_vld_filename(filename)
-      entry_records = process_vld_contents(filename)
+      entry_records = process_vld_contents(filename, chapman_code)
       entry_errors = check_vld_records_for_errors(entry_records, chapman_code, File.basename(filename))
       # do not persist if piece not found. raise exception so we can notify
       # person loading the files that either the PARMS.DAT or .VLD file needs
@@ -18,25 +18,25 @@ module Freecen
 
       persist_to_database(filename, file_record, entry_records, entry_errors)
     end
-  
+
     def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)
       file = Freecen1VldFile.new(file_hash)
       file.file_name = File.basename(filename)
       file.dir_name = File.basename(File.dirname(filename))
       file.file_errors = entry_errors unless entry_errors.blank?
       file.save!
-      
+
       entry_hash_array.each do |hash|
         entry = Freecen1VldEntry.new
-      
+
         entry.deleted_flag = hash[:deleted_flag]
-  
+
         entry.surname = hash[:s_name]
         entry.forenames = hash[:f_name]
-  
+
         entry.occupation = hash[:occ]
         entry.occupation_flag = hash[:occ_err]
-        
+
         entry.name_flag = hash[:name_err]
         entry.relationship = hash[:rel]
         entry.marital_status = hash[:m_stat]
@@ -44,25 +44,24 @@ module Freecen
         entry.age = hash[:age]
         entry.age_unit = hash[:age_unit]
         entry.detail_flag = hash[:p_det_err]
-  
-  
+
         entry.civil_parish = hash[:parish]
         entry.ecclesiastical_parish = hash[:ecc_parish]
-  
+
         entry.dwelling_number = hash[:hh]
         entry.sequence_in_household = hash[:seq_in_household]
-  
+
         entry.enumeration_district = "#{hash[:enum_n]}#{hash[:enum_a]}"
         entry.schedule_number = "#{hash[:sch_n]}#{hash[:sch_a]}"
-        entry.folio_number = "#{hash[:fo_n]}#{hash[:fo_a]}" 
+        entry.folio_number = "#{hash[:fo_n]}#{hash[:fo_a]}"
         entry.page_number = hash[:pg_n]
-   
+
         entry.house_number = hash[:house_n] || hash[:house_a]
         entry.house_or_street_name = hash[:street]
-        
+
         entry.uninhabited_flag = hash[:prem_flag]
         entry.unoccupied_notes = hash[:unoccupied_notes]
-        
+
         entry.individual_flag = hash[:individual_flag]
         entry.birth_county = hash[:born_cty]
         entry.birth_place = hash[:born_place]
@@ -72,16 +71,16 @@ module Freecen
         entry.disability = hash[:dis]
         entry.language = hash[:language]
         entry.notes = hash[:notes]
-  
+
         entry.attributes.delete_if { |key,value| value.blank? }
         entry.freecen1_vld_file = file
-        
+
         entry.save!
       end
-      
+
       file
     end
-  
+
     def process_vld_filename(filepath)
           # $centype = substr($file,0,2);
       filename = File.basename(filepath)
@@ -90,9 +89,9 @@ module Freecen
           # if (uc($centype) eq "HO") {
       centype.upcase!
       if "HO" == centype #HO = England & Wales, 1841 & 1851
-            
+
               # #process EW 1841-1851
-              # $year = 1 if (substr($file,2,1) == 4 ||substr($file,2,1) == 1); 
+              # $year = 1 if (substr($file,2,1) == 4 ||substr($file,2,1) == 1);
               # $year = 2 if substr($file,2,1) == 5;
         year_stub = filename[2,1]
         year = 1 if year_stub == "4" || year_stub == "1"
@@ -100,19 +99,19 @@ module Freecen
               # $piece = substr($file,5,3);
               # $piece = substr($file,4,4) if substr($file,4,1) == 1 || substr($file,4,1) == 2;
         piece = filename[5,3]
-        piece_stub = filename[4,1] 
+        piece_stub = filename[4,1]
         piece = filename[4,4] if piece_stub == "1" || piece_stub == "2"
               # $series = "ENW";
         series = "ENW"
-        
+
           # } elsif (uc($centype) eq "HS") {
       elsif "HS" == centype #HS = Scotland, 1841 & 1851
-        
+
               # #process SC 1841-1851
               # $year = 1 if substr($file,2,1) == 4;
               # $year = 2 if substr($file,2,1) == 5;
         year_stub = filename[2,1]
-        year = 1 if year_stub == "4" 
+        year = 1 if year_stub == "4"
         year = 2 if year_stub == "5"
               # $piece = substr($file,5,3);
         piece = filename[5,3]
@@ -122,7 +121,7 @@ module Freecen
         series = "SCT"
           # } elsif (uc($centype) eq "RG") {
       elsif "RG" == centype #RG = England & Wales, 1861 onwards
-        
+
               # #process EW 1861-1891
         year_stub = filename[2,2]
               # $year = 3 if substr($file,2,2) eq '09';
@@ -169,9 +168,9 @@ module Freecen
         raise "***Invalid Census Type (#{centype.nil? ? 'nil' : centype}) in file #{filename}.\n"
               # print E "<tr><td>".substr($dirname,-3)."<td>$file<td>Invalid Census Type";
               # next;
-              
+
           # }
-          
+
       end
           # $suffix = "";
           # if ($series eq 'SCT') {
@@ -180,16 +179,16 @@ module Freecen
         # $suffix = $sfx[0];
           # }
           # $fullyear = $year*10 + 1831;
-          
+
       full_year = year*10 + 1831
       sctpar = sctpar.to_i
       sctpar = nil if 0==sctpar
       {:full_year => full_year, :raw_year => year, :piece => piece.to_i, :series => series, :census_type => centype, :sctpar => sctpar, :file_digest => file_digest }
     end
-    
+
     VLD_RECORD_LENGTH = 299
 
-    def process_vld_contents(filename)
+    def process_vld_contents(filename, chapman_code = nil)
       # open the file
       raw_file = File.read(filename)
       # loop through each 299-byte substring
@@ -197,13 +196,13 @@ module Freecen
 
       contents = []
       (0...record_count).to_a.each do |i|
-        contents << process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH])
+        contents << process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH], chapman_code)
       end
-      
+
       contents
     end
-  # 
-  # 
+  #
+  #
   # A       0  1 Deletion marker (D or blank)
   # B       1  4 Not used. Was Registration district - this usage is discontinued.
   # C       5  6 A six digit number (leading zeros) which counts the households
@@ -235,10 +234,10 @@ module Freecen
   # Y   V 204  1 Flag for birth place (x or -)
   # Z   W 205  6 Disability (default blank)
   # AA  X 211  1 Language (W, E, B, G or blank)
-  # AB  Y 212 44 Notes (default blank, no case 
-  
-  
-    VLD_POSITION_MAP = 
+  # AB  Y 212 44 Notes (default blank, no case
+
+
+    VLD_POSITION_MAP =
     {
       :deleted_flag => [0,1],
       :hh => [5,6],
@@ -281,38 +280,40 @@ module Freecen
       # :born_place_sx => [279,20], #original has soundex of iu19
       :unoccupied_notes => [212,44],
     }
-    
-  
-    
-    def process_vld_record(line)
+
+    def process_vld_record(line, chapman_code = nil)
       record = parse_vld_record(line)
-      record = clean_vld_record(record)
-      
+      record = clean_vld_record(record, chapman_code)
+
       record
     end
-    
+
     def parse_vld_record(line)
       record = {}
       VLD_POSITION_MAP.each_pair do |attribute, location|
         record[attribute] = line[location[0],location[1]]
       end
-  
+
       record
     end
-    
-    def clean_vld_record(raw_record)
+
+    def clean_vld_record(raw_record, chapman_code = nil)
       # trim trailing whitespace
       record = {}
       raw_record.each_pair do |key,value|
         clean_value = value.encode('ISO-8859-15', { :invalid => :replace, :undef => :replace, :replace => ''}).sub(/\s*$/, '')
-        record[key] = clean_value unless clean_value.blank?       
+        record[key] = clean_value unless clean_value.blank?
       end
-      
+
+      if chapman_code && record[:t_born_cty] == "INC"
+        record[:t_born_cty] = chapman_code
+      end
+
       # fix schn over 1000
       if record[:sch_a] == "!"
         record[:sch_n] = (1000+record[:sch_n].to_i).to_s
       end
-          
+
       record[:t_born_cty] = 'UNK' if record[:t_born_cty].blank?
       [:t_born_cty, :born_cty].each do |key|
         record[key] = 'WAL' if record[key] == 'WLS'#note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS". should we be consistent going forward?
@@ -325,9 +326,9 @@ module Freecen
         record[:born_cty] = record[:t_born_cty]
         record[:born_place] = record[:t_born_place]
       end
-      
+
       # nil out blanks
-      
+
       record
     end
 
