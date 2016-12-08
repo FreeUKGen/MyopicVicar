@@ -22,7 +22,7 @@ module Refinery
 
         # GET /registrations/password/edit?reset_password_token=abcdef
         def edit
-          if @reset_password_token = params[:reset_password_token]
+          if params[:reset_password_token]
             self.resource = User.find_or_initialize_with_error_by_reset_password_token(params[:reset_password_token])
             respond_with(self.resource) and return
           end
