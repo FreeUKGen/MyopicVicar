@@ -426,9 +426,9 @@ class Freecen1UpdateProcessor
     log_message("\n---10---Do some consistency checks on the database data")
     self.database_consistency_checks()
 
-    log_message("\n---11---List of errors detected in loaded VLD files:")
+    log_message("\n---11a---List of errors detected in loaded VLD files:")
     begin
-      vlds = Freecen1VldFile.where(:file_errors.ne => nil).all
+      vlds = Freecen1VldFile.where(:file_errors.ne => nil)
       vlds.each do |vld|
         vld.file_errors.each do |ferr|
           log_message(ferr) unless ferr.blank?
@@ -439,6 +439,20 @@ class Freecen1UpdateProcessor
       log_message(e.backtrace.inspect)
     end
     
+    log_message("\n---11b---List of freecen1_vld_files with errors detected above:")
+    begin
+      vlds = Freecen1VldFile.where(:file_errors.ne => nil)
+      num_files_with_errors=0
+      vlds.each do |vld|
+        num_files_with_errors += 1
+        num_errors_in_vld = vld.file_errors.length rescue 0
+        log_message("#{vld.dir_name unless vld.dir_name.blank?}/#{vld.file_name unless vld.file_name.blank?} #{vld.full_year unless vld.full_year.blank?} (#{num_errors_in_vld} errors)")
+      end
+      log_message("(#{num_files_with_errors} freecen_vld_files had errors)")
+    rescue => e #rescue any exceptions and continue processing the other VLDs
+      log_message("***EXCEPTION CAUGHT:\n  #{e.message}")
+      log_message(e.backtrace.inspect)
+    end
 
     # update places cache is currently done by calling the rake task separately
     # from the script /lib/tasks/scripts/update_freecen2_production.sh
