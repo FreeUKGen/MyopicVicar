@@ -18,9 +18,10 @@ describe Freecen1VldFile do
     File.join(Rails.root, 'test_data', 'freecen1_dats', '1881', 'CONPARMS.DAT'),
     File.join(Rails.root, 'test_data', 'freecen1_dats', '1891', 'CONPARMS.DAT')
   ]
-  
+
   TEST_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'DUR', 'RG093730.VLD')
-  
+  TEST_INC_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'ho410133.vld')
+
   YEAR_VLD_FILES = {
     RecordType::CENSUS_1841 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'ho410140.vld'),
     RecordType::CENSUS_1851 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'ho511906.vld'),
@@ -29,7 +30,7 @@ describe Freecen1VldFile do
     RecordType::CENSUS_1881 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'rg112275.vld'),
     RecordType::CENSUS_1891 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'rg121836.vld')
   }
-  
+
   YEAR_BIRTH_DATE = {
     RecordType::CENSUS_1841 => {
       0 => 1791, # 50 y
@@ -87,19 +88,15 @@ describe Freecen1VldFile do
     }
   }
 
- 
-
   before(:all) do
     clean_database
-    load_dats    
+    load_dats
   end
- 
 
   before(:each) do
     clean_database
-#    load_dats
+    # load_dats
   end
-
 
   it "should create the correct number of entries" do
     process_file(TEST_VLD_FILE)
@@ -108,13 +105,13 @@ describe Freecen1VldFile do
     FreecenDwelling.count.should eq 650 # was 654 -- where did the two missing records go?
     SearchRecord.count.should     eq 0 #this will change once uninhabited houses work
   end
-  
+
   it "should transform a dwelling with search records" do
     process_file(TEST_VLD_FILE)
     dwelling = FreecenDwelling.first
     translator = Freecen::Freecen1VldTranslator.new
     translator.translate_dwelling(dwelling, 'DUR', dwelling.freecen1_vld_file.full_year)
-    SearchRecord.count.should eq dwelling.freecen_individuals.count     
+    SearchRecord.count.should eq dwelling.freecen_individuals.count
   end
 
   it "should not transform an uninhabited dwelling" do
@@ -124,7 +121,7 @@ describe Freecen1VldFile do
       translator = Freecen::Freecen1VldTranslator.new
       translator.translate_dwelling(unoccupied_dwelling, 'DUR', unoccupied_dwelling.freecen1_vld_file.full_year)
       SearchRecord.count.should eq 0
-    end    
+    end
   end
 
   it "should find records by name" do
@@ -173,7 +170,7 @@ describe Freecen1VldFile do
       dwelling = FreecenDwelling.last
       translator = Freecen::Freecen1VldTranslator.new
       translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
-  
+
       dwelling.freecen_individuals.each_with_index do |individual,i|
         query_params = { :first_name => individual.forenames,
                          :last_name => individual.surname,
@@ -183,9 +180,9 @@ describe Freecen1VldFile do
         q.save!(:validate => false)
         q.search
         result = q.results
-  
+
         result.count.should be >= 1
-        
+
       end
       seen = {}
       FreecenIndividual.all.limit(10000).each_with_index do |individual, i|
@@ -210,7 +207,7 @@ describe Freecen1VldFile do
         translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
         birth_date = translator.translate_date(individual, record_type)
         year = birth_date.match(/\d\d\d\d/)[0]
-    
+
         query_params = { :first_name => individual.forenames,
                          :last_name => individual.surname,
                          :start_year => year,
@@ -220,7 +217,7 @@ describe Freecen1VldFile do
         q.save!(:validate => false)
         q.search
         result = q.results
- 
+
 #        print "#{index} => #{individual.search_record.search_dates.first[0..3]}, # #{individual.age}#{individual.age_unit}\n"
         binding.pry if result.count == 0 && true
         result.count.should be >= 1
@@ -238,7 +235,7 @@ describe Freecen1VldFile do
 
     dwelling.freecen_individuals.each do |individual|
       wildcard_surname = individual.surname.sub(/...$/, "*")
-      
+
       query_params = { :first_name => individual.forenames,
                        :last_name => wildcard_surname,
                        :chapman_codes => ['DUR'],
@@ -272,8 +269,47 @@ describe Freecen1VldFile do
     end
   end
 
+  context "when it includes INC birth code, and it's successfully replaced" do
+    it "should return a valid record" do
+      process_file(TEST_INC_VLD_FILE)
+      dwelling = FreecenDwelling.last
+      translator = Freecen::Freecen1VldTranslator.new
+      translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
 
+      inc_individual = dwelling.freecen_individuals[0]
+      query_params = { :first_name => inc_individual.forenames,
+                       :last_name => inc_individual.surname,
+                       :birth_chapman_codes => [inc_individual.verbatim_birth_county],
+                       :inclusive => false }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
 
+      expect(result.count).to eq 1
+    end
+  end
+
+  context "when it includes INC birth code, and it's not replaced" do
+    it "should not return a record" do
+      process_file(TEST_INC_VLD_FILE)
+      dwelling = FreecenDwelling.last
+      translator = Freecen::Freecen1VldTranslator.new
+      translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
+
+      inc_individual = dwelling.freecen_individuals[0]
+      query_params = { :first_name => inc_individual.forenames,
+                       :last_name => inc_individual.surname,
+                       :birth_chapman_codes => ["INC"],
+                       :inclusive => false }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+
+      expect(result.count).to be 0
+    end
+  end
 
   def clean_database
     SearchRecord.delete_all
@@ -281,7 +317,6 @@ describe Freecen1VldFile do
     FreecenIndividual.delete_all
     Freecen1VldEntry.delete_all
     Freecen1VldFile.delete_all
-    
   end
 
   def load_dats
@@ -291,24 +326,23 @@ describe Freecen1VldFile do
     TEST_DAT_FILES.each do |filename|
       parser = Freecen::Freecen1MetadataDatParser.new
       file_record = parser.process_dat_file(filename)
-      
+
       transformer = Freecen::Freecen1MetadataDatTransformer.new
       transformer.transform_file_record(file_record)
-      
+
       translator = Freecen::Freecen1MetadataDatTranslator.new
-      translator.translate_file_record(file_record)      
+      translator.translate_file_record(file_record)
     end
   end
 
-
   def process_file(filename)
-#    print "process_file dwelling count=#{FreecenDwelling.count} before file is processed\n"
+    # print "process_file dwelling count=#{FreecenDwelling.count} before file is processed\n"
     parser = Freecen::Freecen1VldParser.new
     file_record = parser.process_vld_file(filename)
-    
+
     transformer = Freecen::Freecen1VldTransformer.new
-    transformer.transform_file_record(file_record)    
-#    print "process_file dwelling count=#{FreecenDwelling.count} after file #{TEST_VLD_FILE} is processed\n"
+    transformer.transform_file_record(file_record)
+    # print "process_file dwelling count=#{FreecenDwelling.count} after file #{TEST_VLD_FILE} is processed\n"
   end
 
 end
