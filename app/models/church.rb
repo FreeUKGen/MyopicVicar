@@ -169,7 +169,6 @@ class Church
         end
         file.update_attributes(:place => place_name, :church_name => self.church_name)
       end
-      register.update_attributes(:place => place_name, :church_name => self.church_name)
     end
 
   end
