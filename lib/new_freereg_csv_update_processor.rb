@@ -58,13 +58,13 @@ class NewFreeregCsvUpdateProcessor
   end
 
   def self.activate_project(create_search_records,type,force,range)
-    server_name = `hostname`.strip
+    mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
     force, create_search_records = NewFreeregCsvUpdateProcessor.convert_to_bolean(create_search_records,force)
     @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
     @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
 
-    unless server_name == 'colobus.freebmd.org.uk'
-      @project.write_log_file("proccessing terminated, #{server_name} is not the master server")
+    unless mongo_node == :primary_preferred
+      @project.write_log_file("proccessing terminated, task hasn't started on primary mongo node")
       return
     end
 
