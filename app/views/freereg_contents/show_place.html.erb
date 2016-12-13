@@ -27,21 +27,22 @@
           </tr>
         </thead>
         <tbody class="scrollable">
-          <tr><td>Place : </td> <td class="weight--semibold"> <%= @place.place_name %>  </td></tr>
-          <tr><td>County:</td> <td class="weight--semibold"><%= @place.county %></td></tr>
-          <tr><td>Country:</td> <td class="weight--semibold"><%= @place.country %></td></tr>
+          <tr><td>Place </td> <td class="weight--semibold"> <%= @place.place_name %>  </td></tr>
+          <tr><td>County</td> <td class="weight--semibold"><%= @place.county %></td></tr>
+          <tr><td>Country</td> <td class="weight--semibold"><%= @place.country %></td></tr>
           <% if @names%>
             <%  @names.each do |name| %>
-              <tr><td>Other possible place names :</td><td class="weight--semibold" ><%= name %>  </td></tr>
+              <tr><td>Other possible place names</td><td class="weight--semibold" ><%= name %>  </td></tr>
             <%end%>
           <%end%> 
-          <tr><td>Notes about the Place :</td><td class="weight--semibold" > <%= @place.place_notes %> </td></tr>
-          <tr><td>Location on map :</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
-          <tr><td>Last changed:</td><td class="weight--semibold" > <%= @place.u_at.strftime("%d %b %Y") unless @place.u_at.nil?%></td>
+          <tr><td>Notes about the Place</td><td class="weight--semibold" > <%= @place.place_notes %> </td></tr>
+          <tr><td>Location on map</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
+          <tr><td>Latest date a transcription changed</td><td class="weight--semibold" > <%= @place.last_amended %></td>
               </tr>
                <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @place.records %></td></tr>
         <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @place.datemin %></td></tr>
         <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @place.datemax %></td></tr>
+         <tr><td>Date place information changed</td>  <td class="weight--semibold"><%= @place.u_at.strftime("%d %b %Y") %></td></tr>
         </tbody>
       </table> 
        <h3 class=" text--center">Numbers of transcriptions </h4>

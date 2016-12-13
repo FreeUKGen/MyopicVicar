@@ -36,13 +36,14 @@
               <%end%>
             <%end%>
           <%end%>      
-          <tr><td>Denomination of the Church :</td><td class="weight--semibold" ><%= add_blank(@church.denomination) %></td></tr>
-          <tr><td>The Church Website :</td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
-          <tr><td>Notes about the Church :</td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
-          <tr><td>Record last changed:</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
+          <tr><td>Denomination of the Church</td><td class="weight--semibold" ><%= add_blank(@church.denomination) %></td></tr>
+          <tr><td>The Church Website </td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
+          <tr><td>Notes about the Church </td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
+          <tr><td>Latest date a transcription changed</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
            <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @church.records %></td></tr>
         <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @church.datemin %></td></tr>
         <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @church.datemax %></td></tr>
+         <tr><td>Date church information changed</td>  <td class="weight--semibold"><%= @church.u_at.strftime("%d %b %Y") %></td></tr>
         </tbody>
       </table>
     </div>

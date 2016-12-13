@@ -67,6 +67,7 @@ class Church
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = DateTime.new(1998,1,1)
     individual_registers = self.registers
     if individual_registers.present?
       individual_registers.each do |register|
@@ -77,12 +78,15 @@ class Church
           register.daterange = FreeregContent.setup_total_hash if  register.daterange.blank?
           FreeregContent.calculate_date_range(register, total_hash,"register")
           FreeregContent.get_transcribers(register, transcriber_hash,"register")
+          last_amended = register.last_amended.to_datetime if register.present? && register.last_amended.present? && register.last_amended.to_datetime > last_amended.to_datetime
         end
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
   end
 
   def change_name(param)
