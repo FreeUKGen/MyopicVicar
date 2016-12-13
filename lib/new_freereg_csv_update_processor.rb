@@ -63,7 +63,7 @@ class NewFreeregCsvUpdateProcessor
     @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
     @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
 
-    unless mongo_node == :primary_preferred
+    if mongo_node == :secondary_preferred
       @project.write_log_file("proccessing terminated, task hasn't started on primary mongo node")
       return
     end
