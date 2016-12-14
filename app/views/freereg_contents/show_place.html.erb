@@ -37,7 +37,7 @@
           <%end%> 
           <tr><td>Notes about the Place</td><td class="weight--semibold" > <%= @place.place_notes %> </td></tr>
           <tr><td>Location on map</td><td class="weight--semibold" ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
-          <tr><td>Latest date a transcription changed</td><td class="weight--semibold" > <%= @place.last_amended %></td>
+          <tr><td>Latest date a transcription file loaded</td><td class="weight--semibold" > <%= @place.last_amended %></td>
               </tr>
                <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @place.records %></td></tr>
         <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @place.datemin %></td></tr>
