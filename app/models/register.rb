@@ -123,7 +123,9 @@ class Register
           file.daterange = FreeregContent.setup_array if  file.daterange.blank?
           FreeregContent.calculate_date_range(file, total_hash,"file")
           FreeregContent.get_transcribers(file, transcriber_hash,"file")
-          last_amended = file.modification_date.to_datetime  if file.modification_date.to_datetime > last_amended.to_datetime
+          batch = PhysicalFile.userid(file.userid).file_name(file.file_name).first
+          uploaded = batch.base_uploaded_date if batch.present?
+          last_amended = uploaded.to_datetime  if uploaded.present? && uploaded.to_datetime > last_amended.to_datetime
         end
       end
     end
