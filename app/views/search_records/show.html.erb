@@ -9,10 +9,11 @@
     <% end %>
     <table class="table--bordered table--data push--bottom">
       <caption class="beta">FreeReg <%= record_type(@entry) %> entry
-        <span class="additional"> on <%=Time.now.strftime("%d %b %Y")%><br>
-          For information about this place follow the link to <%= link_to(@search_record.place.place_name, place_freereg_content_path(@search_record.place)) %>.<br>
-          If you believe there is an error in this transcription, then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query) %> it to our Data Manager.
-        </span>
+        <%if @display_date%>
+          <span class="additional"> search conduction on <%=Time.now.strftime("%d %b %Y") %></span><br>
+        <% else%>
+          <span class="additional"> <%= link_to "Report Data error", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
+        <% end%> 
       </caption>
       <colgroup>
         <col class="t40">
@@ -26,11 +27,18 @@
       </thead>
       <tbody>
         <% @entry.ordered_display_fields.each do |field| %>
-          <% if @entry[field] %>
+          <% if @entry[field] %>     
+            <% if field == 'place' %>
+            <tr>
+            <td><%= field.gsub('_',' ').capitalize %> (With link for information)</td>
+            <td><%= link_to(@entry[field], place_freereg_content_path(@search_record.place)) %></td>
+            </tr>
+            <%else%>
             <tr>
               <td><%= field.gsub('_',' ').capitalize %></td>
               <td><%= @entry[field] %></td>
             </tr>
+             <% end %>
           <% end %>
         <% end %>
         <% @entry.multiple_witnesses.each do |witness| %>
@@ -50,6 +58,7 @@
           <td><%= @entry.notes_from_transcriber%></td>
         </tr>
 
+
         <% if current_authentication_devise_user.present? %>
           <tr>
             <td>Line ID</td>
@@ -58,6 +67,7 @@
         <% end%>
       </tbody>
     </table>
+    
   <% end %>
   <% if @annotations && @annotations.length > 0 %>
     <table class="table--bordered table--data">
