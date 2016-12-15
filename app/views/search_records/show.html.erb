@@ -10,7 +10,7 @@
     <table class="table--bordered table--data push--bottom">
       <caption class="beta">FreeReg <%= record_type(@entry) %> entry
         <%if @display_date%>
-          <span class="additional"> search conduction on <%=Time.now.strftime("%d %b %Y") %></span><br>
+          <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
         <% else%>
           <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
         <% end%> 
