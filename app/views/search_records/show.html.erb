@@ -12,7 +12,7 @@
         <%if @display_date%>
           <span class="additional"> search conduction on <%=Time.now.strftime("%d %b %Y") %></span><br>
         <% else%>
-          <span class="additional"> <%= link_to "Report Data error", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
+          <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
         <% end%> 
       </caption>
       <colgroup>
@@ -30,7 +30,7 @@
           <% if @entry[field] %>     
             <% if field == 'place' %>
             <tr>
-            <td><%= field.gsub('_',' ').capitalize %> (With link for information)</td>
+            <td><%= field.gsub('_',' ').capitalize %> (link for place information)</td>
             <td><%= link_to(@entry[field], place_freereg_content_path(@search_record.place)) %></td>
             </tr>
             <%else%>
