@@ -67,13 +67,13 @@ Refinery::Pages.configure do |config|
   # config.show_title_in_body = true
 
   # You can add new HTML elements not already supported by Loofah::HTML5::WhiteList::ALLOWED_ELEMENTS
-  # For more information on whitelist see ALLOWED_ELEMENTS 
+  # For more information on whitelist see ALLOWED_ELEMENTS
   # (https://github.com/flavorjones/loofah/blob/v2.0.3/lib/loofah/html5/whitelist.rb#L151)
   # config.add_whitelist_elements = ["source", "track"]
-  config.add_whitelist_elements = ["style"]
-  
+  config.add_whitelist_elements = ["style", "script"]
+
   # You can add new HTML attributes not already supported by Loofah::HTML5::WhiteList::ALLOWED_ATTRIBUTES
-  # For more information on whitelist see ALLOWED_ATTRIBUTES 
+  # For more information on whitelist see ALLOWED_ATTRIBUTES
   # (https://github.com/flavorjones/loofah/blob/v2.0.3/lib/loofah/html5/whitelist.rb#L152)
   # config.add_whitelist_attributes = ["kind", "srclang", "placeholder", "controls"]
   config.add_whitelist_attributes = ["scoped"]
