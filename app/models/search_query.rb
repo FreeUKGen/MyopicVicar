@@ -422,7 +422,7 @@ class SearchQuery
     return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     return nil unless secondary_date_query_required
     secondary_search_params = search_params
-    secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
+    secondary_search_params[:secondary_search_date] = search_params[:search_date]
     search_index = SearchRecord.index_hint(secondary_search_params)
     logger.warn("FREEREG:SECONDARY_SEARCH_HINT: #{search_index}")
     secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
