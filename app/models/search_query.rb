@@ -392,6 +392,14 @@ class SearchQuery
     param
   end
 
+  def register_type_params
+    params = Hash.new
+    params[:record_type] = record_type if record_type.present?
+    params[:record_type] = { '$in' => [ 'ba','ma', 'bu']} if record_type.blank?
+    params
+  end
+
+
   def results
     records = fetch_records
     sort_results(records) unless records.nil?
@@ -415,7 +423,6 @@ class SearchQuery
     return nil unless secondary_date_query_required
     secondary_search_params = search_params
     secondary_search_params[:secondary_search_date] = secondary_search_params[:search_date]
-    secondary_search_params.delete(:search_date)
     search_index = SearchRecord.index_hint(secondary_search_params)
     logger.warn("FREEREG:SECONDARY_SEARCH_HINT: #{search_index}")
     secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
@@ -428,10 +435,10 @@ class SearchQuery
 
   def search_params
     params = Hash.new
-    params[:record_type] = record_type if record_type
-    params.merge!(place_search_params)
-    params.merge!(date_search_params)
     params.merge!(name_search_params)
+    params.merge!(place_search_params)
+    params.merge!(register_type_params)
+    params.merge!(date_search_params)
     params
   end
 

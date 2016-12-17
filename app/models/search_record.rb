@@ -71,44 +71,28 @@ class SearchRecord
 
 
   PRE_SEARCH_DATE_INDEXES = {
-    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
-    "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
-    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name", "search_date"],
-    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "search_date"],
-    "place_ln" => ["place_id", "search_names.last_name", "search_date"],
-    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name", "search_date"],
-    "place_lnsdx" => ["place_id", "search_soundex.last_name", "search_date"],
-    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name", "search_date"],
-    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
-    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
+
   }
   POST_SEARCH_DATE_INDEXES = {
-    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
-    'county_fn_ln_ssd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "secondary_search_date"],
-    "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
-    "county_ln_ssd" => ["chapman_code", "search_names.last_name", "secondary_search_date"],
-    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name","search_date"],
-    "county_lnsdx_fnsdx_ssd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name", "secondary_search_date"],
-    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "search_date"],
-    "county_fnsdx_ssd" => ["chapman_code", "search_soundex.first_name", "secondary_search_date"],
-    "place_ln" => ["place_id", "search_names.last_name","search_date"],
-    "place_ln_ssd" => ["place_id", "search_names.last_name", "secondary_search_date"],
-    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name","search_date"],
-    "place_ln_fn_ssd" => ["place_id","search_names.first_name", "search_names.last_name", "secondary_search_date"],
-    "place_lnsdx" => ["place_id", "search_soundex.last_name","search_date"],
-    "place_lnsdx_ssd" => ["place_id", "search_soundex.last_name", "secondary_search_date"],
-    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name","search_date"],
-    "place_fnsdx_lnsdx_ssd" => ["place_id", "search_soundex.first_name", "search_soundex.last_name", "secondary_search_date"],
-    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name","search_date"],
-    "ln_rt_fn_ssd" => ["search_names.last_name", "record_type", "search_names.first_name", "secondary_search_date"],
-    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name","search_date"],
-    "lnsdx_rt_fnsdx_ssd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "secondary_search_date"]
+    "ln_county_rt_sd_ssd" => ["search_names.last_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "ln_fn_county_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_county_rt_sd_ssd" => ["search_soundex.last_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_fnsdx_county_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+    "ln_place_rt_sd_ssd" => ["search_names.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "ln_fn_place_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","place_id","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","place_id","record_type", "search_date", "secondary_search_date"],
+    "fn_county_rt_sd_ssd" => ["search_names.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "fnsdx_county_rt_sd_ssd" => ["search_soundex.last_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "fn_place_rt_sd_ssd" => ["search_names.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"]
   }
   INDEXES = PRE_SEARCH_DATE_INDEXES.merge(POST_SEARCH_DATE_INDEXES)
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
+    p field_spec
     index(field_spec, {:name => name, background: true })
   end
 
@@ -260,21 +244,26 @@ class SearchRecord
       search_fields = fields_from_params(search_params)
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
       #    pp scores
+      p "scores"
+      p scores
       best = scores.max_by { |k,v| v}
+      p "selected"
+      p best[0]
       best[0]
     end
 
     def index_score(index_name, search_fields)
       Rails.application.config.use_decomposed_dates ? fields = POST_SEARCH_DATE_INDEXES[index_name] : fields = PRE_SEARCH_DATE_INDEXES[index_name]
       best_score = -1
-      fields.each_with_index do |field, i|
+      fields.each do |field|
         if search_fields.any? { |param| param == field }
-          best_score = i
+          best_score =  best_score + 1
         else
-          break #bail since leading terms haven't been found
+          return best_score
+          #bail since leading terms haven't been found
         end
       end
-      best_score
+      return best_score
     end
 
     def indexable_value?(param)
