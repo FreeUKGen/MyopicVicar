@@ -260,11 +260,11 @@ class SearchQuery
     else
       if fuzzy
         name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
-        name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
+        name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name.present?
         params["search_soundex"] =  { "$elemMatch" => name_params}
       else
         name_params["first_name"] = first_name.downcase if first_name
-        name_params["last_name"] = last_name.downcase if last_name
+        name_params["last_name"] = last_name.downcase if last_name.present?
         params["search_names"] =  { "$elemMatch" => name_params}
       end
     end
@@ -408,10 +408,11 @@ class SearchQuery
   end
 
   def search
-    search_index = SearchRecord.index_hint(search_params)
-    logger.warn("FREEREG:SEARCH_HINT: #{search_index}")
-    self.update_attribute(:search_index,search_index)
-    records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    @search_parameters = search_params
+    @search_index = SearchRecord.index_hint(@search_parameters)
+    logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
+    self.update_attribute(:search_index,@search_index)
+    records = SearchRecord.collection.find(@search_parameters).hint(@search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results)
     search_ucf
@@ -421,16 +422,14 @@ class SearchQuery
   def secondary_date_results
     return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     return nil unless secondary_date_query_required
-    secondary_search_params = search_params
-    secondary_search_params[:secondary_search_date] = search_params[:search_date]
-    search_index = SearchRecord.index_hint(secondary_search_params)
-    logger.warn("FREEREG:SECONDARY_SEARCH_HINT: #{search_index}")
-    secondary_records = SearchRecord.collection.find(secondary_search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    @secondary_search_params = @search_parameters
+    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
+    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
 
   def secondary_date_query_required
-    Rails.application.config.use_decomposed_dates && search_params[:search_date] && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
+    Rails.application.config.use_decomposed_dates && @search_parameters[:search_date].present? && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
   end
 
   def search_params
@@ -443,10 +442,12 @@ class SearchQuery
   end
 
   def search_ucf
+
     if can_query_ucf?
+      p "UCF"
       start_ucf_time = Time.now.utc
       ucf_index = SearchRecord.index_hint(ucf_params)
-      ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+      ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
       self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
       self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
@@ -504,12 +505,14 @@ class SearchQuery
   end
 
   def ucf_params
+    p "Ucf parameters
+  	"
     params = Hash.new
-    params[:record_type] = record_type if record_type
+    params.merge!(name_search_params)
     params.merge!(place_search_params)
+    params.merge!(register_type_params)
     params.merge!(date_search_params)
     params["_id"] = { "$in" => ucf_record_ids } #moped doesn't translate :id into "_id"
-
     params
   end
 

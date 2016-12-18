@@ -153,10 +153,11 @@ class SearchRecord
 
     def fields_from_params(search_params)
       fields = []
-
-      search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
-
+      search_params.each_pair do |key,value|
+        extract_fields(fields, value, key.to_s)
+      end
       fields.uniq
+      fields
     end
 
     def from_annotation(annotation)
@@ -269,7 +270,6 @@ class SearchRecord
     def indexable_value?(param)
       if param.is_a? Regexp
         # does this begin with a wildcard?
-
         param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl
       else
         true
