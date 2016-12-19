@@ -1,0 +1,14 @@
+/*------------------------------------*\
+    $BANNER
+\*------------------------------------*/
+
+/**
+ * A horizontal banner
+ */
+.banner-horz {
+  display: block;
+  text-align: center;
+  position: relative;
+  margin: $b 0;
+  height: 90px;
+}

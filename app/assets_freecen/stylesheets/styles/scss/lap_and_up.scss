@@ -1,0 +1,210 @@
+@charset "UTF-8";
+/*------------------------------------*\
+    LAP_AND_UP.CSS
+\*------------------------------------*/
+
+
+/**
+ * Vars and core
+ */
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/vars";
+@import "vars";
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/lap_and_up";
+
+
+/**
+ * Site header
+ */
+
+.site__header {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  height: 170px;
+  @include vendor(box-shadow, 0 0 0 rgba(0, 0, 0, 0));
+
+  @include manual-media-query(890px) {
+    padding-bottom: 60px;
+  }
+
+  .banner-horz {
+    float: right;
+    position: relative;
+    z-index: 3;
+    margin: 0;
+
+    @include manual-media-query(950px) {
+      display: none;
+    }
+
+  }
+
+}
+
+  .site__header__menu-btn {
+    display: none;
+  }
+
+  .site__header__logo {
+    float: left;
+    margin: 0;
+    position: relative;
+    z-index: 3;
+  }
+
+  @include manual-media-query(1090px) {
+    .icon__freereg {
+      @include vendor(background-size, 100%);
+      width: 20%;
+      height: 0px;
+      overflow: hidden;
+
+      padding-bottom: 7%;
+      margin-top: 1%;
+    }
+  }
+
+  @include manual-media-query(1010px) {
+    .icon__freereg {
+      margin-top: 2%;
+      width: 16%;
+    }
+  }
+
+  @include manual-media-query(950px) {
+    .icon__freereg {
+      width: 266px;
+      height: 87px;
+      padding-bottom: 0;
+      margin-top: 0;
+    }
+  }
+
+  .site__header__freeukgen-logo {
+    display: none;
+  }
+
+
+  /**
+   * Most of this code is to re-position the nav inside the header
+   * to counteract the weird markup we need so that the offcanvas works
+   */
+  .site__header__nav {
+
+    background: $orange;
+    overflow: hidden;
+    height: 46px;
+
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 170px;
+    z-index: 3;
+
+    .site__header__nav__inner {
+      @include container($container-width);
+    }
+
+    .main-nav {
+
+      ul {
+        float: left;
+        margin: 0;
+      }
+
+      li {
+        margin-right: $b * 2;
+        float: left;
+
+        @include manual-media-query(800px) {
+          margin-right: $b;
+        }
+
+        @include manual-media-query(680px) {
+          margin-right: $b / 2;
+        }
+      }
+
+      a {
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 11px;
+        padding-bottom: 7px;
+
+        background: none;
+        color: #fff;
+        color: rgba(255, 255, 255, 0.9);
+
+        @include manual-media-query(800px) {
+          @include font-size(16px, false);
+        }
+
+        &:active,
+        &:hover {
+          background: none;
+          color: #fff;
+        }
+
+      }
+
+    }
+
+    .social-links {
+
+      display: block;
+      float: right;
+      border-right: 2px solid #fff;
+
+      ul {
+
+      }
+
+      li {
+        float: left;
+        border-left: 2px solid #fff;
+
+      }
+
+      a {
+        display: block;
+        background: #fff;
+        height: 46px;
+        width: 46px;
+      }
+    }
+
+  }
+
+
+
+/**
+ * Site content
+ */
+.site__content {
+  margin-top: 46px;
+  padding-top: $b;
+}
+
+
+
+
+/**
+ * Site footer
+ */
+.site__footer {
+  .icon__freeukgen__project--light {
+    margin-top: $base-spacing-unit / 3;
+  }
+}
+
+
+
+/**
+ * A list of icons
+ */
+.icon-list {
+  li {
+    @include inline-block;
+    margin-left: $base-spacing-unit * 2;
+    margin-right: $base-spacing-unit * 2;
+  }
+}

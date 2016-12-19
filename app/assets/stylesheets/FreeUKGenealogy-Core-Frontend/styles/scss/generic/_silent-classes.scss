@@ -1,0 +1,25 @@
+/*------------------------------------*\
+    $SILENT CLASSES
+\*------------------------------------*/
+/**
+ * A bunch of silent classes to let us extend
+ * selectors in palm.scss without any overhead
+ *
+ * I've not aliases everything because that would lead to
+ * the probability of lots of unneccessary classes, instead
+ * just add more here as and when you need them
+ */
+
+@each $selector in (
+  'grid', 'grid--half', 'grid__item',
+  'one-whole', 'one-half', 'one-third', 'two-thirds', 'one-quarter', 'two-quarters', 'three-quarters',
+  'btn', 'btn--small', 'btn--large', 'btn-img',
+  'island', 'islet', 'island--bordered', 'islet--bordered', 'media', 'media__img', 'media__img--rev', 'media__body',
+  'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'smallprint', 'milli', 'micro', 'lede', 'lead',
+  'nav', 'nav--stacked', 'nav--banner', 'nav--block', 'nav--fit', 'nav--keywords', 'multi-list',
+  'text-input', 'select', 'cf', 'icon', 'visuallyhidden', 'title-block', 'title-block__sub'
+) {
+  %#{$selector} {
+    @extend .#{$selector};
+  }
+}

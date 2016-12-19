@@ -1,0 +1,98 @@
+/*------------------------------------*\
+    $OFF CANVAS
+\*------------------------------------*/
+
+/**
+ * Off canvas content
+ *
+ * This makes the secondary content hidden off to the left
+ * and provides a set of classes to allow the secondary
+ * content to appear from the left, moving the primary content
+ * nearly completely off screen to the right.
+ *
+ * The direction can be reversed with `.offcanvas--rev`
+ *
+ <a href="#" class="hide--lap-and-up oc-trigger" data-primary="#main" data-secondary="#sidebar">go off canvas</a>
+
+ <div class="offcanvas  grid">
+   <section id="sidebar" class="offcanvas__secondary  grid__item  one-third">
+     Supplemental
+   </section>
+
+   <section id="main" class="offcanvas__primary  grid__item  two-thirds">
+     Main Content
+   </section>
+ </div>
+ *
+ */
+@include media-query(palm) {
+
+  /**
+   * Off-canvas wrapper container
+   */
+  .offcanvas {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  /**
+   * Set up the primary element to be
+   * showing and not the secondary element
+   */
+  .offcanvas__primary,
+  .offcanvas__secondary {
+    display: block;
+    position: relative;
+    @include vendor(transition, 0.25s all ease-in);
+  }
+  .offcanvas__primary {
+    width: 100%;
+    float: right;
+    z-index: 1;
+  }
+  .offcanvas__secondary {
+    width: 85%;
+    margin-left: -100%;
+    float: left;
+    z-index: 2;
+  }
+
+  /**
+   * Active state - show the secondary and only
+   * a small bit of the primary off to the right
+   */
+  .offcanvas--active {
+    .offcanvas__primary {
+      margin-right: -85%;
+    }
+    .offcanvas__secondary {
+      margin-left: 0;
+    }
+  }
+
+  /**
+   * Alternative, reversed layout.
+   */
+  .offcanvas--rev {
+    .offcanvas__primary {
+      padding-right: 0;
+      float: left;
+    }
+    .offcanvas__secondary {
+      margin-left: 0;
+      margin-right: -100%;
+      float: right;
+    }
+    &.offcanvas--active {
+      .offcanvas__primary {
+        margin-right: 0;
+        margin-left: -85%;
+      }
+      .offcanvas__secondary {
+        margin-right: 0;
+      }
+    }
+  }
+}
