@@ -20,7 +20,7 @@ class PlaceCache
         n = 0
         p "#{number}"
       end
-      if place.churches.count > 0 && place.search_records.count > 0
+      if place.churches.count > 0 && place.records.to_i > 0
         county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
       end
     end
