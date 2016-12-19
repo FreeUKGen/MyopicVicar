@@ -392,7 +392,7 @@ class SearchQuery
     param
   end
 
-  def register_type_params
+  def record_type_params
     params = Hash.new
     params[:record_type] = record_type if record_type.present?
     params[:record_type] = { '$in' => [ 'ba','ma', 'bu']} if record_type.blank?
@@ -436,7 +436,7 @@ class SearchQuery
     params = Hash.new
     params.merge!(name_search_params)
     params.merge!(place_search_params)
-    params.merge!(register_type_params)
+    params.merge!(record_type_params)
     params.merge!(date_search_params)
     params
   end
@@ -447,7 +447,7 @@ class SearchQuery
       p "UCF"
       start_ucf_time = Time.now.utc
       ucf_index = SearchRecord.index_hint(ucf_params)
-      ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+      ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
       self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
       self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
@@ -505,12 +505,10 @@ class SearchQuery
   end
 
   def ucf_params
-    p "Ucf parameters
-  	"
+    p "Ucf parameters"
     params = Hash.new
-    params.merge!(name_search_params)
     params.merge!(place_search_params)
-    params.merge!(register_type_params)
+    params.merge!(record_type_params)
     params.merge!(date_search_params)
     params["_id"] = { "$in" => ucf_record_ids } #moped doesn't translate :id into "_id"
     params

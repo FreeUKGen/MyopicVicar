@@ -83,9 +83,10 @@ class SearchRecord
     "lnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
     "lnsdx_fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","place_id","record_type", "search_date", "secondary_search_date"],
     "fn_county_rt_sd_ssd" => ["search_names.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
-    "fnsdx_county_rt_sd_ssd" => ["search_soundex.last_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "fnsdx_county_rt_sd_ssd" => ["search_soundex.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
     "fn_place_rt_sd_ssd" => ["search_names.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
-    "fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"]
+    "fnsdx_place_rt_sd_ssd" => ["search_soundex.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"]
   }
   INDEXES = PRE_SEARCH_DATE_INDEXES.merge(POST_SEARCH_DATE_INDEXES)
 
