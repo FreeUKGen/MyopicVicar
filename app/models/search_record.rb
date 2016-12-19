@@ -92,7 +92,6 @@ class SearchRecord
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
-    p field_spec
     index(field_spec, {:name => name, background: true })
   end
 
