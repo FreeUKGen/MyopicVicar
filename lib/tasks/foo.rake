@@ -255,4 +255,15 @@ namespace :foo do
     puts "Task complete."
 
   end
+  
+  desc "Refresh UCF lists on places"
+  task :refresh_ucf_lists => [:environment] do
+    Place.order(:chapman_code => :asc, :place_name => :asc).all.each do |place|
+      Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.each do |file|
+        print "Updating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
+        place.update_ucf_list(file)
+      end
+      place.save!
+    end
+  end
 end
