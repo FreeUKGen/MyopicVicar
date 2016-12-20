@@ -223,15 +223,9 @@ class UseridDetail
   end
 
   def need_to_confirm_email_address?
-    p "testing"
-    p self
     result = false
     self.email_address_last_confirmned.blank? ? last_date = self.sign_up_date  : last_date = self.email_address_last_confirmned
     result = true if !self.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
-    p last_date
-    p FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS
-    p FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days
-    p result
     return result
   end
 

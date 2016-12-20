@@ -85,6 +85,7 @@ module ApplicationHelper
     display_map["Exact Match?"] = "No" if search_query.fuzzy
 
     display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
+    display_map["Record Type"] = "All" if search_query.record_type.blank?
 
     display_map["Start Year"] = search_query.start_year if search_query.start_year
     display_map["End Year"] = search_query.end_year if search_query.end_year
@@ -106,7 +107,7 @@ module ApplicationHelper
       display_map["Place"] = place if search_query.places.size > 0
     end
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
-
+    display_map["Include Winesses"] = "Yes" if search_query.witness
     display_map
   end
 

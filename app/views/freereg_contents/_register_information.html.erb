@@ -17,9 +17,10 @@
         <tr><td>First official year for Register</td>    <td class="weight--semibold"><%= add_blank(@register.minimum_year_for_register)  %></td></tr>
         <tr><td>Last official year for Register</td><td class="weight--semibold"><%= add_blank(@register.maximum_year_for_register) %>
           </td></tr>
-        <tr><td>Last changed</td>  <td class="weight--semibold"><%= @register.last_amended %></td></tr>
+        <tr><td>Latest date a transcription file loaded</td>  <td class="weight--semibold"><%= @register.last_amended %></td></tr>
         <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @register.records %></td></tr>
         <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @register.datemin %></td></tr>
         <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @register.datemax %></td></tr>
+        <tr><td>Date register information changed</td>  <td class="weight--semibold"><%= @register.u_at.strftime("%d %b %Y") %></td></tr>
       </tbody>
     </table>

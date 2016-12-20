@@ -167,6 +167,7 @@ class Place
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = Date.new(1998,1,1)
     individual_churches = self.churches
     if individual_churches.present?
       individual_churches.each do |church|
@@ -177,12 +178,16 @@ class Place
           church.daterange = FreeregContent.setup_total_hash if  church.daterange.blank?
           FreeregContent.calculate_date_range(church, total_hash,"church")
           FreeregContent.get_transcribers(church, transcriber_hash,"register")
+          last_amended = church.last_amended.to_datetime if church.present? && church.last_amended.present? && church.last_amended.to_datetime > last_amended.to_datetime
         end
+
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
   end
 
   def change_grid_reference(grid)
