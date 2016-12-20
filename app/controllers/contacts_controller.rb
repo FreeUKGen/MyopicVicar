@@ -35,7 +35,9 @@ class ContactsController < ApplicationController
       @contact.session_data.delete("warden.user.authentication_devise_user.session") unless @contact.session_data["warden.user.authentication_devise_user.session"].blank?
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
-      if @contact.save
+      @contact.save
+      @contact.add_link_to_attachment
+      if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
         if @contact.query
@@ -46,6 +48,7 @@ class ContactsController < ApplicationController
           return
         end
       else
+        flash[:notice] = "There was a problem with your submission please review"
         @options = FreeregOptionsConstants::ISSUES
         @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
         render :new
