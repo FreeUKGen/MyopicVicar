@@ -51,7 +51,7 @@ class MasterPlaceName
           place.update_attributes(:disabled => "false") 
           errors.add(:place_name, "Place was previously disabled; it has been re-enabled; go to edit on the place")
           else
-           errors.add(:place_name, "already exits") 
+           errors.add(:place_name, "already exists") 
          end 
         end
   end

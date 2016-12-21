@@ -338,7 +338,7 @@ class Place
   end
 
   def place_does_not_exist
-    errors.add(:place_name, "already exits") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+    errors.add(:place_name, "already exists") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
   end
 
   def places_near(radius_factor, system)
