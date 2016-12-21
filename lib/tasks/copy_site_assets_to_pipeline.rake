@@ -42,9 +42,6 @@ def copy_freexxx_site_assets
   freexxx=MyopicVicar::Application.config.template_set
   stSrcDir = Rails.root.join('app',"assets_#{freexxx}").to_s
   stDstDir = Rails.root.join('app','assets',"copy_of_assets_#{freexxx}").to_s
-  rgFilesToCopy=Dir.glob(File.join(stSrcDir,"*").to_s)
-  rgFilesToCopy.each do |f|
-    puts "copying site specific assets\n  from " + f + "/*\n  to #{stDstDir}/"
-    FileUtils.cp_r(File.join(f,"."),stDstDir)
-  end
+  puts "copying site specific assets\n  from #{stSrcDir}\n  to #{stDstDir}"
+  FileUtils.cp_r(stSrcDir,stDstDir)
 end
