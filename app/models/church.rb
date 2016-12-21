@@ -106,7 +106,7 @@ class Church
     self.church_name = self.church_name.strip
     place.churches.each do |church|
       if church.church_name == self.church_name
-        return false, "Church of that name already exits"
+        return false, "Church of that name already exists"
       end
     end
     return true, "OK"

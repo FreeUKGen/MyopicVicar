@@ -60,7 +60,7 @@ class Syndicate
     end
   end
   def syndicate_code_does_not_exist_on_change
-    errors.add(:syndicate_code, "Syndicate Already exits") if (Syndicate.where(:syndicate_code => self.syndicate_code).exists? && self.changing_name)
+    errors.add(:syndicate_code, "Syndicate Already exists") if (Syndicate.where(:syndicate_code => self.syndicate_code).exists? && self.changing_name)
   end
 
   def self.get_syndicates_open_for_transcription
