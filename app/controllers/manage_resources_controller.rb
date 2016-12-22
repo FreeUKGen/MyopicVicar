@@ -82,6 +82,8 @@ class ManageResourcesController < ApplicationController
 
   def pages
     current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
+    p current_authentication_devise_user
+    p session[:devise]
     redirect_to '/cms/refinery/pages'
   end
 
