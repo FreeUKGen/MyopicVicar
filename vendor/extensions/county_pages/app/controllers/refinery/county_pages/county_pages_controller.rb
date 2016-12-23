@@ -19,7 +19,12 @@ module Refinery
         present(@page)
       end
 
-    protected
+
+      def county_page_params
+        p "overridinf"
+        params.require(:county_page).permit!
+      end
+      protected
 
       def find_all_county_pages
         @county_pages = CountyPage.order('position ASC')
@@ -28,6 +33,8 @@ module Refinery
       def find_page
         @page = ::Refinery::Page.where(:link_url => "/county_pages").first
       end
+
+
 
     end
   end
