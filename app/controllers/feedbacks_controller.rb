@@ -32,7 +32,6 @@ class FeedbacksController < ApplicationController
     @feedback.session_data.delete("warden.user.authentication_devise_user.session") unless @feedback.session_data["warden.user.authentication_devise_user.session"].blank?
     @feedback.session_id = session.to_hash["session_id"]
     @feedback.save
-    @feedback.add_link_to_attachment
     if @feedback.errors.any?
       flash.notice = "There was a problem reporting your feedback!"
       render :action => 'new'

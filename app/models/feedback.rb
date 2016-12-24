@@ -53,15 +53,16 @@ class Feedback
   end
 
   def add_link_to_attachment
+    return if self.screenshot_location.blank?
     website = Rails.application.config.website
     website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
-    go_to = "http://#{website}/#{self.screenshot_location}"
+    go_to = "#{website}/#{self.screenshot_location}"
     body = self.body + "\n" + go_to
     self.update_attribute(:body,body)
   end
 
   def add_screenshot_location
-    self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}"
+    self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
   module FeedbackType
@@ -84,6 +85,7 @@ class Feedback
 
   def github_issue
     if Feedback.github_enabled
+      self.add_link_to_attachment
       Octokit.configure do |c|
         c.login = Rails.application.config.github_issues_login
         c.password = Rails.application.config.github_issues_password

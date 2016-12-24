@@ -36,7 +36,6 @@ class ContactsController < ApplicationController
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
       @contact.save
-      @contact.add_link_to_attachment
       if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
