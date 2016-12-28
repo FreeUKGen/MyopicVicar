@@ -15,6 +15,7 @@ class Feedback
   field :github_comment_url, type: String
   field :github_number, type: String
   field :session_data, type: Hash
+  field :screenshot_location, type: String
   field :screenshot, type: String
   field :identifier, type: String
   attr_accessor :action
@@ -23,7 +24,7 @@ class Feedback
 
   validate :title_or_body_exist
 
-  before_create :url_check, :add_identifier, :add_email
+  before_create :url_check, :add_identifier, :add_email, :add_screenshot_location
 
   class << self
     def id(id)
@@ -51,6 +52,19 @@ class Feedback
     self.name = reporter.person_forename unless reporter.nil?
   end
 
+  def add_link_to_attachment
+    return if self.screenshot_location.blank?
+    website = Rails.application.config.website
+    website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
+    go_to = "#{website}/#{self.screenshot_location}"
+    body = self.body + "\n" + go_to
+    self.update_attribute(:body,body)
+  end
+
+  def add_screenshot_location
+    self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
+  end
+
   module FeedbackType
     ISSUE='issue' #log a GitHub issue
     # To be added: contact form and other problems
@@ -71,10 +85,12 @@ class Feedback
 
   def github_issue
     if Feedback.github_enabled
+      self.add_link_to_attachment
       Octokit.configure do |c|
         c.login = Rails.application.config.github_issues_login
         c.password = Rails.application.config.github_issues_password
       end
+      self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("FREEREG:GITHUB response: #{response}")
       logger.info(response.inspect)

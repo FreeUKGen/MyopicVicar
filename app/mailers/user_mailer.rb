@@ -123,8 +123,8 @@ class UserMailer < ActionMailer::Base
   def get_attachment
     if @contact.screenshot_url.present?
       @image = File.basename(@contact.screenshot.path)
-      @file = "#{Rails.root}/public" + @contact.screenshot_url
-      attachments[@image] = File.binread(@file)
+      p @contact.screenshot.path
+      attachments[@image] = File.binread(@contact.screenshot.path)
     end
   end
 
