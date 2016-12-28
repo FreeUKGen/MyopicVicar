@@ -1,4 +1,5 @@
-# robots.txt for http://freereg2.freereg.org.uk/
+# robots.txt for http://www.freereg.org.uk/
+Sitemap: http://www.freereg.org.uk/sitemap_location.txt
 
 User-agent: *
 Allow: /about
