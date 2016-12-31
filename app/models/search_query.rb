@@ -412,7 +412,10 @@ class SearchQuery
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index,@search_index)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    SearchRecord.collection.indexes.each {|i| puts i.inspect}
+    mongo_node = Mongoid.clients[:default] if Mongoid.clients[:default]
+    p mongo_node
+    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results)
     search_ucf
@@ -424,7 +427,7 @@ class SearchQuery
     return nil unless secondary_date_query_required
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
 
@@ -447,7 +450,7 @@ class SearchQuery
       p "UCF"
       start_ucf_time = Time.now.utc
       ucf_index = SearchRecord.index_hint(ucf_params)
-      ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+      ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
       self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
       self.search_result.ucf_records = ucf_records.map { |sr| sr.id }

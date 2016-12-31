@@ -86,4 +86,5 @@ MyopicVicar::Application.configure do
   config.assets.debug = false
   config.assets.digest = false
   config.use_decomposed_dates = false
+  MyopicVicar::MongoConfig['new_indexes'].present? ? config.new_indexes = MyopicVicar::MongoConfig['new_indexes']  : config.new_indexes = MyopicVicar::MongoConfig['new_indexes'] = false
 end
