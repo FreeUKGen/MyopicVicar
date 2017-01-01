@@ -164,7 +164,7 @@ class UseridDetail
   end
 
   def changed_syndicate?(new_syndicate)
-    self.syndicate == new_syndicate ? change = false : change = true
+    new_syndicate.present? && self.syndicate != new_syndicate ? change = true : change = false
     change
   end
 
