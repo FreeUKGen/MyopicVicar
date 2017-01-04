@@ -578,7 +578,7 @@ describe Freereg1CsvEntry do
         if search_forename # we should find this
           query_params = { :first_name => search_forename,
                            :last_name => entry.mother_surname }
-          p query_params
+ #         p query_params
           q = SearchQuery.new(query_params)
           q.places << place
           q.save!(:validate => false)
@@ -645,7 +645,6 @@ describe Freereg1CsvEntry do
     file_record = process_test_file(filespec)
  
     file_record.freereg1_csv_entries.each_with_index do |entry,i|
-      binding.pry
       check_record(entry, :person_forename, :father_surname, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
     end
   end
