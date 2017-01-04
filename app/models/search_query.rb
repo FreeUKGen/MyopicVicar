@@ -210,9 +210,8 @@ class SearchQuery
   def filter_ucf_records(records)
     filtered_records = []
     records.each do |record|
-      #     p record.id
+      record = SearchRecord.new(record)
       record.search_names.each do |name|
-        #       p name
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive
           if name.contains_wildcard_ucf?
             if self.first_name.blank?
@@ -414,7 +413,6 @@ class SearchQuery
     self.update_attribute(:search_index,@search_index)
     SearchRecord.collection.indexes.each {|i| puts i.inspect}
     mongo_node = Mongoid.clients[:default] if Mongoid.clients[:default]
-    p mongo_node
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results)
@@ -447,7 +445,6 @@ class SearchQuery
   def search_ucf
 
     if can_query_ucf?
-      p "UCF"
       start_ucf_time = Time.now.utc
       ucf_index = SearchRecord.index_hint(ucf_params)
       ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
@@ -508,7 +505,6 @@ class SearchQuery
   end
 
   def ucf_params
-    p "Ucf parameters"
     params = Hash.new
     params.merge!(place_search_params)
     params.merge!(record_type_params)
