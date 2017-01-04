@@ -578,7 +578,7 @@ describe Freereg1CsvEntry do
         if search_forename # we should find this
           query_params = { :first_name => search_forename,
                            :last_name => entry.mother_surname }
-          p query_params
+ #         p query_params
           q = SearchQuery.new(query_params)
           q.places << place
           q.save!(:validate => false)
