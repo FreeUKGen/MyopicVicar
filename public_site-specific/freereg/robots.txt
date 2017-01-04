@@ -1,0 +1,23 @@
+# robots.txt for http://freereg2.freereg.org.uk/
+
+User-agent: *
+Allow: /cms/about
+Allow: /cms/donate
+Allow: /cms/help
+Allow: /search_queries/new
+Allow: /search_queries/*/about
+Allow: /freereg_contents
+Disallow: /manage_resources
+Disallow: /manage_syndicates
+Disallow: /manage_counties
+Disallow: /physical_files
+Disallow: /syndicates
+Disallow: /userid_details
+Disallow: /search_names
+Disallow: /search_queries
+Disallow: /search_records
+Disallow: /freereg1_csv_entries
+Disallow: /freereg1_csv_files
+Disallow: /contacts
+Disallow: /feedback
+Disallow: /cms/refinery/login

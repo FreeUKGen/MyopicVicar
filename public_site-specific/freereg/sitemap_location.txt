@@ -1,0 +1,6 @@
+http://www.freereg.org.uk/freereg_contents/new
+http://www.freereg.org.uk/search_queries/new
+http://www.freereg.org.uk/cms/refinery/login
+http://www.freereg.org.uk/cms/donate
+http://www.freereg.org.uk/cms/about
+http://www.freereg.org.uk/cms/help
