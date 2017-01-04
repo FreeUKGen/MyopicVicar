@@ -10,7 +10,7 @@ trace() {
 }
 
 fail() {
-  sudo /root/bin/searchctl.sh enable
+ 
   trace "FATAL $@"
   exit 1
 }
@@ -38,8 +38,7 @@ if [[ ! -e ${PROCESS} ]] ; then
   trace "${PROCESS} doesn't exist, creating"
   touch ${PROCESS}
 fi
-trace "disable of searches"
-sudo /root/bin/searchctl.sh disable
+
 cd ${ROOT}
 trace "delete log files more than 50 days old"
 sudo -u webserv find log -mtime +50 -delete 
@@ -58,8 +57,7 @@ sudo -u webserv bundle exec rake RAILS_ENV=production freereg:calculate_freereg_
 #sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
 #trace "update of the database2"
 #sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
-trace "re enable searches"
-sudo /root/bin/searchctl.sh enable
+
 trace "finished"
 exit
 
