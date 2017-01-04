@@ -303,7 +303,7 @@ class SearchRecord
           best_score =  best_score + 1
         else
           return best_score
-          #bail since leading terms haven't been found
+          #bail since search field hasn't been found
         end
       end
       return best_score
