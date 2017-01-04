@@ -124,7 +124,6 @@ class SearchRecord
   else
     Rails.application.config.use_decomposed_dates ? INDEXES = PRE_SEARCH_DATE_INDEXES.merge(POST_SEARCH_DATE_INDEXES) : INDEXES = PRE_SEARCH_DATE_INDEXES
   end
-  p INDEXES
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
@@ -282,14 +281,13 @@ class SearchRecord
       end
       scores = {}
       search_fields = fields_from_params(search_params)
-      p candidates
+      # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-      #    pp scores
-      p "scores"
-      p scores
+      # p "scores"
+      # p scores
       best = scores.max_by { |k,v| v}
-      p "selected"
-      p best[0]
+      # p "selected"
+      # p best[0]
       best[0]
     end
 
