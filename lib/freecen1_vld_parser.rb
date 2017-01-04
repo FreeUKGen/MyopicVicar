@@ -308,6 +308,9 @@ module Freecen
       if chapman_code && record[:t_born_cty] == "INC"
         record[:t_born_cty] = chapman_code
       end
+      if chapman_code && record[:born_cty] == "INC"
+        record[:born_cty] = chapman_code
+      end
 
       # fix schn over 1000
       if record[:sch_a] == "!"
