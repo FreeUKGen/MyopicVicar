@@ -124,7 +124,6 @@ class SearchRecord
   else
     Rails.application.config.use_decomposed_dates ? INDEXES = PRE_SEARCH_DATE_INDEXES.merge(POST_SEARCH_DATE_INDEXES) : INDEXES = PRE_SEARCH_DATE_INDEXES
   end
-  p INDEXES
   INDEXES.each_pair do |name,fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }

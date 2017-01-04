@@ -412,9 +412,6 @@ class SearchQuery
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index,@search_index)
-    SearchRecord.collection.indexes.each {|i| puts i.inspect}
-    mongo_node = Mongoid.clients[:default] if Mongoid.clients[:default]
-    p mongo_node
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results)
