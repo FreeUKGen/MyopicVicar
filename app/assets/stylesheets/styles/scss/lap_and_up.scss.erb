@@ -52,25 +52,7 @@
   }
 
   @include manual-media-query(1090px) {
-    .icon__freereg {
-      @include vendor(background-size, 100%);
-      width: 20%;
-      height: 0px;
-      overflow: hidden;
-
-      padding-bottom: 7%;
-      margin-top: 1%;
-    }
-    .icon__freecen {
-      @include vendor(background-size, 100%);
-      width: 20%;
-      height: 0px;
-      overflow: hidden;
-
-      padding-bottom: 7%;
-      margin-top: 1%;
-    }
-    .icon__freebmd {
+    .icon__<%= MyopicVicar::Application.config.template_set %> {
       @include vendor(background-size, 100%);
       width: 20%;
       height: 0px;
@@ -82,34 +64,14 @@
   }
 
   @include manual-media-query(1010px) {
-    .icon__freereg {
-      margin-top: 2%;
-      width: 16%;
-    }
-    .icon__freecen {
-      margin-top: 2%;
-      width: 16%;
-    }
-    .icon__freebmd {
+    .icon__<%= MyopicVicar::Application.config.template_set %> {
       margin-top: 2%;
       width: 16%;
     }
   }
 
   @include manual-media-query(950px) {
-    .icon__freereg {
-      width: 266px;
-      height: 87px;
-      padding-bottom: 0;
-      margin-top: 0;
-    }
-    .icon__freecen {
-      width: 266px;
-      height: 87px;
-      padding-bottom: 0;
-      margin-top: 0;
-    }
-    .icon__freebmd {
+    .icon__<%= MyopicVicar::Application.config.template_set %> {
       width: 266px;
       height: 87px;
       padding-bottom: 0;
