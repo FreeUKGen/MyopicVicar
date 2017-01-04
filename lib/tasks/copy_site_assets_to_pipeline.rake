@@ -28,7 +28,7 @@ def remove_freexxx_site_assets
   ['freereg', 'freecen', 'freebmd'].each do |freexxx|
     stDir = Rails.root.join('app','assets',"copy_of_assets_#{freexxx}").to_s
     if Dir.exists?(stDir)
-      puts "removing previous copy of site-specific assets:\n  #{stDir}"	
+      puts "Removing previous copy of site-specific assets:\n  #{stDir}"	
       FileUtils.rm_rf(stDir)
       fRemoved=true
     end
@@ -36,6 +36,7 @@ def remove_freexxx_site_assets
   if !fRemoved
     puts "no previous copy of site-specific assets to be removed from app/assets"
   end
+  puts "***NOTE: any files previously copied to public/ from public_site-specific/ were left in public."
 end
 
 def copy_freexxx_site_assets
@@ -44,4 +45,13 @@ def copy_freexxx_site_assets
   stDstDir = Rails.root.join('app','assets',"copy_of_assets_#{freexxx}").to_s
   puts "copying site specific assets\n  from #{stSrcDir}\n  to #{stDstDir}"
   FileUtils.cp_r(stSrcDir,stDstDir)
+  stSrcDir = Rails.root.join('public_site-specific',"#{freexxx}").to_s
+  stDstDir = Rails.root.join('public').to_s
+
+  static_files = Dir.glob(File.join(stSrcDir,"*").to_s)
+  puts "copying static files\n  from #{stSrcDir}/*\n  to #{stDstDir}"
+  static_files.each do |f|
+    puts "    #{File.basename(f)}"
+    FileUtils.cp_r(f,stDstDir)
+  end
 end
