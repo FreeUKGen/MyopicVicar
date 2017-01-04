@@ -476,7 +476,10 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)
+    begin
       File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
+    rescue
+    end
   end
 
   def clean_up_physical_files_after_failure(message)
