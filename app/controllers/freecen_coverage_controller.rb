@@ -11,7 +11,7 @@ class FreecenCoverageController < ApplicationController
 
     # TODO: cache for longer time and do Rails.cache.delete when updates done
     # or records/parms added/deleted/updated
-    @all_pieces = Rails.cache.fetch("freecen_coverage_index", :expires_in => 5.minutes) do
+    @all_pieces = Rails.cache.fetch("freecen_coverage_index", :expires_in => 6.hours) do
       FreecenCoverage.get_index_stats
     end
 

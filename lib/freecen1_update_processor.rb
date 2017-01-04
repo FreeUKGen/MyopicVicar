@@ -454,6 +454,13 @@ class Freecen1UpdateProcessor
       log_message(e.backtrace.inspect)
     end
 
+    # clear cached database coverage so it picks up the changes for display
+    # (we may want to do this during the update, too, instead of
+    # waiting until the very end, so the display stays in sync with what is
+    # in the database for those who view the database contents while update is
+    # in progress).
+    Rails.cache.delete("freecen_coverage_index")
+
     # update places cache is currently done by calling the rake task separately
     # from the script /lib/tasks/scripts/update_freecen2_production.sh
     # In a future version, we may want to only update those portions of the
