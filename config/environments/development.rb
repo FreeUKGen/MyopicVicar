@@ -84,8 +84,6 @@ MyopicVicar::Application.configure do
   config.timeout_researcher = MyopicVicar::MongoConfig['timeout_researcher']
   config.timeout_manager = MyopicVicar::MongoConfig['timeout_manager']
   config.timeout_transcriber = MyopicVicar::MongoConfig['timeout_transcriber']
-  config.use_decomposed_dates = MyopicVicar::MongoConfig['use_decomposed_dates']
-  MyopicVicar::MongoConfig['new_indexes'].present? ? config.new_indexes = MyopicVicar::MongoConfig['new_indexes']  : config.new_indexes = MyopicVicar::MongoConfig['new_indexes'] = false
   #config.active_record.auto_explain_threshold_in_seconds = 0.5
   #config.active_record.mass_assignment_sanitizer = :strict
 end

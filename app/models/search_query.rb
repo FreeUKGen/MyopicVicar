@@ -178,7 +178,7 @@ class SearchQuery
       date_params = Hash.new
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lte"] = DateParser::end_search_date(end_year) if end_year
-      Rails.application.config.use_decomposed_dates ? params[:search_date] = date_params : params[:search_dates] = { "$elemMatch" => date_params }
+      params[:search_date] = date_params
     end
     params
   end
@@ -411,8 +411,6 @@ class SearchQuery
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index,@search_index)
-    SearchRecord.collection.indexes.each {|i| puts i.inspect}
-    mongo_node = Mongoid.clients[:default] if Mongoid.clients[:default]
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results)
@@ -430,7 +428,7 @@ class SearchQuery
   end
 
   def secondary_date_query_required
-    Rails.application.config.use_decomposed_dates && @search_parameters[:search_date].present? && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
+    @search_parameters[:search_date].present? && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
   end
 
   def search_params
