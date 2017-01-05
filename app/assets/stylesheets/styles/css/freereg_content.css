@@ -229,7 +229,7 @@ div.boolean label, label.collection_radio_buttons {
   float: none;
 }
 
-.simple_form .collection_radio
+.simple_form .collection_radio 
 {
   margin-right: 10px;
   margin-left: 2px;
@@ -284,7 +284,7 @@ label.collection_check_boxes {
 
 .overide_selection_field_width{
   padding: 16px;
-    width: 350px !important;
+    width: 350px !important;  
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
 .simple_form_position{margin-left: 420px}
@@ -300,11 +300,11 @@ label.collection_check_boxes {
 
 /* Used for spam trap
 -------------------------------------------------*/
-.betterstyling { display: none; visibility: hidden; }
+.betterstyling { display: none; visibility: hidden; } 
 
 .scrollable {
     overflow: auto;
-    height: 400px;
+    height: 400px;  
 }
 
 h1#body_content_title {
@@ -323,7 +323,7 @@ dl.table-display
   padding: 0;
   border-bottom: 1px solid #999;
 }
-
+  
 .table-display dt
 {
   clear: left;
@@ -334,7 +334,7 @@ dl.table-display
   border-top: 1px solid #999;
   font-weight: bold;
 }
-
+  
 .table-display dd
 {
   float: left;
@@ -344,7 +344,7 @@ dl.table-display
   border-top: 1px solid #999;
 }
 .just--left td{
-  text-align: left  !important;
+  text-align: left  !important; 
   padding:6px;
 }
 .t3 {
@@ -369,7 +369,11 @@ dl.table-display
    font: 12px/1.5 bold sans-serif;
 }
 
-/* Forms & tooltips - accessibility changes */
+/* Forms & tooltips - accessibility changes - 05 Jan 2017 */
+.text-input:hover, .text-input:focus {
+  background-color: #f6f6f6;
+  color: #444;
+}
 form#new_search_query fieldset.inputs > ol { margin-left: -28px; margin-right: 0; }
 form#new_search_query fieldset.choices ol  { margin: 0; }
 
@@ -409,7 +413,10 @@ li.choice label { font-weight: normal; margin-bottom: 7px; }
   left: 10%;
   position: absolute;
 }
-.ttip img:hover + .ttip__text, .ttip:focus .ttip__text {
+.ttip:focus { outline: none; }
+.ttip img:hover + .ttip__text,
+.ttip span:hover + .ttip__text, 
+.ttip:focus .ttip__text {
   visibility: visible;
 }
 input::-webkit-input-placeholder { color: #585858; font-style: italic; opacity: 1 ! important; }
@@ -418,9 +425,9 @@ input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 
 input::placeholder               { color: #585858; font-style: italic; opacity: 1 ! important; }
 
 /* Tables - accessibility changes - 07 Dec 2016 */
-#search-result .table--data,
-#search-detail .table--data { line-height: 1.3; width: auto; margin: 0 auto; }
-#search-result table.table--bordered td,
+#search-result .table--data, 
+#search-detail .table--data { line-height: 1.3; width: auto; margin: 0 auto; } 
+#search-result table.table--bordered td, 
 #search-result table.table--bordered th { padding: 14px 5px; }
 #search-detail tbody td {
   padding-left: 14px !important;

@@ -40,7 +40,7 @@ class ContactsController < ApplicationController
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
         if @contact.query
-          redirect_to search_query_path(@contact.query, :anchor => "#{@contact.record_id}")
+          redirect_to search_query_path(@contact.query)
           return
         else
           redirect_to @contact.previous_page_url
@@ -48,13 +48,20 @@ class ContactsController < ApplicationController
         end
       else
         flash[:notice] = "There was a problem with your submission please review"
-        @options = FreeregOptionsConstants::ISSUES
-        @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-        render :new
-        return
+        if @contact.contact_type == 'Data Problem'
+          redirect_to @contact.previous_page_url
+          return
+        else
+          @options = FreeregOptionsConstants::ISSUES
+          @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+          render :new
+          return
+        end
       end
     else
-      redirect_to :action => 'new'
+      @options = FreeregOptionsConstants::ISSUES
+      @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+      render :new
       return
     end
   end

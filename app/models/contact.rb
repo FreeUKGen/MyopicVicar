@@ -107,10 +107,15 @@ class Contact
 
   def communicate_data_problem
     ccs = Array.new
-    coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if self.record_id.present?
+    #coordinator = self.get_coordinator if self.record_id.present?
+    #ccs << coordinator.email_address if self.record_id.present?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
     end
     UserMailer.coordinator_data_problem(self,ccs).deliver_now
   end
