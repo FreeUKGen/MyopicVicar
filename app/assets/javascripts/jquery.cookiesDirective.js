@@ -20,12 +20,12 @@
 			scriptWrapper: function(){},	
 			// Styling
 			fontFamily: 'helvetica',
-			fontColor: '#FFFFFF',
-			fontSize: '10px',
-			backgroundColor: '#24C950',
-			backgroundOpacity: '80',
-			linkColor: '#CA0000'
-		}, options);
+      fontColor: '#FFFFFF',
+      fontSize: '10px',
+      backgroundColor: '#008000',
+      backgroundOpacity: '80',
+      linkColor: '#CA0000'
+    }, options);
 		
 		// Perform consent checks
 		if(!getCookie('cookiesDirective')) {
@@ -182,8 +182,8 @@
 		if(!settings.message) {
 			if(settings.explicitConsent) {
 				// Explicit consent message
-				settings.message = 'This site uses cookies. Some of the cookies we ';
-				settings.message += 'use are essential for parts of the site to operate and have already been set.';
+				settings.message = 'Cookies are essential for this website. ';
+				
 			} else {
 				// Implied consent message
 				settings.message = 'We have placed cookies on your computer to help make this website better.';
@@ -194,17 +194,16 @@
 		// Build the rest of the disclosure for implied and explicit consent
 		if(settings.explicitConsent) {
 			// Explicit consent disclosure
-			html += scriptsDisclosure + 'You may delete and block all cookies from this site, but the search will no longer work.';
-			html += 'To find out more about cookies on this website, see our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
-			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">privacy policy</a>.<br/>';
-			html += '<div id="epdnotick" style="color:#ca0000;display:none;margin:2px;"><span style="background:#cecece;padding:2px;">You must tick the "I accept cookies from this site" box to accept</span></div>';
-			html += '<div style="margin-top:5px;">I accept cookies from this site (by ticking this box) &nbsp<input type="checkbox" name="epdagree" id="epdagree" />&nbsp &nbsp;';
+			html += scriptsDisclosure + 'Blocking cookies stops the search from working. ';
+			html += 'Our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
+			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.<br/>';
+			html += '<div style="margin-top:5px;">Tick this box to accept their use &nbsp<input type="checkbox" name="epdagree" id="epdagree" /> and click continue to stop display of this message &nbsp;';
 			html += '<input type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/><br/></div></div>';
 		
 		} else {
 			// Implied consent disclosure
-			html += scriptsDisclosure + ' More details can be found in our <a style="color:'+ settings.linkColor + ';';
-			html += 'font-weight:bold;font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">privacy policy</a>.';
+			html += scriptsDisclosure + ' Our <a style="color:'+ settings.linkColor + ';';
+			html += 'font-weight:bold;font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
 			html += '<div style="margin-top:5px;"><input type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
 		}		
 		html += '</div></div>';
