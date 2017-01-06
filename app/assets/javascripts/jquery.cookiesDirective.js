@@ -182,7 +182,7 @@
 		if(!settings.message) {
 			if(settings.explicitConsent) {
 				// Explicit consent message
-				settings.message = 'Cookies are essential for this website. ';
+				settings.message = 'Cookies are essential for this website to operate, blocking them stops the search working. ';
 				
 			} else {
 				// Implied consent message
@@ -194,15 +194,15 @@
 		// Build the rest of the disclosure for implied and explicit consent
 		if(settings.explicitConsent) {
 			// Explicit consent disclosure
-			html += scriptsDisclosure + 'Blocking cookies stops the search from working. ';
-			html += 'Our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
+			
+			html += scriptsDisclosure + 'Review our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
 			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.<br/>';
-			html += '<div style="margin-top:5px;">Tick this box to accept their use &nbsp<input type="checkbox" name="epdagree" id="epdagree" /> and click continue to stop display of this message &nbsp;';
+			html += '<div style="margin-top:5px;">Tick this box to accept their use &nbsp<input type="checkbox" name="epdagree" id="epdagree" /> and then click &nbsp;';
 			html += '<input type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/><br/></div></div>';
 		
 		} else {
 			// Implied consent disclosure
-			html += scriptsDisclosure + ' Our <a style="color:'+ settings.linkColor + ';';
+			html += scriptsDisclosure + ' Review our <a style="color:'+ settings.linkColor + ';';
 			html += 'font-weight:bold;font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
 			html += '<div style="margin-top:5px;"><input type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
 		}		
