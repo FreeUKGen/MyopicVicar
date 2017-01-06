@@ -1,10 +1,11 @@
 # robots.txt for http://www.freereg.org.uk/
-Sitemap: http://www.freereg.org.uk/sitemap_location.txt
+sitemap: http://www.freereg.org.uk/sitemap_location.txt
+sitemap: https://www.freereg.org.uk/sitemap_location.txt
 
 User-agent: *
-Allow: /about
-Allow: /donate
-Allow: /help
+Allow: /cms/about
+Allow: /cms/donate
+Allow: /cms/help
 Allow: /search_queries/new
 Allow: /search_queries/*/about
 Allow: /freereg_contents
@@ -21,4 +22,10 @@ Disallow: /freereg1_csv_entries
 Disallow: /freereg1_csv_files
 Disallow: /contacts
 Disallow: /feedback
-Disallow: /refinery/login
+Disallow: /cms/refinery/login
+Disallow: /howto
+Disallow: /parishes
+Disallow: /winreg
+Disallow: /stats
+Disallow: /speedreg
+Disallow: /cgi
