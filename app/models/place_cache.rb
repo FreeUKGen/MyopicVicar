@@ -7,7 +7,7 @@ class PlaceCache
     PlaceCache.where(:chapman_code => county).destroy_all
     # the js library expects a certain format
     county_response = {"" => []}
-    places = Place.chapman_code(county).not_disabled.all
+    places = Place.chapman_code(county).not_disabled.all.order_by( place_name: 1)
     number = places.length
     n = 0
     number = 0
