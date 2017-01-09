@@ -321,7 +321,8 @@ class SearchQuery
       search_place_ids = radius_place_ids
       params[:place_id] = { "$in" => search_place_ids }
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
+      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     end
     params
   end
