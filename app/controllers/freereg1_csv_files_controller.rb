@@ -338,11 +338,10 @@ class Freereg1CsvFilesController < ApplicationController
 
 
   def remove
-    #this just removes a batch of records
+    #this just removes a batch of records it leaves the entries and search records there to be removed by a rake task
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
-
       success, message = @freereg1_csv_file.remove_batch
       if success
         flash[:notice] = 'The removal of the batch entry was successful'
@@ -386,7 +385,7 @@ class Freereg1CsvFilesController < ApplicationController
 
 
   def update_churches
-    if params[:place].blank? ||  params[:place] == "Select Place"
+    if update_churches_not_ok?(params[:place])
       flash[:notice] = "You made an incorrect place selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -408,9 +407,15 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
+  def update_churches_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Select Place" || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:freereg1_csv_file_id].blank?
+    result
+  end
+
 
   def update_counties
-    if params[:country].blank? || params[:country] == "Select Country"
+    if update_counties_not_ok?(params[:country])
       flash[:notice] = "You made an incorrect country selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -428,17 +433,25 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
+  def update_counties_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Select Country"  || session[:freereg1_csv_file_id].blank?
+    result
+  end
+
+
   def update_places
-    if session[:selectcounty].nil? && (params[:county].blank? || params[:county] == "Select County")
-      flash[:notice] = "You made an incorrect county selection "
-      redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
-    else
       get_user_info_from_userid
+    if  (@user.person_role == 'system_administrator' || @user.person_role == 'data_manager')
+      if update_places_not_ok?(params[:county])
+        flash[:notice] = "You made an incorrect county selection "
+        redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
+      end
+    end     
       set_locations
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
       @countries = [session[:selectcountry]]
       if session[:selectcounty].nil?
-
         #means we are a DM selecting the county
         session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
         places = Place.chapman_code(session[:selectcounty]).approved.not_disabled.all.order_by(place_name: 1)
@@ -463,11 +476,18 @@ class Freereg1CsvFilesController < ApplicationController
       end
       @register_types = RegisterType::APPROVED_OPTIONS
       @selected_register = ''
-    end
+   
   end
 
+  def update_places_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Select County" || session[:selectcountry].blank?  || session[:freereg1_csv_file_id].blank?
+    return result
+  end
+
+
   def update_registers
-    if params[:church].blank? || params[:church] == "Has no churches" || params[:church] == "Select Church"
+    if update_registers_not_ok?(params[:church])
       flash[:notice] = "You made an incorrect church selection "
       redirect_to relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id]) and return
     else
@@ -488,6 +508,12 @@ class Freereg1CsvFilesController < ApplicationController
       @selected_church = session[:selectchurch]
       @selected_register = ''
     end
+  end
+
+  def update_registers_not_ok?(param)
+    result = false
+    result = true if param.blank? || param == "Has no churches" || param == "Select Church" || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? || session[:freereg1_csv_file_id].blank?
+    result
   end
 
   def update

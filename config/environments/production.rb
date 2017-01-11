@@ -108,7 +108,6 @@ MyopicVicar::Application.configure do
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   #rails 4 changes
   config.eager_load = true
-  config.use_decomposed_dates = MyopicVicar::MongoConfig['use_decomposed_dates']
   config.timeout_researcher = MyopicVicar::MongoConfig['timeout_researcher']
   config.timeout_manager = MyopicVicar::MongoConfig['timeout_manager']
   config.timeout_transcriber = MyopicVicar::MongoConfig['timeout_transcriber']

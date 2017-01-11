@@ -82,6 +82,7 @@ class RegistersController < ApplicationController
       success[1] = "Non-existent register"
     end
     if success[0]
+      @register.calculate_register_numbers
       flash[:notice] = 'The merge of the Register was successful'
       redirect_to register_path(@register)
       return
@@ -150,9 +151,11 @@ class RegistersController < ApplicationController
 
   def show
     load(params[:id])
-    @decade = @register.daterange
-    @transcribers = @register.transcribers
-    @contributors = @register.contributors
+    unless @register.nil?
+      @decade = @register.daterange
+      @transcribers = @register.transcribers
+      @contributors = @register.contributors
+    end
   end
 
   def update
@@ -179,6 +182,7 @@ class RegistersController < ApplicationController
         render :action => 'rename'
         return
       end
+      @register.calculate_register_numbers
       flash[:notice] = 'The change of register type for the Register was successful'
       redirect_to register_path(@register)
       return

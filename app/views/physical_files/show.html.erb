@@ -1,0 +1,52 @@
+<% breadcrumb :show_physical_files, @batch %>
+<div style="clear:both;"> </div>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<div class="grid">
+  <section class="island ">
+    <h4 >Physical File Details</h4>
+
+    <div class="grid__item  ">
+      
+      <table class="table--bordered table--data " >
+        <colgroup >
+        <col class=t40>
+        <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>File Name :</td> <td class="weight--semibold"> <%= @batch.file_name %>  </td>
+        </tr>
+        <tr>
+          <td>Owner :</td> <td class="weight--semibold"> <%= @batch.userid %>  </td>
+        </tr>
+        <tr>
+          <td>Loaded :</td> <td class="weight--semibold"> <%= @batch.base %>  </td>
+        </tr>
+        <tr>
+          <td>Loaded on :</td> <td class="weight--semibold"> <%= @batch.base_uploaded_date %>  </td>
+        </tr>
+        <tr>
+          <td>Processed:</td> <td class="weight--semibold"> <%= @batch.file_processed %>  </td>
+        </tr>
+        <tr>
+          <td>Processed date:</td> <td class="weight--semibold"> <%= @batch.file_processed_date %>  </td>
+        </tr>
+        <tr>
+          <td>Waiting to be processed :</td> <td class="weight--semibold"> <%= @batch.waiting_to_be_processed %>  </td>
+        </tr>
+        <tr>
+          <td>Waiting since :</td> <td class="weight--semibold"> <%= @batch.waiting_date %>  </td>
+        </tr>
+        
+      </table>
+        
+    </div>
+  </section>
+</div>

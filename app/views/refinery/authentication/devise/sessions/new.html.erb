@@ -4,6 +4,9 @@
 </div>
 <%= form_for resource, :as => resource_name,
                        :url => refinery.authentication_devise_user_session_path do |f| %>
+                       <% if !Rails.application.config.member_open %>
+                       <p style="color:red">The system is currently undergoing maintenance and is unavailable to Members</p>
+                       <%end%>
                        <p>You do not need to be a Member to use the Search Facilities. The Member login is for transcribers, cooordinators and managers. <br> The Username is not case sensitive. If you have forgotten your Username you can use your email address instead. If you have forgotten both then contact your coordinator.<br>
   The Password is case sensitive. If you have forgotten your password use the following link to receive an email to reset your password.<br>
       <%= link_to t('.forgot_password'), refinery.new_authentication_devise_user_password_path  %>.

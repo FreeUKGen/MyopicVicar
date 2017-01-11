@@ -1,5 +1,5 @@
 class UpdateSearchRecords
-  def self.process(limit,record_type,search_version,force)
+  def self.process(limit,record_type,search_version,force,order)
     file_for_warning_messages = "log/search_record_digest.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
     message_file = File.new(file_for_warning_messages, "a")
@@ -8,23 +8,28 @@ class UpdateSearchRecords
       p "Invalid record type #{record_type} it must be one of#{RecordType.all_types}"
       return
     end
+    unless order == "-1" || order == "1"
+      p "Invalid order it must be either 1 or -1"
+      return
+    end
     software_version = SoftwareVersion.control.first
     version = software_version.version unless software_version.nil?
     search_version  = software_version.last_search_record_version if search_version.blank? && software_version.last_search_record_version.present?
     search_version = 1 if search_version.blank?
-    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f} and a force #{force}"
-    message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version}"
+    p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f} and a force #{force} and order #{order}"
+    message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f} and a force #{force} and order #{order}"
     records = 0
     updated_records = 0
     digest_added = 0
     no_update = 0
     created_records = 0
     files_bypassed = 0
+    order == "1" ? order = 1 : order = -1
     n = 0
     time_start = Time.new
     p "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
     message_file.puts "There are #{Freereg1CsvFile.record_type(record_type).count} files to be processed"
-    Freereg1CsvFile.record_type(record_type).all.no_timeout.each do |file|
+    Freereg1CsvFile.record_type(record_type).all.order_by(file_name: order).no_timeout.each do |file|
       n = n + 1
       break if n == limit.to_i
       #p file.search_record_version

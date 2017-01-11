@@ -56,7 +56,7 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_file.calculate_date(params)
       else
         @freereg1_csv_file.error =  @freereg1_csv_file.error - 1
-        @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id]))
+        @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id])) if @freereg1_csv_file.batch_errors.find(session[:error_id]).present?
       end
       display_info
       @freereg1_csv_file.save

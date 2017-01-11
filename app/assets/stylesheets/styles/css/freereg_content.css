@@ -314,13 +314,7 @@ h1#body_content_title {
         line-height: 1.2;
         padding-bottom: 14px;
 }
-table.my-width{
-  width:1000;
-}
 
-table.my-width-min{
-  width:980;
-}
 dl.table-display
 {
   float: left;
@@ -375,6 +369,11 @@ dl.table-display
    font: 12px/1.5 bold sans-serif;
 }
 
+/* Forms & tooltips - accessibility changes - 05 Jan 2017 */
+.text-input:hover, .text-input:focus {
+  background-color: #f6f6f6;
+  color: #444;
+}
 form#new_search_query fieldset.inputs > ol { margin-left: -28px; margin-right: 0; }
 form#new_search_query fieldset.choices ol  { margin: 0; }
 
@@ -414,10 +413,42 @@ li.choice label { font-weight: normal; margin-bottom: 7px; }
   left: 10%;
   position: absolute;
 }
-.ttip img:hover + .ttip__text, .ttip:focus .ttip__text {
+.ttip:focus { outline: none; }
+.ttip img:hover + .ttip__text,
+.ttip span:hover + .ttip__text, 
+.ttip:focus .ttip__text {
   visibility: visible;
 }
 input::-webkit-input-placeholder { color: #585858; font-style: italic; opacity: 1 ! important; }
 input::-moz-placeholder          { color: #585858; font-style: italic; opacity: 1 ! important; }
 input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 1 ! important; }
 input::placeholder               { color: #585858; font-style: italic; opacity: 1 ! important; }
+
+/* Tables - accessibility changes - 07 Dec 2016 */
+#search-result .table--data, 
+#search-detail .table--data { line-height: 1.3; width: auto; margin: 0 auto; } 
+#search-result table.table--bordered td, 
+#search-result table.table--bordered th { padding: 14px 5px; }
+#search-detail tbody td {
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  max-width: 32em;
+}
+@media only screen and (max-width: 571px) {
+  #search-detail tbody td {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+}
+caption .additional, h3 + .additional {
+  font-size: 0.8rem;
+  color: #444;
+  background-color: transparent;
+  padding: 0 0 14px 0;
+  line-height: 1.5;
+}
+.read-length { max-width: 32em; }
+
+dl.table-display { width: 100%; }
+dl.table-display dt { width: 4em; }
+dl.table-display dd { width: calc(100% - 4em); }

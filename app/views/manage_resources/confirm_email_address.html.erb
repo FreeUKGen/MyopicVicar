@@ -1,0 +1,11 @@
+
+<p style="text-align: center"><b>Confirming email address for <%= @userid.userid %></b> </p>
+Your current email address is <%= @current %>
+<%= simple_form_for @userid do |f| %>
+
+<%= f.input :email_address_valid,  { :as => :select, :include_blank => false, :required => false,:size => 5, :collection => @userids, :input_html => {'onchange' => @location,:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} }%>
+
+
+ <%= f.button :submit, 'Confirm'   %>
+ <% end %>
+

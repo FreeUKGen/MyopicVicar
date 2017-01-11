@@ -21,6 +21,7 @@ class Contact
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
   field :identifier, type: String
+  field :screenshot_location, type: String
   attr_accessor :action
 
   validates_presence_of :name, :email_address
@@ -28,22 +29,30 @@ class Contact
 
   mount_uploader :screenshot, ScreenshotUploader
 
-  before_create :url_check, :add_identifier
+  before_create :url_check, :add_identifier, :add_screenshot_location
 
   class << self
     def id(id)
       where(:id => id)
     end
   end
-
-  def url_check
-
-    self.problem_page_url = "unknown" if self.problem_page_url.nil?
-    self.previous_page_url = "unknown" if self.previous_page_url.nil?
-  end
+  ##########################################################################################
 
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
+  end
+
+  def add_link_to_attachment
+    return if self.screenshot_location.blank?
+    website = Rails.application.config.website
+    website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
+    go_to = "#{website}/#{self.screenshot_location}"
+    body = self.body + "\n" + go_to
+    self.update_attribute(:body,body)
+  end
+
+  def add_screenshot_location
+    self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
   def communicate
@@ -98,10 +107,15 @@ class Contact
 
   def communicate_data_problem
     ccs = Array.new
-    coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if self.record_id.present?
+    #coordinator = self.get_coordinator if self.record_id.present?
+    #ccs << coordinator.email_address if self.record_id.present?
     UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
       ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+        ccs << person.email_address
+      end
     end
     UserMailer.coordinator_data_problem(self,ccs).deliver_now
   end
@@ -195,10 +209,12 @@ class Contact
 
   def github_issue
     if Contact.github_enabled
+      self.add_link_to_attachment
       Octokit.configure do |c|
         c.login = Rails.application.config.github_issues_login
         c.password = Rails.application.config.github_issues_password
       end
+      self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("FREEREG:GITHUB response: #{response}")
       logger.info(response.inspect)
@@ -220,5 +236,11 @@ class Contact
     issue_body = ApplicationController.new.render_to_string(:partial => 'contacts/github_issue_body.txt', :locals => {:feedback => self})
     issue_body
   end
+
+  def url_check
+    self.problem_page_url = "unknown" if self.problem_page_url.nil?
+    self.previous_page_url = "unknown" if self.previous_page_url.nil?
+  end
+
 
 end

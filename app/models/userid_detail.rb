@@ -3,6 +3,8 @@ class UseridDetail
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
 
+  require 'freereg_options_constants'
+
   field :userid, type: String
   field :userid_lower_case, type: String
   field :syndicate, type: String
@@ -35,6 +37,9 @@ class UseridDetail
   field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
+  field :email_address_valid, type: Boolean, default: true
+  field :email_address_last_confirmned, type: DateTime
+
   attr_accessor :action, :message
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
@@ -143,6 +148,9 @@ class UseridDetail
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     self.password = password
     self.password_confirmation = password
+    self.email_address_last_confirmned = self.sign_up_date
+    self.email_address_valid= true
+    self.email_address_last_confirmned = Time.new
   end
 
   def add_lower_case_userid
@@ -158,7 +166,7 @@ class UseridDetail
   end
 
   def changed_syndicate?(new_syndicate)
-    self.syndicate == new_syndicate ? change = false : change = true
+    new_syndicate.present? && self.syndicate != new_syndicate ? change = true : change = false
     change
   end
 
@@ -188,9 +196,9 @@ class UseridDetail
 
   def email_address_does_not_exist
     if self.changed.include?('email_address')
-      errors.add(:email_address, "Userid email already exits on change") if
+      errors.add(:email_address, "Userid email already exists on change") if
       UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
-      errors.add(:email_address, "Refinery email already exits on change") if
+      errors.add(:email_address, "Refinery email already exists on change") if
       Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
     end
   end
@@ -203,6 +211,7 @@ class UseridDetail
     UserMailer.notification_of_researcher_registration(self).deliver_now
   end
   def finish_transcriber_creation_setup
+    self.update_attribute(:email_address_last_confirmned, Time.now)
     UserMailer.notification_of_transcriber_registration(self).deliver_now
   end
   def finish_technical_creation_setup
@@ -214,6 +223,15 @@ class UseridDetail
     value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
     value
   end
+
+  def need_to_confirm_email_address?
+    result = false
+    self.email_address_last_confirmned.blank? ? last_date = self.sign_up_date  : last_date = self.email_address_last_confirmned
+    result = true if !self.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
+    return result
+  end
+
+
 
   def remember_search(search_query)
     self.search_queries << search_query
@@ -264,10 +282,10 @@ class UseridDetail
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exits") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exits") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
-    errors.add(:email_address, "Userid email already exits") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exits") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+    errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+    errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
   end
 
   def write_userid_file

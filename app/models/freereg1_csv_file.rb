@@ -260,7 +260,7 @@ class Freereg1CsvFile
 
       def delete_userid_folder(userid)
         folder_location = File.join(Rails.application.config.datafiles,userid)
-        FileUtils.rm_rf(folder_location)
+        FileUtils.rm_rf(folder_location, force = true) if Dir.exist?(folder_location) 
       end
 
       def file_update_location(file,param,session)
@@ -841,7 +841,7 @@ class Freereg1CsvFile
           # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
           csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
           #eg +LDS,,,,
-          csv << ['+LDS'] if file.lds || file.lds =='yes'
+          csv << ['+LDS'] if file.lds =='yes'
 
 
           register = file.register

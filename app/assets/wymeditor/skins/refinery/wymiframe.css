@@ -1,0 +1,342 @@
+/*
+ * WYMeditor : what you see is What You Mean web-based editor
+ * Copyright (c) 2008 Jean-Francois Hovinne, http://www.wymeditor.org/
+ * Dual licensed under the MIT (MIT-license.txt)
+ * and GPL (GPL-license.txt) licenses.
+ *
+ * For further information visit:
+ *    http://www.wymeditor.org/
+ *
+ * File Name:
+ *    wymeditor.css
+ *    Main editor css file.
+ *    See the documentation for more info.
+ *
+ * File Authors:
+ *    Jean-Francois Hovinne (jf.hovinne a-t wymeditor dotorg)
+ *    Daniel Reszka (d.reszka a-t wymeditor dotorg)
+*/
+/* VISUAL FEEDBACK */
+/* basic */
+/* line 24, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+body {
+  background: #fff;
+}
+
+/* make HTML blocks visible */
+/* line 27, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+ol,
+table,
+blockquote,
+pre,
+article,
+aside,
+command,
+details,
+summary,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+mark,
+meter,
+nav,
+progress,
+ruby,
+rt,
+rp,
+section,
+time {
+  background: transparent no-repeat 2px 2px;
+  padding: 8px 5px 5px;
+  margin: 6px 0px;
+  border: 1px dotted #cccccc;
+}
+
+/* line 62, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+td {
+  background: #F0F4F8;
+}
+
+/* line 63, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+th {
+  background: #ffffcc;
+}
+
+/* line 64, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+ul,
+ol {
+  border-left: 20px solid #B9C4D0;
+  padding: 0px 5px;
+}
+
+/* line 66, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+caption {
+  background: #E4E4B0;
+  padding: 5px;
+  font-weight: bold;
+}
+
+/* line 67, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+table {
+  font-size: 12px;
+  width: 500px;
+}
+
+/* line 68, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+td {
+  width: 25%;
+}
+
+/* line 69, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+blockquote {
+  margin-left: 30px;
+}
+
+/* line 70, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+pre {
+  background-color: transparent;
+  border: 1px solid white;
+}
+
+/* Gecko min height fix */
+/* line 73, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+p {
+  min-height: 1em;
+}
+
+/*min-height is needed under Firefox, because empty parargraphs */
+/* line 74, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+html.ie p {
+  min-height: auto;
+}
+
+/* but we have to remove it under IE7 because it triggers the 'haslayout' mode */
+/* line 75, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+td {
+  height: 1.6em;
+}
+
+/* labels */
+/* line 78, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+p {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/p-52b43ad6ce0fc256a89158455227b090a3da5cf74b585977e73a629007d851cd.png);
+}
+
+/* line 79, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h1 {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/h1-911c2fb8899b5bd381cd6e6fd9d5556b7bd95cc6a97112d7dfc8a16829471017.png);
+}
+
+/* line 80, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h2 {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/h2-46f653ff3d024fca84042144fea4b4470b035784b535b9ed0be303fbb038da5e.png);
+}
+
+/* line 81, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h3 {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/h3-8b9874f99332ac73255def4631efbf79e169723088365f1d876608ecae2fa631.png);
+}
+
+/* line 82, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h4 {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/h4-1ae47df34048c3f0d243f061f60d965d07c6cf5c28488e4f92b38007e0f6e79d.png);
+}
+
+/* line 83, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h5 {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/h5-aec1d3ed09ab54752a0995003a03132ac34d0b51b8b8b761042f6d0b4820b7a2.png);
+}
+
+/* line 84, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h6 {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/h6-a42c43313a0b3d759f5f64087eea8602ee7ca95c926d0a9be721050138f9ec04.png);
+}
+
+/* line 85, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+blockquote {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/blockquote-2c77e10392d24e60d465c4481d67089ebf227a5ef39fb97f996fa95a2fe4bce5.png);
+}
+
+/* line 86, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+pre {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/pre-73ec6bca4a7d977c297adab21298678370d6407b9b4ce06b396452e01a3b585b.png);
+}
+
+/* line 87, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+meter {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/meter-7322d8e1d988f6a26681ea16f0fc74986647ee9830386d39ffa760cdb11f1f61.png);
+}
+
+/* line 88, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+nav {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/nav-231df560ac23aca1a21c837c771ee6607c4107bc5c04bb75a6ae679fd4d1948f.png);
+}
+
+/* line 89, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+ruby {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/ruby-936e008f29c196b1cf3899239d1f0fd13cf9094af2dd1b80102fad3251ad9a26.png);
+}
+
+/* line 90, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+rt {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/rt-9c08b236ab896d46e10dce3ec46f418bb2d1f5799de36bdce0cf2f92d8989f84.png);
+}
+
+/* line 91, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+rp {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/rp-c319eeb42861c155666b2ebbfcb4a9703bd14f8db0359aa164ce6fa6032bc56e.png);
+}
+
+/* line 92, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+article {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/article-4d931d807e1d682da29b11400f1145330b3f41cc17a443af0420a379f2725404.png);
+}
+
+/* line 93, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+aside {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/aside-79fcd4728676ff6db68639d99becfde5cf10aa4ce00677474e2ba4462aacc849.png);
+}
+
+/* line 94, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+command {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/command-0d10c147b440bb1a0524027646d897a7c3c7514d79b06d219aaaedfafe061a3d.png);
+}
+
+/* line 95, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+details {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/details-f64cbc4842c28b6bdf2388dc55e0ff1bc2917da2931a64026775a0ebe29ec394.png);
+}
+
+/* line 96, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+summary {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/summary-ea3b0292ad72d86f92582e2f308ccf9ea2ee1d465cbffbe10b8d6b7a80d236d5.png);
+}
+
+/* line 97, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+figure {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/figure-9722835bc81bd93a8b90cc5970e5ce67d40e0d6c55ec3f5720458a6967d8a176.png);
+}
+
+/* line 98, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+figcaption {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/figcaption-e295f1e16d4f0b20afda6537bbe8249903bebe07a35c10dfc40f5dfa3cd99c6d.png);
+}
+
+/* line 99, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+footer {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/footer-a8dc6478e19a2688698fdc98afc8f9f9a5c391db01fce81072c2c159db77e76c.png);
+}
+
+/* line 100, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+header {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/header-463701c08fe329381f240088c6f7779e8ec5ca48dead88b85bb4898f0f6be34c.png);
+}
+
+/* line 101, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+hgroup {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/hgroup-e298ae5d6ab272e388fc02358fcd4c07317673203f171ed90fb50bd2480a76bb.png);
+}
+
+/* line 102, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+mark {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/mark-acc15d9b972b58fd55a5107caeeebfde2080f7c18f2b475e6148fcef80839e6d.png);
+}
+
+/* line 103, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+progress {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/progress-1ca046312de6763c7b898813e1785d15aed15e7c5b7fe03124e086e621bccdc4.png);
+}
+
+/* line 104, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+section {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/section-396e2795f2a850eccb9b394a439930c43733c89fe847a38a81aa803ce73eb09c.png);
+}
+
+/* line 105, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+time {
+  background-image: url(/assets/wymeditor/skins/refinery/html5/time-fd46c62dea6a038e7b598c579f0011b49cce0c21ccc9372aadbf71ddad99ef2f.png);
+}
+
+/* specific HTML elements */
+/* line 108, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+caption {
+  text-align: left;
+}
+
+/* line 109, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+img {
+  margin-right: 5px;
+  border: 1px solid transparent;
+}
+
+/* line 111, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+a img {
+  border: 1px dotted blue !important;
+}
+
+/* line 112, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+acronym {
+  border: 1px solid gray;
+}
+
+/* visual feedback for non-valid nesting of elements*/
+/* line 115, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+h1 h1, h1 h2, h1 h3, h1 h4, h1 h5, h1 h6, h1 p, h1 pre, h1 address,
+h2 h1, h2 h2, h2 h3, h2 h4, h2 h5, h2 h6, h2 p, h2 pre, h2 address,
+h3 h1, h3 h2, h3 h3, h3 h4, h3 h5, h3 h6, h3 p, h3 pre, h3 address,
+h4 h1, h4 h2, h4 h3, h4 h4, h4 h5, h4 h6, h4 p, h4 pre, h4 address,
+h5 h1, h5 h2, h5 h3, h5 h4, h5 h5, h5 h6, h5 p, h5 pre, h5 address,
+h6 h1, h6 h2, h6 h3, h6 h4, h6 h4, h6 h6, h6 p, h6 pre, h6 address,
+p h1, p h2, p h3, p h4, p h5, p h6, p pre, p address,
+pre h1, pre h2, pre h3, pre h4, pre h5, pre h6, pre p, pre pre, pre address,
+address h1, address h2, address h3, address h4, address h5, address h6,
+address p, address pre, address address {
+  background-color: #ff9999 !important;
+  border: 1px solid red !important;
+  font-size: 12px !important;
+  font-weight: normal;
+}
+
+/* indicate invalid text area fields */
+/* line 131, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+body.fieldWithErrors {
+  background-color: #ffecf0 !important;
+}
+
+/* line 133, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+img.selected_by_wym {
+  border: 1px dashed #22a7f2;
+}
+
+/* line 137, D:/Ruby21/lib/ruby/gems/2.1.0/gems/refinerycms-wymeditor-1.0.7/app/assets/stylesheets/wymeditor/skins/refinery/wymiframe.css.scss */
+article,
+aside,
+command,
+details,
+summary,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+mark,
+meter,
+nav,
+progress,
+ruby,
+rt,
+rp,
+section,
+time {
+  display: block;
+}

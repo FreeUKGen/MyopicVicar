@@ -70,6 +70,7 @@ class Place
   index({ chapman_code: 1, modified_place_name: 1, error_flag: 1, disabled: 1 })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
+  index({ disabled: 1 })
   index({ source: 1})
 
 
@@ -169,6 +170,7 @@ class Place
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = Date.new(1998,1,1)
     individual_churches = self.churches
     if individual_churches.present?
       individual_churches.each do |church|
@@ -179,12 +181,16 @@ class Place
           church.daterange = FreeregContent.setup_total_hash if  church.daterange.blank?
           FreeregContent.calculate_date_range(church, total_hash,"church")
           FreeregContent.get_transcribers(church, transcriber_hash,"register")
+          last_amended = church.last_amended.to_datetime if church.present? && church.last_amended.present? && church.last_amended.to_datetime > last_amended.to_datetime
         end
+
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
   end
 
   def change_grid_reference(grid)
@@ -322,7 +328,7 @@ class Place
   end
 
   def place_does_not_exist
-    errors.add(:place_name, "already exits") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+    errors.add(:place_name, "already exists") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
   end
 
   def places_near(radius_factor, system)
@@ -354,7 +360,9 @@ class Place
             else
               entry.search_record.update_attribute(:chapman_code, self.chapman_code)
             end
+            entry.search_record.update_attribute(:county, self.chapman_code)
           end
+          file.update_attribute(:county => self.chapman_code)
         end
       end
     end
@@ -362,8 +370,8 @@ class Place
 
   def propogate_place_name_change
     place_id = self._id
+    place_name = self.place_name
     self.churches.no_timeout.each do |church|
-      church.update_attribute(:place_id, place_id)
       church.registers.no_timeout.each do |register|
         location_names =[]
         location_names << "#{place_name} (#{church.church_name})"
@@ -375,9 +383,12 @@ class Place
             else
               entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
             end
+            entry.update_attributes(:place => place_name)
           end
+          file.update_attributes(:place => place_name)
         end
       end
+      church.update_attributes(:place_id => place_id, :place_name => place_name)
     end
   end
 

@@ -67,6 +67,7 @@ class Church
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = DateTime.new(1998,1,1)
     individual_registers = self.registers
     if individual_registers.present?
       individual_registers.each do |register|
@@ -77,12 +78,15 @@ class Church
           register.daterange = FreeregContent.setup_total_hash if  register.daterange.blank?
           FreeregContent.calculate_date_range(register, total_hash,"register")
           FreeregContent.get_transcribers(register, transcriber_hash,"register")
+          last_amended = register.last_amended.to_datetime if register.present? && register.last_amended.present? && register.last_amended.to_datetime > last_amended.to_datetime
         end
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
   end
 
   def change_name(param)
@@ -102,7 +106,7 @@ class Church
     self.church_name = self.church_name.strip
     place.churches.each do |church|
       if church.church_name == self.church_name
-        return false, "Church of that name already exits"
+        return false, "Church of that name already exists"
       end
     end
     return true, "OK"
@@ -146,6 +150,7 @@ class Church
         place.churches.delete(church)
       end
     end
+    self.calculate_church_numbers
     return [false, ""]
   end
 
@@ -181,10 +186,12 @@ class Church
       self.update_attributes(:place_id => new_place._id, :place_name => param[:place_name])
       new_place.update_attribute(:data_present, true) if new_place.search_records.exists? && new_place.data_present == false
       new_place.recalculate_last_amended_date
+      new_place.calculate_place_numbers
+      self.calculate_church_numbers
       return [true, "Error in save of church; contact the webmaster"] if self.errors.any?
     end
     self.propogate_church_name_change
-    PlaceCache.refresh_cache(new_place)
+    PlaceCache.refresh_cache(new_place) unless new_place.blank?
     return [false, ""]
   end
 

@@ -32,6 +32,12 @@
       <td>Email:</td><td > <%= @userid.email_address   %> </td>
     </tr>
     <tr>
+      <td>Email address valid:</td><td > <%= @userid.email_address_valid   %> </td>
+    </tr>
+     <tr>
+      <td>Email address last confirmed:</td><td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y") if  @userid.email_address_last_confirmned.present? %> </td>
+    </tr>
+    <tr>
       <td>Physical Location:</td><td > <%= @userid.address  %>  </td>
     </tr>
     <tr>

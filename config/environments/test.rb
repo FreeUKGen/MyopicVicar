@@ -85,4 +85,5 @@ MyopicVicar::Application.configure do
   config.assets.compress = false
   config.assets.debug = false
   config.assets.digest = false
+
 end

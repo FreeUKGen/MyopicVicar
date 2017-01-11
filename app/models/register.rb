@@ -114,6 +114,7 @@ class Register
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = DateTime.new(1998,1,1)
     individual_files = self.freereg1_csv_files
     if individual_files.present?
       individual_files.each do |file|
@@ -124,12 +125,17 @@ class Register
           file.daterange = FreeregContent.setup_array if  file.daterange.blank?
           FreeregContent.calculate_date_range(file, total_hash,"file")
           FreeregContent.get_transcribers(file, transcriber_hash,"file")
+          batch = PhysicalFile.userid(file.userid).file_name(file.file_name).first
+          uploaded = batch.base_uploaded_date if batch.present?
+          last_amended = uploaded.to_datetime  if uploaded.present? && uploaded.to_datetime > last_amended.to_datetime
         end
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
   end
 
   def change_type(type)
@@ -192,10 +198,11 @@ class Register
         if entry.search_record.nil?
           logger.info "FREEREG:search record missing for entry #{entry._id}. \r\n"
         else
-          entry.update_attribute(:register_type,register_type)
+          entry.update_attribute(:register_type,self.register_type)
           entry.search_record.update_attribute(:location_names, location_names)
         end
       end
+      file.update_attribute(:register_type,self.register_type)
     end
   end
 

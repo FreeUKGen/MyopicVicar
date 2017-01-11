@@ -1,11 +1,14 @@
 require 'chapman_code'
 
 namespace :foo do
-  # eg rake foo:update_search_records[200,bu]
-  task :update_search_records,[:limit,:record_type,:version,:force] => [:environment] do |t,args|
+  # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
+  #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
+  #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
+
+  task :update_search_records,[:limit,:record_type,:version,:force, :order] => [:environment] do |t,args|
     #limit is number of files to process 0 is all
     require 'update_search_records'
-    UpdateSearchRecords.process(args.limit,args.record_type,args.version,args.force)
+    UpdateSearchRecords.process(args.limit,args.record_type,args.version,args.force,args.order)
   end
   # rake foo:get_software_version[manual,2012/1/1,2015/4/8,1.0]
 
@@ -26,7 +29,12 @@ namespace :foo do
     require 'correct_witness_records'
     CorrectWitnessRecords.process(args.limit,args.range)
   end
-
+  
+ desc "Correct the multiple witness records"
+  task :correct_multiple_witness_records,[:limit,:range,:fix] => :environment do |t, args|
+    require 'correct_multiple_witness_records'
+    CorrectMultipleWitnessRecords.process(args.limit,args.range,args.fix)
+  end
 
   desc "Initialize the Physical files collection"
   task :load_physical_file_records,[:limit,:range] => :environment do |t, args|
@@ -85,7 +93,7 @@ namespace :foo do
 
   desc "Create the indexes after all FreeREG processes have completed"
   task :create_freereg_csv_indexes => [:environment] do
-    #task is there to creat indexes after running of freereg_csv_processor
+    #task is there to create indexes after running of freereg_csv_processor
     require "county"
     require "country"
     require "userid_detail"
@@ -123,7 +131,7 @@ namespace :foo do
 
   desc "Create the search record indices "
   task :create_search_records_indexes => [:environment] do
-    #task is there to creat indexes after running of freereg_csv_processor
+    #task is there to create indexes after running of freereg_csv_processor
     require 'search_record'
     puts "Search records build indexes."
     SearchRecord.create_indexes()
@@ -203,7 +211,7 @@ namespace :foo do
   desc "Refresh the places cache"
   task :refresh_places_cache => [:environment] do |t,args|
     if args.extras.count == 0
-       PlaceCache.refresh_all
+      PlaceCache.refresh_all
     else
       args.extras.each { |a| PlaceCache.refresh(a.to_s) }
     end
@@ -246,5 +254,18 @@ namespace :foo do
     LoadFilesIntoUseridDetails.process(args.len,args.range,args.fr)
     puts "Task complete."
 
+  end
+  
+  desc "Refresh UCF lists on places"
+  task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
+    Place.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
+      unless args.skip && i < args.skip.to_i
+        Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.each do |file|
+          print "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
+          place.update_ucf_list(file)
+        end
+        place.save!        
+      end
+    end
   end
 end

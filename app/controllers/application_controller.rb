@@ -136,7 +136,7 @@ class ApplicationController < ActionController::Base
 
   def require_cookie_directive
     if cookies[:cookiesDirective].blank?
-      flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
+      flash[:notice] = 'This website only works if you are willing to explicitly accept cookies. If you did not see the cookie declaration you could be using an obsolete browser or a browser add on that blocks cookie messages'
       redirect_to main_app.new_search_query_path
     end
   end

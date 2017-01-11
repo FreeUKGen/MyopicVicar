@@ -1,6 +1,13 @@
 class SearchRecordsController < ApplicationController
   before_filter :viewed
   skip_before_filter :require_login
+  rescue_from Mongo::Error::OperationFailure, :with => :catch_error
+
+  def catch_error
+    logger.warn("FREEREG:RECORD: Record encountered a problem #{params}")
+    flash[:notice] = 'We are sorry but we encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
+    redirect_to new_search_query_path
+  end
 
   def index
     flash[:notice] = "That action does not exist"
@@ -30,6 +37,7 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     end
+    @display_date = false
     @entry.display_fields
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
     @search_result = @search_query.search_result
@@ -41,13 +49,13 @@ class SearchRecordsController < ApplicationController
 
   def show_print_version
     @page_number = params[:page_number].to_i
-    @search_record = SearchRecord.find(params[:id])
-    @entry = @search_record.freereg1_csv_entry
-    if params[:search_id].nil?
-      redirect_to new_search_query_path
-      return
-    end
     begin
+      @search_record = SearchRecord.find(params[:id])
+      @entry = @search_record.freereg1_csv_entry
+      if params[:search_id].nil?
+        redirect_to new_search_query_path
+        return
+      end
       @search_query = SearchQuery.find(params[:search_id])
       @previous_record = @search_query.previous_record(params[:id])
       @next_record = @search_query.next_record(params[:id])
@@ -57,6 +65,7 @@ class SearchRecordsController < ApplicationController
       return
     end
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
+    @display_date = true
     render "show", :layout => false
   end
 

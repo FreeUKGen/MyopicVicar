@@ -1,0 +1,9 @@
+<p style="text-align: center">
+	<b>Your current email address is <br><br><%= @current %></b> 
+	<br><br>
+	<%= simple_form_for @userid do |f| %>
+		<%= f.input_field :email_address_valid,  :as => :radio_buttons,  :collection => @options, :input_html => {:class => "ttip" } %>
+		<br><br>
+		<%= f.button :submit, 'Confirm'   %>
+	<% end %>
+</p>

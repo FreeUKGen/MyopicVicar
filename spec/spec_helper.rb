@@ -483,6 +483,20 @@ BAPTISM_BIRTH =
   :user => 'artificial'
 }
 
+WILDCARD_DATES =
+{
+  :filename => "artificial/unclear_date_ba.csv",
+  :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+  :file => "unclear_date_ba.csv",
+  :chapman_code => 'KEN',
+  :placename => 'Stone in Oxney',
+  :churchname => 'St Mary',
+  :entry_count => 1,
+  :register_type => "TR",
+  :minimum_date => "1653",
+  :maximum_date => "1653",
+  :user => 'artificial'
+}
 CHANGELESS_FILE =
 {
   :filename => "jelit/SSXSESBU.CSV",

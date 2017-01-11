@@ -7,6 +7,8 @@ require 'date_parser'
 
 class SearchRecord
   include Mongoid::Document
+  include Mongoid::Timestamps::Created::Short
+  include Mongoid::Timestamps::Updated::Short
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
   #before_save :add_digest
@@ -68,41 +70,23 @@ class SearchRecord
   field :search_soundex, type: Array, default: []
 
 
-  PRE_SEARCH_DATE_INDEXES = {
-    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
-    "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
-    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name", "search_date"],
-    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "search_date"],
-    "place_ln" => ["place_id", "search_names.last_name", "search_date"],
-    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name", "search_date"],
-    "place_lnsdx" => ["place_id", "search_soundex.last_name", "search_date"],
-    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name", "search_date"],
-    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name", "search_date"],
-    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "search_date"]
+  NEW_INDEXES = {
+    "ln_county_rt_sd_ssd" => ["search_names.last_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "ln_fn_county_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_county_rt_sd_ssd" => ["search_soundex.last_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_fnsdx_county_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+    "ln_place_rt_sd_ssd" => ["search_names.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "ln_fn_place_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","place_id","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "lnsdx_fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","place_id","record_type", "search_date", "secondary_search_date"],
+    "fn_county_rt_sd_ssd" => ["search_names.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "fnsdx_county_rt_sd_ssd" => ["search_soundex.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+    "fn_place_rt_sd_ssd" => ["search_names.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "fnsdx_place_rt_sd_ssd" => ["search_soundex.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
+    "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"]
   }
-  POST_SEARCH_DATE_INDEXES = {
-    'county_fn_ln_sd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "search_date"],
-    'county_fn_ln_ssd' => ['chapman_code',"search_names.first_name", "search_names.last_name", "secondary_search_date"],
-    "county_ln_sd" => ["chapman_code", "search_names.last_name", "search_date"],
-    "county_ln_ssd" => ["chapman_code", "search_names.last_name", "secondary_search_date"],
-    "county_lnsdx_fnsdx_sd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name","search_date"],
-    "county_lnsdx_fnsdx_ssd" => ["chapman_code", "search_soundex.last_name", "search_soundex.first_name", "secondary_search_date"],
-    "county_fnsdx" => ["chapman_code", "search_soundex.first_name", "search_date"],
-    "county_fnsdx_ssd" => ["chapman_code", "search_soundex.first_name", "secondary_search_date"],
-    "place_ln" => ["place_id", "search_names.last_name","search_date"],
-    "place_ln_ssd" => ["place_id", "search_names.last_name", "secondary_search_date"],
-    "place_ln_fn" => ["place_id","search_names.first_name", "search_names.last_name","search_date"],
-    "place_ln_fn_ssd" => ["place_id","search_names.first_name", "search_names.last_name", "secondary_search_date"],
-    "place_lnsdx" => ["place_id", "search_soundex.last_name","search_date"],
-    "place_lnsdx_ssd" => ["place_id", "search_soundex.last_name", "secondary_search_date"],
-    "place_fnsdx_lnsdx" => ["place_id", "search_soundex.first_name", "search_soundex.last_name","search_date"],
-    "place_fnsdx_lnsdx_ssd" => ["place_id", "search_soundex.first_name", "search_soundex.last_name", "secondary_search_date"],
-    "ln_rt_fn_sd" => ["search_names.last_name", "record_type", "search_names.first_name","search_date"],
-    "ln_rt_fn_ssd" => ["search_names.last_name", "record_type", "search_names.first_name", "secondary_search_date"],
-    "lnsdx_rt_fnsdx_sd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name","search_date"],
-    "lnsdx_rt_fnsdx_ssd" => ["search_soundex.last_name", "record_type", "search_soundex.first_name", "secondary_search_date"]
-  }
-  INDEXES = PRE_SEARCH_DATE_INDEXES.merge(POST_SEARCH_DATE_INDEXES)
+
+  INDEXES = NEW_INDEXES
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
@@ -167,10 +151,11 @@ class SearchRecord
 
     def fields_from_params(search_params)
       fields = []
-
-      search_params.each_pair { |key,value| extract_fields(fields, value, key.to_s) }
-
+      search_params.each_pair do |key,value|
+        extract_fields(fields, value, key.to_s)
+      end
       fields.uniq
+      fields
     end
 
     def from_annotation(annotation)
@@ -253,32 +238,36 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      Rails.application.config.use_decomposed_dates ? candidates = POST_SEARCH_DATE_INDEXES.keys : candidates = PRE_SEARCH_DATE_INDEXES.keys
+      candidates = NEW_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
+      # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-      #    pp scores
+      p "scores"
+      p scores
       best = scores.max_by { |k,v| v}
+      # p "selected"
+      # p best[0]
       best[0]
     end
 
     def index_score(index_name, search_fields)
-      Rails.application.config.use_decomposed_dates ? fields = POST_SEARCH_DATE_INDEXES[index_name] : fields = PRE_SEARCH_DATE_INDEXES[index_name]
+      fields = NEW_INDEXES[index_name]
       best_score = -1
-      fields.each_with_index do |field, i|
+      fields.each do |field|
         if search_fields.any? { |param| param == field }
-          best_score = i
+          best_score =  best_score + 1
         else
-          break #bail since leading terms haven't been found
+          return best_score
+          #bail since search field hasn't been found
         end
       end
-      best_score
+      return best_score
     end
 
     def indexable_value?(param)
       if param.is_a? Regexp
         # does this begin with a wildcard?
-
         param.inspect.match(/^\/\^/) #this regex looks a bit like a cheerful owl
       else
         true
@@ -312,7 +301,6 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place_id)
-
       search_record = entry.search_record
       #p search_record
       if  search_record.blank?

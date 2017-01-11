@@ -19,7 +19,6 @@ development:
   max_search_time: #as stated
   our_secret_key: #password secret key
   secret_key_base: #secrets secret key base
-  use_decomposed_dates: # if false use old indexes if true use the new indexes
   timeout_researcher: 120
   timeout_transcriber: 60
   timeout_manager: 240
@@ -60,7 +59,6 @@ production:
   max_search_time: #as stated
   our_secret_key: #password secret key
   secret_key_base: #secrets secret key base
-  use_decomposed_dates: # if false use old indexes if true use the new indexes
   timeout_researcher: 120
   timeout_transcriber: 60
   timeout_manager: 240

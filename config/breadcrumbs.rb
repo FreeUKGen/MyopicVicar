@@ -345,6 +345,11 @@ crumb :physical_files do
   link "Listing of Physical Files", physical_files_path
   parent :physical_files_options
 end
+crumb :show_physical_files do |physical_file|
+  link "Show a Physical File", physical_file_path(physical_file)
+  parent :physical_files
+end
+
 #csvfiles
 crumb :new_csvfile do |csvfile|
   link "Upload New File", new_csvfile_path

@@ -4,6 +4,8 @@ class SearchQueriesController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :check_for_mobile, :only => :show
   rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
+  rescue_from Mongoid::Errors::DocumentNotFound, :with => :missing_document
+  rescue_from ActionView::Template::Error, :with => :missing_template
   RECORDS_PER_PAGE = 100
 
   def about
@@ -78,8 +80,19 @@ class SearchQueriesController < ApplicationController
     redirect_to :action => :new
   end
 
-  def narrow
+  def missing_document
+    logger.warn("FREEREG:SEARCH: Search encountered a missing document #{params}")
+    flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
+    redirect_to new_search_query_path
+  end
 
+  def missing_template
+    logger.warn("FREEREG:SEARCH: Search encountered a missing template #{params}")
+    flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
+    redirect_to new_search_query_path
+  end
+
+  def narrow
     old_query = SearchQuery.find(params[:id])
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
@@ -164,6 +177,8 @@ class SearchQueriesController < ApplicationController
   end
 
   def search_taking_too_long
+    p "search error"
+    p params
     @search_query = SearchQuery.find(session[:query])
     runtime = Rails.application.config.max_search_time
     @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))

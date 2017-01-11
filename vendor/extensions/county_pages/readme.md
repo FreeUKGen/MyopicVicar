@@ -4,7 +4,7 @@
 
     cd vendor/extensions/county_pages
     gem build refinerycms-county_pages.gemspec
-    gem install refinerycms-county_pages.gem
+    gem install refinerycms-county_pages-1.2.gem
 
     # Sign up for a http://rubygems.org/ account and publish the gem
-    gem push refinerycms-county_pages.gem
+    gem push refinerycms-county_pages-1.2.gem

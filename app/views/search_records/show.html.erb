@@ -1,150 +1,157 @@
 <% title "Record Details #{@search_record.freereg1_csv_entry.id}" %>
-<section  >
-  
+<section>
   <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
 </section>
-<section>
+<section id="search-detail">
   <% if @search_record.freereg1_csv_entry %>
-  <table class="table--bordered table--data">
-    <colgroup >
-    <col class=t40>
-    <col class=t60>
-    
-    </colgroup>
-    <thead >
-      <tr>
-        <td colspan="2">
-          <% if @entry && @annotations && @annotations.length %>
-          <h2>Offline Transcriptions</h2>
+    <% if @entry && @annotations && @annotations.length %>
+      <h2>Offline Transcriptions</h2>
+    <% end %>
+    <table class="table--bordered table--data push--bottom">
+      <caption class="beta">FreeReg <%= record_type(@entry) %> entry
+        <%if @display_date%>
+          <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
+        <% else%>
+          <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
+        <% end%> 
+      </caption>
+      <colgroup>
+        <col class="t40">
+        <col class="t60">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @entry.ordered_display_fields.each do |field| %>
+          <% if @entry[field] %>     
+            <% if field == 'place' %>
+            <tr>
+            <td><%= field.gsub('_',' ').capitalize %> (link for place information)</td>
+            <td><%= link_to(@entry[field], place_freereg_content_path(@search_record.place)) %></td>
+            </tr>
+            <%else%>
+            <tr>
+              <td><%= field.gsub('_',' ').capitalize %></td>
+              <td><%= @entry[field] %></td>
+            </tr>
+             <% end %>
           <% end %>
-          <h3>FreeReg <%= record_type(@entry)   %> entry on <%=Time.now.strftime("%d %b %Y")%></h3>
-          <h4> For information about this place follow the link to <%= link_to(@search_record.place.place_name, place_freereg_content_path(@search_record.place)) %></h4>
-          <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query) %> it to our data manager.</h5>
-        </td>
-      </tr>
-      <tr>
-        <th >Field</th>
-        <th class="caps">Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @entry.ordered_display_fields.each do |field| %>
-      <% if @entry[field] %>
-      <tr>
-        <td class="weight--normal"><%= field.gsub('_',' ').capitalize %></td>
-        <td class="weight--semibold"><%= @entry[field] %></td>
-      </tr>
-      <% end %>
-      <% end %>
-      <% @entry.multiple_witnesses.each do |witness| %>
-      <tr>
-        <td class="weight--normal">Witness </td>
-        <td class="weight--semibold"><%= witness.witness_forename %> <%= witness.witness_surname %></td>
-      </tr>
-      <% end%>
-      
-      <tr>
-        <td class="weight--normal">Register note </td>
-        <td class="weight--semibold"><%= @entry.notes %></td>
-      </tr>
-      
-      <tr>
-        <td class="weight--normal">Transcriber notes </td>
-        <td class="weight--semibold"><%= @entry.notes_from_transcriber%></td>
-      </tr>
-      
-      <% if current_authentication_devise_user.present? %>
-      <tr>
-        <td class="weight--normal"> Line id </td>
-        <td class="weight--semibold"><%= @entry.line_id %></td>
-      </tr>
-      <% end%>
-    </tbody>
-  </table>
+        <% end %>
+        <% @entry.multiple_witnesses.each do |witness| %>
+          <tr>
+            <td>Witness </td>
+            <td><%= witness.witness_forename %> <%= witness.witness_surname %></td>
+          </tr>
+        <% end%>
+
+        <tr>
+          <td>Register note </td>
+          <td><%= @entry.notes %></td>
+        </tr>
+
+        <tr>
+          <td>Transcriber notes </td>
+          <td><%= @entry.notes_from_transcriber%></td>
+        </tr>
+
+
+        <% if current_authentication_devise_user.present? %>
+          <tr>
+            <td>Line ID</td>
+            <td><%= @entry.line_id %></td>
+          </tr>
+        <% end%>
+      </tbody>
+    </table>
+    
   <% end %>
   <% if @annotations && @annotations.length > 0 %>
-  <table class="table--bordered table--data">
-    <thead>
-      <tr>
-        <td colspan="2">
-          <h2>Online Transcriptions</h2>
-        </td>
-      </tr>
-    </thead>
-    <tbody>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <h2>Online Transcriptions</h2>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
       <% @annotations.each do |annotation| %>
-      <% annotation.attributes.keys.each do |field| %>
-      <% if annotation[field] %>
-      <tr>
-        <td><%= field.gsub('_',' ').capitalize %></td>
-        <td><%= annotation[field] %></td>
-      </tr>
-      <% end %>
-      <% end %>
-      <% transcription = annotation.transcription %>
-      <% if transcription %>
-      <% transcription.attributes.keys.each do |field| %>
-      <% if transcription[field] %>
-      <tr>
-        <td><%= field.gsub('_',' ').capitalize %></td>
-        <td><%= transcription[field] %></td>
-      </tr>
-      <% end %>
-      <% end %>
-      <tr>
-        <td>Image</td>
-        <td>
-          <% if transcription.asset.thumbnail_location %>
-          <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
-          <% else %>
-          <%= link_to("Image", transcription.asset.location) %>
+        <% annotation.attributes.keys.each do |field| %>
+          <% if annotation[field] %>
+            <tr>
+              <td><%= field.gsub('_',' ').capitalize %></td>
+              <td><%= annotation[field] %></td>
+            </tr>
           <% end %>
-        </td>
-      </tr>
+        <% end %>
+        <% transcription = annotation.transcription %>
+        <% if transcription %>
+          <% transcription.attributes.keys.each do |field| %>
+            <% if transcription[field] %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize %></td>
+                <td><%= transcription[field] %></td>
+              </tr>
+            <% end %>
+          <% end %>
+          <tr>
+            <td>Image</td>
+            <td>
+              <% if transcription.asset.thumbnail_location %>
+                <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+              <% else %>
+                <%= link_to("Image", transcription.asset.location) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       <% end %>
-      <% end %>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
   <% end%>
   <% unless params[:debug].blank? %>
-  <table class="table--bordered table--data">
-    <thead>
-      <tr>
-        <td colspan="2">
-          <h1>Record</h1>
-        </td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Primary names</td>
-        <td>
-          <% @search_record.primary_names.each do |name| %>
-          first_name: <%= name.first_name %><br/>
-          last_name: <%= name.last_name %><br/>
-          origin: <%= name.origin %><br/>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <h1>Record</h1>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary names</td>
+          <td>
+            <% @search_record.primary_names.each do |name| %>
+              first_name: <%= name.first_name %><br/>
+              last_name: <%= name.last_name %><br/>
+              origin: <%= name.origin %><br/>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>Other family names</td>
+          <td>
+            <% @search_record.inclusive_names.each do |name| %>
+              first_name: <%= name.first_name %><br/>
+              last_name: <%= name.last_name %><br/>
+              origin: <%= name.origin %><br/>
+            <% end %>
+          </td>
+        </tr>
+        <% @search_record.ordered_display_fields.each do |field| %>
+          <% if @search_record[field] %>
+            <tr>
+              <td><%= field.gsub('_',' ').capitalize %></td>
+              <td><%= @search_record[field] %></td>
+            </tr>
           <% end %>
-        </td>
-      </tr>
-      <tr>
-        <td>Other family names</td>
-        <td>
-          <% @search_record.inclusive_names.each do |name| %>
-          first_name: <%= name.first_name %><br/>
-          last_name: <%= name.last_name %><br/>
-          origin: <%= name.origin %><br/>
-          <% end %>
-        </td>
-      </tr>
-      <% @search_record.ordered_display_fields.each do |field| %>
-      <% if @search_record[field] %>
-      <tr>
-        <td><%= field.gsub('_',' ').capitalize %></td>
-        <td><%= @search_record[field] %></td>
-      </tr>
-      <% end %>
-      <% end %>
-    </tbody>
-  </table>
+        <% end %>
+      </tbody>
+    </table>
   <% end %>
 </section>

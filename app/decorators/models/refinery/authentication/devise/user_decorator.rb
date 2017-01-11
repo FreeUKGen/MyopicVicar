@@ -20,13 +20,17 @@ Refinery::Authentication::Devise::User.class_eval do
   end
   def timeout_in
     userid = UseridDetail.id(self.userid_detail_id).first
-    case
-    when userid.person_role == "researcher"
-      timeout = Rails.application.config.timeout_researcher.minutes
-    when userid.person_role == "transcriber" || "trainee"
-      timeout = Rails.application.config.timeout_transcriber.minutes
+    if userid.present?
+      case
+      when userid.person_role == "researcher"
+        timeout = Rails.application.config.timeout_researcher.minutes
+      when userid.person_role == "transcriber" || "trainee"
+        timeout = Rails.application.config.timeout_transcriber.minutes
+      else
+        timeout = Rails.application.config.timeout_manager.minutes
+      end
     else
-      timeout = Rails.application.config.timeout_manager.minutes
+      timeout = Rails.application.config.timeout_researcher.minutes
     end
     return timeout
   end
