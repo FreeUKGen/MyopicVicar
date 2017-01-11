@@ -8,7 +8,7 @@ end
 
 def load_counties
   position = 1
-  codes = ChapmanCode::CODES.merge_countries
+  codes = ChapmanCode.merge_countries
   codes.each_pair do |name, code|
     Refinery::CountyPages::CountyPage.create( :name => name, :chapman_code => code, :position => position )
     position = position+1
