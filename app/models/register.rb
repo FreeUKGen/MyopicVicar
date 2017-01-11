@@ -29,6 +29,8 @@ class Register
   field :contributors, type: Hash
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
+  
+  has_many :sources # includes transcripts, printed editions, and microform, and digital versions of these 
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
