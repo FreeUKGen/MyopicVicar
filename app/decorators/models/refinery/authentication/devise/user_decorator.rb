@@ -2,7 +2,7 @@
 #require Rails.root.join('lib', 'devise', 'encryptors', 'md5')
 
 Refinery::Authentication::Devise::User.class_eval do
-  attr_accessible :userid_detail_id, :reset_password_token, :reset_password_sent_at
+  attr_accessible :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email
   devise :timeoutable , :encryptable, :encryptor => :freereg
   before_update :inform_coordinator_of_completion
   after_update :save_password_and_send_notification

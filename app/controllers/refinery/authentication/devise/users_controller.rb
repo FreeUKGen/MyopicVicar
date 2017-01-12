@@ -9,6 +9,7 @@ module Refinery
         helper Refinery::Core::Engine.helpers
         layout 'refinery/layouts/login'
 
+
         def new
           @user = User.new
         end
@@ -19,7 +20,6 @@ module Refinery
 
           if @user.create_first
             flash[:message] = t('welcome', scope: 'refinery.authentication.devise.users.create', who: @user)
-
             sign_in(@user)
             redirect_back_or_default(Refinery::Core.backend_path)
           else
