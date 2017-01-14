@@ -1,0 +1,23 @@
+<div class="grid__item ">
+<% @emendation_rules.each do |emendation_rule|  %>
+<table   class="table--bordered  table--data">
+    <colgroup >
+    <col class=t40>
+    <col class=t60>
+    </colgroup>
+    <tr>
+      <th class="caps">Field</th>
+      <th  class="caps">Value</th>
+    </tr>
+    <tr>
+      <td>Original :</td><td class="weight--semibold"> <%= emendation_rule.original %></td>
+    </tr>
+    <tr>
+      <td>Replacement :</td><td class="weight--semibold"> <%= emendation_rule.replacement %></td>
+    </tr>
+    <tr>
+      <td>Gender :</td><td class="weight--semibold"><% if !emendation_rule.gender.nil? %><%= emendation_rule.gender %><% else %>---<% end %></td>
+    </tr>
+  </table>
+<% end %>	
+</div>
