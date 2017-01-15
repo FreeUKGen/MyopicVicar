@@ -60,6 +60,7 @@ class CsvfilesController < ApplicationController
         pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
         flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
       when processing_time < 100
+        logger.warn("FREEREG:CSV_PROCESSING: Spinning off rake task for #{@csvfile.userid} #{@csvfile.file_name}")
         pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
         flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
       when processing_time >= 100
