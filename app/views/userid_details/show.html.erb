@@ -45,6 +45,9 @@
       <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
       <% end%>
     </tr>
+    <tr>
+      <td>Registration completed:</td><td > <%= registered(@userid)  %>  </td>
+    </tr>
     <% unless @userid.person_role == 'researcher'%>
     <tr>
       <td>Telephone number:</td><td > <%= @userid.telephone_number %>  </td>
