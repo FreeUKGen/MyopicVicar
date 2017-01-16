@@ -513,7 +513,7 @@ describe Freereg1CsvEntry do
     query = SearchQuery.new(query_params)
     query.places << place
 
-    SearchRecord.index_hint(query.search_params).should eq("place_ln_fn")
+    SearchRecord.index_hint(query.search_params).should eq("ln_fn_place_rt_sd_ssd")
      
     # ends-with wildcard should not use name index (with no place)
     query_params = { :record_type => RecordType::BAPTISM,
@@ -605,37 +605,6 @@ describe Freereg1CsvEntry do
 
     check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true)
     check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
-    
-    # now test the old algorithm against old records
-    create_old_style_search_record(entry)
-    check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
-    check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true) # search secondary year
-    
-    
-    # test the new algorithm against upgraded records
-    old_version = entry.search_record.search_record_version
-
-    UpdateSearchRecords.process(1000,'ba','1',false,'1')
-    entry.search_record.reload
-    # search_record_version is apparently now tracked on the file
-    # new_version = entry.search_record.search_record_version
-    # old_version.should_not == new_version
-
-    # test the upgrade updated the date strings
-    entry.search_record.search_date.should eq entry.search_record.search_dates[0] 
-    entry.search_record.secondary_search_date.should eq entry.search_record.search_dates[1] 
-
-
-    check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true)
-    check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
-
-    # test the new algorithm against new records
-    check_record(entry, :person_forename, :father_surname, false, { :use_decomposed_dates => true, :start_year => baptism_date,:end_year => baptism_date }, true)
-    check_record(entry, :person_forename, :father_surname, false, { :use_decomposed_dates => true, :start_year => birth_date,:end_year => birth_date }, true)
-    
-    
-    # test the new algorithm against cleaned records
-    
   end
 
   it "should find wildcard dates" do
