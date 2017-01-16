@@ -17,10 +17,16 @@ class UseridDetailsController < ApplicationController
   def change_password
     load(params[:id])
     refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
-    refinery_user.send_reset_password_instructions
-    flash[:notice] = 'An email has been sent with instructions.'
+    if refinery_user.blank?
+      flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
+      flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
+      logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist. Run the Fix Refinery User Table utilty")
+    else
+      refinery_user.send_reset_password_instructions
+      flash[:notice] = 'An email has been sent with instructions.'
+    end
     if session[:my_own]
-      redirect_to refinery.logout_path and return
+      redirect_to logout_manage_resources_path and return
     else
       redirect_to userid_detail_path(@userid) and return
     end
@@ -156,10 +162,14 @@ class UseridDetailsController < ApplicationController
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
 
-    when params[:commit] == "Submit"
-      redirect_to userid_details_path(:anchor => "#{ @userid.id}", :page => "#{session[:user_index_page]}") and return
+    when params[:commit] == "Submit" && session[:userid_detail_id].present?
+      redirect_to userid_detail_path(@userid) and return
+    when params[:commit] == "Update" && session[:my_own]
+      logout_manage_resources_path and return
+    when params[:commit] == "Update" && session[:userid_detail_id].present?
+      redirect_to userid_detail_path(@userid) and return
     else
-      redirect_to refinery.login_path and return
+      logout_manage_resources_path and return
     end
   end
 
@@ -384,7 +394,6 @@ class UseridDetailsController < ApplicationController
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
-
       UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
       flash[:notice] = 'The update of the profile was successful'
       redirect_to userid_detail_path(@userid)
