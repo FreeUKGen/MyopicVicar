@@ -52,7 +52,6 @@ class CsvfilesController < ApplicationController
     if batch.present?
       flash[:notice] = "Your file is currently waiting to be processed. It cannot be processed this way now"
       logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
-      @csvfile.delete
     else
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
       case
@@ -67,18 +66,18 @@ class CsvfilesController < ApplicationController
         batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
         flash[:notice] =  "The file has been placed in the queue for overnight processing. You will receive an email when it has been completed."
       end
-      @csvfile.delete
-      if session[:my_own]
-        redirect_to my_own_freereg1_csv_file_path
-        return
-      end #session
-      unless session[:freereg1_csv_file_id].nil?
-        redirect_to freereg1_csv_files_path(:anchor => "#{session[:freereg1_csv_file_id]}")
-        return
-      else
-        redirect_to freereg1_csv_files_path
-        return
-      end
+    end
+    @csvfile.delete
+    if session[:my_own]
+      redirect_to my_own_freereg1_csv_file_path
+      return
+    end #session
+    unless session[:freereg1_csv_file_id].nil?
+      redirect_to freereg1_csv_files_path(:anchor => "#{session[:freereg1_csv_file_id]}")
+      return
+    else
+      redirect_to freereg1_csv_files_path
+      return
     end
   end #create method
 
