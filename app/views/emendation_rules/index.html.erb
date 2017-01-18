@@ -5,15 +5,13 @@
     <col class=t60>
     </colgroup>
     <tr>
+      <th class="caps">Replacement</th>
       <th class="caps">Original</th>
-      <th  class="caps">Replacement</th>
-      <th class="caps">Gender</th>
     </tr>
-<% @emendation_rules.each do |emendation_rule|  %>
+<% @emendation_rules_replacements.each do |emendation_rules_replacement|  %>
     <tr>
-      <td class="weight--semibold"><%= emendation_rule.original %></td>
-			<td class="weight--semibold"><%= emendation_rule.replacement %></td>
-			<td class="weight--semibold"><% if !emendation_rule.gender.nil? %><%= emendation_rule.gender %><% else %>---<% end %></td>
+      <td class="weight--semibold"><%= emendation_rules_replacement %></td>
+			<td class="weight--semibold"><%= EmendationRule.all_original_by_replacement(emendation_rules_replacement)*", \n" %></td>
 		</tr>
 <% end %>	
   </table>
