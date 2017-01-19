@@ -17,6 +17,14 @@ class EmendationRule
       end
       originals
     end
+
+    def sort_by_initial_letter(replacement_array)
+       hash_letter = Hash.new { |hash, key| hash[key] = [] }
+       replacement_array.each do |replacement|
+         hash_letter[replacement[0]].push(replacement)
+       end
+       hash_letter
+    end
   end
 
 end

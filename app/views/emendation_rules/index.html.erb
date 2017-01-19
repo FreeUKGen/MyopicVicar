@@ -1,18 +1,16 @@
 <div class="grid__item ">
-<table   class="table--bordered  table--data">
-    <colgroup >
-    <col class=t40>
-    <col class=t60>
-    </colgroup>
-    <tr>
-      <th class="caps">Replacement</th>
-      <th class="caps">Original</th>
-    </tr>
-<% @emendation_rules_replacements.each do |emendation_rules_replacement|  %>
-    <tr>
-      <td class="weight--semibold"><%= emendation_rules_replacement %></td>
-			<td class="weight--semibold"><%= EmendationRule.all_original_by_replacement(emendation_rules_replacement)*", \n" %></td>
-		</tr>
-<% end %>	
-  </table>
+<% @alphabet_keys.each do |letter| %>
+<%= link_to "#{letter.capitalize}", "##{letter}" %>
+<% end %>
+
+<dl>
+<% @emendation_rules.each do |key,values| %>
+<hr>
+<lh id="<%= key %>" class="weight--semibold" style="font-size:36px;"><%= "#{key}".upcase %></lh>
+<% values.each do |emendation_rules_replacement|  %>
+    <dt class="weight--semibold"><%= emendation_rules_replacement.capitalize %></dt>
+		<dd><%= EmendationRule.all_original_by_replacement(emendation_rules_replacement)*", \n" %></dd>
+<% end %>
+<% end %>
+</dl>
 </div>
