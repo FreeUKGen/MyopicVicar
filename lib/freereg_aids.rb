@@ -123,7 +123,7 @@ module FreeregAids
       end
     else
       if church_name.nil?
-        church = place_churches.first
+        church = place.churches.first
         message = " no church_name on IS but there are multiple churches on FR will not process,"
         church_ok = false
       else
