@@ -128,7 +128,7 @@ module FreeregAids
         church_ok = false
       else
         #p "checking #{church.church_name}"
-        place_churches.each do |church|
+        place.churches.each do |church|
           if church.church_name.downcase == church_name.downcase
             church_ok = true
             message = " church name #{church_name} on IS matches church on FR,"
