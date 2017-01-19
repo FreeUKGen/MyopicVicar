@@ -66,7 +66,8 @@ module FreeregAids
     final_message = message unless message.nil?
     final_message = final_message + message1 unless message1.nil?
     final_message = final_message + message2 unless message2.nil?
-    unless (success || success1 || success2)
+
+    if success && success1 && success2
       final_success = true
     else
       final_success = false
