@@ -175,11 +175,17 @@ class Church
     new_place = self.place
     new_place_name = new_place.place_name
     old_place_name = old_place.place_name
-    old_location = "#{old_place_name} (#{self.church_name})"
-    new_location = "#{new_place_name} (#{self.church_name})"
-    result = SearchRecord.collection.find({place_id: old_place._id, location_names: old_location}).hint("place_location").update_many({"$set" => {"location_names.$" => new_location,:place_id => new_place.id, :chapman_code => new_place.chapman_code}})
+    old_location= Array.new
+    new_location= Array.new
+    old_location[0] = "#{old_place_name} (#{self.church_name})"
+    new_location[0] = "#{new_place_name} (#{self.church_name})"
+    #result = SearchRecord.collection.find({place_id: old_place._id, location_names: old_location}).hint("place_location").update_many({"$set" => {"location_names.$" => new_location,:place_id => new_place.id, :chapman_code => new_place.chapman_code}})
     all_registers = self.registers
     all_registers.each do |register|
+      type = register.register_type
+      old_location[1] = " [#{RegisterType.display_name(type)}]"
+      new_location[1] = " [#{RegisterType.display_name(type)}]"
+      result = SearchRecord.collection.update_many({place_id: old_place._id, location_names: old_location},{"$set" => {"location_names" => new_location,:place_id => new_place.id, :chapman_code => new_place.chapman_code}})
       all_files = register.freereg1_csv_files
       all_files.each do |file|
         result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:place => new_place_name, :church_name => self.church_name}})
