@@ -14,8 +14,9 @@
     <% end %>
     </nav>
   </div>
-  <div class="push--bottom">
+
   <% @emendation_rules.each do |key,values| %>
+<div class="push--bottom">
     <h3 class="beta push-half--bottom" id="<%= key %>"><%= "#{key}".upcase %></h3>
     <dl>
     <% values.each do |emendation_rules_replacement|  %>
@@ -23,7 +24,7 @@
       <dd><%= EmendationRule.all_original_by_replacement(emendation_rules_replacement)*",\n" %></dd>
     <% end %>
     </dl>
-  </div>
+</div>
   <hr class="rule">
   <% end %>
 </div>
