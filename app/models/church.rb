@@ -179,7 +179,6 @@ class Church
     new_location= Array.new
     old_location[0] = "#{old_place_name} (#{self.church_name})"
     new_location[0] = "#{new_place_name} (#{self.church_name})"
-    #result = SearchRecord.collection.find({place_id: old_place._id, location_names: old_location}).hint("place_location").update_many({"$set" => {"location_names.$" => new_location,:place_id => new_place.id, :chapman_code => new_place.chapman_code}})
     all_registers = self.registers
     all_registers.each do |register|
       type = register.register_type
