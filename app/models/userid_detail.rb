@@ -49,7 +49,7 @@ class UseridDetail
   has_many :freereg1_csv_files, dependent: :restrict
   has_many :attic_files, dependent: :restrict
   has_many :assignments
-  
+
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
@@ -182,7 +182,7 @@ class UseridDetail
   def compute_records
     count = 0
     self.freereg1_csv_files.each do |file|
-      count = count + file.freereg1_csv_entries.count
+      count = count + file.records
     end
     count
   end
