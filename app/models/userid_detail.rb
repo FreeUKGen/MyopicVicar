@@ -182,7 +182,7 @@ class UseridDetail
   def compute_records
     count = 0
     self.freereg1_csv_files.each do |file|
-      count = count + file.records
+      count = count + file.records.to_i
     end
     count
   end
