@@ -94,6 +94,8 @@ class SearchRecord
     index(field_spec, {:name => name, background: true })
   end
 
+  index({ place_id: 1, locations_names: 1}, {name: "place_location"})
+
   class << self
 
     def baptisms
