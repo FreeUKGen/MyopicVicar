@@ -23,7 +23,7 @@ class PhysicalFile
   index ({file_processed: 1})
   index ({ change: 1})
   index ({ waiting_to_be_processed: 1})
-
+  index ({ userid: 1, waiting_to_be_processed: 1})
   class << self
     def id(id)
       where(:id => id)
