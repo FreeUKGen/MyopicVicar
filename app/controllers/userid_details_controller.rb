@@ -355,14 +355,24 @@ class UseridDetailsController < ApplicationController
   end
 
   def transcriber_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-    session[:type] = "transcriber_registration"
-    @userid = UseridDetail.new
-    @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @transcription_agreement = [true,false]
-    @first_name = session[:first_name]
+    if Rails.application.config.member_open
+      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
+      continue = false
+      cookies.signed[:Administrator] = Rails.application.config.github_issues_password
+      session[:return_to] = request.fullpath
+      session[:first_name] = 'New Registrant'
+      session[:type] = "transcriber_registration"
+      @userid = UseridDetail.new
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+      @transcription_agreement = [true,false]
+      @first_name = session[:first_name]
+    else
+      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
+      redirect_to :back
+      return
+    end
   end
 
   def update

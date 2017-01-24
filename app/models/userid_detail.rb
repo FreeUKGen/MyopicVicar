@@ -45,6 +45,7 @@ class UseridDetail
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
 
+
   has_many :search_queries, dependent: :restrict
   has_many :freereg1_csv_files, dependent: :restrict
   has_many :attic_files, dependent: :restrict
