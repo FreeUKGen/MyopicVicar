@@ -153,6 +153,9 @@ class ManageCountiesController < ApplicationController
       @all_places.each do |place|
         @places << place if place.place_name =~  Regexp.new(/^[#{@character}]/)
       end
+
+      # TODO at some point consider place/churches/registers hash
+
     else
       flash[:notice] = 'You did not make a range selection'
       redirect_to :action => 'select_action'

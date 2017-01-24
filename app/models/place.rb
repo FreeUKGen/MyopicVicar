@@ -72,8 +72,8 @@ class Place
   index({ place_name: 1, grid_reference: 1 })
   index({ disabled: 1 })
   index({ source: 1})
-
-
+  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1},{name: "chapman_data_present_disabled_error_flag"})
+  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
   has_many :churches, dependent: :restrict
