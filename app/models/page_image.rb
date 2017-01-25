@@ -13,6 +13,7 @@ class PageImage
   field :register_type, type: String
   field :form_number, type: Integer
   field :file_number, type: Integer
-  belongs_to :source # sources and registers may need to be created by the filesystem-to-database script if they do not exist
-  belongs_to :place # denormalization -- possibly unnecessary
+  #belongs_to :source # sources and registers may need to be created by the filesystem-to-database script if they do not exist
+  #belongs_to :place # denormalization -- possibly unnecessary
+  embedded_in :place
 end
