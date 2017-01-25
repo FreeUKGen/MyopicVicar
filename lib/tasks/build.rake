@@ -276,6 +276,8 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "messages"
+    require "denominations"
+    require "software_versions"
 
     puts "Freereg build indexes."
     Country.create_indexes()
@@ -294,7 +296,9 @@ namespace :build do
     SearchQuery.create_indexes()
     AtticFile.create_indexes()
     PhysicalFile.create_indexes()
-    Messages.create_indexes()
+    Message.create_indexes()
+    Denomination.create_indexes()
+    SoftwareVersion.create_indexes()
     puts "Indexes complete."
   end
 
@@ -450,6 +454,9 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "message"
+    require "denominations"
+    require "software_versions"
+
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
