@@ -1,9 +1,11 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <div class="table-wrapper" id="search-result">
   <table class="table--bordered table--data">
-    <caption class="gamma"> <%= pluralize(@n, ' Search Result', ' Search Results') %> 
-      <small class="additional">Select a heading to sort results on that column.<br> Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-    </caption>
+    <% unless (defined? ucf_results && ucf_results) %>
+      <caption class="gamma"> <%= pluralize(@n, ' Search Result', ' Search Results') %> 
+        <small class="additional">Select a heading to sort results on that column.<br> Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+      </caption>
+    <% end %>
     <thead>
       <tr>
         <th>

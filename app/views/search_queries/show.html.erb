@@ -60,9 +60,9 @@
       <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
         <p>These additional entries with partly-readable names could be relevant:</p>
         <% if device_type == :desktop || device_type == :tablet %>
-          <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results}) %>
+          <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
         <% else %>
-          <%= render(:partial => "mobile", :locals => {:search_results => @ucf_results}) %>
+          <%= render(:partial => "mobile", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
         <% end %>
       <% end %>
     <% end%>
