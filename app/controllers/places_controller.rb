@@ -223,11 +223,11 @@ class PlacesController < ApplicationController
     when params[:commit] == 'Relocate'
       errors = @place.relocate_place(params[:place])
       if errors[0]  then
-        flash[:notice] = "Place filling unsuccessful; #{errors[1]}"
+        flash[:notice] = "Place relocation/filling unsuccessful; #{errors[1]}"
         render :action => 'show'
         return
       end
-      flash[:notice] = "The filling of the county country information was successful."
+      flash[:notice] = "Place relocation/filling was successful."
       redirect_to place_path(@place)
       return
     else

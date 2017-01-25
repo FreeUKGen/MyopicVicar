@@ -145,10 +145,17 @@ class ManageCountiesController < ApplicationController
       get_user_info_from_userid
       @active = session[:active_place]
       if session[:active_place]
-        @places = Place.chapman_code(session[:chapman_code]).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.data_present.all.order_by(place_name: 1)
+        @all_places = Place.chapman_code(session[:chapman_code]).not_disabled.data_present.all.order_by(place_name: 1)
       else
-        @places = Place.chapman_code(session[:chapman_code]).any_of({:place_name => Regexp.new("^["+@character+"]") }).not_disabled.all.order_by(place_name: 1)
+        @all_places = Place.chapman_code(session[:chapman_code]).not_disabled.all.order_by(place_name: 1)
       end
+      @places = Array.new
+      @all_places.each do |place|
+        @places << place if place.place_name =~  Regexp.new(/^[#{@character}]/)
+      end
+
+      # TODO at some point consider place/churches/registers hash
+
     else
       flash[:notice] = 'You did not make a range selection'
       redirect_to :action => 'select_action'

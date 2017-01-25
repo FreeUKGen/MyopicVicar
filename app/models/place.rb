@@ -72,8 +72,8 @@ class Place
   index({ place_name: 1, grid_reference: 1 })
   index({ disabled: 1 })
   index({ source: 1})
-
-
+  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1},{name: "chapman_data_present_disabled_error_flag"})
+  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
   has_many :churches, dependent: :restrict
@@ -217,12 +217,13 @@ class Place
 
   def change_name(param)
     place_name = param[:place_name]
+    old_place_name = self.place_name
     return [true, "That place name is already in use"] if Place.place(place_name).exists?
-    unless self.place_name == place_name
+    unless old_place_name == place_name
       self.save_to_original
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
       return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
-      self.propogate_place_name_change
+      self.propogate_place_name_change(old_place_name)
       self.propogate_batch_lock
       self.recalculate_last_amended_date
       PlaceCache.refresh_cache(self)
@@ -351,44 +352,40 @@ class Place
   end
 
   def propogate_county_change
-    self.churches.each do |church|
-      church.registers.each do |register|
-        register.freereg1_csv_files do |file|
-          file.freereg1_csv_entries.each do |entry|
-            if entry.search_record.nil?
-              logger.info "FREEREG:search record missing for entry #{entry._id}"
-            else
-              entry.search_record.update_attribute(:chapman_code, self.chapman_code)
-            end
-            entry.search_record.update_attribute(:county, self.chapman_code)
-          end
-          file.update_attribute(:county => self.chapman_code)
+    place_id = self._id
+    new_place_name = self.place_name
+    chapman_code = self.chapman_code
+    all_churches = self.churches
+    all_churches.each do |church|
+      result = SearchRecord.collection.find({place_id: place_id}).hint("_id_").update_many({"$set" => {:chapman_code => chapman_code}})
+      all_registers = church.registers
+      all_registers.each do |register|
+        all_files = register.freereg1_csv_files
+        all_files.each do |file|
+          result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:county => chapman_code}})
+          file.update_attributes(:county => chapman_code, :chapman_code => chapman_code)
         end
       end
     end
   end
 
-  def propogate_place_name_change
+  def propogate_place_name_change(old_place_name)
     place_id = self._id
-    place_name = self.place_name
-    self.churches.no_timeout.each do |church|
-      church.registers.no_timeout.each do |register|
-        location_names =[]
-        location_names << "#{place_name} (#{church.church_name})"
-        location_names  << " [#{RegisterType.display_name(register.register_type)}]"
-        register.freereg1_csv_files.no_timeout.each do |file|
-          file.freereg1_csv_entries.no_timeout.each do |entry|
-            if entry.search_record.nil?
-              logger.info "FREEREG:search record missing for entry #{entry._id}"
-            else
-              entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
-            end
-            entry.update_attributes(:place => place_name)
-          end
-          file.update_attributes(:place => place_name)
+    new_place_name = self.place_name
+    all_churches = self.churches
+    all_churches.each do |church|
+      old_location = "#{old_place_name} (#{church.church_name})"
+      new_location = "#{new_place_name} (#{church.church_name})"
+      result = SearchRecord.collection.find({place_id: place_id, location_names: old_location}).hint("place_location").update_many({"$set" => {"location_names.$" => new_location}})
+      all_registers = church.registers
+      all_registers.each do |register|
+        all_files = register.freereg1_csv_files
+        all_files.each do |file|
+          result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:place => new_place_name}})
+          file.update_attributes(:place => new_place_name)
         end
       end
-      church.update_attributes(:place_id => place_id, :place_name => place_name)
+      church.update_attributes(:place_name => new_place_name)
     end
   end
 
@@ -420,12 +417,6 @@ class Place
     end
     country = old_place.country
     country = param[:country] if param[:country].present?
-    unless old_place.chapman_code == chapman_code
-      old_place.search_records.each do |record|
-        record.update_attribute(:chapman_code , chapman_code)
-        return [true, "Error in save of search record; contact the webmaster"] if record.errors.any?
-      end
-    end
     self.update_attributes(:county => county, :chapman_code => chapman_code, :country => country)
     if self.errors.any?
       return [true, "Error in save of place; contact the webmaster"]

@@ -78,6 +78,10 @@ class Freereg1CsvFile
   index({file_name:1,error:1})
   index({error:1, file_name:1})
 
+  index({userid: 1, uploaded_date: 1},{name: "userid_uploaded_date"})
+  index({userid: 1, file_name: 1},{name: "userid_file_name"})
+  index({county: 1, errors: 1},{name: "county_errors"})
+
   before_save :add_lower_case_userid_to_file, :add_country_to_file
   after_save :recalculate_last_amended, :update_number_of_files
 

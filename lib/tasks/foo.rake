@@ -29,8 +29,8 @@ namespace :foo do
     require 'correct_witness_records'
     CorrectWitnessRecords.process(args.limit,args.range)
   end
-  
- desc "Correct the multiple witness records"
+
+  desc "Correct the multiple witness records"
   task :correct_multiple_witness_records,[:limit,:range,:fix] => :environment do |t, args|
     require 'correct_multiple_witness_records'
     CorrectMultipleWitnessRecords.process(args.limit,args.range,args.fix)
@@ -216,7 +216,11 @@ namespace :foo do
       args.extras.each { |a| PlaceCache.refresh(a.to_s) }
     end
   end
-
+  desc "Check and Refresh the places cache"
+  task :check_and_refresh_places_cache => [:environment] do |t,args|
+    PlaceCache.check_and_refresh_if_absent
+    p "finished"
+  end
 
   task :create_userid_docs, [:type,:range]  => [:environment] do |t, args|
     #this task reads the .uDetails file for each userid and creates the userid_detail collection
@@ -255,7 +259,7 @@ namespace :foo do
     puts "Task complete."
 
   end
-  
+
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
     Place.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
@@ -264,7 +268,7 @@ namespace :foo do
           print "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
           place.update_ucf_list(file)
         end
-        place.save!        
+        place.save!
       end
     end
   end
