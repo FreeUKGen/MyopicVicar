@@ -44,6 +44,9 @@ class UseridDetail
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
+  index({syndicate: 1, active: 1}, {name: "syndicate_active"})
+  index({person_role: 1}, {name: "person_role"})
+
 
 
   has_many :search_queries, dependent: :restrict

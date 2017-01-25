@@ -58,13 +58,24 @@ class CsvfilesController < ApplicationController
       when @user.person_role == "trainee"
         pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
         flash[:notice] =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
-      when processing_time < 100
-        logger.warn("FREEREG:CSV_PROCESSING: Spinning off rake task for #{@csvfile.userid} #{@csvfile.file_name}")
-        pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
-        flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
-      when processing_time >= 100
+      when processing_time < 600
         batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
-        flash[:notice] =  "The file has been placed in the queue for overnight processing. You will receive an email when it has been completed."
+        #check to see if rake task running
+        rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+        if File.exist?(rake_lock_file)
+          p "lock existed"
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
+        else
+          p "Creating lock"
+          p rake_lock_file
+          locking_file = File.new(rake_lock_file, "w")
+          logger.warn("FREEREG:CSV_PROCESSING: Spinning off rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+          flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
+        end
+      when processing_time >= 600
+        flash[:notice] =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
+        UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
       end
     end
     @csvfile.delete

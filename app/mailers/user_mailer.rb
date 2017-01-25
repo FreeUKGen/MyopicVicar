@@ -191,6 +191,13 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
   end
 
+  def report_to_data_manger_of_large_file(file_name,userid)
+    data_manager = UseridDetail.role("data_manager").first
+    @file = file_name
+    @user = userid
+    mail(:from => "freereg-processing@freereg.org.uk",:to => "#{data_manager.person_forename} <#{data_manager.email_address}>", :subject => "Too large a file to be processed by FreeReg")
+  end
+
   def send_change_of_syndicate_notification_to_sc(user)
     @user = user
     get_coordinator_name
