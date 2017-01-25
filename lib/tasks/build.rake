@@ -276,8 +276,8 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "messages"
-    require "denominations"
-    require "software_versions"
+    require "denomination"
+    require "software_version"
 
     puts "Freereg build indexes."
     Country.create_indexes()
@@ -302,12 +302,12 @@ namespace :build do
     puts "Indexes complete."
   end
 
-  # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5"]
+  # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5",27017]
   #this saves and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
   #and indexes everything
-  # example build:freereg_from_files["","","","0/1","0/1"]
+  # example build:freereg_from_files["","","","0/1","0/1",37017]
   #reloads the Mater and Alias collections from Github and indexes them
-  # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7"]
+  # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7",27017]
   #reloads saved versions of Places/Churches/Registers/Files/Entries/Search_records from tmp and reloads the Mater and Alias
   #collections from Github and indexes them all
   #******************************NOTE************************************
@@ -454,8 +454,8 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "message"
-    require "denominations"
-    require "software_versions"
+    require "denomination"
+    require "software_version"
 
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.clients[:default][:database]
