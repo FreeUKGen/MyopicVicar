@@ -90,7 +90,7 @@ class NewFreeregCsvUpdateProcessor
       end
     end
     # p "manager communication"
-    @project.communicate_to_managers(@csvfile) unless @project.type_of_project == "individual"
+    @project.communicate_to_managers(@csvfile) if @project.type_of_project == "range"
     at_exit do
       # p "goodbye"
     end
@@ -116,9 +116,9 @@ class NewFreeregCsvUpdateProcessor
     file = @message_file
     @message_file.close
     user = UseridDetail.where(userid: "REGManager").first
-    UserMailer.update_report_to_freereg_manager(file,user).deliver
+    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
     user = UseridDetail.where(userid: "ericb").first
-    UserMailer.update_report_to_freereg_manager(file,user).deliver
+    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
   end
 
   def self.convert_to_bolean(create_search_records,force)

@@ -94,6 +94,8 @@ class SearchRecord
     index(field_spec, {:name => name, background: true })
   end
 
+  index({ place_id: 1, locations_names: 1}, {name: "place_location"})
+
   class << self
 
     def baptisms
@@ -243,8 +245,8 @@ class SearchRecord
       search_fields = fields_from_params(search_params)
       # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-      # p "scores"
-      # p scores
+      p "scores"
+      p scores
       best = scores.max_by { |k,v| v}
       # p "selected"
       # p best[0]

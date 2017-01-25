@@ -78,6 +78,10 @@ class Freereg1CsvFile
   index({file_name:1,error:1})
   index({error:1, file_name:1})
 
+  index({userid: 1, uploaded_date: 1},{name: "userid_uploaded_date"})
+  index({userid: 1, file_name: 1},{name: "userid_file_name"})
+  index({county: 1, errors: 1},{name: "county_errors"})
+
   before_save :add_lower_case_userid_to_file, :add_country_to_file
   after_save :recalculate_last_amended, :update_number_of_files
 
@@ -260,7 +264,7 @@ class Freereg1CsvFile
 
       def delete_userid_folder(userid)
         folder_location = File.join(Rails.application.config.datafiles,userid)
-        FileUtils.rm_rf(folder_location, force = true) if Dir.exist?(folder_location) 
+        FileUtils.rm_rf(folder_location) if Dir.exist?(folder_location) 
       end
 
       def file_update_location(file,param,session)

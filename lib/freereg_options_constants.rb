@@ -1,4 +1,5 @@
 module FreeregOptionsConstants
+  require 'record_type'
 
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales','Unknown', 'Clwyd','Dyfed','Gwent','Gwynedd','Powys','Mid Glamorgan',
                                'South Glamorgan','West Glamorgan','Borders','Central','Dumfries and Galloway','Grampian','Highland','Lothian','Orkney Isles',

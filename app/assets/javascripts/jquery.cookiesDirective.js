@@ -195,10 +195,10 @@
 		if(settings.explicitConsent) {
 			// Explicit consent disclosure
 			
-			html += scriptsDisclosure + 'Review our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
-			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.<br/>';
-			html += '<div style="margin-top:5px;">Tick this box to accept their use &nbsp<input type="checkbox" name="epdagree" id="epdagree" /> and then click &nbsp;';
-			html += '<input type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/><br/></div></div>';
+			html += scriptsDisclosure + 'Review our <a tabindex="1" style="color:'+ settings.linkColor + ';font-weight:bold;';
+			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
+			html += '<div style="margin-top:5px;"><label for="epdagree" style="font-weight: normal; display: inline;">Tick this box to accept their use &nbsp;<input type="checkbox" name="epdagree" id="epdagree" tabindex="2" />&nbsp;&nbsp;</label> and then click &nbsp;';
+			html += '<input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/></div></div>';
 		
 		} else {
 			// Implied consent disclosure

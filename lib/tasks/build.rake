@@ -276,6 +276,8 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "messages"
+    require "denomination"
+    require "software_version"
 
     puts "Freereg build indexes."
     Country.create_indexes()
@@ -294,16 +296,18 @@ namespace :build do
     SearchQuery.create_indexes()
     AtticFile.create_indexes()
     PhysicalFile.create_indexes()
-    Messages.create_indexes()
+    Message.create_indexes()
+    Denomination.create_indexes()
+    SoftwareVersion.create_indexes()
     puts "Indexes complete."
   end
 
-  # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5"]
+  # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5",27017]
   #this saves and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
   #and indexes everything
-  # example build:freereg_from_files["","","","0/1","0/1"]
+  # example build:freereg_from_files["","","","0/1","0/1",37017]
   #reloads the Mater and Alias collections from Github and indexes them
-  # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7"]
+  # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7",27017]
   #reloads saved versions of Places/Churches/Registers/Files/Entries/Search_records from tmp and reloads the Mater and Alias
   #collections from Github and indexes them all
   #******************************NOTE************************************
@@ -450,6 +454,9 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "message"
+    require "denomination"
+    require "software_version"
+
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
@@ -543,7 +550,16 @@ namespace :build do
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
     p "using database #{db} on host #{host}"
-    NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+    rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+    p rake_lock_file
+    p PhysicalFile.waiting.exists?
+    while PhysicalFile.waiting.exists?
+      p "process"
+      NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+    end
+    p "removing lock"
+    p rake_lock_file
+    File.delete(rake_lock_file) if File.exist?(rake_lock_file)
   end
 
 end

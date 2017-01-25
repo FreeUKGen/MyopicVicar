@@ -50,8 +50,8 @@ class ManageResourcesController < ApplicationController
   end
 
   def logout
+    @message = flash[:notice]
     reset_session
-    redirect_to refinery.logout_path
   end
 
   def new
@@ -120,7 +120,7 @@ class ManageResourcesController < ApplicationController
 
 
   def stop_processing
-    redirect_to refinery.logout_path and return
+    redirect_to logout_manage_resources_path and return
   end
 
   def update

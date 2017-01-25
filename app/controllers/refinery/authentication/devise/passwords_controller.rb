@@ -4,7 +4,7 @@ module Refinery
       class PasswordsController < ::Devise::PasswordsController
         helper Refinery::Core::Engine.helpers
         layout 'refinery/layouts/login'
-
+        skip_before_filter :require_login
         before_action :store_password_reset_return_to, :only => [:update]
         def store_password_reset_return_to
           session[:'return_to'] = Refinery::Core.backend_path

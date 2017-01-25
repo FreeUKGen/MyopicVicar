@@ -31,11 +31,7 @@
       <div class="scrollable ">
         <table class=" table--bordered my-width table--data just--left">
           <tbody >
-            <% records = 0 %>
-            <% files = 0 %>
             <% @freereg1_csv_files.each do |freereg1_csv_file| %>
-            <% files = files +1 %>
-            <%records = records + freereg1_csv_file.records.to_i %>
             <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
               <td class="t12"><%= file_name(freereg1_csv_file)%></td>
               <td class="t5"><%= freereg1_csv_file.county %></td>
@@ -62,9 +58,6 @@
             <% end %>
           </tbody>
         </table>
-      <h3 style="text-align: center"> <tr > There are <%= files %> files with <%= records %> records</tr> </h3>
-      <% time_to_display = Time.now - time_start%>
-      <% logger.warn "FREEREG::FILES::INDEX time to display #{time_to_display} " %>
       <%= paginate @freereg1_csv_files %>
     </div>
   </div>

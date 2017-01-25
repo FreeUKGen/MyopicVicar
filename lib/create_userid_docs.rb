@@ -71,7 +71,7 @@ class CreateUseridDocs
         filenames << fil[0] unless fil[0].nil?
       end
     else
-      P "unknown range style"
+      p "unknown range style"
     end
     file_for_warning_messages = "log/userid_detail_messages.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
@@ -225,6 +225,8 @@ class CreateUseridDocs
           userid.update_attributes(header)
           p "#{header[:userid]} updated"
         else
+          header.delete(:syndicate_name)
+          header.delete(:disabled)
           userid = UseridDetail.new(header)
           if type == 'recreate'
             p "#{header[:userid]} created"

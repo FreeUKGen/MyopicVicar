@@ -1,6 +1,6 @@
 module MessagesHelper
   def attachment(message)
-    if message.attachment.present?
+    if message.attachment.present? || message.images.present?
       attachment = "Yes"
     else
       attachment = "No"

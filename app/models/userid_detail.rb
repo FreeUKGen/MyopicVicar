@@ -44,10 +44,16 @@ class UseridDetail
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
+  index({syndicate: 1, active: 1}, {name: "syndicate_active"})
+  index({person_role: 1}, {name: "person_role"})
+
+
 
   has_many :search_queries, dependent: :restrict
   has_many :freereg1_csv_files, dependent: :restrict
   has_many :attic_files, dependent: :restrict
+  has_many :assignments
+
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
@@ -180,7 +186,7 @@ class UseridDetail
   def compute_records
     count = 0
     self.freereg1_csv_files.each do |file|
-      count = count + file.freereg1_csv_entries.count
+      count = count + file.records.to_i
     end
     count
   end

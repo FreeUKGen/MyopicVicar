@@ -14,10 +14,10 @@ development:
 test:
   adapter: mysql2
   encoding: utf8
-  database: myopic_vicar_test
+  database: freereg2_development
   pool: 5
-  username: rails
-  password: rails
+  username: freereg2
+  password: freereg2
   socket: /var/run/mysqld/mysqld.sock
 
 
@@ -25,8 +25,8 @@ test:
 production:
   adapter: mysql2
   encoding: utf8
-  database: myopic_vicar_production
+  database: freereg2_development
   pool: 5
-  username: rails
-  password: rails
+  username: freereg2
+  password: freereg2
   socket: /var/run/mysqld/mysqld.sock
