@@ -64,13 +64,13 @@ class NewFreeregCsvUpdateProcessor
     @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
     p mongo_node
     if mongo_node == :secondary_preferred
-      @project.write_log_file("proccessing terminated, task hasn't started on primary mongo node")
+      @project.write_log_file("processing terminated, task hasn't started on primary mongo node")
       return
     end
 
     @csvfiles = CsvFiles.new
     success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
-    if !success || files_to_be_processed == 0
+    if !success || (files_to_be_processed.present? && files_to_be_processed.length == 0)
       @project.write_log_file("processing terminated as we have no records to process. <br>")
       return
     end
@@ -87,10 +87,11 @@ class NewFreeregCsvUpdateProcessor
         #p "failed to process file"
         @csvfile.communicate_failure_to_member(@project,@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        @project.communicate_to_managers(@csvfile)
       end
     end
     # p "manager communication"
-    @project.communicate_to_managers(@csvfile) if @project.type_of_project == "range"
+    @project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
     at_exit do
       # p "goodbye"
     end
