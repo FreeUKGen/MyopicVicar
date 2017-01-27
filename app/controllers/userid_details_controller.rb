@@ -229,12 +229,19 @@ class UseridDetailsController < ApplicationController
   end
 
   def researcher_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-    session[:type] = "researcher_registration"
-    @userid = UseridDetail.new
-    @first_name = session[:first_name]
+    if Rails.application.config.member_open
+      cookies.signed[:Administrator] = Rails.application.config.github_issues_password
+      session[:return_to] = request.fullpath
+      session[:first_name] = 'New Registrant'
+      session[:type] = "researcher_registration"
+      @userid = UseridDetail.new
+      @first_name = session[:first_name]
+    else
+      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
+      redirect_to :back
+      return
+    end
   end
 
   def role
@@ -347,18 +354,23 @@ class UseridDetailsController < ApplicationController
   end
 
   def technical_registration
-    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-    session[:type] = "technical_registration"
-    @userid = UseridDetail.new
+    if Rails.application.config.member_open
+      cookies.signed[:Administrator] = Rails.application.config.github_issues_password
+      session[:return_to] = request.fullpath
+      session[:first_name] = 'New Registrant'
+      session[:type] = "technical_registration"
+      @userid = UseridDetail.new
+    else
+      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
+      redirect_to :back
+      return
+    end
   end
 
   def transcriber_registration
     if Rails.application.config.member_open
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
-      flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
-      continue = false
       cookies.signed[:Administrator] = Rails.application.config.github_issues_password
       session[:return_to] = request.fullpath
       session[:first_name] = 'New Registrant'
