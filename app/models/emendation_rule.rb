@@ -23,7 +23,7 @@ class EmendationRule
        replacement_array.each do |replacement|
          hash_letter[replacement[0]].push(replacement)
        end
-       hash_letter
+       hash_letter.sort.to_h
     end
   end
 
