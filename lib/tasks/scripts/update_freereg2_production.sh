@@ -43,8 +43,7 @@ if [[ ! -e ${PROCESS} ]] ; then
 fi
 
 cd ${ROOT}
-#trace "delete log files more than +30 days old"
-#sudo  -u webserv find log -mtime +30 -delete 
+
 trace "write the REG_users file for the image servers"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_userids_passwords_for_image_server[0] --trace
 trace "process the waiting uploads"
@@ -62,7 +61,8 @@ sudo -u webserv bundle exec rake RAILS_ENV=production foo:check_and_refresh_plac
 #sudo -u webserv rsync  -avz  --delete --exclude '.attic' --exclude '.errors' --exclude '.warnings' --exclude '.uDetails' /raid/freereg/users/ ${FREEREG2}/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freereg1.delta
 #trace "update of the database2"
 #sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
-
+trace "delete log files more than +30 days old"
+sudo  -u webserv find log -mtime +30 -delete 
 trace "finished"
 exit
 
