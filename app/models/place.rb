@@ -137,6 +137,8 @@ class Place
   end
 
   def add_location_if_not_present
+    self[:place_name] = self[:place_name].strip
+    self[:modified_place_name] = self[:modified_place_name].strip
     if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
