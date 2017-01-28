@@ -31,6 +31,7 @@ class UseridDetailsController < ApplicationController
       redirect_to userid_detail_path(@userid) and return
     end
   end
+
   def confirm_email_address
     get_user_info_from_userid
     session[:edit_userid] = true
