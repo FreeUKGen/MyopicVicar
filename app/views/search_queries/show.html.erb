@@ -1,8 +1,8 @@
 <% title "Search Results" %>
 <% if flash[:notice] %>
-  <div id="notice" style="color:red;"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
-  </div>
+<div id="notice" style="color:red;"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
+</div>
 <% end %>
 <% unless @search_query.nil? %>
   <% unless defined?(@printable_format) && @printable_format %>
@@ -11,79 +11,81 @@
       <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small " %>
       <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  weight--light btn--small") %>
       <% if @search_query.can_be_broadened? %>
-        <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  weight--light btn--small" %>
+      <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  weight--light btn--small" %>
       <% end %>
       <% if @search_query.can_be_narrowed? %>
-        <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
+      <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
       <% end %>
       <% if device_type == :desktop || device_type == :tablet %>
-        <%= link_to "Printable Format", show_print_version_search_query_path, :class => "btn  weight--light btn--small" %>
+      <%= link_to "Printable Format", show_print_version_search_query_path, :class => "btn  weight--light btn--small" %>
       <% end %>
     </div>
   <% end %>
-  <% if defined?(@printable_format) && @printable_format %> 
+  <% if defined?(@printable_format) && @printable_format %>
     <% search_params_for_display(@search_query).each do |name, value| %>
       <%= name %>: <b><%= value %></b> ;
     <% end %>
   <% else %>
-  <section class="islet islet--light soft--left hard--bottom">
-    <h2 class="epsilon flush--bottom"><em>You searched for:</em></h2>
-    <div class="criteria-group">
-    <% search_params_for_display(@search_query).each do |name, value| %>
-      <dl class="criteria">
-        <dt class="criteria__name"><%= name %></dt>
-        <dd class="criteria__value"><%= value %></dd>
-      </dl>
-    <% end %>
-    </div>
-  </section>
+    <section class="islet islet--light soft--left hard--bottom">
+      <h2 class="epsilon flush--bottom"><em>You searched for:</em></h2>
+      <div class="criteria-group">
+        <% search_params_for_display(@search_query).each do |name, value| %>
+        <dl class="criteria">
+          <dt class="criteria__name"><%= name %></dt>
+          <dd class="criteria__value"><%= value %></dd>
+        </dl>
+        <% end %>
+      </div>
+    </section>
   <% end %>
   <section>
-  <% @n = @search_query.result_count %>
-  <% if @n >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-    <div class="island">
-      <h2 class="gamma text--negative push-half--bottom">Too many search results</h2>
-      <p class="read-length">Please refine (narrow down) your search.<br>We limit the number of results to <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS%> to avoid overloading your device with too much information at one time.</p>
-    </div>
-  <% else %>
-    <% if @n == 0 && (ucf_wildcards_enabled? && @ucf_results && @ucf_results.size == 0) %>
-    <div class="island">
-      <h2 class="gamma text--negative push-half--bottom">No results found</h2>
-      <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
-    </div>
-    <% else %>
-      <% if device_type == :desktop || device_type == :tablet %>
-        <%= render(:partial => "desktop", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-      <% else %>
-        <%= render(:partial => "mobile", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-      <% end %>  
-      <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
-        <p>These additional entries with partly-readable names could be relevant:</p>
-        <% if device_type == :desktop || device_type == :tablet %>
-          <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
-        <% else %>
-          <%= render(:partial => "mobile", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
-        <% end %>
-      <% end %>
-    <% end%>
-  </section>
-    <% if @n > 10 && @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-      <% unless defined?(@printable_format) && @printable_format %>
-      <div class="text--center push--ends">
-        <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light btn--small" %>
-        <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small" %>
-        <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn weight--light btn--small") %>
-        <% if @search_query.can_be_broadened? %>
-          <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn weight--light btn--small" %>
-        <% end %>
-        <% if @search_query.can_be_narrowed? %>
-          <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
-        <% end %>
-        <a href="#" class="btn weight--light btn--small">Go to top</a>
+    <% @n = @search_query.result_count %>
+    <% if @n >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+      <div class="island">
+        <h2 class="gamma text--negative push-half--bottom">Too many search results</h2>
+        <p class="read-length">Please refine (narrow down) your search.<br>We limit the number of results to <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS%> to avoid overloading your device with too much information at one time.</p>
       </div>
+    <% else %>
+      <% if @n == 0 && ( @ucf_results && @ucf_results.size == 0) %>
+        <div class="island">
+          <h2 class="gamma text--negative push-half--bottom">No results found</h2>
+          <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
+        </div>
+      <% else %>
+        <% if device_type == :desktop || device_type == :tablet %>
+          <%= render(:partial => "desktop", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <% else %>
+          <%= render(:partial => "mobile", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <% end %>
+        <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
+          <br>
+          <p>These additional entries with partly-readable names could be relevant:</p>
+          <% @n = @ucf_results.size %>
+          <% if device_type == :desktop || device_type == :tablet %>
+            <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
+          <% else %>
+            <%= render(:partial => "mobile", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
+          <% end %>
+        <% end %>
+      <% end%>
+      <% if @search_query.result_count > 10 && @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <% unless defined?(@printable_format) && @printable_format %>
+          <div class="text--center push--ends">
+            <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light btn--small" %>
+            <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small" %>
+            <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn weight--light btn--small") %>
+            <% if @search_query.can_be_broadened? %>
+            <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn weight--light btn--small" %>
+            <% end %>
+            <% if @search_query.can_be_narrowed? %>
+            <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
+            <% end %>
+            <a href="#" class="btn weight--light btn--small">Go to top</a>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
+ </section>
 <% else %>
   <div class="island">
     <h2 class="gamma text--negative push-half--bottom">No results found</h2>

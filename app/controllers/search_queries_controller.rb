@@ -177,8 +177,6 @@ class SearchQueriesController < ApplicationController
   end
 
   def search_taking_too_long
-    p "search error"
-    p params
     @search_query = SearchQuery.find(session[:query])
     runtime = Rails.application.config.max_search_time
     @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
@@ -217,6 +215,7 @@ class SearchQueriesController < ApplicationController
     if @search_query.present?
       @search_results =   @search_query.results
       @ucf_results = @search_query.ucf_results
+      @ucf_results = Array.new unless  @ucf_results.present?
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
       go_back
@@ -240,6 +239,8 @@ class SearchQueriesController < ApplicationController
     end
     if @search_query.present?
       @search_results =   @search_query.results
+      @ucf_results = @search_query.ucf_results
+      @ucf_results = Array.new unless  @ucf_results.present?
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
       go_back
