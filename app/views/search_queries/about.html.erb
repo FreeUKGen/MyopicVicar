@@ -1,54 +1,59 @@
 <% title "About Search Results" %>
-<section class="island  ">
-  <div class="grid">
-    <div class="text--center">
-      
-      <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small " %>
-      <%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small  " %>
-      <%= link_to "Back", search_query_path(@search_query ), :class => "btn weight--light  btn--small  "%>
-    </div>
-    <h2>About This Query: </h2>
+<style scoped="scoped">
+  .aboutQuery section { margin-bottom: 28px; padding-bottom: 14px; max-width: 32rem; border-bottom: 1px solid #ccc; }
+  .aboutQuery h3 { margin-bottom: 14px; }
+  .aboutQuery p { margin-bottom: 14px; }
+</style>
+<div class="aboutQuery push palm-flush--bottom">
+  <div class="text--center push--bottom">     
+    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small " %>
+    <%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small  " %>
+    <%= link_to "Back", search_query_path(@search_query ), :class => "btn weight--light  btn--small  "%>
+  </div>
+  <h2>About this Query</h2>
+  <section>
     <h3>Name</h3>
     <p>
       Search Criteria:
       <b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>,
       <b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
-      <b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>
+      <b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>.
       <% if @search_query.query_contains_wildcard? && @search_query.fuzzy %>
-      	<i>(Because this query contained a wildcard, use of SOUNDEX was ignored in favor of a wildcard search on exact names.)</i>
+      	<i>(Because this query contained a wildcard, use of SOUNDEX was ignored in favour of a wildcard search on exact names.)</i>
       <% end %>
-      <br> <br>
-      
+    </p>
+    <p>
       Search Logic:
       <% if @search_query.first_name %>
-      Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalization)
+      Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalisation)
 	      <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
-	      and records with a first name whose soundex is <%= fuzzy(@search_query.first_name)%>
+	      and records with a first name whose Soundex is <%= fuzzy(@search_query.first_name)%>
 	      <% end %>.
 	      <% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
 	      <% if emendations && emendations.size > 0 %>
 	      In addition, match records whose first name is
-	      <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalization).
+	      <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalisation).
 	      <% end %>
       <% end %>
       <% if @search_query.last_name %>
-	      Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalization)
+	      Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalisation)
 	      <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
-		      and records with a last name whose soundex is <%= fuzzy(@search_query.last_name)%>
+		      and records with a last name whose Soundex is <%= fuzzy(@search_query.last_name)%>
 	      <% end %>
       <% end %>
       <% if @search_query.inclusive || @search_query.witness %>
       	This search will match against the primary names in the record (i.e. baptisee, bride and groom, or deceased).  In addition, it will search 
-      	<% if @search_query.inclusive %> for other <b>family members</b>  (father, mother, etc) <% end %>
+      	<% if @search_query.inclusive %> for other <b>family members</b>  (father, mother, etc.) <% end %>
       	<% if @search_query.inclusive && @search_query.witness %> and <% end %>
       	<% if @search_query.witness %> <b>witnesses</b> <% end %>
-      	mentioned in a record.
-      	
+      	mentioned in a record.	
       <% end %>
     </p>
+  </section>
+  <section>
     <h3>Date</h3>
     <% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
-      Search Criteria:
+      <p>Search Criteria:
       <% if @search_query.start_year %>
         <b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
       <% end %>
@@ -57,36 +62,40 @@
       <% end %>
     <% else %>
       <i>No date criteria specified.</i>
-    <% end %>
-    <br>
-    <% if @search_query.start_year.present? || @search_query.end_year.present? %>
-        Search Logic:<br>
-        Records with dates
-        <% if @search_query.start_year.present? %>
-          <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
-            <% if @search_query.end_year.present? %>
-            and dates
-            <% end %>
-        <% end %>
-        <% if @search_query.end_year.present? %>
-          <i><b>before <%= format_end_date(@search_query.end_year) %></b></i> (New Style).
-        <% end %>
-    <% end %>
-    <p>
-      <h3>Records</h3>
-      <% if @search_query.record_type %>
-      <%= RecordType::display_name(@search_query.record_type) %> records were specified.
-      <%else%>
-      All three record types, Baptisms, Burials and Marriages were included.
-      <%end%>
     </p>
+    <% end %>
+    <% if @search_query.start_year.present? || @search_query.end_year.present? %>
+    <p>Search Logic:<br>
+      Records with dates
+      <% if @search_query.start_year.present? %>
+        <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
+          <% if @search_query.end_year.present? %>
+          and dates
+          <% end %>
+      <% end %>
+      <% if @search_query.end_year.present? %>
+        <i><b>on or before <%= format_end_date(@search_query.end_year) %></b></i> (New Style)
+      <% end %>
+    </p>
+    <% end %>
+  </section>
+  <section>
+    <h3>Records</h3>
+    <p>
+    <% if @search_query.record_type %>
+      <%= RecordType::display_name(@search_query.record_type) %> records were specified.
+    <% else %>
+      All three record types &mdash; Baptisms, Burials and Marriages &mdash; were included.
+    <% end %>
+    </p>
+  </section>
+  <section>
     <h3>Location</h3>
     <% if @search_query.radius_search? %>
     <p>
       Search Criteria:
       <b>Search additional places</b>
       near
-
       <b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b>
       in
       <b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[0])%></b>
@@ -95,26 +104,32 @@
       Search Logic:
       <% first_place = @search_query.places.first%>
       We have records within these places:
-      <ul>
-        <% @search_query.all_radius_places.each do |near_place| %>
-        <li>
-          <%= near_place.place_name %> (<%= near_place.county%>)   (<%= geo_near_distance(first_place,near_place,@search_query.place_system).round(1) %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
-        </li>
-        <% end %>
-      </ul>
     </p>
-    <%else%>
+    <ol>
+      <% @search_query.all_radius_places.each do |near_place| %>
+      <li>
+        <%= near_place.place_name %> (<%= near_place.county%>)   (<%= geo_near_distance(first_place,near_place,@search_query.place_system).round(1) %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
+      </li>
+      <% end %>
+    </ol>
+    <% else %>
     <p>The following counties were included in the search:
-      <% @search_query.chapman_codes.each do |chapman| %>
-      <b><%=ChapmanCode.name_from_code(chapman)%></b>
-      <%end%>
+      <% counties = @search_query.chapman_codes.size %>
+      <% start = 0 %>
+      <% @and = " and " %>
+      <% while start < counties do  %>
+
+      <b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[start])  %></b>
+      <% start +=1 %>
+      <%= @and unless start == counties %>
+      <% end%>.</p>
       <% place = @search_query.places.map {|pl| pl.place_name} %>
       <% unless place.nil? %>
-      and <b>all places</b> with data in the selected counties were included.
-      <%else%>
-      and the place with the name <b><%= place[0]%></b> was selected.
-      <%end%>
-      <%end%>
+         <b>All places</b> with data in the selected counties were included.
+      <% else %>
+        The place with the name <b><%= place[0] %></b> was searched.
+      <% end %>
+    <% end %>
     </p>
-  </div>
-</section>
+  </section>
+</div>

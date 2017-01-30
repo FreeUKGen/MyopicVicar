@@ -45,7 +45,7 @@ gem "unicode", "~> 0.4.3"
 gem 'kaminari', '0.17.0'
 gem 'kaminari-mongoid', '0.1.2'
 gem "gretel"
-gem 'geocoder'
+gem 'geocoder', '1.3.7' #appears to be a regression in 1.4
 #gem 'activeadmin'
 #gem "meta_search",    '>= 1.1.0.pre'
 
