@@ -50,7 +50,11 @@ class ApplicationController < ActionController::Base
     session[:mobile_override] = true if mobile_device?
   end
 
-
+  def get_max_records(user)
+    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
+    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if user.person_role == "data_manager"
+    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  user.person_role == "system_administrator"
+  end
 
   def get_place_id_from_file(freereg1_csv_file)
     register = freereg1_csv_file.register

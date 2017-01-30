@@ -108,11 +108,11 @@ class ChurchesController < ApplicationController
       @county = session[:county]
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
-      @records = 0
-      @church.registers.each do |register|
-        register.freereg1_csv_files.each do |file|
-          @records = @records + file.freereg1_csv_entries.count
-        end
+      @records = @church.records
+      max_records = get_max_records(@user)
+      if @records.to_i >= max_records
+        flash[:notice] = 'There are too many records for an on-line relocation'
+        redirect_to :action => 'show' and return
       end
     end
   end
@@ -127,11 +127,11 @@ class ChurchesController < ApplicationController
       @county = session[:county]
       @first_name = session[:first_name]
       @user = UseridDetail.where(:userid => session[:userid]).first
-      @records = 0
-      @church.registers.each do |register|
-        register.freereg1_csv_files.each do |file|
-          @records = @records + file.freereg1_csv_entries.count
-        end
+      @records = @church.records
+      max_records = get_max_records(@user)
+      if @records.to_i >= max_records
+        flash[:notice] = 'There are too many records for an on-line relocation'
+        redirect_to :action => 'show' and return
       end
     end
   end

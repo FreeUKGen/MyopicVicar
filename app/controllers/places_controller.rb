@@ -176,8 +176,12 @@ class PlacesController < ApplicationController
     load(params[:id])
     @county = session[:county]
     get_places_counties_and_countries
-    @records = @place.search_records.count
-
+    @records = @place.records
+    max_records = get_max_records(@user)
+    if @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
+      redirect_to :action => 'show' and return
+    end
   end
 
   def rename
@@ -185,7 +189,12 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_countries
     @county = session[:county]
-    @records = @place.search_records.count
+    @records = @place.records
+    max_records = get_max_records(@user)
+    if @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
+      redirect_to :action => 'show' and return
+    end
   end
 
   def show

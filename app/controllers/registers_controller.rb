@@ -120,9 +120,7 @@ class RegistersController < ApplicationController
     unless @register.nil?
       @records = @register.records
     end
-    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
-    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if @user.person_role == "data_manager"
-    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  @user.person_role == "system_administrator"
+    max_records = get_max_records(@user)
     if @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to :action => 'show' and return
@@ -140,9 +138,7 @@ class RegistersController < ApplicationController
     unless @register.nil?
       @records = @register.records
     end
-    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
-    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if @user.person_role == "data_manager"
-    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  @user.person_role == "system_administrator"
+    max_records = get_max_records(@user)
     if @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line rename'
       redirect_to :action => 'show' and return
