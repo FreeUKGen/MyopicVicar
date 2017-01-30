@@ -559,7 +559,7 @@ namespace :build do
     end
     p "removing lock"
     p rake_lock_file
-    File.delete(rake_lock_file) if File.exist?(rake_lock_file)
+    FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
   end
 
 end
