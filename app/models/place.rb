@@ -58,8 +58,6 @@ class Place
 
   validates_presence_of :place_name
 
-  validate :place_does_not_exist, on: :create
-
   validate :grid_reference_or_lat_lon_present_and_valid
 
   before_save :add_location_if_not_present, :add_country
@@ -233,6 +231,35 @@ class Place
     return [false, ""]
   end
 
+  def check_and_set(param)
+    self.chapman_code = ChapmanCode.values_at(param[:place][:county])
+    self.modified_place_name = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
+    #use the lat/lon if present if not calculate from the grid reference
+    self.add_location_if_not_present
+    place = Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+
+    p "place creation"
+    p place
+    case
+    when place.length > 1
+      return false, "Many places of that name already exist", place
+    when place.length == 1
+      place = place.first
+      if place.disabled == 'true'
+        if place.error_flag == "Place name is not approved"
+          return false, "There is a disabled place with an unapproved name that already exists", place
+        else
+          place.update_attribute(:disabled , 'false')
+          return true, "There is a disabled place with that name. It has been reactivated.", place
+        end
+      else
+        return false, "There is an active place with that name", place
+      end
+    when place.length == 0
+      return true, 'Proceed', place
+    end
+  end
+
   def check_place_country?
     self.country.present? ? result = true : result = false
     result
@@ -328,10 +355,6 @@ class Place
     end
     PlaceCache.refresh_cache(self)
     return [true, ""]
-  end
-
-  def place_does_not_exist
-    errors.add(:place_name, "already exists") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
   end
 
   def places_near(radius_factor, system)

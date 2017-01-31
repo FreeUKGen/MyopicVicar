@@ -16,22 +16,33 @@ class PlacesController < ApplicationController
   def create
     @user = UseridDetail.where(:userid => session[:userid]).first
     @place = Place.new(place_params)
-    @place.chapman_code = ChapmanCode.values_at(params[:place][:county])
-    @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-    #use the lat/lon if present if not calculate from the grid reference
-    @place.add_location_if_not_present
-    @place.save
-    if @place.errors.any?
-      #we have errors on the creation
-      flash[:notice] = 'The addition of a place was unsuccessful (See fields below for actual error and explanations)'
-      @county = session[:county]
-      get_places_counties_and_countries
-      @place_name = @place.place_name unless @place.nil?
-      render :new
+    result,message,place = @place.check_and_set(params)
+    if result && message == "Proceed"
+      @place.save
+      if @place.errors.any?
+        #we have errors on the creation
+        flash[:notice] = 'The addition of a place was unsuccessful (See fields below for actual error and explanations)'
+        @county = session[:county]
+        get_places_counties_and_countries
+        @place_name = @place.place_name unless @place.nil?
+        render :new
+      else
+        #we are clean on the addition
+        flash[:notice] = 'The addition to a place was successful'
+        redirect_to place_path(@place) and return
+      end
     else
-      #we are clean on the addition
-      flash[:notice] = 'The addition to a place was successful'
-      redirect_to place_path(@place)
+      if result
+        #we are clean on the addition
+        flash[:notice] = "The addition to a place was successful: #{message})"
+        redirect_to place_path(place) and return
+      else
+        flash[:notice] = "The addition of a place was unsuccessful: #{message})"
+        @county = session[:county]
+        get_places_counties_and_countries
+        @place_name = @place.place_name unless @place.nil?
+        render :new
+      end
     end
   end
 
