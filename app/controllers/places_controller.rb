@@ -21,7 +21,7 @@ class PlacesController < ApplicationController
       @place.save
       if @place.errors.any?
         #we have errors on the creation
-        flash[:notice] = 'The addition of a place was unsuccessful (See fields below for actual error and explanations)'
+        flash[:notice] = 'The addition of a place was unsuccessful: (See fields below for actual error and explanations)'
         @county = session[:county]
         get_places_counties_and_countries
         @place_name = @place.place_name unless @place.nil?
@@ -34,10 +34,10 @@ class PlacesController < ApplicationController
     else
       if result
         #we are clean on the addition
-        flash[:notice] = "The addition to a place was successful: #{message})"
+        flash[:notice] = "The addition to a place was successful: #{message}"
         redirect_to place_path(place) and return
       else
-        flash[:notice] = "The addition of a place was unsuccessful: #{message})"
+        flash[:notice] = "The addition of a place was unsuccessful: #{message}"
         @county = session[:county]
         get_places_counties_and_countries
         @place_name = @place.place_name unless @place.nil?

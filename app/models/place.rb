@@ -237,9 +237,6 @@ class Place
     #use the lat/lon if present if not calculate from the grid reference
     self.add_location_if_not_present
     place = Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
-
-    p "place creation"
-    p place
     case
     when place.length > 1
       return false, "Many places of that name already exist", place
