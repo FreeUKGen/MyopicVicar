@@ -124,7 +124,7 @@
       <%= @and unless start == counties %>
       <% end%>.</p>
       <% place = @search_query.places.map {|pl| pl.place_name} %>
-      <% unless place.nil? %>
+      <% if place.size == 0 %>
          <b>All places</b> with data in the selected counties were included.
       <% else %>
         The place with the name <b><%= place[0] %></b> was searched.
