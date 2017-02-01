@@ -11,4 +11,5 @@ Allow: /cms/county-pages
 Allow: /search_queries
 Allow: /search_statistics
 Allow: /freereg_contents
+Allow: /sitemap_location.txt
 Disallow: /search_queries/report
