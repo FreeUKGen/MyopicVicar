@@ -302,10 +302,8 @@ class Freereg1CsvFilesController < ApplicationController
       session[:selectcountry] = nil
       session[:selectcounty] = nil
       @records = @freereg1_csv_file.freereg1_csv_entries.count
-      max_records = 4000
-      max_records = 15000 if @user.person_role == "data_manager"
-      max_records = 30000 if  @user.person_role == "system_administrator"
-      if @records.to_i >= max_records
+      max_records = get_max_records(@user)
+      if @records.present? && @records.to_i >= max_records
         flash[:notice] = 'There are too many records for an on-line relocation'
         redirect_to :action => 'show' and return
       end
