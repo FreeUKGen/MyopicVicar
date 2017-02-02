@@ -549,16 +549,12 @@ namespace :build do
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
-    p "using database #{db} on host #{host}"
     rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-    p rake_lock_file
-    p PhysicalFile.waiting.exists?
     while PhysicalFile.waiting.exists?
       p "process"
       NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+      sleep(300)
     end
-    p "removing lock"
-    p rake_lock_file
     FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
   end
 
