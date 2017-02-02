@@ -23,8 +23,8 @@ gem 'refinerycms-wymeditor', '~> 1.0', '>= 1.0.6'
 #gem 'refinerycms-authentication',  '~> 2.1.1'
 # MongoDB
 #gem 'bson_ext'
-gem 'mongoid', '~> 5.0'
-gem 'mongo', '~> 2.1'
+gem 'mongoid', '5.1.4'
+gem 'mongo', '2.3.0'
 #gem "mongoid", "~> 3.1"
 #gem "moped", "~> 1"
 gem 'execjs'
