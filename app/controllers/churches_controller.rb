@@ -110,7 +110,7 @@ class ChurchesController < ApplicationController
       @user = UseridDetail.where(:userid => session[:userid]).first
       @records = @church.records
       max_records = get_max_records(@user)
-      if @records.to_i >= max_records
+      if @records.present? && @records.to_i >= max_records
         flash[:notice] = 'There are too many records for an on-line relocation'
         redirect_to :action => 'show' and return
       end
@@ -129,7 +129,7 @@ class ChurchesController < ApplicationController
       @user = UseridDetail.where(:userid => session[:userid]).first
       @records = @church.records
       max_records = get_max_records(@user)
-      if @records.to_i >= max_records
+      if @records.present? && @records.to_i >= max_records
         flash[:notice] = 'There are too many records for an on-line relocation'
         redirect_to :action => 'show' and return
       end

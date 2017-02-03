@@ -189,7 +189,7 @@ class PlacesController < ApplicationController
     get_places_counties_and_countries
     @records = @place.records
     max_records = get_max_records(@user)
-    if @records.to_i >= max_records
+    if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to :action => 'show' and return
     end
@@ -202,7 +202,7 @@ class PlacesController < ApplicationController
     @county = session[:county]
     @records = @place.records
     max_records = get_max_records(@user)
-    if @records.to_i >= max_records
+    if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to :action => 'show' and return
     end

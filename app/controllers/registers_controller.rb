@@ -121,7 +121,7 @@ class RegistersController < ApplicationController
       @records = @register.records
     end
     max_records = get_max_records(@user)
-    if @records.to_i >= max_records
+    if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to :action => 'show' and return
     end
@@ -139,7 +139,7 @@ class RegistersController < ApplicationController
       @records = @register.records
     end
     max_records = get_max_records(@user)
-    if @records.to_i >= max_records
+    if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line rename'
       redirect_to :action => 'show' and return
     end
