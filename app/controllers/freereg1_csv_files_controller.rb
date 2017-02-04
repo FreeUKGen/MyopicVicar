@@ -346,7 +346,7 @@ class Freereg1CsvFilesController < ApplicationController
       else
         flash[:notice] = message
       end
-      redirect_to :back
+      redirect_to register_path(@return_location)
       return
     else
       #no id
