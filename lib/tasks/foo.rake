@@ -216,6 +216,18 @@ namespace :foo do
       args.extras.each { |a| PlaceCache.refresh(a.to_s) }
     end
   end
+
+  desc "Clear the rake_processing_lock"
+  task :clear_processing_lock => [:environment] do |t,args|
+    rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+    if File.exist?(rake_lock_file)
+      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+      FileUtils.rm(rake_lock_file, :force => true)
+    else
+      p "FREEREG:CSV_PROCESSING: Rake lock file did not exist"
+    end
+  end
+
   desc "Check and Refresh the places cache"
   task :check_and_refresh_places_cache => [:environment] do |t,args|
     PlaceCache.check_and_refresh_if_absent
