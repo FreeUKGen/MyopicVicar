@@ -551,15 +551,15 @@ namespace :build do
     host = hosts[0]
     rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
     if File.exist?(rake_lock_file)
-      logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting")
+      p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
     else
       locking_file = File.new(rake_lock_file, "w")
-      logger.warn("FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files")
+      p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
       while PhysicalFile.waiting.exists?
         NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
         sleep(300)
       end
-      logger.warn("FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}")
+      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
       FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
     end
   end
