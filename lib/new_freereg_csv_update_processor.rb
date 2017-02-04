@@ -89,6 +89,7 @@ class NewFreeregCsvUpdateProcessor
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
         @project.communicate_to_managers(@csvfile)
       end
+      sleep(300)
     end
     # p "manager communication"
     @project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
@@ -315,6 +316,7 @@ class CsvFile < CsvFiles
     success = true
     project.member_message_file = self.define_member_message_file
     @file_start = Time.new
+    logger.warn("FREEREG:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}")
     project.write_log_file("******************************************************************* <br>")
     project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
     success, message = self.ensure_processable?(project) unless project.force_rebuild
