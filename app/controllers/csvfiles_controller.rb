@@ -66,9 +66,7 @@ class CsvfilesController < ApplicationController
           logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
           flash[:notice] =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
         else
-          locking_file = File.new(rake_lock_file, "w")
-          logger.warn("FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file}")
-          logger.warn("FREEREG:CSV_PROCESSING: Spinning off rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+          logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
         end
