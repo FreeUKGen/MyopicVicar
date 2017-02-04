@@ -549,18 +549,23 @@ namespace :build do
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
-    rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-    if File.exist?(rake_lock_file)
-      p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
+    if args.type == "individual"
+      p "FREEREG:CSV_PROCESSING: starting an individual project"
+      NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
     else
-      locking_file = File.new(rake_lock_file, "w")
-      p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-      while PhysicalFile.waiting.exists?
-        NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-        sleep(300)
+      rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+      if File.exist?(rake_lock_file)
+        p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
+      else
+        locking_file = File.new(rake_lock_file, "w")
+        p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+        while PhysicalFile.waiting.exists?
+          NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+          sleep(300)
+        end
+        p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+        FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
       end
-      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
     end
   end
 
