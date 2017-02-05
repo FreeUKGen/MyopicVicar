@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   before_filter :require_login
   before_filter :require_cookie_directive
   before_filter :load_last_stat
-
+  before_filter :set_no_cache
   require 'record_type'
   require 'name_role'
   require 'chapman_code'
@@ -272,6 +272,11 @@ class ApplicationController < ActionController::Base
     session.delete(:current_page)
   end
 
+  def set_no_cache
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end
 
 
 

@@ -108,8 +108,8 @@ class SearchQueriesController < ApplicationController
     else
       @page = nil
     end
-    if params[:search_id]
-      old_query = SearchQuery.search_id(params[:search_id]).first
+    if session[:query]
+      old_query = SearchQuery.search_id(session[:query]).first
       if old_query.present?
         @search_query = SearchQuery.new(old_query.attributes)
       else
