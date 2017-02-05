@@ -48,7 +48,7 @@ class UseridDetailsController < ApplicationController
     if @userid.save
       refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
       refinery_user.send_reset_password_instructions
-      flash[:notice] = 'The initial registration was successful; an email has been sent to complete the process.'
+      flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
       @userid.write_userid_file
       next_place_to_go_successful_create
     else
