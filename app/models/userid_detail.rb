@@ -142,7 +142,7 @@ class UseridDetail
     when type == 'Register Researcher'
       self.person_role = 'researcher'
       self.syndicate = 'Researcher'
-    when type == 'Register Transcriber'
+    when type == 'Register as Transcriber'
       self.person_role = 'transcriber'
     when type == 'Technical Registration'
       self.active  = false

@@ -158,11 +158,12 @@ class UseridDetailsController < ApplicationController
   end
 
   def next_place_to_go_successful_create
-    @userid.finish_creation_setup if params[:commit] == 'Submit'
+    @userid.finish_creation_setup if params[:commit] == 'Register as Transcriber'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
-
+    when  params[:commit] == 'Register as Transcriber'
+      redirect_to :back and return
     when params[:commit] == "Submit" && session[:userid_detail_id].present?
       redirect_to userid_detail_path(@userid) and return
     when params[:commit] == "Update" && session[:my_own]
@@ -181,7 +182,7 @@ class UseridDetailsController < ApplicationController
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
-    when params[:commit] == 'Register Transcriber'
+    when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       render :action => 'transcriber_registration' and return
