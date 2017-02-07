@@ -23,7 +23,7 @@ class CountriesController < ApplicationController
   def index
     @first_name = session[:first_name]
     @user = UseridDetail.userid(session[:userid]).first
-    @counties = Country.all.order_by(country_code: 1)
+    @countries = Country.all.order_by(country_code: 1)
   end
 
   def load(id)
