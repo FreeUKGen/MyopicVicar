@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   before_filter :require_login
   before_filter :require_cookie_directive
   before_filter :load_last_stat
-
+  before_filter :load_message_flag
   require 'record_type'
   require 'name_role'
   require 'chapman_code'
@@ -28,12 +28,30 @@ class ApplicationController < ActionController::Base
 
 
   def load_last_stat
-    @site_stat = SiteStatistic.all.order_by(interval_end: -1).first
+    if session[:site_stats].blank?
+      time = Time.now
+      last_midnight = Time.new(time.year,time.month,time.day)
+      #last_midnight = Time.new(2015,10,13)
+      @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
+      session[:site_stats] = @site_stat
+    else
+      @site_stat = session[:site_stats]
+    end
+    @site_stat
+  end
+
+  def load_message_flag
+    # This tells system there is a message to display
+    if session[:message].blank?
+      session[:message] = "no"
+      session[:message]  = "load" if Refinery::Page.where(:slug => 'message').exists?
+    end
   end
 
   private
 
   def after_sign_in_path_for(resource_or_scope)
+    #p "signed in"
     #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     #start new session
@@ -140,6 +158,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_cookie_directive
+    #p "cookie"
     if cookies[:cookiesDirective].blank?
       flash[:notice] = 'This website only works if you are willing to explicitly accept cookies. If you did not see the cookie declaration you could be using an obsolete browser or a browser add on that blocks cookie messages'
       redirect_to main_app.new_search_query_path
@@ -147,6 +166,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
+    #p "login"
     if session[:userid_detail_id].nil?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path  # halts request cycle
@@ -186,6 +206,9 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_userid)
     session.delete(:who)
     session.delete(:redirect_to)
+    session.delete(:site_stats)
+    session.delete(:message)
+
   end
 
   def clean_session_for_county

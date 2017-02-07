@@ -5,7 +5,7 @@ class SearchQueriesController < ApplicationController
   before_action :check_for_mobile, :only => :show
   rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, :with => :missing_document
-  rescue_from ActionView::Template::Error, :with => :missing_template
+  #rescue_from ActionView::Template::Error, :with => :missing_template
   RECORDS_PER_PAGE = 100
 
   def about
@@ -103,7 +103,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    if @page = Refinery::Page.where(:slug => 'message').exists?
+    if session[:message]  == "load"
       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
     else
       @page = nil
@@ -176,13 +176,18 @@ class SearchQueriesController < ApplicationController
     @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
   end
 
-  def search_taking_too_long
-    @search_query = SearchQuery.find(session[:query])
-    runtime = Rails.application.config.max_search_time
-    @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
-    logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
-    session[:query] = nil
-    flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
+  def search_taking_too_long(message)
+    if message.to_s =~ /operation exceeded time limit/
+      @search_query = SearchQuery.find(session[:query])
+      runtime = Rails.application.config.max_search_time
+      @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
+      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
+      session[:query] = nil
+      flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
+    else
+      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} had a problem #{message}")
+      flash[:notice] = 'Your search encountered a problem please contact us with this message'
+    end
     redirect_to new_search_query_path(:search_id => @search_query)
   end
 
