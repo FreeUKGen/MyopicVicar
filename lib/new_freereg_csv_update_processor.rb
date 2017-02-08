@@ -89,7 +89,7 @@ class NewFreeregCsvUpdateProcessor
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
         @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
-      sleep(300)
+      sleep(300) if Rails.env.production?
     end
     # p "manager communication"
     @project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
