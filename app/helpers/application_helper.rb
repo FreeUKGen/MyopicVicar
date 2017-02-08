@@ -15,15 +15,21 @@
 module ApplicationHelper
 
   def get_user_info_from_userid
-    @userid = session[:userid]
-    @user_id = session[:user_id]
-    @first_name = session[:first_name]
-    @manager = session[:manager]
-    @roles = session[:role]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @roles = UseridRole::OPTIONS.fetch(session[:role]) unless session[:role].blank?
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename
+    @user_id = @user.id
+    @userid = @user.id
+    @first_name = @user.person_forename
+    @manager = manager?(@user)
+    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
+  def manager?(user)
+    #sets the manager flag status
+    a = true
+    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' ||  user.person_role == 'technical')
+    return a
+  end
 
 
   def problem_url

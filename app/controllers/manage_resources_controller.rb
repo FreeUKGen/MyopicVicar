@@ -1,11 +1,14 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:new, :pages]
+  #skip_before_filter :require_login, only: [:new, :pages]
+  skip_before_filter :refinery_authentication_devise_users
 
 
   def create
-    @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
+    p "creating manage resource instance"
+    p "----------------------------------------------------------------------------"
+    #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
     session[:userid] = @user.userid
     session[:first_name] = @user.person_forename
     session[:manager] = manager?(@user)
@@ -18,8 +21,8 @@ class ManageResourcesController < ApplicationController
 
   def is_ok_to_render_actions?
     continue = true
-    if session[:userid_detail_id].present?
-      @user = UseridDetail.id(session[:userid_detail_id]).first
+    if cookies.signed[:userid].present?
+      @user = cookies.signed[:userid]
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
         flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
@@ -46,7 +49,7 @@ class ManageResourcesController < ApplicationController
 
   def load(userid_id)
     @first_name = session[:first_name]
-    @user = UseridDetail.find(userid_id)
+    @user = cookies.signed[:userid]
   end
 
   def logout
@@ -83,7 +86,6 @@ class ManageResourcesController < ApplicationController
   def pages
     current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
     p current_authentication_devise_user
-    p session[:devise]
     redirect_to '/cms/refinery/pages'
   end
 

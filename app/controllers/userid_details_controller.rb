@@ -122,8 +122,8 @@ class UseridDetailsController < ApplicationController
   end #end method
 
   def load(userid_id)
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
       go_back("userid",userid_id)
@@ -178,7 +178,8 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_create
     case
     when  params[:commit] == "Submit"
-      @user = UseridDetail.where(userid:  session[:userid]).first
+      @user = cookies.signed[:userid]
+      @first_name = @user.person_forename
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
@@ -189,7 +190,8 @@ class UseridDetailsController < ApplicationController
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
-      @user = UseridDetail.where(userid:  session[:userid]).first
+      @user = cookies.signed[:userid]
+      @first_name = @user.person_forename
       render :action => 'new' and return
     end
   end

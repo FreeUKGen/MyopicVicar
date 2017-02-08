@@ -16,6 +16,7 @@ class SearchQueriesController < ApplicationController
     end
     begin
       @search_query = SearchQuery.find(params[:id])
+      # @emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a unless @search_query.blank? || @search_query.first_name.blank?
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path

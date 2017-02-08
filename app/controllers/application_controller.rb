@@ -15,7 +15,7 @@
 
 class ApplicationController < ActionController::Base
 
-  protect_from_forgery :with => :reset_session
+  #protect_from_forgery :with => :reset_session
   before_filter :require_login
   before_filter :require_cookie_directive
   before_filter :load_last_stat
@@ -51,11 +51,9 @@ class ApplicationController < ActionController::Base
   private
 
   def after_sign_in_path_for(resource_or_scope)
-    #p "signed in"
     #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    #start new session
-    cookies[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
@@ -91,13 +89,13 @@ class ApplicationController < ActionController::Base
   end
 
   def get_user_info_from_userid
-    @userid = session[:userid]
-    @user = UseridDetail.userid(@userid).first
+    @user = cookies.signed[:userid]
     unless @user.present?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path # halts request cycle
     else
       @user_id = @user.id
+      @userid = @user.id
       @first_name = @user.person_forename
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
@@ -106,14 +104,14 @@ class ApplicationController < ActionController::Base
 
   def  get_user_info(userid,name)
     #old version for compatibility
-    @userid = userid
-    @user = UseridDetail.where(:userid => @userid).first
+    @user = cookies.signed[:userid]
     @first_name = @user.person_forename
+    @userid = @user.id
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
   def get_userids_and_transcribers
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
     @userids = UseridDetail.all.order_by(userid_lower_case: 1)
   end
 
@@ -166,7 +164,6 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    #p "login"
     if session[:userid_detail_id].nil?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path  # halts request cycle
