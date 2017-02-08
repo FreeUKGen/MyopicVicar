@@ -186,7 +186,7 @@
 				
 			} else {
 				// Implied consent message
-				settings.message = 'We use cookies to ensure you get the best experience with our website. By continuing to use our website you consent to this action.';
+				settings.message = 'We use cookies to ensure you get the best experience with our website. By continuing to use our website you consent to our use of cookies. ';
 			}		
 		}	
 		html += settings.message;
