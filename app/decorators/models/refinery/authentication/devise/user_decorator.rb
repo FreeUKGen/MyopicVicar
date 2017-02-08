@@ -3,7 +3,7 @@
 
 Refinery::Authentication::Devise::User.class_eval do
   attr_accessible :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email
-  devise :timeoutable , :encryptable, :encryptor => :freereg
+  devise  :encryptable, :encryptor => :freereg
   before_update :inform_coordinator_of_completion
   after_update :save_password_and_send_notification
 
@@ -16,25 +16,9 @@ Refinery::Authentication::Devise::User.class_eval do
   end
 
   def userid_detail
+    p 'user detail'
     UseridDetail.find(self.userid_detail_id)
   end
-  def timeout_in
-    userid = UseridDetail.id(self.userid_detail_id).first
-    if userid.present?
-      case
-      when userid.person_role == "researcher"
-        timeout = Rails.application.config.timeout_researcher.minutes
-      when userid.person_role == "transcriber" || "trainee"
-        timeout = Rails.application.config.timeout_transcriber.minutes
-      else
-        timeout = Rails.application.config.timeout_manager.minutes
-      end
-    else
-      timeout = Rails.application.config.timeout_researcher.minutes
-    end
-    return timeout
-  end
-
 
   def downcase_username
     self.username = self.username #no-op for case-sensitive usernames

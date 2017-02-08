@@ -17,6 +17,7 @@ module UcfTransformer
   BRACE_REGEX = /(\[(\w*?)\])/
   EDITORIAL_NOT_UCF = /blank|sic|illegible|\?|unnamed|deceased|wife|son|daughter|widow/
   TENTATIVE_NAME_NOT_UCF = /(\[(john|william|thomas|james|mary|richard)\])/
+  QUESTION_MARK_UCF = /(\w*?)\?/
 
   def self.expand_single_name(name)
     # seed the expansions with the untransformed name      
@@ -27,12 +28,10 @@ module UcfTransformer
       unless contents =~ EDITORIAL_NOT_UCF
         # loop through each character in the UCF expression
         contents.each_char do |character|
-          unless character == '_'
-            # add the permutation to the expansion
-            expanded_names.each do |forename|
-              new_name = forename.sub(replacement, character)
-              new_expansions << new_name
-            end
+          # add the permutation to the expansion
+          expanded_names.each do |forename|
+            new_name = forename.sub(replacement, character)
+            new_expansions << new_name
           end
         end
       end
@@ -55,6 +54,7 @@ module UcfTransformer
       # first, handle the names in square brackets (invalid but common)
       if name.first_name
         name.first_name.sub!(TENTATIVE_NAME_NOT_UCF,'\2')     
+        name.first_name.sub!(QUESTION_MARK_UCF,'\1')     
         
         expanded_forenames = expand_single_name(name.first_name)
         if expanded_forenames # only add the transformation if we did stuff
@@ -64,6 +64,7 @@ module UcfTransformer
 
       if name.last_name
         name.last_name.sub!(TENTATIVE_NAME_NOT_UCF,'\2')           
+        name.last_name.sub!(QUESTION_MARK_UCF,'\1')     
         expanded_surnames = expand_single_name(name.last_name)
         if expanded_surnames # only add the transformation if we did stuff
           transformed_names += expanded_surnames.map { |surname| SearchName.new(name.attributes.merge({:last_name => surname, :origin => 'ucf'}))}    

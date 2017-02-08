@@ -160,8 +160,8 @@ class Register
     @place = @church.place
     @county =  @place.county
     @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename
   end
 
   def has_input?

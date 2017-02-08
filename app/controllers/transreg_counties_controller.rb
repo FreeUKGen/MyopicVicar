@@ -6,9 +6,8 @@ class TransregCountiesController < ApplicationController
       return
     end
 
-    @first_name = session[:first_name]
-    @user = UseridDetail.id(session[:userid_detail_id]).first
-
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename
     @counties = County.all.order_by(chapman_code: 1)
 
     respond_to do |format|

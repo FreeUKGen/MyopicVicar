@@ -16,12 +16,12 @@
           <p ><%= number_with_delimiter(@site_stat.n_searches)%> searches were performed yesterday on <%= number_with_delimiter(@site_stat.n_records) %> records
           </p>
           <ul class="push--left">
-            <li><%= number_with_delimiter(@site_stat.n_records_baptisms) %> baptisms</li>
-            <li><%= number_with_delimiter(@site_stat.n_records_marriages) %> marriages </li>
-            <li><%= number_with_delimiter(@site_stat.n_records_burials) %> burials</li>
+            <li><%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> baptisms</li>
+            <li><%= number_with_delimiter(@site_stat[:n_records_marriages]) %> marriages </li>
+            <li><%= number_with_delimiter(@site_stat[:n_records_burials]) %> burials</li>
           </ul> 
           <% if @site_stat.n_records_added  %>
-            <p>In the 24 hrs ending at midnight GMT we added <%= number_with_delimiter(@site_stat.n_records_added) %> records &mdash; <%= number_with_delimiter(@site_stat.n_records_added_baptisms) %> baptisms; <%= number_with_delimiter(@site_stat.n_records_added_marriages) %> marriages; and <%= number_with_delimiter(@site_stat.n_records_added_burials) %> burials</p>
+            <p>In the 24 hrs ending at midnight GMT we added <%= number_with_delimiter(@site_stat[:n_records_added]) %> records &mdash; <%= number_with_delimiter(@site_stat[:n_records_added_baptisms]) %> baptisms; <%= number_with_delimiter(@site_stat[:n_records_added_marriages]) %> marriages; and <%= number_with_delimiter(@site_stat[:n_records_added_burials]) %> burials</p>
           <% else %>
             <p>No records were added</p>
           <% end %>
