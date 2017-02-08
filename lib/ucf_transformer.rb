@@ -27,12 +27,10 @@ module UcfTransformer
       unless contents =~ EDITORIAL_NOT_UCF
         # loop through each character in the UCF expression
         contents.each_char do |character|
-          unless character == '_'
-            # add the permutation to the expansion
-            expanded_names.each do |forename|
-              new_name = forename.sub(replacement, character)
-              new_expansions << new_name
-            end
+          # add the permutation to the expansion
+          expanded_names.each do |forename|
+            new_name = forename.sub(replacement, character)
+            new_expansions << new_name
           end
         end
       end
