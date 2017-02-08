@@ -87,12 +87,12 @@ class NewFreeregCsvUpdateProcessor
         #p "failed to process file"
         @csvfile.communicate_failure_to_member(@project,@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
-        @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
+        #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(300)
     end
     # p "manager communication"
-    @project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
+    #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
     at_exit do
       # p "goodbye"
     end
@@ -116,7 +116,7 @@ class NewFreeregCsvUpdateProcessor
     time = ((Time.new.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
     self.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",false)
     file = @message_file
-    @message_file.close if @project.type_of_project == "individual"
+    #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "REGManager").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver_now
     user = UseridDetail.where(userid: "ericb").first
