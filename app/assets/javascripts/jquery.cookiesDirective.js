@@ -10,7 +10,7 @@
 		// Default Cookies Directive Settings
 		var settings = $.extend({
 			//Options
-			explicitConsent: true,
+			explicitConsent: false,
 			position: 'top',
 			duration: 10,
 			limit: 0,
@@ -186,7 +186,7 @@
 				
 			} else {
 				// Implied consent message
-				settings.message = 'We have placed cookies on your computer to help make this website better.';
+				settings.message = 'We use cookies to ensure you get the best experience with our website. By continuing to use our website you consent to this action.';
 			}		
 		}	
 		html += settings.message;
@@ -202,9 +202,9 @@
 		
 		} else {
 			// Implied consent disclosure
-			html += scriptsDisclosure + ' Review our <a style="color:'+ settings.linkColor + ';';
-			html += 'font-weight:bold;font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
-			html += '<div style="margin-top:5px;"><input type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
+			html += scriptsDisclosure + 'Review our <a tabindex="1" style="color:'+ settings.linkColor + ';font-weight:bold;';
+      html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
+			html += '<div style="margin-top:5px;"><input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
 		}		
 		html += '</div></div>';
 		$('body').append(html);
