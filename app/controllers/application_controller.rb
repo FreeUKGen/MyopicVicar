@@ -15,7 +15,7 @@
 
 class ApplicationController < ActionController::Base
 
-  #protect_from_forgery :with => :reset_session
+  protect_from_forgery :with => :reset_session
   before_filter :require_login
   before_filter :require_cookie_directive
   before_filter :load_last_stat
