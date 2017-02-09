@@ -33,6 +33,11 @@ class ApplicationController < ActionController::Base
       last_midnight = Time.new(time.year,time.month,time.day)
       #last_midnight = Time.new(2015,10,13)
       @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
+      if  @site_stat.blank?
+        time =  1.day.ago
+        last_midnight = Time.new(time.year,time.month,time.day)
+        @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
+      end
       session[:site_stats] = @site_stat
     else
       @site_stat = session[:site_stats]
