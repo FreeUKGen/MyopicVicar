@@ -219,19 +219,25 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      @search_results =   @search_query.results
-      @ucf_results = @search_query.ucf_results
-      @ucf_results = Array.new unless  @ucf_results.present?
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @search_results =   Array.new
+        @ucf_results = Array.new
+      else
+        @search_results =   @search_query.results
+        @ucf_results = @search_query.ucf_results
+        @ucf_results = Array.new unless  @ucf_results.present?
+        if @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+          go_back
+          return
+        end
+      end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
       go_back
       return
     end
-    if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-      go_back
-      return
-    end
+
   end
 
   def show_print_version
