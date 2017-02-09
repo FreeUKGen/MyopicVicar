@@ -55,6 +55,7 @@ class ManageResourcesController < ApplicationController
   def logout
     @message = flash[:notice]
     cookies.delete :userid
+    cookies.delete :remember_authentication_devise_user_token
     reset_session
   end
 
