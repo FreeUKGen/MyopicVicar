@@ -16,10 +16,9 @@ module ApplicationHelper
 
   def get_user_info_from_userid
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @user_id = @user.id
     @userid = @user.id
-    @first_name = @user.person_forename
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
@@ -99,7 +98,6 @@ module ApplicationHelper
     counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
     display_map["Counties"] = counties if search_query.chapman_codes.size > 1
     display_map["County"] = counties if search_query.chapman_codes.size == 1
-
     if search_query.places.size > 0
       first_place = search_query.places.first
       place = first_place.place_name
