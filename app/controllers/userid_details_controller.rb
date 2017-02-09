@@ -123,7 +123,7 @@ class UseridDetailsController < ApplicationController
 
   def load(userid_id)
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
       go_back("userid",userid_id)
@@ -179,7 +179,7 @@ class UseridDetailsController < ApplicationController
     case
     when  params[:commit] == "Submit"
       @user = cookies.signed[:userid]
-      @first_name = @user.person_forename
+      @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
@@ -191,7 +191,7 @@ class UseridDetailsController < ApplicationController
       render :action => 'technical_registration' and return
     else
       @user = cookies.signed[:userid]
-      @first_name = @user.person_forename
+      @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     end
   end

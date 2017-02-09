@@ -105,7 +105,7 @@ class ManageResourcesController < ApplicationController
   def set_session
     @user_id = @user._id
     @userid = @user.userid
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     session[:userid] = @userid

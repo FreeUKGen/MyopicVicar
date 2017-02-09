@@ -15,7 +15,7 @@ class CountiesController < ApplicationController
 
   def index
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @counties = County.all.order_by(chapman_code: 1)
   end
 
@@ -99,7 +99,7 @@ class CountiesController < ApplicationController
     person = UseridDetail.userid(@county.previous_county_coordinator).first
     @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def update

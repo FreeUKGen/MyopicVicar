@@ -161,7 +161,7 @@ class Register
     @county =  @place.county
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def has_input?

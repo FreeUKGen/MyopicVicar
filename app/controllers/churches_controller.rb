@@ -11,7 +11,7 @@ class ChurchesController < ApplicationController
     @place = Place.find(session[:place_id])
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @church.alternatechurchnames.build
     denomination_list
   end
@@ -107,7 +107,7 @@ class ChurchesController < ApplicationController
       end
       @county = session[:county]
       @user = cookies.signed[:userid]
-      @first_name = @user.person_forename
+      @first_name = @user.person_forename unless @user.blank?
       @records = @church.records
       max_records = get_max_records(@user)
       if @records.present? && @records.to_i >= max_records
@@ -126,7 +126,7 @@ class ChurchesController < ApplicationController
       setup(params[:id])
       @county = session[:county]
       @user = cookies.signed[:userid]
-      @first_name = @user.person_forename
+      @first_name = @user.person_forename unless @user.blank?
       @records = @church.records
       max_records = get_max_records(@user)
       if @records.present? && @records.to_i >= max_records
@@ -149,7 +149,7 @@ class ChurchesController < ApplicationController
     @county = ChapmanCode.has_key(@place.chapman_code)
     session[:county] = @county
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def show

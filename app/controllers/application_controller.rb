@@ -105,7 +105,7 @@ class ApplicationController < ActionController::Base
   def  get_user_info(userid,name)
     #old version for compatibility
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @userid = @user.id
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end

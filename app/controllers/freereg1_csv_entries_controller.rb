@@ -115,7 +115,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @county =  @place.county
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
   end
 
 
@@ -200,7 +200,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @place_name = @place.place_name
     end
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def show

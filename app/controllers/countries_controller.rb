@@ -22,7 +22,7 @@ class CountriesController < ApplicationController
 
   def index
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @countries = Country.all.order_by(country_code: 1)
   end
 
@@ -47,7 +47,7 @@ class CountriesController < ApplicationController
     person = UseridDetail.where(:userid => @country.previous_country_coordinator).first
     @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def update
