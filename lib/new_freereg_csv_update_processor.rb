@@ -489,8 +489,7 @@ class CsvFile < CsvFiles
       #p "clean up after failure"
       batch = PhysicalFile.userid(@userid).file_name(@file_name).first
       return true if batch.blank? || message.blank?
-      PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("file is older than one on system. ")
-      PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("is already on system and is locked against replacement. ")
+      PhysicalFile.remove_waiting_flag(@userid,@file_name)   
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
