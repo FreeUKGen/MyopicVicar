@@ -16,11 +16,13 @@ module ApplicationHelper
 
   def get_user_info_from_userid
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename unless @user.blank?
-    @user_id = @user.id
-    @userid = @user.id
-    @manager = manager?(@user)
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    unless @user.blank?
+      @first_name = @user.person_forename
+      @user_id = @user.id
+      @userid = @user.id
+      @manager = manager?(@user)
+      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    end
   end
 
   def manager?(user)
