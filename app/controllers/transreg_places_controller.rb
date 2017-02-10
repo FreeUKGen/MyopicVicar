@@ -5,8 +5,7 @@ class TransregPlacesController < ApplicationController
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'list'}))
       return
     end
-    @user = cookies.signed[:userid]
-    @first_name = @user.person_forename
+    @user = UseridDetail.id(session[:userid_detail_id]).first
     @county = ChapmanCode.has_key(params[:county])
 
     @places = Place.chapman_code(params[:county]).not_disabled.all.order_by( place_name: 1)
