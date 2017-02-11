@@ -519,7 +519,8 @@ class CsvFile < CsvFiles
      end
      #recalculate distribution after clean up
      files.each do |file|
-        Freereg1CsvFile.id(file).first.calculate_distribution
+        actual_batch = Freereg1CsvFile.id(file).first
+        actual_batch.calculate_distribution if actual_batch.present?
      end
      @unique_existing_locations.each do |key,value|
       file = Freereg1CsvFile.id(value[:id]).first
