@@ -29,7 +29,7 @@
 	      <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
 	      and records with a first name whose Soundex is <%= fuzzy(@search_query.first_name)%>
 	      <% end %>.
-	      <% emendations = EmendationRule.where(:replacement => @search_query.first_name.upcase).all.to_a %>
+	      <% emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a %>
 	      <% if emendations && emendations.size > 0 %>
 	      In addition, match records whose first name is
 	      <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalisation).
