@@ -21,6 +21,7 @@ class TransregCsvfilesController < ApplicationController
     proceed = @csvfile.check_for_existing_file
     logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
     @csvfile.save if proceed
+
     if @csvfile.errors.any? || !proceed
       @result = "failure"
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
@@ -34,9 +35,9 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
-        @processing_time = @csvfile.estimate_time
+        processing_time = @csvfile.estimate_time
         range = File.join(@csvfile.userid,@csvfile.file_name)
-        logger.warn("FREEREG:UPLOAD: About to process the file #{@processing_time}")
+        logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
         when @user.person_role == "trainee"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
@@ -114,9 +115,9 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
-        @processing_time = @csvfile.estimate_time
+        processing_time = @csvfile.estimate_time
         range = File.join(@csvfile.userid,@csvfile.file_name)
-        logger.warn("FREEREG:UPLOAD: About to process the file #{@processing_time}")
+        logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
         when @user.person_role == "trainee"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
