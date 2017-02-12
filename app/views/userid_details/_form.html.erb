@@ -42,6 +42,8 @@
 
       <%= f.input :disabled_reason,:hint => "If you selected 'Other' or need to add information, explain here.",:label => "Reason for making inactive (explanation)",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
 
+      <%= f.input :no_processing_messages, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.no_processing_messages, :label => "SC uploading data", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "send file upload email to transcribers or not"} %>
+
       <% unless @userid.active %> 
         <%= f.input :disabled_date,:label => "Date made inactive", :input_html => { :size => 30, :disabled => true}%>
       <% end%>

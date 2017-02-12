@@ -48,7 +48,7 @@ class UserMailer < ActionMailer::Base
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new
-      unless @userid.nil? || !@userid.active
+      unless @userid.nil? || !@userid.active || @userid.no_processing_messages
         user_email_with_name =  @userid.email_address
         emails <<  user_email_with_name
       end

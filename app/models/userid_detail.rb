@@ -39,6 +39,7 @@ class UseridDetail
   field :research_agreement, type: Boolean, default: false
   field :email_address_valid, type: Boolean, default: true
   field :email_address_last_confirmned, type: DateTime
+  field :no_processing_messages, type: Boolean, default: false
 
   attr_accessor :action, :message
   index({ email_address: 1 })

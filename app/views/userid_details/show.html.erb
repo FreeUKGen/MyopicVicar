@@ -94,7 +94,10 @@
   <tr>
     <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>
   </tr>
-  
+  <tr>
+    <td>no processing messages:</td><td><%= @userid.no_processing_messages %></td>
+  </tr>
+
   <tr>
     <% unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
