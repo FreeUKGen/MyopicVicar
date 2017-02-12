@@ -35,6 +35,7 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
+        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
         processing_time = @csvfile.estimate_time
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
@@ -115,6 +116,7 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
+        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
         processing_time = @csvfile.estimate_time
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
