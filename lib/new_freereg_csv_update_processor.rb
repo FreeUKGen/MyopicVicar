@@ -514,7 +514,7 @@ class CsvFile < CsvFiles
        file_for_entry = actual_record.freereg1_csv_file_id unless actual_record.nil?
        files << file_for_entry unless files.include?(file_for_entry)
        actual_record.destroy unless actual_record.nil?
-      sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+      sleep_time =  sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time) unless actual_record.nil?
      end
      #recalculate distribution after clean up
