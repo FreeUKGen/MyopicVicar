@@ -41,6 +41,7 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
         when @user.person_role == "trainee"
+          @result = "success"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when processing_time < 600
@@ -48,14 +49,17 @@ class TransregCsvfilesController < ApplicationController
           #check to see if rake task running
           rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
           if File.exist?(rake_lock_file)
+            @result = "success"
             logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
             @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
           else
+            @result = "success"
             logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
             pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
             @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end
         when processing_time >= 600
+          @result = "failure"
           @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
           UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
@@ -122,6 +126,7 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
         when @user.person_role == "trainee"
+          @result = "success"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when processing_time < 600
@@ -129,14 +134,17 @@ class TransregCsvfilesController < ApplicationController
           #check to see if rake task running
           rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
           if File.exist?(rake_lock_file)
+            @result = "success"
             logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
             @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
           else
+            @result = "success"
             logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
             pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
             @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end
         when processing_time >= 600
+          @result = "failure"
           @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
           UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
