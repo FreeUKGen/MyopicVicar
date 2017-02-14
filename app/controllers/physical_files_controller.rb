@@ -67,7 +67,7 @@ class PhysicalFilesController < ApplicationController
       @batches = PhysicalFile.county(session[:county]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(1000)
       @number =  @batches.length
     when   @sorted_by == '(Waiting_to_be_processed)'
-      @batches = PhysicalFile.waiting.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.waiting.all.order_by(base_uploaded_date: -1, userid: 1,).page(params[:page]).per(1000)
       @number =  @batches.length
     else
       @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]).per(1000)

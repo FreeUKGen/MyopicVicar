@@ -36,10 +36,10 @@
 				<td > <%= batch.file_name  %>  </td>
 				<% end %>
         <td > <%= syndicate(batch)%>  </td>
-				<td > <%= batch.base_uploaded_date.strftime("%d %b %Y") if batch.base && !batch.base_uploaded_date.nil? %>  </td>
+				<td > <%= batch.base_uploaded_date.strftime("%d %b %Y (%H:%M)") if batch.base && !batch.base_uploaded_date.nil? %>  </td>
 			
-				<td > <%= batch.file_processed_date.strftime("%d %b %Y") if batch.file_processed && !batch.file_processed_date.nil?%>  </td>
-        <td > <%= batch.waiting_date.strftime("%d %b %Y") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
+				<td > <%= batch.file_processed_date.strftime("%d %b %Y (%H:%M)") if batch.file_processed && !batch.file_processed_date.nil?%>  </td>
+        <td > <%= batch.waiting_date.strftime("%d %b %Y (%H:%M)") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
 
 				<td><%= link_to 'SH', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
 				<td><%= link_to 'FR2', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
