@@ -123,7 +123,6 @@ class UserMailer < ActionMailer::Base
   def get_attachment
     if @contact.screenshot_url.present?
       @image = File.basename(@contact.screenshot.path)
-      p @contact.screenshot.path
       attachments[@image] = File.binread(@contact.screenshot.path)
     end
   end
@@ -192,16 +191,43 @@ class UserMailer < ActionMailer::Base
   end
 
   def report_to_data_manger_of_large_file(file_name,userid)
-    data_managers = UseridDetail.role("data_manager").all
-    emails = Array.new
-    data_managers.each do |dm|
-      user_email_with_name =  dm.email_address
-      emails <<  user_email_with_name
-    end
-    first_mail = emails.shift
     @file = file_name
-    @user = userid
-    mail(:from => "freereg-processing@freereg.org.uk",:to => first_mail, :cc => emails, :subject => "Too large a file to be processed by FreeReg")
+    @user = UseridDetail.userid(userid).first
+    if @user.present?
+      syndicate_coordinator = nil
+      syndicate_coordinator = Syndicate.where(syndicate_code: @user.syndicate).first
+      if syndicate_coordinator.present?
+        syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
+        sc = UseridDetail.where(userid: syndicate_coordinator).first
+        if sc.present?
+          @sc_email_with_name =  sc.email_address
+        end
+      end
+      data_managers = UseridDetail.role("data_manager").all
+      dm_emails = Array.new
+      data_managers.each do |dm|
+        user_email_with_name =  dm.email_address
+        dm_emails <<  user_email_with_name unless user_email_with_name == @sc_email_with_name
+      end
+      if @sc_email_with_name.length == 1
+        mail(:from => "freereg-processing@freereg.org.uk", :to => @sc_email_with_name,  :cc => dm_emails, :subject => "#{@user.userid} uploaded a file #{@file} at #{Time.now} that was held and not processed due to its size")
+      else
+        mail(:from => "freereg-processing@freereg.org.uk",:to => dm_emails, :subject => "#{@user.userid} uploaded a file #{@file} at #{Time.now} that was held and not processed due to its size")
+      end
+
+    else
+      p "--------------------------------------------"
+      p "User does not exist"
+      p file_name
+      p userid
+
+    end
+
+
+
+
+
+
   end
 
   def send_change_of_syndicate_notification_to_sc(user)

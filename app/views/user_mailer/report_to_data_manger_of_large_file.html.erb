@@ -1,7 +1,11 @@
 <p> Too large a file </p>
 
-<p>The member <%= @user %> submitted a file <%= @file %> that was too large for normal processing <br>
+<p>The member <%= @user.userid %> submitted a file <%= @file %> that was too large for normal processing. They were informed that it was being held for review. <br></p>
+<p>As this was an initial upload then the file should be split into parts and the parts uploaded. strategy developed for its updating</p>
+<% if @sc_email_with_name.present? %>
 
-Would you please review with the member how best to proceed with their processing</p>
-
+<p>This email was sent to the syndicate coordinator and data managers. The coordinator is requested to consult with the data managers if they are unsure as to how to proceed</p>
+<% else%>
+Would you please review this with the member as it appears they have no coordinator</p>
+<% end%>
 <p> The FreeREG Team</p>

@@ -71,7 +71,7 @@ class CsvfilesController < ApplicationController
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
         end
       when processing_time >= 600
-        flash[:notice] =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
+        flash[:notice] =  "Your file #{@csvfile.file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
         UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
       end
     end
