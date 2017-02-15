@@ -88,7 +88,6 @@ class Freereg1CsvFile
   before_destroy do |file|
     file.save_to_attic
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-    num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
     entries.each do |entry|
       entry.destroy
       #sleep_time = 2*(Rails.application.config.sleep.to_f)
@@ -215,7 +214,7 @@ class Freereg1CsvFile
       return number_of_records,daterange
     end
 
-       def convert_date(date_field)
+      def convert_date(date_field)
         #use a custom date conversion to number of days for comparison purposes only
         #dates provided vary in format
         date_day = 0
@@ -732,8 +731,14 @@ class Freereg1CsvFile
       def remove_batch
         #rspect
         #This deletes the document and defers deletion of entries/search records to overnight rake task
-        if self.locked_by_transcriber  ||  self.locked_by_coordinator
+        case
+        when self.records.to_i > 5000
+          UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
+          return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
+        when self.locked_by_transcriber  ||  self.locked_by_coordinator
           return false,'The removal of the batch was unsuccessful; the batch is locked'
+
+
         else
           #deal with file and its records
           self.add_to_rake_delete_list

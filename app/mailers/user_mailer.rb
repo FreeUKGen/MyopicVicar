@@ -210,9 +210,9 @@ class UserMailer < ActionMailer::Base
         dm_emails <<  user_email_with_name unless user_email_with_name == @sc_email_with_name
       end
       if @sc_email_with_name.length == 1
-        mail(:from => "freereg-processing@freereg.org.uk", :to => @sc_email_with_name,  :cc => dm_emails, :subject => "#{@user.userid} uploaded a file #{@file} at #{Time.now} that was held and not processed due to its size")
+        mail(:from => "freereg-processing@freereg.org.uk", :to => @sc_email_with_name,  :cc => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
       else
-        mail(:from => "freereg-processing@freereg.org.uk",:to => dm_emails, :subject => "#{@user.userid} uploaded a file #{@file} at #{Time.now} that was held and not processed due to its size")
+        mail(:from => "freereg-processing@freereg.org.uk",:to => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
       end
 
     else
@@ -220,14 +220,7 @@ class UserMailer < ActionMailer::Base
       p "User does not exist"
       p file_name
       p userid
-
     end
-
-
-
-
-
-
   end
 
   def send_change_of_syndicate_notification_to_sc(user)
