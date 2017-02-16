@@ -414,8 +414,8 @@ class UseridDetailsController < ApplicationController
         return
       end
     end
-    params[:userid_detail][:email_address_last_confirmned]  = Time.now
-    params[:userid_detail][:email_address_valid]  = true
+    params[:userid_detail][:email_address_last_confirmned] = params[:userid_detail][:email_address_valid] == '1' ? Time.now : ''
+#    params[:userid_detail][:email_address_valid]  = true
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
