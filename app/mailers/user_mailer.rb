@@ -195,12 +195,14 @@ class UserMailer < ActionMailer::Base
     @user = UseridDetail.userid(userid).first
     if @user.present?
       syndicate_coordinator = nil
-      syndicate_coordinator = Syndicate.where(syndicate_code: @user.syndicate).first
-      if syndicate_coordinator.present?
-        syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
+      syndicate = Syndicate.where(syndicate_code: @user.syndicate).first
+      if syndicate.present?
+        syndicate_coordinator = syndicate.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator).first
         if sc.present?
           @sc_email_with_name =  sc.email_address
+        else
+          p "FREREG_PROCESSING: There was no syndicate coordinator"
         end
       end
       data_managers = UseridDetail.role("data_manager").all
@@ -209,7 +211,7 @@ class UserMailer < ActionMailer::Base
         user_email_with_name =  dm.email_address
         dm_emails <<  user_email_with_name unless user_email_with_name == @sc_email_with_name
       end
-      if @sc_email_with_name.length == 1
+      if @sc_email_with_name.present?
         mail(:from => "freereg-processing@freereg.org.uk", :to => @sc_email_with_name,  :cc => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
       else
         mail(:from => "freereg-processing@freereg.org.uk",:to => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
