@@ -28,6 +28,7 @@ class CsvfilesController < ApplicationController
         setup = @csvfile.setup_batch
         if !setup[0]
           flash[:notice] = setup[1]
+          @csvfile.delete
           session.delete(:file_name)
           redirect_to :back
           return
