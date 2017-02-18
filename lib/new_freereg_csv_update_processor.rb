@@ -253,7 +253,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
 
   def get_the_waiting_files_to_be_processed(project)
     #p "waiting file selection"
-    physical_waiting_files = PhysicalFile.waiting.all
+    physical_waiting_files = PhysicalFile.waiting.all.order_by(waiting_date: 1)
     files = Array.new
     physical_waiting_files.each do |file|
       files << File.join(project.freereg_files_directory, file.userid, file.file_name)
