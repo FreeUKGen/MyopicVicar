@@ -16,12 +16,17 @@
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
-      <%= f.input :email_address_valid, :as => :boolean,boolean_style: :inline,:label => "Valid email address"%>
-    <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {   :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width" }%>
+      <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
+      <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {   :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width" }%>
 
     <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:input_html => { :size => 40, :disabled => true }%>
          <%= f.input :person_role,:label => "Role in Freereg",:input_html => { :size => 40, :disabled => true }%>
+
+        <% if (manager?(@user)) %>
+          <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
+          <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {   :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width" }%>
+        <% end %>
     <% end%>
   <% end%>
   <%= f.input :person_forename,:label => "Forename", :required => true, :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>

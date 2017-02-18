@@ -142,7 +142,7 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
       @user.person_role == "data_manager"
-    @syndicates = Syndicate.get_syndicates if @user.person_role == "system_administrator"
+    @syndicates = Syndicate.get_syndicates if ['system_administrator', 'executive director', 'project-manager', 'volunteer_coordinator'].include?(@user.person_role)
     @userid = UseridDetail.new
   end
 
@@ -414,7 +414,7 @@ class UseridDetailsController < ApplicationController
         return
       end
     end
-    params[:userid_detail][:email_address_last_confirmned] = params[:userid_detail][:email_address_valid] == '1' ? Time.now : ''
+    params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
 #    params[:userid_detail][:email_address_valid]  = true
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
