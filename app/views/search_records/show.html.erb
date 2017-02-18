@@ -3,7 +3,7 @@
   <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
 </section>
 <section id="search-detail">
-  <% if @search_record.freereg1_csv_entry %>
+  <% if @entry %>
     <% if @entry && @annotations && @annotations.length %>
       <h2>Offline Transcriptions</h2>
     <% end %>
@@ -66,9 +66,9 @@
           </tr>
         <% end%>
       </tbody>
-    </table>
-    
+    </table>   
   <% end %>
+
   <% if @annotations && @annotations.length > 0 %>
     <table class="table--bordered table--data">
       <thead>

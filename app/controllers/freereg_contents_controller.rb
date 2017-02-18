@@ -23,10 +23,10 @@ class FreeregContentsController < ApplicationController
       proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
       case proceed
       when "dual"
-        flash[:notice] = "Only a place or a character can be selected not both"
+        flash[:notice] = "Choose a place or a letter; you cannot choose both."
         redirect_to freereg_contents_path and return
       when "no option"
-        flash[:notice] = "You must select either a place or a character"
+        flash[:notice] = "Choose a place or a letter; you must choose something."
         redirect_to freereg_contents_path and return
       when "place"
         redirect_to freereg_content_path(params[:freereg_content][:place]) and return
