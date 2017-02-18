@@ -142,7 +142,7 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
       @user.person_role == "data_manager"
-    @syndicates = Syndicate.get_syndicates if ['system_administrator', 'executive director', 'project-manager', 'volunteer_coordinator'].include?(@user.person_role)
+    @syndicates = Syndicate.get_syndicates if ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
     @userid = UseridDetail.new
   end
 
