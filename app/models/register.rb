@@ -206,14 +206,6 @@ class Register
     end
   end
 
-  def records
-    records = 0
-    self.freereg1_csv_files.each do |file|
-      records =  records + file.freereg1_csv_entries.count
-    end
-    records
-  end
-
 
   def update_data_present_in_place(file)
     #also refresh the cache if the place is newly active
