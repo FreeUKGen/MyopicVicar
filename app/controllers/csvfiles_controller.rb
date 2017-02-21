@@ -25,10 +25,9 @@ class CsvfilesController < ApplicationController
         redirect_to :back
         return
       else
-        setup = @csvfile.setup_batch
+        setup = @csvfile.setup_batch_on_replace
         if !setup[0]
           flash[:notice] = setup[1]
-          @csvfile.delete
           session.delete(:file_name)
           redirect_to :back
           return
@@ -38,7 +37,7 @@ class CsvfilesController < ApplicationController
       end
     end
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_file
+    proceed = @csvfile.check_for_existing_file_and_save
     @csvfile.save if proceed
     if @csvfile.errors.any?
       flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
@@ -72,6 +71,7 @@ class CsvfilesController < ApplicationController
           flash[:notice] =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
         end
       when processing_time >= 600
+        batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
         flash[:notice] =  "Your file #{@csvfile.file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
         UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
       end

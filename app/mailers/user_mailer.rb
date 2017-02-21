@@ -231,6 +231,13 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of syndicate") unless @coordinator.blank?
   end
 
+  def send_change_of_email_notification_to_sc(user)
+    @user = user
+    get_coordinator_name
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of email") unless @coordinator.blank?
+  end
+
+
   def send_message(mymessage,ccs,from)
     @message = mymessage
     from = "freereg-contacts@freereg.org.uk" if from.blank?

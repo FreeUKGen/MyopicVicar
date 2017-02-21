@@ -11,7 +11,7 @@ class Csvfile < CarrierWave::Uploader::Base
 
 
 
-  def check_for_existing_file
+  def check_for_existing_file_and_save
     process = true
     batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true).first
     if batch.present?
@@ -57,18 +57,30 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def estimate_time
     place = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
-    size = (File.size("#{place}"))
+    size = (File.size("#{place}")) unless place.blank?
     unit = 0.001
     processing_time = (size.to_i*unit).to_i
   end
 
-  def setup_batch
+  def setup_batch_on_replace
     ok = true
     processing_time = self.estimate_time
     batch_entries = PhysicalFile.where(userid: self.userid, file_name: self.file_name).count
     case
-    when processing_time >= 600
+    when processing_time >= 600 && batch_entries == 0
+      batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
+      batch.save
       batch = "Too large a file to be replaced. A message has been sent to your coordinator and data managers so please discuss with them how to proceed."
+      self.check_for_existing_file_and_save
+      self.save
+      ok = false
+      UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
+    when processing_time >= 600 && batch_entries == 1
+      batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
+      batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+      batch = "Too large a file to be replaced. A message has been sent to your coordinator and data managers so please discuss with them how to proceed."
+      self.check_for_existing_file_and_save
+      self.save
       ok = false
       UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
     when batch_entries == 0
@@ -77,9 +89,6 @@ class Csvfile < CarrierWave::Uploader::Base
     when batch_entries == 1
       batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
       batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
-    else
-      batch = "Too many batch entries. Have your coordinator contact system administration with this message, date and time"
-      ok = false
     end
     return[ok,batch]
   end

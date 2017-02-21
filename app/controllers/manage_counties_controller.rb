@@ -84,6 +84,14 @@ class ManageCountiesController < ApplicationController
     render 'physical_files/index'
   end
 
+  def display_files_not_processed
+    @batches = ManageCounty.get_waiting_files_for_county(session[:county])
+    @number = @batches.length if @batches.present?
+    @person = session[:county]
+    @sorted_by = "; Not processed "
+    render 'physical_files/index'
+  end
+
 
   def get_counties_for_selection
     @counties = @user.county_groups

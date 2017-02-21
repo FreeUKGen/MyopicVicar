@@ -18,7 +18,7 @@ class TransregCsvfilesController < ApplicationController
     uploaded_file = params[:csvfile][:csvfile].tempfile.path
 
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_file
+    proceed = @csvfile.check_for_existing_file_and_save
     logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
     @csvfile.save if proceed
 
@@ -60,6 +60,7 @@ class TransregCsvfilesController < ApplicationController
           end
         when processing_time >= 600
           @result = "failure"
+          batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
           @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
           UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
@@ -91,7 +92,7 @@ class TransregCsvfilesController < ApplicationController
     #      return
     #    end
 
-    setup = @csvfile.setup_batch
+    setup = @csvfile.setup_batch_on_replace
     if !setup[0]
       @result = 'failure'
       @message = setup[1]
@@ -103,7 +104,7 @@ class TransregCsvfilesController < ApplicationController
     batch = setup[1]
 
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_file
+    proceed = @csvfile.check_for_existing_file_and_save
     logger.warn("FREEREG:REPLACE: About to save file #{proceed}")
 
     @csvfile.save if proceed
@@ -145,6 +146,7 @@ class TransregCsvfilesController < ApplicationController
           end
         when processing_time >= 600
           @result = "failure"
+          batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
           @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
           UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end

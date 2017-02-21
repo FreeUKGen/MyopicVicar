@@ -46,7 +46,7 @@ class Freereg1CsvFilesController < ApplicationController
       end
       @freereg1_csv_file.update_freereg_contents_after_processing
       #save a copy to attic and delete all batches
-      @physical_file.file_delete
+      @physical_file.file_and_entries_delete
       @physical_file.delete
       session[:type] = "edit"
       flash[:notice] = 'The deletion of the batches was successful'
