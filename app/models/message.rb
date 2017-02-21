@@ -36,18 +36,18 @@ class Message
     recipients.each do |recip|
       case
       when active
-        UseridDetail.role(recip).active(active).all.each do |person|
+        UseridDetail.role(recip).active(active).email_address_valid.all.each do |person|
           ccs << person.email_address
         end
       when reasons.present? && !active
         reasons.each do |reason|
-          UseridDetail.role(recip).active(active).reason(reason).all.each do |person|
+          UseridDetail.role(recip).active(active).reason(reason).email_address_valid.all.each do |person|
             ccs << person.email_address
           end
         end
       when reasons.blank? && !active
         easons.each do |reason|
-          UseridDetail.role(recip).active(active).reason("temporary").all.each do |person|
+          UseridDetail.role(recip).active(active).reason("temporary").email_address_valid.all.each do |person|
             ccs << person.email_address
           end
         end

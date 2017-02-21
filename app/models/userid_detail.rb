@@ -86,6 +86,9 @@ class UseridDetail
     def reason(reason)
       where(:disabled_reason_standard => reason)
     end
+    def email_address_valid
+      where(:email_address_valid => true)
+    end
   end
 
   def self.get_active_userids_for_display(syndicate)
