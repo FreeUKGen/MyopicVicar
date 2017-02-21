@@ -6,9 +6,12 @@ module Refinery
         layout 'refinery/layouts/login'
         skip_before_filter :require_login
         before_action :store_password_reset_return_to, :only => [:update]
+
+
         def store_password_reset_return_to
           session[:'return_to'] = Refinery::Core.backend_path
         end
+
         protected :store_password_reset_return_to
 
         # Rather than overriding devise, it seems better to just apply the notice here.

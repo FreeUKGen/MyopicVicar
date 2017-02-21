@@ -175,6 +175,11 @@ class UseridDetail
     change
   end
 
+  def changed_email?(new_email)
+    new_email.present? && self.email_address != new_email ? change = true : change = false
+    change
+  end
+
   def check_exists_in_refinery
     refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     if refinery_user.nil?
