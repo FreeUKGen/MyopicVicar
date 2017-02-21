@@ -341,9 +341,16 @@ crumb :physical_files_options do
   link "Physical Files Options", select_action_physical_files_path
   parent :root
 end
-crumb :physical_files do
+crumb :physical_files do |type|
   link "Listing of Physical Files", physical_files_path
-  parent :physical_files_options
+  case
+  when Syndicate.is_syndicate?(type)
+    parent :syndicate_options, type
+  when County.is_county?(type)
+    parent :county_options, type
+  else
+    parent :physical_files_options
+  end
 end
 crumb :show_physical_files do |physical_file|
   link "Show a Physical File", physical_file_path(physical_file)

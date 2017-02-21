@@ -89,7 +89,7 @@ module UseridRole
   COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
                                'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',
-                               "Upload New Batch",'List files waiting to be processed']
+                               "Upload New Batch",'List files waiting to be processed','List files NOT processed']
   COUNTY_OPTIONS_TRANSLATION = {
     'All Places' => "/manage_counties/selection?option=Work with All Places",
     'Active Places' => "/manage_counties/selection?option=Work with Active Places",
@@ -102,12 +102,13 @@ module UseridRole
     'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
     'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
     'List files waiting to be processed' => "/manage_counties/display_files_waiting_to_be_processed",
+    'List files NOT processed' => "/manage_counties/display_files_not_processed",
     'Upload New Batch' =>  "/csvfiles/new"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Create userid",'Review Batches with Errors','Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
-                                   'Review Specific Batch','List files waiting to be processed',"Upload New Batch",'Change Recruiting Status']
+                                   'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status']
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
     'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
@@ -123,6 +124,7 @@ module UseridRole
     'Review Specific Batch'=> "/manage_syndicates/selection?option=Review Specific Batch",
     'Upload New Batch' =>  "/csvfiles/new",
     'List files waiting to be processed'  => "/manage_syndicates/display_files_waiting_to_be_processed",
+    'List files NOT processed' => "/manage_syndicates/display_files_not_processed",
     'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
   }
   PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no Files','Processed but no File in FR1','Processed but no File in FR2','Browse Files' ,

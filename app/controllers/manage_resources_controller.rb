@@ -6,8 +6,6 @@ class ManageResourcesController < ApplicationController
 
 
   def create
-    p "creating manage resource instance"
-    p "----------------------------------------------------------------------------"
     #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
     session[:userid] = @user.userid
     session[:first_name] = @user.person_forename
@@ -64,7 +62,6 @@ class ManageResourcesController < ApplicationController
     when !is_ok_to_render_actions?
       stop_processing and return
     when @user.need_to_confirm_email_address?
-      p "redirecting"
       redirect_to '/userid_details/confirm_email_address'
       return
     when user_is_computer?
@@ -87,7 +84,6 @@ class ManageResourcesController < ApplicationController
 
   def pages
     current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
-    p current_authentication_devise_user
     redirect_to '/cms/refinery/pages'
   end
 

@@ -24,6 +24,20 @@ class Syndicate
     def id(id)
       where(:id => id)
     end
+
+    def all_syndicates
+      all_syndicates = Array.new
+      Syndicate.all.order_by(syndicate_code: 1).each do |syndicate|
+        all_syndicates << syndicate.syndicate_code
+      end
+      all_syndicates
+    end
+
+    def is_syndicate?(value)
+      Syndicate.all_syndicates.include?(value) ?  result = true : result = false
+      result
+    end
+
   end
 
   def  add_lower_case_and_change_userid_fields

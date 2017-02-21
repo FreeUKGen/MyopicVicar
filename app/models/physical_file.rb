@@ -138,7 +138,7 @@ class PhysicalFile
     end
     return[success,message]
   end
-  def file_delete
+  def file_and_entries_delete
     file =   Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).first
     file.save_to_attic unless file.blank?
     Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all unless file.blank?
@@ -149,6 +149,13 @@ class PhysicalFile
       File.delete(change_file_location) if File.file?(change_file_location)
     end
   end
+
+  def file_delete
+    location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    File.delete(location) if File.file?(location)
+  end
+
+
   def update_userid(new_userid)
     self.update_attribute(:userid, new_userid)
   end

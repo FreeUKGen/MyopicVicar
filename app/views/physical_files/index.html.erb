@@ -1,4 +1,4 @@
-<% breadcrumb :physical_files%>
+<% breadcrumb :physical_files, @person%>
 <h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @person %> </h2>
   <p style="text-align: center"> Number of files <%= @number if @number.present?%>.  Download first page of report as: <%= link_to "CSV", physical_files_path(format: "csv") %> </p>
 
@@ -14,39 +14,41 @@
 			<tr >
 				<th>Userid</th>
 				<th >File Name</th>
-        <th >Syndicate</th>
+                <th >Syndicate</th>
 				<th >loaded into FR</th>
-				
 				<th >Last Processed into Database</th>
-        <th >Waiting Date</th>
-         <th >Show</th>
-        <th >Process file</th>
-        <th >Download</th>
+                <th >Waiting Date</th>
+                <th >Show</th>
+                <th >Download</th>
+                <th >Remove</th>
+              <% unless Syndicate.is_syndicate?(@person) || County.is_county?(@person) %>
+                <th >Process file</th> 
 				<th >Delete File and Entries</th>
+              <% end%>
 			</tr>
 			<% if @batches.nil? %>
 			 <p style="text-align: center">There are no files waiting to be processed</p>
 			<% else %>
-			<% @batches.each do |batch| %>
-			<tr id="<%=batch.id%>">
+			 <% @batches.each do |batch| %>
+			 <tr id="<%=batch.id%>">
 				<td > <%= batch.userid  %>  </td>
 				<% if @sorted_by == '(Processed but no file)' || @sorted_by == 'processed but no file' %>
-				<td>  <%= link_to batch.file_name , freereg1_csv_file_path(Freereg1CsvFile.where(:userid =>batch.userid, :file_name => batch.file_name).first.id) %> </td>
+				  <td>  <%= link_to batch.file_name , freereg1_csv_file_path(Freereg1CsvFile.where(:userid =>batch.userid, :file_name => batch.file_name).first.id) %> </td>
 				<% else %>
-				<td > <%= batch.file_name  %>  </td>
+				  <td > <%= batch.file_name  %>  </td>
 				<% end %>
-        <td > <%= syndicate(batch)%>  </td>
-				<td > <%= batch.base_uploaded_date.strftime("%d %b %Y (%H:%M)") if batch.base && !batch.base_uploaded_date.nil? %>  </td>
-			
+                <td > <%= syndicate(batch)%>  </td>
+				<td > <%= batch.base_uploaded_date.strftime("%d %b %Y (%H:%M)") if batch.base && !batch.base_uploaded_date.nil? %>  </td>	
 				<td > <%= batch.file_processed_date.strftime("%d %b %Y (%H:%M)") if batch.file_processed && !batch.file_processed_date.nil?%>  </td>
-        <td > <%= batch.waiting_date.strftime("%d %b %Y (%H:%M)") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
-
-				<td><%= link_to 'SH', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
-				<td><%= link_to 'FR2', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
-       
-        <td><%= link_to 'FR2', download_physical_file_path(batch,   :params=> {:loc => "FR2"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
-				<td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn weight--light  btn--small",data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
+                <td > <%= batch.waiting_date.strftime("%d %b %Y (%H:%M)") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
+				<td><%= link_to 'Show', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
+                <td><%= link_to 'Download', download_physical_file_path(batch,   :params=> {:loc => "FR2"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
+                <td><%= link_to 'Remove file', remove_physical_file_path(batch) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
+                <% unless Syndicate.is_syndicate?(@person) || County.is_county?(@person) %>
+                  <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
+        		  <td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn weight--light  btn--small",data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
 				<% end %>
-				<% end %>
-			</table>
-		</div>
+              <% end %>
+			<% end %>
+		</table>
+	</div>

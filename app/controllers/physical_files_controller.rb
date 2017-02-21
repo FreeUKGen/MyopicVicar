@@ -64,6 +64,7 @@ class PhysicalFilesController < ApplicationController
       @batches = PhysicalFile.userid(session[:who]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(1000)
       @number =  @batches.length
     when   @sorted_by == 'All' && session[:county].present?
+
       @batches = PhysicalFile.county(session[:county]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(1000)
       @number =  @batches.length
     when   @sorted_by == '(Waiting_to_be_processed)'
@@ -254,7 +255,7 @@ class PhysicalFilesController < ApplicationController
 
   def destroy
     load(params[:id])
-    @batch.file_delete
+    @batch.file_and_entries_delete
     @batch.destroy
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_to :back
@@ -265,6 +266,14 @@ class PhysicalFilesController < ApplicationController
     County.all.order_by(chapman_code: 1).each do |county|
       @counties << county.chapman_code
     end
+  end
+
+  def remove
+    load(params[:id])
+    @batch.file_delete
+    @batch.delete
+    flash[:notice] = 'The file and physical files entry was removed'
+    redirect_to :back
   end
 
 

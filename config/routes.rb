@@ -70,6 +70,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
+  get 'physical_files/:id/remove(.:format)', :to => 'physical_files#remove', :as => :remove_physical_file
   resources :physical_files
 
   resources :search_statistics
@@ -112,7 +113,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
-
+  get  'manage_syndicates/display_files_not_processed',  :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   resources :manage_syndicates
@@ -178,6 +179,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
+  get  'manage_counties/display_files_not_processed',  :to => 'manage_counties#display_files_not_processed', :as => :display_files_not_processed_manage_counties
   resources :manage_counties
 
 
