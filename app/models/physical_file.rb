@@ -136,6 +136,15 @@ class PhysicalFile
     else
       p "why here"
     end
+    rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+    if File.exist?(rake_lock_file)
+      logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+      message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
+    else
+      logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+      pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+      message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
+    end
     return[success,message]
   end
   def file_and_entries_delete
