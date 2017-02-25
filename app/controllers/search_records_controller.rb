@@ -38,7 +38,7 @@ class SearchRecordsController < ApplicationController
       return
     end
     @display_date = false
-    @entry.display_fields
+    @entry.display_fields(@search_record)
     @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
     @search_result = @search_query.search_result
     @viewed_records = @search_result.viewed_records

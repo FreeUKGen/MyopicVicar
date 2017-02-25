@@ -20,6 +20,7 @@ class Freereg1CsvEntry
   require 'record_type'
   require 'freereg_options_constants'
   require 'multiple_witness'
+  require 'chapman_code'
 
 
   # Fields here represent those currently requested by FreeREG1 at
@@ -408,20 +409,18 @@ class Freereg1CsvEntry
     end
   end
 
-  def display_fields
-    file = self.freereg1_csv_file
-    register  = file.register unless file.nil?
+  def display_fields(search_record)
     self['register_type'] = ""
-    self['register_type'] = RegisterType.display_name(register.register_type) unless register.nil?
-    church = register.church unless register.nil?
+    self['register_type'] = /^.*[\[](.*)[\]].*$/.match(search_record[:location_names][1])[1] unless search_record[:location_names].nil?
     self['church_name'] = ""
-    self['church_name'] = church.church_name unless church.nil?
-    place = church.place unless church.nil?
+    self['church_name'] = /^(.*)[(](.*)[)].*$/.match(search_record[:location_names][0])[2] unless search_record[:location_names].nil?
     self['place'] = ""
+    self['place'] = /^(.*)[(](.*)[)].*$/.match(search_record[:location_names][0])[1] unless search_record[:location_names].nil?
     self['county'] = ""
-    self['place'] = place.place_name unless place.nil?
-    self['county'] = place.county unless place.nil?
-
+    code = search_record[:chapman_code] unless search_record[:chapman_code].nil?
+    ChapmanCode::CODES.each_pair do |key,value|
+      self['county'] = value.key(code)
+    end
   end
 
 
