@@ -411,15 +411,19 @@ class Freereg1CsvEntry
 
   def display_fields(search_record)
     self['register_type'] = ""
-    self['register_type'] = /^.*[\[](.*)[\]].*$/.match(search_record[:location_names][1])[1] unless search_record[:location_names].nil?
-    self['church_name'] = ""
-    self['church_name'] = /^(.*)[(](.*)[)].*$/.match(search_record[:location_names][0])[2] unless search_record[:location_names].nil?
-    self['place'] = ""
-    self['place'] = /^(.*)[(](.*)[)].*$/.match(search_record[:location_names][0])[1] unless search_record[:location_names].nil?
+    self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names].nil?
+    
+    place, church = ''
+    (place, church) = search_record[:location_names][0].split('(') unless search_record[:location_names].nil?
+    place.present? ? self['place'] = place.strip : self['place'] = ''
+    church.present? ? self['church_name'] = church[0..-2] : self['church_name'] = ''
+
     self['county'] = ""
     code = search_record[:chapman_code] unless search_record[:chapman_code].nil?
     ChapmanCode::CODES.each_pair do |key,value|
-      self['county'] = value.key(code)
+      if value.has_value?(code)
+        self['county'] = value.key(code) 
+      end
     end
   end
 
