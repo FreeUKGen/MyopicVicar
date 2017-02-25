@@ -411,10 +411,10 @@ class Freereg1CsvEntry
 
   def display_fields(search_record)
     self['register_type'] = ""
-    self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names][1].nil?
+    self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names].nil? || search_record[:location_names][1].nil?
     
     place, church = ''
-    (place, church) = search_record[:location_names][0].split('(') unless search_record[:location_names][0].nil?
+    (place, church) = search_record[:location_names][0].split('(') unless search_record[:location_names].nil? || search_record[:location_names][0].nil?
     place.present? ? self['place'] = place.strip : self['place'] = ''
     church.present? ? self['church_name'] = church[0..-2] : self['church_name'] = ''
 
