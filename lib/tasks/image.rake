@@ -3,9 +3,10 @@ namespace :image do
 
 
   desc "load the image file names from a listing created by rsync from the image server."
-  # rake image:load_pages[limit,county] --trace
+  # rake image:load_pages[limit,county,file_name] --trace
   # limit is the number of pages to be retrieved
-  # county is the county to be processed. ALL is all counties
+  # county is the chapman_code for the county to be processed. ALL is all counties
+  # file is the name of the file containing the image file_names
   task :load_pages, [:limit,:county,:file] => [:environment] do |t, args|
     limit = args.limit.to_i
     file_for_output = "#{Rails.root}/log/loading_pages.log"
