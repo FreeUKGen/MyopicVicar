@@ -51,6 +51,7 @@ namespace :image do
               lines = lines + 1
               break if lines == limit
               # we have a page for a known place church and register
+              #we could now store the image location in page_image
               # p line
               output_file.puts line
             end
