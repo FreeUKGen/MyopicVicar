@@ -15,5 +15,5 @@ class PageImage
   field :file_number, type: Integer
   #belongs_to :source # sources and registers may need to be created by the filesystem-to-database script if they do not exist
   #belongs_to :place # denormalization -- possibly unnecessary
-  embedded_in :place
+  embedded_in :page
 end
