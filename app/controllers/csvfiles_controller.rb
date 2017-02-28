@@ -37,6 +37,7 @@ class CsvfilesController < ApplicationController
       end
     end
     #lets check for existing file, save if required
+    processing_time = @csvfile.estimate_time
     proceed = @csvfile.check_for_existing_file_and_save
     @csvfile.save if proceed
     if @csvfile.errors.any?
@@ -46,7 +47,6 @@ class CsvfilesController < ApplicationController
       return
     end #error
     batch = @csvfile.create_batch_unless_exists
-    processing_time = @csvfile.estimate_time
     range = File.join(@csvfile.userid,@csvfile.file_name)
     batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
     if batch.present?
