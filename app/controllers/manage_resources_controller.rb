@@ -26,6 +26,10 @@ class ManageResourcesController < ApplicationController
         flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
         continue = false
       end
+    else
+      logger.warn "FREEREG::USER no userid cookie"
+      flash[:notice] = "We did not find your userid cookie. Do you have them disabled?"
+      continue = false
     end
     case
     when @user.blank?
