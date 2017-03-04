@@ -160,8 +160,8 @@ class Register
     @place = @church.place
     @county =  @place.county
     @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def has_input?
@@ -204,14 +204,6 @@ class Register
       result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:register_type => self.register_type}})
       file.update_attribute(:register_type,self.register_type)
     end
-  end
-
-  def records
-    records = 0
-    self.freereg1_csv_files.each do |file|
-      records =  records + file.freereg1_csv_entries.count
-    end
-    records
   end
 
 

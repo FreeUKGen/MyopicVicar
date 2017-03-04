@@ -15,15 +15,22 @@
 module ApplicationHelper
 
   def get_user_info_from_userid
-    @userid = session[:userid]
-    @user_id = session[:user_id]
-    @first_name = session[:first_name]
-    @manager = session[:manager]
-    @roles = session[:role]
-    @user = UseridDetail.where(:userid => session[:userid]).first
-    @roles = UseridRole::OPTIONS.fetch(session[:role]) unless session[:role].blank?
+    @user = cookies.signed[:userid]
+    unless @user.blank?
+      @first_name = @user.person_forename
+      @user_id = @user.id
+      @userid = @user.id
+      @manager = manager?(@user)
+      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    end
   end
 
+  def manager?(user)
+    #sets the manager flag status
+    a = true
+    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' ||  user.person_role == 'technical')
+    return a
+  end
 
 
   def problem_url
@@ -93,7 +100,6 @@ module ApplicationHelper
     counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
     display_map["Counties"] = counties if search_query.chapman_codes.size > 1
     display_map["County"] = counties if search_query.chapman_codes.size == 1
-
     if search_query.places.size > 0
       first_place = search_query.places.first
       place = first_place.place_name

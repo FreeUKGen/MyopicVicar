@@ -7,7 +7,7 @@ class UserMailer < ActionMailer::Base
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new
-      unless @userid.nil? || !@userid.active
+      unless @userid.nil? || !@userid.active || @userid.no_processing_messages || !@userid.email_address_valid
         user_email_with_name = @userid.email_address
         emails <<  user_email_with_name
       end
@@ -15,7 +15,7 @@ class UserMailer < ActionMailer::Base
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
       if syndicate_coordinator.present?
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
-        sc = UseridDetail.where(userid: syndicate_coordinator).first
+        sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
         if sc.present?
           sc_email_with_name = sc.email_address
           emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
@@ -25,7 +25,7 @@ class UserMailer < ActionMailer::Base
       county = County.where(chapman_code: @batch.county).first unless @batch.nil?
       if county.present?
         county_coordinator = county.county_coordinator
-        cc = UseridDetail.where(userid: county_coordinator).first
+        cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
         if cc.present?
           cc_email_with_name = cc.email_address
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
@@ -48,7 +48,7 @@ class UserMailer < ActionMailer::Base
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new
-      unless @userid.nil? || !@userid.active
+      unless @userid.nil? || !@userid.active || @userid.no_processing_messages || !@userid.email_address_valid
         user_email_with_name =  @userid.email_address
         emails <<  user_email_with_name
       end
@@ -56,7 +56,7 @@ class UserMailer < ActionMailer::Base
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
       if syndicate_coordinator.present?
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
-        sc = UseridDetail.where(userid: syndicate_coordinator).first
+        sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
         if sc.present?
           sc_email_with_name =  sc.email_address
           emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
@@ -66,7 +66,7 @@ class UserMailer < ActionMailer::Base
       county = County.where(chapman_code: @batch.county).first unless @batch.nil?
       if county.present?
         county_coordinator = county.county_coordinator
-        cc = UseridDetail.where(userid: county_coordinator).first
+        cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
         if cc.present?
           cc_email_with_name =  cc.email_address
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
@@ -123,7 +123,6 @@ class UserMailer < ActionMailer::Base
   def get_attachment
     if @contact.screenshot_url.present?
       @image = File.basename(@contact.screenshot.path)
-      p @contact.screenshot.path
       attachments[@image] = File.binread(@contact.screenshot.path)
     end
   end
@@ -134,7 +133,7 @@ class UserMailer < ActionMailer::Base
       @coordinator = nil
     else
       coordinator = coordinator.syndicate_coordinator
-      @coordinator = UseridDetail.where(:userid => coordinator).first
+      @coordinator = UseridDetail.where(:userid => coordinator, :email_address_valid => true).first
     end
   end
 
@@ -155,7 +154,7 @@ class UserMailer < ActionMailer::Base
     reg_manager = UseridDetail.userid("REGManager").first
     get_coordinator_name
     if Time.now - 5.days <= @user.c_at
-      mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg registration completion")
+      mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => "FreeReg registration completion") unless @coordinator.nil?
     end
   end
   def notification_of_technical_registration(user)
@@ -192,10 +191,38 @@ class UserMailer < ActionMailer::Base
   end
 
   def report_to_data_manger_of_large_file(file_name,userid)
-    data_manager = UseridDetail.role("data_manager").first
     @file = file_name
-    @user = userid
-    mail(:from => "freereg-processing@freereg.org.uk",:to => "#{data_manager.person_forename} <#{data_manager.email_address}>", :subject => "Too large a file to be processed by FreeReg")
+    @user = UseridDetail.userid(userid).first
+    if @user.present?
+      syndicate_coordinator = nil
+      syndicate = Syndicate.where(syndicate_code: @user.syndicate).first
+      if syndicate.present?
+        syndicate_coordinator = syndicate.syndicate_coordinator
+        sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
+        if sc.present?
+          @sc_email_with_name =  sc.email_address
+        else
+          p "FREREG_PROCESSING: There was no syndicate coordinator"
+        end
+      end
+      data_managers = UseridDetail.role("data_manager").email_address_valid.all
+      dm_emails = Array.new
+      data_managers.each do |dm|
+        user_email_with_name =  dm.email_address
+        dm_emails <<  user_email_with_name unless user_email_with_name == @sc_email_with_name
+      end
+      if @sc_email_with_name.present?
+        mail(:from => "freereg-processing@freereg.org.uk", :to => @sc_email_with_name,  :cc => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
+      else
+        mail(:from => "freereg-processing@freereg.org.uk",:to => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
+      end
+
+    else
+      p "--------------------------------------------"
+      p "User does not exist"
+      p file_name
+      p userid
+    end
   end
 
   def send_change_of_syndicate_notification_to_sc(user)
@@ -203,6 +230,13 @@ class UserMailer < ActionMailer::Base
     get_coordinator_name
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of syndicate") unless @coordinator.blank?
   end
+
+  def send_change_of_email_notification_to_sc(user)
+    @user = user
+    get_coordinator_name
+    mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of email") unless @coordinator.blank?
+  end
+
 
   def send_message(mymessage,ccs,from)
     @message = mymessage
@@ -214,6 +248,7 @@ class UserMailer < ActionMailer::Base
   def update_report_to_freereg_manager(file,user)
     attachments["report.log"] = File.read(file)
     @person_forename = user.person_forename
+    # userid is REGManager, so no need to check email_address_valid
     @email_address = user.email_address
     mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
   end

@@ -94,6 +94,10 @@
   <tr>
     <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>
   </tr>
+
+  <tr>
+  <td>SC upload data:</td><td><%= @userid.no_processing_messages %></td>
+  </tr>
   
   <tr>
     <% unless @userid.disabled_date.nil?%>

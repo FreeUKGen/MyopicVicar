@@ -1,13 +1,13 @@
 class TransregUsersController < ApplicationController
   skip_before_action :require_login
   def new
-    logger.warn "FREEREG::USER Entered transreg session #{session[:userid_detail_id]}  cookie #{cookies[:userid_detail_id] }"
-    if session[:userid_detail_id].nil? && cookies[:userid_detail_id].nil?
+    logger.warn "FREEREG::USER Entered transreg session #{session[:userid_detail_id]}  cookie #{cookies.signed[:userid].id}"
+    if session[:userid_detail_id].nil? && cookies.signed[:userid].blank?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
       return
     end
     @user = UseridDetail.id(session[:userid_detail_id]).first unless session[:userid_detail_id].nil?
-    @user = UseridDetail.id(cookies[:userid_detail_id]).first if session[:userid_detail_id].nil?
+    @user = cookies.signed[:userid] if session[:userid_detail_id].nil?
 
     render(:text => { "result" => "Logged in", :userid_detail => @user.attributes}.to_xml({:dasherize => false, :root => 'login'}))
 

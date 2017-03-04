@@ -1,11 +1,12 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:new, :pages]
+  #skip_before_filter :require_login, only: [:new, :pages]
+  skip_before_filter :refinery_authentication_devise_users
 
 
   def create
-    @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
+    #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
     session[:userid] = @user.userid
     session[:first_name] = @user.person_forename
     session[:manager] = manager?(@user)
@@ -18,13 +19,17 @@ class ManageResourcesController < ApplicationController
 
   def is_ok_to_render_actions?
     continue = true
-    if session[:userid_detail_id].present?
-      @user = UseridDetail.id(session[:userid_detail_id]).first
+    if cookies.signed[:userid].present?
+      @user = cookies.signed[:userid]
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
         flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
         continue = false
       end
+    else
+      logger.warn "FREEREG::USER no userid cookie"
+      flash[:notice] = "We did not find your userid cookie. Do you have them disabled?"
+      continue = false
     end
     case
     when @user.blank?
@@ -46,11 +51,13 @@ class ManageResourcesController < ApplicationController
 
   def load(userid_id)
     @first_name = session[:first_name]
-    @user = UseridDetail.find(userid_id)
+    @user = cookies.signed[:userid]
   end
 
   def logout
     @message = flash[:notice]
+    cookies.delete :userid
+    cookies.delete :remember_authentication_devise_user_token
     reset_session
   end
 
@@ -59,7 +66,6 @@ class ManageResourcesController < ApplicationController
     when !is_ok_to_render_actions?
       stop_processing and return
     when @user.need_to_confirm_email_address?
-      p "redirecting"
       redirect_to '/userid_details/confirm_email_address'
       return
     when user_is_computer?
@@ -82,8 +88,6 @@ class ManageResourcesController < ApplicationController
 
   def pages
     current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
-    p current_authentication_devise_user
-    p session[:devise]
     redirect_to '/cms/refinery/pages'
   end
 
@@ -102,7 +106,7 @@ class ManageResourcesController < ApplicationController
   def set_session
     @user_id = @user._id
     @userid = @user.userid
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     session[:userid] = @userid

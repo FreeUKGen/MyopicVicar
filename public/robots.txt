@@ -5,9 +5,9 @@ Disallow: /
 Allow: /cms/about
 Allow: /cms/donate
 Allow: /cms/help
+Allow: /cms/refinery/login
 Allow: /cms/information-for-transcribers
 Allow: /cms/information-for-coordinators
-Allow: /cms/county-pages
 Allow: /search_queries
 Allow: /search_statistics
 Allow: /freereg_contents

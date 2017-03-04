@@ -81,11 +81,11 @@ class Contact
 
   def communicate_website_problem
     ccs = Array.new
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -94,11 +94,11 @@ class Contact
 
   def communicate_data_question
     ccs = Array.new
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -109,11 +109,11 @@ class Contact
     ccs = Array.new
     #coordinator = self.get_coordinator if self.record_id.present?
     #ccs << coordinator.email_address if self.record_id.present?
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -123,14 +123,14 @@ class Contact
 
   def communicate_publicity
     ccs = Array.new
-    UseridDetail.where(:person_role => 'publicity_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'publicity_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -139,14 +139,14 @@ class Contact
 
   def communicate_genealogical_question
     ccs = Array.new
-    UseridDetail.where(:person_role => 'genealogy_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'genealogy_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -155,14 +155,14 @@ class Contact
 
   def communicate_enhancement_suggestion
     ccs = Array.new
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'project_manager').all.each do |person|
+    UseridDetail.where(:person_role => 'project_manager', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -171,14 +171,14 @@ class Contact
 
   def communicate_volunteering
     ccs = Array.new
-    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'volunteer_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -187,11 +187,11 @@ class Contact
 
   def communicate_general
     ccs = Array.new
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end

@@ -5,7 +5,7 @@ class SearchQueriesController < ApplicationController
   before_action :check_for_mobile, :only => :show
   rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, :with => :missing_document
-  rescue_from ActionView::Template::Error, :with => :missing_template
+  #rescue_from ActionView::Template::Error, :with => :missing_template
   RECORDS_PER_PAGE = 100
 
   def about
@@ -16,6 +16,7 @@ class SearchQueriesController < ApplicationController
     end
     begin
       @search_query = SearchQuery.find(params[:id])
+      # @emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a unless @search_query.blank? || @search_query.first_name.blank?
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
@@ -103,7 +104,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    if @page = Refinery::Page.where(:slug => 'message').exists?
+    if session[:message]  == "load"
       @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
     else
       @page = nil
@@ -176,13 +177,18 @@ class SearchQueriesController < ApplicationController
     @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
   end
 
-  def search_taking_too_long
-    @search_query = SearchQuery.find(session[:query])
-    runtime = Rails.application.config.max_search_time
-    @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
-    logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
-    session[:query] = nil
-    flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
+  def search_taking_too_long(message)
+    if message.to_s =~ /operation exceeded time limit/
+      @search_query = SearchQuery.find(session[:query])
+      runtime = Rails.application.config.max_search_time
+      @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
+      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
+      session[:query] = nil
+      flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
+    else
+      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} had a problem #{message}")
+      flash[:notice] = 'Your search encountered a problem please contact us with this message'
+    end
     redirect_to new_search_query_path(:search_id => @search_query)
   end
 
@@ -213,19 +219,25 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      @search_results =   @search_query.results
-      @ucf_results = @search_query.ucf_results
-      @ucf_results = Array.new unless  @ucf_results.present?
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @search_results =   Array.new
+        @ucf_results = Array.new
+      else
+        @search_results =   @search_query.results
+        @ucf_results = @search_query.ucf_results
+        @ucf_results = Array.new unless  @ucf_results.present?
+        if @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+          go_back
+          return
+        end
+      end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
       go_back
       return
     end
-    if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-      go_back
-      return
-    end
+
   end
 
   def show_print_version

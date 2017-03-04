@@ -87,12 +87,12 @@ class NewFreeregCsvUpdateProcessor
         #p "failed to process file"
         @csvfile.communicate_failure_to_member(@project,@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
-        @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
+        #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(300) if Rails.env.production?
     end
     # p "manager communication"
-    @project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
+    #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
     at_exit do
       # p "goodbye"
     end
@@ -116,7 +116,7 @@ class NewFreeregCsvUpdateProcessor
     time = ((Time.new.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
     self.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",false)
     file = @message_file
-    @message_file.close if @project.type_of_project == "individual"
+    #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "REGManager").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver_now
     user = UseridDetail.where(userid: "ericb").first
@@ -253,7 +253,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
 
   def get_the_waiting_files_to_be_processed(project)
     #p "waiting file selection"
-    physical_waiting_files = PhysicalFile.waiting.all
+    physical_waiting_files = PhysicalFile.waiting.all.order_by(waiting_date: 1)
     files = Array.new
     physical_waiting_files.each do |file|
       files << File.join(project.freereg_files_directory, file.userid, file.file_name)
@@ -489,8 +489,7 @@ class CsvFile < CsvFiles
       #p "clean up after failure"
       batch = PhysicalFile.userid(@userid).file_name(@file_name).first
       return true if batch.blank? || message.blank?
-      PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("file is older than one on system. ")
-      PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("is already on system and is locked against replacement. ")
+      PhysicalFile.remove_waiting_flag(@userid,@file_name)   
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
@@ -515,12 +514,13 @@ class CsvFile < CsvFiles
        file_for_entry = actual_record.freereg1_csv_file_id unless actual_record.nil?
        files << file_for_entry unless files.include?(file_for_entry)
        actual_record.destroy unless actual_record.nil?
-      sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+      sleep_time =  sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time) unless actual_record.nil?
      end
      #recalculate distribution after clean up
      files.each do |file|
-        Freereg1CsvFile.id(file).first.calculate_distribution
+        actual_batch = Freereg1CsvFile.id(file).first
+        actual_batch.calculate_distribution if actual_batch.present?
      end
      @unique_existing_locations.each do |key,value|
       file = Freereg1CsvFile.id(value[:id]).first

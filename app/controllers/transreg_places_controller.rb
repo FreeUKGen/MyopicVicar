@@ -5,7 +5,6 @@ class TransregPlacesController < ApplicationController
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'list'}))
       return
     end
-
     @user = UseridDetail.id(session[:userid_detail_id]).first
     @county = ChapmanCode.has_key(params[:county])
 

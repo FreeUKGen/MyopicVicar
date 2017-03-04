@@ -11,7 +11,7 @@ class Csvfile < CarrierWave::Uploader::Base
 
 
 
-  def check_for_existing_file
+  def check_for_existing_file_and_save
     process = true
     batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true).first
     if batch.present?
@@ -57,23 +57,42 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def estimate_time
     place = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
-    size = (File.size("#{place}"))
+    File.exists?(place) ? size = File.size(place) : size = 1
     unit = 0.001
     processing_time = (size.to_i*unit).to_i
   end
 
-  def setup_batch
+  def setup_batch_on_replace
     ok = true
+    place = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    processing_time = self.estimate_time
     batch_entries = PhysicalFile.where(userid: self.userid, file_name: self.file_name).count
-    if batch_entries == 0
+    case
+    when !File.exists?(place)
+      ok = false
+      batch = "You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their uaerid."
+    when processing_time >= 600 && batch_entries == 0
       batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
       batch.save
-    elsif batch_entries == 1
+      batch = "Too large a file to be replaced. A message has been sent to your coordinator and data managers so please discuss with them how to proceed."
+      self.check_for_existing_file_and_save
+      self.save
+      ok = false
+      UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
+    when processing_time >= 600 && batch_entries == 1
       batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
       batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
-    else
-      batch = "Too many batch entries. Have your coordinator contact system administration with this message, date and time"
+      batch = "Too large a file to be replaced. A message has been sent to your coordinator and data managers so please discuss with them how to proceed."
+      self.check_for_existing_file_and_save
+      self.save
       ok = false
+      UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
+    when batch_entries == 0
+      batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
+      batch.save
+    when batch_entries == 1
+      batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
+      batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
     end
     return[ok,batch]
   end

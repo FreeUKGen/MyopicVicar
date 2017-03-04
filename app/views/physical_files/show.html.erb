@@ -30,21 +30,24 @@
           <td>Loaded :</td> <td class="weight--semibold"> <%= @batch.base %>  </td>
         </tr>
         <tr>
-          <td>Loaded on :</td> <td class="weight--semibold"> <%= @batch.base_uploaded_date %>  </td>
+          <td>Loaded on :</td> <td class="weight--semibold"> <%= @batch.base_uploaded_date.strftime("%d %b %Y (%H:%M)") unless @batch.base_uploaded_date.nil?%>  </td>
         </tr>
         <tr>
           <td>Processed:</td> <td class="weight--semibold"> <%= @batch.file_processed %>  </td>
         </tr>
         <tr>
-          <td>Processed date:</td> <td class="weight--semibold"> <%= @batch.file_processed_date %>  </td>
+          <td>Processed date:</td> <td class="weight--semibold"> <%= @batch.file_processed_date.strftime("%d %b %Y (%H:%M)") unless @batch.file_processed_date.nil?%> </td>
         </tr>
         <tr>
           <td>Waiting to be processed :</td> <td class="weight--semibold"> <%= @batch.waiting_to_be_processed %>  </td>
         </tr>
         <tr>
-          <td>Waiting since :</td> <td class="weight--semibold"> <%= @batch.waiting_date %>  </td>
+          <td>Waiting since :</td> <td class="weight--semibold"> <%= @batch.waiting_date.strftime("%d %b %Y (%H:%M)") unless @batch.waiting_date.nil?%>  </td>
         </tr>
-        
+
+        <tr>
+          <td>Size (If field is empty then the file DOES NOT exist):</td> <td class="weight--semibold"> <%= size(@batch) %>  </td>
+        </tr>
       </table>
         
     </div>

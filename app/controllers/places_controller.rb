@@ -14,7 +14,8 @@ class PlacesController < ApplicationController
   end
 
   def create
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     @place = Place.new(place_params)
     result,message,place = @place.check_and_set(params)
     if result && message == "Proceed"
@@ -132,13 +133,14 @@ class PlacesController < ApplicationController
     else
       @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)
     end
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     session[:page] = request.original_url
   end
 
   def load(place_id)
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     @place = Place.id(place_id).first
     if @place.nil?
       go_back("place",place_id)

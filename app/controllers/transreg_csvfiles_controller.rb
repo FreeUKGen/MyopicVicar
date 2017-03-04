@@ -11,18 +11,18 @@ class TransregCsvfilesController < ApplicationController
       render(:text => {"result" => "fail", "message" => "You must select a file"}.to_xml({:dasherize => false, :root => 'upload'}))
       return
     end
-
     p 'valid user'
-
     @csvfile  = Csvfile.new(csvfile_params)
     @csvfile.userid = params[:transcriberid]
     @csvfile.file_name = @csvfile.csvfile.identifier
     uploaded_file = params[:csvfile][:csvfile].tempfile.path
 
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_file
+    processing_time = @csvfile.estimate_time
+    proceed = @csvfile.check_for_existing_file_and_save
     logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
     @csvfile.save if proceed
+
     if @csvfile.errors.any? || !proceed
       @result = "failure"
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
@@ -36,25 +36,33 @@ class TransregCsvfilesController < ApplicationController
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
-        @processing_time = @csvfile.estimate_time
-        logger.warn("FREEREG:UPLOAD: About to process the file #{@processing_time}")
-        if @processing_time <= 100
-          range = File.join(@csvfile.userid,@csvfile.file_name)
-          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
-          @result = 'success'
-          @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
-          logger.warn("FREEREG:UPLOAD: Task has been spun off")
-        else
-          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
-          if batch.nil?
-            @message  = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
-            logger.warn("FREEREG:CSV_FAILURE: No file for #{session[:userid]}")
-            @csvfile.delete
+        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+        range = File.join(@csvfile.userid,@csvfile.file_name)
+        logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
+        case
+        when @user.person_role == "trainee"
+          @result = "success"
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+          @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
+        when processing_time < 600
+          batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
+          #check to see if rake task running
+          rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+          if File.exist?(rake_lock_file)
+            @result = "success"
+            logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+            @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
+          else
+            @result = "success"
+            logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+            pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+            @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end
-          batch.add_file("base")
-          @message =  "The file has been placed in the queue for overnight processing"
-          logger.warn("FREEREG:UPLOAD: File has been placed in queue")
-          batch.add_file("base")
+        when processing_time >= 600
+          @result = "failure"
+          batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+          @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
+          UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
       end
     end #errors
@@ -84,7 +92,7 @@ class TransregCsvfilesController < ApplicationController
     #      return
     #    end
 
-    setup = @csvfile.setup_batch
+    setup = @csvfile.setup_batch_on_replace
     if !setup[0]
       @result = 'failure'
       @message = setup[1]
@@ -96,46 +104,54 @@ class TransregCsvfilesController < ApplicationController
     batch = setup[1]
 
     #lets check for existing file, save if required
-    proceed = @csvfile.check_for_existing_file
+    proceed = @csvfile.check_for_existing_file_and_save
     logger.warn("FREEREG:REPLACE: About to save file #{proceed}")
 
     @csvfile.save if proceed
     if @csvfile.errors.any? || !proceed
-      @result = 'failure'
+      @result = "failure"
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
-      logger.warn("FREEREG:REPLACE: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
+      logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
       batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
       if batch.present?
-        @result = 'failure'
+        @result = "failure"
         @message = "Your file is currently waiting to be processed. It cannot be processed this way now"
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
-        @processing_time = @csvfile.estimate_time
-        logger.warn("FREEREG:REPACE: About to process the file #{@processing_time}")
-        if @processing_time <= 100
-          range = File.join(@csvfile.userid,@csvfile.file_name)
-          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"individual\",\"no\",#{range}]")
-          @result = 'success'
-          @message =  "The csv file #{ @csvfile.file_name} is being processed. You will receive an email when it has been completed."
-          logger.warn("FREEREG:REPLACE: Task has been spun off")
-        else
-          batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
-          if batch.nil?
-            @message  = "There was no file to put into the queue; did you perhaps double click or reload the process page? Talk to your coordinator if this continues"
-            logger.warn("FREEREG:CSV_FAILURE: No file for #{session[:userid]}")
-            @csvfile.delete
+        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
+        processing_time = @csvfile.estimate_time
+        range = File.join(@csvfile.userid,@csvfile.file_name)
+        logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
+        case
+        when @user.person_role == "trainee"
+          @result = "success"
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+          @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
+        when processing_time < 600
+          batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
+          #check to see if rake task running
+          rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+          if File.exist?(rake_lock_file)
+            @result = "success"
+            logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+            @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
+          else
+            @result = "success"
+            logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+            pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+            @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end
-          batch.add_file("base")
-          @message =  "The file has been placed in the queue for overnight processing"
-          logger.warn("FREEREG:REPLACE: File has been placed in queue")
-          batch.add_file("base")
+        when processing_time >= 600
+          @result = "failure"
+          batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+          @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
+          UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
       end
-    end #errors
-
+    end #error
     render(:text => {"result" => @result, "message" => @message}.to_xml({:dasherize => false, :root => 'replace'}))
   end
 

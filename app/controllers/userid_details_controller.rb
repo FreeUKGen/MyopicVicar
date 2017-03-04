@@ -122,8 +122,8 @@ class UseridDetailsController < ApplicationController
   end #end method
 
   def load(userid_id)
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
       go_back("userid",userid_id)
@@ -142,7 +142,7 @@ class UseridDetailsController < ApplicationController
     @syndicates = Syndicate.get_syndicates_open_for_transcription
     @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
       @user.person_role == "data_manager"
-    @syndicates = Syndicate.get_syndicates if @user.person_role == "system_administrator"
+    @syndicates = Syndicate.get_syndicates if ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
     @userid = UseridDetail.new
   end
 
@@ -178,7 +178,8 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_create
     case
     when  params[:commit] == "Submit"
-      @user = UseridDetail.where(userid:  session[:userid]).first
+      @user = cookies.signed[:userid]
+      @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
       render :action => 'researcher_registration' and return
@@ -189,7 +190,8 @@ class UseridDetailsController < ApplicationController
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
-      @user = UseridDetail.where(userid:  session[:userid]).first
+      @user = cookies.signed[:userid]
+      @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     end
   end
@@ -392,6 +394,7 @@ class UseridDetailsController < ApplicationController
   def update
     load(params[:id])
     changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
+    changed_email_address = @userid.changed_email?(params[:userid_detail][:email_address])
     success = Array.new
     success[0] = true
     case
@@ -412,13 +415,14 @@ class UseridDetailsController < ApplicationController
         return
       end
     end
-    params[:userid_detail][:email_address_last_confirmned]  = Time.now
-    params[:userid_detail][:email_address_valid]  = true
+    params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
+    #    params[:userid_detail][:email_address_valid]  = true
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
       UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
+      UserMailer.send_change_of_email_notification_to_sc(@userid).deliver_now if changed_email_address
       flash[:notice] = 'The update of the profile was successful'
       redirect_to userid_detail_path(@userid)
       return

@@ -304,8 +304,13 @@ label.collection_check_boxes {
 
 .scrollable {
     overflow: auto;
-    height: 400px;  
+    max-height: 400px;  
 }
+.fixed-headers table { border-bottom: 1px solid #ccc; }
+.fixed-headers th:first-child { padding-left: 14px; }
+.fixed-headers th:last-child, 
+.fixed-headers .scrollable td:last-child { padding-right: 14px; }
+.fixed-headers .scrollable table { border-top: none; border-bottom: none; }
 
 h1#body_content_title {
         border-bottom: 1px solid #999;

@@ -43,7 +43,8 @@ class SyndicatesController < ApplicationController
   end
 
   def get_userids_and_transcribers
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
