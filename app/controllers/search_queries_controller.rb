@@ -131,8 +131,8 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
-    order_field=params[:order_field]
-    if order_field==old_query.order_field
+    order_field = params[:order_field]
+    if order_field == old_query.order_field
       # reverse the directions
       old_query.order_asc = !old_query.order_asc
     else
@@ -223,8 +223,12 @@ class SearchQueriesController < ApplicationController
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results =   @search_query.results
+        @search_results =   @search_query.search_result.records
+        @search_query.sort_results(@search_results) unless @search_results.nil?
+        p @search_results
         @ucf_results = @search_query.ucf_results
+
+
         @ucf_results = Array.new unless  @ucf_results.present?
         if @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
@@ -250,16 +254,25 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      @search_results =   @search_query.results
-      @ucf_results = @search_query.ucf_results
-      @ucf_results = Array.new unless  @ucf_results.present?
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @search_results =   Array.new
+        @ucf_results = Array.new
+      else
+        @search_results =   @search_query.search_result.records
+        @search_results = SearchQuery.remove_family(@search_results) if @search_query.inclusive.blank?
+        @search_results = SearchQuery.remove_witness(@search_results) if @search_query.witness.blank?
+        @ucf_results = @search_query.ucf_results
+
+
+        @ucf_results = Array.new unless  @ucf_results.present?
+        if @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+          go_back
+          return
+        end
+      end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
-      go_back
-      return
-    end
-    if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
       go_back
       return
     end

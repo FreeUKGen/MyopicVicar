@@ -17,21 +17,21 @@ module SearchQueriesHelper
   #end
 
   def format_location(search_record)
-    if search_record.respond_to? :location_name
-      search_record.location_name
+    if search_record[:location_name].present?
+      search_record[:location_name]
     elsif
-      search_record.respond_to? :location_names
-      format_for_line_breaks(search_record.location_names)
+      search_record[:location_names].present?
+      format_for_line_breaks(search_record[:location_names])
     else
       ""
     end
   end
   def county(search_record)
-    chapman = search_record.chapman_code
+    chapman = search_record[:chapman_code]
     if chapman.present?
       county = ChapmanCode.has_key(chapman)
     else
-      county = search_record.place.county
+      county = search_record[:place_id].county
     end
     county
   end
@@ -46,6 +46,30 @@ module SearchQueriesHelper
     end
     register_type = names[1].gsub('[', '').gsub(']', '')
     loc = [place, church, register_type].join(' : ')
+    return loc
+  end
+
+  def do_we_show_record?(record,inclusive,witness,first_name,last_name)
+    record[:search_names].each do |name|
+      case
+      when name[:type] == "p" && name[:last_name] == last_name && first_name.blank?
+        return true
+      when name[:type] == "p" && name[:last_name] == last_name && (first_name.present? && first_name == name[:first_name])
+        return true
+      when inclusive && name[:type] == "f" && name[:last_name] == last_name && first_name.blank?
+        return true
+
+      when inclusive && name[:type] == "f" && name[:last_name] == last_name && (first_name.present? && first_name == name[:first_name])
+        return true
+      when inclusive && name[:type] == "w" && name[:last_name] == last_name && first_name.blank?
+        return true
+      when inclusive && name[:type] == "w" && name[:last_name] == last_name && (first_name.present? && first_name == name[:first_name])
+        return true
+
+      else
+      end
+    end
+    return false
   end
 
 end

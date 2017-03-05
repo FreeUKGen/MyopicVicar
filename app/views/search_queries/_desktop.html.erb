@@ -29,37 +29,41 @@
     <tbody>
     <% n = 0 %>
     <% search_results.each do |search_record| %>
-     <% n = n + 1 %>
-      <tr id="<%=search_record.id%>">
-        <td>
-        <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
-          <% if  name['type'] == 'primary' %>
-            <% if i > 0 %>
-            <br />
-            <% end%>
-          <%= "#{name['first_name']} #{name['last_name']} " %>
-          <% end %>
-        <% end%>
-        </td>
-        <td>
-          <%= RecordType::display_name(search_record.record_type) %>
-        </td>
-        <td>
-          <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty? %>
-        </td>
-        <td>
-          <%= county(search_record) %>
-        </td>
-        <td>
-          <%= format_location(search_record) %>
-        </td>
-        <% unless print_friendly %>
+
+    <% if do_we_show_record?(search_record,inclusive,witness,first_name,last_name) %>
+
+       <% n = n + 1 %>
+        <tr id="<%=search_record[:_id]%>">
           <td>
-            <%= link_to("Row #{n}", search_record_path(search_record, :search_id => @search_query), :title => "As available for this record") %> 
-            <i><%= viewed(@search_query,search_record) %></i>
+          <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
+            <% if  name['type'] == 'primary' %>
+              <% if i > 0 %>
+              <br />
+              <% end%>
+            <%= "#{name['first_name']} #{name['last_name']} " %>
+            <% end %>
+          <% end%>
           </td>
-        <% end %>
-      </tr>
+          <td>
+            <%= RecordType::display_name(search_record[:record_type]) %>
+          </td>
+          <td>
+            <%= raw(search_record[:transcript_dates].first.gsub(' ', '&nbsp;')) unless search_record[:transcript_dates].empty? %>
+          </td>
+          <td>
+            <%= county(search_record) %>
+          </td>
+          <td>
+            <%= format_location(search_record) %>
+          </td>
+          <% unless print_friendly %>
+            <td>
+              <%= link_to("Row #{n}", search_record_path(search_record[:_id], :search_id => @search_query), :title => "As available for this record") %> 
+              <i><%= viewed(@search_query,search_record) %></i>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
     <% end %>
     </tbody>
   </table>

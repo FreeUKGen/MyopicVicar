@@ -16,22 +16,21 @@ class SearchRecordsController < ApplicationController
   end
 
   def show
-    @page_number = params[:page_number].to_i
-    if params[:id].nil?
-      redirect_to new_search_query_path
-      return
-    end
-    @search_record = SearchRecord.record_id(params[:id]).first
-    if params[:search_id].nil? || @search_record.nil?
+    if params[:search_id].nil? || params[:id].nil?
       flash[:notice] = "Prior records no longer exist"
       redirect_to new_search_query_path
       return
     end
-    @entry = @search_record.freereg1_csv_entry
     begin
       @search_query = SearchQuery.find(params[:search_id])
-      @previous_record = @search_query.previous_record(params[:id])
-      @next_record = @search_query.next_record(params[:id])
+      @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+      @search_record = @search_query.locate(params[:id])
+      if @search_record.nil?
+        flash[:notice] = "Prior records no longer exist"
+        redirect_to new_search_query_path
+        return
+      end
+      @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
@@ -39,7 +38,7 @@ class SearchRecordsController < ApplicationController
     end
     @display_date = false
     @entry.display_fields(@search_record)
-    @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
+    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
     @search_result = @search_query.search_result
     @viewed_records = @search_result.viewed_records
     @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
@@ -48,23 +47,32 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_print_version
-    @page_number = params[:page_number].to_i
+    if params[:search_id].nil? || params[:id].nil?
+      flash[:notice] = "Prior records no longer exist"
+      redirect_to new_search_query_path
+      return
+    end
     begin
-      @search_record = SearchRecord.find(params[:id])
-      @entry = @search_record.freereg1_csv_entry
-      if params[:search_id].nil?
+      @search_query = SearchQuery.find(params[:search_id])
+      @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+      @search_record = @search_query.locate(params[:id])
+      if @search_record.nil?
+        flash[:notice] = "Prior records no longer exist"
         redirect_to new_search_query_path
         return
       end
-      @search_query = SearchQuery.find(params[:search_id])
-      @previous_record = @search_query.previous_record(params[:id])
-      @next_record = @search_query.next_record(params[:id])
+      @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
       return
     end
-    @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
+    @entry.display_fields(@search_record)
+    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
+    @search_result = @search_query.search_result
+    @viewed_records = @search_result.viewed_records
+    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+    @search_result.update_attribute(:viewed_records, @viewed_records)
     @display_date = true
     render "show", :layout => false
   end
