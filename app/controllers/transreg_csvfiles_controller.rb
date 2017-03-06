@@ -18,6 +18,7 @@ class TransregCsvfilesController < ApplicationController
     uploaded_file = params[:csvfile][:csvfile].tempfile.path
 
     #lets check for existing file, save if required
+    processing_time = @csvfile.estimate_time
     proceed = @csvfile.check_for_existing_file_and_save
     logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
     @csvfile.save if proceed
@@ -36,7 +37,6 @@ class TransregCsvfilesController < ApplicationController
         @csvfile.delete
       else
         batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
-        processing_time = @csvfile.estimate_time
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
