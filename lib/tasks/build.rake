@@ -579,6 +579,9 @@ namespace :build do
     if args.type == "individual"
       p "FREEREG:CSV_PROCESSING: starting an individual project"
       NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+    elsif args.force == "force_rebuild"
+      p "FREEREG:CSV_PROCESSING: starting a force rebuild"
+      NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
     else
       rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
       if File.exist?(rake_lock_file)
