@@ -1,22 +1,26 @@
 namespace :build_ssl do
 
-  $collections = Array.new
-  $collections[0] = "master_place_names"
-  $collections[1] = "batch_errors"
-  $collections[2] = "places"
-  $collections[3] = "churches"
-  $collections[4] = "registers"
-  $collections[5] = "freereg1_csv_files"
-  $collections[6] = "freereg1_csv_entries"
-  $collections[7] = "search_records"
-  $collections[8] = "userid_details"
-  $collections[9] = "syndicates"
-  $collections[10] = "counties"
-  $collections[11] = "countries"
-  $collections[12] = "feedbacks"
-  $collections[13] = "search_queries"
-  $collections[14] = "contacts"
-  $collections[15] = "attic_files"
+  collection_array = Array.new
+  collection_array[0] = "master_place_names"
+  collection_array[1] = "batch_errors"
+  collection_array[2] = "places"
+  collection_array[3] = "churches"
+  collection_array[4] = "registers"
+  collection_array[5] = "freereg1_csv_files"
+  collection_array[6] = "freereg1_csv_entries"
+  collection_array[7] = "search_records"
+  collection_array[8] = "userid_details"
+  collection_array[9] = "syndicates"
+  collection_array[10] = "counties"
+  collection_array[11] = "countries"
+  collection_array[12] = "feedbacks"
+  collection_array[13] = "search_queries"
+  collection_array[14] = "contacts"
+  collection_array[15] = "attic_files"
+  collection_array[16] = "physical_files"
+  collection_array[17] = "messages"
+  collection_array[18] = "denominations"
+  collection_array[19] = "software_versions"
 
 
   # example build:freereg[recreate,create_search_records,a-d,e-f,g-h]
@@ -271,28 +275,29 @@ namespace :build_ssl do
   #@file_location =  Rails.application.config.mongodb_collection_location the location of the github collections
   #from the development application.config
   task :freereg_from_files,[:save, :drop, :reload_from_temp, :load_from_file, :index, :port] => [:recreate_freereg_csv_indexes,:environment] do |t,args|
+
     puts "Completed rebuild of FreeREG"
   end
 
   task :save_freereg_collections,[:save, :drop, :reload_from_temp, :load_from_file, :index, :port] => [:environment] do |t,args|
+
     puts "Saving collections"
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @db = Mongoid.clients[:default][:database]
-    EXPORT_COMMAND =  "mongoexport --db #{@db} --ssl --port #{args.port} --collection  "
+    EXPORT_COMMAND =  "mongoexport --db #{@db} --ssl --sslAllowInvalidCertificates --port #{args.port} --replSet freereg2   --collection  "
     EXPORT_OUT = " --out  "
     p "using database #{@db} on port #{args.port}"
     collections_to_save = Array.new
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    @tmp_location =   Rails.application.config.mongodb_collection_temp
+    @tmp_location =   File.join(Rails.root + "tmp")
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @db = Mongoid.clients[:default][:database]
     unless args[:save].nil?
       collections_to_save = args[:save].split("/")
       collections_to_save.each  do |col|
         coll  = col.to_i
-        location = File.join(@tmp_location, collection_array[coll] + ".json")
         #saved_file = File.new(location,"w")
-        collection = @mongodb_bin + EXPORT_COMMAND  + collection_array[coll] + EXPORT_OUT + location
+        collection = @mongodb_bin + EXPORT_COMMAND  + collections[coll] + EXPORT_OUT + @tmp_location + '/' + collection_array[coll] + ".json"
         #saved_file.close
         puts "#{collection_array[coll]} being saved in #{@tmp_location}"
         output =  `#{collection}`
@@ -325,7 +330,7 @@ namespace :build_ssl do
     p "using database #{@db} on port #{args.port}"
     collections_to_reload = Array.new
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    @tmp_location =   Rails.application.config.mongodb_collection_temp
+    @tmp_location =   File.join(Rails.root + "tmp")
     unless args[:reload_from_temp].nil?
       collections_to_reload = args[:reload_from_temp].split("/")
       collections_to_reload.each  do |col|
@@ -349,7 +354,7 @@ namespace :build_ssl do
     p "using database #{@db} on port #{args.port}"
     collections_to_load = Array.new
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    @tmp_location =   Rails.application.config.mongodb_collection_temp
+    @tmp_location =   File.join(Rails.root + "tmp")
     @file_location =  Rails.application.config.mongodb_collection_location
     unless args[:load_from_file].nil?
       collections_to_load = args[:load_from_file].split("/")
@@ -405,7 +410,7 @@ namespace :build_ssl do
     collections_to_save = ["0","1","2","3","4","5","8","9","10","11","12","13","14","15"] if args.save == 'partial'
     collections_to_save = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"] if args.save == 'full'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    @tmp_location =   Rails.application.config.mongodb_collection_location
+    @tmp_location =   File.join(Rails.root + "tmp")
     @tmp_location = File.join(@tmp_location, Time.now.to_i.to_s )
     FileUtils.mkdir(@tmp_location)
 
