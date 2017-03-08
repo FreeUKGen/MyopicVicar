@@ -9,11 +9,13 @@ class RefreshUcfList
 
   def filter_id
     retrieve_name_columns.each do |name|
-      $stdout.reopen(new_file(name), "w")
-      puts "#{name}"
-      @model_name.where(name.to_sym => SPECIAL_CHARACTER_LISTS).each do |record| 
+      original_stdout = STDOUT.clone
+      STDOUT.reopen(new_file(name), "w")
+      special_character_records(name).each do |record| 
         puts "#{record.id}\n"
       end
+      STDOUT.reopen(original_stdout)
+      puts "Total number of ids for #{name}: #{special_character_records(name).count}"
     end
   end
 
@@ -27,6 +29,11 @@ class RefreshUcfList
   # Retrieve the column attribute where like 'name'
   def retrieve_name_columns
     fetch_columns.grep /name/
+  end
+
+  # Retrieve the special character records from the model
+  def special_character_records column_name
+    @model_name.where(column_name.to_sym => SPECIAL_CHARACTER_LISTS)
   end
 
   # Create a new file named as current date and time
