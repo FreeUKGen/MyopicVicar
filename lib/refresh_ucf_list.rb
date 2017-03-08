@@ -5,6 +5,8 @@ class RefreshUcfList
     @model_name = model_name
   end
 
+  SPECIAL_CHARACTER_LISTS = /[?{}\[\]]/
+
   def filter_id
     retrieve_name_columns.each do |name|
       $stdout.reopen(new_file, "w")
@@ -30,6 +32,6 @@ class RefreshUcfList
   # Create a new file named as current date and time
   def new_file
     file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_filtered_ids.txt"
-    Rails.root.to_s + "script/refresh_ucf/file_name"
+    Rails.root.join("script", "refresh_ucf", file_name)
   end
 end
