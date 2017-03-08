@@ -48,13 +48,16 @@ class TransregCsvfilesController < ApplicationController
           batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
           #check to see if rake task running
           rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-          if File.exist?(rake_lock_file)
+          processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
+          if File.exist?(rake_lock_file) || File.exist?(processor_initiation_lock_file)
+            logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} or processor_initiation_lock_file #{processor_initiation_lock_file} already exists")
             @result = "success"
-            logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
             @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
           else
             @result = "success"
-            logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+            logger.warn("FREEREG:CSV_PROCESSING: Initiating rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+            initiation_locking_file = File.new(processor_initiation_lock_file, "w")
+            logger.warn("FREEREG:CSV_PROCESSING: Created processor_initiation_lock_file #{processor_initiation_lock_file}")
             pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
             @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end

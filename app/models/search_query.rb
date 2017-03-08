@@ -392,6 +392,7 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
+    @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index,@search_index)
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
@@ -407,7 +408,6 @@ class SearchQuery
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
     @secondary_search_params.delete(:search_date)
-
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params,{'projection' =>{_id: 1}}).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
@@ -524,8 +524,9 @@ class SearchQuery
     return name_string unless name_string.match(WILDCARD)
 
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
-    regex_string = trimmed.gsub('?', '\w').gsub('*', '.*') #replace glob-style wildcards with regex wildcards
-
+    scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
+    cleaned = Regexp.escape(scrubbed)
+    regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end
 

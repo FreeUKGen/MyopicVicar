@@ -482,6 +482,23 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should not explode on bad characters" do
+    ["foo",
+      "bar?",
+      "bar[",
+      "bar$^",
+      "bar\\]}':;>.,/)*&^%$\#@!~`",
+      "baz(*", 
+      "quux[*"].each do |name|
+      query_params = { :last_name => name }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+    end
+  end
+
+
   it "should handle wildcard performance" do
     Freereg1CsvEntry.count.should eq(0)
     Freereg1CsvFile.count.should eq(0)
