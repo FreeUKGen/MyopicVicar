@@ -87,20 +87,38 @@ class SearchQuery
       records.each do |record|
         include_record = false
         record[:search_names].each do |name|
-          case
-          when name[:type] == "p" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
-            include_record = true
-          when name[:type] == "p"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
-            include_record = true
-          when search_query.inclusive && name[:type] == "f" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
-            include_record = true
-          when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
-            include_record = true
-          when search_query.witness && name[:type] == "w" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
-            include_record = true
-          when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
-            include_record = true
+          if search_query.fuzzy
+            case
+            when name[:type] == "p" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(search_query.last_name) && search_query.first_name.blank?
+              include_record = true
+            when name[:type] == "p"  && (search_query.first_name.present? && Text::Soundex.soundex(search_query.first_name) == Text::Soundex.soundex(name[:first_name]))
+              include_record = true
+            when search_query.inclusive && name[:type] == "f" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(search_query.last_name) && search_query.first_name.blank?
+              include_record = true
+            when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && Text::Soundex.soundex(search_query.first_name) == Text::Soundex.soundex(name[:first_name]))
+              include_record = true
+            when search_query.witness && name[:type] == "w" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(search_query.last_name) && search_query.first_name.blank?
+              include_record = true
+            when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && Text::Soundex.soundex(search_query.first_name) == Text::Soundex.soundex(name[:first_name]))
+              include_record = true
+            else
+            end
           else
+            case
+            when name[:type] == "p" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+              include_record = true
+            when name[:type] == "p"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+              include_record = true
+            when search_query.inclusive && name[:type] == "f" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+              include_record = true
+            when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+              include_record = true
+            when search_query.witness && name[:type] == "w" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+              include_record = true
+            when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+              include_record = true
+            else
+            end
           end
           filtered_records << record if  include_record
           break if include_record
