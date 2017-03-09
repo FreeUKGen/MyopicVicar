@@ -42,19 +42,36 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    @userid = UseridDetail.new(userid_details_params)
-    @userid.add_fields(params[:commit],session[:syndicate])
-    @userid.save
-    if @userid.save
-      refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
-      refinery_user.send_reset_password_instructions
-      flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
-      @userid.write_userid_file
-      next_place_to_go_successful_create
+    honeypot_error = true
+    diff = Time.now - Time.parse(params[:__TIME])
+
+    params.each do |k,v|
+      if k.include? session[:honeypot]
+        honeypot_error = false if v.nil?
+      end
+    end
+    if honeypot_error || diff <= 5
+      if honeypot_error
+        # write error message into log or send email to notify manager
+      end
+      if diff <= 5
+        # write error message into log or send email to notify manager
+      end
     else
-      flash[:notice] = 'The registration was unsuccessful'
-      @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_create
+      @userid = UseridDetail.new(userid_details_params)
+      @userid.add_fields(params[:commit],session[:syndicate])
+      @userid.save
+      if @userid.save
+        refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+        refinery_user.send_reset_password_instructions
+        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        @userid.write_userid_file
+        next_place_to_go_successful_create
+      else
+        flash[:notice] = 'The registration was unsuccessful'
+        @syndicates = Syndicate.get_syndicates_open_for_transcription
+        next_place_to_go_unsuccessful_create
+      end
     end
   end
 
@@ -379,7 +396,11 @@ class UseridDetailsController < ApplicationController
       session[:return_to] = request.fullpath
       session[:first_name] = 'New Registrant'
       session[:type] = "transcriber_registration"
+      honeypot = "agreement_" + rand.to_s[2..11]
+      session[:honeypot] = honeypot 
+
       @userid = UseridDetail.new
+      @userid[:honeypot] = session[:honeypot]
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       @first_name = session[:first_name]
