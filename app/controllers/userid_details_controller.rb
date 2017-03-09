@@ -57,6 +57,8 @@ class UseridDetailsController < ApplicationController
         @syndicates = Syndicate.get_syndicates_open_for_transcription
         next_place_to_go_unsuccessful_create
       end
+    else
+      redirect_to transcriber_registration_userid_detail_path
     end
   end
 
@@ -389,7 +391,6 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       @first_name = session[:first_name]
-byebug
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
@@ -458,12 +459,26 @@ byebug
     end
 
     if honeypot_error || diff <= 5
+      error_file = "log/spam_check_error_messages.log"
+      f = File.exists?(error_file) ? File.open(error_file, "a+") : File.new(error_file, "w") 
+      error_text = "===========SPAM caught at " + Time.now.to_s
+
       if honeypot_error
-        # write error message into log or send email to notify manager
+        error_text = error_text+" honeypot error detected"
       end
       if diff <= 5
-        # write error message into log or send email to notify manager
+        error_text = error_text+" submission time is "+diff.to_s+" seconds"
       end
+      
+      error_text = error_text+"\r\nEMAIL: "+params[:userid_detail][:email_address]+"\r\n" 
+      error_text = error_text+"USERID: "+params[:userid_detail][:userid]+"\r\n"
+      error_text = error_text+"FORENAME: "+params[:userid_detail][:person_forename]+"\r\n" 
+      error_text = error_text+"SURNAME: "+params[:userid_detail][:person_surname] + "\r\n"
+      error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n"
+      error_text = error_text+"REMOTE IP: "+request.remote_ip + "\r\n"
+      error_text = error_text+"REMOTE HOST: "+request.remote_host+"\r\n\r\n\r\n"
+      f.puts error_text
+      f.close
       return false
     end
     return true
