@@ -1,8 +1,9 @@
 class RefreshUcfList
-  attr_accessor :model_name
+  attr_accessor :model_name, :output_directory
 
-  def initialize model_name
+  def initialize model_name, output_directory
     @model_name = model_name
+    @output_directory = output_directory
   end
 
   SPECIAL_CHARACTER_LISTS = /[?{}\[\]]/
@@ -36,9 +37,14 @@ class RefreshUcfList
     @model_name.where(column_name.to_sym => SPECIAL_CHARACTER_LISTS)
   end
 
+  def valid_directory?
+    File.directory?(@output_directory)
+  end
+
   # Create a new file named as current date and time
   def new_file name
+    raise "Not a Valid Directory" unless valid_directory?
     file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{name}.txt"
-    Rails.root.to_s + "/script/refresh_ucf/#{file_name}"
+    "#{@output_directory}/#{file_name}"
   end
 end
