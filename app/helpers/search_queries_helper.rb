@@ -49,27 +49,4 @@ module SearchQueriesHelper
     return loc
   end
 
-  def do_we_show_record?(record,inclusive,witness,first_name,last_name)
-    record[:search_names].each do |name|
-      case
-      when name[:type] == "p" && name[:last_name] == last_name && first_name.blank?
-        return true
-      when name[:type] == "p" && name[:last_name] == last_name && (first_name.present? && first_name == name[:first_name])
-        return true
-      when inclusive && name[:type] == "f" && name[:last_name] == last_name && first_name.blank?
-        return true
-
-      when inclusive && name[:type] == "f" && name[:last_name] == last_name && (first_name.present? && first_name == name[:first_name])
-        return true
-      when inclusive && name[:type] == "w" && name[:last_name] == last_name && first_name.blank?
-        return true
-      when inclusive && name[:type] == "w" && name[:last_name] == last_name && (first_name.present? && first_name == name[:first_name])
-        return true
-
-      else
-      end
-    end
-    return false
-  end
-
 end

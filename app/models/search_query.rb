@@ -82,6 +82,33 @@ class SearchQuery
       where(:id => name)
     end
 
+    def filter_name_types(records,search_query)
+      filtered_records = Array.new {Hash.new}
+      records.each do |record|
+        include_record = false
+        record[:search_names].each do |name|
+          case
+          when name[:type] == "p" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+            include_record = true
+          when name[:type] == "p"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+            include_record = true
+          when search_query.inclusive && name[:type] == "f" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+            include_record = true
+          when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+            include_record = true
+          when search_query.witness && name[:type] == "w" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+            include_record = true
+          when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+            include_record = true
+          else
+          end
+          filtered_records << record if  include_record
+          break if include_record
+        end
+      end
+      filtered_records
+    end
+
   end
 
   ############################################################################# instance methods #####################################################
@@ -183,6 +210,7 @@ class SearchQuery
     end
     params
   end
+
 
   def explain_plan
     SearchRecord.where(search_params).max_scan(1+FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(:search_date).all.explain
@@ -287,12 +315,19 @@ class SearchQuery
   def persist_additional_results(results)
     return unless results
     # finally extract the records IDs and persist them
-    records = Array.new
+    records = Array.new {Hash.new}
     results.each do |rec|
       a = rec["_id"].to_s
-      records << a unless self.search_result.records.include?(a)
+      results_include = false
+      self.search_result.records.each do |record|
+        if record[:_id].to_s == a
+          results_include = true
+          break
+        end
+      end
+      records << rec unless results_include
     end
-    self.search_result =  SearchResult.new(:records => self.search_result.records + records)
+    self.search_result.records = self.search_result.records + records
     self.result_count = self.search_result.records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000 + self.runtime
     self.day = Time.now.strftime("%F")
@@ -309,6 +344,7 @@ class SearchQuery
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime("%F")
+    self.search_index = @search_index
     self.save
   end
 
@@ -394,22 +430,19 @@ class SearchQuery
     @search_index = SearchRecord.index_hint(@search_parameters)
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
-    self.update_attribute(:search_index,@search_index)
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
-    #self.persist_additional_results(secondary_date_results)
+    self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     #search_ucf
     records
   end
 
   def secondary_date_results
-    return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    return nil unless secondary_date_query_required
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
     @secondary_search_params.delete(:search_date)
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params,{'projection' =>{_id: 1}}).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
 
