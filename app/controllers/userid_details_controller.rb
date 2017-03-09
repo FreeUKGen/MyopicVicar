@@ -42,22 +42,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    honeypot_error = true
-    diff = Time.now - Time.parse(params[:__TIME])
-
-    params.each do |k,v|
-      if k.include? session[:honeypot]
-        honeypot_error = false if v.nil?
-      end
-    end
-    if honeypot_error || diff <= 5
-      if honeypot_error
-        # write error message into log or send email to notify manager
-      end
-      if diff <= 5
-        # write error message into log or send email to notify manager
-      end
-    else
+    if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit],session[:syndicate])
       @userid.save
@@ -404,6 +389,7 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       @first_name = session[:first_name]
+byebug
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
@@ -459,6 +445,28 @@ class UseridDetailsController < ApplicationController
 
   def userid_details_params
     params.require(:userid_detail).permit!
+  end
+
+  def spam_check
+    honeypot_error = true
+    diff = Time.now - Time.parse(params[:__TIME])
+
+    params.each do |k,x|
+      if k.include? session[:honeypot]
+          honeypot_error = false if x == ''
+      end
+    end
+
+    if honeypot_error || diff <= 5
+      if honeypot_error
+        # write error message into log or send email to notify manager
+      end
+      if diff <= 5
+        # write error message into log or send email to notify manager
+      end
+      return false
+    end
+    return true
   end
 
 end
