@@ -383,7 +383,7 @@ class SearchQuery
     param[:order_field] = self.order_field
     param[:order_asc] = self.order_asc
     param[:region] = self.region
-    param[:userid_detail_id] = self.userid_detail_id
+    #param[:userid_detail_id] = self.userid_detail_id
     param[:c_at] = self.c_at
     param[:u_at] = Time.now
     param[:place_ids] = self.place_ids
