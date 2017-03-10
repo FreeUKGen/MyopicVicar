@@ -282,7 +282,7 @@ class Place
   def data_present?
     self.churches.each do |church|
       church.registers.each do |register|
-        if register.freereg1_csv_files.exist?
+        if register.freereg1_csv_files.exists?
           return  true
         end #if
       end #church
