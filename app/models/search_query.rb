@@ -343,7 +343,7 @@ class SearchQuery
   end
 
   def radius_is_valid
-    if search_nearby_places && places.count == 0
+    if search_nearby_places && places.blank?
       errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end

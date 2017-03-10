@@ -49,9 +49,9 @@ class PlacesController < ApplicationController
 
   def destroy
     load(params[:id])
-    unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
-      unless @place.churches.count == 0
-        flash[:notice] = 'The Place cannot be disabled because there were Dependant churches; please remove them first'
+    if @place.search_records.exist? && @place.error_flag == "Place name is not approved"
+      if  @place.churches.exist?
+        flash[:notice] = 'The Place cannot be disabled because there are Dependant churches; please remove them first'
         redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
         return
       end
