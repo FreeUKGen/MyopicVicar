@@ -116,6 +116,10 @@
           <% end %>
         </select>
       </li>
+      <div id = "<%= @userid[:honeypot] %>" style="position:absolute; left:-9000px;">
+        <label for="<%= @userid[:honeypot] %>" > Leave this field blank </label> <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">
+        <input type="hidden" id="__TIME" name="__TIME" value="<%= Time.now %>" />
+      </div>      
       <%= f.action :submit, :as => :input, :label => 'Register as Transcriber', 
         :button_html => { :class => "btn", :type => 'submit' },
         :wrapper_html => { :class => "grid__item one-whole" } %>

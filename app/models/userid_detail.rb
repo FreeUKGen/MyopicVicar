@@ -48,9 +48,6 @@ class UseridDetail
   index({syndicate: 1, active: 1}, {name: "syndicate_active"})
   index({person_role: 1}, {name: "person_role"})
 
-
-
-  has_many :search_queries, dependent: :restrict
   has_many :freereg1_csv_files, dependent: :restrict
   has_many :attic_files, dependent: :restrict
   has_many :assignments

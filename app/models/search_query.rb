@@ -58,8 +58,6 @@ class SearchQuery
 
   has_and_belongs_to_many :places, inverse_of: nil
 
-  belongs_to :userid_detail
-
   embeds_one :search_result
 
   validate :name_not_blank
@@ -387,7 +385,7 @@ class SearchQuery
   end
 
   def radius_is_valid
-    if search_nearby_places && places.count == 0
+    if search_nearby_places && places.blank?
       errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end
@@ -427,7 +425,7 @@ class SearchQuery
     param[:order_field] = self.order_field
     param[:order_asc] = self.order_asc
     param[:region] = self.region
-    param[:userid_detail_id] = self.userid_detail_id
+    #param[:userid_detail_id] = self.userid_detail_id
     param[:c_at] = self.c_at
     param[:u_at] = Time.now
     param[:place_ids] = self.place_ids

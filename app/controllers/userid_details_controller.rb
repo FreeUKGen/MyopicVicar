@@ -42,19 +42,23 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    @userid = UseridDetail.new(userid_details_params)
-    @userid.add_fields(params[:commit],session[:syndicate])
-    @userid.save
-    if @userid.save
-      refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
-      refinery_user.send_reset_password_instructions
-      flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
-      @userid.write_userid_file
-      next_place_to_go_successful_create
+    if spam_check
+      @userid = UseridDetail.new(userid_details_params)
+      @userid.add_fields(params[:commit],session[:syndicate])
+      @userid.save
+      if @userid.save
+        refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+        refinery_user.send_reset_password_instructions
+        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        @userid.write_userid_file
+        next_place_to_go_successful_create
+      else
+        flash[:notice] = 'The registration was unsuccessful'
+        @syndicates = Syndicate.get_syndicates_open_for_transcription
+        next_place_to_go_unsuccessful_create
+      end
     else
-      flash[:notice] = 'The registration was unsuccessful'
-      @syndicates = Syndicate.get_syndicates_open_for_transcription
-      next_place_to_go_unsuccessful_create
+      redirect_to transcriber_registration_userid_detail_path
     end
   end
 
@@ -379,7 +383,11 @@ class UseridDetailsController < ApplicationController
       session[:return_to] = request.fullpath
       session[:first_name] = 'New Registrant'
       session[:type] = "transcriber_registration"
+      honeypot = "agreement_" + rand.to_s[2..11]
+      session[:honeypot] = honeypot 
+
       @userid = UseridDetail.new
+      @userid[:honeypot] = session[:honeypot]
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @transcription_agreement = [true,false]
       @first_name = session[:first_name]
@@ -438,6 +446,42 @@ class UseridDetailsController < ApplicationController
 
   def userid_details_params
     params.require(:userid_detail).permit!
+  end
+
+  def spam_check
+    honeypot_error = true
+    diff = Time.now - Time.parse(params[:__TIME])
+
+    params.each do |k,x|
+      if k.include? session[:honeypot]
+          honeypot_error = false if x == ''
+      end
+    end
+
+    if honeypot_error || diff <= 5
+      error_file = "log/spam_check_error_messages.log"
+      f = File.exists?(error_file) ? File.open(error_file, "a+") : File.new(error_file, "w") 
+      error_text = "===========SPAM caught at " + Time.now.to_s
+
+      if honeypot_error
+        error_text = error_text+" honeypot error detected"
+      end
+      if diff <= 5
+        error_text = error_text+" submission time is "+diff.to_s+" seconds"
+      end
+      
+      error_text = error_text+"\r\nEMAIL: "+params[:userid_detail][:email_address]+"\r\n" 
+      error_text = error_text+"USERID: "+params[:userid_detail][:userid]+"\r\n"
+      error_text = error_text+"FORENAME: "+params[:userid_detail][:person_forename]+"\r\n" 
+      error_text = error_text+"SURNAME: "+params[:userid_detail][:person_surname] + "\r\n"
+      error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n"
+      error_text = error_text+"REMOTE IP: "+request.remote_ip + "\r\n"
+      error_text = error_text+"REMOTE HOST: "+request.remote_host+"\r\n\r\n\r\n"
+      f.puts error_text
+      f.close
+      return false
+    end
+    return true
   end
 
 end
