@@ -4,7 +4,7 @@ namespace :freereg do
   task :find_bad_ucf => [:environment] do
     require 'filter_ucf_list'
 
-    output_directory = "C:/Work/FreeUKGen/refresh_ucf"
+    output_directory = File.join(Rails.root, 'script')
     model_name = Freereg1CsvEntry
 
     # Print the time before start the process

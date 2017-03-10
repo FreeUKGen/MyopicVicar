@@ -59,7 +59,7 @@ class FilterUcfList
   # else check the trailing slash at the end of the directory
   def output_directory_path
     if @output_directory.nil?
-      directory = Rails.root.to_s + "/script/"
+      directory = File.join(Rails.root, 'script')
     else
       directory = File.join(@output_directory, "")
     end
