@@ -58,8 +58,6 @@ class SearchQuery
 
   has_and_belongs_to_many :places, inverse_of: nil
 
-  belongs_to :userid_detail
-
   embeds_one :search_result
 
   validate :name_not_blank
