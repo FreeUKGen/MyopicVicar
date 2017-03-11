@@ -39,7 +39,6 @@
     </section>
   <% end %>
   <section>
-    <% @result_count = @result_count %>
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <div class="island">
         <h2 class="gamma text--negative push-half--bottom">Too many search results</h2>
@@ -68,7 +67,7 @@
           <% end %>
         <% end %>
       <% end%>
-      <% if @search_query.result_count > 10 && @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+      <% if @result_count > 10 && @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <% unless defined?(@printable_format) && @printable_format %>
           <div class="text--center push--ends">
             <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light btn--small" %>

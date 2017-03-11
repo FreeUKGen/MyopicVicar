@@ -45,9 +45,10 @@ class SearchQuery
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
   field :ucf_unfiltered_count, type: Integer
-  field :ucf_result_ms, type: Integer
   field :session_id, type: String
   field :runtime, type: Integer
+  field :runtime_additional, type: Integer
+  field :runtime_ucf, type: Integer
   field :order_field, type: String, default: SearchOrder::DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
@@ -55,6 +56,7 @@ class SearchQuery
   field :search_index, type: String
   field :day, type:String
   field :use_decomposed_dates, type: Boolean, default: false
+  field :all_radius_place_ids, type: Array, default: []
 
   has_and_belongs_to_many :places, inverse_of: nil
 
@@ -143,6 +145,7 @@ class SearchQuery
       end
     end
     all_places.uniq
+    all_places
   end
 
   def begins_with_wildcard(name_string)
@@ -345,12 +348,12 @@ class SearchQuery
     end
     self.search_result.records = self.search_result.records + records
     self.result_count = self.search_result.records.length
-    self.runtime = (Time.now.utc - self.updated_at) * 1000 + self.runtime
-    self.day = Time.now.strftime("%F")
-    self.save
+    self.runtime_additional = (Time.now.utc - self.updated_at) * 1000
+    # self.save
   end
 
   def persist_results(results)
+    return unless results
     # finally extract the records IDs and persist them
     records = Array.new {Hash.new}
     results.each do |rec|
@@ -361,8 +364,29 @@ class SearchQuery
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime("%F")
     self.search_index = @search_index
-    self.save
+    #self.save
   end
+
+  def persist_ucf_results(results)
+    return unless results
+    ucf_records = filter_ucf_records(results)
+    records = Array.new {Hash.new}
+    ucf_records.each do |rec|
+      a = rec["_id"].to_s
+      results_include = false
+      self.search_result.records.each do |record|
+        if record[:_id].to_s == a
+          results_include = true
+          break
+        end
+      end
+      records << rec unless results_include
+    end
+    self.runtime_ucf = (Time.now.utc - @start_ucf_time) * 1000
+    self.ucf_unfiltered_count = ucf_records.count
+    self.search_result.ucf_records = records
+  end
+
 
   def place_search?
     place_ids && place_ids.size > 0
@@ -372,6 +396,7 @@ class SearchQuery
     params = Hash.new
     if place_search?
       search_place_ids = radius_place_ids
+
       params[:place_id] = { "$in" => search_place_ids }
     else
       chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
@@ -395,6 +420,8 @@ class SearchQuery
     all_radius_places.map { |place| radius_ids << place.id }
     radius_ids.concat(place_ids)
     radius_ids.uniq
+    self.all_radius_place_ids = radius_ids
+    radius_ids
   end
 
   def radius_places(place_id)
@@ -449,7 +476,8 @@ class SearchQuery
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    #search_ucf
+    self.persist_ucf_results(search_ucf_results)  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    self.save
     records
   end
 
@@ -475,19 +503,11 @@ class SearchQuery
     params
   end
 
-  def search_ucf
-
-    if can_query_ucf?
-      start_ucf_time = Time.now.utc
-      ucf_index = SearchRecord.index_hint(ucf_params)
-      ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-      self.ucf_unfiltered_count = ucf_records.count
-      ucf_records = filter_ucf_records(ucf_records)
-      self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
-      self.ucf_result_ms = (Time.now.utc - start_ucf_time) * 1000
-      self.save
-    end
-
+  def search_ucf_results
+    @start_ucf_time = Time.now.utc
+    ucf_index = SearchRecord.index_hint(ucf_params)
+    ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    ucf_records
   end
 
 
@@ -565,7 +585,6 @@ class SearchQuery
 
   def ucf_record_ids
     ids = []
-
     self.places.inject([]) { |accum, place| accum + place.ucf_record_ids }
   end
 

@@ -220,6 +220,7 @@ class SearchQueriesController < ApplicationController
     end
     if @search_query.present?
       if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
       else
@@ -227,7 +228,11 @@ class SearchQueriesController < ApplicationController
         @search_results = SearchQuery.filter_name_types(@search_results,@search_query)
         @search_results.length.present? ? @result_count = @search_results.length : @result_count = 0
         @search_query.sort_results(@search_results) unless @search_results.nil?
+        p "{{{{{{{{{{{{{{{{{{{{{{{{{{"
         @ucf_results = @search_query.ucf_results
+        p "}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+        p "ucf"
+        p  @ucf_results.present?
         @ucf_results = Array.new unless  @ucf_results.present?
         if @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
@@ -254,6 +259,7 @@ class SearchQueriesController < ApplicationController
     end
     if @search_query.present?
       if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
       else
