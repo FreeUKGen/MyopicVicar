@@ -105,17 +105,17 @@ class SearchQuery
             end
           else
             case
-            when name[:type] == "p" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+            when name[:type] == "p" && search_query.last_name.present? && name[:last_name] == search_query.last_name.downcase && search_query.first_name.blank?
               include_record = true
-            when name[:type] == "p"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+            when name[:type] == "p"  && (search_query.first_name.present? && search_query.first_name.downcase == name[:first_name])
               include_record = true
-            when search_query.inclusive && name[:type] == "f" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+            when search_query.inclusive && name[:type] == "f" && search_query.last_name.present? && name[:last_name] == search_query.last_name.downcase && search_query.first_name.blank?
               include_record = true
-            when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+            when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && search_query.first_name.downcase == name[:first_name])
               include_record = true
-            when search_query.witness && name[:type] == "w" && name[:last_name] == search_query.last_name && search_query.first_name.blank?
+            when search_query.witness && name[:type] == "w" && search_query.last_name.present? && name[:last_name] == search_query.last_name.downcase && search_query.first_name.blank?
               include_record = true
-            when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && search_query.first_name == name[:first_name])
+            when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && search_query.first_name.downcase == name[:first_name])
               include_record = true
             else
             end
@@ -162,6 +162,9 @@ class SearchQuery
   end
 
   def can_query_ucf?
+    p "canucf"
+    p Rails.application.config.ucf_support
+    p self.places.size
     Rails.application.config.ucf_support && self.places.size > 0 # disable search until tested
   end
 
@@ -504,9 +507,13 @@ class SearchQuery
   end
 
   def search_ucf_results
+    p "search ucf"
+    p ucf_params
     @start_ucf_time = Time.now.utc
     ucf_index = SearchRecord.index_hint(ucf_params)
     ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    p "results"
+    p ucf_records
     ucf_records
   end
 
@@ -558,6 +565,8 @@ class SearchQuery
   end
 
   def ucf_params
+    p "ucf_params"
+    p ucf_record_ids
     params = Hash.new
     params.merge!(place_search_params)
     params.merge!(record_type_params)
