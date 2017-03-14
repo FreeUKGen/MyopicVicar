@@ -6,6 +6,7 @@ module Freecen
 
     def process_vld_file(filename)
       chapman_code = File.basename(File.dirname(filename))
+      chapman_code = chapman_code.sub(/-.*/, '') 
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename, chapman_code)
       entry_errors = check_vld_records_for_errors(entry_records, chapman_code, File.basename(filename))

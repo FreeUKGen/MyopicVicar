@@ -20,15 +20,15 @@ describe Freecen1VldFile do
   ]
 
   TEST_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'DUR', 'RG093730.VLD')
-  TEST_INC_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'ho410133.vld')
+  TEST_INC_VLD_FILE = File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'ho410133.vld')
 
   YEAR_VLD_FILES = {
-    RecordType::CENSUS_1841 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'ho410140.vld'),
-    RecordType::CENSUS_1851 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'ho511906.vld'),
-    RecordType::CENSUS_1861 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'rg091544.vld'),
-    RecordType::CENSUS_1871 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'RG102267.VLD'),
-    RecordType::CENSUS_1881 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'rg112275.vld'),
-    RecordType::CENSUS_1891 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON', 'rg121836.vld')
+    RecordType::CENSUS_1841 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'ho410140.vld'),
+    RecordType::CENSUS_1851 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'ho511906.vld'),
+    RecordType::CENSUS_1861 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'rg091544.vld'),
+    RecordType::CENSUS_1871 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'RG102267.VLD'),
+    RecordType::CENSUS_1881 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'rg112275.vld'),
+    RecordType::CENSUS_1891 => File.join(Rails.root, 'test_data', 'freecen1_vlds', 'CON-Cornwall', 'rg121836.vld')
   }
 
   YEAR_BIRTH_DATE = {
