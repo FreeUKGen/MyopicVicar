@@ -55,7 +55,7 @@
           </td>
           <% unless print_friendly %>
             <td>
-              <%= link_to("Row #{n}", search_record_path(search_record[:_id], :search_id => @search_query), :title => "As available for this record") %> 
+              <%= link_to("Row #{n}", search_record_path(search_record[:_id], :search_id => @search_query, :ucf => ucf_results), :title => "As available for this record") %> 
               <i><%= viewed(@search_query,search_record) %></i>
             </td>
           <% end %>

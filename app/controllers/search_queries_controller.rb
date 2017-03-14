@@ -224,16 +224,7 @@ class SearchQueriesController < ApplicationController
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results =   @search_query.search_result.records
-        @search_results = SearchQuery.filter_name_types(@search_results,@search_query)
-        @search_results.length.present? ? @result_count = @search_results.length : @result_count = 0
-        @search_query.sort_results(@search_results) unless @search_results.nil?
-        p "{{{{{{{{{{{{{{{{{{{{{{{{{{"
-        @ucf_results = @search_query.ucf_results
-        p "}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-        p "ucf"
-        p  @ucf_results.present?
-        @ucf_results = Array.new unless  @ucf_results.present?
+        @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
         if @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
           go_back
@@ -263,11 +254,7 @@ class SearchQueriesController < ApplicationController
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results =   @search_query.search_result.records
-        @search_results = SearchQuery.filter_name_types(@search_results,@search_query)
-        @search_results.length.present? ? @result_count = @search_results.length : @result_count = 0
-        @search_query.sort_results(@search_results) unless @search_results.nil?
-        @ucf_results = @search_query.ucf_results
+        @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
         if @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
           go_back

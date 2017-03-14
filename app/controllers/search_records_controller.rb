@@ -23,8 +23,12 @@ class SearchRecordsController < ApplicationController
     end
     begin
       @search_query = SearchQuery.find(params[:search_id])
-      @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-      @search_record = @search_query.locate(params[:id])
+      if params[:ucf] == "true"
+        @search_record = SearchRecord.find(params[:id])
+      else
+        @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        @search_record = @search_query.locate(params[:id])
+      end
       if @search_record.nil?
         flash[:notice] = "Prior records no longer exist"
         redirect_to new_search_query_path
@@ -54,8 +58,11 @@ class SearchRecordsController < ApplicationController
     end
     begin
       @search_query = SearchQuery.find(params[:search_id])
-      @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-      @search_record = @search_query.locate(params[:id])
+      @search_record = SearchRecord.find(params[:id])
+      if @search_record.nil?
+        @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        @search_record = @search_query.locate(params[:id])
+      end
       if @search_record.nil?
         flash[:notice] = "Prior records no longer exist"
         redirect_to new_search_query_path

@@ -82,50 +82,7 @@ class SearchQuery
       where(:id => name)
     end
 
-    def filter_name_types(records,search_query)
-      filtered_records = Array.new {Hash.new}
-      records.each do |record|
-        include_record = false
-        record[:search_names].each do |name|
-          if search_query.fuzzy
-            case
-            when name[:type] == "p" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(search_query.last_name) && search_query.first_name.blank?
-              include_record = true
-            when name[:type] == "p"  && (search_query.first_name.present? && Text::Soundex.soundex(search_query.first_name) == Text::Soundex.soundex(name[:first_name]))
-              include_record = true
-            when search_query.inclusive && name[:type] == "f" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(search_query.last_name) && search_query.first_name.blank?
-              include_record = true
-            when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && Text::Soundex.soundex(search_query.first_name) == Text::Soundex.soundex(name[:first_name]))
-              include_record = true
-            when search_query.witness && name[:type] == "w" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(search_query.last_name) && search_query.first_name.blank?
-              include_record = true
-            when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && Text::Soundex.soundex(search_query.first_name) == Text::Soundex.soundex(name[:first_name]))
-              include_record = true
-            else
-            end
-          else
-            case
-            when name[:type] == "p" && search_query.last_name.present? && name[:last_name] == search_query.last_name.downcase && search_query.first_name.blank?
-              include_record = true
-            when name[:type] == "p"  && (search_query.first_name.present? && search_query.first_name.downcase == name[:first_name])
-              include_record = true
-            when search_query.inclusive && name[:type] == "f" && search_query.last_name.present? && name[:last_name] == search_query.last_name.downcase && search_query.first_name.blank?
-              include_record = true
-            when search_query.inclusive && name[:type] == "f"  && (search_query.first_name.present? && search_query.first_name.downcase == name[:first_name])
-              include_record = true
-            when search_query.witness && name[:type] == "w" && search_query.last_name.present? && name[:last_name] == search_query.last_name.downcase && search_query.first_name.blank?
-              include_record = true
-            when search_query.witness && name[:type] == "w"  && (search_query.first_name.present? && search_query.first_name.downcase == name[:first_name])
-              include_record = true
-            else
-            end
-          end
-          filtered_records << record if  include_record
-          break if include_record
-        end
-      end
-      filtered_records
-    end
+
 
   end
 
@@ -162,10 +119,7 @@ class SearchQuery
   end
 
   def can_query_ucf?
-    p "canucf"
-    p Rails.application.config.ucf_support
-    p self.places.size
-    Rails.application.config.ucf_support && self.places.size > 0 # disable search until tested
+    Rails.application.config.ucf_support && self.places.exists? # disable search until tested
   end
 
   def clean_blanks
@@ -247,7 +201,7 @@ class SearchQuery
     records.each do |record|
       record = SearchRecord.new(record)
       record.search_names.each do |name|
-        if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive
+        if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive || self.witness
           if name.contains_wildcard_ucf?
             if self.first_name.blank?
               # test surname
@@ -273,19 +227,74 @@ class SearchQuery
     filtered_records
   end
 
+  def filter_name_types(records)
+    filtered_records = Array.new {Hash.new}
+    records.each do |record|
+      include_record = false
+      record[:search_names].each do |name|
+        if self.fuzzy
+          case
+          when name[:type] == "p" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(self.last_name) && self.first_name.blank?
+            include_record = true
+          when name[:type] == "p"  && (self.first_name.present? && Text::Soundex.soundex(self.first_name) == Text::Soundex.soundex(name[:first_name]))
+            include_record = true
+          when self.inclusive && name[:type] == "f" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(self.last_name) && self.first_name.blank?
+            include_record = true
+          when self.inclusive && name[:type] == "f"  && (self.first_name.present? && Text::Soundex.soundex(self.first_name) == Text::Soundex.soundex(name[:first_name]))
+            include_record = true
+          when self.witness && name[:type] == "w" && Text::Soundex.soundex(name[:last_name]) == Text::Soundex.soundex(self.last_name) && self.first_name.blank?
+            include_record = true
+          when self.witness && name[:type] == "w"  && (self.first_name.present? && Text::Soundex.soundex(self.first_name) == Text::Soundex.soundex(name[:first_name]))
+            include_record = true
+          else
+          end
+        else
+          case
+          when name[:type] == "p" && self.last_name.present? && name[:last_name] == self.last_name.downcase && self.first_name.blank?
+            include_record = true
+          when name[:type] == "p"  && (self.first_name.present? && self.first_name.downcase == name[:first_name])
+            include_record = true
+          when self.inclusive && name[:type] == "f" && self.last_name.present? && name[:last_name] == self.last_name.downcase && self.first_name.blank?
+            include_record = true
+          when self.inclusive && name[:type] == "f"  && (self.first_name.present? && self.first_name.downcase == name[:first_name])
+            include_record = true
+          when self.witness && name[:type] == "w" && self.last_name.present? && name[:last_name] == self.last_name.downcase && self.first_name.blank?
+            include_record = true
+          when self.witness && name[:type] == "w"  && (self.first_name.present? && self.first_name.downcase == name[:first_name])
+            include_record = true
+          else
+          end
+        end
+        filtered_records << record if  include_record
+        break if include_record
+      end
+    end
+    filtered_records
+  end
+
+
+  def get_and_sort_results_for_display
+    search_results =   self.search_result.records.values
+    search_results = self.filter_name_types(search_results)
+    search_results.length.present? ? result_count = search_results.length : result_count = 0
+    search_results = self.sort_results(search_results) unless search_results.nil?
+    ucf_results = self.ucf_results unless self.ucf_results.blank?
+    ucf_results = Array.new if  ucf_results.blank?
+    return search_results, ucf_results, result_count
+  end
+
 
   def locate(record_id)
-    records = self.search_result.records
+    records = self.search_result.records.values
     position = locate_index(records,record_id)
-    record = records[position]
+    position.present? ? record = records[position] : record = nil
     record
   end
 
   def locate_index(records,current)
-    c = BSON::ObjectId(current)
     n = 0
     records.each do |record|
-      break if record[:_id] == c
+      break if record[:_id].to_s == current
       n = n + 1
     end
     return n
@@ -324,72 +333,45 @@ class SearchQuery
   end
 
   def next_and_previous_records(current)
-    records = self.search_result.records
-
-    record_number = locate_index(records,current)
+    search_results =   self.search_result.records.values
+    search_results = self.filter_name_types(search_results)
+    record_number = locate_index(search_results,current)
     next_record = nil
     previous_record = nil
-    next_record = records[record_number + 1][:_id] unless record_number.nil? || records.nil? || record_number >= records.length - 1
-    previous_record = records[record_number - 1][:_id] unless records.nil?  || record_number.nil? || record_number == 0
+    next_record = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+    previous_record = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
     return  next_record, previous_record
   end
 
   def persist_additional_results(results)
     return unless results
     # finally extract the records IDs and persist them
-    records = Array.new {Hash.new}
+    records = Hash.new
     results.each do |rec|
-      a = rec["_id"].to_s
-      results_include = false
-      self.search_result.records.each do |record|
-        if record[:_id].to_s == a
-          results_include = true
-          break
-        end
-      end
-      records << rec unless results_include
+      rec_id = rec["_id"].to_s
+      records[rec_id] = rec
     end
-    self.search_result.records = self.search_result.records + records
+    self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
     self.runtime_additional = (Time.now.utc - self.updated_at) * 1000
-    # self.save
+    self.save
   end
 
   def persist_results(results)
     return unless results
     # finally extract the records IDs and persist them
-    records = Array.new {Hash.new}
+    records = Hash.new
     results.each do |rec|
-      records << rec
+      rec_id = rec["_id"].to_s
+      records[rec_id] = rec
     end
     self.search_result =  SearchResult.new(records: records)
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime("%F")
     self.search_index = @search_index
-    #self.save
+    self.save
   end
-
-  def persist_ucf_results(results)
-    return unless results
-    ucf_records = filter_ucf_records(results)
-    records = Array.new {Hash.new}
-    ucf_records.each do |rec|
-      a = rec["_id"].to_s
-      results_include = false
-      self.search_result.records.each do |record|
-        if record[:_id].to_s == a
-          results_include = true
-          break
-        end
-      end
-      records << rec unless results_include
-    end
-    self.runtime_ucf = (Time.now.utc - @start_ucf_time) * 1000
-    self.ucf_unfiltered_count = ucf_records.count
-    self.search_result.ucf_records = records
-  end
-
 
   def place_search?
     place_ids && place_ids.size > 0
@@ -477,10 +459,10 @@ class SearchQuery
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    self.persist_ucf_results(search_ucf_results)  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    self.save
+    search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
@@ -506,15 +488,15 @@ class SearchQuery
     params
   end
 
-  def search_ucf_results
-    p "search ucf"
-    p ucf_params
-    @start_ucf_time = Time.now.utc
+  def search_ucf
+    start_ucf_time = Time.now.utc
     ucf_index = SearchRecord.index_hint(ucf_params)
     ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    p "results"
-    p ucf_records
-    ucf_records
+    self.ucf_unfiltered_count = ucf_records.count
+    ucf_records = filter_ucf_records(ucf_records)
+    self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
+    self.runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
+    self.save
   end
 
 
@@ -562,11 +544,10 @@ class SearchQuery
         end
       end
     end
+    results
   end
 
   def ucf_params
-    p "ucf_params"
-    p ucf_record_ids
     params = Hash.new
     params.merge!(place_search_params)
     params.merge!(record_type_params)
