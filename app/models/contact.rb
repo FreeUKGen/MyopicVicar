@@ -23,6 +23,7 @@ class Contact
   field :selected_county, type: String # user-selected county to contact in FC2
   field :fc_individual_id, type: String
   field :identifier, type: String
+  field :screenshot_location, type: String
   attr_accessor :action
 
   validates_presence_of :name, :email_address
@@ -30,22 +31,30 @@ class Contact
 
   mount_uploader :screenshot, ScreenshotUploader
 
-  before_create :url_check, :add_identifier
+  before_create :url_check, :add_identifier, :add_screenshot_location
 
   class << self
     def id(id)
       where(:id => id)
     end
   end
-
-  def url_check
-
-    self.problem_page_url = "unknown" if self.problem_page_url.nil?
-    self.previous_page_url = "unknown" if self.previous_page_url.nil?
-  end
+  ##########################################################################################
 
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
+  end
+
+  def add_link_to_attachment
+    return if self.screenshot_location.blank?
+    website = Rails.application.config.website
+    website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
+    go_to = "#{website}/#{self.screenshot_location}"
+    body = self.body + "\n" + go_to
+    self.update_attribute(:body,body)
+  end
+
+  def add_screenshot_location
+    self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
   def communicate
@@ -76,11 +85,11 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -91,11 +100,11 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -106,10 +115,15 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if coordinator.present?
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    #coordinator = self.get_coordinator if self.record_id.present?
+    #ccs << coordinator.email_address if coordinator.present?
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
     end
     UserMailer.coordinator_data_problem(self,ccs).deliver_now
   end
@@ -119,14 +133,14 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'publicity_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'publicity_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -137,14 +151,14 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'genealogy_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'genealogy_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -155,14 +169,14 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'project_manager').all.each do |person|
+    UseridDetail.where(:person_role => 'project_manager', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -173,14 +187,14 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'volunteer_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'volunteer_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -191,11 +205,11 @@ class Contact
     ccs = Array.new
     selected_coord = get_coordinator_for_selected_county
     ccs << selected_coord.email_address unless selected_coord.nil?
-    UseridDetail.where(:person_role => 'contacts_coordinator').all.each do |person|
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').all.each do |person|
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
       end
     end
@@ -237,10 +251,12 @@ class Contact
   def github_issue
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if Contact.github_enabled
+      self.add_link_to_attachment
       Octokit.configure do |c|
         c.login = Rails.application.config.github_issues_login
         c.password = Rails.application.config.github_issues_password
       end
+      self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
@@ -263,11 +279,10 @@ class Contact
     issue_body
   end
 
-  def contact_screenshot_url
-    return nil unless screenshot.present?
-    cid=self._id.to_s unless self._id.nil?
-    ss=File.basename(screenshot.to_s)
-    MyopicVicar::Application.config.website + "/uploads/contact/screenshot/#{cid}/#{ss}"
+  def url_check
+    self.problem_page_url = "unknown" if self.problem_page_url.nil?
+    self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end
+
 
 end

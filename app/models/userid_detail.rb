@@ -3,6 +3,8 @@ class UseridDetail
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
 
+  require 'freereg_options_constants'
+
   field :userid, type: String
   field :userid_lower_case, type: String
   field :syndicate, type: String
@@ -35,14 +37,21 @@ class UseridDetail
   field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
+  field :email_address_valid, type: Boolean, default: true
+  field :email_address_last_confirmned, type: DateTime
+  field :no_processing_messages, type: Boolean, default: false
+
   attr_accessor :action, :message
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
+  index({syndicate: 1, active: 1}, {name: "syndicate_active"})
+  index({person_role: 1}, {name: "person_role"})
 
-  has_many :search_queries, dependent: :restrict
   has_many :freereg1_csv_files, dependent: :restrict
   has_many :attic_files, dependent: :restrict
+  has_many :assignments
+
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
@@ -68,8 +77,14 @@ class UseridDetail
     def role(role)
       where(:person_role => role)
     end
-    def active(role)
-      where(:active => role)
+    def active(active)
+      where(:active => active)
+    end
+    def reason(reason)
+      where(:disabled_reason_standard => reason)
+    end
+    def email_address_valid
+      where(:email_address_valid => true)
     end
   end
 
@@ -200,7 +215,7 @@ class UseridDetail
     when type == 'Register Researcher'
       self.person_role = 'researcher'
       self.syndicate = 'Researcher'
-    when type == 'Register Transcriber'
+    when type == 'Register as Transcriber'
       self.person_role = 'transcriber'
     when type == 'Technical Registration'
       self.active  = false
@@ -210,6 +225,9 @@ class UseridDetail
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     self.password = password
     self.password_confirmation = password
+    self.email_address_last_confirmned = self.sign_up_date
+    self.email_address_valid= true
+    self.email_address_last_confirmned = Time.new
   end
 
   def add_lower_case_userid
@@ -225,7 +243,12 @@ class UseridDetail
   end
 
   def changed_syndicate?(new_syndicate)
-    self.syndicate == new_syndicate ? change = false : change = true
+    new_syndicate.present? && self.syndicate != new_syndicate ? change = true : change = false
+    change
+  end
+
+  def changed_email?(new_email)
+    new_email.present? && self.email_address != new_email ? change = true : change = false
     change
   end
 
@@ -241,7 +264,7 @@ class UseridDetail
   def compute_records
     count = 0
     self.freereg1_csv_files.each do |file|
-      count = count + file.freereg1_csv_entries.count
+      count = count + file.records.to_i
     end
     count
   end
@@ -271,6 +294,7 @@ class UseridDetail
     UserMailer.notification_of_researcher_registration(self).deliver_now
   end
   def finish_transcriber_creation_setup
+    self.update_attribute(:email_address_last_confirmned, Time.now)
     UserMailer.notification_of_transcriber_registration(self).deliver_now
   end
   def finish_technical_creation_setup
@@ -279,9 +303,19 @@ class UseridDetail
 
   def has_files?
     value = false
-    value = true if Freereg1CsvFile.where(:userid => self.userid).count > 0
+    value = true if Freereg1CsvFile.where(:userid => self.userid).exists?
     value
   end
+
+  def need_to_confirm_email_address?
+    result = false
+    @user = UseridDetail.userid(self.userid).first
+    @user.email_address_last_confirmned.blank? ? last_date = @user.sign_up_date : last_date = @user.email_address_last_confirmned
+    result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
+    return result
+  end
+
+
 
   def remember_search(search_query)
     self.search_queries << search_query

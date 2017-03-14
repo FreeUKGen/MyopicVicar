@@ -60,8 +60,27 @@ module CheckFreereg1CsvFile
       check = true if reason.blank?
       file.save if fix && !check
       reason = ""  if reason.blank?
-      p "#{check} #{reason} " if !check
+      puts "#{check} #{reason} " if !check
       return [check,reason]
+    end
+    def check_register_type(file,fix)
+      check = false
+      register = file.register
+      if register.nil?
+        reason = "No register"
+        return [check,reason]
+      end
+      if register.register_type != file.register_type
+        reason =   reason + " Register, #{register.register_type},#{file.register_type},"  if  reason.present?
+        reason = "Register, #{register.register_type},#{file.register_type}," if  reason.blank?
+        file.register_type = register.register_type if fix
+      end
+      check = true if reason.blank?
+      file.save if fix && !check
+      reason = ""  if reason.blank?
+      puts "#{check} #{reason} " if !check
+      return [check,reason]
+
     end
 
   end

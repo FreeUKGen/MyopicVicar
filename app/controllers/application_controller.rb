@@ -17,9 +17,9 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery :with => :reset_session
   before_filter :require_login
-  before_filter :require_cookie_directive
+  #before_filter :require_cookie_directive
   before_filter :load_last_stat
-
+  before_filter :load_message_flag
   require 'record_type'
   require 'name_role'
   require 'chapman_code'
@@ -28,7 +28,29 @@ class ApplicationController < ActionController::Base
 
 
   def load_last_stat
-    @site_stat = SiteStatistic.all.order_by(interval_end: -1).first
+    if session[:site_stats].blank?
+      time = Time.now
+      last_midnight = Time.new(time.year,time.month,time.day)
+      #last_midnight = Time.new(2015,10,13)
+      @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
+      if  @site_stat.blank?
+        time =  1.day.ago
+        last_midnight = Time.new(time.year,time.month,time.day)
+        @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
+      end
+      session[:site_stats] = @site_stat
+    else
+      @site_stat = session[:site_stats]
+    end
+    @site_stat
+  end
+
+  def load_message_flag
+    # This tells system there is a message to display
+    if session[:message].blank?
+      session[:message] = "no"
+      session[:message]  = "load" if Refinery::Page.where(:slug => 'message').exists?
+    end
   end
 
   private
@@ -36,8 +58,7 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource_or_scope)
     #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    #start new session
-    cookies[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
@@ -50,7 +71,12 @@ class ApplicationController < ActionController::Base
     session[:mobile_override] = true if mobile_device?
   end
 
-
+  def get_max_records(user)
+    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
+    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if user.person_role == "data_manager"
+    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  user.person_role == "system_administrator"
+    max_records
+  end
 
   def get_place_id_from_file(freereg1_csv_file)
     register = freereg1_csv_file.register
@@ -68,13 +94,13 @@ class ApplicationController < ActionController::Base
   end
 
   def get_user_info_from_userid
-    @userid = session[:userid]
-    @user = UseridDetail.userid(@userid).first
+    @user = cookies.signed[:userid]
     unless @user.present?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path # halts request cycle
     else
       @user_id = @user.id
+      @userid = @user.id
       @first_name = @user.person_forename
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
@@ -83,14 +109,14 @@ class ApplicationController < ActionController::Base
 
   def  get_user_info(userid,name)
     #old version for compatibility
-    @userid = userid
-    @user = UseridDetail.where(:userid => @userid).first
-    @first_name = @user.person_forename
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
+    @userid = @user.id
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
   def get_userids_and_transcribers
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
     @userids = UseridDetail.all.order_by(userid_lower_case: 1)
   end
 
@@ -136,8 +162,9 @@ class ApplicationController < ActionController::Base
   end
 
   def require_cookie_directive
+    #p "cookie"
     if cookies[:cookiesDirective].blank?
-      flash[:notice] = 'This website only works if you are willing to accept cookies. If you did not see the cookie declaration you are likely using an obsolete browser and this website will not function'
+      flash[:notice] = 'This website only works if you are willing to explicitly accept cookies. If you did not see the cookie declaration you could be using an obsolete browser or a browser add on that blocks cookie messages'
       redirect_to main_app.new_search_query_path
     end
   end
@@ -183,6 +210,9 @@ class ApplicationController < ActionController::Base
     session.delete(:who)
     session.delete(:edit_freecen_pieces)
     session.delete(:redirect_to)
+    session.delete(:site_stats)
+    session.delete(:message)
+
   end
 
   def clean_session_for_county

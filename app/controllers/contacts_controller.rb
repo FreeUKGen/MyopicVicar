@@ -36,26 +36,35 @@ class ContactsController < ApplicationController
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
       if @contact.selected_county == 'nil'
-        @contact.selected_county = nil
+        @contact.selected_county = nil # string 'nil' to nil
       end
-      if @contact.save
+      @contact.save
+      if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
         @contact.communicate
         if @contact.query
-          redirect_to search_query_path(@contact.query, :anchor => "#{@contact.record_id}")
+          redirect_to search_query_path(@contact.query)
           return
         else
           redirect_to @contact.previous_page_url
           return
         end
       else
-        @options = FreeregOptionsConstants::ISSUES
-        @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-        render :new
-        return
+        flash[:notice] = "There was a problem with your submission please review"
+        if @contact.contact_type == 'Data Problem'
+          redirect_to @contact.previous_page_url
+          return
+        else
+          @options = FreeregOptionsConstants::ISSUES
+          @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+          render :new
+          return
+        end
       end
     else
-      redirect_to :action => 'new'
+      @options = FreeregOptionsConstants::ISSUES
+      @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+      render :new
       return
     end
   end
@@ -181,15 +190,19 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
-    if MyopicVicar::Application.config.template_set == 'freereg'
-      church = file.register.church
-      place = church.place
-      session[:freereg1_csv_file_id] = file._id
-      session[:freereg1_csv_file_name] = file.file_name
-      session[:place_name] = place.place_name
-      session[:church_name] = church.church_name
-      session[:county] = place.county
-    end
+    return true if MyopicVicar::Application.config.template_set == 'freecen'
+    register = file.register
+    return false if register.blank?
+    church = register.church
+    return false if church.blank?
+    place = church.place
+    return false if place.blank?
+    session[:freereg1_csv_file_id] = file._id
+    session[:freereg1_csv_file_name] = file.file_name
+    session[:place_name] = place.place_name
+    session[:church_name] = church.church_name
+    session[:county] = place.county
+    return true
   end
 
   def show
@@ -197,7 +210,8 @@ class ContactsController < ApplicationController
     if @contact.present?
       if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
         file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
-        set_session_parameters_for_record(file)
+        result = set_session_parameters_for_record(file)
+        go_back("contact",params[:id]) unless result
       else
         set_nil_session_parameters
       end

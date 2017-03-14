@@ -78,13 +78,16 @@ class Freereg1CsvFile
   index({file_name:1,error:1})
   index({error:1, file_name:1})
 
+  index({userid: 1, uploaded_date: 1},{name: "userid_uploaded_date"})
+  index({userid: 1, file_name: 1},{name: "userid_file_name"})
+  index({county: 1, errors: 1},{name: "county_errors"})
+
   before_save :add_lower_case_userid_to_file, :add_country_to_file
   after_save :recalculate_last_amended, :update_number_of_files
 
   before_destroy do |file|
     file.save_to_attic
     entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-    num = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).count
     entries.each do |entry|
       entry.destroy
       #sleep_time = 2*(Rails.application.config.sleep.to_f)
@@ -211,7 +214,7 @@ class Freereg1CsvFile
       return number_of_records,daterange
     end
 
-       def convert_date(date_field)
+      def convert_date(date_field)
         #use a custom date conversion to number of days for comparison purposes only
         #dates provided vary in format
         date_day = 0
@@ -260,7 +263,7 @@ class Freereg1CsvFile
 
       def delete_userid_folder(userid)
         folder_location = File.join(Rails.application.config.datafiles,userid)
-        FileUtils.rm_rf(folder_location)
+        FileUtils.rm_rf(folder_location) if Dir.exist?(folder_location) 
       end
 
       def file_update_location(file,param,session)
@@ -303,6 +306,7 @@ class Freereg1CsvFile
         church.update_attribute(:place_name, place.place_name)
         file.propogate_file_location_change(place.id)
         PlaceCache.refresh_cache(place)
+        file.update_freereg_contents_after_processing
         return[false,""]
       end
 
@@ -727,8 +731,14 @@ class Freereg1CsvFile
       def remove_batch
         #rspect
         #This deletes the document and defers deletion of entries/search records to overnight rake task
-        if self.locked_by_transcriber  ||  self.locked_by_coordinator
+        case
+        when self.records.to_i > 5000
+          UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
+          return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
+        when self.locked_by_transcriber  ||  self.locked_by_coordinator
           return false,'The removal of the batch was unsuccessful; the batch is locked'
+
+
         else
           #deal with file and its records
           self.add_to_rake_delete_list
@@ -789,7 +799,14 @@ class Freereg1CsvFile
           }
       end
 
-
+      def  update_freereg_contents_after_processing
+        register = self.register
+        register.calculate_register_numbers
+        church = register.church
+        church.calculate_church_numbers
+        place = church.place
+        place.calculate_place_numbers
+      end
 
       def update_number_of_files
         #this code although here and works produces values in fields that are no longer being used
@@ -833,7 +850,7 @@ class Freereg1CsvFile
           # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
           csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
           #eg +LDS,,,,
-          csv << ['+LDS'] if file.lds || file.lds =='yes'
+          csv << ['+LDS'] if file.lds =='yes'
 
 
           register = file.register

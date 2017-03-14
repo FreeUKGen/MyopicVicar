@@ -27,6 +27,7 @@ MyopicVicar::Application.routes.draw do
   get 'transreg_churches/list'
   get 'transreg_places/list'
   get 'transreg_counties/register_types'
+  get 'transreg_counties/all_register_types'
   get 'transreg_counties/list'
   get 'transreg_users/refreshuser'
   get 'transreg_users/authenticate'
@@ -90,6 +91,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/all_files', :to => 'physical_files#all_files', :as => :all_files_physical_files
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
+  get 'physical_files/:id/remove(.:format)', :to => 'physical_files#remove', :as => :remove_physical_file
   resources :physical_files
 
   resources :search_statistics
@@ -132,7 +134,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
-
+  get  'manage_syndicates/display_files_not_processed',  :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   resources :manage_syndicates
@@ -165,11 +167,14 @@ MyopicVicar::Application.routes.draw do
 
   resources :my_saved_searches
 
+
   get 'manage_resources/pages', :to =>'manage_resources#pages', :as => :pages_manage_resources
   get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
 
+
+  get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
   get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail
   get 'userid_details/person_roles', :to =>'userid_details#person_roles', :as => :person_roles_userid_detail
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail
@@ -209,6 +214,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
+  get  'manage_counties/display_files_not_processed',  :to => 'manage_counties#display_files_not_processed', :as => :display_files_not_processed_manage_counties
   resources :manage_counties
 
 

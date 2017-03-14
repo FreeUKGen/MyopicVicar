@@ -75,12 +75,17 @@ MyopicVicar::Application.configure do
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
+
   #rails 4 changes
   config.eager_load = false
+  config.timeout_researcher = MyopicVicar::MongoConfig['timeout_researcher']
+  config.timeout_manager = MyopicVicar::MongoConfig['timeout_manager']
+  config.timeout_transcriber = MyopicVicar::MongoConfig['timeout_transcriber']
   #config.active_record.mass_assignment_sanitizer = :strict
   config.serve_static_files = true
   config.assets.compile = true
   config.assets.compress = false
   config.assets.debug = false
   config.assets.digest = false
+
 end

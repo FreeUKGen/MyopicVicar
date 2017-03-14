@@ -32,12 +32,21 @@
       <td>Email:</td><td > <%= @userid.email_address   %> </td>
     </tr>
     <tr>
+      <td>Email address valid:</td><td > <%= @userid.email_address_valid   %> </td>
+    </tr>
+     <tr>
+      <td>Email address last confirmed:</td><td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y") if  @userid.email_address_last_confirmned.present? %> </td>
+    </tr>
+    <tr>
       <td>Physical Location:</td><td > <%= @userid.address  %>  </td>
     </tr>
     <tr>
       <% unless @userid.sign_up_date.nil?%>
       <td>Signed up:</td><td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
       <% end%>
+    </tr>
+    <tr>
+      <td>Registration completed:</td><td > <%= registered(@userid)  %>  </td>
     </tr>
     <% unless @userid.person_role == 'researcher'%>
     <tr>
@@ -90,11 +99,15 @@
   <tr>
     <td>Skill Level:</td><td > <%=@userid.skill_level%>  </td>
   </tr>
-  <% unless  @userid.active %>
+
+  <tr>
+  <td>SC upload data:</td><td><%= @userid.no_processing_messages %></td>
+  </tr>
+  
   <tr>
     <% unless @userid.disabled_date.nil?%>
     <td>Date made inactive :</td><td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
-    <% end%>
+   
   </tr>
   <tr>
     <td>Reason for making inactive (standardized):</td><td > <%=UseridRole::REASONS_FOR_INACTIVATING.key(@userid.disabled_reason_standard) unless @userid.nil? || @userid.disabled_reason.nil? %>  </td>

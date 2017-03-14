@@ -3,6 +3,7 @@ class County
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
+  require 'chapman_code'
 
   field :chapman_code, type: String
   field :county_coordinator, type: String
@@ -46,6 +47,20 @@ class County
       end
       coordinator_name
     end
+
+    def all_counties
+      all_counties = Array.new
+      County.all.order_by(chapman_code: 1).each do |county|
+        all_counties << county.chapman_code
+      end
+      all_counties
+    end
+
+    def is_county?(value)
+      County.all_counties.include?(ChapmanCode::values_at(value)) ?  result = true : result = false
+      result
+    end
+
 
     def id(id)
       where(:id => id)

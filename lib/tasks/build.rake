@@ -276,6 +276,8 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "messages"
+    require "denomination"
+    require "software_version"
 
     puts "Freereg build indexes."
     Country.create_indexes()
@@ -294,16 +296,18 @@ namespace :build do
     SearchQuery.create_indexes()
     AtticFile.create_indexes()
     PhysicalFile.create_indexes()
-    Messages.create_indexes()
+    Message.create_indexes()
+    Denomination.create_indexes()
+    SoftwareVersion.create_indexes()
     puts "Indexes complete."
   end
 
-  # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5"]
+  # example build:freereg_from_files["0/1","2/3/4/5/6/7", "0/1","2/3/4/5","0/1/2/3/4/5",27017]
   #this saves and reloads the Master and Alias collections, drops the other 6 collections, reloads 4 of those from the github respository
   #and indexes everything
-  # example build:freereg_from_files["","","","0/1","0/1"]
+  # example build:freereg_from_files["","","","0/1","0/1",37017]
   #reloads the Mater and Alias collections from Github and indexes them
-  # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7"]
+  # example build:freereg_from_files["","","2/3/4/5/6/7","0/1","0/1/2/3/4/5/6/7",27017]
   #reloads saved versions of Places/Churches/Registers/Files/Entries/Search_records from tmp and reloads the Mater and Alias
   #collections from Github and indexes them all
   #******************************NOTE************************************
@@ -450,6 +454,9 @@ namespace :build do
     require "attic_file"
     require "physical_file"
     require "message"
+    require "denomination"
+    require "software_version"
+
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
@@ -542,8 +549,84 @@ namespace :build do
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
-    p "using database #{db} on host #{host}"
-    NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+    begin
+      if args.type == "individual"
+        p "FREEREG:CSV_PROCESSING: starting an individual project"
+        NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+      else
+        rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+        processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
+        p "Initiation lock present" if File.exist?(processor_initiation_lock_file)
+        FileUtils.rm(processor_initiation_lock_file, :force => true) if File.exist?(processor_initiation_lock_file)
+        if File.exist?(rake_lock_file)
+          p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
+        else
+          #set the processor running flag
+          locking_file = File.new(rake_lock_file, "w")
+          p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+          while PhysicalFile.waiting.exists?
+            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+            sleep(300)
+          end
+
+        end
+      end
+      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+      p "Still there" if File.exist?(rake_lock_file)
+
+    rescue Exception => msg
+      p "rescue"
+      p msg
+      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+      p "Still there" if File.exist?(rake_lock_file)
+    end
+  end
+  desc "build recommence search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
+  task :recommence_freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
+    require 'new_freereg_csv_update_processor'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.clients[:default][:database]
+    hosts = Mongoid.clients[:default][:hosts]
+    host = hosts[0]
+    begin
+      if args.type == "individual"
+        p "FREEREG:CSV_PROCESSING: starting an individual project"
+        NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+      elsif args.force == "force_rebuild"
+        p "FREEREG:CSV_PROCESSING: starting a force rebuild"
+        NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+      else
+        rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+        processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
+        File.delete(processor_initiation_lock_file) if File.exist?(processor_initiation_lock_file)
+        if File.exist?(rake_lock_file)
+          p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Continuing with processing"
+          while PhysicalFile.waiting.exists?
+            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+            sleep(300)
+          end
+          p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+          FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+        else
+          locking_file = File.new(rake_lock_file, "w")
+          p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+          while PhysicalFile.waiting.exists?
+            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+            sleep(300)
+          end
+        end
+      end
+      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+    rescue Exception => msg
+      p "rescue"
+      p msg
+      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+    end
   end
 
 end

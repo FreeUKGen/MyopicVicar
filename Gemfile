@@ -12,6 +12,7 @@ gem 'mysql2'
 #gem 'web-console', '~> 2.0'
 gem 'rails_12factor', group: :production
 
+#gem 'actionpack-xml_parser', '~> 2.0'
 #gem 'mysql2', '0.3.12'
 
 gem 'refinerycms', '~> 3.0', '>= 3.0.3'
@@ -22,8 +23,8 @@ gem 'refinerycms-wymeditor', '~> 1.0', '>= 1.0.6'
 #gem 'refinerycms-authentication',  '~> 2.1.1'
 # MongoDB
 #gem 'bson_ext'
-gem 'mongoid', '~> 5.0'
-gem 'mongo', '~> 2.1'
+gem 'mongoid', '5.1.4'
+gem 'mongo', '2.3.0'
 #gem "mongoid", "~> 3.1"
 #gem "moped", "~> 1"
 gem 'execjs'
@@ -42,9 +43,10 @@ gem 'pry-byebug'
 gem 'pry-stack_explorer'
 gem 'email_veracity'
 gem "unicode", "~> 0.4.3"
-gem 'kaminari-mongoid'
+gem 'kaminari', '0.17.0'
+gem 'kaminari-mongoid', '0.1.2'
 gem "gretel"
-gem 'geocoder'
+gem 'geocoder', '1.3.7' #appears to be a regression in 1.4
 #gem 'activeadmin'
 #gem "meta_search",    '>= 1.1.0.pre'
 

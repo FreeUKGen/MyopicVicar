@@ -1,15 +1,19 @@
-if Rails.env.development? && (Rails.application.config.mongodb_bin_location == "D:\\Program Files\\MongoDB\\Server\\3.2\\bin\\" ||
+if Rails.env.development? 
+  if (Rails.application.config.mongodb_bin_location == "D:\\Program Files\\MongoDB\\Server\\3.2\\bin\\" ||
                               Rails.application.config.mongodb_bin_location == "d:\\mongodb\\3.2\\bin\\")
-  ActionMailer::Base.delivery_method = :smtp
-  # SMTP settings for gmail
-  ActionMailer::Base.smtp_settings = {
-    :address              => "smtp.gmail.com",
-    :port                 => 587,
-    :user_name            => ENV['gmail_username'],
-    :password             => ENV['gmail_password'],
-    :authentication       => "plain",
-    :enable_starttls_auto => true
-  }
+    ActionMailer::Base.delivery_method = :smtp
+    # SMTP settings for gmail
+    ActionMailer::Base.smtp_settings = {
+      :address              => "smtp.gmail.com",
+      :port                 => 587,
+      :user_name            => ENV['gmail_username'],
+      :password             => ENV['gmail_password'],
+      :authentication       => "plain",
+      :enable_starttls_auto => true
+    }
+  else
+    #developer other than Kirk
+  end
 else
   ActionMailer::Base.delivery_method = :sendmail
   ActionMailer::Base.perform_deliveries = true

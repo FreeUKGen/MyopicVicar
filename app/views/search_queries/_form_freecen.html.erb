@@ -3,8 +3,8 @@
 	<%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<% if @search_query.errors.present? && @search_query.errors.any? %>
-<h2 class=" gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
+<% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
+<h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
 <ul class="validation-list">
 	<% @search_query.errors.messages.each do |key, msg| %>
 	<li class="validation-list__error text--center" ><%= msg[0] %></li>

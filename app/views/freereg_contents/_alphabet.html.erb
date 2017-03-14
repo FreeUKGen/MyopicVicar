@@ -1,63 +1,65 @@
 <% title "#{@county} Contents" %>
-<div class="grid">
-  <header class="grid__item one-whole">
-    <div class="text--center push-half--bottom">
-      <%= link_to 'County Selection', new_freereg_content_path, :class => "btn weight--light btn--small "%> 
-      <% if @character  %>
-        <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
-      <% end%>
+<div class="text--center push-half--bottom">
+  <%= link_to 'Choose a County', new_freereg_content_path, :class => "btn weight--light btn--small "%> 
+</div>
+<h1 class="title text--center"><%= @county %></h1>
+<h2 class="accessibility">Database contents</h2>
+<p class="read-length" style="margin: 0 auto 28px auto;"><%= @county %> has too many records to show all the places on one page. Choose <em>either</em> a specific place <em>or</em> a group of places by their first letter:</p>
+<% if flash[:notice] %>
+<div class="push-half--bottom" id="notice" role="alert" style="color: #a1185a;">
+  <%= flash[:notice] %>  <% flash[:notice] = nil%>
+</div>
+<% end %>
+<%= semantic_form_for @freereg_content do |f| %>
+  <div class="grid">
+    <div class="grid__item one-sixth lap-one-twelfth palm-one-whole" style="height: 1px;">&nbsp;</div>
+    <div class="grid__item four-sixths lap-ten-twelfths palm-one-whole">
+      <ol class="grid">
+        <li class="grid__item three-fifths palm-one-whole" id="freereg_content_place_input">
+          <label class="label" for="freereg_content_place">
+            Specific Place
+          </label>
+          <select id="freereg_content_place" name="freereg_content[place]" class="select" size="4">
+          <%  @places.each do | value| %>
+            <option value="<%= value %>"><%= value %></option>
+          <% end %>
+          </select>
+        </li>
+        <li class="grid__item two-fifths palm-two-thirds" id="freereg_content_character_input">
+          <label class="label" for="freereg_content_character">
+            First Letter
+          </label>
+          <select id="freereg_content_character" name="freereg_content[character]" class="select" size="4">
+          <%  @options.each do |value| %>
+            <option value="<%= value %>"><%= value %></option>
+          <% end %>
+          </select>
+        </li>   
+        <%= f.action :submit, :as => :button,  :label => 'Go' ,:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff" },:wrapper_html => { :class => "grid__item one-whole text--center push--bottom" } %>
+      </ol>
     </div>
-    <h1 class="title  text--center"> <%= @county %> General Information</h1>
-    <h2 class="text--center">Coordinator: <%= @coordinator %> </h2>
-  </header>
-  <div class="grid__item one-third palm-one-whole float--right ">
-    <div class="island island--blue push-half--top">
-      <strong>As of today…</strong><br /> <%= @county %> has <%= display_number(@records[0])%> records:
-      <ul>
+  </div>
+<% end %>
+<hr class="rule">
+<h2 class="text--center">General County Information</h2>
+<div class="grid">
+  <div class="grid__item two-thirds lap-one-half palm-one-whole">
+    <div class="read-length">
+      <p class="gamma">Coordinator: <span class="weight--semibold"><%= @coordinator %></span></p>
+      <%= county_content(@page)%>
+    </div>
+  </div>
+  <div class="grid__item one-third lap-one-half palm-one-whole">
+    <div class="island island--bordered">
+      <h3 class="delta push-half--bottom">As of today …</h3>
+      <p class="push-half--bottom"><%= @county %> has <%= display_number(@records[0])%> records:</p>
+      <ul class="push--left">
         <li><%= display_number(@records[1])%> baptisms</li>
         <li><%=display_number(@records[2])%> burials</li>
         <li><%= display_number(@records[3])%> marriages</li>
       </ul>
     </div>
   </div>
-  <div class="grid__item two-thirds palm-one-whole ">
-    <%= county_content(@page)%>
-  </div>
-  <div class="grid__item one-whole">
-    <hr class="rule">
-  <% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-  <% end %>
-    
-  </div>
-</div>
-
-<div class="grid">
- <%= semantic_form_for @freereg_content do |f| %>
-    <li class="grid__item  one-third  palm-one-whole" id="freereg_content_place_input">
-      <label class=" label" for="freereg_content_place">
-        Specific Place
-      </label>
-      <select id="freereg_content_place" name="freereg_content[place]" class="select" size="4" tabindex="6">
-        <%  @places.each do | value| %>
-            <option name="<%= value %>"><%= value %></option>
-        <% end %>
-      </select>
-    </li>
-    <%= f.action :submit, :as => :button,  :label => 'Select One Option' ,:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff" },:wrapper_html => { :class => "grid__item  one-third text--center" }  %>
-    <li class="grid__item  one-third  palm-one-whole" id="freereg_content_character_input">
-      <label class=" label" for="freereg_content_character">
-       Letter range
-      </label>
-      <select id="freereg_content_character" name="freereg_content[character]" class="select" size="4" tabindex="6">
-        <%  @options.each do |value| %>
-            <option name="<%= value %>"><%= value %></option>
-        <% end %>
-      </select>
-    </li>   
-  <% end %>
 </div>
 <script type="text/javascript">
       Ladda.bind( 'button[type=submit]' );

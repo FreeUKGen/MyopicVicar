@@ -30,6 +30,8 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
+  has_many :sources # includes transcripts, printed editions, and microform, and digital versions of these
+
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
   index({ alternate_register_name: 1})
@@ -111,6 +113,7 @@ class Register
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = DateTime.new(1998,1,1)
     individual_files = self.freereg1_csv_files
     if individual_files.present?
       individual_files.each do |file|
@@ -121,22 +124,28 @@ class Register
           file.daterange = FreeregContent.setup_array if  file.daterange.blank?
           FreeregContent.calculate_date_range(file, total_hash,"file")
           FreeregContent.get_transcribers(file, transcriber_hash,"file")
+          batch = PhysicalFile.userid(file.userid).file_name(file.file_name).first
+          uploaded = batch.base_uploaded_date if batch.present?
+          last_amended = uploaded.to_datetime  if uploaded.present? && uploaded.to_datetime > last_amended.to_datetime
         end
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
   end
 
   def change_type(type)
+    old_type = self.register_type
     unless self.register_type == type
       self.update_attributes(:register_type => type, :alternate_register_name =>  self.church.church_name.to_s + " " + type.to_s )
     end
     if self.errors.any?
       return true
     end
-    self.propogate_register_type_change
+    self.propogate_register_type_change(old_type)
     return false
   end
 
@@ -150,8 +159,8 @@ class Register
     @place = @church.place
     @county =  @place.county
     @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def has_input?
@@ -177,31 +186,23 @@ class Register
     return [true, ""]
   end
 
-  def propogate_register_type_change
-    location_names =[]
-    place_name = self.church.place.place_name
+  def propogate_register_type_change(old_type)
+    place = self.church.place
+    place_name = place.place_name
     church_name = self.church.church_name
-    register_type = RegisterType.display_name(self.register_type)
-    location_names << "#{place_name} (#{church_name})"
-    location_names  << " [#{register_type}]"
-    self.freereg1_csv_files.no_timeout.each do |file|
-      file.freereg1_csv_entries.no_timeout.each do |entry|
-        if entry.search_record.nil?
-          logger.info "FREEREG:search record missing for entry #{entry._id}. \r\n"
-        else
-          entry.update_attribute(:register_type,register_type)
-          entry.search_record.update_attribute(:location_names, location_names)
-        end
-      end
+    new_register_type = RegisterType.display_name(self.register_type)
+    old_location_names =[]
+    old_location_names << "#{place_name} (#{church_name})"
+    old_location_names  << " [#{RegisterType.display_name(old_type)}]"
+    new_location_names =[]
+    new_location_names << "#{place_name} (#{church_name})"
+    new_location_names[1] = " [#{new_register_type}]"
+    result = SearchRecord.collection.find({place_id: place._id, location_names: old_location_names}).hint("place_location").update_many({"$set" => {:location_names => new_location_names}})
+    files = self.freereg1_csv_files
+    files.each do |file|
+      result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:register_type => self.register_type}})
+      file.update_attribute(:register_type,self.register_type)
     end
-  end
-
-  def records
-    records = 0
-    self.freereg1_csv_files.each do |file|
-      records =  records + file.freereg1_csv_entries.count
-    end
-    records
   end
 
 

@@ -1,72 +1,81 @@
-<div class="grid">
-  <h1 class="title">Data Problem Report</h4>
-  <% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-  <% end %>
-  <% if @contact.errors.any? %>
-      <div id="error_explanation">
-        <h2><%= pluralize(@contact.errors.count, "error") %> prohibited your contact from being submitted:</h2>
-        <ul class="validation-list">
-          <% @contact.errors.full_messages.each do |msg| %>
-          <li class="validation-list__error"><%= msg %></li>
-          <% end %>
-        </ul>
-      </div>
-  <% end %>
-  <div style="margin: 0 auto;" class="grid__item  four-fifths " >
-    <p >We are sorry that you feel the transcription may be in error. Please tell us why you believe we have misinterpreted the original record. We will adjust the record if, upon review of the original, we agree with your interpretation. <br><b>Please be aware we do not adjust transcriptions based upon sources of information other than the original register.</b></p>
-  </div>
-  </div>
-  <div class="grid">
-  <div class="island  island--light ">
-      <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
-      <%= f.hidden_field :query %>
-      <%= f.hidden_field :contact_type %>
-      <%= f.hidden_field :contact_time %>
-      <%= f.hidden_field :record_id %>
-      <%= f.hidden_field :entry_id %>
-      <%= f.hidden_field :line_id %>
-      <%= f.hidden_field :previous_page_url %>
-      <%= f.hidden_field :county %>
-
-
-      <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="name_input">
-        <label class="label" for="name">Your name  <a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>Please provide a name for when we contact you; it will not be made public</span></a>
+<h1 class="title">Data Problem Report</h1>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<% if @contact.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(@contact.errors.count, "error") %> prohibited your contact from being submitted:</h2>
+  <ul class="validation-list">
+    <% @contact.errors.full_messages.each do |msg| %>
+    <li class="validation-list__error"><%= msg %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+<div class="read-length">
+  <p class="push-half--bottom">Thank you for reporting a possible error in our transcription. <b>We will change our record if we agree with your interpretation of the source document we transcribed.</b> If you have access to a different document which has different evidence, please provide details so that we can attach a note to our transcription. We would be grateful if you could send us an image of the different document so that we may transcribe it.</p>
+  <p style="font-size: 0.9rem;">Please note: some Record Offices and some websites allow you to make copies for personal use only &mdash; if your document is such a copy, we cannot use it.</p>
+</div>
+<div class="push palm-flush--bottom">
+  <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
+  <%= f.hidden_field :query %>
+  <%= f.hidden_field :contact_type %>
+  <%= f.hidden_field :contact_time %>
+  <%= f.hidden_field :record_id %>
+  <%= f.hidden_field :entry_id %>
+  <%= f.hidden_field :line_id %>
+  <%= f.hidden_field :previous_page_url %>
+  <%= f.hidden_field :county %>
+    <ol class="grid">
+      <li class="grid__item one-quarter lap-one-half palm-one-whole" id="name_input">
+        <label class="label ttip" for="name" tabindex="0">Your name 
+          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <span class="ttip__text">Required. Your name for when we contact you: it will not be made public</span>
         </label>
       <% if @contact.name.nil? %>
-        <input name="contact[name]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+        <input id="name" name="contact[name]" type="text" class="text-input" placeholder="Required" required="required">
       <% else %>
-        <input name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
+        <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
       <% end %>
       </li>
-      <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="email_address_input">
-         <label class="label" for="email_address">Your email address <a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %> <span>Please enter your email address so we can contact you; it will not be made public</span></a></label>
+      <li class="grid__item one-quarter lap-one-half palm-one-whole" id="email_address_input">
+        <label class="label ttip" for="email_address" tabindex="0">Your email address 
+          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <span class="ttip__text">Required. Your email address so we can contact you: it will not be made public</span>
+        </label>
       <% if @contact.email_address.nil? %>
-        <input name="contact[email_address]" type="text" class="text-input" placeholder="Mandatory" required="required" >
+        <input id="email_address" name="contact[email_address]" type="text" class="text-input" placeholder="Required" required="required">
       <% else%>
-        <input name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
+        <input id="email_address" name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
       <% end%>
+      </li>
+      <li class="grid__item one-half lap-one-whole palm-one-whole push--bottom clear--left">
+        <label class="ttip" for="description" tabindex="0">Description
+          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <span class="ttip__text">Your reasons for commenting on the record entry</span>
+        </label>
+      <% if @contact.body.nil? %>
+        <textarea id="description" name="contact[body]" style="width: 100%; max-width: 32rem;" rows="6"></textarea>
+        <% else%>
+        <textarea id="description" name="contact[body]" style="width: 100%; max-width: 32rem;" rows="6"><%=@contact.body%></textarea>
+        <% end%>
       </li>
       
-    <li class="grid__item  one-third  palm-one-whole  push--bottom">
-      <label>Screenshot or image <span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select any supporting images (jpg, jpeg or gif only)</span></a></label>
-        <input name="contact[screenshot]" type="file" >
+      <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole push--bottom">
+        <label class="ttip" for="screenshot" tabindex="0">Screenshot or image 
+          <span class="weight--normal" style="display: inline-block;"> (optional) <%= image_tag 'info.png', alt: 'Info', height: '16' %></span>
+          <span class="ttip__text">Please select any supporting images (jpg, jpeg, png, or gif only)</span>
+        </label>
+        <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
       </li>
-      <br>
-    <li class="grid__item  two-thirds  palm-one-whole  push--bottom">
-      <label>Description <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %> <span>Please enter your reasons for commenting on the record entry</span></a></label>
-      <% if @contact.body.nil? %>
-      <textarea name="contact[body]"  style="width: 100%;"  rows="6"></textarea>
-      <% else%>
-      <textarea name="contact[body]"   style="width: 100%;" rows="6" ><%=@contact.body%></textarea>
-      <% end%>
-    </li>
-    <%= f.action :submit, :as  => :input, :label => 'Report Error' , :button_html => { :class => "btn  " }, :wrapper_html => { :class => "grid__item  one-third text--left " }  %>
-    <div class="betterstyling">
-      <p>Please add your name again: </p><input type="text" name="contact[contact_name]">
-    </div>
-    <% end %>
-  </div>
+      
+      <%= f.action :submit, :as  => :input, :label => 'Report Error' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-third lap-two-fifths palm-one-whole push--bottom" } %>
+      <li class="betterstyling">
+        <label for="contact_name_confirm">Please add your name again:</label>
+        <input id="contact_name_confirm" type="text" name="contact[contact_name]">
+      </li>
+    </ol>
+  <% end %>
 </div>

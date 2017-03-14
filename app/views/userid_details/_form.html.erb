@@ -17,9 +17,17 @@
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => role_lbl, :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+      <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
+      <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {   :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width" }%>
+
     <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:input_html => { :size => 40, :disabled => true }%>
          <%= f.input :person_role,:label => role_lbl,:input_html => { :size => 40, :disabled => true }%>
+
+        <% if (manager?(@user)) %>
+          <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
+          <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {   :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width" }%>
+        <% end %>
     <% end%>
   <% end%>
   <%= f.input :person_forename,:label => "Forename", :required => true, :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
@@ -40,6 +48,8 @@
 
       <%= f.input :disabled_reason,:hint => "If you selected 'Other' or need to add information, explain here.",:label => "Reason for making inactive (explanation)",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
 
+      <%= f.input :no_processing_messages, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.no_processing_messages, :label => "SC upload data", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "no email to transcriber if SC upload data"} %>
+
       <% unless @userid.active %> 
         <%= f.input :disabled_date,:label => "Date made inactive", :input_html => { :size => 30, :disabled => true}%>
       <% end%>
@@ -48,6 +58,7 @@
       <%= f.input :last_upload,:label => "Date of last upload", :input_html => { :size => 30, :disabled => true }%>
     <% end %>
     <%= f.input :sign_up_date,:label => "Date signed up", :input_html => { :size => 30, :disabled => true }%>
+    
   <% end %>
   <%= f.button :submit, 'Update'   %>
   <% end %>

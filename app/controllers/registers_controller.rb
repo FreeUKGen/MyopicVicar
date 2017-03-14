@@ -82,6 +82,7 @@ class RegistersController < ApplicationController
       success[1] = "Non-existent register"
     end
     if success[0]
+      @register.calculate_register_numbers
       flash[:notice] = 'The merge of the Register was successful'
       redirect_to register_path(@register)
       return
@@ -119,10 +120,8 @@ class RegistersController < ApplicationController
     unless @register.nil?
       @records = @register.records
     end
-    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
-    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if @user.person_role == "data_manager"
-    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  @user.person_role == "system_administrator"
-    if @records.to_i >= max_records
+    max_records = get_max_records(@user)
+    if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to :action => 'show' and return
     end
@@ -139,10 +138,8 @@ class RegistersController < ApplicationController
     unless @register.nil?
       @records = @register.records
     end
-    max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
-    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if @user.person_role == "data_manager"
-    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  @user.person_role == "system_administrator"
-    if @records.to_i >= max_records
+    max_records = get_max_records(@user)
+    if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line rename'
       redirect_to :action => 'show' and return
     end
@@ -150,9 +147,11 @@ class RegistersController < ApplicationController
 
   def show
     load(params[:id])
-    @decade = @register.daterange
-    @transcribers = @register.transcribers
-    @contributors = @register.contributors
+    unless @register.nil?
+      @decade = @register.daterange
+      @transcribers = @register.transcribers
+      @contributors = @register.contributors
+    end
   end
 
   def update
@@ -179,6 +178,7 @@ class RegistersController < ApplicationController
         render :action => 'rename'
         return
       end
+      @register.calculate_register_numbers
       flash[:notice] = 'The change of register type for the Register was successful'
       redirect_to register_path(@register)
       return

@@ -7,11 +7,12 @@ class MessagesController < ApplicationController
   end
 
   def show
+    get_user_info_from_userid
     @message = Message.id(params[:id]).first
     if @message.blank?
       go_back("message",params[:id])
     end
-    @sent =   @message.sent_messages
+    @sent =   @message.sent_messages.order_by(sent_time: 1)
   end
 
   def list_by_name
@@ -67,13 +68,24 @@ class MessagesController < ApplicationController
   end
 
   def send_message
+    get_user_info_from_userid
     @message = Message.id(params[:id]).first
     if @message.present?
       @options = UseridRole::VALUES
-      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now)
+      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @userid)
       @message.sent_messages <<  [ @sent_message ]
       @sent_message.save
+      @sent_message.active = true
       @message.action =  @sent_message.id
+      @inactive_reasons = Array.new
+      UseridRole::REASONS_FOR_INACTIVATING.each_pair do |key,value|
+        @inactive_reasons << value
+      end
+      @senders = Array.new
+      @senders << ''
+      UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
+        @senders << sender.userid
+      end
     else
       go_back("message",params[:id])
     end
@@ -88,16 +100,24 @@ class MessagesController < ApplicationController
   end
 
   def update
+
     @message = Message.id(params[:id]).first
     if @message.present?
       case params[:commit]
       when "Submit"
         @message.update_attributes(message_params)
       when "Send"
+        sender = params[:sender]
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
-        @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:message][:sent_message][:active])
-        @message.communicate(params[:recipients],  params[:message][:sent_message][:active])
-        flash[:notice] = "Message sent to #{params[:recipients]} #{ params[:message][:sent_message][:active]}"
+        active = false
+        active = true if params[:active] == "true"
+        reasons = Array.new
+        params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
+        @sent_message.update_attributes(:recipients => params[:recipients], :active => active, :inactive_reason => reasons, :sender => sender)
+        @message.communicate(params[:recipients],  active, reasons,sender)
+        flash[:notice] = "Message sent to Recipients: #{params[:recipients]}; Active : #{active} #{reasons}" if !active
+        flash[:notice] = "Message sent to Recipients: #{params[:recipients]}; Active : #{active} " if active
+
       end
       redirect_to :action => 'show'
       return

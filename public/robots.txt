@@ -1,23 +1,15 @@
-# robots.txt for http://freereg2.freereg.org.uk/
-
+# robots.txt for https://www.freereg.org.uk/
+sitemap: https://www.freereg.org.uk/sitemap_location.txt
 User-agent: *
-Allow: /about
-Allow: /donate
-Allow: /help
-Allow: /search_queries/new
-Allow: /search_queries/*/about
+Disallow: /
+Allow: /cms/about
+Allow: /cms/donate
+Allow: /cms/help
+Allow: /cms/refinery/login
+Allow: /cms/information-for-transcribers
+Allow: /cms/information-for-coordinators
+Allow: /search_queries
+Allow: /search_statistics
 Allow: /freereg_contents
-Disallow: /manage_resources
-Disallow: /manage_syndicates
-Disallow: /manage_counties
-Disallow: /physical_files
-Disallow: /syndicates
-Disallow: /userid_details
-Disallow: /search_names
-Disallow: /search_queries
-Disallow: /search_records
-Disallow: /freereg1_csv_entries
-Disallow: /freereg1_csv_files
-Disallow: /contacts
-Disallow: /feedback
-Disallow: /refinery/login
+Allow: /sitemap_location.txt
+Disallow: /search_queries/report

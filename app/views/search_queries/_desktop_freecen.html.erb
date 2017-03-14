@@ -57,8 +57,10 @@
             </th>
           <% end %>
         </thead >
-        <% @search_results.each do |search_record| %>
         <tbody >
+	<% n = 0 %>
+        <% @search_results.each do |search_record| %>
+         <% n = n + 1 %>
           <tr id="<%=search_record.id%>">
             <td>
               <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
@@ -82,17 +84,13 @@
 	      <%# search_record.place.county %>
               <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
             </td>
-			<td>
-	        	<%= format_location(search_record) %>
-	         </td>
-          <% unless print_friendly %>
-	          <td>
-              <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query)) %>
-              <% if session[:viewed] %>
-                <i>
-                <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
-                </i>
-              <% end %>
+            <td>
+              <%= format_location(search_record) %>
+	    </td>
+            <% unless print_friendly %>
+	      <td>
+              <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query), :title => "Row #{n}, details for #{name['first_name']} #{name['last_name']}") %>
+	      <i><%= viewed(@search_query,search_record) %></i>
             </td>
           <% end %>
           </tr>

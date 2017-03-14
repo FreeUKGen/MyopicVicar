@@ -40,9 +40,9 @@ Devise.setup do |config|
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
-  config.mailer_sender = "reg-web@freereg.org.uk"
+  config.mailer_sender = "freereg-registration@freereg.org.uk"
   if MyopicVicar::Application.config.template_set == 'freecen'
-    config.mailer_sender = "cen-web@freecen.org.uk"
+    config.mailer_sender = "freecen-registration@freecen.org.uk"
   end
 
   # Configure the class responsible to send e-mails.
@@ -155,7 +155,7 @@ Devise.setup do |config|
 
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
-  # config.remember_for = 2.weeks
+  config.remember_for = 2.weeks
 
   # If true, extends the user's remember period when remembered via cookie.
   # config.extend_remember_period = false
@@ -180,7 +180,7 @@ Devise.setup do |config|
   # ==> Configuration for :timeoutable
   # The time you want to timeout the user session without activity. After this
   # time the user will be asked for credentials again. Default is 30 minutes.
-  config.timeout_in = 10.minutes
+  #config.timeout_in = 100.minutes
 
   # ==> Configuration for :lockable
   # Defines which strategy will be used to lock an account.

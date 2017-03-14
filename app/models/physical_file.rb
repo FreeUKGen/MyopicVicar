@@ -23,7 +23,7 @@ class PhysicalFile
   index ({file_processed: 1})
   index ({ change: 1})
   index ({ waiting_to_be_processed: 1})
-
+  index ({ userid: 1, waiting_to_be_processed: 1})
   class << self
     def id(id)
       where(:id => id)
@@ -136,9 +136,18 @@ class PhysicalFile
     else
       p "why here"
     end
+    rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+    if File.exist?(rake_lock_file)
+      logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+      message =  "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
+    else
+      logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
+      pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+      message =  "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+    end
     return[success,message]
   end
-  def file_delete
+  def file_and_entries_delete
     file =   Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).first
     file.save_to_attic unless file.blank?
     Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all unless file.blank?
@@ -149,6 +158,13 @@ class PhysicalFile
       File.delete(change_file_location) if File.file?(change_file_location)
     end
   end
+
+  def file_delete
+    location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    File.delete(location) if File.file?(location)
+  end
+
+
   def update_userid(new_userid)
     self.update_attribute(:userid, new_userid)
   end

@@ -4,17 +4,20 @@ module Refinery
       class PasswordsController < ::Devise::PasswordsController
         helper Refinery::Core::Engine.helpers
         layout 'refinery/layouts/login'
-
+        skip_before_filter :require_login
         before_action :store_password_reset_return_to, :only => [:update]
+
+
         def store_password_reset_return_to
           session[:'return_to'] = Refinery::Core.backend_path
         end
+
         protected :store_password_reset_return_to
 
         # Rather than overriding devise, it seems better to just apply the notice here.
         after_action :give_notice, :only => [:update]
         def give_notice
-          if %w(notice error alert).exclude?(flash.keys.map(&:to_s)) or self.resource.errors.any?
+          if self.resource.errors.empty?
             flash[:notice] = t('successful', :scope => 'refinery.authentication.devise.users.reset', :email => self.resource.email)
           end
         end
@@ -22,13 +25,9 @@ module Refinery
 
         # GET /registrations/password/edit?reset_password_token=abcdef
         def edit
-          if @reset_password_token = params[:reset_password_token]
-            self.resource = User.find_or_initialize_with_error_by_reset_password_token(params[:reset_password_token])
-            respond_with(self.resource) and return
-          end
-
-          redirect_to refinery.new_authentication_devise_user_password_path,
-            :flash => ({ :error => t('code_invalid', :scope => 'refinery.authentication.devise.users.reset') })
+          self.resource = User.find_or_initialize_with_error_by_reset_password_token(params[:reset_password_token])
+          set_minimum_password_length
+          resource.reset_password_token = params[:reset_password_token]
         end
 
         # POST /registrations/password

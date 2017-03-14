@@ -56,13 +56,12 @@ class SearchQuery
   field :region, type: String #bot honeypot
   field :search_index, type: String
   field :day, type:String
+  field :use_decomposed_dates, type: Boolean, default: false
 
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
   
   has_and_belongs_to_many :places, inverse_of: nil
-
-  belongs_to :userid_detail
 
   embeds_one :search_result
 
@@ -86,6 +85,8 @@ class SearchQuery
       where(:id => name)
     end
   end
+
+  ############################################################################# instance methods #####################################################
 
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
@@ -199,7 +200,7 @@ class SearchQuery
       date_params = Hash.new
       date_params["$gt"] = DateParser::start_search_date(start_year) if start_year
       date_params["$lte"] = DateParser::end_search_date(end_year) if end_year
-      params[:search_dates] = { "$elemMatch" => date_params }
+      params[:search_date] = date_params
     end
     params
   end
@@ -231,9 +232,8 @@ class SearchQuery
   def filter_ucf_records(records)
     filtered_records = []
     records.each do |record|
-      #     p record.id
+      record = SearchRecord.new(record)
       record.search_names.each do |name|
-        #       p name
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive
           if name.contains_wildcard_ucf?
             if self.first_name.blank?
@@ -283,11 +283,11 @@ class SearchQuery
       params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
-        name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name
+        name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name.present?
         params["search_soundex"] =  { "$elemMatch" => name_params}
       else
         name_params["first_name"] = first_name.downcase if first_name
-        name_params["last_name"] = last_name.downcase if last_name
+        name_params["last_name"] = last_name.downcase if last_name.present?
         params["search_names"] =  { "$elemMatch" => name_params}
       end
     end
@@ -305,6 +305,21 @@ class SearchQuery
     return nil if idx.nil?
     record = record_ids_sorted[idx+1]
     record
+  end
+
+  def persist_additional_results(results)
+    return unless results
+    # finally extract the records IDs and persist them
+    records = Array.new
+    results.each do |rec|
+      a = rec["_id"].to_s
+      records << a unless self.search_result.records.include?(a)
+    end
+    self.search_result =  SearchResult.new(:records => self.search_result.records + records)
+    self.result_count = self.search_result.records.length
+    self.runtime = (Time.now.utc - self.updated_at) * 1000 + self.runtime
+    self.day = Time.now.strftime("%F")
+    self.save
   end
 
   def persist_results(results)
@@ -330,7 +345,8 @@ class SearchQuery
       search_place_ids = radius_place_ids
       params[:place_id] = { "$in" => search_place_ids }
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
+      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
       params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
     end
     params
@@ -368,7 +384,7 @@ class SearchQuery
   end
 
   def radius_is_valid
-    if search_nearby_places && places.count == 0
+    if search_nearby_places && places.blank?
       errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end
@@ -409,12 +425,20 @@ class SearchQuery
     param[:order_field] = self.order_field
     param[:order_asc] = self.order_asc
     param[:region] = self.region
-    param[:userid_detail_id] = self.userid_detail_id
+    #param[:userid_detail_id] = self.userid_detail_id
     param[:c_at] = self.c_at
     param[:u_at] = Time.now
     param[:place_ids] = self.place_ids
     param
   end
+
+  def record_type_params
+    params = Hash.new
+    params[:record_type] = record_type if record_type.present?
+    params[:record_type] = { '$in' => [ 'ba','ma', 'bu']} if record_type.blank?
+    params
+  end
+
 
   def results
     records = fetch_records
@@ -424,38 +448,57 @@ class SearchQuery
   end
 
   def search
-    search_index = SearchRecord.index_hint(search_params)
-    self.update_attribute(:search_index,search_index)
-    records = SearchRecord.collection.find(search_params).hint(search_index).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    @search_parameters = search_params
+    @search_index = SearchRecord.index_hint(@search_parameters)
+    @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
+    logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
+    self.update_attribute(:search_index,@search_index)
+    records = SearchRecord.collection.find(@search_parameters,{'projection' =>{_id: 1}}).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
+    self.persist_additional_results(secondary_date_results)
     search_ucf
     records
   end
 
+  def secondary_date_results
+    return nil if self.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    return nil unless secondary_date_query_required
+    @secondary_search_params = @search_parameters
+    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
+    @secondary_search_params.delete(:search_date)
+    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    secondary_records = SearchRecord.collection.find(@secondary_search_params,{'projection' =>{_id: 1}}).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    secondary_records
+  end
+
+  def secondary_date_query_required
+    @search_parameters[:search_date].present? && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
+  end
+
   def search_params
     params = Hash.new
-    params[:record_type] = record_type if record_type
-    params.merge!(place_search_params)
-    params.merge!(date_search_params)
     params.merge!(name_search_params)
-
+    params.merge!(place_search_params)
+    params.merge!(record_type_params)
+    params.merge!(date_search_params)
     params
   end
 
   def search_ucf
+
     if can_query_ucf?
       start_ucf_time = Time.now.utc
       ucf_index = SearchRecord.index_hint(ucf_params)
-      ucf_records = SearchRecord.where(ucf_params).hint(ucf_index).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+      ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
       self.ucf_unfiltered_count = ucf_records.count
       ucf_records = filter_ucf_records(ucf_records)
-
       self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
       self.ucf_result_ms = (Time.now.utc - start_ucf_time) * 1000
       self.save
     end
 
   end
+
 
   def sort_results(results)
     # next reorder in memory
@@ -505,11 +548,10 @@ class SearchQuery
 
   def ucf_params
     params = Hash.new
-    params[:record_type] = record_type if record_type
     params.merge!(place_search_params)
+    params.merge!(record_type_params)
     params.merge!(date_search_params)
     params["_id"] = { "$in" => ucf_record_ids } #moped doesn't translate :id into "_id"
-
     params
   end
 
@@ -540,8 +582,9 @@ class SearchQuery
     return name_string unless name_string.match(WILDCARD)
 
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
-    regex_string = trimmed.gsub('?', '\w').gsub('*', '.*') #replace glob-style wildcards with regex wildcards
-
+    scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
+    cleaned = Regexp.escape(scrubbed)
+    regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end
 

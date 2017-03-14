@@ -3,6 +3,7 @@ require 'record_type'
 require 'new_freereg_csv_update_processor'
 require 'pp'
 require 'get_software_version'
+require 'update_search_records'
 
 RSpec::Matchers.define :be_in_result do |entry|
   match do |results|
@@ -230,7 +231,6 @@ describe Freereg1CsvEntry do
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 2 }, true)
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] - 2 }, false)
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 2 }, false)
-#        binding.pry
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] + 2 }, true)
 
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 12,:end_year => entry[:modern_year] - 10 }, false)
@@ -481,6 +481,23 @@ describe Freereg1CsvEntry do
     end
   end
 
+  it "should not explode on bad characters" do
+    ["foo",
+      "bar?",
+      "bar[",
+      "bar$^",
+      "bar\\]}':;>.,/)*&^%$\#@!~`",
+      "baz(*", 
+      "quux[*"].each do |name|
+      query_params = { :last_name => name }
+      q = SearchQuery.new(query_params)
+      q.save!(:validate => false)
+      q.search
+      result = q.results
+    end
+  end
+
+
   it "should handle wildcard performance" do
     Freereg1CsvEntry.count.should eq(0)
     Freereg1CsvFile.count.should eq(0)
@@ -512,7 +529,7 @@ describe Freereg1CsvEntry do
     query = SearchQuery.new(query_params)
     query.places << place
 
-    SearchRecord.index_hint(query.search_params).should eq("place_ln_fn")
+    SearchRecord.index_hint(query.search_params).should eq("ln_fn_place_rt_sd_ssd")
      
     # ends-with wildcard should not use name index (with no place)
     query_params = { :record_type => RecordType::BAPTISM,
@@ -530,6 +547,9 @@ describe Freereg1CsvEntry do
 
   it "should find square brace UCF" do
     filespec = SQUARE_BRACE_UCF
+    # if we add the scenario [y_], add this to the testfile
+    #NTH,Gretton,St James,,,10 Jun 1798,Nineteen,M,Nineteen,Nineteen,DUCKL[Y_],DUCKLE,,,
+
 
     file_record = process_test_file(filespec)
     
@@ -574,7 +594,7 @@ describe Freereg1CsvEntry do
         if search_forename # we should find this
           query_params = { :first_name => search_forename,
                            :last_name => entry.mother_surname }
-          p query_params
+ #         p query_params
           q = SearchQuery.new(query_params)
           q.places << place
           q.save!(:validate => false)
@@ -592,16 +612,28 @@ describe Freereg1CsvEntry do
   it "should handle birth and baptismal dates correctly" do
     Freereg1CsvEntry.count.should eq(0)
 
+    # test freshly created records
     file_record = process_test_file(BAPTISM_BIRTH)
-
+    
     entry = file_record.freereg1_csv_entries.first
-    first_name = entry.person_forename
-    last_name = entry.father_surname
+    birth_date = entry.birth_date.sub(/\w\w\s\w\w\w\s/, '')
+    baptism_date = entry.baptism_date.sub(/\w\w\s\w\w\w\s/, '')
 
-
-    check_record(entry, first_name, last_name, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
-    check_record(entry, first_name, last_name, false, { :start_year => entry.baptism_date,:end_year => entry.baptism_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => birth_date,:end_year => birth_date }, true)
+    check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
   end
+
+  it "should find wildcard dates" do
+    filespec = WILDCARD_DATES
+    Rails.application.config.ucf_support = true
+
+    file_record = process_test_file(filespec)
+ 
+    file_record.freereg1_csv_entries.each_with_index do |entry,i|
+      check_record(entry, :person_forename, :father_surname, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
+    end
+  end
+
 
 
   def check_record(entry, first_name_key, last_name_key, required, additional={}, should_find=true)
@@ -612,6 +644,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save(:validate => false)
       q.search
+      
       result = q.results
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
@@ -625,6 +658,44 @@ describe Freereg1CsvEntry do
         result.should_not be_in_result(entry)            
       end
     end    
+  end
+
+
+  OLD_SEARCH_RECORD_ATTRIBUTES = 
+    {"transcript_dates"=>["05 Nov 1553", "05 Nov 1653"],
+     "search_dates"=>["1553-11-05", "1653-11-05"],
+     "location_names"=>["Stone in Oxney (St Mary)", " [Transcript]"],
+     "search_soundex"=>[{"first_name"=>"W450", "last_name"=>"F236", "type"=>"f"}],
+     "record_type"=>"ba",
+     "search_record_version"=>nil,
+     "chapman_code"=>"KEN",
+     "line_id"=>"artificial.birth_date_ba.csv.1",
+     "transcript_names"=>
+      [{"role"=>"ba", "type"=>"primary", "first_name"=>"", "last_name"=>"FOSTER"},
+       {"role"=>"f", "type"=>"other", "first_name"=>"William", "last_name"=>"FOSTER"}],
+     "place_id"=>BSON::ObjectId('57d2f9eda020dd401c6a54fb'), #invalid
+     "digest"=>"vpTiqWA8s6iXhCDCdGpJgw==", # probably invalid
+     "search_names"=>
+      [{"_id"=>BSON::ObjectId('57d2f9eda020dd401c6a5501'), # possibly invalid
+        "first_name"=>"nameless",
+        "last_name"=>"foster",
+        "origin"=>"transcript",
+        "type"=>"p",
+        "role"=>"ba",
+        "gender"=>"f"},
+       {"_id"=>BSON::ObjectId('57d2f9eda020dd401c6a5502'),# possibly invalid
+        "first_name"=>"william",
+        "last_name"=>"foster",
+        "origin"=>"transcript",
+        "type"=>"f",
+        "role"=>"f",
+        "gender"=>"m"}]}
+
+  def create_old_style_search_record(entry)
+    entry.search_record.delete
+    search_record = SearchRecord.new(OLD_SEARCH_RECORD_ATTRIBUTES)
+    search_record.freereg1_csv_entry = entry
+    search_record.save!    
   end
 
 

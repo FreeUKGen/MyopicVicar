@@ -58,12 +58,19 @@ class NewFreeregCsvUpdateProcessor
   end
 
   def self.activate_project(create_search_records,type,force,range)
+    mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
     force, create_search_records = NewFreeregCsvUpdateProcessor.convert_to_bolean(create_search_records,force)
     @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
     @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
+    p mongo_node
+    if mongo_node == :secondary_preferred
+      @project.write_log_file("processing terminated, task hasn't started on primary mongo node")
+      return
+    end
+
     @csvfiles = CsvFiles.new
     success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
-    if !success || files_to_be_processed == 0
+    if !success || (files_to_be_processed.present? && files_to_be_processed.length == 0)
       @project.write_log_file("processing terminated as we have no records to process. <br>")
       return
     end
@@ -80,10 +87,12 @@ class NewFreeregCsvUpdateProcessor
         #p "failed to process file"
         @csvfile.communicate_failure_to_member(@project,@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
+      sleep(300) if Rails.env.production?
     end
     # p "manager communication"
-    @project.communicate_to_managers(@csvfile) unless @project.type_of_project == "individual"
+    #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
     at_exit do
       # p "goodbye"
     end
@@ -107,26 +116,26 @@ class NewFreeregCsvUpdateProcessor
     time = ((Time.new.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
     self.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",false)
     file = @message_file
-    @message_file.close 
+    #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "REGManager").first
-    UserMailer.update_report_to_freereg_manager(file,user).deliver
+    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
     user = UseridDetail.where(userid: "ericb").first
-    UserMailer.update_report_to_freereg_manager(file,user).deliver
-  end 
+    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
+  end
 
   def self.convert_to_bolean(create_search_records,force)
     if create_search_records == "create_search_records"
-        create_search_records = true 
+        create_search_records = true
       else
         create_search_records = false
       end
       if force == "force_rebuild"
-        force = true 
+        force = true
       else
         force = false
       end
       return force, create_search_records
-  end 
+  end
 
   def define_message_file
     file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
@@ -151,23 +160,23 @@ class NewFreeregCsvUpdateProcessor
 
   def write_log_file(message)
     self.message_file.puts message
-  end 
+  end
 end
 
 class CsvFiles < NewFreeregCsvUpdateProcessor
-  
-  def initialize  
+
+  def initialize
   end
 
   def get_the_files_to_be_processed(project)
   #  p "Getting files"
     case project.type_of_project
     when "waiting"
-      files = self.get_the_waiting_files_to_be_processed(project)     
+      files = self.get_the_waiting_files_to_be_processed(project)
     when "range"
       files = self.get_the_range_files_to_be_processed(project)
     when "individual"
-      files = self.get_the_individual_file_to_be_processed(project)  
+      files = self.get_the_individual_file_to_be_processed(project)
     when "special_selection_1"
       # this is designed to correct the location and search record creation bug that existed for 2 days
       files = self.get_the_special_selection_1_files_to_be_processed(project)
@@ -205,7 +214,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
         if processed.present?
           processed = processed.to_time.to_f
           if processed.between?(time_start, time_end)
-            affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name) 
+            affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name)
             files << affected_file
             actual_file = Freereg1CsvFile.userid(file.userid).file_name(file.file_name).first
             total_entries = total_entries + actual_file.freereg1_csv_entries.count unless actual_file.blank?
@@ -244,7 +253,7 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
 
   def get_the_waiting_files_to_be_processed(project)
     #p "waiting file selection"
-    physical_waiting_files = PhysicalFile.waiting.all
+    physical_waiting_files = PhysicalFile.waiting.all.order_by(waiting_date: 1)
     files = Array.new
     physical_waiting_files.each do |file|
       files << File.join(project.freereg_files_directory, file.userid, file.file_name)
@@ -307,6 +316,7 @@ class CsvFile < CsvFiles
     success = true
     project.member_message_file = self.define_member_message_file
     @file_start = Time.new
+    p "FREEREG:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
     project.write_log_file("******************************************************************* <br>")
     project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
     success, message = self.ensure_processable?(project) unless project.force_rebuild
@@ -330,18 +340,18 @@ class CsvFile < CsvFiles
     success, message = self.clean_up_supporting_information(project)
     #p "finished clean up"
     time = ((Time.new.to_i  - @file_start.to_i)*1000)/@total_records unless @total_records == 0
-    project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)   
+    project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
     return success,"clean up failed #{message}. <br>" unless success
     success, message = self.communicate_file_processing_results(project)
     #p "finished com"
     return success,"communication failed #{message}. <br>" unless success
-    return true,@total_records ,@total_data_errors 
+    return true,@total_records ,@total_data_errors
   end
 
   def change_location_for_existing_entry_and_record(existing_record,data_record,project,freereg1_csv_file)
      #change of location
      existing_record.update_location(data_record,freereg1_csv_file)
-     #update location of record       
+     #update location of record
      record = existing_record.search_record
      if  record.present?
        success = "nochange"
@@ -351,15 +361,15 @@ class CsvFile < CsvFiles
        #p "updated record"
      else
       #p "created record"
-       success = "change" 
-       #transform_search_record is a method in freereg1_csv_entry.rb.rb  
-       # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on 
-       place = self.place_id  
+       success = "change"
+       #transform_search_record is a method in freereg1_csv_entry.rb.rb
+       # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on
+       place = self.place_id
        SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if  project.create_search_records && existing_record.enough_name_fields?
        sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)
      end
-     return success 
+     return success
   end
 
   def check_and_create_db_record_for_entry(project,data_record,freereg1_csv_file)
@@ -369,7 +379,7 @@ class CsvFile < CsvFiles
       data_record.delete(:chapman_code)
        entry = Freereg1CsvEntry.new(data_record)
        #p "new entry"
-       new_digest = entry.cal_digest       
+       new_digest = entry.cal_digest
        if @all_existing_records.has_value?(new_digest)
          #p "we have an existing record but may be for different location"
          existing_record = Freereg1CsvEntry.id(@all_existing_records.key(new_digest)).first
@@ -397,21 +407,21 @@ class CsvFile < CsvFiles
   def check_and_set_characterset(code_set,csvtxt,project)
     #if it looks like valid UTF-8 and we know it isn't
          #Windows-1252 because of undefined characters, then
-         #default to UTF-8 instead of Windows-1252   
+         #default to UTF-8 instead of Windows-1252
        if code_set.nil? || code_set.empty? || code_set=="chset"
-        #project.write_messages_to_all("Checking for undefined with #{code_set}",false) 
+        #project.write_messages_to_all("Checking for undefined with #{code_set}",false)
         if csvtxt.index(0x81.chr) || csvtxt.index(0x8D.chr) ||
              csvtxt.index(0x8F.chr) || csvtxt.index(0x90.chr) ||
              csvtxt.index(0x9D.chr)
            #p 'undefined Windows-1252 chars, try UTF-8 default'
-           #project.write_messages_to_all("Found undefined}",false) 
+           #project.write_messages_to_all("Found undefined}",false)
            csvtxt.force_encoding('UTF-8')
            code_set = 'UTF-8' if csvtxt.valid_encoding?
            csvtxt.force_encoding('ASCII-8BIT')#convert later with replace
         end
        end
         code_set = self.default_charset if (code_set.blank? || code_set == "chset")
-      code_set = "UTF-8" if (code_set.upcase == "UTF8") 
+      code_set = "UTF-8" if (code_set.upcase == "UTF8")
       #Deal with the cp437 code which is IBM437 in ruby
       code_set = "IBM437" if (code_set.upcase == "CP437")
       #Deal with the macintosh instruction in freereg1
@@ -436,26 +446,26 @@ class CsvFile < CsvFiles
   end
 
   def check_file_exists?(project)
-    #make sure file actually exists 
+    #make sure file actually exists
     message = "The file #{@file_name} for #{@userid} does not exist. <br>"
     if File.exists?(@file)
       return true, "OK"
     else
-       project.write_messages_to_all(message,true) 
+       project.write_messages_to_all(message,true)
       return false,  message
-    end                                 
+    end
   end
 
 
   def check_file_is_not_locked?(batch,project)
     return true, "OK" if batch.blank?
     message = "The file #{batch.file_name} for #{batch.userid} is already on system and is locked against replacement. <br>"
-    if batch.locked_by_transcriber || batch.locked_by_coordinator 
-      project.write_messages_to_all(message,true) 
+    if batch.locked_by_transcriber || batch.locked_by_coordinator
+      project.write_messages_to_all(message,true)
       return false,  message
     else
       return true, "OK"
-    end    
+    end
   end
 
   def check_userid_exists?(project)
@@ -463,21 +473,23 @@ class CsvFile < CsvFiles
     if UseridDetail.userid(@userid).first.present?
       return true, "OK"
     else
-      project.write_messages_to_all(message,true) 
+      project.write_messages_to_all(message,true)
         return false,  message
-    end  
+    end
   end
 
-  def clean_up_message(project)     
+  def clean_up_message(project)
+    begin
       File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
+    rescue
+    end
   end
 
   def clean_up_physical_files_after_failure(message)
       #p "clean up after failure"
       batch = PhysicalFile.userid(@userid).file_name(@file_name).first
-      return true if batch.blank? || message.blank? 
-      PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("file is older than one on system. ")
-      PhysicalFile.remove_waiting_flag(@userid,@file_name) if message.include?("is already on system and is locked against replacement. ")
+      return true if batch.blank? || message.blank?
+      PhysicalFile.remove_waiting_flag(@userid,@file_name)   
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
@@ -488,33 +500,34 @@ class CsvFile < CsvFiles
         batch.delete
     else
       self.physical_file_clean_up_on_success(project)
-    end    
+    end
      return true
   end
 
-  def clean_up_unused_batches(project)  
+  def clean_up_unused_batches(project)
     #p "cleaning up batches and records"
     counter = 0
     files = Array.new
     @all_existing_records.each do |record,value|
        counter = counter + 1
        actual_record = Freereg1CsvEntry.id(record).first
-       file_for_entry = actual_record.freereg1_csv_file_id
+       file_for_entry = actual_record.freereg1_csv_file_id unless actual_record.nil?
        files << file_for_entry unless files.include?(file_for_entry)
        actual_record.destroy unless actual_record.nil?
-      sleep_time = 2*(Rails.application.config.sleep.to_f).to_f
+      sleep_time =  sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time) unless actual_record.nil?
      end
      #recalculate distribution after clean up
      files.each do |file|
-        Freereg1CsvFile.id(file).first.calculate_distribution
-     end 
+        actual_batch = Freereg1CsvFile.id(file).first
+        actual_batch.calculate_distribution if actual_batch.present?
+     end
      @unique_existing_locations.each do |key,value|
       file = Freereg1CsvFile.id(value[:id]).first
-        if file.present? 
+        if file.present?
           message = "Removing batch #{file.county}, #{file.place}, #{file.church_name}, #{file.register_type}, #{file.record_type} for #{file.userid} #{file.file_name}. <br>"
               project.write_messages_to_all(message,false)
-              file.delete 
+              file.delete
       end
      end
     return counter
@@ -727,14 +740,8 @@ class CsvFile < CsvFiles
     place.save
   end
 
-  def update_freereg_contents_after_processing(freereg1_csv_file)
-    register = freereg1_csv_file.register
-    register.calculate_register_numbers
-    church = register.church
-    church.calculate_church_numbers
-    place = church.place
-    place.calculate_place_numbers
-  end
+
+
 
   def process_the_data(project)
     #p "Processing the data records"
@@ -753,7 +760,7 @@ class CsvFile < CsvFiles
       PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
       project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
       update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
-      update_freereg_contents_after_processing(freereg1_csv_file)
+      freereg1_csv_file.update_freereg_contents_after_processing
     end
     #p "after process"
     counter = self.clean_up_unused_batches(project)
@@ -922,7 +929,9 @@ class CsvRecords <  CsvFile
     csvfile.header_error << "Invalid file type #{header_field[4]} in first line of header. <br>" if header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
     # canonicalize record type
     scrubbed_record_type = Unicode::upcase(header_field[4]).gsub(/\s/, '') unless header_field[4].blank?
-    csvfile.header[:record_type] =  FreeregOptionsConstants::RECORD_TYPE_TRANSLATION[scrubbed_record_type] unless header_field[4].blank?
+    csvfile.header[:record_type] =  FreeregOptionsConstants::RECORD_TYPE_TRANSLATION[scrubbed_record_type] unless header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
+    #assumes Baptism to allow processing of rest of headers to proceed
+    csvfile.header[:record_type] = "ba" if  header_field[4].blank? || !FreeregOptionsConstants::VALID_RECORD_TYPE.include?(header_field[4].gsub(/\s+/, ' ').strip.upcase)
     if csvfile.header_error.present?
       return false
     else

@@ -67,6 +67,7 @@ class Church
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = DateTime.new(1998,1,1)
     individual_registers = self.registers
     if individual_registers.present?
       individual_registers.each do |register|
@@ -77,23 +78,27 @@ class Church
           register.daterange = FreeregContent.setup_total_hash if  register.daterange.blank?
           FreeregContent.calculate_date_range(register, total_hash,"register")
           FreeregContent.get_transcribers(register, transcriber_hash,"register")
+          last_amended = register.last_amended.to_datetime if register.present? && register.last_amended.present? && register.last_amended.to_datetime > last_amended.to_datetime
         end
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
   end
 
   def change_name(param)
-    unless self.church_name == param[:church_name]
+    old_church_name = self.church_name
+    unless old_church_name == param[:church_name]
       param[:church_name] = Church.standardize_church_name(param[:church_name])
       self.update_attribute(:church_name, param[:church_name])
     end
     if self.errors.any?
       return true
     end
-    self.propogate_church_name_change
+    self.propogate_church_name_change(old_church_name)
     return false
   end
 
@@ -146,34 +151,51 @@ class Church
         place.churches.delete(church)
       end
     end
+    self.calculate_church_numbers
     return [false, ""]
   end
 
-  def propogate_church_name_change
+  def propogate_church_name_change(old_church_name)
     place = self.place
     place_name = place.place_name
-    self.registers.no_timeout.each do |register|
-      location_names = []
-      location_names << "#{place_name} (#{self.church_name})"
-      location_names  << " [#{RegisterType.display_name(register.register_type)}]"
-      register.freereg1_csv_files.no_timeout.each do |file|
-        file.freereg1_csv_entries.no_timeout.each do |entry|
-          if entry.search_record.nil?
-            logger.info "FREEREG:search record missing for entry #{entry._id}"
-          else
-            entry.update_attributes(:place => place_name, :church_name => self.church_name)
-            record  = entry.search_record
-            record.update_attributes(:location_names => location_names,:place_id => place.id, :chapman_code => place.chapman_code)
-          end
-        end
-        file.update_attributes(:place => place_name, :church_name => self.church_name)
+    old_location = "#{place_name} (#{old_church_name})"
+    new_location = "#{place_name} (#{self.church_name})"
+    result = SearchRecord.collection.find({place_id: place._id, location_names: old_location}).hint("place_location").update_many({"$set" => {"location_names.$" => new_location}})
+    all_registers = self.registers
+    all_registers.each do |register|
+      all_files = register.freereg1_csv_files
+      all_files.each do |file|
+        result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:church_name => self.church_name}})
+        file.update_attributes(:church_name => self.church_name)
       end
     end
+  end
 
+  def propogate_place_change(old_place,old_church_name)
+    new_place = self.place
+    new_place_name = new_place.place_name
+    old_place_name = old_place.place_name
+    old_location= Array.new
+    new_location= Array.new
+    old_location[0] = "#{old_place_name} (#{self.church_name})"
+    new_location[0] = "#{new_place_name} (#{self.church_name})"
+    all_registers = self.registers
+    all_registers.each do |register|
+      type = register.register_type
+      old_location[1] = " [#{RegisterType.display_name(type)}]"
+      new_location[1] = " [#{RegisterType.display_name(type)}]"
+      result = SearchRecord.collection.update_many({place_id: old_place._id, location_names: old_location},{"$set" => {"location_names" => new_location,:place_id => new_place.id, :chapman_code => new_place.chapman_code}})
+      all_files = register.freereg1_csv_files
+      all_files.each do |file|
+        result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:place => new_place_name, :church_name => self.church_name}})
+        file.update_attributes(:place => new_place_name, :church_name => self.church_name)
+      end
+    end
   end
 
   def relocate_church(param)
     unless param[:place_name].blank? || param[:place_name] == self.place.place_name
+      old_church_name = self.church_name
       old_place = self.place
       chapman_code = old_place.chapman_code
       new_place = Place.where(:chapman_code => chapman_code, :place_name => param[:place_name]).first
@@ -181,10 +203,12 @@ class Church
       self.update_attributes(:place_id => new_place._id, :place_name => param[:place_name])
       new_place.update_attribute(:data_present, true) if new_place.search_records.exists? && new_place.data_present == false
       new_place.recalculate_last_amended_date
+      new_place.calculate_place_numbers
+      self.calculate_church_numbers
       return [true, "Error in save of church; contact the webmaster"] if self.errors.any?
     end
-    self.propogate_church_name_change
-    PlaceCache.refresh_cache(new_place)
+    self.propogate_place_change(old_place,old_church_name)
+    PlaceCache.refresh_cache(new_place) unless new_place.blank?
     return [false, ""]
   end
 

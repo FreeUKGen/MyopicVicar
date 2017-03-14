@@ -14,32 +14,44 @@ class PlacesController < ApplicationController
   end
 
   def create
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     @place = Place.new(place_params)
-    @place.chapman_code = ChapmanCode.values_at(params[:place][:county])
-    @place.modified_place_name = @place.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
-    #use the lat/lon if present if not calculate from the grid reference
-    @place.add_location_if_not_present
-    @place.save
-    if @place.errors.any?
-      #we have errors on the creation
-      flash[:notice] = 'The addition of a place was unsuccessful (See fields below for actual error and explanations)'
-      @county = session[:county]
-      get_places_counties_and_countries
-      @place_name = @place.place_name unless @place.nil?
-      render :new
+    result,message,place = @place.check_and_set(params)
+    if result && message == "Proceed"
+      @place.save
+      if @place.errors.any?
+        #we have errors on the creation
+        flash[:notice] = 'The addition of a place was unsuccessful: (See fields below for actual error and explanations)'
+        @county = session[:county]
+        get_places_counties_and_countries
+        @place_name = @place.place_name unless @place.nil?
+        render :new
+      else
+        #we are clean on the addition
+        flash[:notice] = 'The addition to a place was successful'
+        redirect_to place_path(@place) and return
+      end
     else
-      #we are clean on the addition
-      flash[:notice] = 'The addition to a place was successful'
-      redirect_to place_path(@place)
+      if result
+        #we are clean on the addition
+        flash[:notice] = "The addition to a place was successful: #{message}"
+        redirect_to place_path(place) and return
+      else
+        flash[:notice] = "The addition of a place was unsuccessful: #{message}"
+        @county = session[:county]
+        get_places_counties_and_countries
+        @place_name = @place.place_name unless @place.nil?
+        render :new
+      end
     end
   end
 
   def destroy
     load(params[:id])
-    unless @place.search_records.count == 0 && @place.error_flag == "Place name is not approved"
-      unless @place.churches.count == 0
-        flash[:notice] = 'The Place cannot be disabled because there were Dependant churches; please remove them first'
+    if @place.search_records.exists? && @place.error_flag == "Place name is not approved"
+      if  @place.churches.exists?
+        flash[:notice] = 'The Place cannot be disabled because there are Dependant churches; please remove them first'
         redirect_to places_path(:anchor => "#{@place.id}", :page => "#{session[:place_index_page]}")
         return
       end
@@ -138,13 +150,14 @@ class PlacesController < ApplicationController
     else
       @places = Place.where( :chapman_code => @chapman_code,:disabled => 'false').all.order_by(place_name: 1)
     end
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     session[:page] = request.original_url
   end
 
   def load(place_id)
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     @place = Place.id(place_id).first
     if @place.nil?
       go_back("place",place_id)
@@ -193,8 +206,12 @@ class PlacesController < ApplicationController
     load(params[:id])
     @county = session[:county]
     get_places_counties_and_countries
-    @records = @place.search_records.count
-
+    @records = @place.records
+    max_records = get_max_records(@user)
+    if @records.present? && @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
+      redirect_to :action => 'show' and return
+    end
   end
 
   def rename
@@ -202,7 +219,12 @@ class PlacesController < ApplicationController
     load(params[:id])
     get_places_counties_and_countries
     @county = session[:county]
-    @records = @place.search_records.count
+    @records = @place.records
+    max_records = get_max_records(@user)
+    if @records.present? && @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
+      redirect_to :action => 'show' and return
+    end
   end
 
   def show
@@ -240,11 +262,11 @@ class PlacesController < ApplicationController
     when params[:commit] == 'Relocate'
       errors = @place.relocate_place(params[:place])
       if errors[0]  then
-        flash[:notice] = "Place filling unsuccessful; #{errors[1]}"
+        flash[:notice] = "Place relocation/filling unsuccessful; #{errors[1]}"
         render :action => 'show'
         return
       end
-      flash[:notice] = "The filling of the county country information was successful."
+      flash[:notice] = "Place relocation/filling was successful."
       redirect_to place_path(@place)
       return
     else

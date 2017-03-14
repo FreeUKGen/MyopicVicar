@@ -38,6 +38,12 @@ describe Freereg1CsvFile do
     end
   end
 
+  it "should process the same file twice without errors" do 
+    process_test_file(CHANGELESS_FILE)
+    process_test_file(CHANGELESS_FILE)
+  end
+
+
   # apparently FreeregCsvProcessor no longer returns files
   # it "should load the same file twice, correctly" do
     # old_file_count = Freereg1CsvFile.count

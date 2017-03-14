@@ -1,6 +1,8 @@
 Freereg2 Database and Fields(Jan/2014)
 
-Our current data model for Freereg2 starts with a Place in a specific County. A Place can have many religious institutions which we call Churches. Each Church can have many Registers.  Each Register can have many Freereg Files.  Each Freereg File has many Entries. Each Entry has a single Search Record which contains the information required for an effective search. 
+The data model for Freereg2 is based on a specific Place (location) in a specific County and Country. A Place can have many religious institutions or entities which have registers containing records of baptisms (births), marriages and deaths (burials); we call these Churches. A Church can have many Registers.  Each Register can have many transcription Batches.  Each batch has many individual transcription Entries. Each transcription Entry has a single Search Record which contains the information required for an effective search. 
+
+Batches are currently presented to FR in physical files of CSV data lines
 
 Collections/tables that are used to support this model are 1) Chapman Codes 2) Master Place Name and perhaps an associated Alias Place Church. 3) Emendation Rules 4) Person Details* 5)Syndicates 
 (*This is a collection of information on people and their coordinates ie userid, email address, physical address, etc plus their role which code be researcher, transcriber, coordinator, assistant coordinator, system administrator, data manager; the collection replaces the more limited transcriber table in F1)
@@ -42,7 +44,7 @@ field :last_amended, type: String
 has_many :freereg1_csv_files
 belongs_to :church, index: true
 
-Freereg1CSVFile Fields
+Freereg1CSVFile (Batch) Fields
 field :county, type: String
   field :place, type: String
   field :church_name, type: String

@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gemspec
 
-gem 'refinerycms', '~> 3.0', '>= 3.0.3'
+gem 'refinerycms', '~> 3.0', '>= 3.0.5'
 
 gem "refinerycms-wymeditor", "~> 1.0"
 

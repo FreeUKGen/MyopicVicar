@@ -1,0 +1,11 @@
+<p> Too large a file </p>
+
+<p>The member <%= @user.userid %> submitted an action for a file <%= @file %> that was too large for normal processing. They were informed that it could not be processed in its current form. <br></p>
+<p>If this was an initial upload then the file should be split into parts and the parts uploaded separately. If it is a replacement the uploaded file was saved but not processed and the original file and batch remains on the system. If it was a deletion the batch remains on the system. In these cases develop a plan for its processing.</p>
+<% if @sc_email_with_name.present? %>
+
+<p>This email was sent to the syndicate coordinator and data managers. The coordinator is requested to consult with the data managers if they are unsure as to how to proceed.</p>
+<% else%>
+<p>Would one of the data managers please review this with the member as it appears they have no coordinator.</p>
+<% end%>
+<p> The FreeREG Team</p>

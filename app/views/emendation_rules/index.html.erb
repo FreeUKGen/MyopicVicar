@@ -1,0 +1,30 @@
+<% title "Forename abbreviations" %>
+<h1 class="title text--center">Forename abbreviations</h1> 
+<div class="read-length">
+  <style scoped="scoped">
+    nav.simpleIndex a { display: inline-block; padding: 5px; width: 2.5rem; }
+  </style>
+  <p>This page lists forenames (first names) together with the variations, abbreviations, and Latin forms that will be found automatically for each forename in a search.</p>
+  <p>You could use your browser's Find command to go to a particular forename or abbreviation &mdash; see the Edit menu.</p>
+  <div class="island island--bordered push--bottom">
+    <h2 class="epsilon weight--normal push-half--bottom">Go to forenames beginning with:</h2>
+    <nav class="simpleIndex">
+    <% @alphabet_keys.each do |letter| %>
+      <%= link_to "#{letter.capitalize}", "##{letter}" %>
+    <% end %>
+    </nav>
+  </div>
+
+  <% @emendation_rules.each do |key,values| %>
+<div class="push--bottom">
+    <h3 class="beta push-half--bottom" id="<%= key %>"><%= "#{key}".upcase %></h3>
+    <dl>
+    <% values.each do |emendation_rules_replacement|  %>
+      <dt class="weight--semibold"> <%= emendation_rules_replacement.capitalize %></dt>
+      <dd><%= EmendationRule.all_original_by_replacement(emendation_rules_replacement)*",\n" %></dd>
+    <% end %>
+    </dl>
+</div>
+  <hr class="rule">
+  <% end %>
+</div>

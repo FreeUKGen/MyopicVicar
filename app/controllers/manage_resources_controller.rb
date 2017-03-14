@@ -1,10 +1,12 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  skip_before_filter :require_login, only: [:new, :pages]
+  #skip_before_filter :require_login, only: [:new, :pages]
+  skip_before_filter :refinery_authentication_devise_users
+
 
   def create
-    @user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
+    #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
     session[:userid] = @user.userid
     session[:first_name] = @user.person_forename
     session[:manager] = manager?(@user)
@@ -15,36 +17,72 @@ class ManageResourcesController < ApplicationController
     redirect_to :new
   end
 
+  def is_ok_to_render_actions?
+    continue = true
+    if cookies.signed[:userid].present?
+      @user = cookies.signed[:userid]
+      if @user.blank?
+        logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
+        flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
+        continue = false
+      end
+    else
+      logger.warn "FREEREG::USER no userid cookie"
+      flash[:notice] = "We did not find your userid cookie. Do you have them disabled?"
+      continue = false
+    end
+    case
+    when @user.blank?
+      continue = false
+    when  !@user.active
+      flash[:notice] = "You are not active, if you believe this to be a mistake please contact your coordinator"
+      continue = false
+    when @user.person_role == "researcher"  || @user.person_role == 'pending'
+      flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
+      continue = false
+    when !Rails.application.config.member_open  && !(@user.person_role == "system_administrator"  || @user.person_role == 'technical')
+      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
+      continue = false
+    end
+    set_session if continue
+    continue
+  end
+
   def load(userid_id)
     @first_name = session[:first_name]
-    @user = UseridDetail.find(userid_id)
+    @user = cookies.signed[:userid]
   end
 
   def logout
+    @message = flash[:notice]
+    cookies.delete :userid
+    cookies.delete :remember_authentication_devise_user_token
     reset_session
-    redirect_to refinery.logout_path
   end
 
   def new
-    if !is_ok_to_render_actions?
+    case
+    when !is_ok_to_render_actions?
       stop_processing and return
+    when @user.need_to_confirm_email_address?
+      redirect_to '/userid_details/confirm_email_address'
+      return
+    when user_is_computer?
+      go_to_computer_code
+      return
     else
-      if user_is_computer?
-        go_to_computer_code
-        return
+      clean_session
+      clean_session_for_syndicate
+      clean_session_for_county
+      if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
+        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
       else
-        clean_session
-        clean_session_for_syndicate
-        clean_session_for_county
-        if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
-          @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
-        else
-          @page = ""
-        end
-        @manage_resources = ManageResource.new
-        render 'actions'
-        return
+        @page = ""
       end
+      @manage_resources = ManageResource.new
+      render 'actions'
+      return
     end
   end
 
@@ -65,51 +103,10 @@ class ManageResourcesController < ApplicationController
     end
   end
 
-
-  def show
-    load(params[:id])
-  end
-
-  private
-
-  def go_to_computer_code
-    redirect_to new_transreg_user_path
-    return
-  end
-
-  def is_ok_to_render_actions?
-    continue = true
-    if session[:userid_detail_id].present?
-      @user = UseridDetail.id(session[:userid_detail_id]).first
-      if @user.blank?
-        logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
-        flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
-        continue = false
-      end
-    end
-    case
-    when @user.blank?
-      continue = false
-    when  !@user.active
-      flash[:notice] = "You are not active, if you believe this to be a mistake please contact your coordinator"
-      continue = false
-    when @user.person_role == "researcher"  || @user.person_role == 'pending'
-      flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
-      continue = false
-    when !Rails.application.config.member_open  && !(@user.person_role == "system_administrator"  || @user.person_role == 'technical')
-      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
-      flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
-      continue = false
-    end
-    set_session if continue
-    continue
-  end
-
-
   def set_session
     @user_id = @user._id
     @userid = @user.userid
-    @first_name = @user.person_forename
+    @first_name = @user.person_forename unless @user.blank?
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     session[:userid] = @userid
@@ -121,12 +118,31 @@ class ManageResourcesController < ApplicationController
     logger.warn "FREEREG::USER  manager #{@manager}"
   end
 
+  def show
+    load(params[:id])
+  end
+
+
   def stop_processing
-    redirect_to refinery.logout_path and return
+    redirect_to logout_manage_resources_path and return
+  end
+
+  def update
+
+
   end
 
   def user_is_computer?
     @user.person_role == "computer" ? result = true : result = false
     result
   end
+
+
+  private
+
+  def go_to_computer_code
+    redirect_to new_transreg_user_path
+    return
+  end
+
 end

@@ -483,6 +483,34 @@ BAPTISM_BIRTH =
   :user => 'artificial'
 }
 
+WILDCARD_DATES =
+{
+  :filename => "artificial/unclear_date_ba.csv",
+  :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+  :file => "unclear_date_ba.csv",
+  :chapman_code => 'KEN',
+  :placename => 'Stone in Oxney',
+  :churchname => 'St Mary',
+  :entry_count => 1,
+  :register_type => "TR",
+  :minimum_date => "1653",
+  :maximum_date => "1653",
+  :user => 'artificial'
+}
+CHANGELESS_FILE =
+{
+  :filename => "jelit/SSXSESBU.CSV",
+  :basedir => "#{Rails.root}/test_data/freereg1_csvs/",
+  :file => "SSXSESBU.CSV",
+  :chapman_code => 'SSX',
+  :placename => 'Selsey',
+  :churchname => 'St Peter',
+  :entry_count => 835,
+  :register_type => "PR",
+  :minimum_date => "1813",
+  :maximum_date => "1866",
+  :user => 'jelit'
+}
 
 
 

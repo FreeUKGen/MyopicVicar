@@ -19,13 +19,13 @@
     <title>FreeCen - UK Census Records (England, Scotland, Wales)</title>
     <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
     <meta name="description" content="The FreeCEN project provides free online access to transcriptions of 19th Century UK Censuses.">
-    <meta name="google-site-verification" content="" >
+    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" ><!-- do we need an app-specific verification key? -->
 
 <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
     <title>FreeBMD - UK Birth, Marriage, and Death Records (England, Scotland, Wales)</title>
     <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
     <meta name="description" content="The FreeBMD project provides free online access to the GRO indexes of births, marriages and deaths for England and Wales. ">
-    <meta name="google-site-verification" content="" >
+    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" ><!-- do we need an app-specific verification key? -->
 <% end %>
     <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
     <!--[if lt IE 9]>
@@ -145,18 +145,21 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
-    $.cookiesDirective({
-    privacyPolicyUri:  "/about/cookie-policy",
-    fontColor: '#FFFFFF', // font color for disclosure panel
-    fontSize: '18px', // font size for disclosure panel
-    backgroundColor: '#4A993E', // background color of disclosure panel
-    backgroundOpacity: '95', // opacity of disclosure panel
-    linkColor: '#E02424', // link color in disclosure panel
-    <% if MyopicVicar::Application.config.template_set == 'freecen' %>
-      linkColor: '#ffff00', // link color in disclosure panel
-    <% end %>
-    duration: 300
-    });
+        $.cookiesDirective({
+            privacyPolicyUri:  "/cms/about/cookie-policy",
+            duration: 120,
+            <% if MyopicVicar::Application.config.template_set == 'freecen' %>
+              fontColor: '#FFFFFF', // font color for disclosure panel
+              backgroundColor: '#4A993E',
+              linkColor: '#ffff00',
+            <% else %>
+              fontColor: '#282828', // font color for disclosure panel
+              backgroundColor: '#f7a21c', //background color of disclosure panel
+              linkColor: ' #000080'// link color in disclosure panel
+            <% end %>
+            fontSize: '1.0rem', // font size for disclosure panel
+            backgroundOpacity: '99',
+        });
     });
     </script>
 

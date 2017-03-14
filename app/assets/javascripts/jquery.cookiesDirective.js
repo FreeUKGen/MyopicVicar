@@ -10,7 +10,7 @@
 		// Default Cookies Directive Settings
 		var settings = $.extend({
 			//Options
-			explicitConsent: true,
+			explicitConsent: false,
 			position: 'top',
 			duration: 10,
 			limit: 0,
@@ -20,12 +20,12 @@
 			scriptWrapper: function(){},	
 			// Styling
 			fontFamily: 'helvetica',
-			fontColor: '#FFFFFF',
-			fontSize: '10px',
-			backgroundColor: '#24C950',
-			backgroundOpacity: '80',
-			linkColor: '#CA0000'
-		}, options);
+      fontColor: '#FFFFFF',
+      fontSize: '10px',
+      backgroundColor: '#008000',
+      backgroundOpacity: '80',
+      linkColor: '#CA0000'
+    }, options);
 		
 		// Perform consent checks
 		if(!getCookie('cookiesDirective')) {
@@ -182,11 +182,11 @@
 		if(!settings.message) {
 			if(settings.explicitConsent) {
 				// Explicit consent message
-				settings.message = 'This site uses cookies. Some of the cookies we ';
-				settings.message += 'use are essential for parts of the site to operate and have already been set.';
+				settings.message = 'Cookies are essential for this website to operate, blocking them stops the search working. ';
+				
 			} else {
 				// Implied consent message
-				settings.message = 'We have placed cookies on your computer to help make this website better.';
+				settings.message = 'We use cookies to ensure you get the best experience with our website. By continuing to use our website you consent to our use of cookies. ';
 			}		
 		}	
 		html += settings.message;
@@ -194,18 +194,17 @@
 		// Build the rest of the disclosure for implied and explicit consent
 		if(settings.explicitConsent) {
 			// Explicit consent disclosure
-			html += scriptsDisclosure + 'You may delete and block all cookies from this site, but the search will no longer work.';
-			html += 'To find out more about cookies on this website, see our <a style="color:'+ settings.linkColor + ';font-weight:bold;';
-			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">privacy policy</a>.<br/>';
-			html += '<div id="epdnotick" style="color:#ca0000;display:none;margin:2px;"><span style="background:#cecece;padding:2px;">You must tick the "I accept cookies from this site" box to accept</span></div>';
-			html += '<div style="margin-top:5px;">I accept cookies from this site (by ticking this box) &nbsp<input type="checkbox" name="epdagree" id="epdagree" />&nbsp &nbsp;';
-			html += '<input type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/><br/></div></div>';
+			
+			html += scriptsDisclosure + 'Review our <a tabindex="1" style="color:'+ settings.linkColor + ';font-weight:bold;';
+			html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
+			html += '<div style="margin-top:5px;"><label for="epdagree" style="font-weight: normal; display: inline;">Tick this box to accept their use &nbsp;<input type="checkbox" name="epdagree" id="epdagree" tabindex="2" />&nbsp;&nbsp;</label> and then click &nbsp;';
+			html += '<input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="explicitsubmit" id="explicitsubmit" value="Continue"/></div></div>';
 		
 		} else {
 			// Implied consent disclosure
-			html += scriptsDisclosure + ' More details can be found in our <a style="color:'+ settings.linkColor + ';';
-			html += 'font-weight:bold;font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">privacy policy</a>.';
-			html += '<div style="margin-top:5px;"><input type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
+			html += scriptsDisclosure + 'Review our <a tabindex="1" style="color:'+ settings.linkColor + ';font-weight:bold;';
+      html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
+			html += '<div style="margin-top:5px;"><input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
 		}		
 		html += '</div></div>';
 		$('body').append(html);

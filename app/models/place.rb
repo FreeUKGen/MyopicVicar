@@ -59,8 +59,6 @@ class Place
 
   validates_presence_of :place_name
 
-  validate :place_does_not_exist, on: :create
-
   validate :grid_reference_or_lat_lon_present_and_valid
 
   before_save :add_location_if_not_present, :add_country
@@ -71,15 +69,18 @@ class Place
   index({ chapman_code: 1, modified_place_name: 1, error_flag: 1, disabled: 1 })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
+  index({ disabled: 1 })
   index({ source: 1})
-
-
+  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1},{name: "chapman_data_present_disabled_error_flag"})
+  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
   has_many :churches, dependent: :restrict
   has_many :search_records
   has_many :freecen_pieces
   has_many :freecen_dwellings
+  has_many :sources
+  has_many :gaps
 
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
@@ -138,6 +139,8 @@ class Place
   end
 
   def add_location_if_not_present
+    self[:place_name] = self[:place_name].strip
+    self[:modified_place_name] = self[:modified_place_name].strip
     if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
@@ -175,6 +178,7 @@ class Place
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
+    last_amended = Date.new(1998,1,1)
     individual_churches = self.churches
     if individual_churches.present?
       individual_churches.each do |church|
@@ -185,12 +189,16 @@ class Place
           church.daterange = FreeregContent.setup_total_hash if  church.daterange.blank?
           FreeregContent.calculate_date_range(church, total_hash,"church")
           FreeregContent.get_transcribers(church, transcriber_hash,"register")
+          last_amended = church.last_amended.to_datetime if church.present? && church.last_amended.present? && church.last_amended.to_datetime > last_amended.to_datetime
         end
+
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"], :contributors => transcriber_hash["contributor"])
+    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
+    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
+                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
   end
 
   def change_grid_reference(grid)
@@ -225,17 +233,44 @@ class Place
 
   def change_name(param)
     place_name = param[:place_name]
+    old_place_name = self.place_name
     return [true, "That place name is already in use"] if Place.place(place_name).exists?
-    unless self.place_name == place_name
+    unless old_place_name == place_name
       self.save_to_original
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
       return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
-      self.propogate_place_name_change
+      self.propogate_place_name_change(old_place_name)
       self.propogate_batch_lock
       self.recalculate_last_amended_date
       PlaceCache.refresh_cache(self)
     end
     return [false, ""]
+  end
+
+  def check_and_set(param)
+    self.chapman_code = ChapmanCode.values_at(param[:place][:county])
+    self.modified_place_name = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
+    #use the lat/lon if present if not calculate from the grid reference
+    self.add_location_if_not_present
+    place = Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+    case
+    when place.length > 1
+      return false, "Many places of that name already exist", place
+    when place.length == 1
+      place = place.first
+      if place.disabled == 'true'
+        if place.error_flag == "Place name is not approved"
+          return false, "There is a disabled place with an unapproved name that already exists", place
+        else
+          place.update_attribute(:disabled , 'false')
+          return true, "There is a disabled place with that name. It has been reactivated.", place
+        end
+      else
+        return false, "There is an active place with that name", place
+      end
+    when place.length == 0
+      return true, 'Proceed', place
+    end
   end
 
   def check_place_country?
@@ -263,7 +298,7 @@ class Place
   def data_present?
     self.churches.each do |church|
       church.registers.each do |register|
-        if register.freereg1_csv_files.count != 0
+        if register.freereg1_csv_files.exists?
           return  true
         end #if
       end #church
@@ -337,10 +372,6 @@ class Place
     return [true, ""]
   end
 
-  def place_does_not_exist
-    errors.add(:place_name, "already exists") if Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name], :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
-  end
-
   def places_near(radius_factor, system)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
     # places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
@@ -361,39 +392,40 @@ class Place
   end
 
   def propogate_county_change
-    self.churches.each do |church|
-      church.registers.each do |register|
-        register.freereg1_csv_files do |file|
-          file.freereg1_csv_entries.each do |entry|
-            if entry.search_record.nil?
-              logger.info "FREEREG:search record missing for entry #{entry._id}"
-            else
-              entry.search_record.update_attribute(:chapman_code, self.chapman_code)
-            end
-          end
+    place_id = self._id
+    new_place_name = self.place_name
+    chapman_code = self.chapman_code
+    all_churches = self.churches
+    all_churches.each do |church|
+      result = SearchRecord.collection.find({place_id: place_id}).hint("_id_").update_many({"$set" => {:chapman_code => chapman_code}})
+      all_registers = church.registers
+      all_registers.each do |register|
+        all_files = register.freereg1_csv_files
+        all_files.each do |file|
+          result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:county => chapman_code}})
+          file.update_attributes(:county => chapman_code, :chapman_code => chapman_code)
         end
       end
     end
   end
 
-  def propogate_place_name_change
+  def propogate_place_name_change(old_place_name)
     place_id = self._id
-    self.churches.no_timeout.each do |church|
-      church.update_attribute(:place_id, place_id)
-      church.registers.no_timeout.each do |register|
-        location_names =[]
-        location_names << "#{place_name} (#{church.church_name})"
-        location_names  << " [#{RegisterType.display_name(register.register_type)}]"
-        register.freereg1_csv_files.no_timeout.each do |file|
-          file.freereg1_csv_entries.no_timeout.each do |entry|
-            if entry.search_record.nil?
-              logger.info "FREEREG:search record missing for entry #{entry._id}"
-            else
-              entry.search_record.update_attributes(:location_names => location_names, :place_id => place_id)
-            end
-          end
+    new_place_name = self.place_name
+    all_churches = self.churches
+    all_churches.each do |church|
+      old_location = "#{old_place_name} (#{church.church_name})"
+      new_location = "#{new_place_name} (#{church.church_name})"
+      result = SearchRecord.collection.find({place_id: place_id, location_names: old_location}).hint("place_location").update_many({"$set" => {"location_names.$" => new_location}})
+      all_registers = church.registers
+      all_registers.each do |register|
+        all_files = register.freereg1_csv_files
+        all_files.each do |file|
+          result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:place => new_place_name}})
+          file.update_attributes(:place => new_place_name)
         end
       end
+      church.update_attributes(:place_name => new_place_name)
     end
     if MyopicVicar::Application.config.template_set == 'freecen'
       self.freecen_pieces.no_timeout.each do |piece|
@@ -431,12 +463,6 @@ class Place
     end
     country = old_place.country
     country = param[:country] if param[:country].present?
-    unless old_place.chapman_code == chapman_code
-      old_place.search_records.each do |record|
-        record.update_attribute(:chapman_code , chapman_code)
-        return [true, "Error in save of search record; contact the webmaster"] if record.errors.any?
-      end
-    end
     self.update_attributes(:county => county, :chapman_code => chapman_code, :country => country)
     if self.errors.any?
       return [true, "Error in save of place; contact the webmaster"]

@@ -20,6 +20,7 @@ class Freereg1CsvEntry
   require 'record_type'
   require 'freereg_options_constants'
   require 'multiple_witness'
+  require 'chapman_code'
 
 
   # Fields here represent those currently requested by FreeREG1 at
@@ -213,6 +214,7 @@ class Freereg1CsvEntry
     return string
   end
   def create_marriage_string
+   
     string = ''
     string = string + self.groom_forename.strip + "groom" unless  self.groom_forename.nil?
     string = string + self.groom_surname.strip + "groomsurname" unless self.groom_surname.nil?
@@ -264,6 +266,7 @@ class Freereg1CsvEntry
   end
 
   def self.compare_baptism_fields?(one, two)
+    #used in  task check_record_digest
     if one.person_forename == two.person_forename &&
         one.baptism_date == two.baptism_date &&
         one.birth_date == two.birth_date &&
@@ -285,6 +288,7 @@ class Freereg1CsvEntry
     equal
   end
   def self.compare_marriage_fields?(one, two)
+      #used in  task check_record_digest
     if one.groom_forename  ==  two.groom_forename             &&
         one.groom_surname  ==  two.groom_surname            &&
         one.groom_age  ==            two.groom_age  &&
@@ -318,6 +322,7 @@ class Freereg1CsvEntry
     equal
   end
   def self.compare_burial_fields?(one, two)
+      #used in  task check_record_digest
     if one.burial_person_forename == two.burial_person_forename &&
         one.burial_date == two.burial_date &&
         one.burial_person_surname  == two.burial_person_surname &&
@@ -397,26 +402,29 @@ class Freereg1CsvEntry
   end
 
   def embed_witness
+    #does not appear to be called
     if self.record_type == 'ma'
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}] unless self[:witness1_forename].blank? &&  self[:witness1_surname].blank?
       self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
     end
   end
 
-  def display_fields
-    file = self.freereg1_csv_file
-    register  = file.register unless file.nil?
+  def display_fields(search_record)
     self['register_type'] = ""
-    self['register_type'] = RegisterType.display_name(register.register_type) unless register.nil?
-    church = register.church unless register.nil?
-    self['church_name'] = ""
-    self['church_name'] = church.church_name unless church.nil?
-    place = church.place unless church.nil?
-    self['place'] = ""
-    self['county'] = ""
-    self['place'] = place.place_name unless place.nil?
-    self['county'] = place.county unless place.nil?
+    self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names].nil? || search_record[:location_names][1].nil?
+    
+    place, church = ''
+    (place, church) = search_record[:location_names][0].split('(') unless search_record[:location_names].nil? || search_record[:location_names][0].nil?
+    place.present? ? self['place'] = place.strip : self['place'] = ''
+    church.present? ? self['church_name'] = church[0..-2] : self['church_name'] = ''
 
+    self['county'] = ""
+    code = search_record[:chapman_code] unless search_record[:chapman_code].nil?
+    ChapmanCode::CODES.each_pair do |key,value|
+      if value.has_value?(code)
+        self['county'] = value.key(code) 
+      end
+    end
   end
 
 

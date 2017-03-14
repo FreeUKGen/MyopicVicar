@@ -6,7 +6,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def create
     get_user_info_from_userid
-    @user = UseridDetail.where(:userid => session[:userid]).first
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
     params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
@@ -56,7 +55,7 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_file.calculate_date(params)
       else
         @freereg1_csv_file.error =  @freereg1_csv_file.error - 1
-        @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id]))
+        @freereg1_csv_file.batch_errors.delete( @freereg1_csv_file.batch_errors.find(session[:error_id])) if @freereg1_csv_file.batch_errors.find(session[:error_id]).present?
       end
       display_info
       @freereg1_csv_file.save
@@ -115,8 +114,8 @@ class Freereg1CsvEntriesController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
 
@@ -200,8 +199,8 @@ class Freereg1CsvEntriesController < ApplicationController
       @county =  @place.county
       @place_name = @place.place_name
     end
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first unless session[:userid].nil?
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def show

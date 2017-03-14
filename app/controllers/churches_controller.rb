@@ -10,8 +10,8 @@ class ChurchesController < ApplicationController
     @county = session[:county]
     @place = Place.find(session[:place_id])
     @place_name = @place.place_name
-    @first_name = session[:first_name]
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
     @church.alternatechurchnames.build
     denomination_list
   end
@@ -106,13 +106,13 @@ class ChurchesController < ApplicationController
         @places << my_place.place_name
       end
       @county = session[:county]
-      @first_name = session[:first_name]
-      @user = UseridDetail.where(:userid => session[:userid]).first
-      @records = 0
-      @church.registers.each do |register|
-        register.freereg1_csv_files.each do |file|
-          @records = @records + file.freereg1_csv_entries.count
-        end
+      @user = cookies.signed[:userid]
+      @first_name = @user.person_forename unless @user.blank?
+      @records = @church.records
+      max_records = get_max_records(@user)
+      if @records.present? && @records.to_i >= max_records
+        flash[:notice] = 'There are too many records for an on-line relocation'
+        redirect_to :action => 'show' and return
       end
     end
   end
@@ -125,20 +125,19 @@ class ChurchesController < ApplicationController
     else
       setup(params[:id])
       @county = session[:county]
-      @first_name = session[:first_name]
-      @user = UseridDetail.where(:userid => session[:userid]).first
-      @records = 0
-      @church.registers.each do |register|
-        register.freereg1_csv_files.each do |file|
-          @records = @records + file.freereg1_csv_entries.count
-        end
+      @user = cookies.signed[:userid]
+      @first_name = @user.person_forename unless @user.blank?
+      @records = @church.records
+      max_records = get_max_records(@user)
+      if @records.present? && @records.to_i >= max_records
+        flash[:notice] = 'There are too many records for an on-line relocation'
+        redirect_to :action => 'show' and return
       end
     end
   end
 
   def setup(church_id)
     @church = Church.id(church_id).first
-    @first_name = session[:first_name]
     session[:church_id] = @church._id
     @church_name = @church.church_name
     session[:church_name] = @church_name
@@ -149,7 +148,8 @@ class ChurchesController < ApplicationController
     session[:place_name] =  @place_name
     @county = ChapmanCode.has_key(@place.chapman_code)
     session[:county] = @county
-    @user = UseridDetail.where(:userid => session[:userid]).first
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
   def show

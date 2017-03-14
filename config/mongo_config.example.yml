@@ -4,6 +4,7 @@ development:
   website: # the website being used eg '192.168.1.112:3000'
   backup_directory: #location of the backup folder 'd:/users/kirk/documents/github/myopicvicar/tmp/backups'
   sleep: # number of seconds to wait after each entry/search_record creation/deletion  eg '0.001'
+  emmendation_sleep:
   datafiles_changeset: # location of the FR1 user files eg 'c:/freereg12/' ! obsolete
   datafiles_delta: # location of the file that holds the FR1 rsync list eg'm:/freereg1.delta'
   files_for_processing: # location of file to hold list of files for overnight processing eg 'm:/processing.delta'
@@ -18,6 +19,11 @@ development:
   max_search_time: #as stated
   our_secret_key: #password secret key
   secret_key_base: #secrets secret key base
+  timeout_researcher: 120
+  timeout_transcriber: 60
+  timeout_manager: 240
+
+
 test:
   mongodb_bin_location: 
   datafiles: 
@@ -32,12 +38,14 @@ test:
   max_search_time: #as stated
   our_secret_key: #password secret key
   secret_key_base: #secrets secret key base
+
 production:
   mongodb_bin_location: 
   datafiles: 
   website: 
   backup_directory:
   sleep: 
+  emmendation_sleep:
   datafiles_changeset:
   datafiles_delta: 
   files_for_processing: 
@@ -51,3 +59,6 @@ production:
   max_search_time: #as stated
   our_secret_key: #password secret key
   secret_key_base: #secrets secret key base
+  timeout_researcher: 120
+  timeout_transcriber: 60
+  timeout_manager: 240

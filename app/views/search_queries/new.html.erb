@@ -1,9 +1,4 @@
 <% title "Search Query" %>
-<% unless @page.nil?%>
-  <div class="weight--semibold">
-    <%= @page%>
-  </div>
-<% end%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -18,4 +13,8 @@
 <% end %>
 <%= render app_specific_partial('form') %>
 
-
+<% unless @page.nil?%>
+  <div class="weight--semibold">
+    <%= @page%>
+  </div>
+<% end%>
