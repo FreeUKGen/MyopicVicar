@@ -15,6 +15,6 @@ class Freecen1VldFile
   field :file_errors, type: Array
   
   def chapman_code
-    self.dir_name
+    self.dir_name.sub(/-.*/, '') 
   end
 end
