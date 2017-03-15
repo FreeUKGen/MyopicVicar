@@ -54,7 +54,7 @@ class PlaceCache
 
   def self.refresh_cache(place)
     cache = PlaceCache.where(:chapman_code => place.chapman_code).first
-    PlaceCache.refresh(false, place.chapman_code) if cache.blank? || !cache.places_json.include?(place.place_name)
+    PlaceCache.refresh(place.chapman_code) if cache.blank? || !cache.places_json.include?(place.place_name)
   end
 
   def self.check_and_refresh_if_absent
