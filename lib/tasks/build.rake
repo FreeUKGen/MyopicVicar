@@ -629,4 +629,37 @@ namespace :build do
     end
   end
 
+  task :delete_search_queries,[:limit] => [:environment] do |t, args|
+    file_for_warning_messages = "#{Rails.root}/log/delete_search_queries.txt"
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+    output_file = File.new(file_for_warning_messages, "w")
+    int = 0
+    output_file.puts "Starting query deletes at #{Time.now}"
+
+    start = Time.now
+    p "Starting queries deletes at #{start}"
+
+    record_number = 0
+    number_deleted = 0
+    SearchQuery.all.sort(c_at: -1).each do |query|
+      record_number = record_number + 1
+      x = DateTime.now - Rails.application.config.days_to_retain_search_queries.days
+      break if record_number == args.limit.to_i
+      if query.c_at  <= x
+        number_deleted = number_deleted +1
+        query.destroy
+        output_file.puts "#{query.id}  deleted "
+        puts "#{query.id} records deleted "
+      else
+        #p query
+        output_file.puts "#{query.id} #{query.c_at} retained "
+        puts "#{query.id} #{query.c_at} retained "
+      end
+    end
+    output_file.puts "#{number_deleted}  deleted  in #{Time.now - start}"
+    puts "#{number_deleted} deleted  in #{Time.now - start}"
+    output_file.close
+    p "finished"
+  end
+
 end
