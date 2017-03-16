@@ -12,7 +12,7 @@
         <%if @display_date%>
           <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
         <% else%>
-          <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
+          <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record[:_id], :query => @search_query) %> </span> 
         <% end%> 
       </caption>
       <colgroup>
