@@ -13,10 +13,10 @@
       <td>Run at :</td><td class="weight--semibold"> <%= @search_query.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
     </tr>
     <tr>
-      <td>first_name :</td><td class="weight--semibold"> <%= @search_query.first_name%></td>
+      <td>first name :</td><td class="weight--semibold"> <%= @search_query.first_name%></td>
     </tr>
     <tr>
-      <td>last_name :</td><td class="weight--semibold"> <%= @search_query.last_name %> </td>
+      <td>last name :</td><td class="weight--semibold"> <%= @search_query.last_name %> </td>
     </tr>
     <tr>
       <td>fuzzy :</td><td class="weight--semibold"> <%= @search_query.fuzzy %>  </td>
@@ -25,10 +25,10 @@
       <td>role :</td><td class="weight--semibold"> <%= @search_query.role %>  </td>
     </tr>
     <tr>
-      <td>record_type :</td><td class="weight--semibold"> <%= @search_query.record_type %>  </td>
+      <td>record type :</td><td class="weight--semibold"> <%= @search_query.record_type %>  </td>
     </tr>
     <tr>
-      <td>chapman_codes :</td><td class="weight--semibold"><%= @search_query.chapman_codes %> </td>
+      <td>chapman codes :</td><td class="weight--semibold"><%= @search_query.chapman_codes %> </td>
     </tr>
     <tr>
       <td>inclusive :</td><td class="weight--semibold"><%= @search_query.inclusive %> </td>
@@ -37,37 +37,39 @@
       <td>witness :</td><td class="weight--semibold"><%= @search_query.witness%> </td>
     </tr>
     <tr>
-      <td>start_year :</td><td class="weight--semibold"><%= @search_query.start_year %> </td>
+      <td>start year :</td><td class="weight--semibold"><%= @search_query.start_year %> </td>
     </tr>    
     <tr>
-      <td>end_year :</td><td class="weight--semibold"> <%= @search_query.end_year%></td>
+      <td>end year :</td><td class="weight--semibold"> <%= @search_query.end_year%></td>
     </tr>
     <tr>
-      <td>last_name :</td><td class="weight--semibold"> <%= @search_query.last_name %> </td>
+      <td>radius factor :</td><td class="weight--semibold"> <%= @search_query.radius_factor %>  </td>
     </tr>
     <tr>
-      <td>radius_factor :</td><td class="weight--semibold"> <%= @search_query.radius_factor %>  </td>
+      <td>search nearby places :</td><td class="weight--semibold"> <%= @search_query.search_nearby_places %>  </td>
     </tr>
     <tr>
-      <td>search_nearby_places :</td><td class="weight--semibold"> <%= @search_query.search_nearby_places %>  </td>
+      <td>result count :</td><td class="weight--semibold"> <%= @search_query.result_count %>  </td>
     </tr>
     <tr>
-      <td>result_count :</td><td class="weight--semibold"> <%= @search_query.result_count %>  </td>
-    </tr>
-    <tr>
-      <td>place_system :</td><td class="weight--semibold"><%= @search_query.place_system %> </td>
-    </tr>
-    <tr>
-      <td>ucf_unfiltered_count :</td><td class="weight--semibold"><%= @search_query.ucf_unfiltered_count %> </td>
-    </tr>
-    <tr>
-      <td>ucf_result_ms :</td><td class="weight--semibold"><%= @search_query.ucf_result_ms%> </td>
-    </tr>
+      <td>ucf unfiltered count :</td><td class="weight--semibold"><%= @search_query.ucf_unfiltered_count %> </td>
+    </tr>   
     <tr>
       <td>runtime :</td><td class="weight--semibold"><%= @search_query.runtime %> </td>
     </tr>
     <tr>
-      <td>search_index :</td><td class="weight--semibold"><%= @search_query.search_index%> </td>
+      <td>additional runtime :</td><td class="weight--semibold"><%= @search_query.runtime_additional %> </td>
+    </tr>
+    <tr>
+      <td>ucf runtime :</td><td class="weight--semibold"><%= @search_query.runtime_ucf%> </td>
+    </tr>
+    
+    <tr>
+      <td>place system :</td><td class="weight--semibold"><%= @search_query.place_system %> </td>
+    </tr>
+    
+    <tr>
+      <td>search index :</td><td class="weight--semibold"><%= @search_query.search_index%> </td>
     </tr>
   </table>
 </div>
