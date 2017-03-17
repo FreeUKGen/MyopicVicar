@@ -435,7 +435,7 @@ class SearchQuery
   def record_type_params
     params = Hash.new
     params[:record_type] = record_type if record_type.present?
-    params[:record_type] = { '$in' => [ 'ba','ma', 'bu']} if record_type.blank?
+    params[:record_type] = { '$in' => RecordType.all_types } if record_type.blank?
     params
   end
 

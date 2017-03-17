@@ -58,7 +58,7 @@ class UseridDetailsController < ApplicationController
         next_place_to_go_unsuccessful_create
       end
     else
-      redirect_to transcriber_registration_userid_detail_path
+      render :status => 404
     end
   end
 
@@ -386,7 +386,7 @@ class UseridDetailsController < ApplicationController
       session[:first_name] = 'New Registrant'
       session[:type] = "transcriber_registration"
       honeypot = "agreement_" + rand.to_s[2..11]
-      session[:honeypot] = honeypot 
+      session[:honeypot] = honeypot
 
       @userid = UseridDetail.new
       @userid[:honeypot] = session[:honeypot]
@@ -456,13 +456,13 @@ class UseridDetailsController < ApplicationController
 
     params.each do |k,x|
       if k.include? session[:honeypot]
-          honeypot_error = false if x == ''
+        honeypot_error = false if x == ''
       end
     end
 
     if honeypot_error || diff <= 5
       error_file = "log/spam_check_error_messages.log"
-      f = File.exists?(error_file) ? File.open(error_file, "a+") : File.new(error_file, "w") 
+      f = File.exists?(error_file) ? File.open(error_file, "a+") : File.new(error_file, "w")
       error_text = "===========SPAM caught at " + Time.now.to_s
 
       if honeypot_error
@@ -471,10 +471,10 @@ class UseridDetailsController < ApplicationController
       if diff <= 5
         error_text = error_text+" submission time is "+diff.to_s+" seconds"
       end
-      
-      error_text = error_text+"\r\nEMAIL: "+params[:userid_detail][:email_address]+"\r\n" 
+
+      error_text = error_text+"\r\nEMAIL: "+params[:userid_detail][:email_address]+"\r\n"
       error_text = error_text+"USERID: "+params[:userid_detail][:userid]+"\r\n"
-      error_text = error_text+"FORENAME: "+params[:userid_detail][:person_forename]+"\r\n" 
+      error_text = error_text+"FORENAME: "+params[:userid_detail][:person_forename]+"\r\n"
       error_text = error_text+"SURNAME: "+params[:userid_detail][:person_surname] + "\r\n"
       error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n"
       error_text = error_text+"REMOTE IP: "+request.remote_ip + "\r\n"

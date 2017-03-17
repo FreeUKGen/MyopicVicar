@@ -89,10 +89,13 @@
             <% end %>
             <a href="#" class="btn weight--light btn--small">Go to top</a>
           </div>
-          <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+        <% end %>
+      <% end %>
+      <% if @search_query.result_count > 0 && @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+            <br>
              <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= MyopicVicar::Application.config.freexxx_display_name %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p><%= link_to 'Make a Donation',"http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free", :class => "weight--semibold go", :title => "external link to Free UK Genealogy" %>
           </div>
-        <% end %>
       <% end %>
     <% end %>
  </section>
