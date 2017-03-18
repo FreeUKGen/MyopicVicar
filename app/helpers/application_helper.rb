@@ -126,10 +126,11 @@ module ApplicationHelper
   def display_banner
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- banner 468x60, created 12/10/10 -->
     <ins class="adsbygoogle"
-    style="display:inline-block;width:728px;height:90px"
-    data-ad-client="ca-pub-7825403497160061"
-    data-ad-slot="3235467631"></ins>
+         style="display:inline-block;width:468px;height:60px"
+         data-ad-client="ca-pub-7825403497160061"
+         data-ad-slot="0816871891"></ins>
     <script>
     (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
