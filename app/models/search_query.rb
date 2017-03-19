@@ -44,7 +44,7 @@ class SearchQuery
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
-  field :ucf_unfiltered_count, type: Integer
+  field :ucf_filtered_count, type: Integer
   field :session_id, type: String
   field :runtime, type: Integer
   field :runtime_additional, type: Integer
@@ -455,7 +455,7 @@ class SearchQuery
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
-    logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
+    #logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -467,7 +467,7 @@ class SearchQuery
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
     @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    #logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
@@ -489,8 +489,8 @@ class SearchQuery
     start_ucf_time = Time.now.utc
     ucf_index = SearchRecord.index_hint(ucf_params)
     ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    self.ucf_unfiltered_count = ucf_records.count
     ucf_records = filter_ucf_records(ucf_records)
+    self.ucf_filtered_count = ucf_records.length
     self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
     self.runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
     self.save
