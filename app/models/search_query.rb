@@ -119,7 +119,7 @@ class SearchQuery
   end
 
   def can_query_ucf?
-    Rails.application.config.ucf_support && self.places.exists? # disable search until tested
+    Rails.application.config.ucf_support && self.places.exists? && !self.search_nearby_places# disable search until tested
   end
 
   def clean_blanks
