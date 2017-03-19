@@ -451,15 +451,12 @@ class SearchQuery
     params
   end
 
-
-
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -469,7 +466,7 @@ class SearchQuery
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete(:search_date)
+    @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
