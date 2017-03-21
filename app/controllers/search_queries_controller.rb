@@ -224,16 +224,17 @@ class SearchQueriesController < ApplicationController
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-        if @search_results.nil? || @search_query.result_count.nil?
+        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+        if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-          go_back
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to new_search_query_path(:search_id => @search_query)
           return
         end
       end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
-      go_back
+      redirect_to new_search_query_path
       return
     end
 
@@ -254,16 +255,18 @@ class SearchQueriesController < ApplicationController
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-        if @search_results.nil? || @search_query.result_count.nil?
+        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+        if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-          go_back
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to new_search_query_path(:search_id => @search_query)
           return
         end
       end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
-      go_back
+      flash[:notice] = 'Your search is not available. Please repeat your criteria'
+      redirect_to new_search_query_path
       return
     end
     render "show", :layout => false

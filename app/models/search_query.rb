@@ -274,13 +274,19 @@ class SearchQuery
 
 
   def get_and_sort_results_for_display
-    search_results =   self.search_result.records.values
-    search_results = self.filter_name_types(search_results)
-    search_results.length.present? ? result_count = search_results.length : result_count = 0
-    search_results = self.sort_results(search_results) unless search_results.nil?
-    ucf_results = self.ucf_results unless self.ucf_results.blank?
-    ucf_results = Array.new if  ucf_results.blank?
-    return search_results, ucf_results, result_count
+    if self.search_result.records.respond_to?(:values)
+      search_results =   self.search_result.records.values
+      search_results = self.filter_name_types(search_results)
+      search_results.length.present? ? result_count = search_results.length : result_count = 0
+      search_results = self.sort_results(search_results) unless search_results.nil?
+      ucf_results = self.ucf_results unless self.ucf_results.blank?
+      ucf_results = Array.new if  ucf_results.blank?
+      response = true
+      return response,search_results, ucf_results, result_count
+    else
+      response = false
+      return response
+    end
   end
 
 
