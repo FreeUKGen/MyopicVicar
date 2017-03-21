@@ -103,10 +103,11 @@ class PhysicalFilesController < ApplicationController
     @paginate = true
     get_user_info_from_userid
     if session[:who].nil?
-      @person = "All"
+      @selection = "All"
     else
-      @person = session[:who]
+      @selection = session[:who]
     end
+    (Syndicate.is_syndicate(@selection) || County.is_county(@selection)) ? @is_coordinator = true : @is_coordinator = false
     case
     when   @sorted_by == "(All files by userid then batch name)"
       @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]).per(1000)
@@ -281,6 +282,8 @@ class PhysicalFilesController < ApplicationController
   end
 
   def waiting_to_be_processed
+    p "(((((((((((((((((((((((((((((((((((((((((((((((((("
+    p "waiting"
     session[:sorted_by] = '(Waiting_to_be_processed)'
     session[:who] = nil
     redirect_to  :action => 'index'
