@@ -1,0 +1,40 @@
+<% breadcrumb :regmanager_userid_options if session[:edit_userid]%>
+<% breadcrumb :coordinator_userid_options unless session[:edit_userid]%>
+<% breadcrumb :incomplete_registrations if session[:edit_userid]%>
+
+<br />
+
+<h3 class=" text--center">List of Incomplete Registration Userids</h3>
+<h4 class=" text--center">Total number of Incomplete Registrations: <%= @incomplete_registrations.count %></h4>
+
+<div class="fixed-headers push--bottom">
+  <table class="flush--bottom" role="presentation">
+    <colgroup>
+      <col span="5" class="t20">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable">
+    <table class="table--data">
+      <colgroup>
+        <col span="5" class="t20">
+      </colgroup>
+      <tbody>
+      <% @incomplete_registrations.each do |user| %>
+        <tr>
+          <td><%= user.id %> </td>
+          <td><%= user.userid %> </td>
+          <td><%= user.email_address %> </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br />

@@ -334,6 +334,11 @@ crumb :role_listing do
   link "Role Listing"
   parent :regmanager_userid_options
 end
+crumb :incomplete_registrations do
+  link 'Incomplete Registration Listing'
+  parent :regmanager_userid_options, incomplete_registrations_userid_details_path
+end
+
 
 #Physical Files
 

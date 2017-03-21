@@ -62,7 +62,7 @@ module UseridRole
     "Logout" => "/refinery/logout",
     "Message System" => "/messages"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Create userid"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Create userid","Incomplete Registrations"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
@@ -72,7 +72,8 @@ module UseridRole
     "Select specific email" =>  "/userid_details/selection?option=Select specific email",
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
-    "Select Role" => "/userid_details/person_roles"
+    "Select Role" => "/userid_details/person_roles",
+    "Incomplete Registrations" => "/userid_details/incomplete_registrations"
 
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
