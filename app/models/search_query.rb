@@ -455,7 +455,7 @@ class SearchQuery
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
-    #logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
+    logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
