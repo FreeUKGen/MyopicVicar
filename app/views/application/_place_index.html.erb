@@ -29,7 +29,7 @@
         <% old_place_name = nil %>
         <% @places.each do |place| %>
           <% old_church_name = nil %>
-          <% if place.churches.blank? %>
+          <% if !place.churches.exists? %>
             <%church_name = nil%>
             <%register_type = nil %>
             <tr style= "color:black" id="<%=place.id%>">
@@ -46,7 +46,7 @@
             </tr>
           <% else%>
             <% place.churches.order_by(church_name: 1).each do |church| %>
-              <% if church.registers.blank? %>
+              <% if !church.registers.exists? %>
                 <% session[:placeid] = place.id%>
                 <tr style= "color:black" id="<%=place.id%>">
                   <% if place.place_name != old_place_name %>

@@ -7,7 +7,7 @@ class FilterUcfList
   end
 
   # Rules to filter the special characters
-  SPECIAL_CHARACTER_LISTS = /[?{}\[\]]/
+  SPECIAL_CHARACTER_LISTS = /[?*{}\[\]]/
 
   # Print the special character ID's into the output directory
   def filter_id

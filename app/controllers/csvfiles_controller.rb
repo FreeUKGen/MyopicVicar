@@ -17,7 +17,8 @@ class CsvfilesController < ApplicationController
     #if the process does not have a userid then the process has been initiated by the user on his own batches
     @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
     @csvfile.file_name = @csvfile.csvfile.identifier
-    if params[:commit] == "Replace"
+    case
+    when params[:commit] == "Replace"
       name_ok = @csvfile.check_name(session[:file_name])
       if !name_ok
         flash[:notice] = 'The file you are replacing must have the same name'
@@ -34,6 +35,14 @@ class CsvfilesController < ApplicationController
         else
           batch = setup[1]
         end
+      end
+    when params[:commit] == "Upload"
+      ok,message = @csvfile.csvfile_already_exists
+      if !ok
+        session.delete(:file_name)
+        flash[:notice] = message
+        redirect_to :back
+        return
       end
     end
     #lets check for existing file, save if required

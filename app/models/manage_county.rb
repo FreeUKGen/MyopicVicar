@@ -34,18 +34,20 @@ class ManageCounty
     def records(chapman,alphabet)
       #if alphabet is present we have already been through
       number = 0
-      if alphabet.blank?
+      if alphabet.present?
+        number = alphabet
+      else
         county = County.chapman_code(chapman).first
         total = county.total_records unless county.nil?
+        total_places = Place.chapman_code(chapman).count/100
         if total.present?
           number = total.to_i
-          number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
+          number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i >= total_places ?  number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i : number = total_places
           number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
         else
-          total = 0
+          number = 1
         end
-      else
-        number = alphabet
+
       end
       number
     end
