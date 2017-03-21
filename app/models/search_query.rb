@@ -339,14 +339,21 @@ class SearchQuery
   end
 
   def next_and_previous_records(current)
-    search_results =   self.search_result.records.values
-    search_results = self.filter_name_types(search_results)
-    record_number = locate_index(search_results,current)
-    next_record = nil
-    previous_record = nil
-    next_record = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-    previous_record = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
-    return  next_record, previous_record
+    if self.search_result.records.respond_to?(:values)
+      search_results =   self.search_result.records.values
+      search_results = self.filter_name_types(search_results)
+      record_number = locate_index(search_results,current)
+      next_record = nil
+      previous_record = nil
+      next_record = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
+      response = true
+      return  response,next_record, previous_record
+    else
+      response = false
+      return response
+    end
+
   end
 
   def persist_additional_results(results)
