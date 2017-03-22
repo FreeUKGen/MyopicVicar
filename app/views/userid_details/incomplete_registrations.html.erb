@@ -14,23 +14,23 @@
     </colgroup>
     <thead>
       <tr>
-        <th>ID</th>
         <th>User ID</th>
         <th>Email</th>
+        <th>Action</th>
       </tr>
     </thead>
   </table>
   <div class="scrollable">
-    <table class="table--data">
+    <table class="table--bordered my-width table--data just--left">
       <colgroup>
         <col span="5" class="t20">
       </colgroup>
       <tbody>
       <% @incomplete_registrations.each do |user| %>
         <tr>
-          <td><%= user.id %> </td>
           <td><%= user.userid %> </td>
           <td><%= user.email_address %> </td>
+          <td><%= link_to 'SHOW', userid_detail_path(user.id), method: :get  %></td>
         </tr>
       <% end %>
       </tbody>

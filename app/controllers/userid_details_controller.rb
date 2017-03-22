@@ -224,6 +224,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def incomplete_registrations
+    session[:edit_userid] = true
     incomplete_registrations = IncompleteRegistration.new
     @incomplete_registrations = incomplete_registrations.list_users
   end
