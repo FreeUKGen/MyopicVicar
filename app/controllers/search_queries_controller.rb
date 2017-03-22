@@ -113,7 +113,7 @@ class SearchQueriesController < ApplicationController
 
       old_query = SearchQuery.search_id(params[:search_id]).first
       if old_query.present?
-        old_query.search_result.records = Hash.new
+        old_query.search_result.records = Hash.new unless  old_query.search_result.nil?
         @search_query = SearchQuery.new(old_query.attributes)
       else
         @search_query = SearchQuery.new
