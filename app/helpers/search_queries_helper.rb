@@ -57,8 +57,12 @@ module SearchQueriesHelper
     else
       church = ' '
     end
-    register_type = names[1].gsub('[', '').gsub(']', '')
-    loc = [place, church, register_type].join(' : ')
+    if names[1]
+      register_type = names[1].gsub('[', '').gsub(']', '')
+      loc = [place, church, register_type].join(' : ')
+    else
+      loc = place
+    end
   end
 
 end

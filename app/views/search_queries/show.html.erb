@@ -60,18 +60,18 @@
         </div>
       <% else %>
         <% if device_type == :desktop || device_type == :tablet %>
-          <%= render(:partial => "desktop", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+          <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <% else %>
-          <%= render(:partial => "mobile", :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+          <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results}) if @n <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <% end %>
         <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
           <br>
           <p>These additional entries with partly-readable names could be relevant:</p>
           <% @n = @ucf_results.size %>
           <% if device_type == :desktop || device_type == :tablet %>
-            <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
+            <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
           <% else %>
-            <%= render(:partial => "mobile", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
+            <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
           <% end %>
         <% end %>
       <% end%>

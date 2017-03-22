@@ -89,7 +89,7 @@
 	    </td>
             <% unless print_friendly %>
 	      <td>
-              <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query), :title => "Row #{n}, details for #{name['first_name']} #{name['last_name']}") %>
+              <%= link_to("Detail", search_record_path(search_record, :search_id => @search_query), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}") %>
 	      <i><%= viewed(@search_query,search_record) %></i>
             </td>
           <% end %>
