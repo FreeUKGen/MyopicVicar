@@ -1,6 +1,5 @@
 class UseridDetailsController < ApplicationController
   require 'userid_role'
-  require 'incomplete_registration'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
 
@@ -224,9 +223,10 @@ class UseridDetailsController < ApplicationController
   end
 
   def incomplete_registrations
+    current_user = cookies.signed[:userid]
     session[:edit_userid] = true
-    incomplete_registrations = IncompleteRegistration.new
-    @incomplete_registrations = incomplete_registrations.list_users
+    user = UseridDetail.new
+    @incomplete_registrations = user.list_incomplete_registrations
   end
 
   def record_validation_errors(exception)

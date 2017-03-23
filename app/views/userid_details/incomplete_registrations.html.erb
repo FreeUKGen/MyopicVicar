@@ -1,4 +1,3 @@
-<% breadcrumb :regmanager_userid_options if session[:edit_userid]%>
 <% breadcrumb :coordinator_userid_options unless session[:edit_userid]%>
 <% breadcrumb :incomplete_registrations if session[:edit_userid]%>
 
@@ -8,29 +7,29 @@
 <h4 class=" text--center">Total number of Incomplete Registrations: <%= @incomplete_registrations.count %></h4>
 
 <div class="fixed-headers push--bottom">
-  <table class="flush--bottom" role="presentation">
+  <table class="flush--bottom" >
     <colgroup>
-      <col span="5" class="t20">
+      <col span="5" class="t1">
     </colgroup>
     <thead>
       <tr>
-        <th>User ID</th>
-        <th>Email</th>
-        <th>Action</th>
+        <th class="t1">User ID</th>
+        <th class="t1">Email</th>
+        <th class="t1">Action</th>
       </tr>
     </thead>
   </table>
   <div class="scrollable">
     <table class="table--bordered my-width table--data just--left">
       <colgroup>
-        <col span="5" class="t20">
+        <col span="5" class="t1">
       </colgroup>
       <tbody>
       <% @incomplete_registrations.each do |user| %>
         <tr>
           <td><%= user.userid %> </td>
           <td><%= user.email_address %> </td>
-          <td><%= link_to 'SHOW', userid_detail_path(user.id), method: :get  %></td>
+          <td><%= link_to 'SHOW', userid_detail_path(user.id), method: :get, :class => "btn weight--light btn--small"  %></td>
         </tr>
       <% end %>
       </tbody>

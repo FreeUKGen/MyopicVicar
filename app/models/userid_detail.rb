@@ -331,4 +331,28 @@ class UseridDetail
     details.close
   end
 
+  def list_incomplete_registrations
+    @incompleted_registration_users = Array.new
+
+    required_user_details.each { |user|
+      next if registration_completed(user)
+      @incompleted_registration_users << user
+    }
+    @incompleted_registration_users
+  end
+
+  private
+
+  def required_user_details
+    self.class.only(:_id, :userid, :password, :email_address)
+  end
+
+  def registration_completed user
+    user.password != registered_password
+  end
+
+  def registered_password
+    Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+  end
+
 end #end class
