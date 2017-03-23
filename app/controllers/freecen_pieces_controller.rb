@@ -66,7 +66,7 @@ class FreecenPiecesController < InheritedResources::Base
     unless params[:freecen_piece].blank?
       piece_params = transform_piece_params(params[:freecen_piece])
       @piece_params_errors = check_piece_params(params[:freecen_piece])
-      @freecen_piece = FreecenPiece.new(piece_params) unless piece_params.blank?
+      @freecen_piece = FreecenPiece.new(piece_params.permit!) unless piece_params.blank?
       set_piece_place(@freecen_piece)
       if @piece_params_errors.present? && @piece_params_errors.any?
         flash[:notice] = "***Could not create the new piece"
