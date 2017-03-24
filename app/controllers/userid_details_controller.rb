@@ -222,13 +222,6 @@ class UseridDetailsController < ApplicationController
     @location = 'location.href= "role?role=" + this.value'
   end
 
-  def incomplete_registrations
-    current_user = cookies.signed[:userid]
-    session[:edit_userid] = true
-    user = UseridDetail.new
-    @incomplete_registrations = user.list_incomplete_registrations
-  end
-
   def record_validation_errors(exception)
     flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
     @userid.delete
@@ -449,6 +442,18 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def incomplete_registrations
+    @current_user = cookies.signed[:userid]
+    session[:edit_userid] = true
+    user = UseridDetail.new
+    if permitted_users?
+      @incomplete_registrations = user.list_incomplete_registrations(@current_user)
+    else
+      flash[:notice] = 'Sorry, You are not authorized for this action'
+      redirect_to '/manage_resources/new'
+    end
+  end
+
   private
 
   def userid_details_params
@@ -489,6 +494,10 @@ class UseridDetailsController < ApplicationController
       return false
     end
     return true
+  end
+
+  def permitted_users?
+    @current_user.person_role == 'system_administrator'
   end
 
 end

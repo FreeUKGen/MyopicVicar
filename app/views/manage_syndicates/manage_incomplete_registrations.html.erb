@@ -3,7 +3,7 @@
 <br />
 
 <h3 class=" text--center">List of Incomplete Registration Userids</h3>
-<h4 class=" text--center">Total number of Incomplete Registrations: <%= @incomplete_registrations.count %></h4>
+<h4 class=" text--center">Total number of Incomplete Registrations for <%= @current_syndicate %>: <%= @incomplete_registrations.count %></h4>
 
 <div class="fixed-headers push--bottom">
   <table class="flush--bottom" >
@@ -14,7 +14,6 @@
       <tr>
         <th class="t1">User ID</th>
         <th class="t1">Email</th>
-        <th class="t1">Syndicate</th>
         <th class="t1">Action</th>
       </tr>
     </thead>
@@ -29,7 +28,6 @@
         <tr>
           <td><%= user.userid %> </td>
           <td><%= user.email_address %> </td>
-          <td><%= user.syndicate %> </td>
           <td><%= link_to 'SHOW', userid_detail_path(user.id), method: :get, :class => "btn weight--light btn--small"  %></td>
         </tr>
       <% end %>
