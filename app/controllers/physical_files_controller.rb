@@ -1,5 +1,5 @@
 class PhysicalFilesController < ApplicationController
-
+  before_filter :running_on_primary
   def all_files
     session[:sorted_by] = "(All files by userid then batch name)"
     session[:who] = nil

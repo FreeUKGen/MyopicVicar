@@ -1,5 +1,5 @@
 class CountiesController < ApplicationController
-
+  before_filter :running_on_primary
   require 'county'
 
   def display

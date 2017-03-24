@@ -1,4 +1,5 @@
 class ManageCountiesController < ApplicationController
+  before_filter :running_on_primary
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]

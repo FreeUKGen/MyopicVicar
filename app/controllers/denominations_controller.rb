@@ -1,5 +1,5 @@
 class DenominationsController < ApplicationController
-
+  before_filter :running_on_primary
   def create
     if params[:denomination].blank?
       flash[:notice] = 'You must enter a field '
