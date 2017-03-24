@@ -367,7 +367,7 @@ task :initialize_places_geo, [:csv_file,:keep_existing,:use_subplaces] => :envir
         else
           num_still_not_found += 1
           
-          puts "#{pp[:chapman_code]},\"#{pp[:place_name]}\",\"***not found***\",#{num_place_pieces},#{num_subplaces}"
+          #puts "#{pp[:chapman_code]},\"#{pp[:place_name]}\",\"***not found***\",#{num_place_pieces},#{num_subplaces}"
           # puts "place #{pp[:place_name]} has #{num_place_pieces} pieces with #{num_subplaces} subplaces (#{lats.length} with location) #{lats.length>0 ? '' : '***still not found***'}"
         end
         # puts "place #{pp[:place_name]} has #{num_place_pieces} pieces with #{num_subplaces} subplaces (#{lats.length} with location) #{lats.length>0 ? '***found***' : ''}"
