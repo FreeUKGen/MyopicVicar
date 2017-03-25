@@ -59,8 +59,6 @@ class FreecenPiecesController < InheritedResources::Base
     redirect_to freecen_pieces_path if @freecen_piece.blank?
   end
 
-
-
   def create
     #puts "\n\n*** create ***\n\n"
     unless params[:freecen_piece].blank?

@@ -5,7 +5,7 @@ module Freecen
       # extract dwellings
       freecen1_vld_file.freecen_dwellings.each do |dwelling|
         translate_dwelling(dwelling, freecen1_vld_file.chapman_code, freecen1_vld_file.full_year)
-      end      
+      end
     end
   
     def translate_dwelling(dwelling, chapman_code, full_year)
