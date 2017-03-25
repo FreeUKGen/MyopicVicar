@@ -1,4 +1,5 @@
 class SearchQueriesController < ApplicationController
+  helper DonateIconHelper
   skip_before_action :require_login
   skip_before_action :require_cookie_directive, :only => :new
   skip_before_action :verify_authenticity_token
