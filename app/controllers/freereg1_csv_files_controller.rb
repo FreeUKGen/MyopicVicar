@@ -1,7 +1,7 @@
 class Freereg1CsvFilesController < ApplicationController
   require 'chapman_code'
   require 'freereg_options_constants'
-  before_filter :running_on_primary
+  before_filter :running_on_primary, :except => [:show]
   def by_userid
     #entry by userid
     session[:page] = request.original_url
