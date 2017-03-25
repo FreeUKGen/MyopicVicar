@@ -162,11 +162,10 @@ class ApplicationController < ActionController::Base
 
   def running_on_primary
     mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
-    p mongo_node
     if mongo_node.present? && mongo_node != :primary_preferred
       flash[:notice] = "You appear to be running on a secondary. Please log in again."
       logger.warn "FREEREG::USER user is running on a secondary #{Mongoid.clients[:default]}"
-      stop_processing and return
+      redirect_to logout_manage_resources_path and return
     end
   end
 
