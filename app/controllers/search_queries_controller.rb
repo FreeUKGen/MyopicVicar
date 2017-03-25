@@ -176,7 +176,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page]).per(100)
   end
 
   def search_taking_too_long(message)

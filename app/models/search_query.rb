@@ -76,6 +76,7 @@ class SearchQuery
   index({day: -1,runtime: -1},{background: true })
   index({day: -1,u_at: -1},{background: true })
   index({day: -1,result_count: -1},{background: true })
+  index({day: 1, _id: 1},{name: "day_id",background: true })
 
   class << self
     def search_id(name)
