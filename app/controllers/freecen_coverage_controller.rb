@@ -5,13 +5,11 @@ class FreecenCoverageController < ApplicationController
   skip_before_filter :require_login
 
   def index
-    # @all_pieces = FreecenCoverage.get_index_stats
-    # Since get_index_stats is a bit slow (a couple of seconds), cache the
-    # result so subsequent hits will be faster
-
-    # TODO: cache for longer time and do Rails.cache.delete when updates done
-    # or records/parms added/deleted/updated
-    @all_pieces = Rails.cache.fetch("freecen_coverage_index", :expires_in => 6.hours) do
+    # Since get_index_stats is slow (several seconds on production), we cache
+    # the result so subsequent hits will be faster. Be sure to do
+    # Rails.cache.delete when updates are done (when records or parms are
+    # added/deleted/updated in db)
+    @all_pieces = Rails.cache.fetch("freecen_coverage_index", :expires_in => 7.days) do
       FreecenCoverage.get_index_stats
     end
 
