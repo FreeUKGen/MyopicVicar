@@ -31,7 +31,7 @@ module SearchQueriesHelper
     if chapman.present?
       county = ChapmanCode.has_key(chapman)
     else
-      place = Place.id(search_record[:place_id].to_s)
+      place = Place.id(search_record[:place_id].to_s).first
       place.present? ? county = place.county : county = ""
     end
     county
