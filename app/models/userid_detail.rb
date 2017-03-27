@@ -341,6 +341,10 @@ class UseridDetail
     filter_users
   end
 
+  def user_active
+    self.active ? "Yes" : "No"
+  end
+
   private
 
   def filter_users
@@ -361,7 +365,7 @@ class UseridDetail
   end
 
   def list_all_users
-    self.class.only(:_id, :userid, :password, :email_address, :syndicate)
+    self.class.only(:_id, :userid, :password, :email_address, :syndicate, :active)
   end
 
   def get_users(current_user, current_syndicate)

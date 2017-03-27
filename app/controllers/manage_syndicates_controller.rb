@@ -196,6 +196,7 @@ class ManageSyndicatesController < ApplicationController
     user = UseridDetail.new
     if permitted_users?
       @incomplete_registrations = user.syndicate_incomplete_registrations(@current_user, @current_syndicate)
+      render :template => 'shared/incomplete_registrations'
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'

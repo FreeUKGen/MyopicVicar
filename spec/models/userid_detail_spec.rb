@@ -28,4 +28,23 @@ describe UseridDetail do
       expect(subject.syndicate_incomplete_registrations(current_user_syndicate, current_syndicate).count).to eq 9
     end
   end
+
+  describe '#user_active' do
+    context 'when a user is active' do
+      let (:current_user) {UseridDetail.where(userid: "VinodhiniS").first}
+
+      it "returns Yes" do
+        expect(current_user.user_active).to eq "Yes"
+      end
+    end
+
+    context 'when a user is inactive' do
+      let (:current_user) {UseridDetail.where(userid: "1066Land").first}
+
+      it "returns Yes" do
+        expect(current_user.user_active).to eq "No"
+      end
+    end
+
+  end
 end

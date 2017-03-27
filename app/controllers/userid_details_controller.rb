@@ -443,11 +443,13 @@ class UseridDetailsController < ApplicationController
   end
 
   def incomplete_registrations
+    @current_syndicate = nil
     @current_user = cookies.signed[:userid]
     session[:edit_userid] = true
     user = UseridDetail.new
     if permitted_users?
       @incomplete_registrations = user.list_incomplete_registrations(@current_user)
+      render :template => 'shared/incomplete_registrations'
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'

@@ -334,9 +334,15 @@ crumb :role_listing do
   link "Role Listing"
   parent :regmanager_userid_options
 end
-crumb :incomplete_registrations do
+
+#Incomplete Registrations
+crumb :incomplete_registrations do |syndicate|
   link 'Incomplete Registration Listing'
-  parent :root
+  if syndicate
+    parent :syndicate_options,syndicate
+  else
+    parent :regmanager_userid_options
+  end
 end
 
 

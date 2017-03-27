@@ -1,0 +1,44 @@
+<% breadcrumb :incomplete_registrations, @current_syndicate %><br />
+
+<% if @current_syndicate.nil? %>
+  <h4 class=" text--center">Total number of Incomplete Registrations: <%= @incomplete_registrations.count %></h4>
+<% else %>
+  <h4 class=" text--center">Total number of Incomplete Registrations for <%= @current_syndicate %> syndicate: <%= @incomplete_registrations.count %></h4>
+<% end %>
+
+<div class="fixed-headers push--bottom">
+  <table class="flush--bottom" >
+    <colgroup>
+      <col span="7" class="t7">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="t3">User ID</th>
+        <th class="t15">Email</th>
+        <th class="t3">Syndicate</th>
+        <th class="t3">Active</th>
+        <th colspan="5" class="t5">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SHOW: Show profile details; DESTROY: Destroy the Inactivate userid </span></a></th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable">
+    <table class="table--bordered my-width table--data just--left">
+      <colgroup>
+        <col span="7" class="t7">
+      </colgroup>
+      <tbody>
+      <% @incomplete_registrations.each do |user| %>
+        <tr>
+          <td class="t1"><%= user.userid %> </td>
+          <td class="t3"><%= user.email_address %> </td>
+          <td class="t1"><%= user.syndicate %> </td>
+          <td class="t3"><%= user.user_active %> </td>
+          <td class="t5"><%= link_to 'SHOW', userid_detail_path(user.id, page_name: 'incomplete_registrations'), method: :get, :class => "btn weight--light btn--small"  %>
+          <%= link_to 'DESTROY', userid_detail_path(user.id) ,  data: { confirm: 'Are you sure?' },method: :delete, :class => "btn weight--light btn--small" if user.active == false%></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br />
