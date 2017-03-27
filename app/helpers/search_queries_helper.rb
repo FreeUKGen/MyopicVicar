@@ -17,21 +17,22 @@ module SearchQueriesHelper
   #end
 
   def format_location(search_record)
-    if search_record.respond_to? :location_name
-      search_record.location_name
+    if search_record[:location_name].present?
+      search_record[:location_name]
     elsif
-      search_record.respond_to? :location_names
-      format_for_line_breaks(search_record.location_names)
+      search_record[:location_names].present?
+      format_for_line_breaks(search_record[:location_names])
     else
       ""
     end
   end
   def county(search_record)
-    chapman = search_record.chapman_code
+    chapman = search_record[:chapman_code]
     if chapman.present?
       county = ChapmanCode.has_key(chapman)
     else
-      county = search_record.place.county
+      place = Place.id(search_record[:place_id].to_s).first
+      place.present? ? county = place.county : county = ""
     end
     county
   end
@@ -46,6 +47,7 @@ module SearchQueriesHelper
     end
     register_type = names[1].gsub('[', '').gsub(']', '')
     loc = [place, church, register_type].join(' : ')
+    return loc
   end
 
 end

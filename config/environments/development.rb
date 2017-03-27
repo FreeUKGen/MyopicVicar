@@ -81,9 +81,4 @@ MyopicVicar::Application.configure do
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   config.eager_load = false
-  config.timeout_researcher = MyopicVicar::MongoConfig['timeout_researcher']
-  config.timeout_manager = MyopicVicar::MongoConfig['timeout_manager']
-  config.timeout_transcriber = MyopicVicar::MongoConfig['timeout_transcriber']
-  #config.active_record.auto_explain_threshold_in_seconds = 0.5
-  #config.active_record.mass_assignment_sanitizer = :strict
 end

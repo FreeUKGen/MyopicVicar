@@ -2,7 +2,7 @@ class SearchRecordsController < ApplicationController
   before_filter :viewed
   skip_before_filter :require_login
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
-
+  before_filter :running_on_primary, :except => [:show,:show_print_version]
   def catch_error
     logger.warn("FREEREG:RECORD: Record encountered a problem #{params}")
     flash[:notice] = 'We are sorry but we encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
@@ -16,22 +16,25 @@ class SearchRecordsController < ApplicationController
   end
 
   def show
-    @page_number = params[:page_number].to_i
-    if params[:id].nil?
-      redirect_to new_search_query_path
-      return
-    end
-    @search_record = SearchRecord.record_id(params[:id]).first
-    if params[:search_id].nil? || @search_record.nil?
+    if params[:search_id].nil? || params[:id].nil?
       flash[:notice] = "Prior records no longer exist"
       redirect_to new_search_query_path
       return
     end
-    @entry = @search_record.freereg1_csv_entry
     begin
       @search_query = SearchQuery.find(params[:search_id])
-      @previous_record = @search_query.previous_record(params[:id])
-      @next_record = @search_query.next_record(params[:id])
+      if params[:ucf] == "true"
+        @search_record = SearchRecord.find(params[:id])
+      else
+        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
+      end
+      if @search_record.nil?
+        flash[:notice] = "Prior records no longer exist"
+        redirect_to new_search_query_path
+        return
+      end
+      @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
@@ -39,7 +42,7 @@ class SearchRecordsController < ApplicationController
     end
     @display_date = false
     @entry.display_fields(@search_record)
-    @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
+    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
     @search_result = @search_query.search_result
     @viewed_records = @search_result.viewed_records
     @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
@@ -48,23 +51,35 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_print_version
-    @page_number = params[:page_number].to_i
+    if params[:search_id].nil? || params[:id].nil?
+      flash[:notice] = "Prior records no longer exist"
+      redirect_to new_search_query_path
+      return
+    end
     begin
+      @search_query = SearchQuery.find(params[:search_id])
       @search_record = SearchRecord.find(params[:id])
-      @entry = @search_record.freereg1_csv_entry
-      if params[:search_id].nil?
+      if @search_record.nil?
+        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
+      end
+      if @search_record.nil?
+        flash[:notice] = "Prior records no longer exist"
         redirect_to new_search_query_path
         return
       end
-      @search_query = SearchQuery.find(params[:search_id])
-      @previous_record = @search_query.previous_record(params[:id])
-      @next_record = @search_query.next_record(params[:id])
+      @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
       redirect_to new_search_query_path
       return
     end
-    @annotations = Annotation.find(@search_record.annotation_ids) if @search_record.annotation_ids
+    @entry.display_fields(@search_record)
+    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
+    @search_result = @search_query.search_result
+    @viewed_records = @search_result.viewed_records
+    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+    @search_result.update_attribute(:viewed_records, @viewed_records)
     @display_date = true
     render "show", :layout => false
   end

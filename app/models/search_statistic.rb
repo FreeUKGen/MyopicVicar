@@ -60,6 +60,7 @@ class SearchStatistic
   field :n_r_type,        type: Integer, default: 0  # record type
 
   index({ interval_end: -1})
+  index({ year: 1, month: 1, day: 1},{name: "year_month_day",background: true })
 
   def self.calculate
     until self.up_to_date? do

@@ -3,7 +3,7 @@ class ChurchesController < ApplicationController
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
 
   require 'chapman_code'
-
+  before_filter :running_on_primary, :except => [:show]
 
   def new
     @church = Church.new
