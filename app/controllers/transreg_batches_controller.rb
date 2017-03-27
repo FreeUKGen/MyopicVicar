@@ -1,5 +1,7 @@
 class TransregBatchesController < ApplicationController
 
+  before_filter :running_on_primary
+
   def list
     if session[:userid_detail_id].nil?
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'list'}))

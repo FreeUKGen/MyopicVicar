@@ -3,7 +3,7 @@ class Freereg1CsvEntriesController < ApplicationController
   require 'freereg_validations'
 
   skip_before_filter :require_login, only: [:show]
-
+  before_filter :running_on_primary, :except => [:show]
   def create
     get_user_info_from_userid
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])

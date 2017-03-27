@@ -1,0 +1,1 @@
+sudo -u webserv bundle exec rake RAILS_ENV=production build:delete_search_queries[0] --trace

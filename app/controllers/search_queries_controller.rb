@@ -110,8 +110,10 @@ class SearchQueriesController < ApplicationController
       @page = nil
     end
     if params[:search_id]
+
       old_query = SearchQuery.search_id(params[:search_id]).first
       if old_query.present?
+        old_query.search_result.records = Hash.new unless  old_query.search_result.nil?
         @search_query = SearchQuery.new(old_query.attributes)
       else
         @search_query = SearchQuery.new
@@ -131,8 +133,8 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
-    order_field=params[:order_field]
-    if order_field==old_query.order_field
+    order_field = params[:order_field]
+    if order_field == old_query.order_field
       # reverse the directions
       old_query.order_asc = !old_query.order_asc
     else
@@ -174,7 +176,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page]).per(100)
   end
 
   def search_taking_too_long(message)
@@ -220,21 +222,21 @@ class SearchQueriesController < ApplicationController
     end
     if @search_query.present?
       if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results =   @search_query.results
-        @ucf_results = @search_query.ucf_results
-        @ucf_results = Array.new unless  @ucf_results.present?
-        if @search_results.nil? || @search_query.result_count.nil?
+        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+        if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-          go_back
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to new_search_query_path(:search_id => @search_query)
           return
         end
       end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
-      go_back
+      redirect_to new_search_query_path
       return
     end
 
@@ -250,17 +252,23 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      @search_results =   @search_query.results
-      @ucf_results = @search_query.ucf_results
-      @ucf_results = Array.new unless  @ucf_results.present?
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        @result_count = @search_query.result_count
+        @search_results =   Array.new
+        @ucf_results = Array.new
+      else
+        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+        if !response || @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to new_search_query_path(:search_id => @search_query)
+          return
+        end
+      end
     else
       logger.warn("FREEREG:SEARCH_ERROR:search query no longer present")
-      go_back
-      return
-    end
-    if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-      go_back
+      flash[:notice] = 'Your search is not available. Please repeat your criteria'
+      redirect_to new_search_query_path
       return
     end
     render "show", :layout => false

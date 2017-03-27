@@ -355,9 +355,11 @@ end
 crumb :physical_files do |type|
   link "Listing of Physical Files", physical_files_path
   case
-  when Syndicate.is_syndicate?(type)
+  when type.nil? || type =="All"
+    parent :physical_files_options
+  when Syndicate.is_syndicate(type)
     parent :syndicate_options, type
-  when County.is_county?(type)
+  when County.is_county(type)
     parent :county_options, type
   else
     parent :physical_files_options

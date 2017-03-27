@@ -2,7 +2,7 @@ class UseridDetailsController < ApplicationController
   require 'userid_role'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
-
+  before_filter :running_on_primary, except: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
 
   def all
     if params[:page]
@@ -247,7 +247,7 @@ class UseridDetailsController < ApplicationController
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
-      redirect_to :back
+      redirect_to new_search_query_path
       return
     end
   end
@@ -371,7 +371,7 @@ class UseridDetailsController < ApplicationController
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
-      redirect_to :back
+      redirect_to new_search_query_path
       return
     end
   end
@@ -394,7 +394,7 @@ class UseridDetailsController < ApplicationController
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
-      redirect_to :back
+      redirect_to new_search_query_path
       return
     end
   end

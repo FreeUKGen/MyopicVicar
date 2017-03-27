@@ -114,6 +114,12 @@ class SearchRecord
       where(:id => id)
     end
 
+    def comparable_name(record)
+      record[:transcript_names].uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
+        name['type'] == 'primary'
+      end
+    end
+
     def create_search_record(entry,search_version,place_id)
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = SearchRecord.new(search_record_parameters)
@@ -453,11 +459,6 @@ class SearchRecord
     return the_digest
   end
 
-  def comparable_name
-    self.transcript_names.uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
-      name['type'] == 'primary'
-    end
-  end
 
   def contains_wildcard_ucf?
     search_names.detect do |name|

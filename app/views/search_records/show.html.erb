@@ -1,6 +1,6 @@
-<% title "Record Details #{@search_record.freereg1_csv_entry.id}" %>
+<% title "Record Details #{@search_record[:freereg1_csv_entry_id]}" %>
 <section>
-  <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
+  <p class="text--center"><%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :anchor => "#{@search_record[:_id]}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record[:_id], :search_id => @search_query), :class => "btn  weight--light btn--small"%> </p>
 </section>
 <section id="search-detail">
   <% if @entry %>
@@ -12,7 +12,7 @@
         <%if @display_date%>
           <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
         <% else%>
-          <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record, :query => @search_query) %> </span> 
+          <span class="additional"> <%= link_to "Link for reporting error in transcription", report_error_contact_path(@search_record[:_id], :query => @search_query) %> </span> 
         <% end%> 
       </caption>
       <colgroup>
@@ -31,7 +31,7 @@
             <% if field == 'place' %>
             <tr>
             <td><%= field.gsub('_',' ').capitalize %> (link for place information)</td>
-            <td><%= link_to(@entry[field], place_freereg_content_path(@search_record.place)) %></td>
+            <td><%= link_to(@entry[field], place_freereg_content_path(@search_record[:place_id])) %></td>
             </tr>
             <%else%>
             <tr>

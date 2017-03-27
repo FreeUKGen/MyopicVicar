@@ -1,4 +1,5 @@
 class TransregCountiesController < ApplicationController
+  before_filter :running_on_primary
 
   def list
     if session[:userid_detail_id].nil?

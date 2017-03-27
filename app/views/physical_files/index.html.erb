@@ -1,5 +1,5 @@
-<% breadcrumb :physical_files, @person%>
-<h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @person %> </h2>
+<% breadcrumb :physical_files, @selection%>
+<h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @selection %> </h2>
   <p style="text-align: center"> Number of files <%= @number if @number.present?%>.  Download first page of report as: <%= link_to "CSV", physical_files_path(format: "csv") %> </p>
 
 <% if flash[:notice] %>
@@ -21,7 +21,7 @@
                 <th >Show</th>
                 <th >Download</th>
                 <th >Remove</th>
-              <% unless Syndicate.is_syndicate?(@person) || County.is_county?(@person) %>
+              <% unless @is_coordinator %>
                 <th >Process file</th> 
 				<th >Delete File and Entries</th>
               <% end%>
@@ -44,7 +44,7 @@
 				<td><%= link_to 'Show', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
                 <td><%= link_to 'Download', download_physical_file_path(batch,   :params=> {:loc => "FR2"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
                 <td><%= link_to 'Remove file', remove_physical_file_path(batch) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
-                <% unless Syndicate.is_syndicate?(@person) || County.is_county?(@person) %>
+                <% unless @is_coordinator %>
                   <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
         		  <td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn weight--light  btn--small",data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
 				<% end %>

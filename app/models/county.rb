@@ -48,19 +48,14 @@ class County
       coordinator_name
     end
 
-    def all_counties
-      all_counties = Array.new
-      County.all.order_by(chapman_code: 1).each do |county|
-        all_counties << county.chapman_code
-      end
-      all_counties
+    def coordinator(userid)
+      where(:county_coordinator => userid)
     end
 
-    def is_county?(value)
-      County.all_counties.include?(ChapmanCode::values_at(value)) ?  result = true : result = false
+    def is_county(code)
+      County.chapman_code(code).present?  ? result = true : result = false
       result
     end
-
 
     def id(id)
       where(:id => id)

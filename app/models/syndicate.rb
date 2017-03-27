@@ -25,16 +25,15 @@ class Syndicate
       where(:id => id)
     end
 
-    def all_syndicates
-      all_syndicates = Array.new
-      Syndicate.all.order_by(syndicate_code: 1).each do |syndicate|
-        all_syndicates << syndicate.syndicate_code
-      end
-      all_syndicates
+    def coordinator(userid)
+      where(:syndicate_coordinator => userid)
+    end
+    def syndicate_code(code)
+      where(:syndicate_code => code)
     end
 
-    def is_syndicate?(value)
-      Syndicate.all_syndicates.include?(value) ?  result = true : result = false
+    def is_syndicate(code)
+      Syndicate.syndicate_code(code).present?  ? result = true : result = false
       result
     end
 
