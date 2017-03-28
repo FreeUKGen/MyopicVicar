@@ -2,10 +2,15 @@
 
 
 <section class="island">
-<p>*This list only includes errors detected in files that were loaded into the database. If there was an error that prevented the file from being loaded, it may not be listed here.</p>
+<p>*This list includes errors detected in files that were loaded into the database. If there was an error that prevented the file from being loaded, it may not be listed here:</p>
 
 <%  @freecen_error_list.each do |fc_err| %>
 <%= fc_err %><br>
+<% end%>
+&nbsp;<br>
+<p><b>These pieces have an unexpected load status:</b></p>
+<%  @freecen_error_files_list.each do |f_err| %>
+<%= f_err %><br>
 <% end%>
 
 </section>
