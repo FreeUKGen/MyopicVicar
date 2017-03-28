@@ -373,7 +373,12 @@ class Freecen1UpdateProcessor
 
 
     log_message("\n---8---Load new VLDs, and reload any dropped due to modifications:")
-    vld_changes = self.get_vld_changes_info(vld_dir, false)
+    #update list of vlds that need to be loaded if it might have changed (if we
+    #have only added and deleted VLDs or PARMS, the list of new vlds should
+    #still be correct and we shouldn't need to update it).
+    if (modified_vlds.length + multiple_vlds.length + multiple_parms.length + modified_parms.length) > 0
+      vld_changes = self.get_vld_changes_info(vld_dir, false)
+    end
     new_vlds = vld_changes['new_vlds']
     log_message("  (none to load)") if new_vlds.length < 1
     new_vlds.each do |nv|
