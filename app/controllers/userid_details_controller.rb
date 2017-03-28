@@ -28,7 +28,7 @@ class UseridDetailsController < ApplicationController
     if session[:my_own]
       redirect_to logout_manage_resources_path and return
     else
-      redirect_to userid_detail_path(@userid) and return
+      redirect_to userid_detail_path(@userid, page_name: params[:page_name]) and return
     end
   end
 
@@ -359,6 +359,7 @@ class UseridDetailsController < ApplicationController
     @syndicate = session[:syndicate]
     get_user_info_from_userid
     load(params[:id])
+    @page_name = params[:page_name]
   end
 
   def technical_registration
@@ -432,23 +433,24 @@ class UseridDetailsController < ApplicationController
       UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
       UserMailer.send_change_of_email_notification_to_sc(@userid).deliver_now if changed_email_address
       flash[:notice] = 'The update of the profile was successful'
-      redirect_to userid_detail_path(@userid)
+      redirect_to userid_detail_path(@userid, page_name: params[:page_name])
       return
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      render :action => 'edit'
+      render :action => 'edit', page_name: params[:page_name]
       return
     end
   end
 
   def incomplete_registrations
-    @current_syndicate = nil
+    @current_syndicate = session[:syndicate]
     @current_user = cookies.signed[:userid]
     session[:edit_userid] = true
     user = UseridDetail.new
+
     if permitted_users?
-      @incomplete_registrations = user.list_incomplete_registrations(@current_user)
+      @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
       render :template => 'shared/incomplete_registrations'
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
@@ -499,7 +501,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_users?
-    @current_user.person_role == 'system_administrator'
+    ['system_administrator', 'syndicate_coordinator'].include? @current_user.person_role
   end
 
 end

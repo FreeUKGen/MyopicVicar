@@ -188,24 +188,4 @@ class ManageSyndicatesController < ApplicationController
   def upload_batch
     redirect_to new_csvfile_path
   end
-
-  def manage_incomplete_registrations
-    @current_syndicate = session[:syndicate]
-    @current_user = cookies.signed[:userid]
-    session[:edit_userid] = true
-    user = UseridDetail.new
-    if permitted_users?
-      @incomplete_registrations = user.syndicate_incomplete_registrations(@current_user, @current_syndicate)
-      render :template => 'shared/incomplete_registrations'
-    else
-      flash[:notice] = 'Sorry, You are not authorized for this action'
-      redirect_to '/manage_resources/new'
-    end
-  end
-
-  private
-
-  def permitted_users?
-    @current_user.person_role == 'system_administrator'|| @current_user.person_role == 'syndicate_coordinator'
-  end
 end

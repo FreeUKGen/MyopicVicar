@@ -115,7 +115,6 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
   get  'manage_syndicates/display_files_not_processed',  :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
-  get 'manage_syndicates/manage_incomplete_registrations', :to =>'manage_syndicates#manage_incomplete_registrations', :as => :manage_incomplete_registrations_userid_details
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   resources :manage_syndicates
 

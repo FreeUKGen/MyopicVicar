@@ -331,14 +331,17 @@ class UseridDetail
     details.close
   end
 
-  def list_incomplete_registrations current_user
-    @users = list_all_users
+  def list_incomplete_registrations current_user, current_syndicate
+    if current_syndicate == 'all'
+      @users = list_all_users
+    else
+      @users = get_users(current_syndicate)
+    end
     filter_users
   end
 
-  def syndicate_incomplete_registrations current_user, current_syndicate
-    @users = get_users(current_user, current_syndicate)
-    filter_users
+  def full_name
+    "#{self.person_forename} #{self.person_surname}"
   end
 
   private
@@ -361,10 +364,10 @@ class UseridDetail
   end
 
   def list_all_users
-    self.class.only(:_id, :userid, :password, :email_address, :syndicate)
+    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate)
   end
 
-  def get_users(current_user, current_syndicate)
+  def get_users(current_syndicate)
     Syndicate.get_users_for_syndicate(current_syndicate)
   end
 

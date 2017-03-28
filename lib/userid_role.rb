@@ -115,7 +115,7 @@ module UseridRole
     'Select Specific Member by Userid'=> "/manage_syndicates/selection?option=Select Specific Member by Userid",
     'Select Specific Member by Email Address'=> "/manage_syndicates/selection?option=Select Specific Member by Email Address",
     'Select Specific Member by Surname/Forename' => "/manage_syndicates/selection?option=Select Specific Member by Surname/Forename",
-    "Incomplete Registrations" => "/manage_syndicates/manage_incomplete_registrations",
+    "Incomplete Registrations" => "/userid_details/incomplete_registrations",
     "Create userid"=> "/userid_details/selection?option=Create userid",
     'Review Batches with Errors'=> "/manage_syndicates/selection?option=Review Batches with Errors",
     'Review Batches by Filename' => "/manage_syndicates/selection?option=Review Batches by Filename",
