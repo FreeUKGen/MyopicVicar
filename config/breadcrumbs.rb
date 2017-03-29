@@ -300,13 +300,15 @@ end
 
 
 #Profile
-crumb :userid_detail do |syndicate,userid_detail,page_name|
+crumb :userid_detail do |syndicate,userid_detail,page_name,option|
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
   if session[:my_own]
     parent :root
   else
     if page_name == 'incomplete_registrations'
       parent :incomplete_registrations, syndicate
+    elsif option
+      parent :selection_user_id, option
     elsif session[:edit_userid]
       syndicate = session[:syndicate]
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
@@ -317,7 +319,10 @@ crumb :userid_detail do |syndicate,userid_detail,page_name|
   end
 end
 
-
+crumb :selection_user_id do |selection|
+  link "#{selection}", selection_userid_details_path(option: selection)
+  parent :regmanager_userid_options
+end
 
 #manage userids
 crumb :regmanager_userid_options do

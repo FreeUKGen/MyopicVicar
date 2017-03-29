@@ -269,7 +269,7 @@ class UseridDetailsController < ApplicationController
         return
       else
         userid = UseridDetail.where(:userid => params[:userid]).first
-        redirect_to userid_detail_path(userid)
+        redirect_to userid_detail_path(userid, option: params[:option])
         return
       end
     when !params[:email].nil?
@@ -282,7 +282,7 @@ class UseridDetailsController < ApplicationController
         #adjust for + having been replaced with space
         params[:email] = params[:email].gsub(/\s/,"+")
         userid = UseridDetail.where(:email_address => params[:email]).first
-        redirect_to userid_detail_path(userid)
+        redirect_to userid_detail_path(userid, option: params[:option])
         return
       end
     when !params[:name].nil?
@@ -304,7 +304,7 @@ class UseridDetailsController < ApplicationController
           return
         when number == 1
           userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
-          redirect_to userid_detail_path(userid)
+          redirect_to userid_detail_path(userid, option: params[:option])
           return
         when number >= 2
           @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all
@@ -350,6 +350,7 @@ class UseridDetailsController < ApplicationController
       redirect_to :back
       return
     end
+    @location = get_option_parameter(params[:option], @location)
     params[:option] = nil
     @manage_syndicate = session[:syndicate]
   end
@@ -502,6 +503,10 @@ class UseridDetailsController < ApplicationController
 
   def permitted_users?
     ['system_administrator', 'syndicate_coordinator'].include? @current_user.person_role
+  end
+
+  def get_option_parameter(option, location)
+    location += '+"&option=' + option +'"'
   end
 
 end
