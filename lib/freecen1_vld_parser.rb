@@ -9,13 +9,16 @@ module Freecen
       chapman_code = chapman_code.sub(/-.*/, '') 
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename, chapman_code)
+      print("   call check_vld_records_for_errors() #{Time.now.strftime("%I:%M:%S %p")}\n")
       entry_errors = check_vld_records_for_errors(entry_records, chapman_code, File.basename(filename))
       # do not persist if piece not found. raise exception so we can notify
       # person loading the files that either the PARMS.DAT or .VLD file needs
       # to be fixed
+      print("   call FreecenPiece.where() #{Time.now.strftime("%I:%M:%S %p")}\n")
       if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
         raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nVerify that the PARMS.DAT file is correct and has been loaded by the update task, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
+      print("   call vldparser persist_to_database #{Time.now.strftime("%I:%M:%S %p")}\n")
 
       persist_to_database(filename, file_record, entry_records, entry_errors)
     end
