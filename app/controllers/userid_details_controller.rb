@@ -502,7 +502,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_users?
-    ['system_administrator', 'syndicate_coordinator'].include? @current_user.person_role
+    ['system_administrator', 'syndicate_coordinator', 'county_coordinator'].include? @current_user.person_role
   end
 
   def get_option_parameter(option, location)
