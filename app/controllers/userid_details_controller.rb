@@ -451,6 +451,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def spam_check
+    return true #temporarily disabled spam check until it is fixed for admin action
     honeypot_error = true
     diff = Time.now - Time.parse(params[:__TIME])
 

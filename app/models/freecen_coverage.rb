@@ -1,7 +1,9 @@
 class FreecenCoverage
   require 'chapman_code'
 
-
+  #self.get_index_stats is slow (several seconds) because there are >16,000
+  #pieces (and more added each month) to traverse to compute the stats.
+  #The controller caches the result of this function.
   def self.get_index_stats
     all_years = {'1841'=>Hash.new, '1851'=>Hash.new, '1861'=>Hash.new,
       '1871'=>Hash.new, '1881'=>Hash.new, '1891'=>Hash.new}
