@@ -133,14 +133,13 @@ module ApplicationHelper
   def display_banner
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- banner 468x60, created 12/10/10 -->
+    <!-- Responsive ad -->
     <ins class="adsbygoogle"
-         style="display:inline-block;width:468px;height:60px"
-         data-ad-client="ca-pub-7825403497160061"
-         data-ad-slot="0816871891"></ins>
-    <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+      style="display:block"
+      data-ad-client="ca-pub-7825403497160061"
+      data-ad-slot="9011588433"
+      data-ad-format="auto">
+    </ins>
     HTML
     if Rails.env.development?
      banner = <<-HTML
