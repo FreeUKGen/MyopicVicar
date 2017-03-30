@@ -449,6 +449,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def spam_check
+    return true if cookies.signed[:userid].present?
     honeypot_error = true
     diff = Time.now - Time.parse(params[:__TIME])
 
