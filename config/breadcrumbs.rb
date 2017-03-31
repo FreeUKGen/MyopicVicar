@@ -428,7 +428,7 @@ crumb :userid_messages do
 end
 
 crumb :show_messages_user do
-  link "User Messages", userid_messages_path
+  link "Show User Messages", userid_messages_path
   parent :userid_messages
 end
 
