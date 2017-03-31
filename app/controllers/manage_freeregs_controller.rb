@@ -4,7 +4,7 @@ class ManageFreeregsController < ApplicationController
   def index
    @manage_freeregs = ManageFreereg.new
    get_user_info(session[:userid],session[:first_name])
-   @options_userids=["Browse userids","Create userid","Select specific email","Select specific userid", "Select specific surname"]
+   @options_userids=["Browse userids","Create userid","Incomplete registrations","Select specific email","Select specific userid", "Select specific surname"]
    @location_manage_userid = 'location.href= "/userid_details/selection?userid=" + this.value'
    
 

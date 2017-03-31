@@ -108,6 +108,7 @@ class ManageSyndicatesController < ApplicationController
   end
 
   def new
+    #raise @syndicates.inspect
     clean_session_for_syndicate
     session.delete(:syndicate)
     session.delete(:chapman_code)

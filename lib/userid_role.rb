@@ -62,18 +62,18 @@ module UseridRole
     "Logout" => "/refinery/logout",
     "Message System" => "/messages"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Create userid"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
     #todo clean up first 2
     "Browse userids" => "/userid_details/selection?option=Browse userids",
+    "Incomplete Registrations" => "/userid_details/incomplete_registrations",
     "Create userid"=> "/userid_details/selection?option=Create userid",
     "Select specific email" =>  "/userid_details/selection?option=Select specific email",
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
     "Select Role" => "/userid_details/person_roles"
-
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
@@ -106,7 +106,7 @@ module UseridRole
     'Upload New Batch' =>  "/csvfiles/new"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Create userid",'Review Batches with Errors','Review Batches by Filename',
+                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",'Review Batches with Errors','Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
                                    'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status']
   SYNDICATE_OPTIONS_TRANSLATION = {
@@ -115,6 +115,7 @@ module UseridRole
     'Select Specific Member by Userid'=> "/manage_syndicates/selection?option=Select Specific Member by Userid",
     'Select Specific Member by Email Address'=> "/manage_syndicates/selection?option=Select Specific Member by Email Address",
     'Select Specific Member by Surname/Forename' => "/manage_syndicates/selection?option=Select Specific Member by Surname/Forename",
+    "Incomplete Registrations" => "/userid_details/incomplete_registrations",
     "Create userid"=> "/userid_details/selection?option=Create userid",
     'Review Batches with Errors'=> "/manage_syndicates/selection?option=Review Batches with Errors",
     'Review Batches by Filename' => "/manage_syndicates/selection?option=Review Batches by Filename",

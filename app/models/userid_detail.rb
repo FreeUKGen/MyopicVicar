@@ -331,4 +331,44 @@ class UseridDetail
     details.close
   end
 
+  def list_incomplete_registrations current_user, current_syndicate
+    if current_syndicate == 'all'
+      @users = list_all_users
+    else
+      @users = get_users(current_syndicate)
+    end
+    filter_users
+  end
+
+  def full_name
+    "#{self.person_forename} #{self.person_surname}"
+  end
+
+  private
+
+  def filter_users
+    @incompleted_registration_users = Array.new
+    @users.each { |user|
+      next if registration_completed(user)
+      @incompleted_registration_users << user
+    }    
+    @incompleted_registration_users
+  end
+
+  def registration_completed user
+    user.password != registered_password
+  end
+
+  def registered_password
+    Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+  end
+
+  def list_all_users
+    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate)
+  end
+
+  def get_users(current_syndicate)
+    Syndicate.get_users_for_syndicate(current_syndicate)
+  end
+
 end #end class
