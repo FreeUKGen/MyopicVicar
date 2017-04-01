@@ -132,3 +132,5 @@ config/mongo_config.yml
 config/mongoid.yml
 config/secrets.yml
 app/assets/copy_of_assets_freecen/
+config/initializers/development_mail_interceptor.rb
+config/initializers/setup_mail.rb

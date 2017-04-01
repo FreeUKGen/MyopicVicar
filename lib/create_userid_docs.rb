@@ -193,6 +193,7 @@ class CreateUseridDocs
 
       header[:person_role] = "system_administrator" if header[:userid] == "REGManager"
       header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk"
+      header[:person_role] = "technical" if header[:userid] == "VinodhiniS"
       header[:person_role] = "data_manager" if header[:userid] == "ericb"
       header[:person_role] = "data_manager" if header[:userid] == "kirkbedfordshire"
 
