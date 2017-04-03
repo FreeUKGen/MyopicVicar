@@ -25,9 +25,10 @@ module Freecen
  
       start_time = Time.now
       print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}")
-      persist_to_database(filename, file_record, entry_records, entry_errors)
+      file = persist_to_database(filename, file_record, entry_records, entry_errors)
       print("  #{Time.now - start_time} elapsed\n")
-      
+
+      file      
     end
 
     def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)
