@@ -6,6 +6,7 @@ module Freecen
     def transform_file_record(freecen1_vld_file)
       dwelling = nil
       piece = check_and_get_piece_for_file(freecen1_vld_file)
+      piece.freecen1_filename = freecen1_vld_file.file_name
       piece.status = 'Loading' if piece.status != 'Loading'
       piece.save!
       Rails.cache.delete("freecen_coverage_index")#bust cache so status shows
