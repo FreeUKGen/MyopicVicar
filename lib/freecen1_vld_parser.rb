@@ -9,18 +9,25 @@ module Freecen
       chapman_code = chapman_code.sub(/-.*/, '') 
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename, chapman_code)
-      print("   call check_vld_records_for_errors() #{Time.now.strftime("%I:%M:%S %p")}\n")
+      start_time = Time.now
+      print("   call check_vld_records_for_errors() #{start_time.strftime("%I:%M:%S %p")}\n")
       entry_errors = check_vld_records_for_errors(entry_records, chapman_code, File.basename(filename))
+      print("  #{Time.now - start_time} elapsed\n")
       # do not persist if piece not found. raise exception so we can notify
       # person loading the files that either the PARMS.DAT or .VLD file needs
       # to be fixed
-      print("   call FreecenPiece.where() #{Time.now.strftime("%I:%M:%S %p")}\n")
+      start_time = Time.now
+      print("   call FreecenPiece.where() #{start_time.strftime("%I:%M:%S %p")}")
       if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
         raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nVerify that the PARMS.DAT file is correct and has been loaded by the update task, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
-      print("   call vldparser persist_to_database #{Time.now.strftime("%I:%M:%S %p")}\n")
-
+      print("  #{Time.now - start_time} elapsed\n")
+ 
+      start_time = Time.now
+      print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}")
       persist_to_database(filename, file_record, entry_records, entry_errors)
+      print("  #{Time.now - start_time} elapsed\n")
+      
     end
 
     def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)
@@ -30,6 +37,7 @@ module Freecen
       file.file_errors = entry_errors unless entry_errors.blank?
       file.save!
 
+      entries_to_insert = []
       entry_hash_array.each do |hash|
         entry = Freecen1VldEntry.new
 
@@ -79,8 +87,9 @@ module Freecen
         entry.attributes.delete_if { |key,value| value.blank? }
         entry.freecen1_vld_file = file
 
-        entry.save!
+        entries_to_insert << entry.attributes
       end
+      Freecen1VldEntry.collection.insert_many(entries_to_insert)
 
       file
     end
