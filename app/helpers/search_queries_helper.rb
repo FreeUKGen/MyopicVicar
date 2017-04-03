@@ -39,7 +39,17 @@ module SearchQueriesHelper
 
   def format_for_line_breaks (names)
     place = ' '
+    name_parts = names[0].split(') ')
+    case 
+    when name_parts.length = 1
     (place, church) = names[0].split(' (')
+    when name_parts.length = 2
+      place = name_parts[0] + ")"
+      name_parts[1][0] = ""
+      church = name_parts[1]
+  else
+
+  end
     if church.present?
       church = church[0..-2]
     else
