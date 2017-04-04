@@ -337,7 +337,7 @@ describe Freecen1VldFile do
 
   def process_file(filename)
     # print "process_file dwelling count=#{FreecenDwelling.count} before file is processed\n"
-    parser = Freecen::Freecen1VldParser.new
+    parser = Freecen::Freecen1VldParser.new(true)
     file_record = parser.process_vld_file(filename)
 
     transformer = Freecen::Freecen1VldTransformer.new
