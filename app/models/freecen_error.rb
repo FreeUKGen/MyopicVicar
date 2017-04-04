@@ -17,7 +17,7 @@ class FreecenError
     plist = []
     pcs = FreecenPiece.where(:status.nin => [nil, '', 'Online'])
     pcs.each do |pc|
-      plist << "#{pc.chapman_code}/#{pc.freecen1_filename} #{pc.status}"
+      plist << "#{pc.chapman_code} filename:#{pc.freecen1_filename} #{pc.year} piece:#{pc.piece_number} suffix:#{pc.suffix} status:#{pc.status}"
     end
     pcs = FreecenPiece.where(:status => 'Online', :freecen1_filename.in=>[nil,''])
     pcs.each do |pc|
