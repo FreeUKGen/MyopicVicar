@@ -116,6 +116,8 @@
           <% end %>
         </select>
       </li>
+      <%= render "shared/transcriber_agreement", f: f %>
+
       <li class="betterstyling grid__item seven-twelfths lap-one-whole palm-one-whole">
         <label class="label ttip" for="<%= @userid[:honeypot] %>" > Leave this field blank </label> 
         <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">

@@ -1,0 +1,46 @@
+<li class="grid__item eleven-twelfths lap-one-whole palm-one-whole">
+  <label class="label ttip" for="syndicate" tabindex="0">Agreement
+    <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+    <span class="ttip__text">Please read the following Transcriber Agreement. You must accept the terms of this agreement before continuing with the registration.</span>
+    <small class="additional">Required</small>
+  </label>
+  <div class="agreement">
+    <p>
+      <h5>Transcription  Agreement</h5>
+      <h6>Introduction</h6>
+      <p>
+      Thank you for agreeing to contribute data to one or more of our databases. In order to make proper use of your contribution as part of our databases, we ask you to license us to use your rights in your contribution.  In return, we agree to make your contribution readily available, free of charge via internet services such as our website and via other non-commercial archival services.  You retain ownership of the rights in your contribution.  If you do not agree to these terms please do not submit your contribution.</p>
+      <h6>Definitions</h6>
+      <h6>In this agreement:</h6>
+      <p>We are Free UK Genealogy (“we”, “us”, “our”), a Charitable Incorporated Organisation (registration number 1167484, registered address Erw Wen, Harford, Llanwrda, Carmarthenshire, UK SA19 8DT).</p>
+      <p>“our database(s)” refers to any database project managed by us, including FreeBMD, FreeREG and FreeCEN.</p>
+      <p>“your contribution” refers to all data you have contributed and will contribute to our database, and terms such as “contribute” are to be understood accordingly.</p>
+      <p>“your rights” means copyright and database right and any related or neighbouring rights that might apply to your contribution. It includes any of these rights which you may acquire in the future, but is restricted to rights that you are, or will be able to, license.</p>
+      <p>“open licence” means the Open Database Licence Version 1.0 (being a  licence which is intended to allow users to freely share, modify, and use our databases while maintaining this same freedom for others) or any other licence proposed from time to time by us and approved by a two thirds majority vote of active transcribers (see <a href="http://opendatacommons.org/licenses/odbl/1-0/" target="_blank">http://opendatacommons.org/licenses/odbl/1-0/</a>).</p>
+      <p>“active transcriber” is a natural person (whether using a single or multiple accounts) who:</p>
+      <ul>
+      <li>has contributed substantive information to any of our databases (which means providing a transcription, or if checking transcriptions  identifying or making a correction or amendment); and</li>
+      <li>has a valid and functioning email address in their registration profile responds to an invitation to vote or comment within 3 weeks.</li>
+      </ul>
+      <h6>What you agree to do</h6>
+      <p>When making a contribution, you grant a licence to us (“your licence”) of your rights in the contributions.  This licence is an irrevocable, perpetual, worldwide, royalty-free, non-exclusive licence to do any act which would otherwise require your permission because of your ownership of your rights.  You continue to own your rights in your contribution and may grant other non-exclusive licences if you choose to do so.</p>
+
+      <p>You must not make a contribution where you think that the data is subject to conflicting third party rights.</p>
+      <h6>What we agree to do</h6>
+      <p>If you accept these terms and your contribution has met our standards we will take reasonable steps to:</p>
+      <ul>
+      <li>publish your contribution and ensure that it is readily available online, free of charge under an open licence; and</li> 
+      <li>ensure that your contribution is placed with at least one additional, non-commercial custodian, whose purpose is to provide archival access for the public to public domain, historical records.</li>
+      </ul>
+      <p>We reserve the right not to publish your contribution or to remove it once published if we do not feel that it meets our standards.</p>
+
+      <h6>Liability</h6>
+      <p>It is not intended that this agreement should result in either us or you claiming damages from the other, so, to the extent that it is possible to do so by law, neither party shall be liable to the other for damages, whether for breach of this agreement or for any other reason.</p>
+
+      <h6>Proper law</h6>
+      <p>This agreement is intended to have legal effect as a contract made under the laws of England and Wales and the parties agree that the courts of England and Wales shall have exclusive jurisdiction to hear any dispute arising from it.</p>
+    </p>
+  </div>
+  <%= f.check_box :transcription_agreement, {}, "true","false" %> 
+  <span>I have read and accept the <%= link_to 'agreement', "/docs/FreeUKGenealogyTranscriptionAgreement.pdf", title: "Click here to Download the Agreement" %></span><br />
+</li>

@@ -42,23 +42,28 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    if spam_check
-      @userid = UseridDetail.new(userid_details_params)
-      @userid.add_fields(params[:commit],session[:syndicate])
-      @userid.save
-      if @userid.save
-        refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
-        @userid.write_userid_file
-        next_place_to_go_successful_create
+    if user_accepted_agreement?(userid_details_params)
+      if spam_check
+        @userid = UseridDetail.new(userid_details_params)
+        @userid.add_fields(params[:commit],session[:syndicate])
+        @userid.save
+        if @userid.save
+          refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+          refinery_user.send_reset_password_instructions
+          flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+          @userid.write_userid_file
+          next_place_to_go_successful_create
+        else
+          flash[:notice] = 'The registration was unsuccessful'
+          @syndicates = Syndicate.get_syndicates_open_for_transcription
+          next_place_to_go_unsuccessful_create
+        end
       else
-        flash[:notice] = 'The registration was unsuccessful'
-        @syndicates = Syndicate.get_syndicates_open_for_transcription
-        next_place_to_go_unsuccessful_create
+        render :status => 404
       end
     else
-      render :status => 404
+      flash[:notice] = 'Please read the Transcriber Agreement. You must accept the terms of this agreement before continuing with the registration.'
+      redirect_to :back
     end
   end
 
@@ -510,4 +515,7 @@ class UseridDetailsController < ApplicationController
     location += '+"&option=' + option +'"'
   end
 
+  def user_accepted_agreement? params
+    params[:transcription_agreement] == "true"
+  end
 end
