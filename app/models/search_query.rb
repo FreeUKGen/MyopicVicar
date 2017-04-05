@@ -376,10 +376,12 @@ class SearchQuery
     # finally extract the records IDs and persist them
     records = Hash.new
     results.each do |rec|
-      rec_id = rec["_id"].to_s
-      records[rec_id] = rec
+      record = SearchRecord.new(rec)
+      rec_id = record.id
+      records[rec_id] = record
     end
-    self.search_result =  SearchResult.new(records: records)
+    self.search_result =  SearchResult.new
+    self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime("%F")
