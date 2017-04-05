@@ -470,3 +470,7 @@ dl.table-display dd { width: calc(100% - 4em); }
 .agreement > h5, h6 {
   color: #009f98;
 }
+
+.login_agreement {
+  margin-bottom: 20px;
+}

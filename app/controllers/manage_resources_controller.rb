@@ -81,6 +81,9 @@ class ManageResourcesController < ApplicationController
         @page = ""
       end
       @manage_resources = ManageResource.new
+      get_user_info_from_userid
+      @transcription_agreement = agreement_accepted?
+      @current_user_id = UseridDetail.find(@user)
       render 'actions'
       return
     end
@@ -128,8 +131,6 @@ class ManageResourcesController < ApplicationController
   end
 
   def update
-
-
   end
 
   def user_is_computer?
@@ -137,6 +138,10 @@ class ManageResourcesController < ApplicationController
     result
   end
 
+  def agreement_accepted?
+    user_id = params[:user] || @user.userid
+    UseridDetail.transcription_agreement_accepted(user_id)
+  end
 
   private
 

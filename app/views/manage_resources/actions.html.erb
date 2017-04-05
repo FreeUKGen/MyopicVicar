@@ -7,4 +7,13 @@
 <% breadcrumb :root %>
 <%= @page %> 
 
-<%= render "resource_sidebar" %>
+<% if @transcription_agreement %>
+  <%= render "resource_sidebar" %>
+<% else %>
+  <div class="login_agreement">
+    <%= form_tag({controller: "userid_details", action: "volunteer_agreement", params: {user: @current_user_id}}, method: "post") do |f| %>
+      <%= render "shared/transcriber_agreement", f: @userid %>
+      <%= submit_tag 'Accept Agreement', class: "btn btn--small" %>
+    <% end %>
+  </div>
+<% end %>

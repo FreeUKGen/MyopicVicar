@@ -41,6 +41,8 @@
       <p>This agreement is intended to have legal effect as a contract made under the laws of England and Wales and the parties agree that the courts of England and Wales shall have exclusive jurisdiction to hear any dispute arising from it.</p>
     </p>
   </div>
-  <%= f.check_box :transcription_agreement, {}, "true","false" %> 
+
+  <%= check_box_tag("userid_detail[transcription_agreement]", "true", false) %>
   <span>I have read and accept the <%= link_to 'agreement', "/docs/FreeUKGenealogyTranscriptionAgreement.pdf", title: "Click here to Download the Agreement" %></span><br />
+
 </li>

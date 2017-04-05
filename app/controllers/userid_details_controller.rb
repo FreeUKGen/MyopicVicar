@@ -431,7 +431,6 @@ class UseridDetailsController < ApplicationController
       end
     end
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    #    params[:userid_detail][:email_address_valid]  = true
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
@@ -461,6 +460,20 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
+    end
+  end
+
+  def volunteer_agreement
+    user = UseridDetail.id(params[:user]).first
+    agreement = params[:userid_detail][:transcription_agreement] if params[:userid_detail]
+    if agreement
+      user.update_attributes(transcription_agreement: true)
+      redirect_to new_manage_resource_path(user: user.userid)
+      return
+    else
+      flash[:notice] = "You must accept the agreement to proceed further."
+      redirect_to '/manage_resources/logout'
+      return
     end
   end
 

@@ -344,6 +344,11 @@ class UseridDetail
     "#{self.person_forename} #{self.person_surname}"
   end
 
+  def self.transcription_agreement_accepted(user_id)
+    user = self.userid(user_id).first
+    user.transcription_agreement
+  end
+
   private
 
   def filter_users
