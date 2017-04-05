@@ -40,6 +40,7 @@ class UseridDetail
   field :email_address_valid, type: Boolean, default: true
   field :email_address_last_confirmned, type: DateTime
   field :no_processing_messages, type: Boolean, default: false
+  field :userid_messages,type: Array, default: []
 
   attr_accessor :action, :message
   index({ email_address: 1 })
@@ -87,6 +88,29 @@ class UseridDetail
       where(:email_address_valid => true)
     end
   end
+
+  def remove_checked_messages(msg_id)
+    self.reload
+    return if !(self.userid_messages.include? msg_id)
+    userid_msgs = self.userid_messages
+    userid_msgs = userid_msgs - [msg_id]
+    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  end
+
+  def count_not_checked_messages
+    self.reload
+    userid_msgs = self.userid_messages
+    return 0 if userid_msgs.length == 0
+    self.userid_messages.each do |msg_id|
+      msg = Message.id(msg_id.to_s).first
+      if msg.nil?
+        userid_msgs = userid_msgs - [msg_id]
+      end
+    end
+    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+    self.userid_messages.length
+  end
+
 
   def self.get_active_userids_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'

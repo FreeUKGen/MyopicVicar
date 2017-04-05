@@ -37,17 +37,20 @@ class Message
       case
       when active
         UseridDetail.role(recip).active(active).email_address_valid.all.each do |person|
+          add_message_to_userid_messages(person)
           ccs << person.email_address
         end
       when reasons.present? && !active
         reasons.each do |reason|
           UseridDetail.role(recip).active(active).reason(reason).email_address_valid.all.each do |person|
+            add_message_to_userid_messages(person)
             ccs << person.email_address
           end
         end
       when reasons.blank? && !active
-        easons.each do |reason|
+        reasons.each do |reason|
           UseridDetail.role(recip).active(active).reason("temporary").email_address_valid.all.each do |person|
+            add_message_to_userid_messages(person)
             ccs << person.email_address
           end
         end
@@ -56,4 +59,14 @@ class Message
     ccs = ccs.uniq
     UserMailer.send_message(self,ccs,sender_email).deliver_now
   end
+
+  private
+  def add_message_to_userid_messages(person)
+    @message_userid =  person.userid_messages
+    if !@message_userid.include? self.id.to_s
+        @message_userid << self.id.to_s
+        person.update_attribute(:userid_messages, @message_userid)
+    end
+  end
+
 end

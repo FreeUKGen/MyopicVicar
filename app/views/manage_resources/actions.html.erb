@@ -1,9 +1,12 @@
 <% title "Action Page" %>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %> 
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<% if @user.count_not_checked_messages != 0 %>
+<%= link_to "Messages waiting for you: #{@user.count_not_checked_messages}. Click here to check it out !",userid_messages_path %>
+<% end %>
 <% breadcrumb :root %>
 <%= @page %> 
 

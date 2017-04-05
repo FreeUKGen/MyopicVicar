@@ -440,6 +440,16 @@ crumb :show_message do |message|
   link "Show Message", message_path(message)
   parent :messages
 end
+
+crumb :userid_messages do
+  link "User Messages", userid_messages_path
+end
+
+crumb :show_messages_user do
+  link "Show User Messages", userid_messages_path
+  parent :userid_messages
+end
+
 crumb :edit_message do |message|
   link "Edit Message", edit_message_path(message)
   parent :show_message, message
