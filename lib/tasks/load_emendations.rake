@@ -174,15 +174,11 @@ task :load_emendations => :environment do
   add_ruleset(:original => 'elish', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elisth', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'elith', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
-  add_ruleset(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
-  add_ruleset(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
-  add_ruleset(:original => 'elisath', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'eliz', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => "eliz'h", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')
   add_ruleset(:original => "eliz-th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "eliz:th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "eliz'b", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
-  add_ruleset(:original => "eliz'h", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => "eliz'th", :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
   add_ruleset(:original => 'eliza', :replacement => 'eliza', :emendation_type => et, :gender => 'f')#for punctuation at end
   add_ruleset(:original => 'eliza', :replacement => 'elizabeth', :emendation_type => et, :gender => 'f')#
