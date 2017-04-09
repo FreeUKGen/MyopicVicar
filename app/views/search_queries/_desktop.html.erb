@@ -42,10 +42,10 @@
           <% end%>
           </td>
           <td>
-            <%= RecordType::display_name(search_record[:record_type]) %>
+            <%= RecordType::display_name(search_record.record_type) %>
           </td>
           <td>
-            <%= raw(search_record[:transcript_dates].first.gsub(' ', '&nbsp;')) unless search_record[:transcript_dates].empty? %>
+            <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty? %>
           </td>
           <td>
             <%= county(search_record) %>
@@ -55,7 +55,7 @@
           </td>
           <% unless print_friendly %>
             <td>
-              <%= link_to("Row #{n}", search_record_path(search_record[:_id], :search_id => @search_query, :ucf => ucf_results), :title => "As available for this record") %> 
+              <%= link_to("Row #{n}", search_record_path(search_record.id, :search_id => @search_query, :ucf => ucf_results), :title => "As available for this record") %> 
               <i><%= viewed(@search_query,search_record) %></i>
             </td>
           <% end %>

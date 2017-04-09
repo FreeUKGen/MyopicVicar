@@ -283,7 +283,7 @@ class SearchQuery
       ucf_results = self.ucf_results unless self.ucf_results.blank?
       ucf_results = Array.new if  ucf_results.blank?
       response = true
-      return response,search_results, ucf_results, result_count
+      return response,search_results.map{|h| SearchRecord.new(h)}, ucf_results, result_count
     else
       response = false
       return response
@@ -376,8 +376,8 @@ class SearchQuery
     # finally extract the records IDs and persist them
     records = Hash.new
     results.each do |rec|
-      record = SearchRecord.new(rec)
-      rec_id = record.id
+      record = rec # should be a SearchRecord despite Mongoid bug
+      rec_id = record["_id"].to_s
       records[rec_id] = record
     end
     self.search_result =  SearchResult.new
