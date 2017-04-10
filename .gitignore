@@ -125,10 +125,13 @@ vendor/extensions/**/spec/dummy
 
 
 # Ignore application configuration
-/config/application.yml
+config/application.yml
 config/database.yml
 config/errbit.yml
 config/mongo_config.yml
 config/mongoid.yml
 config/secrets.yml
+config/initializers/setup_mail.rb
+data/*
+
 app/assets/copy_of_assets_freecen/

@@ -101,6 +101,7 @@ class CreateUseridDocs
       records = record.split("\n")
 
       records.each do |r|
+        r = r.chomp
         rx = r.split(":")
         fields[rx[0]] = rx[1]
       end #end record split
@@ -192,7 +193,7 @@ class CreateUseridDocs
       end
 
       header[:person_role] = "system_administrator" if header[:userid] == "REGManager"
-      header[:person_role] = "system_administrator" if header[:userid] == "kirknorfolk"
+      header[:person_role] = "system_administrator" if header[:userid] == "Captainkirk"
       header[:person_role] = "data_manager" if header[:userid] == "ericb"
       header[:person_role] = "data_manager" if header[:userid] == "kirkbedfordshire"
 
@@ -229,10 +230,10 @@ class CreateUseridDocs
           header.delete(:disabled)
           userid = UseridDetail.new(header)
           if type == 'recreate'
-            p "#{header[:userid]} created"
+    
             userid.save(:validate => false)
           else
-            p "#{header[:userid]} created"
+          
             userid.save
           end
         end
@@ -243,6 +244,9 @@ class CreateUseridDocs
           @@message_file.puts userid.errors.messages
           p "#{header[:userid]} not created"
           p userid.errors.messages
+        else
+        @@message_file.puts  "#{header[:userid]} created"
+        p "#{header[:userid]} created"
         end #end errors
       end
 

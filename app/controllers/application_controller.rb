@@ -162,6 +162,8 @@ class ApplicationController < ActionController::Base
   end
 
   def running_on_primary
+    p "clients"
+    p Mongoid.clients[:default]
     mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
     if mongo_node.present? && mongo_node != :primary_preferred
       flash[:notice] = "You appear to be running on a secondary. Please log in again."
