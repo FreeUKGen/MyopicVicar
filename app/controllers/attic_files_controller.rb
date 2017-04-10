@@ -1,4 +1,5 @@
 class AtticFilesController < ApplicationController
+  before_filter :running_on_primary
   def download
     file = AtticFile.find(params[:id])
     my_file =  File.join(Rails.application.config.datafiles, file.userid_detail.userid,".attic",file.name)

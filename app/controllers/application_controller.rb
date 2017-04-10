@@ -1,3 +1,4 @@
+
 # Copyright 2012 Trustees of FreeBMD
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -159,6 +160,15 @@ class ApplicationController < ActionController::Base
     logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
     redirect_to main_app.new_manage_resource_path
     return
+  end
+
+  def running_on_primary
+    mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
+    if mongo_node.present? && mongo_node != :primary_preferred
+      flash[:notice] = "You appear to be running on a secondary. Please log in again."
+      logger.warn "FREEREG::USER user is running on a secondary #{Mongoid.clients[:default]}"
+      redirect_to logout_manage_resources_path and return
+    end
   end
 
   def require_cookie_directive

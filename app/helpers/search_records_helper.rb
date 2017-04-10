@@ -28,8 +28,8 @@ module SearchRecordsHelper
     search_results = search_query.search_result
     viewed_records = search_results.viewed_records
     field = ""
-    if viewed_records.present?           
-      field = "(viewed)" if viewed_records.include?("#{search_record.id}")          
+    if viewed_records.present?
+      field = "(viewed)" if viewed_records.include?("#{search_record[:_id]}")
     end
     field
   end

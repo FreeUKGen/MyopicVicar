@@ -66,6 +66,9 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen1_vld_files
 
+  get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
+  delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
+  get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
   get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
@@ -190,6 +193,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
+  get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
 

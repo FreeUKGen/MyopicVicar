@@ -25,16 +25,15 @@ class Syndicate
       where(:id => id)
     end
 
-    def all_syndicates
-      all_syndicates = Array.new
-      Syndicate.all.order_by(syndicate_code: 1).each do |syndicate|
-        all_syndicates << syndicate.syndicate_code
-      end
-      all_syndicates
+    def coordinator(userid)
+      where(:syndicate_coordinator => userid)
+    end
+    def syndicate_code(code)
+      where(:syndicate_code => code)
     end
 
-    def is_syndicate?(value)
-      Syndicate.all_syndicates.include?(value) ?  result = true : result = false
+    def is_syndicate(code)
+      Syndicate.syndicate_code(code).present?  ? result = true : result = false
       result
     end
 
@@ -124,6 +123,15 @@ class Syndicate
     coordinator.person_role = 'syndicate_coordinator' if  coordinator.person_role == 'transcriber' || coordinator.person_role == 'researcher'
     coordinator.save(:validate => false)
   end
+
+  def self.get_users_for_syndicate(syndicate)
+    users = Array.new
+    UseridDetail.syndicate(syndicate).each do |user|
+      users << user
+    end
+    users
+  end
+
   def self.get_userids_for_syndicate(syndicate)
     userids = Array.new
     UseridDetail.syndicate(syndicate).each do |user|

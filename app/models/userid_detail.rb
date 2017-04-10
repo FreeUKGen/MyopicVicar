@@ -40,6 +40,7 @@ class UseridDetail
   field :email_address_valid, type: Boolean, default: true
   field :email_address_last_confirmned, type: DateTime
   field :no_processing_messages, type: Boolean, default: false
+  field :userid_messages,type: Array, default: []
 
   attr_accessor :action, :message
   index({ email_address: 1 })
@@ -127,6 +128,31 @@ class UseridDetail
     end
     details.close
   end
+
+
+  def remove_checked_messages(msg_id)
+    self.reload
+    return if !(self.userid_messages.include? msg_id)
+    userid_msgs = self.userid_messages
+    userid_msgs = userid_msgs - [msg_id]
+    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  end
+
+  def count_not_checked_messages
+    self.reload
+    userid_msgs = self.userid_messages
+    return 0 if userid_msgs.length == 0
+    self.userid_messages.each do |msg_id|
+      msg = Message.id(msg_id.to_s).first
+      if msg.nil?
+        userid_msgs = userid_msgs - [msg_id]
+      end
+    end
+    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+    self.userid_messages.length
+  end
+
+
 
   def self.get_active_userids_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
@@ -402,6 +428,46 @@ class UseridDetail
       details.puts "Disabled:0"
     end
     details.close
+  end
+
+  def list_incomplete_registrations current_user, current_syndicate
+    if current_syndicate == 'all'
+      @users = list_all_users
+    else
+      @users = get_users(current_syndicate)
+    end
+    filter_users
+  end
+
+  def full_name
+    "#{self.person_forename} #{self.person_surname}"
+  end
+
+  private
+
+  def filter_users
+    @incompleted_registration_users = Array.new
+    @users.each { |user|
+      next if registration_completed(user)
+      @incompleted_registration_users << user
+    }    
+    @incompleted_registration_users
+  end
+
+  def registration_completed user
+    user.password != registered_password
+  end
+
+  def registered_password
+    Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+  end
+
+  def list_all_users
+    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate)
+  end
+
+  def get_users(current_syndicate)
+    Syndicate.get_users_for_syndicate(current_syndicate)
   end
 
 end #end class
