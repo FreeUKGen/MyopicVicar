@@ -45,7 +45,10 @@ class Csvfile < CarrierWave::Uploader::Base
     if !batch
       batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
       batch.save
+    else
+      batch.update_attributes( :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
     end
+    batch
   end
 
   def csvfile_already_exists

@@ -58,12 +58,11 @@ class CsvfilesController < ApplicationController
     end #error
     batch = @csvfile.create_batch_unless_exists
     range = File.join(@csvfile.userid,@csvfile.file_name)
-    batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
-    if batch.present?
+    batch_processing = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
+    if batch_processing.present?
       flash[:notice] = "Your file is currently waiting to be processed. It cannot be processed this way now"
       logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
     else
-      batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
       case
       when @user.person_role == "trainee"
         pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
