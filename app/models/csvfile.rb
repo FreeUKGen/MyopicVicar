@@ -41,8 +41,8 @@ class Csvfile < CarrierWave::Uploader::Base
     decision
   end
   def create_batch_unless_exists
-    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).exists?
-    if !batch
+    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
+    if !batch.present?
       batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
       batch.save
     else
