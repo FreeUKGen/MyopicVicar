@@ -19,7 +19,7 @@ class CsvfilesController < ApplicationController
     @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
     @csvfile.file_name = @csvfile.csvfile.identifier
     case
-    when params[:commit] == "Replace"
+    when params[:csvfile][:action] == "Replace"
       name_ok = @csvfile.check_name(session[:file_name])
       if !name_ok
         flash[:notice] = 'The file you are replacing must have the same name'
@@ -37,7 +37,7 @@ class CsvfilesController < ApplicationController
           batch = setup[1]
         end
       end
-    when params[:commit] == "Upload"
+    when params[:csvfile][:action] ==  "Upload"
       ok,message = @csvfile.csvfile_already_exists
       if !ok
         session.delete(:file_name)
@@ -134,6 +134,7 @@ class CsvfilesController < ApplicationController
       @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
       session[:file_name] =  @file_name
       get_userids_and_transcribers
+      @action = "Replace"
     else
       flash[:notice] = "There was no file to replace"
       redirect_to :back
@@ -172,6 +173,7 @@ class CsvfilesController < ApplicationController
     @csvfile  = Csvfile.new(:userid  => session[:userid])
     #get @people
     get_userids_and_transcribers
+    @action = "Upload"
   end
 
   private
