@@ -67,6 +67,7 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
+  validate :all_counties_have_both_surname_and_firstname
 
   before_validation :clean_blanks
   attr_accessor :action
@@ -91,6 +92,12 @@ class SearchQuery
 
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
+  end
+  
+  def all_counties_have_both_surname_and_firstname
+    if (chapman_codes.length == 0) && (first_name.blank? || last_name.blank?)
+      errors.add(:first_name, "A forename and surname must be present to perform an all counties search.")
+    end
   end
 
   def all_radius_places
