@@ -18,7 +18,12 @@ class Message
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
-
+  
+  index({_id: 1, userid: 1},{name: "id_userid"})
+  index({_id: 1, sent_time: 1},{name: "id_sent_time"})
+  index({_id: 1, identifier: 1},{name: "id_indentifier"})
+  index({_id: 1, message_time: 1},{name: "id_message_time"})
+  
   class << self
     def id(id)
       where(:id => id)
