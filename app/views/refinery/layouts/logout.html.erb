@@ -1,4 +1,9 @@
-<div id="flash_container">
+<div>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <br>
+    </div>
+   <% end %>   
   <%= render 'refinery/message' %>
 </div>
 <%= render :template => 'layouts/application' %>
