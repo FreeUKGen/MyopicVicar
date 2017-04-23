@@ -223,7 +223,7 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
         @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
@@ -254,7 +254,7 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
         @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
