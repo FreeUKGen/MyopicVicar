@@ -174,7 +174,6 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
-  get  'manage_counties/display_files_waiting_to_be_processed',  :to => 'manage_counties#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
@@ -183,7 +182,6 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
-  get  'manage_counties/display_files_not_processed',  :to => 'manage_counties#display_files_not_processed', :as => :display_files_not_processed_manage_counties
   resources :manage_counties
 
 

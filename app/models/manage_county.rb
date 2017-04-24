@@ -9,28 +9,6 @@ class ManageCounty
 
   class << self
 
-
-    def get_not_processed_files_for_county(county)
-      #rspec tested
-      possible_batches = PhysicalFile.uploaded_into_base.not_processed.not_waiting.all.order_by("userid ASC, base_uploaded_date DESC")
-      batches =[]
-      possible_batches.each do |batch|
-        batches << batch if Freereg1CsvFile.file_name(batch.file_name).county(ChapmanCode.merge_countries[(county)]).present?
-      end
-      batches
-    end
-
-    def get_waiting_files_for_county(county)
-      #rspec tested
-      possible_batches = PhysicalFile.waiting.all.order_by("userid ASC, waiting_date DESC")
-      batches =[]
-      possible_batches.each do |batch|
-        batches << batch if Freereg1CsvFile.file_name(batch.file_name).county(ChapmanCode.merge_countries[(county)]).present?
-      end
-      batches
-    end
-
-
     def records(chapman,alphabet)
       #if alphabet is present we have already been through
       number = 0
