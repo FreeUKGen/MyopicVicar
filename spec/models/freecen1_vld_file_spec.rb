@@ -137,7 +137,7 @@ describe Freecen1VldFile do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.search_result.records.values
       result.count.should be >= 1
     end
   end
@@ -156,7 +156,7 @@ describe Freecen1VldFile do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.search_result.records.values
 
       result.count.should be >= 1
     end
@@ -179,7 +179,7 @@ describe Freecen1VldFile do
         q = SearchQuery.new(query_params)
         q.save!(:validate => false)
         q.search
-        result = q.results
+        result = q.search_result.records.values
 
         result.count.should be >= 1
 
@@ -216,7 +216,7 @@ describe Freecen1VldFile do
         q = SearchQuery.new(query_params)
         q.save!(:validate => false)
         q.search
-        result = q.results
+        result = q.search_result.records.values
 
 #        print "#{index} => #{individual.search_record.search_dates.first[0..3]}, # #{individual.age}#{individual.age_unit}\n"
         binding.pry if result.count == 0 && true
@@ -243,7 +243,7 @@ describe Freecen1VldFile do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.search_result.records.values
 
       result.count.should be >= 1
     end
@@ -263,7 +263,7 @@ describe Freecen1VldFile do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.search_result.records.values
 
       result.count.should be >= 1
     end
@@ -284,7 +284,7 @@ describe Freecen1VldFile do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.search_result.records.values
 
       expect(result.count).to eq 1
     end
@@ -305,7 +305,7 @@ describe Freecen1VldFile do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.search_result.records.values
 
       expect(result.count).to be 0
     end
