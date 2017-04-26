@@ -49,7 +49,7 @@
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <div class="island">
         <h2 class="gamma text--negative push-half--bottom">Too many search results</h2>
-        <p class="read-length">Please refine (narrow down) your search.<br>We limit the number of results to <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS%> to avoid overloading your device with too much information at one time.</p>
+        <p class="read-length">Please refine (narrow down) your search.<br> Your <%= @result_count%> results exceeds our display limit of <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS%> to avoid overloading your device with too much information at one time.</p>
       </div>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>

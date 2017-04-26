@@ -442,6 +442,10 @@ class UseridDetail
   def full_name
     "#{self.person_forename} #{self.person_surname}"
   end
+  
+  def registration_completed user
+    user.password != registered_password
+  end
 
   private
 
@@ -452,10 +456,6 @@ class UseridDetail
       @incompleted_registration_users << user
     }    
     @incompleted_registration_users
-  end
-
-  def registration_completed user
-    user.password != registered_password
   end
 
   def registered_password

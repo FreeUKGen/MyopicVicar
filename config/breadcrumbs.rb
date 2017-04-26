@@ -359,15 +359,10 @@ crumb :physical_files_options do
   link "Physical Files Options", select_action_physical_files_path
   parent :root
 end
-crumb :physical_files do |type|
+crumb :physical_files do |syndicate,type|
   link "Listing of Physical Files", physical_files_path
-  case
-  when type.nil? || type =="All"
-    parent :physical_files_options
-  when Syndicate.is_syndicate(type)
-    parent :syndicate_options, type
-  when County.is_county(type)
-    parent :county_options, type
+  if type == "syndicate"
+    parent :syndicate_options, syndicate
   else
     parent :physical_files_options
   end

@@ -230,7 +230,7 @@ class SearchQueriesController < ApplicationController
       else
         response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
         if !response || @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present")
+          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'
           redirect_to new_search_query_path(:search_id => @search_query)
           return
@@ -261,7 +261,7 @@ class SearchQueriesController < ApplicationController
       else
         response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
         if !response || @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present")
+          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'
           redirect_to new_search_query_path(:search_id => @search_query)
           return
