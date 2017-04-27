@@ -32,7 +32,7 @@ module Freecen
       file = persist_to_database(filename, file_record, entry_records, entry_errors)
       print("  #{Time.now - start_time} elapsed\n") if @print_performance
 
-      file      
+      return file, entry_records.length
     end
 
     def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)

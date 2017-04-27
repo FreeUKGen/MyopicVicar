@@ -540,15 +540,15 @@ class Freecen1UpdateProcessor
 
     #use same logic as in process_freecen1_vld.rake process_file
     parser = Freecen::Freecen1VldParser.new
-    file_record = parser.process_vld_file(vld_pathname)
+    file_record, num_entries = parser.process_vld_file(vld_pathname)
     log_message("   transform start at #{Time.now.strftime("%I:%M:%S %p")}")
     transformer = Freecen::Freecen1VldTransformer.new
     transformer.transform_file_record(file_record)
     
     log_message("   translate start at #{Time.now.strftime("%I:%M:%S %p")}")
     translator = Freecen::Freecen1VldTranslator.new
-    translator.translate_file_record(file_record)
-    log_message("\t#{vld_pathname} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries (done at #{Time.now.strftime("%I:%M:%S %p")})\n")
+    num_dwel, num_ind = translator.translate_file_record(file_record)
+    log_message("\t#{vld_pathname} contained #{num_dwel} dwellings and #{num_ind} individuals in #{num_entries} entries (done at #{Time.now.strftime("%I:%M:%S %p")})\n")
   end
 
 
