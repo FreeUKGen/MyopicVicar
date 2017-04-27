@@ -16,12 +16,10 @@ class PhysicalFile
   field :action, type: String
   attr_accessor :type
   attr_accessor :county
-  index ({ userid: 1, file_name: 1, change: 1, change_uploaded_date: 1})
   index ({ userid: 1, file_name: 1, base: 1, base_uploaded_date: 1})
   index ({ userid: 1, file_name: 1, file_processed: 1, file_processed_date: 1})
   index ({ base: 1})
   index ({file_processed: 1})
-  index ({ change: 1})
   index ({ waiting_to_be_processed: 1})
   index ({ userid: 1, waiting_to_be_processed: 1})
   class << self

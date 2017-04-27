@@ -66,6 +66,7 @@ class ManageSyndicatesController < ApplicationController
 
   def display_files_waiting_to_be_processed
     @selection = session[:syndicate]
+    @nature = "syndicate"
     @batches = ManageSyndicate.get_waiting_files_for_syndicate(session[:syndicate])
     @sorted_by = "; waiting to be processed "
     render 'physical_files/index'
@@ -73,6 +74,7 @@ class ManageSyndicatesController < ApplicationController
 
   def display_files_not_processed
     @selection = session[:syndicate]
+    @nature = "syndicate"
     @batches = ManageSyndicate.get_not_processed_files_for_syndicate(session[:syndicate])
     @sorted_by = "; not processed "
     render 'physical_files/index'

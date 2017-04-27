@@ -5,6 +5,7 @@ class Csvfile < CarrierWave::Uploader::Base
   field :userid, type: String
   field :file_name,type: String
   field :process,type: String, default: "Process tonight"
+  field :action, type: String
   # files are stored in Rails.application.config.datafiles_changeset
   mount_uploader :csvfile, CsvfileUploader
 
@@ -41,11 +42,14 @@ class Csvfile < CarrierWave::Uploader::Base
     decision
   end
   def create_batch_unless_exists
-    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).exists?
-    if !batch
+    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
+    if !batch.present?
       batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
       batch.save
+    else
+      batch.update_attributes( :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
     end
+    batch
   end
 
   def csvfile_already_exists
@@ -76,7 +80,7 @@ class Csvfile < CarrierWave::Uploader::Base
     case
     when !File.exists?(place)
       ok = false
-      batch = "You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their uaerid."
+      batch = "You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid."
     when processing_time >= 600 && batch_entries == 0
       batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
       batch.save
