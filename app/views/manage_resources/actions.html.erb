@@ -7,7 +7,7 @@
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
-  You have <b><%= link_to "#{count} #{pluralize(count, 'message')}", userid_messages_path %>.</b>
+  You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
   </div>
 <% end %>
 <% breadcrumb :root %>
