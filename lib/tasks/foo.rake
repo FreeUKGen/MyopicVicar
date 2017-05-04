@@ -284,4 +284,21 @@ namespace :foo do
       end
     end
   end
+  
+  desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
+  task :recalc_search_record_for_entries_in_file, [:id_file] => [:environment] do |t,args|
+    lines = File.readlines(args.id_file).map { |l| l.to_s }
+    lines.each do |line|
+      if line =~ /^#/
+        print "Rebuilding "
+        print line
+      else
+        entry = Freereg1CsvEntry.find(line.chomp)
+        record = entry.search_record
+        record.transform
+        record.save!
+      end
+    end
+  end
+  
 end
