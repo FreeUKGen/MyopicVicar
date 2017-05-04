@@ -4,8 +4,11 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-<% if @user.count_not_checked_messages != 0 %>
-<%= link_to "Messages waiting for you: #{@user.count_not_checked_messages}. Click here to check it out !",userid_messages_path %>
+<% count = @user.count_not_checked_messages %>
+<% if count != 0 %>
+  <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
+  You have <b><%= link_to "#{count} #{pluralize(count, 'message')}", userid_messages_path %>.</b>
+  </div>
 <% end %>
 <% breadcrumb :root %>
 <%= @page %> 
