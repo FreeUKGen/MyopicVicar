@@ -300,6 +300,7 @@ namespace :foo do
           record.save!
         rescue => e
           binding.pry
+          record.transform
         end
       end
     end
