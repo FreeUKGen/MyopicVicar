@@ -62,8 +62,7 @@ namespace :freereg do
         UserMailer.send_logs(nil,email_address_sc,"Logs with bounced emails!!!!\n This is userid with  bounced email: #{array_userid_bounced_mail.join(" \n")}").deliver_now
       end
     end
-    UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Emails not associated with users #{email_of_nil_users.join(" \n")}").deliver_now
-    UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Logs with bounced emails!!!!").deliver_now
+    UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Logs with bounced emails!!!! and Emails not associated with users #{email_of_nil_users.join(" \n") if !email_of_nil_users.nil? }").deliver_now
 
   end
 end
