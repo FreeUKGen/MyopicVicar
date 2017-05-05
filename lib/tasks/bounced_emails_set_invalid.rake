@@ -31,7 +31,7 @@ namespace :freereg do
     UseridDetail.role('system_administrator').each do |userid|
       ccs_system_administrator << userid.email_address
     end
-
+    email_of_nil_users = []
     MY_LOG.info("#{Time.new} =========== | Change_email value #{change_email.to_s} | ======================================\n")
     (JSON.parse response.body).each do |data|
         user =  UseridDetail.where(email_address: data['email'])[0]
@@ -51,6 +51,8 @@ namespace :freereg do
             end
             user.update_attributes(email_address_valid: false,reason_for_invalidating: data['reason'],email_address_last_confirmned: user.sign_up_date)
           end
+        else
+          email_of_nil_users << data['email']
         end
     end
 
@@ -60,7 +62,7 @@ namespace :freereg do
         UserMailer.send_logs(nil,email_address_sc,"Logs with bounced emails!!!!\n This is userid with  bounced email: #{array_userid_bounced_mail.join(" \n")}").deliver_now
       end
     end
-
+    UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Emails not associated with users #{email_of_nil_users.join(" \n")}").deliver_now
     UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Logs with bounced emails!!!!").deliver_now
 
   end
