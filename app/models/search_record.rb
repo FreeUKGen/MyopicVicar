@@ -593,6 +593,8 @@ class SearchRecord
   end
 
   def populate_search_from_transcript
+    search_names = []
+    search_soundex = []
     populate_search_names
   end
 
