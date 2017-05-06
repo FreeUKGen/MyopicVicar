@@ -32,23 +32,25 @@ namespace :freereg do
       ccs_system_administrator << userid.email_address
     end
     email_of_nil_users = []
+    user_with_nil_syndicate = []
+    obj_syndicate = Hash.new { |hash, key| hash[key] = [] }
     MY_LOG.info("#{Time.new} =========== | Change_email value #{change_email.to_s} | ======================================\n")
     (JSON.parse response.body).each do |data|
         user =  UseridDetail.where(email_address: data['email'])[0]
         if user != nil
           MY_LOG.info("#{user.userid} / #{user.email_address} was bounced, because --> #{data['reason']}\n")
-          if change_email
-            if user.syndicate != nil
-              syndicate = Syndicate.syndicate_code(user.syndicate)[0]
-              if syndicate != nil
-                sc = syndicate.syndicate_coordinator
-                hash_syncate_coordinator[sc].push(user.userid)
-              else
-                UserMailer.send_logs(nil,ccs_system_administrator,"Logs with bounced emails!!!!\n This is userid with bounced email: #{user.userid}\n OBS: There is no syncate called #{user.syndicate}\n").deliver_now
-              end
+          if user.syndicate != nil
+            syndicate = Syndicate.syndicate_code(user.syndicate)[0]
+            if syndicate != nil
+              sc = syndicate.syndicate_coordinator
+              hash_syncate_coordinator[sc].push(user.userid)
             else
-              UserMailer.send_logs(nil,ccs_system_administrator,"Logs with bounced emails!!!!\n This is userid with bounced email: #{user.userid}\n OBS: Syndicate empty\n").deliver_now
+              obj_syndicate[user.syndicate] << user.userid
             end
+          else
+            user_with_nil_syndicate << user.userid
+          end
+          if change_email and (data['created'] > user.email_address_last_confirmned.to_i)
             user.update_attributes(email_address_valid: false,reason_for_invalidating: data['reason'],email_address_last_confirmned: user.sign_up_date)
           end
         else
@@ -62,7 +64,14 @@ namespace :freereg do
         UserMailer.send_logs(nil,email_address_sc,"Logs with bounced emails!!!!\n This is userid with  bounced email: #{array_userid_bounced_mail.join(" \n")}").deliver_now
       end
     end
+    # SEND  LOGS TO SYSTEM_ADMNISTRATORS
     UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Logs with bounced emails!!!! and Emails not associated with users #{email_of_nil_users.join(" \n") if !email_of_nil_users.nil? }").deliver_now
+    # SEND  USER WITH NIL SYNCATE TO SYSTEM_ADMNISTRATORS
+    UserMailer.send_logs(nil,ccs_system_administrator,"These userids has empty syndicate attribute #{user_with_nil_syndicate.join(" \n")}\n").deliver_now if !user_with_nil_syndicate.nil?
+    # SEND  SYNCATE WITH SPECIFIC NAME THAT HAS NO CORRESPONDENT OBJECT IN  DATABASE
+    obj_syndicate.each do |key,array_userid_bounced_mail|
+      UserMailer.send_logs(nil,ccs_system_administrator,"Syndicate #{key} with no correspondent object in database - useriddetail: #{array_userid_bounced_mail.join(" \n")}").deliver_now
+    end
 
   end
 end
