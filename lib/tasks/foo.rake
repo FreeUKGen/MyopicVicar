@@ -296,8 +296,10 @@ namespace :foo do
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record
         begin
-          record.transform
-          record.save!
+          if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
+            record.transform
+            record.save!           
+          end
         rescue => e
           binding.pry
           record.transform
