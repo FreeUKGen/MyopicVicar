@@ -465,9 +465,9 @@ class UseridDetailsController < ApplicationController
 
   def volunteer_agreement
     user = UseridDetail.id(params[:user]).first
-    agreement = params[:userid_detail][:transcription_agreement] if params[:userid_detail]
-    if agreement
-      user.update_attributes(transcription_agreement: true)
+    agreement = (params[:agreement_action]) #if params[:userid_detail]
+    if agreement == "Accept Agreement"
+      user.update_attributes(transcription_agreement: "Accepted")
       redirect_to new_manage_resource_path(user: user.userid)
       return
     else
@@ -529,6 +529,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def user_accepted_agreement? params
-    params[:transcription_agreement] == "true"
+    params[:transcription_agreement] == "Accepted"
   end
 end
