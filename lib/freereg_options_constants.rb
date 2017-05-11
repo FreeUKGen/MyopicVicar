@@ -247,4 +247,5 @@ module FreeregOptionsConstants
   ST_PERIOD = /\A[Ss][Tt]\z/
   TEST = {:fieldset => "mine", otherset: "yours"}
   CONFIRM_EMAIL_ADDRESS = 120
+  AGREEMENT_OPTIONS = ["Unknown", "Accepted", "Declined", "Requested"]
 end

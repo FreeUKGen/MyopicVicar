@@ -42,9 +42,9 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    if user_accepted_agreement?(userid_details_params)
+    @userid = UseridDetail.new(userid_details_params)
+    if new_user_accepted_agreement?(userid_details_params)
       if spam_check
-        @userid = UseridDetail.new(userid_details_params)
         @userid.add_fields(params[:commit],session[:syndicate])
         @userid.save
         if @userid.save
@@ -63,7 +63,7 @@ class UseridDetailsController < ApplicationController
       end
     else
       flash[:notice] = 'Please read the Transcriber Agreement. You must accept the terms of this agreement before continuing with the registration.'
-      redirect_to :back
+      next_place_to_go_unsuccessful_create
     end
   end
 
@@ -194,7 +194,7 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration' and return
     when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
+      @transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       render :action => 'transcriber_registration' and return
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
@@ -465,16 +465,9 @@ class UseridDetailsController < ApplicationController
 
   def volunteer_agreement
     user = UseridDetail.id(params[:user]).first
-    agreement = (params[:agreement_action]) #if params[:userid_detail]
-    if agreement == "Accept Agreement"
-      user.update_attributes(transcription_agreement: "Accepted")
-      redirect_to new_manage_resource_path(user: user.userid)
-      return
-    else
-      flash[:notice] = "You must accept the agreement to proceed further."
-      redirect_to '/manage_resources/logout'
-      return
-    end
+    user.update_attributes(transcription_agreement: set_agreement_status)
+    redirect_to new_manage_resource_path(user: user.userid)
+    return
   end
 
   private
@@ -528,7 +521,12 @@ class UseridDetailsController < ApplicationController
     location += '+"&option=' + option +'"'
   end
 
-  def user_accepted_agreement? params
+  def new_user_accepted_agreement? params
     params[:transcription_agreement] == "Accepted"
+  end
+
+  def set_agreement_status
+    params[:agreement_action] == "Accept" ? agreement = "Accepted" : agreement = "Declined"
+    agreement
   end
 end

@@ -471,6 +471,6 @@ dl.table-display dd { width: calc(100% - 4em); }
   color: #009f98;
 }
 
-.login_agreement {
+.login_agreement, .agreement_options {
   margin-bottom: 20px;
 }
