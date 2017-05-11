@@ -1,4 +1,6 @@
 if Rails.env.development? 
+  #use this if you wish to use gmail to send your mail in development
+  # and set your password and username in the application.yml see the example
   ActionMailer::Base.delivery_method = :smtp
     # SMTP settings for gmail
     ActionMailer::Base.smtp_settings = {

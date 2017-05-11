@@ -77,23 +77,6 @@ class ManageCountiesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
 
-  def display_files_waiting_to_be_processed
-    @batches = ManageCounty.get_waiting_files_for_county(session[:chapman_code])
-    @number = @batches.length if @batches.present?
-    @selection = session[:chapman_code]
-    @sorted_by = "; waiting to be processed "
-    render 'physical_files/index'
-  end
-
-  def display_files_not_processed
-    @batches = ManageCounty.get_waiting_files_for_county(session[:chapman_code])
-    @number = @batches.length if @batches.present?
-    @selection = session[:chapman_code]
-    @sorted_by = "; Not processed "
-    render 'physical_files/index'
-  end
-
-
   def get_counties_for_selection
     @counties = @user.county_groups
     @countries = @user.country_groups

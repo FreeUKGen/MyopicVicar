@@ -26,8 +26,7 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
-
-
+ 
   def load_last_stat
     if session[:site_stats].blank?
       time = Time.now
@@ -166,7 +165,7 @@ class ApplicationController < ActionController::Base
     if mongo_node.present? && mongo_node != :primary_preferred
       flash[:notice] = "You appear to be running on a secondary. Please log in again."
       logger.warn "FREEREG::USER user is running on a secondary #{Mongoid.clients[:default]}"
-      redirect_to logout_manage_resources_path and return
+      redirect_to refinery.logout_path and return
     end
   end
 

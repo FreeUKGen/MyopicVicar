@@ -251,8 +251,8 @@ class SearchRecord
       search_fields = fields_from_params(search_params)
       # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-      p "scores"
-      p scores
+      # p "scores"
+      # p scores
       best = scores.max_by { |k,v| v}
       # p "selected"
       # p best[0]
@@ -593,6 +593,8 @@ class SearchRecord
   end
 
   def populate_search_from_transcript
+    search_names.clear
+    search_soundex.clear
     populate_search_names
   end
 
@@ -639,7 +641,7 @@ class SearchRecord
         end
       end
     end
-    names_array << separated_names
+    names_array << separated_names.reject { |e| e.blank? }
   end
 
   def separate_last_names(names_array)
@@ -654,7 +656,7 @@ class SearchRecord
         end
       end
     end
-    names_array << separated_names
+    names_array << separated_names.reject { |e| e.blank? }
   end
 
   def soundex_names_equal?(new_search_record)

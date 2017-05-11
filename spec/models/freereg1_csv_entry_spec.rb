@@ -197,7 +197,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
 
       result.count.should be >= 1
       result.should be_in_result(entry)              
@@ -260,7 +260,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
       result.count.should be >= 1
       result.should be_in_result(entry)
     end    
@@ -299,7 +299,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.results
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -310,7 +310,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.results
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -330,7 +330,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.results
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -340,7 +340,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.results
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -358,7 +358,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.results
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -369,7 +369,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.results
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -404,7 +404,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
 
       result.count.should be >= 1
       result.should be_in_result(entry)
@@ -416,7 +416,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
       result.count.should be >= 1
       result.should be_in_result(entry)
       
@@ -427,7 +427,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
 
       result.count.should eq(0)
       result.should_not be_in_result(entry)
@@ -459,7 +459,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
   
       result.count.should be >= 1
       result.should be_in_result(entry)
@@ -475,7 +475,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
   
       result.count.should be >= 1
       result.should be_in_result(entry)
@@ -494,7 +494,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]
     end
   end
 
@@ -564,7 +564,7 @@ describe Freereg1CsvEntry do
           q = SearchQuery.new(query_params)
           q.save!(:validate => false)
           q.search
-          result = q.results
+          result = q.get_and_sort_results_for_display[1]
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
           result.count.should be >= 1
@@ -646,7 +646,7 @@ describe Freereg1CsvEntry do
       q.save(:validate => false)
       q.search
       
-      result = q.results
+      result = q.get_and_sort_results_for_display[1]#.records.values
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
       # pp q.attributes

@@ -67,6 +67,7 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
+  validate :all_counties_have_both_surname_and_firstname
 
   before_validation :clean_blanks
   attr_accessor :action
@@ -91,6 +92,12 @@ class SearchQuery
 
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
+  end
+  
+  def all_counties_have_both_surname_and_firstname
+    if (chapman_codes.length == 0) && (first_name.blank? || last_name.blank?)
+      errors.add(:first_name, "A forename and surname must be present to perform an all counties search.")
+    end
   end
 
   def all_radius_places
@@ -283,7 +290,7 @@ class SearchQuery
       ucf_results = self.ucf_results unless self.ucf_results.blank?
       ucf_results = Array.new if  ucf_results.blank?
       response = true
-      return response,search_results, ucf_results, result_count
+      return response,search_results.map{|h| SearchRecord.new(h)}, ucf_results, result_count
     else
       response = false
       return response
@@ -376,14 +383,15 @@ class SearchQuery
     # finally extract the records IDs and persist them
     records = Hash.new
     results.each do |rec|
-      rec_id = rec["_id"].to_s
-      records[rec_id] = rec
+      record = rec # should be a SearchRecord despite Mongoid bug
+      rec_id = record["_id"].to_s
+      records[rec_id] = record
     end
-    self.search_result =  SearchResult.new(records: records)
+    self.search_result =  SearchResult.new
+    self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime("%F")
-    self.search_index = @search_index
     self.save
   end
 
@@ -470,6 +478,7 @@ class SearchQuery
     @search_index = SearchRecord.index_hint(@search_parameters)
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
+    self.update_attribute(:search_index, @search_index)
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
