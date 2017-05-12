@@ -163,7 +163,7 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
-    @userid = @user
+    @userid = @user.reload
   end
 
   def next_place_to_go_successful_create
