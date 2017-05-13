@@ -61,16 +61,16 @@ namespace :freereg do
     if change_email
       hash_syncate_coordinator.each do |key,array_userid_bounced_mail|
         email_address_sc = UseridDetail.userid(key)[0].email_address
-        UserMailer.send_logs(nil,email_address_sc,"Logs with bounced emails!!!!\n This is userid with  bounced email: #{array_userid_bounced_mail.join(" \n")}").deliver_now
+        UserMailer.send_logs(nil,email_address_sc,"These users have  bounced email: #{array_userid_bounced_mail.join(" \n")}","Bounced emails logs").deliver_now
       end
     end
     # SEND  LOGS TO SYSTEM_ADMNISTRATORS
-    UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Logs with bounced emails!!!! and Emails not associated with users #{email_of_nil_users.join(" \n") if !email_of_nil_users.nil? }").deliver_now
+    UserMailer.send_logs("#{Rails.root}/log/bounced_mails_#{Date.today.strftime('%Y_%m_%d')}.log",ccs_system_administrator,"Logs with bounced emails!!!! and Emails not associated with users #{email_of_nil_users.join(" \n") if !email_of_nil_users.nil? }","Logs bounced emails").deliver_now
     # SEND  USER WITH NIL SYNCATE TO SYSTEM_ADMNISTRATORS
-    UserMailer.send_logs(nil,ccs_system_administrator,"These userids has empty syndicate attribute #{user_with_nil_syndicate.join(" \n")}\n").deliver_now if !user_with_nil_syndicate.nil?
+    UserMailer.send_logs(nil,ccs_system_administrator,"These userids has empty syndicate attribute #{user_with_nil_syndicate.join(" \n")}\n","Users with syndicate = nil").deliver_now if !user_with_nil_syndicate.empty?
     # SEND  SYNCATE WITH SPECIFIC NAME THAT HAS NO CORRESPONDENT OBJECT IN  DATABASE
     obj_syndicate.each do |key,array_userid_bounced_mail|
-      UserMailer.send_logs(nil,ccs_system_administrator,"Syndicate #{key} with no correspondent object in database - useriddetail: #{array_userid_bounced_mail.join(" \n")}").deliver_now
+      UserMailer.send_logs(nil,ccs_system_administrator,"Syndicate #{key} with no correspondent object in database -  these users have latter syndicate in their object: #{array_userid_bounced_mail.join(" \n")}","User's syndicate that does not exit in database").deliver_now
     end
 
   end

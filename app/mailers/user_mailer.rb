@@ -245,12 +245,12 @@ class UserMailer < ActionMailer::Base
     mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
-  def send_logs(file,ccs,body_message)
+  def send_logs(file,ccs,body_message,subjects)
     from = "freereg-contacts@freereg.org.uk" if from.blank?
     unless file.nil?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
     end
-    mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "logs of bounced email",:body => body_message,:content_type => "text/plain")
+    mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => subjects,:body => body_message)
   end
 
   def update_report_to_freereg_manager(file,user)
