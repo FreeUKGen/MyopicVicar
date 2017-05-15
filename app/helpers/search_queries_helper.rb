@@ -30,28 +30,38 @@ module SearchQueriesHelper
   #end
 
   def format_location(search_record)
-    if search_record.respond_to? :location_name
-      search_record.location_name
+    if search_record[:location_name].present?
+      search_record[:location_name]
     elsif
-      search_record.respond_to? :location_names
-      format_for_line_breaks(search_record.location_names)
+      search_record[:location_names].present?
+      format_for_line_breaks(search_record[:location_names])
     else
       ""
     end
   end
   def county(search_record)
-    chapman = search_record.chapman_code
+    chapman = search_record[:chapman_code]
     if chapman.present?
       county = ChapmanCode.has_key(chapman)
     else
-      county = search_record.place.county
+      place = Place.id(search_record[:place_id].to_s).first
+      place.present? ? county = place.county : county = ""
     end
     county
   end
 
   def format_for_line_breaks (names)
     place = ' '
+    name_parts = names[0].split(') ')
+    case 
+    when name_parts.length == 1
     (place, church) = names[0].split(' (')
+    when name_parts.length == 2
+      place = name_parts[0] + ")"
+      name_parts[1][0] = ""
+      church = name_parts[1]
+    else
+    end
     if church.present?
       church = church[0..-2]
     else
@@ -63,6 +73,8 @@ module SearchQueriesHelper
     else
       loc = place
     end
+
+    return loc
   end
 
 end

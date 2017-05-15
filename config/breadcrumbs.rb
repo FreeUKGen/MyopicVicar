@@ -7,12 +7,12 @@ crumb :my_own_userid_detail do |userid_detail|
   parent :root
 end
 
-crumb :edit_userid_detail do |syndicate, userid_detail|
+crumb :edit_userid_detail do |syndicate, userid_detail, page_name|
   link "Edit Profile:#{userid_detail.userid}", userid_detail_path
   if session[:my_own]
     parent :my_own_userid_detail, userid_detail
   else
-    parent :userid_detail, syndicate, userid_detail
+    parent :userid_detail, syndicate, userid_detail, page_name
   end
 end
 crumb :disable_userid_detail do |userid_detail|
@@ -300,12 +300,16 @@ end
 
 
 #Profile
-crumb :userid_detail do |syndicate,userid_detail|
+crumb :userid_detail do |syndicate,userid_detail,page_name,option|
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
   if session[:my_own]
     parent :root
   else
-    if  session[:edit_userid]
+    if page_name == 'incomplete_registrations'
+      parent :incomplete_registrations, syndicate
+    elsif option
+      parent :selection_user_id, option
+    elsif session[:edit_userid]
       syndicate = session[:syndicate]
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
       parent :userid_details_listing, syndicate,userid_detail
@@ -315,7 +319,10 @@ crumb :userid_detail do |syndicate,userid_detail|
   end
 end
 
-
+crumb :selection_user_id do |selection|
+  link "#{selection}", selection_userid_details_path(option: selection)
+  parent :regmanager_userid_options
+end
 
 #manage userids
 crumb :regmanager_userid_options do
@@ -335,19 +342,27 @@ crumb :role_listing do
   parent :regmanager_userid_options
 end
 
+#Incomplete Registrations
+crumb :incomplete_registrations do |syndicate|
+  link 'Incomplete Registration Listing', incomplete_registrations_userid_details_path
+  if syndicate == 'all'
+    parent :regmanager_userid_options
+  else
+    parent :syndicate_options,syndicate
+  end
+end
+
+
 #Physical Files
 
 crumb :physical_files_options do
   link "Physical Files Options", select_action_physical_files_path
   parent :root
 end
-crumb :physical_files do |type|
+crumb :physical_files do |syndicate,type|
   link "Listing of Physical Files", physical_files_path
-  case
-  when Syndicate.is_syndicate?(type)
-    parent :syndicate_options, type
-  when County.is_county?(type)
-    parent :county_options, type
+  if type == "syndicate"
+    parent :syndicate_options, syndicate
   else
     parent :physical_files_options
   end
@@ -420,6 +435,16 @@ crumb :show_message do |message|
   link "Show Message", message_path(message)
   parent :messages
 end
+
+crumb :userid_messages do
+  link "User Messages", userid_messages_path
+end
+
+crumb :show_messages_user do
+  link "Show User Messages", userid_messages_path
+  parent :userid_messages
+end
+
 crumb :edit_message do |message|
   link "Edit Message", edit_message_path(message)
   parent :show_message, message

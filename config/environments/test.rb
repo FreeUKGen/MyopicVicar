@@ -78,9 +78,6 @@ MyopicVicar::Application.configure do
 
   #rails 4 changes
   config.eager_load = false
-  config.timeout_researcher = MyopicVicar::MongoConfig['timeout_researcher']
-  config.timeout_manager = MyopicVicar::MongoConfig['timeout_manager']
-  config.timeout_transcriber = MyopicVicar::MongoConfig['timeout_transcriber']
   #config.active_record.mass_assignment_sanitizer = :strict
   config.serve_static_files = true
   config.assets.compile = true

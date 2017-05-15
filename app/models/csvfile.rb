@@ -5,8 +5,8 @@ class Csvfile < CarrierWave::Uploader::Base
   field :userid, type: String
   field :file_name,type: String
   field :process,type: String, default: "Process tonight"
+  field :action, type: String
   # files are stored in Rails.application.config.datafiles_changeset
-  validate :csvfile_already_exists, on: :create
   mount_uploader :csvfile, CsvfileUploader
 
 
@@ -42,17 +42,27 @@ class Csvfile < CarrierWave::Uploader::Base
     decision
   end
   def create_batch_unless_exists
-    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).exists?
-    if !batch
+    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
+    if !batch.present?
       batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
       batch.save
+    else
+      batch.update_attributes( :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
     end
+    batch
   end
 
   def csvfile_already_exists
-    errors.add(:file_name, "A processed file of that name already exists. You cannot upload a file with the same name. You must replace the existing file") if  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.first.present?
-    errors.add(:file_name,  "The file you are replacing is locked.") if Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists? ||
-      Freereg1CsvFile.userid(self.userid).file_name(self.file_name).coordinator_lock.exists?
+    ok = true
+    case
+    when  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.first.present?
+      ok = false
+      message = "You already have a processed file of that name. You cannot upload a file with the same name. You must replace the existing file or use a different file name."
+    when Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists?
+      message =   "The file you are replacing is locked."
+      ok = false
+    end
+    return ok, message
   end
 
   def estimate_time
@@ -70,7 +80,7 @@ class Csvfile < CarrierWave::Uploader::Base
     case
     when !File.exists?(place)
       ok = false
-      batch = "You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their uaerid."
+      batch = "You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid."
     when processing_time >= 600 && batch_entries == 0
       batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
       batch.save
@@ -87,12 +97,21 @@ class Csvfile < CarrierWave::Uploader::Base
       self.save
       ok = false
       UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
+    when Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists?
+      message =   "You have done on-line edits to the file, so it is locked against replacement until you have downloaded and edited the file."
+      ok = false
+    when Freereg1CsvFile.userid(self.userid).file_name(self.file_name).coordinator_lock.exists?
+      message =   "The file you are trying to replace has been locked by your coordinator."
+      ok = false
     when batch_entries == 0
       batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
       batch.save
     when batch_entries == 1
       batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
       batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+    else
+      message =   "A situation has occurred that should not have. Please have your coordinator contact system administration."
+      ok = false
     end
     return[ok,batch]
   end

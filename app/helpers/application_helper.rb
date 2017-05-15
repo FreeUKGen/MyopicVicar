@@ -107,17 +107,21 @@ module ApplicationHelper
     counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
     display_map["Counties"] = counties if search_query.chapman_codes.size > 1
     display_map["County"] = counties if search_query.chapman_codes.size == 1
-    if search_query.places.size > 0
-      first_place = search_query.places.first
+    search_query[:place_ids].present? ? search_query_places_size = search_query[:place_ids].length : search_query_places_size = 0
+    if search_query_places_size > 0
+      first_place = search_query[:place_ids][0]
+      first_place = Place.find(first_place)
       place = first_place.place_name
-      if search_query.all_radius_places.size > 0
-        last_place = search_query.all_radius_places.last
+      if search_query.all_radius_place_ids.length > 1
+        last_place = search_query.all_radius_place_ids[-2]
+        last_place = Place.find(last_place)
+        additional = search_query.all_radius_place_ids.length - 1
         place <<
-        " (including #{search_query.all_radius_places.size} additional places within
+        " (including #{additional} additional places within
           #{geo_near_distance(first_place,last_place,Place::MeasurementSystem::ENGLISH).round(1)}
           #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
       end
-      display_map["Place"] = place if search_query.places.size > 0
+      display_map["Place"] = place if search_query_places_size > 0
     end
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
     display_map["Include Winesses"] = "Yes" if search_query.witness

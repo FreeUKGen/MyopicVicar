@@ -2,16 +2,23 @@ module Freecen
   class Freecen1VldTranslator
       
     def translate_file_record(freecen1_vld_file)
+      num_dwel_in_file=0
+      num_ind_in_file=0
       # extract dwellings
       freecen1_vld_file.freecen_dwellings.each do |dwelling|
-        translate_dwelling(dwelling, freecen1_vld_file.chapman_code, freecen1_vld_file.full_year)
+        num_ind_in_file += translate_dwelling(dwelling, freecen1_vld_file.chapman_code, freecen1_vld_file.full_year)
+        num_dwel_in_file += 1
       end
+      return num_dwel_in_file, num_ind_in_file
     end
   
     def translate_dwelling(dwelling, chapman_code, full_year)
+      num_ind_in_dwel=0
       dwelling.freecen_individuals.each do |individual|
         translate_individual(individual, chapman_code, full_year)
+        num_ind_in_dwel += 1
       end
+      num_ind_in_dwel
     end
 
 

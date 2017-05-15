@@ -2,7 +2,7 @@ class UseridDetailsController < ApplicationController
   require 'userid_role'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
-
+  before_filter :running_on_primary, except: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
 
   def all
     if params[:page]
@@ -28,7 +28,7 @@ class UseridDetailsController < ApplicationController
     if session[:my_own]
       redirect_to logout_manage_resources_path and return
     else
-      redirect_to userid_detail_path(@userid) and return
+      redirect_to userid_detail_path(@userid, page_name: params[:page_name]) and return
     end
   end
 
@@ -249,7 +249,7 @@ class UseridDetailsController < ApplicationController
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
-      redirect_to :back
+      redirect_to new_search_query_path
       return
     end
   end
@@ -271,7 +271,7 @@ class UseridDetailsController < ApplicationController
         return
       else
         userid = UseridDetail.where(:userid => params[:userid]).first
-        redirect_to userid_detail_path(userid)
+        redirect_to userid_detail_path(userid, option: params[:option])
         return
       end
     when !params[:email].nil?
@@ -284,7 +284,7 @@ class UseridDetailsController < ApplicationController
         #adjust for + having been replaced with space
         params[:email] = params[:email].gsub(/\s/,"+")
         userid = UseridDetail.where(:email_address => params[:email]).first
-        redirect_to userid_detail_path(userid)
+        redirect_to userid_detail_path(userid, option: params[:option])
         return
       end
     when !params[:name].nil?
@@ -306,7 +306,7 @@ class UseridDetailsController < ApplicationController
           return
         when number == 1
           userid = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).first
-          redirect_to userid_detail_path(userid)
+          redirect_to userid_detail_path(userid, option: params[:option])
           return
         when number >= 2
           @userids = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).all
@@ -352,6 +352,7 @@ class UseridDetailsController < ApplicationController
       redirect_to :back
       return
     end
+    @location = get_option_parameter(params[:option], @location)
     params[:option] = nil
     @manage_syndicate = session[:syndicate]
   end
@@ -361,6 +362,7 @@ class UseridDetailsController < ApplicationController
     @syndicate = session[:syndicate]
     get_user_info_from_userid
     load(params[:id])
+    @page_name = params[:page_name]
   end
 
   def technical_registration
@@ -373,7 +375,7 @@ class UseridDetailsController < ApplicationController
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
-      redirect_to :back
+      redirect_to new_search_query_path
       return
     end
   end
@@ -396,7 +398,7 @@ class UseridDetailsController < ApplicationController
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable for registration"
-      redirect_to :back
+      redirect_to new_search_query_path
       return
     end
   end
@@ -434,13 +436,28 @@ class UseridDetailsController < ApplicationController
       UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
       UserMailer.send_change_of_email_notification_to_sc(@userid).deliver_now if changed_email_address
       flash[:notice] = 'The update of the profile was successful'
-      redirect_to userid_detail_path(@userid)
+      redirect_to userid_detail_path(@userid, page_name: params[:page_name])
       return
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      render :action => 'edit'
+      render :action => 'edit', page_name: params[:page_name]
       return
+    end
+  end
+
+  def incomplete_registrations
+    @current_syndicate = session[:syndicate]
+    @current_user = cookies.signed[:userid]
+    session[:edit_userid] = true
+    user = UseridDetail.new
+
+    if permitted_users?
+      @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
+      render :template => 'shared/incomplete_registrations'
+    else
+      flash[:notice] = 'Sorry, You are not authorized for this action'
+      redirect_to '/manage_resources/new'
     end
   end
 
@@ -485,6 +502,14 @@ class UseridDetailsController < ApplicationController
       return false
     end
     return true
+  end
+
+  def permitted_users?
+    ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator'].include? @current_user.person_role
+  end
+
+  def get_option_parameter(option, location)
+    location += '+"&option=' + option +'"'
   end
 
 end

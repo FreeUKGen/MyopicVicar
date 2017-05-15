@@ -1,4 +1,5 @@
 class CsvfilesController < ApplicationController
+  before_filter :running_on_primary
 
   require 'freereg_csv_update_processor'
   require 'digest/md5'
@@ -17,7 +18,8 @@ class CsvfilesController < ApplicationController
     #if the process does not have a userid then the process has been initiated by the user on his own batches
     @csvfile.userid = session[:userid]   if params[:csvfile][:userid].nil?
     @csvfile.file_name = @csvfile.csvfile.identifier
-    if params[:commit] == "Replace"
+    case
+    when params[:csvfile][:action] == "Replace"
       name_ok = @csvfile.check_name(session[:file_name])
       if !name_ok
         flash[:notice] = 'The file you are replacing must have the same name'
@@ -35,6 +37,14 @@ class CsvfilesController < ApplicationController
           batch = setup[1]
         end
       end
+    when params[:csvfile][:action] ==  "Upload"
+      ok,message = @csvfile.csvfile_already_exists
+      if !ok
+        session.delete(:file_name)
+        flash[:notice] = message
+        redirect_to :back
+        return
+      end
     end
     #lets check for existing file, save if required
     processing_time = @csvfile.estimate_time
@@ -48,12 +58,11 @@ class CsvfilesController < ApplicationController
     end #error
     batch = @csvfile.create_batch_unless_exists
     range = File.join(@csvfile.userid,@csvfile.file_name)
-    batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
-    if batch.present?
+    batch_processing = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
+    if batch_processing.present?
       flash[:notice] = "Your file is currently waiting to be processed. It cannot be processed this way now"
       logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
     else
-      batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
       case
       when @user.person_role == "trainee"
         pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
@@ -125,6 +134,7 @@ class CsvfilesController < ApplicationController
       @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
       session[:file_name] =  @file_name
       get_userids_and_transcribers
+      @action = "Replace"
     else
       flash[:notice] = "There was no file to replace"
       redirect_to :back
@@ -163,6 +173,7 @@ class CsvfilesController < ApplicationController
     @csvfile  = Csvfile.new(:userid  => session[:userid])
     #get @people
     get_userids_and_transcribers
+    @action = "Upload"
   end
 
   private

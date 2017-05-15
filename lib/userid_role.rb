@@ -63,18 +63,18 @@ module UseridRole
     "Message System" => "/messages",
     "Manage Pieces" => "/freecen_coverage/edit"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Create userid"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
     #todo clean up first 2
     "Browse userids" => "/userid_details/selection?option=Browse userids",
+    "Incomplete Registrations" => "/userid_details/incomplete_registrations",
     "Create userid"=> "/userid_details/selection?option=Create userid",
     "Select specific email" =>  "/userid_details/selection?option=Select specific email",
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
     "Select Role" => "/userid_details/person_roles"
-
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
@@ -90,7 +90,7 @@ module UseridRole
   COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
                                'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',
-                               "Upload New Batch",'List files waiting to be processed','List files NOT processed']
+                               "Upload New Batch"]
   COUNTY_OPTIONS_TRANSLATION = {
     'All Places' => "/manage_counties/selection?option=Work with All Places",
     'Active Places' => "/manage_counties/selection?option=Work with Active Places",
@@ -102,12 +102,10 @@ module UseridRole
     'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
     'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
     'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
-    'List files waiting to be processed' => "/manage_counties/display_files_waiting_to_be_processed",
-    'List files NOT processed' => "/manage_counties/display_files_not_processed",
     'Upload New Batch' =>  "/csvfiles/new"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Create userid",'Review Batches with Errors','Review Batches by Filename',
+                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",'Review Batches with Errors','Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
                                    'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status']
   SYNDICATE_OPTIONS_TRANSLATION = {
@@ -116,6 +114,7 @@ module UseridRole
     'Select Specific Member by Userid'=> "/manage_syndicates/selection?option=Select Specific Member by Userid",
     'Select Specific Member by Email Address'=> "/manage_syndicates/selection?option=Select Specific Member by Email Address",
     'Select Specific Member by Surname/Forename' => "/manage_syndicates/selection?option=Select Specific Member by Surname/Forename",
+    "Incomplete Registrations" => "/userid_details/incomplete_registrations",
     "Create userid"=> "/userid_details/selection?option=Create userid",
     'Review Batches with Errors'=> "/manage_syndicates/selection?option=Review Batches with Errors",
     'Review Batches by Filename' => "/manage_syndicates/selection?option=Review Batches by Filename",
@@ -128,21 +127,15 @@ module UseridRole
     'List files NOT processed' => "/manage_syndicates/display_files_not_processed",
     'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
   }
-  PHYSICAL_FILES_OPTIONS =  ['Files Not Processed','Processed but no Files','Processed but no File in FR1','Processed but no File in FR2','Browse Files' ,
-                             'Waiting to be processed','Files for Specific Userid']
+  PHYSICAL_FILES_OPTIONS =  ['Waiting to be processed','Files not processed','Processed but no file','Browse files' ,'Files for specific userid' ]
 
   PHYSICAL_FILES_OPTIONS_TRANSLATION ={
-    'Browse Files' => "/physical_files/all_files",
-    'Files Not Processed' => '/physical_files/file_not_processed',
-    'Processed but no File in FR2' => '/physical_files/processed_but_no_file_in_fr2',
-    'Processed but no File in FR1' => '/physical_files/processed_but_no_file_in_fr1',
-    'Processed but no Files' => '/physical_files/processed_but_no_files',
-    'Waiting to be processed' => '/physical_files/waiting_to_be_processed',
-    'Files for Specific Userid' => '/physical_files/files_for_specific_userid'
+    'Browse files' => "/physical_files/all_files",
+    'Files not processed' => '/physical_files/file_not_processed',
+    'Processed but no file' => '/physical_files/processed_but_no_file',
+    'Files for specific userid' => '/physical_files/files_for_specific_userid',
+    'Waiting to be processed' => '/physical_files/waiting_to_be_processed'
   }
-
-
-
 
   SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
 

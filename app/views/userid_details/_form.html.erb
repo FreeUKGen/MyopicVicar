@@ -58,7 +58,7 @@
       <%= f.input :last_upload,:label => "Date of last upload", :input_html => { :size => 30, :disabled => true }%>
     <% end %>
     <%= f.input :sign_up_date,:label => "Date signed up", :input_html => { :size => 30, :disabled => true }%>
-    
+    <%= hidden_field_tag(:page_name, params[:page_name]) %>
   <% end %>
-  <%= f.button :submit, 'Update'   %>
+  <%= f.button :submit, 'Update' %>
   <% end %>

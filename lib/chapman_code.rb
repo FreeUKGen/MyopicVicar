@@ -96,7 +96,7 @@ module ChapmanCode
     codes.value?(value)
   end
 
-  CODES = {
+  CODES = {"All" =>{"" => ""},
     "England" =>
     {'England' => 'ENG',
      'Bedfordshire' => 'BDF',

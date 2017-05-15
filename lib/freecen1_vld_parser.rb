@@ -3,6 +3,10 @@ module Freecen
 
     #note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS"
     @@valid_birth_counties = ChapmanCode::values + ["ANT", "ARM", "AVN", "CAR", "CAV", "CLA", "CLV", "CMA", "CNN", "COR", "DON", "DOW", "DUB", "ENW", "FER", "GAL", "GTL", "GTM", "HUM", "HWR", "IRL", "KER", "KID", "KIK", "LDY", "LEN", "LET", "LEX", "LIM", "LOG", "LOU", "MAY", "MEA", "MOG", "MSY", "MUN", "NIR", "NYK", "OFF", "ROS", "SLI", "SXE", "SXW", "SYK", "TIP", "TWR", "TYR", "UIE", "WAL", "WAT", "WEM", "WEX", "WIC", "WMD", "WYK"] # adding all chapman codes listed in the FreeUKGENconst mysql database that weren't in ChapmanCode::values. ('OUC','OVF','OVB','UNK' are already in ChapmanCode::values). Do we want to flag these birth counties that are inconsistent with FC1?
+    def initialize(print_performance=false)
+      @print_performance = print_performance
+    end
+    
 
     def process_vld_file(filename)
       chapman_code = File.basename(File.dirname(filename))
@@ -10,24 +14,25 @@ module Freecen
       file_record = process_vld_filename(filename)
       entry_records = process_vld_contents(filename, chapman_code)
       start_time = Time.now
-      print("   call check_vld_records_for_errors() #{start_time.strftime("%I:%M:%S %p")}\n")
+      print("   call check_vld_records_for_errors() #{start_time.strftime("%I:%M:%S %p")}\n") if @print_performance
       entry_errors = check_vld_records_for_errors(entry_records, chapman_code, File.basename(filename))
-      print("  #{Time.now - start_time} elapsed\n")
+      print("  #{Time.now - start_time} elapsed\n") if @print_performance
       # do not persist if piece not found. raise exception so we can notify
       # person loading the files that either the PARMS.DAT or .VLD file needs
       # to be fixed
       start_time = Time.now
-      print("   call FreecenPiece.where() #{start_time.strftime("%I:%M:%S %p")}")
+      print("   call FreecenPiece.where() #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
       if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
         raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nVerify that the PARMS.DAT file is correct and has been loaded by the update task, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
-      print("  #{Time.now - start_time} elapsed\n")
+      print("  #{Time.now - start_time} elapsed\n") if @print_performance
  
       start_time = Time.now
-      print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}")
-      file=persist_to_database(filename, file_record, entry_records, entry_errors)
-      print("  #{Time.now - start_time} elapsed\n")
-      return file
+      print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
+      file = persist_to_database(filename, file_record, entry_records, entry_errors)
+      print("  #{Time.now - start_time} elapsed\n") if @print_performance
+
+      return file, entry_records.length
     end
 
     def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)

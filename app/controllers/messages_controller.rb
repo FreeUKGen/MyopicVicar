@@ -1,9 +1,38 @@
 class MessagesController < ApplicationController
+  before_filter :running_on_primary
   require 'freereg_options_constants'
   require 'userid_role'
   def index
     get_user_info_from_userid
     @messages = Message.all.order_by(message_time: -1)
+  end
+
+  def userid_messages
+    get_user_info_from_userid
+    @user.reload
+    @messages = []
+    @user.userid_messages.each do |msg_id|
+      @messages << Message.id(msg_id).first
+    end
+  end
+
+  def remove_from_useriddetail_waitlist
+    get_user_info_from_userid
+    @user.remove_checked_messages(params[:id])
+    if @user.userid_messages.length > 0
+      redirect_to userid_messages_path
+    else
+      redirect_to new_manage_resource_path
+    end
+  end
+
+  def show_waitlist_msg
+    get_user_info_from_userid
+    @message = Message.id(params[:id]).first
+    if @message.blank?
+      go_back("message",params[:id])
+    end
+    @sent =   @message.sent_messages.order_by(sent_time: 1)
   end
 
   def show

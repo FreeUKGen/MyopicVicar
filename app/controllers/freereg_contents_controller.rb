@@ -152,12 +152,17 @@ class FreeregContentsController < ApplicationController
     @county = session[:county]
     @character =  session[:character]
     @chapman_code = session[:chapman_code]
-    @place_name = @church.place.place_name
-    @place = @church.place
-    @church_name = @church.church_name
-    @decade = @church.daterange
-    @transcribers = @church.transcribers
-    @contributors = @church.contributors
+    if  @church.present?
+      @place = @church.place
+      @place_name = @place.place_name if @place.present?
+      @church_name = @church.church_name
+      @decade = @church.daterange
+      @transcribers = @church.transcribers
+      @contributors = @church.contributors
+    else
+      flash[:notice] = "Non existent place has been selected."
+      redirect_to :action => 'new' and return
+    end
     @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
   end
 
@@ -207,7 +212,7 @@ class FreeregContentsController < ApplicationController
       @contributors = @register.contributors
     else
       flash[:notice] = "The register has no church; you will need to start again"
-      redirect_to :back and return
+      redirect_to :action => :new and return
     end
   end
 

@@ -1,4 +1,4 @@
-<h3 class="epsilon flush--bottom"><%= pluralize(@n, ' Search Result', ' Search Results') %> 
+<h3 class="epsilon flush--bottom"><%= pluralize(@result_count, ' Search Result', ' Search Results') %> 
   <small class="additional">Select a heading to sort results on that heading.<br> 'Place' consists of Place : Church : Register type <br>Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
 </h3>
   <% search_results.each do |search_record| %>
@@ -20,7 +20,7 @@
         <dd><%= RecordType::display_name(search_record.record_type) %></dd>
         <dt><%= link_to('Date ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
         </dt>
-        <dd><%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%></dd>
+        <dd><%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record[:transcript_dates].empty? %></dd>
         <dt><%= link_to('County ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
         </dt>
         <dd><%= county(search_record) %></dd>
@@ -28,7 +28,7 @@
         </dt>
         <dd><%= format_location(search_record) %></dd>
         <dt>Detail</dt>
-        <dd><%= link_to("Detail ", search_record_path(search_record, :search_id => @search_query)) %> 
+        <dd><%= link_to("Detail ", search_record_path(search_record[:_id], :search_id => @search_query)) %> 
             <i><%= viewed(@search_query,search_record)%></i></dd>
       </dl>
     </div>

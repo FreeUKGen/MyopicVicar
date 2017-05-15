@@ -2,8 +2,9 @@ class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
   #skip_before_filter :require_login, only: [:new, :pages]
+  skip_before_filter :require_login, only: [:logout]
   skip_before_filter :refinery_authentication_devise_users
-
+  before_filter :running_on_primary
 
   def create
     #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -139,6 +140,7 @@ class ManageResourcesController < ApplicationController
 
 
   private
+
 
   def go_to_computer_code
     redirect_to new_transreg_user_path

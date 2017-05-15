@@ -1,0 +1,41 @@
+<% breadcrumb :userid_messages,  @messages%>
+<h2 class=" text--center">List of all messages of <%= @user.userid %></h2>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<section class="island" >
+  <div class="table-wrapper">
+    <div class="grid">
+      <div class="grid__item one-whole" >
+        <table class="table--bordered table--data ">
+        <% if @messages.present? %>
+          <tr>
+            <th class="t20">Subject</th>
+            <th class="t20">Sent by</th>
+            <th class="t10">Posted</th>
+            <th class="t10">Attachment</th>
+            <th class="t20">Summarized message</th>
+            <th class="t20">Action</th>
+          </tr>
+          <% @messages.each do |message| %>
+              <tr>
+                <td><%= message.subject %></td>
+                <td><%= message.userid %></td>
+                <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
+                <td><%= attachment(message)%></td>
+                <td><%= message.body[0,100] %>...</td>
+                <td> <%= link_to 'SH', show_waitlist_msg_path(message.id), :class => "btn weight--light  btn--small" %>
+                <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from message wait list?' } %> </td>
+              </tr>
+            <% end %>
+          <% else%>
+            No messages
+          <% end%>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<br/>

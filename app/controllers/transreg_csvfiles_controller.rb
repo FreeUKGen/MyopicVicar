@@ -5,6 +5,7 @@ class TransregCsvfilesController < ApplicationController
   # Should re-authenticate the userid/password provided with the request
   # No guarantee that the userid is the same as that used when the logon happened
   before_filter :authenticate_user
+  before_filter :running_on_primary, :except => [:show]
 
   def upload
     if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
@@ -29,14 +30,13 @@ class TransregCsvfilesController < ApplicationController
       logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
-      batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
-      if batch.present?
+      batch_processing = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
+      if batch_processing.present?
         @result = "failure"
         @message = "Your file is currently waiting to be processed. It cannot be processed this way now"
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
-        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
@@ -117,14 +117,13 @@ class TransregCsvfilesController < ApplicationController
       logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
-      batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
-      if batch.present?
+      batch_processing = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
+      if batch_processing.present?
         @result = "failure"
         @message = "Your file is currently waiting to be processed. It cannot be processed this way now"
         logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
-        batch = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name).first
         processing_time = @csvfile.estimate_time
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")

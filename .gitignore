@@ -125,7 +125,7 @@ vendor/extensions/**/spec/dummy
 
 
 # Ignore application configuration
-/config/application.yml
+config/application.yml
 config/database.yml
 config/errbit.yml
 config/mongo_config.yml
@@ -134,3 +134,6 @@ config/secrets.yml
 
 # assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
 app/assets/copy_of_assets_free*
+config/initializers/setup_mail.rb
+data/*
+

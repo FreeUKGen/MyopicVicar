@@ -111,8 +111,10 @@ class SearchQueriesController < ApplicationController
       @page = nil
     end
     if params[:search_id]
+
       old_query = SearchQuery.search_id(params[:search_id]).first
       if old_query.present?
+        old_query.search_result.records = Hash.new unless  old_query.search_result.nil?
         @search_query = SearchQuery.new(old_query.attributes)
       else
         @search_query = SearchQuery.new
@@ -132,8 +134,8 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
-    order_field=params[:order_field]
-    if order_field==old_query.order_field
+    order_field = params[:order_field]
+    if order_field == old_query.order_field
       # reverse the directions
       old_query.order_asc = !old_query.order_asc
     else
@@ -175,7 +177,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at)
+    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page]).per(100)
   end
 
   def search_taking_too_long(message)
@@ -221,16 +223,16 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && 'FreeCen' != MyopicVicar::Application.config.template_set
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
+        @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results =   @search_query.results
-        @ucf_results = @search_query.ucf_results
-        @ucf_results = Array.new unless  @ucf_results.present?
-        if @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present")
-          go_back
+        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+        if !response || @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to new_search_query_path(:search_id => @search_query)
           return
         end
       end
@@ -252,16 +254,16 @@ class SearchQueriesController < ApplicationController
       return
     end
     if @search_query.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && 'FreeCen' != MyopicVicar::Application.config.template_set
+      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
+        @result_count = @search_query.result_count
         @search_results =   Array.new
         @ucf_results = Array.new
       else
-        @search_results =   @search_query.results
-        @ucf_results = @search_query.ucf_results
-        @ucf_results = Array.new unless  @ucf_results.present?
-        if @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present")
-          go_back
+        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+        if !response || @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to new_search_query_path(:search_id => @search_query)
           return
         end
       end

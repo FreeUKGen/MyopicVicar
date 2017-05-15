@@ -1,3 +1,5 @@
+<% breadcrumb :selection_user_id, request.query_parameters[:option] %>
+
 <div id="notice" style="color:red">
   <% if flash[:notice] %>
   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>

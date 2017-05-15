@@ -66,6 +66,9 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen1_vld_files
 
+  get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
+  delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
+  get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
   get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
@@ -79,11 +82,8 @@ MyopicVicar::Application.routes.draw do
   get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
 
-  get 'physical_files/files_for_county', :to =>'physical_files#files_for_county', :as => :files_for_county_physical_files
   get 'physical_files/files_for_specific_userid', :to =>'physical_files#files_for_specific_userid', :as => :files_for_specific_userid_physical_files
-  get 'physical_files/processed_but_no_files', :to =>'physical_files#processed_but_no_files', :as => :processed_but_no_files_physical_files
-  get 'physical_files/processed_but_no_file_in_fr1', :to =>'physical_files#processed_but_no_file_in_fr1', :as => :processed_but_no_file_in_fr1_physical_files
-  get 'physical_files/processed_but_no_file_in_fr2', :to =>'physical_files#processed_but_no_file_in_fr2', :as => :processed_but_no_file_in_fr2_physical_files
+  get 'physical_files/processed_but_no_file', :to =>'physical_files#processed_but_no_file', :as => :processed_but_no_file_physical_files
   get 'physical_files/file_not_processed', :to =>'physical_files#file_not_processed', :as => :file_not_processed_physical_files
   get 'physical_files/select_action',  :to => 'physical_files#select_action', :as => :select_action_physical_files
   get 'physical_files/:id/submit_for_processing(.:format)',  :to => 'physical_files#submit_for_processing', :as => :submit_for_processing_physical_file
@@ -190,6 +190,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/selection', :to =>'userid_details#selection', :as => :selection_userid_details
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
+  get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
 
@@ -205,7 +206,6 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
-  get  'manage_counties/display_files_waiting_to_be_processed',  :to => 'manage_counties#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
@@ -214,7 +214,6 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
-  get  'manage_counties/display_files_not_processed',  :to => 'manage_counties#display_files_not_processed', :as => :display_files_not_processed_manage_counties
   resources :manage_counties
 
 

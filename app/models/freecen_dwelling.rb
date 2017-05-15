@@ -12,7 +12,7 @@ class FreecenDwelling
   field :house_or_street_name, type: String
   field :uninhabited_flag, type: String
   field :unoccupied_notes, type: String
-  belongs_to :freecen1_vld_file
+  belongs_to :freecen1_vld_file, index: true
   has_many :freecen_individuals
   belongs_to :place
   belongs_to :freecen_piece
