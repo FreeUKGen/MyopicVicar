@@ -37,7 +37,7 @@
   <% unless @user.person_role == 'researcher' %>
     <%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
-    <%= f.input :transcription_agreement, collection: [["Unknown","Unknown"],["Accept", "Accepted"],["Decline", "Declined"],["Requested","Requested"]], :selected => @userid.transcription_agreement, label: "#{link_to 'Transcription agreement', "/docs/FreeUKGenealogyTranscriptionAgreement.pdf", title: "Click here to Download the Agreement"} accepted?".html_safe,:input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true}%>
+    <%= f.input :transcription_agreement, collection: ["Unknown","Accepted","Declined","Requested"],include_blank: false, :selected => @userid.transcription_agreement, label: "#{link_to 'Transcription agreement', "/docs/FreeUKGenealogyTranscriptionAgreement.pdf", title: "Click here to Download the Agreement"} accepted?".html_safe,:input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true}%>
     <% unless session[:my_own] %>           
       <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 4},:selected => "Learning" %>
       <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>

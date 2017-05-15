@@ -396,7 +396,7 @@ class UseridDetailsController < ApplicationController
       @userid = UseridDetail.new
       @userid[:honeypot] = session[:honeypot]
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
+      @transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       @first_name = session[:first_name]
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
