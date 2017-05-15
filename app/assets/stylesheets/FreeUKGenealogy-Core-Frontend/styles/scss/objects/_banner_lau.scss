@@ -9,6 +9,11 @@
   display: block;
   text-align: center;
   position: relative;
-  margin: $b 0;
   height: 90px;
+}
+
+.adsense_center {
+    max-width: 700px;
+    margin: 0 auto;
+    font-weight: bold;
 }
