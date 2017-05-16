@@ -2,7 +2,7 @@ class SearchRecordsController < ApplicationController
   before_filter :viewed
   skip_before_filter :require_login
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
-  before_filter :running_on_primary, :except => [:show,:show_print_version]
+  
   def catch_error
     logger.warn("FREEREG:RECORD: Record encountered a problem #{params}")
     flash[:notice] = 'We are sorry but we encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
