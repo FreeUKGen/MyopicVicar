@@ -100,7 +100,18 @@ class SearchRecord
     "pl_fnsdx_rt_ssd" => [ "search_date", "chapman_code", "place_id","search_soundex.first_name","record_type", "secondary_search_date"],
     "pl_rt_ssd" => [ "search_date", "chapman_code", "place_id","record_type", "secondary_search_date"],
     "fnsdx_rt_ssd" => [ "search_date", "chapman_code","search_soundex.first_name","record_type", "secondary_search_date"],
-    "fn_rt_ssd" =>  [ "search_date", "chapman_code","search_names.first_name","record_type", "secondary_search_date"],
+    "fn_rt_ssd" =>  [ "search_date", "chapman_code","search_names.first_name","record_type", "secondary_search_date"]
+   }
+   
+   
+   MERGED_INDEXES = {
+     "search_date_chapman_code" => ["search_date", "chapman_code" ],
+     "ln_rt_ssd" => [ "search_date", "chapman_code", "search_names.last_name", "record_type", "secondary_search_date"],    
+     "ln_county_rt_sd_ssd" => ["search_names.last_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
+     
+     
+     
+     
    }
 
 
@@ -264,7 +275,7 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      candidates = SHARDED_INDEXES.keys
+      candidates = MERGED_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
        p candidates
@@ -278,7 +289,7 @@ class SearchRecord
     end
 
     def index_score(index_name, search_fields)
-      fields = SHARDED_INDEXES[index_name]
+      fields = MERGED_INDEXES[index_name]
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
