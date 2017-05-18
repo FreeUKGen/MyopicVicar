@@ -86,7 +86,7 @@ class SearchRecord
     "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"]
   }
 
-  SHARDED_INDEXES={
+  SHARDED_INDEXES = {
     "search_date_chapman_code" => ["search_date", "chapman_code" ],
     "ln_rt_ssd" => [ "search_date", "chapman_code", "search_names.last_name", "record_type", "secondary_search_date"],     
     "ln_fn_rt_ssd" => [ "search_date", "chapman_code", "search_names.last_name", "search_names.first_name", "record_type", "secondary_search_date"],
@@ -264,7 +264,7 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      candidates = SHARED_INDEXES.keys
+      candidates = SHARDED_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
        p candidates
