@@ -120,7 +120,7 @@ class SearchRecord
     }
 
 
-  INDEXES = NEW_INDEXES
+  INDEXES = MERGED_INDEXES
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
