@@ -222,6 +222,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
       params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
       params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
+      params[:freereg1_csv_entry][:person_sex] == @freereg1_csv_entry.person_sex ? sex_change = false : sex_change = true
       #update entry
       @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
       if @freereg1_csv_entry.errors.any?
@@ -234,6 +235,8 @@ class Freereg1CsvEntriesController < ApplicationController
         search_version = ''
         search_version  = software_version.last_search_record_version unless software_version.blank?
         place_id = get_place_id_from_file(@freereg1_csv_file)
+        @freereg1_csv_entry.search_record.destroy  if sex_change # updating the search names is too complex on a sex change it is better to just recreate
+        @freereg1_csv_entry.search_record(true) #this frefreshes the cache
         SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
         # lock file and note modification date
         @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]

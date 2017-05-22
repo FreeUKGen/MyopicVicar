@@ -11,7 +11,7 @@ namespace :freereg do
       number = 0
       SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
         number = number + 1
-        print "#{number} records " if (number/10000)*10000 == number
+        print "#{number} records #{number_bad_dates}\n" if (number/10000)*10000 == number
         identified = false
         unless record.search_dates.include?(record.search_date)
           number_bad_dates = number_bad_dates + 1
