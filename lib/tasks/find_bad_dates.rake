@@ -14,7 +14,7 @@ namespace :freereg do
         print "#{number} records #{number_bad_dates}\n" if (number/10000)*10000 == number
         identified = false
         if  !record.search_dates.empty? 
-          if record.search_dates.include?(record.search_date)
+          unless record.search_dates.include?(record.search_date)
             number_bad_dates = number_bad_dates + 1
             print "#\tBad date at #{record.freereg1_csv_entry_id}\n"
             output_file.puts "#{record.freereg1_csv_entry_id}\n"
