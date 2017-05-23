@@ -287,31 +287,31 @@ namespace :foo do
   
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
-    print "starting"
+    p "starting"
     number = 0
     stop_after = args.limit.to_i
-    print "doing #{stop_after} records"
+    p "doing #{stop_after} records"
     lines = File.readlines(args.id_file).map { |l| l.to_s }
-    print "#{lines.length} records to process"
+    p "#{lines.length} records to process"
     lines.each do |line|
       number = number + 1
       break if number == stop_after
       if line =~ /^#/
-        print "Rebuilding "
-        print line
+        p "Rebuilding "
+        p line
       else
-        print "Rebuilding "
-        print line
+        
+        p line
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record
-        print entry
-        print "before"
-        print record
+        p entry
+        p "before"
+        p record
         begin
           if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
             record.transform
-            print "after"
-            print record
+            p "after"
+            p record
             break if record.search_date.blank?
             record.save!           
           end
@@ -321,7 +321,7 @@ namespace :foo do
         end
       end
     end
-    print "#{number} records processed"
+    p "#{number} records processed"
   end
   
 end
