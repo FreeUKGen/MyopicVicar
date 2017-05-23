@@ -44,12 +44,12 @@
         <% end %>
       </div>
     </section>
-    <fieldset class="adsense_center">
-      <span>Advertisement</span>
-      <div class="banner-horz">
-        <%= display_banner %>
-      </div>
-    </fieldset>
+    <div class="adsense_center">
+    <span>Advertisement</span>
+    <div>
+      <%= fullwidth_adsense %>
+    </div>
+  </div>
   <% end %>
   <section>
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
