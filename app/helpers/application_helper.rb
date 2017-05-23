@@ -161,6 +161,33 @@ module ApplicationHelper
     banner.html_safe
   end
 
+  def banners
+    banner = <<-HTML
+    <style>
+      .adBanner { width: 100%; height: 100px; }
+      @media(min-width: 800px) { .adBanner { width: 100%; height: 90px; } }
+      @media(min-width: 500px) { .adBanner { width: 100%; height: 60px; } }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- Responsive ad -->
+    <ins class="adsbygoogle adBanner"
+      style="display:block"
+      data-ad-client="ca-pub-7825403497160061"
+      data-ad-slot="9011588433"
+      data-ad-format="auto">
+    </ins>
+    <script>
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+    </script>
+    HTML
+    if Rails.env.development?
+     banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      HTML
+    end
+    banner.html_safe
+  end
+
   def title(title = nil)
     if title.present?
       content_for :title, title
@@ -184,5 +211,3 @@ module ApplicationHelper
   def ucf_wildcards_enabled?
     Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
   end
-
-end
