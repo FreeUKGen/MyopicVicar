@@ -211,3 +211,4 @@ module ApplicationHelper
   def ucf_wildcards_enabled?
     Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
   end
+end
