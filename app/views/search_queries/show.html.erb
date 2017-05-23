@@ -1,8 +1,8 @@
 <% title "Search Results" %>
 <% if flash[:notice] %>
-<div id="notice" style="color:red;"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
-</div>
+  <div id="notice" style="color:red;"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
+  </div>
 <% end %>
 
 <% if MyopicVicar::Application.config.template_set == 'freereg' %>
@@ -18,13 +18,13 @@
       <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small " %>
       <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  weight--light btn--small") %>
       <% if @search_query.can_be_broadened? %>
-      <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  weight--light btn--small" %>
+        <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  weight--light btn--small" %>
       <% end %>
       <% if @search_query.can_be_narrowed? %>
-      <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
+        <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
       <% end %>
       <% if device_type == :desktop || device_type == :tablet %>
-      <%= link_to "Printable Format", show_print_version_search_query_path , :class => "btn  weight--light btn--small" %>
+        <%= link_to "Printable Format", show_print_version_search_query_path , :class => "btn  weight--light btn--small" %>
       <% end %>
     </div>
   <% end %>
@@ -37,13 +37,19 @@
       <h2 class="epsilon flush--bottom"><em>You searched for:</em></h2>
       <div class="criteria-group">
         <% search_params_for_display(@search_query).each do |name, value| %>
-        <dl class="criteria">
-          <dt class="criteria__name"><%= name %></dt>
-          <dd class="criteria__value"><%= value %></dd>
-        </dl>
+          <dl class="criteria">
+            <dt class="criteria__name"><%= name %></dt>
+            <dd class="criteria__value"><%= value %></dd>
+          </dl>
         <% end %>
       </div>
     </section>
+    <div class="adsense_center">
+    <span>Advertisement</span>
+    <div>
+      <%= fullwidth_adsense %>
+    </div>
+  </div>
   <% end %>
   <section>
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
@@ -81,10 +87,10 @@
             <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small" %>
             <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn weight--light btn--small") %>
             <% if @search_query.can_be_broadened? %>
-            <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn weight--light btn--small" %>
+              <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn weight--light btn--small" %>
             <% end %>
             <% if @search_query.can_be_narrowed? %>
-            <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
+              <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
             <% end %>
             <a href="#" class="btn weight--light btn--small">Go to top</a>
           </div>
@@ -92,18 +98,19 @@
       <% end %>
       <% if @result_count > 0 && @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
-            <br>
-<% unless defined?(@printable_format) && @printable_format %>
-  <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
-<% end %>
-             <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= MyopicVicar::Application.config.freexxx_display_name %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p><%= link_to 'Make a Donation',"http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free", :class => "weight--semibold go", :title => "external link to Free UK Genealogy" %>
-          </div>
+          <br>
+          <% unless defined?(@printable_format) && @printable_format %>
+            <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
+          <% end %>
+          <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= MyopicVicar::Application.config.freexxx_display_name %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p><%= link_to 'Make a Donation',"http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free", :class => "weight--semibold go", :title => "external link to Free UK Genealogy" %>
+        </div>
       <% end %>
     <% end %>
- </section>
+  </section>
 <% else %>
   <div class="island">
     <h2 class="gamma text--negative push-half--bottom">No results found</h2>
-    <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= contents_link %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
+    <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= contents_link %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.
+    </p>
   </div>
 <% end %>
