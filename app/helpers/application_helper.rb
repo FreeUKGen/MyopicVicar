@@ -161,6 +161,33 @@ module ApplicationHelper
     banner.html_safe
   end
 
+  def fullwidth_adsense
+    banner = <<-HTML
+    <style>
+      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
+      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
+      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- Responsive ad -->
+    <ins class="adsbygoogle adSenseBanner"
+      style="display:block"
+      data-ad-client="ca-pub-7825403497160061"
+      data-ad-slot="9011588433"
+      data-ad-format="auto">
+    </ins>
+    <script>
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+    </script>
+    HTML
+    # if Rails.env.development?
+    #  banner = <<-HTML
+    #   <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+    #   HTML
+    # end
+    banner.html_safe
+  end
+
   def title(title = nil)
     if title.present?
       content_for :title, title
