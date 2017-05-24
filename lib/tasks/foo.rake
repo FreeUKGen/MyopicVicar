@@ -309,7 +309,9 @@ namespace :foo do
         p record
         begin
           if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
-            record.transform
+            search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+            record = record.update_attributes(search_record_parameters)
+            #record.transform
             p "after"
             p record
             break if record.search_date.blank?
