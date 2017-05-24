@@ -7,11 +7,13 @@ namespace :freereg do
     output_file = File.new(file, "w")
     number_bad_dates = 0
     number = 0
+    mum = 0
     stop_after = args.limit.to_i
     ChapmanCode.values.sort.each do |chapman_code|
       print "# #{chapman_code}\n"
       SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
-        print "#{number} records #{number_bad_dates}\n" if (number/10000)*10000 == number
+        mum = mum + 1
+        p "#{mum} records #{number_bad_dates}\n" if ((mum/10000)*10000 == mum)
         entry_id = record.freereg1_csv_entry_id
         entry = Freereg1CsvEntry.find(entry_id)
         identified = false
