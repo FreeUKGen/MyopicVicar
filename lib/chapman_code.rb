@@ -87,7 +87,7 @@ module ChapmanCode
     codes.value?(value)
   end
 
-  CODES = {"All" =>{"" => ""},
+  CODES = {
     "England" =>
     {'England' => 'ENG',
      'Bedfordshire' => 'BDF',
@@ -224,5 +224,11 @@ module ChapmanCode
     end
     all_countries
   end
+
   #Note the actual list of codes is the merge_counties or select_hash
+  def self.merge_counties
+    all_counties = Array.new
+    all_counties = County.distinct(:chapman_code)
+    all_counties
+  end
 end
