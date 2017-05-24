@@ -15,8 +15,10 @@ namespace :freereg do
         identified = false
         if  !record.search_dates.empty? 
           unless record.search_dates.include?(record.search_date)
+          
             number_bad_dates = number_bad_dates + 1
             print "#\tBad date at #{record.freereg1_csv_entry_id}\n"
+            p "#{record.search_date}, #{ record.search_dates}"
             output_file.puts "#{record.freereg1_csv_entry_id}\n"
             identified = true
           end
