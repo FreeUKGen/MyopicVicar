@@ -717,20 +717,13 @@ class SearchRecord
       @@tts[:date_tts] += Benchmark.measure { transform_date }
       @@tts[:location_tts] += Benchmark.measure { populate_location }
     else
-      p 'transforming'
-      p self
       populate_search_from_transcript
-      p self 
       downcase_all
       separate_all
       emend_all
       transform_ucf
       create_soundex
-        p self 
-        p 'before date'
       transform_date
-      p 'after date'
-        p self 
       populate_location
     end
   end

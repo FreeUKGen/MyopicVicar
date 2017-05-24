@@ -300,25 +300,14 @@ namespace :foo do
         p "Rebuilding "
         p line
       else
-        
         p line
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record
-        p entry
-        p "before"
-        p record
-        p record.search_names
         begin
           if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
             search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
             record.update_attributes(search_record_parameters)
-             p record.search_names
-            #record.transform
-            p "after"
-            p record
-             p record.search_names
             break if record.search_date.blank?
-           # record.save!           
           end
         rescue => e
           binding.pry
