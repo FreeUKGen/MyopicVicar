@@ -1,14 +1,14 @@
 namespace :freereg do
 
-  desc "Find bad UCF"
+  desc "Find bad dates"
   task :find_bad_dates,[:limit] => [:environment] do |t, args|
     stop_after = args.limit.to_i
     file = File.join(Rails.root, 'script','dates.txt')
     output_file = File.new(file, "w")
     number_bad_dates = 0
+    number = 0
     ChapmanCode.values.sort.each do |chapman_code|
       print "# #{chapman_code}\n"
-      number = 0
       SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
         break if number > stop_after 
         number = number + 1
