@@ -23,7 +23,7 @@ namespace :freereg do
           entry_dates << DateParser::searchable(entry.burial_date) unless entry.burial_date.blank?
           entry_dates << DateParser::searchable(entry.marriage_date) unless entry.marriage_date.blank?
           if entry_dates.length > 0
-            unless entry_dates.include?(record.search_date)
+            unless entry_dates.include?(record.search_date) || (record.secondary_search_date.present? && record.secondary_search_date == DateParser::searchable(entry.birth_date))
              break if number > stop_after 
              number = number + 1
               number_bad_dates = number_bad_dates + 1
@@ -33,15 +33,6 @@ namespace :freereg do
               identified = true
             end
           end 
-       
-        
-        if !identified && !record.secondary_search_date.blank?
-          unless record.secondary_search_date == DateParser::searchable(entry.birth_date) || record.secondary_search_date == DateParser::searchable(entry.baptism_date)
-            print "#\tBad secondary date at #{record.freereg1_csv_entry_id}\n"
-             output_file.puts "#{record.freereg1_csv_entry_id}\n"
-            identified = true
-          end          
-        end
       end      
     end
     print "Finished with #{number_bad_dates} bad dates"
