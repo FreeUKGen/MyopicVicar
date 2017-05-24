@@ -313,7 +313,7 @@ namespace :foo do
             search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
             record.update_attributes(search_record_parameters)
              p record.search_names
-            record.transform
+            #record.transform
             p "after"
             p record
              p record.search_names
