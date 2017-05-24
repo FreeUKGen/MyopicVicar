@@ -1,8 +1,8 @@
 namespace :freereg do
 
   desc "Find bad UCF"
-  task :find_bad_dates => [:environment] do
-
+  task :find_bad_dates[:limit] => [:environment] do
+    stop_after = args.limit.to_i
     file = File.join(Rails.root, 'script','dates.txt')
     output_file = File.new(file, "w")
     number_bad_dates = 0
@@ -10,6 +10,7 @@ namespace :freereg do
       print "# #{chapman_code}\n"
       number = 0
       SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
+        break if number > stop_after 
         number = number + 1
         print "#{number} records #{number_bad_dates}\n" if (number/10000)*10000 == number
         identified = false

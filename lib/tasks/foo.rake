@@ -294,8 +294,8 @@ namespace :foo do
     lines = File.readlines(args.id_file).map { |l| l.to_s }
     p "#{lines.length} records to process"
     lines.each do |line|
+      break if number > stop_after 
       number = number + 1
-      break if number == stop_after
       if line =~ /^#/
         p "Rebuilding "
         p line
