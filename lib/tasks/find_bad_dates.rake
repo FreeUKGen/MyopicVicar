@@ -1,7 +1,7 @@
 namespace :freereg do
 
   desc "Find bad UCF"
-  task :find_bad_dates[:limit] => [:environment] do
+  task :find_bad_dates, [:limit] => [:environment] do
     stop_after = args.limit.to_i
     file = File.join(Rails.root, 'script','dates.txt')
     output_file = File.new(file, "w")
