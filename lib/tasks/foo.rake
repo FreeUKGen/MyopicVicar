@@ -313,7 +313,7 @@ namespace :foo do
             p "after"
             p record
             break if record.search_date.blank?
-            record.save!           
+           # record.save!           
           end
         rescue => e
           binding.pry
