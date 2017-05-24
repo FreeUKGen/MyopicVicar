@@ -24,6 +24,8 @@ namespace :freereg do
           entry_dates << DateParser::searchable(entry.marriage_date) unless entry.marriage_date.blank?
           if entry_dates.length > 0
             unless entry_dates.include?(record.search_date)
+             break if number > stop_after 
+             number = number + 1
               number_bad_dates = number_bad_dates + 1
               print "#\tBad date at #{record.freereg1_csv_entry_id}\n"
               p "#{record.search_date}, #{entry_dates}"
