@@ -11,8 +11,6 @@ namespace :freereg do
     ChapmanCode.values.sort.each do |chapman_code|
       print "# #{chapman_code}\n"
       SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
-        break if number > stop_after 
-        number = number + 1
         print "#{number} records #{number_bad_dates}\n" if (number/10000)*10000 == number
         entry_id = record.freereg1_csv_entry_id
         entry = Freereg1CsvEntry.find(entry_id)
