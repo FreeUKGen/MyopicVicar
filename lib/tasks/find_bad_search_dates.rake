@@ -18,10 +18,10 @@ namespace :freereg do
         entry = Freereg1CsvEntry.find(entry_id)
         identified = false
           entry_dates = Array.new
-          entry_dates << entry.birth_date unless entry.birth_date.blank?
-          entry_dates << entry.baptism_date unless entry.baptism_date.blank?
-          entry_dates << entry.burial_date unless entry.burial_date.blank?
-          entry_dates << entry.marriage_date unless entry.marriage_date.blank?
+          entry_dates << DateParser::searchable(entry.birth_date) unless entry.birth_date.blank?
+          entry_dates << DateParser::searchable(entry.baptism_date) unless entry.baptism_date.blank?
+          entry_dates << DateParser::searchable(entry.burial_date) unless entry.burial_date.blank?
+          entry_dates << DateParser::searchable(entry.marriage_date) unless entry.marriage_date.blank?
           if entry_dates.length > 0
             unless entry_dates.include?(record.search_date)
               number_bad_dates = number_bad_dates + 1
@@ -34,7 +34,7 @@ namespace :freereg do
        
         
         if !identified && !record.secondary_search_date.blank?
-          unless record.secondary_search_date == entry.birth_date || record.secondary_search_date == entry.baptism_date
+          unless record.secondary_search_date == DateParser::searchable(entry.birth_date) || record.secondary_search_date == DateParser::searchable(entry.baptism_date)
             print "#\tBad secondary date at #{record.freereg1_csv_entry_id}\n"
              output_file.puts "#{record.freereg1_csv_entry_id}\n"
             identified = true
