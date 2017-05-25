@@ -106,17 +106,40 @@ class SearchRecord
      "ln_fn_rt_ssd" => ["chapman_code","search_date", "search_names.last_name", "search_names.first_name", "record_type", "secondary_search_date"],
      "lnsdx_fnsdx_rt_ssd" => [ "chapman_code","search_date", "search_soundex.last_name", "search_soundex.first_name", "record_type", "secondary_search_date"],
      "lnsdx_rt_ssd" => [ "chapman_code","search_date", "search_soundex.last_name", "record_type", "secondary_search_date"],    
-     "ln_county_rt_sd_ssd" => ["search_names.last_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
-     "ln_fn_county_rt_sd_ssd" => ["search_names.last_name","chapman_code", "search_names.first_name","record_type", "search_date", "secondary_search_date"],
-     "lnsdx_fnsdx_county_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","chapman_code","record_type", "search_date", "secondary_search_date"],
+     "ln_fn_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","record_type", "search_date", "secondary_search_date"],
+     "lnsdx_fnsdx_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","record_type", "search_date", "secondary_search_date"],
      "ln_place_rt_sd_ssd" => ["search_names.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+     "ln_county_rt" =>  ["search_names.last_name","chapman_code" ,"record_type"] ,
+     "ln_fn_county_rt" =>  ["search_names.last_name", "search_names.first_name","chapman_code" ,"record_type"] ,
+     "lnsdx_county_rt" =>  ["search_soundex.last_name","chapman_code" ,"record_type"] ,
+     "lnsdx_fnsdx_county_rt"  =>  ["search_soundex.last_name", "search_soundex.first_name","chapman_code" ,"record_type"] ,
      "ln_fn_place_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","place_id","record_type", "search_date", "secondary_search_date"],
      "lnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
      "lnsdx_fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","place_id","record_type", "search_date", "secondary_search_date"],
      "fn_place_rt_sd_ssd" => ["search_names.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
      "fnsdx_place_rt_sd_ssd" => ["search_soundex.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
-     "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"]
+     "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"],
+     
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   INDEXES = MERGED_INDEXES
