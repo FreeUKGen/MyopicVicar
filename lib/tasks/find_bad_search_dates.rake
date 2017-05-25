@@ -9,15 +9,15 @@ namespace :freereg do
     number = 0
     mum = 0
     stop_after = args.limit.to_i
-    chapman_code = args.county.to_s
-    #ChapmanCode.values.sort.each do |chapman_code|
+    #chapman_code = args.county.to_s
+    ChapmanCode.values.sort.each do |chapman_code|
       print "# #{chapman_code}\n"
       SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
         mum = mum + 1
         p "#{mum} records #{number_bad_dates}\n" if ((mum/10000)*10000 == mum)
         entry_id = record.freereg1_csv_entry_id
         entry = Freereg1CsvEntry.find(entry_id)
-       
+        p "known record" if  entry.id == "58f3abb6f493fd8152fb101a"
         p entry if entry.id == "58f3abb6f493fd8152fb101a"
         p record if entry.id == "58f3abb6f493fd8152fb101a"
         identified = false
@@ -40,7 +40,7 @@ namespace :freereg do
             end
           end 
       end      
-    #end
+    end
     print "Finished with #{number_bad_dates} bad dates"
 
   end
