@@ -1,7 +1,7 @@
 namespace :freereg do
 
   desc "Find bad UCF"
-  task :find_bad_search_dates,[:limit,:chapman_code] => [:environment] do |t, args|
+  task :find_bad_search_dates,[:limit,:county] => [:environment] do |t, args|
 
     file = File.join(Rails.root, 'script','search_dates.txt')
     output_file = File.new(file, "w")
@@ -9,10 +9,10 @@ namespace :freereg do
     number = 0
     mum = 0
     stop_after = args.limit.to_i
-    county = args.chapman_code.to_s
+    chapman_code = args.county.to_s
     #ChapmanCode.values.sort.each do |chapman_code|
       print "# #{chapman_code}\n"
-      SearchRecord.no_timeout.where(:chapman_code => county).each_with_index do |record, i|
+      SearchRecord.no_timeout.where(:chapman_code => chapman_code).each_with_index do |record, i|
         mum = mum + 1
         p "#{mum} records #{number_bad_dates}\n" if ((mum/10000)*10000 == mum)
         entry_id = record.freereg1_csv_entry_id
