@@ -319,6 +319,8 @@ namespace :foo do
             p "passed"
           end
         rescue => e
+          p "#{e.message}"
+          p "#{e.backtrace.inspect}"
           binding.pry
           record.transform
         end
