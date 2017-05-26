@@ -315,7 +315,8 @@ namespace :foo do
             p record.search_date
             p record.secondary_search_date
             record.save!
-            break if record.search_date.blank?
+            break if record.search_date.nil?
+            p "passed"
           end
         rescue => e
           binding.pry
