@@ -304,7 +304,7 @@ namespace :foo do
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record
         begin
-          if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
+          if record.present? && record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
             p record.search_date
             p record.secondary_search_date
             p "#{entry.birth_date} #{entry.baptism_date} #{entry.burial_date} #{entry.marriage_date} "
@@ -323,11 +323,19 @@ namespace :foo do
             entry.save!
            
             p "passed"
+            
+          else
+            record = SearchRecord.new
+            record.transform
+            p record
+            p record.search_date
+            p record.secondary_search_date
+            entry.search_record << record
+            entry.save!
           end
         rescue => e
           p "#{e.message}"
           p "#{e.backtrace.inspect}"
-          binding.pry
           #record.transform
         end
       end
