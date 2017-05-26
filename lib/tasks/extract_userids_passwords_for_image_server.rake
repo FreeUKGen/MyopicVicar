@@ -6,11 +6,7 @@ task :extract_userids_passwords_for_image_server,[:limit] => [:environment] do |
   puts start
   record_number = 0
   UseridDetail.no_timeout.each do |user|
-    p user.userid.present?
-    p user.password.present?
-    p user.registration_completed(user)
-    p user.active == 'true'
-    if user.userid.present? && user.password.present? && user.registration_completed(user) && user.active == 'true'
+    if user.userid.present? && user.password.present? && user.registration_completed(user) && user.active
       record_number =  record_number + 1
       output_file.puts "#{user.userid}:[FreeREG]#{user.password}" 
     end
