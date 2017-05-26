@@ -306,12 +306,14 @@ namespace :foo do
         begin
           if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
             p record.search_date
+            p record.secondary_search_date
             p "#{entry.birth_date} #{entry.baptism_date} #{entry.burial_date} #{entry.marriage_date} "
             search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
             p search_record_parameters
             record.update_attributes(search_record_parameters)
             record.transform
             p record.search_date
+            p record.secondary_search_date
             break if record.search_date.blank?
           end
         rescue => e
