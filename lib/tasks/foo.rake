@@ -308,7 +308,9 @@ namespace :foo do
             p record.search_date
             p "#{entry.birth_date} #{entry.baptism_date} #{entry.burial_date} #{entry.marriage_date} "
             search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+            p search_record_parameters
             record.update_attributes(search_record_parameters)
+            record.transform
             p record.search_date
             break if record.search_date.blank?
           end
