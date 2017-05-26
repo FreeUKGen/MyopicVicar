@@ -310,10 +310,13 @@ namespace :foo do
             p "#{entry.birth_date} #{entry.baptism_date} #{entry.burial_date} #{entry.marriage_date} "
             search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
             p search_record_parameters
+            record.transform
+            old_record = record
             entry.search_record = nil
             entry.search_record(true)
-            new_record = SearchRecord.new(search_record_parameters)
-            new_record.transform
+            p old_record
+            new_record = SearchRecord.new(old_record)
+            p new_record
             p new_record.search_date
             p new_record.secondary_search_date
             entry.search_record << new_record
