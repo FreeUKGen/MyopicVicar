@@ -310,19 +310,22 @@ namespace :foo do
             p "#{entry.birth_date} #{entry.baptism_date} #{entry.burial_date} #{entry.marriage_date} "
             search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
             p search_record_parameters
-            record.update_attributes(search_record_parameters)
-            record.transform
-            p record.search_date
-            p record.secondary_search_date
-            record.save!
-            break if record.search_date.nil?
+            entry.search_record = nil
+            entry.search_record(true)
+            new_record = SearchRecord.new(search_record_parameters)
+            new_record.transform
+            p new_record.search_date
+            p new_record.secondary_search_date
+            entry.search_record << new_record
+            entry.save!
+           
             p "passed"
           end
         rescue => e
           p "#{e.message}"
           p "#{e.backtrace.inspect}"
           binding.pry
-          record.transform
+          #record.transform
         end
       end
     end
