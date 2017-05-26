@@ -314,6 +314,7 @@ namespace :foo do
             record.transform
             p record.search_date
             p record.secondary_search_date
+            record.save!
             break if record.search_date.blank?
           end
         rescue => e
