@@ -307,9 +307,11 @@ namespace :foo do
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record 
         
-          if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
+          if  entry.present? && record.present? && entry.freereg1_csv_file_id.present? 
             record.transform
-            record.save!           
+            record.save!  
+          else
+            p "bypassed #{line}"
           end
         rescue => e
           p "#{e.message}"
