@@ -285,8 +285,8 @@ namespace :foo do
     end
   end
   
-  desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
-  task :recalc_search_record_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
+  desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
+  task :recalc_search_record_seach_date_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
     p "starting"
     number = 0
     stop_after = args.limit.to_i
@@ -320,7 +320,7 @@ namespace :foo do
             p "Upadted"
             p record.search_date
             p record.secondary_search_date
-            p "passed"
+            p "passed #{number}"
         rescue => e
           p "#{e.message}"
           p "#{e.backtrace.inspect}"
