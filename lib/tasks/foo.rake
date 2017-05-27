@@ -304,6 +304,7 @@ namespace :foo do
         print line
       else
         begin
+        p line
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record 
         
