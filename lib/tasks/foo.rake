@@ -294,8 +294,8 @@ namespace :foo do
     lines = File.readlines(args.id_file).map { |l| l.to_s }
     p "#{lines.length} records to process"
     lines.each do |line|
-      break if number > stop_after 
       number = number + 1
+      break if number == stop_after
       if line =~ /^#/
         p "Rebuilding "
         p line
@@ -304,35 +304,21 @@ namespace :foo do
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record
         begin
-          if record.present? && record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
-            p record.search_date
-            p record.secondary_search_date
-            p "#{entry.birth_date} #{entry.baptism_date} #{entry.burial_date} #{entry.marriage_date} "
-            search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-            p search_record_parameters
-            record.transform
-            old_record = record
-            entry.search_record = nil
-            entry.search_record(true)
-            p old_record
-            new_record = SearchRecord.new(old_record)
-            p new_record
-            p new_record.search_date
-            p new_record.secondary_search_date
-            entry.search_record << new_record
-            entry.save!
-           
-            p "passed"
-            
-          else
-            record = SearchRecord.new
-            record.transform
+        p "original"
+            p entry
             p record
+            software_version = SoftwareVersion.control.first
+            search_version = ''
+            search_version  = software_version.last_search_record_version unless software_version.blank?
+            freereg1_csv_file = entry.freereg1_csv_file
+            register = freereg1_csv_file.register
+            church = register.church
+            place = church.place
+            SearchRecord.update_create_search_record(entry,search_version,place.id)
+            record = entry.search_record
             p record.search_date
             p record.secondary_search_date
-            entry.search_record << record
-            entry.save!
-          end
+            p "passed"
         rescue => e
           p "#{e.message}"
           p "#{e.backtrace.inspect}"

@@ -5,6 +5,7 @@ class Freereg1CsvEntriesController < ApplicationController
   skip_before_filter :require_login, only: [:show]
  
   def create
+    p "creating"
     get_user_info_from_userid
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
@@ -223,8 +224,14 @@ class Freereg1CsvEntriesController < ApplicationController
       params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
       params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
       params[:freereg1_csv_entry][:person_sex] == @freereg1_csv_entry.person_sex ? sex_change = false : sex_change = true
+      p params
       #update entry
+      p  @freereg1_csv_entry
+      p "updating entry"
+      p freereg1_csv_entry_params
       @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
+      p "after"
+      p  @freereg1_csv_entry
       if @freereg1_csv_entry.errors.any?
         flash[:notice] = 'The update of the record was unsuccessful'
         render :action => 'edit'
@@ -236,8 +243,10 @@ class Freereg1CsvEntriesController < ApplicationController
         search_version  = software_version.last_search_record_version unless software_version.blank?
         place_id = get_place_id_from_file(@freereg1_csv_file)
         @freereg1_csv_entry.search_record.destroy  if sex_change # updating the search names is too complex on a sex change it is better to just recreate
-        @freereg1_csv_entry.search_record(true) #this frefreshes the cache
+        @freereg1_csv_entry.search_record(true)   if sex_change#this frefreshes the cache
+        p "update record"
         SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
+        p "have updated record"
         # lock file and note modification date
         @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
         @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]

@@ -122,26 +122,6 @@ class SearchRecord
      
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   INDEXES = MERGED_INDEXES
 
   INDEXES.each_pair do |name,fields|
@@ -365,8 +345,8 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place_id)
-      search_record = entry.search_record
-      if  search_record.blank?
+      p "creating/updating"
+     unless   entry.record_updateable?
         search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
         search_record = SearchRecord.new(search_record_parameters)
         search_record.freereg1_csv_entry = entry
@@ -378,6 +358,7 @@ class SearchRecord
         #p search_record
         return "created"
       else
+        search_record = entry.search_record
         #p "updating"
         #p search_record
         digest = search_record.digest
@@ -402,8 +383,8 @@ class SearchRecord
           search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
           #update the soundex if it has changed
           search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
-          search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
-          search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
+          #search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
+          #search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
           #create a hash of search names from the original search names
           #note adjust_search_names does a save of the search record
           search_record.adjust_search_names(new_search_record)
