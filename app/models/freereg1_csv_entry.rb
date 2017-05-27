@@ -715,8 +715,6 @@ class Freereg1CsvEntry
   
   def record_updateable?
     p "updateable"
-    p self
-    p self.search_record
     is_ok = true
     record = self.search_record
     return false if record.nil?
@@ -740,14 +738,12 @@ class Freereg1CsvEntry
   
   def updateable_search_date?(record)
     p "updateable date"
-    p self
-    p record
      is_ok = true
     if record.search_date.present? && self.baptism_date.present? && DateParser::searchable(self.baptism_date)  != record.search_date
       p "baptism"
       is_ok = false
     elsif record.search_date.present? && self.burial_date.present? && DateParser::searchable(self.burial_date)  != record.search_date
-    p burial
+    p "burial"
       is_ok = false
     elsif record.search_date.present? && self.marriage_date.present? && DateParser::searchable(self.marriage_date)  != record.search_date
     p "marriage"

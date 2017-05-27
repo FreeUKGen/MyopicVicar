@@ -306,7 +306,8 @@ namespace :foo do
         begin
         p "original"
             p entry
-            p record
+            p record.search_date
+             p record.secondary_search_date
             software_version = SoftwareVersion.control.first
             search_version = ''
             search_version  = software_version.last_search_record_version unless software_version.blank?
@@ -316,6 +317,7 @@ namespace :foo do
             place = church.place
             SearchRecord.update_create_search_record(entry,search_version,place.id)
             record = entry.search_record
+            p "Upadted"
             p record.search_date
             p record.secondary_search_date
             p "passed"
