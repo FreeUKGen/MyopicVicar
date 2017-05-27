@@ -287,7 +287,7 @@ namespace :foo do
   
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_for_entries_in_file, [:id_file,:skip] => [:environment] do |t,args|
-   rescue_from Mongoid::Errors::DocumentNotFound, :with => :catch_error
+  
     lines = File.readlines(args.id_file).map { |l| l.to_s }
     p "starting"
     number = 0
@@ -318,9 +318,7 @@ namespace :foo do
         end
       end
     end
-   def catch_error
-     p line
-     next
+   
    end
   end
   
