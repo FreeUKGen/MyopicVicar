@@ -287,6 +287,7 @@ namespace :foo do
   
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_for_entries_in_file, [:id_file,:skip] => [:environment] do |t,args|
+   
     lines = File.readlines(args.id_file).map { |l| l.to_s }
     p "starting"
     number = 0
@@ -302,9 +303,10 @@ namespace :foo do
         print "Rebuilding "
         print line
       else
-        entry = Freereg1CsvEntry.find(line.chomp)
-        record = entry.search_record
         begin
+        entry = Freereg1CsvEntry.find(line.chomp)
+        record = entry.search_record unless 
+        
           if record.freereg1_csv_entry && record.freereg1_csv_entry.freereg1_csv_file 
             record.transform
             record.save!           
@@ -312,9 +314,11 @@ namespace :foo do
         rescue => e
           p "#{e.message}"
           p "#{e.backtrace.inspect}"
+          next
         end
       end
     end
+   
   end
   
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
