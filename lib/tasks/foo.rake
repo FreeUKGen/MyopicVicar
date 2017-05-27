@@ -286,9 +286,18 @@ namespace :foo do
   end
   
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
-  task :recalc_search_record_for_entries_in_file, [:id_file] => [:environment] do |t,args|
+  task :recalc_search_record_for_entries_in_file, [:id_file,:skip] => [:environment] do |t,args|
     lines = File.readlines(args.id_file).map { |l| l.to_s }
+    p "starting"
+    number = 0
+    skipping = args.skip.to_i
+    p "#{lines.length} records to process with #{skipping} skipped"
     lines.each do |line|
+      number = number + 1
+      p "#{number}  processed" if (number/10000)*10000 == number
+      if number < skipping
+        next
+      end
       if line =~ /^#/
         print "Rebuilding "
         print line
