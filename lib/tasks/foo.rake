@@ -318,8 +318,6 @@ namespace :foo do
         end
       end
     end
-   
-   end
   end
   
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
