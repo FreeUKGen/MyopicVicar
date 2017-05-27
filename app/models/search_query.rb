@@ -490,7 +490,7 @@ class SearchQuery
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
     @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    #logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
