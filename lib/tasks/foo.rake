@@ -287,7 +287,9 @@ namespace :foo do
   
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_for_entries_in_file, [:id_file,:skip] => [:environment] do |t,args|
-  
+   file_for_warning_messages = "#{Rails.root}/log/update_search_records.log"
+   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+   output_file = File.new(file_for_warning_messages, "w")
     lines = File.readlines(args.id_file).map { |l| l.to_s }
     p "starting"
     number = 0
@@ -304,7 +306,7 @@ namespace :foo do
         print line
       else
         begin
-        p line
+        output_file.puts line
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record 
         
@@ -312,11 +314,11 @@ namespace :foo do
             record.transform
             record.save!  
           else
-            p "bypassed #{line}"
+            output_file.puts "bypassed #{line}"
           end
         rescue => e
-          p "#{e.message}"
-          p "#{e.backtrace.inspect}"
+          output_file.puts "#{e.message}"
+          output_file.puts "#{e.backtrace.inspect}"
           next
         end
       end
