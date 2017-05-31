@@ -346,8 +346,8 @@ namespace :foo do
         begin
         p "original"
             p entry
-            p record.search_date
-             p record.secondary_search_date
+            p record.search_date unless record.blank?
+             p record.secondary_search_date unless record.blank?
             software_version = SoftwareVersion.control.first
             search_version = ''
             search_version  = software_version.last_search_record_version unless software_version.blank?
