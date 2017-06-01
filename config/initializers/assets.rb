@@ -14,6 +14,7 @@ Rails.application.configure do
   config.assets.precompile += %w( styles/scss/palm.scss )
 
   config.assets.precompile += %w(  styles/css/icons.data.svg.css )
+  config.assets.precompile += %w(  styles/css/donate_icon.css)
   config.assets.precompile += %w(  styles/css/icons.data.png.css )
   config.assets.precompile += %w(  styles/css/icons.fallback.css )
   config.assets.precompile += %w( styles/css/freereg_content.css )

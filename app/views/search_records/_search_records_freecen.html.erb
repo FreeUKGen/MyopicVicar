@@ -74,6 +74,13 @@
       </tbody>
     </table>
   <% end %>
+  <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+  <br>
+    <% unless defined?(@printable_format) && @printable_format %>
+      <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
+      <% end %>
+      <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= MyopicVicar::Application.config.freexxx_display_name %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p><%= link_to 'Make a Donation',"http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free", :class => "weight--semibold go", :title => "external link to Free UK Genealogy" %>
+  </div>
 
   <% if @annotations && @annotations.length > 0 %>
   <!----- do we need this annotations stuff for freecen? ----->
