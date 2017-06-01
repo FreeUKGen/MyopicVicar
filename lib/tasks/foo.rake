@@ -325,7 +325,7 @@ namespace :foo do
         end
       end
     end
-    p "finished #{number} with #{skipped} skipped"
+    p "finished #{number} with #{skipping} skipped"
   end
   
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
