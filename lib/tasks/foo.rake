@@ -286,7 +286,7 @@ namespace :foo do
   end
   
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
-  task :recalc_search_record_for_entries_in_file, [:id_file,:skip] => [:environment] do |t,args|
+  task :recalc_search_record_for_entries_in_file, [:id_file,:skip,:limit] => [:environment] do |t,args|
    file_for_warning_messages = "#{Rails.root}/log/update_search_records.log"
    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
    output_file = File.new(file_for_warning_messages, "w")
@@ -294,9 +294,11 @@ namespace :foo do
     p "starting"
     number = 0
     skipping = args.skip.to_i
+    stopping = args.limit.to_i
     p "#{lines.length} records to process with #{skipping} skipped"
     lines.each do |line|
       number = number + 1
+      break if stopping + 1 == number
       p "#{number}  processed" if (number/10000)*10000 == number
       if number < skipping
         next
