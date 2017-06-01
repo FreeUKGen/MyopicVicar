@@ -296,6 +296,7 @@ namespace :foo do
     skipping = args.skip.to_i
     stopping = args.limit.to_i
     p "#{lines.length} records to process with #{skipping} skipped"
+    time_start = Time.new
     lines.each do |line|
       number = number + 1
       break if stopping + 1 == number
@@ -325,7 +326,10 @@ namespace :foo do
         end
       end
     end
-    p "finished #{number} with #{skipping} skipped"
+    number = number - 1
+    time_running = time_start - Time.new
+    average_time = time_running/number
+    p "finished #{number} with #{skipping} skipped at average time of #{average_time} ms/record"
   end
   
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
