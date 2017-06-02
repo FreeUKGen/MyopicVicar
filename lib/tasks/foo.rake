@@ -329,7 +329,7 @@ namespace :foo do
     number = number - 1
     time_running = Time.new - time_start
     average_time = time_running/(number - skipping)
-    p "finished #{number} with #{skipping} skipped at average time of #{average_time} ms/record"
+    p "finished #{number} with #{skipping} skipped at average time of #{average_time} sec/record"
   end
   
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
