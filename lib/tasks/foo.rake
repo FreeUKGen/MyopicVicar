@@ -327,8 +327,8 @@ namespace :foo do
       end
     end
     number = number - 1
-    time_running = time_start - Time.new
-    average_time = time_running/number
+    time_running = Time.new - time_start
+    average_time = time_running/(number - skipping)
     p "finished #{number} with #{skipping} skipped at average time of #{average_time} ms/record"
   end
   
