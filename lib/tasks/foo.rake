@@ -299,9 +299,10 @@ namespace :foo do
     time_start = Time.new
     lines.each do |line|
       number = number + 1
+      output_file.puts "#{number},#{line}" 
       break if stopping + 1 == number
       p "#{number}  processed" if (number/10000)*10000 == number
-      if number < skipping
+      if number <= skipping
         next
       end
       if line =~ /^#/
@@ -309,7 +310,6 @@ namespace :foo do
         print line
       else
         begin
-        output_file.puts line
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record 
         
