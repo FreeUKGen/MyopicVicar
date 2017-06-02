@@ -299,8 +299,8 @@ namespace :foo do
     time_start = Time.new
     lines.each do |line|
       number = number + 1
-      output_file.puts "#{number},#{line}" 
       break if stopping + 1 == number
+      output_file.puts "#{number},#{line}"
       p "#{number}  processed" if (number/10000)*10000 == number
       if number <= skipping
         next
