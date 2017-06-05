@@ -1,6 +1,6 @@
 class SearchQuery
   include Mongoid::Document
-  store_in client: "local_writable"
+  #store_in client: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
@@ -406,8 +406,7 @@ class SearchQuery
 
       params[:place_id] = { "$in" => search_place_ids }
     else
-      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
-      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     end
     params
   end
@@ -479,6 +478,7 @@ class SearchQuery
     @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
+    p @search_parameters
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -490,7 +490,7 @@ class SearchQuery
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
     @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    #logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end

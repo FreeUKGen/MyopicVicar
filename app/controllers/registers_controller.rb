@@ -1,7 +1,7 @@
 class RegistersController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
-  before_filter :running_on_primary, :except => [:show]
+ 
   def create
     get_user_info_from_userid
     @church_name = session[:church_name]

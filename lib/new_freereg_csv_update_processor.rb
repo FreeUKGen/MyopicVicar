@@ -58,16 +58,9 @@ class NewFreeregCsvUpdateProcessor
   end
 
   def self.activate_project(create_search_records,type,force,range)
-    mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
     force, create_search_records = NewFreeregCsvUpdateProcessor.convert_to_bolean(create_search_records,force)
     @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
     @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
-    p mongo_node
-    if mongo_node == :secondary_preferred
-      @project.write_log_file("processing terminated, task hasn't started on primary mongo node")
-      return
-    end
-
     @csvfiles = CsvFiles.new
     success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
     if !success || (files_to_be_processed.present? && files_to_be_processed.length == 0)

@@ -5,8 +5,7 @@ class TransregCsvfilesController < ApplicationController
   # Should re-authenticate the userid/password provided with the request
   # No guarantee that the userid is the same as that used when the logon happened
   before_filter :authenticate_user
-  before_filter :running_on_primary, :except => [:show]
-
+ 
   def upload
     if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
       render(:text => {"result" => "fail", "message" => "You must select a file"}.to_xml({:dasherize => false, :root => 'upload'}))

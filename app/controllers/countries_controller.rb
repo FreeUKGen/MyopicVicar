@@ -1,5 +1,5 @@
 class CountriesController < ApplicationController
-  before_filter :running_on_primary, :except => [:show]
+  
   def create
     @country = Country.new(country_params)
     @country.save
