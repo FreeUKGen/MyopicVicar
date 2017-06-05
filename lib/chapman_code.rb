@@ -37,7 +37,9 @@ module ChapmanCode
       hash.delete("'Overseas Foreign'")
       hash.delete("'Scottish Shipping'")
     end
-    
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREECEN
+      hash.delete("All")
+    end
     hash
   end
 
