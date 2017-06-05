@@ -107,9 +107,17 @@ class Freereg1CsvEntry
 
   index({freereg1_csv_file_id: 1,file_line_number:1})
   index({freereg1_csv_file_id: 1, record_digest:1})
-  index({file_line_number:1})
-  index({line_id:1})
-
+  index({person_forename: 1})
+  index({mother_forename: 1})
+  index({groom_forenamen: 1})
+  index({groom_father_forename: 1})
+  index({female_relative_forenamee: 1})
+  index({father_forename: 1})
+  index({burial_person_forename: 1})
+  index({bride_forename: 1})
+  index({bride_father_forename: 1})
+  index({"multiple_witnesses.witness_forename":1})
+  
   validate :errors_in_fields
   class << self
     def id(id)
