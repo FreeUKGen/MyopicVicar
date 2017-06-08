@@ -188,8 +188,8 @@ class SearchQueriesController < ApplicationController
       session[:query] = nil
       flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
     else
-      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} had a problem #{message}")
-      flash[:notice] = 'Your search encountered a problem please contact us with this message'
+      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} had a problem #{message}") if @search_query.id.present?
+      flash[:notice] = "Your search encountered a problem please contact us with this message #{message}"
     end
     redirect_to new_search_query_path(:search_id => @search_query)
   end
