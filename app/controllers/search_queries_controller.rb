@@ -220,7 +220,7 @@ class SearchQueriesController < ApplicationController
       go_back
       return
     end
-    if @search_query.present?
+    if @search_query.present? &&  @search_query.result_count.present?
       if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
         @result_count = @search_query.result_count
         @search_results =   Array.new
