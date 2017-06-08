@@ -167,7 +167,7 @@ class SearchQueriesController < ApplicationController
     end
     @previous_day = (Date.parse(@start_day) - 1).strftime("%F")
     @next_day = (Date.parse(@start_day) + 1).strftime("%F")
-    @search_queries = SearchQuery.where(:day => @start_day).desc(order_param).page(params[:page]).per(100)
+    @search_queries = SearchQuery.where(:day => @start_day).order_by(runtime: -1)
   end
 
   def report_for_session
@@ -176,7 +176,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page]).per(100)
+    @search_queries = SearchQuery.where(:session_id => @session_id).order_by(c_at: 1)
   end
 
   def search_taking_too_long(message)
