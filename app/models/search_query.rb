@@ -57,6 +57,7 @@ class SearchQuery
   field :day, type:String
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
+  field :wildcard_search, type: Boolean, default: false
 
   has_and_belongs_to_many :places, inverse_of: nil
 
@@ -254,6 +255,8 @@ class SearchQuery
             include_record = true
           else
           end
+        elsif self.wildcard_search
+          include_record = true
         else
           case
           when name[:type] == "p" && self.last_name.present? && name[:last_name] == self.last_name.downcase && self.first_name.blank?
@@ -410,8 +413,11 @@ class SearchQuery
   end
 
   def query_contains_wildcard?
-    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))
+    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
+    self.wildcard_search = wildcard_search
+    return wildcard_search
   end
+
 
   def radius_is_valid
     if search_nearby_places && places.blank?
