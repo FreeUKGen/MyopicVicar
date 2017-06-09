@@ -149,13 +149,9 @@ class SearchQueriesController < ApplicationController
   def report
     # default criteria:
     # today
-    p "report"
-    p params
     if params[:session_id]
-      p "session"
       report_for_session
     else
-      p "day"
       report_for_day
     end
   end
