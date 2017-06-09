@@ -35,8 +35,13 @@ class SearchRecordsController < ApplicationController
         return
       end
       @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
-    rescue Mongoid::Errors::DocumentNotFound
+    rescue Mongoid::Errors::DocumentNotFound 
       log_possible_host_change
+      redirect_to new_search_query_path
+      return
+    rescue Mongoid::Errors::InvalidFind
+      log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
+      flash[:notice] = "We encountered a problem locating that original entry"
       redirect_to new_search_query_path
       return
     end
@@ -71,6 +76,11 @@ class SearchRecordsController < ApplicationController
       @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
+      redirect_to new_search_query_path
+      return
+    rescue Mongoid::Errors::InvalidFind
+      log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
+      flash[:notice] = "We encountered a problem locating that original entry"
       redirect_to new_search_query_path
       return
     end
