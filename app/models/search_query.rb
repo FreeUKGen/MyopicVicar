@@ -187,8 +187,6 @@ class SearchQuery
   end
 
   def date_search_params
-    p "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"
-    p self
     params = Hash.new
     if start_year || end_year
       date_params = Hash.new
