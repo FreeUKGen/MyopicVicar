@@ -1,6 +1,5 @@
 class SearchQuery
   include Mongoid::Document
-  store_in client: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
