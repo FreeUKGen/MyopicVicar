@@ -167,7 +167,8 @@ class SearchQueriesController < ApplicationController
     end
     @previous_day = (Date.parse(@start_day) - 1).strftime("%F")
     @next_day = (Date.parse(@start_day) + 1).strftime("%F")
-    @search_queries = SearchQuery.where(:day => @start_day).order_by(runtime: -1)
+    @number = SearchQuery.where(:day => @start_day).count
+    @search_queries = SearchQuery.where(:day => @start_day).limit(500).order_by(runtime: -1)
   end
 
   def report_for_session
