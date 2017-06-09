@@ -275,7 +275,7 @@ namespace :foo do
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
      p "starting with a skip of #{args.skip.to_i}"
-    Place.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
+    Place.data_present.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
       p place
       unless args.skip && i < args.skip.to_i
         Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.each do |file|
