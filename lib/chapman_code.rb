@@ -211,10 +211,18 @@ module ChapmanCode
      'Montgomeryshire' => 'MGY',
      'Pembrokeshire' => 'PEM',
      'Powys' => 'POW',
-     'Radnorshire' => 'RAD',
-     'Unknown' => 'UNK'}
+     'Radnorshire' => 'RAD'},
+     "Northern Ireland" =>
+     {"Northern Ireland" => 'NIR',
+     'Antrim' => 'ANT',
+     'Armagh' => 'ARM',
+     'Down' => 'DOW',
+     'Fermanagh' => 'FER',
+     'Londonderry' => 'LDY',
+     'Tyrone' => 'TYR'},
+     'Unknown' => 
+     {'Unknown' => 'UNK'}
   }
-
 
 
   def self.merge_countries
