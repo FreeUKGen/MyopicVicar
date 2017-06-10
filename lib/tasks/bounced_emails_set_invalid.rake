@@ -54,7 +54,7 @@ namespace :freereg do
             user.update_attributes(email_address_valid: false,reason_for_invalidating: data['reason'],email_address_last_confirmned: user.sign_up_date)
           end
         else
-          email_of_nil_users << data['email']
+         # email_of_nil_users << data['email'] These are other peoples emails
         end
     end
 
