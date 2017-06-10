@@ -1,11 +1,8 @@
-
+<% if request.server_name.eql? "freecen2.freecen.org.uk" %>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
-  <% if request.server_name.eql? "freecen2.freecen.org.uk" %>
-      _gaq.push(['_setAccount', 'UA-89287207-1']);
-  <% end %> 
-
+  _gaq.push(['_setAccount', 'UA-89287207-1']);
   _gaq.push(['_trackPageview']);
 
   (function() {
@@ -14,6 +11,6 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
+
 </script>
-
-
+<% end %>
