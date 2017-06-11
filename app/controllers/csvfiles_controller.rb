@@ -38,8 +38,6 @@ class CsvfilesController < ApplicationController
         end
       end
     when params[:csvfile][:action] ==  "Upload"
-      p "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
-      p "upload"
       ok,message = @csvfile.csvfile_already_exists
       if !ok
         session.delete(:file_name)
