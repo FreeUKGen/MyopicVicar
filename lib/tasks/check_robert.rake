@@ -8,10 +8,10 @@ task :check_robert,[:limit] => [:environment] do |t, args|
   p num_robt
   num_emended = 0
   num = 0
-  SearchRecord.where("search_names.first_name": "robt.").all.each do |robt|
+  SearchRecord.where("search_names.first_name": "will.").all.each do |robt|
     a_robert = false
      robt.search_names.each do |names|
-       a_robert = true if names.first_name ==  "robert" && names.origin == "e" 
+       a_robert = true if names.first_name ==  "william" && names.origin == "e" 
     end
    # p  robt if a_robert == false
    # p robt.search_names if a_robert == false
