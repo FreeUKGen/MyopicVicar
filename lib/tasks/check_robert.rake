@@ -4,7 +4,7 @@ task :check_robert,[:limit] => [:environment] do |t, args|
   output_file = File.new(file_for_warning_messages, "w")
   output_file.puts "Starting check of robert at #{Time.now}"
   stopping = args.limit.to_i
-  num_robt = SearchRecord.where("search_names.first_name": "robt.").count
+  num_robt = SearchRecord.where("search_names.first_name": "will.").count
   p num_robt
   num_emended = 0
   num = 0
