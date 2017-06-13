@@ -12,6 +12,7 @@ task :check_robert,[:limit] => [:environment] do |t, args|
     a_robert = false
      robt.search_names.each do |names|
        a_robert = true if names.first_name ==  "william" && names.origin == "e" 
+       break if a_robert == true
     end
    # p  robt if a_robert == false
    # p robt.search_names if a_robert == false
