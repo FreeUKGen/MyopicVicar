@@ -13,13 +13,14 @@ task :check_robert,[:limit] => [:environment] do |t, args|
      robt.search_names.each do |names|
        a_robert = true if names.first_name ==  "robert" && names.origin == "e" 
     end
-    p  robt if a_robert == false
-    p robt.search_names if a_robert == false
+   # p  robt if a_robert == false
+   # p robt.search_names if a_robert == false
     output_file.puts "#{robt.inspect}" if a_robert == false
     output_file.puts "#{robt.search_names.inspect}" if a_robert == false
     num_emended = num_emended + 1 if a_robert == true
     num = num + 1
     break if stopping + 1 == num
   end
+  num_emended = num_emended - 1 if stopping + 1 == num
   p "Of #{num_robt} originals #{num_emended} were emended"
 end
