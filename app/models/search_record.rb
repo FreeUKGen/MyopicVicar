@@ -345,7 +345,7 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place_id)
-      p "creating/updating"
+#      p "creating/updating"
      unless   entry.record_updateable?
         search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
         search_record = SearchRecord.new(search_record_parameters)
