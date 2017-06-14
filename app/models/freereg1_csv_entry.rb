@@ -722,13 +722,13 @@ class Freereg1CsvEntry
   end
   
   def record_updateable?
-    p "updateable"
+#    p "updateable"
     is_ok = true
     record = self.search_record
     return false if record.nil?
     return false unless updateable_search_date?(record)
     return false unless updateable_county?(record)
-    p is_ok
+#    p is_ok
     return is_ok
   end
   
