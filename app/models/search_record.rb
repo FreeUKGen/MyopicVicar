@@ -524,12 +524,7 @@ class SearchRecord
   end
 
   def emend_all
-    p "emending"
-    p self.search_names
-    p "befoe"
     self.search_names = Emendor.emend(self.search_names)
-    p "after"
-    p self.search_names
   end
 
   def format_location
