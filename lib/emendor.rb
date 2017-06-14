@@ -26,10 +26,13 @@ module Emendor
       if rules
         rules.each do |rule|
           if !rule[:gender].nil? #ignore gender-based rule unless same gender
+          p "checking for witness"
+          p name[:gender].nil? && name[:role] != "wt"
             if (name[:gender].nil? && name[:role] != "bu") ||  (name[:gender].nil? && name[:role] != "wt") || (name[:gender].present? && (name[:gender] != rule[:gender])) # burials and witnesses have no sex
               next
             end
           end
+          p "actually applying rule #{rule}"
           emended_name = SearchName.new(name.attributes)
           emended_name[:first_name] = rule.replacement
           emended_name.origin = SearchRecord::Source::EMENDOR
