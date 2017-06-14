@@ -285,13 +285,13 @@ class SearchRecord
       candidates = MERGED_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
-       p candidates
+       # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-       p "scores"
-       p scores
+       # p "scores"
+       # p scores
       best = scores.max_by { |k,v| v}
-       p "selected"
-       p best[0]
+       # p "selected"
+       # p best[0]
       best[0]
     end
 
