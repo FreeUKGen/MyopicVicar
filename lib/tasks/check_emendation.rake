@@ -7,8 +7,8 @@ task :check_emendation,[:limit,:emendation,:replacement,:type,:fix] => [:environ
   original = args.emendation.to_s 
   replacement = args.replacement.to_s 
   args.fix == "true" ? fix = true : fix = false
-  output_file.puts "Starting check of original emendatio #{original} at #{Time.now}" if type
-  output_file.puts "Starting check of original emendatio #{replacement} at #{Time.now}" unless type
+  output_file.puts "Starting check of original emendation #{original} with replacement #{replacement} at #{Time.now}" if type
+  output_file.puts "Starting check of original emendation #{replacement} at #{Time.now}" unless type
   stopping = args.limit.to_i
   num_emended = 0
   num_unemended = 0

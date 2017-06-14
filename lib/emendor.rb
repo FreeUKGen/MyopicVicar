@@ -26,7 +26,7 @@ module Emendor
       if rules
         rules.each do |rule|
           if !rule[:gender].nil? #ignore gender-based rule unless same gender
-            if (name[:gender].nil? && name[:role] != "bu") || (name[:gender].present? && (name[:gender] != rule[:gender])) # burials have no sex
+            if (name[:gender].nil? && name[:role] != "bu") ||  (name[:gender].nil? && name[:role] != "wt") || (name[:gender].present? && (name[:gender] != rule[:gender])) # burials and witnesses have no sex
               next
             end
           end
