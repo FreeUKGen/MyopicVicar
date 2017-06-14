@@ -32,11 +32,11 @@ module Emendor
             when (name[:gender].nil? && name[:role] == "wt")
               p "no sex on witness"
             when (name[:gender].present? && (name[:gender] != rule[:gender]))
-              p "genders match"
+              p "genders do not match"
               next
             end
           end
-          p "actually applying rule #{rule}"
+          p "actually applying rule #{rule.inspect}"
           emended_name = SearchName.new(name.attributes)
           emended_name[:first_name] = rule.replacement
           emended_name.origin = SearchRecord::Source::EMENDOR
