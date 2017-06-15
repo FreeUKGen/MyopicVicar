@@ -38,7 +38,8 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
             record.emend_all
             record.save
             #output_file.puts "Fixed #{record.search_names.inspect}"
-            sleep(0.1)
+            sleep_time = 0.1*(Rails.application.config.sleep.to_f).to_f
+            sleep(sleep_time)
           end
         else
          num_emended = num_emended + 1 
@@ -53,8 +54,6 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
       total_num_unemended = total_num_unemended + num_unemended
       end_time = Time.now
       processing_time = (end_time - start_time)/num_unemended
-      sleep(100) if (total_num_emended/10000)*10000 == total_num_emended
-      
       output_file.puts "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
       p "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
       break if stopping + 1 == num
