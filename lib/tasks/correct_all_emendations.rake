@@ -5,12 +5,14 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
   #type true for original and false for replacement
   args.fix == "true" ? fix = true : fix = false
   output_file.puts "Starting correction of original emendations  at #{Time.now}" 
+  
   stopping = args.limit.to_i
   total_num_emended = 0
   total_num_unemended = 0
   total = EmendationRule.all.count
   num = 0
   EmendationRule.no_timeout.each do |rule|
+      start_time = Time.now
       num_emended = 0
       num_unemended = 0
       original = rule.original
@@ -35,7 +37,7 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
           if fix
             record.emend_all
             record.save
-            output_file.puts "Fixed #{record.search_names.inspect}"
+            #output_file.puts "Fixed #{record.search_names.inspect}"
             sleep(0.1)
           end
         else
@@ -49,10 +51,13 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
       num_unemended = num_unemended - 1 if stopping + 1 == num
       total_num_emended = total_num_emended + num_emended
       total_num_unemended = total_num_unemended + num_unemended
+      end_time = Time.now
+      processing_time = (end_time - start_time)/num_unemended
       sleep(100) if (total_num_emended/10000)*10000 == total_num_emended
-      output_file.puts "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended"
-      p "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended"
+      
+      output_file.puts "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
+      p "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
       break if stopping + 1 == num
   end
-  p "  A total of #{num} records examined for #{total} rules with #{total_num_emended} emended and #{total_num_unemended} unemended"
+  p "  A total of #{num} records examined for #{total} rules with #{total_num_emended} emended and #{total_num_unemended} unemended at #{Time.now}"
 end
