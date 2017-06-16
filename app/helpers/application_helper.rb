@@ -17,7 +17,6 @@ module ApplicationHelper
   def app_specific_partial(partial)
     template_set = MyopicVicar::Application.config.template_set
     base_template = File.basename(partial)
-    raise template_set.inspect
     app_specific_template = base_template.sub(/$/, "_#{template_set}")
     #raise app_specific_template.inspect
 
