@@ -733,38 +733,38 @@ class Freereg1CsvEntry
   end
   
   def updateable_county?(record)
-    p "updateable county"
     is_ok = true
     if record.chapman_code? && self.county.present? && self.county  != record.chapman_code
       is_ok = false
     end
-    self.search_record = nil unless is_ok
-    self.search_record(true) unless is_ok
-    p is_ok
+    unless is_ok
+      record = self.search_record 
+      record.destroy
+      self.search_record = nil
+      self.search_record(true)
+    end
     return is_ok
   end
   
   def updateable_search_date?(record)
-    p "updateable date"
      is_ok = true
     if record.search_date.present? && self.baptism_date.present? && DateParser::searchable(self.baptism_date)  != record.search_date
-      p "baptism"
       is_ok = false
     elsif record.search_date.present? && self.burial_date.present? && DateParser::searchable(self.burial_date)  != record.search_date
-    p "burial"
       is_ok = false
     elsif record.search_date.present? && self.marriage_date.present? && DateParser::searchable(self.marriage_date)  != record.search_date
-    p "marriage"
       is_ok = false
     elsif record.secondary_search_date.present? && self.birth_date.present? && DateParser::searchable(self.birth_date)  != record.secondary_search_date 
-    p "birth"
       is_ok = false
     else
       is_ok = true
     end
-    self.search_record = nil unless is_ok
-    self.search_record(true) unless is_ok
-    p is_ok
+    unless is_ok
+      record = self.search_record 
+      record.destroy
+      self.search_record = nil
+      self.search_record(true)
+    end
     return is_ok
   end
 
