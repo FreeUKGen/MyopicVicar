@@ -31,14 +31,17 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
            break if a_match
         end
         unless a_match
-          #output_file.puts "#{record.inspect}"
-          #output_file.puts "#{record.search_names.inspect}" 
+         
           num_unemended = num_unemended + 1 
           if fix
             record.emend_all
             record.save
-            #output_file.puts "Fixed #{record.search_names.inspect}"
-            sleep_time = 0.1*(Rails.application.config.sleep.to_f).to_f
+            output_file.puts "#{record.inspect}"
+            output_file.puts "#{record.search_names.inspect}" 
+            entry = Freereg1CsvEntry.find(record.freereg1_csv_entry)
+            output_file.puts "#{entry.inspect}" 
+            output_file.puts "*********************************************************************************************************"
+            sleep_time = 0.01*(Rails.application.config.sleep.to_f).to_f
             sleep(sleep_time)
           end
         else
@@ -54,7 +57,7 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
       total_num_unemended = total_num_unemended + num_unemended
       end_time = Time.now
       processing_time = (end_time - start_time)/num_unemended
-      output_file.puts "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
+      #output_file.puts "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
       p "Of #{num_emendations} originals for #{original} with replacement #{replacement} #{num_emended} were emended and #{num_unemended} unemended at #{processing_time}"
       break if stopping + 1 == num
   end
