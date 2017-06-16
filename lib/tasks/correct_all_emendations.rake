@@ -38,8 +38,8 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
             record.save
             output_file.puts "#{record.inspect}"
             output_file.puts "#{record.search_names.inspect}" 
-            entry = Freereg1CsvEntry.find(record.freereg1_csv_entry)
-            output_file.puts "#{entry.inspect}" 
+            entry = Freereg1CsvEntry.find(record.freereg1_csv_entry) unless record.freereg1_csv_entry.blank?
+            output_file.puts "#{entry.inspect}" unless record.freereg1_csv_entry.blank?
             output_file.puts "*********************************************************************************************************"
             sleep_time = 0.01*(Rails.application.config.sleep.to_f).to_f
             sleep(sleep_time)
