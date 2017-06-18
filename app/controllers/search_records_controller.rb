@@ -34,7 +34,14 @@ class SearchRecordsController < ApplicationController
         redirect_to new_search_query_path
         return
       end
-      @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
+      if @search_record[:freereg1_csv_entry_id].present? 
+        @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
+      else
+        log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
+        flash[:notice] = "We encountered a problem locating that original entry"
+        redirect_to new_search_query_path
+        return
+      end
     rescue Mongoid::Errors::DocumentNotFound 
       log_possible_host_change
       redirect_to new_search_query_path
