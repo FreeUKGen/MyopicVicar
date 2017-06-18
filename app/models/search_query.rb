@@ -180,9 +180,6 @@ class SearchQuery
       if start_year.to_i > end_year.to_i
         errors.add(:end_year, "First year must precede last year.")
       end
-      if start_year.to_i < 1000
-        errors.add(:start_year, "First year must be greater than 1000.")
-      end
     end
   end
 

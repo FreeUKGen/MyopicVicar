@@ -69,9 +69,13 @@ class FreeregContent
       number = 0
       if alphabet.blank?
         county = County.chapman_code(chapman).first
-        number = county.total_records.to_i
-        number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
-        number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
+        if county.present?
+          number = county.total_records.to_i 
+          number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
+          number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
+        else
+          number = 26
+        end
       else
         number = alphabet
       end
