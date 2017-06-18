@@ -60,10 +60,10 @@ class SearchQueriesController < ApplicationController
         @search_results = @search_query.search
         redirect_to search_query_path(@search_query)
       else
-        render :new
+       redirect_to new_search_query_path
       end
     else
-      render :new
+      redirect_to new_search_query_path
     end
   end
 
