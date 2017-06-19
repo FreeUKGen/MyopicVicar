@@ -60,10 +60,11 @@ class SearchQueriesController < ApplicationController
         @search_results = @search_query.search
         redirect_to search_query_path(@search_query)
       else
-       redirect_to new_search_query_path
+      render :new
       end
     else
-      redirect_to new_search_query_path
+     logger.warn("FREEREG:SEARCH: Search was initiated by a bot")
+     render :new
     end
   end
 
