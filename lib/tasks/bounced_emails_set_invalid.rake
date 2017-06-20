@@ -37,7 +37,7 @@ namespace :freereg do
     MY_LOG.info("#{Time.new} =========== | Change_email value #{change_email.to_s} | ======================================\n")
     (JSON.parse response.body).each do |data|
         user =  UseridDetail.where(email_address: data['email'])[0]
-        if user != nil && !user.email_address_valid
+        if user != nil && user.email_address_valid
           MY_LOG.info("#{user.userid} / #{user.email_address} was bounced, because --> #{data['reason']}\n")
           if user.syndicate != nil
             syndicate = Syndicate.syndicate_code(user.syndicate)[0]
