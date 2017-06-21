@@ -4,7 +4,6 @@ class ManageResourcesController < ApplicationController
   #skip_before_filter :require_login, only: [:new, :pages]
   skip_before_filter :require_login, only: [:logout]
   skip_before_filter :refinery_authentication_devise_users
-  before_filter :running_on_primary
 
   def create
     #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first

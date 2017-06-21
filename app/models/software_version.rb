@@ -2,7 +2,7 @@ class SoftwareVersion
 
   include Mongoid::Document
   include Mongoid::Timestamps
-  store_in client: "local_writable"
+  #store_in client: "local_writable"
 
   field :date_of_update,  type: DateTime
   field :version, type: String

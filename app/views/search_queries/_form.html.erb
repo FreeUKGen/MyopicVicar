@@ -79,10 +79,11 @@
             <small class="additional">Select one to three (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-          <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
-            <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil? %>
-            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-          </select>
+           <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
+              <option value="">All Counties</option>
+              <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
+              <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+            </select>
         </li>
 
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">

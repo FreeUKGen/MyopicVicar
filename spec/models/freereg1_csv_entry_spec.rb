@@ -213,20 +213,20 @@ describe Freereg1CsvEntry do
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]       
-          if file[:type] == RecordType::MARRIAGE
-            first_name = :groom_forename
-            last_name = :groom_surname
-          elsif file[:type] == RecordType::BURIAL
-            first_name = :burial_person_forename
-            if entry[:burial_person_surname]
-              last_name = :burial_person_surname
-            else
-              last_name = :relative_surname
-            end
+        if file[:type] == RecordType::MARRIAGE
+          first_name = :groom_forename
+          last_name = :groom_surname
+        elsif file[:type] == RecordType::BURIAL
+          first_name = :burial_person_forename
+          if entry[:burial_person_surname]
+            last_name = :burial_person_surname
           else
-            first_name = :person_forename
-            last_name = :father_surname
+            last_name = :relative_surname
           end
+        else
+          first_name = :person_forename
+          last_name = :father_surname
+        end
 
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 2 }, true)
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] - 2 }, false)
@@ -235,6 +235,9 @@ describe Freereg1CsvEntry do
 
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 12,:end_year => entry[:modern_year] - 10 }, false)
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 10,:end_year => entry[:modern_year] + 12 }, false)
+
+        check_record(entry, first_name, last_name, false, { :start_year => 999,:end_year => entry[:modern_year] + 10 }, true)
+        check_record(entry, first_name, last_name, false, { :start_year => 99,:end_year => entry[:modern_year] + 10 }, true)
 
       end
     end

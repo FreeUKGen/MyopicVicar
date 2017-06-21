@@ -79,14 +79,50 @@ class SearchRecord
     "ln_fn_place_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","place_id","record_type", "search_date", "secondary_search_date"],
     "lnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
     "lnsdx_fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","place_id","record_type", "search_date", "secondary_search_date"],
-    "fn_county_rt_sd_ssd" => ["search_names.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
-    "fnsdx_county_rt_sd_ssd" => ["search_soundex.first_name", "chapman_code","record_type", "search_date", "secondary_search_date"],
     "fn_place_rt_sd_ssd" => ["search_names.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
     "fnsdx_place_rt_sd_ssd" => ["search_soundex.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
     "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"]
   }
 
-  INDEXES = NEW_INDEXES
+  SHARDED_INDEXES = {
+    "search_date_chapman_code" => ["search_date", "chapman_code" ],
+    "ln_rt_ssd" => [ "search_date", "chapman_code", "search_names.last_name", "record_type", "secondary_search_date"],     
+    "ln_fn_rt_ssd" => [ "search_date", "chapman_code", "search_names.last_name", "search_names.first_name", "record_type", "secondary_search_date"],
+    "lnsdx_fnsdx_rt_ssd" => [ "search_date", "chapman_code", "search_soundex.last_name", "search_soundex.first_name", "record_type", "secondary_search_date"],
+    "lnsdx_rt_ssd" => [ "search_date", "chapman_code", "search_soundex.last_name", "record_type", "secondary_search_date"],    
+    "pl_ln_rt_ssd" => [ "search_date", "chapman_code", "place_id", "search_names.last_name", "record_type", "secondary_search_date"],    
+    "pl_lnsdx_rt_ssd" => [ "search_date", "chapman_code", "place_id", "search_soundex.last_name", "record_type", "secondary_search_date"],
+    "pl_lnsdx_fnsdx_rt_ssd" => [ "search_date", "chapman_code", "place_id", "search_soundex.last_name"," search_soundex.first_name","record_type", "secondary_search_date"],
+    "pl_ln_fn_rt_ssd" => [ "search_date", "chapman_code", "place_id", "search_names.last_name"," search_names.first_name","record_type", "secondary_search_date"],
+    "pl_fn_rt_ssd" => [ "search_date", "chapman_code", "place_id","search_names.first_name","record_type", "secondary_search_date"],
+    "pl_fnsdx_rt_ssd" => [ "search_date", "chapman_code", "place_id","search_soundex.first_name","record_type", "secondary_search_date"],
+    "pl_rt_ssd" => [ "search_date", "chapman_code", "place_id","record_type", "secondary_search_date"]
+   }
+   
+   
+   MERGED_INDEXES = {
+     "chapman_code_search_date" => ["chapman_code","search_date" ],
+     "ln_rt_ssd" => [ "chapman_code","search_date", "search_names.last_name", "record_type", "secondary_search_date"], 
+     "ln_fn_rt_ssd" => ["chapman_code","search_date", "search_names.last_name", "search_names.first_name", "record_type", "secondary_search_date"],
+     "lnsdx_fnsdx_rt_ssd" => [ "chapman_code","search_date", "search_soundex.last_name", "search_soundex.first_name", "record_type", "secondary_search_date"],
+     "lnsdx_rt_ssd" => [ "chapman_code","search_date", "search_soundex.last_name", "record_type", "secondary_search_date"],    
+     "ln_fn_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","record_type", "search_date", "secondary_search_date"],
+     "lnsdx_fnsdx_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","record_type", "search_date", "secondary_search_date"],
+     "ln_place_rt_sd_ssd" => ["search_names.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+     "ln_county_rt" =>  ["search_names.last_name","chapman_code" ,"record_type"] ,
+     "ln_fn_county_rt" =>  ["search_names.last_name", "search_names.first_name","chapman_code" ,"record_type"] ,
+     "lnsdx_county_rt" =>  ["search_soundex.last_name","chapman_code" ,"record_type"] ,
+     "lnsdx_fnsdx_county_rt"  =>  ["search_soundex.last_name", "search_soundex.first_name","chapman_code" ,"record_type"] ,
+     "ln_fn_place_rt_sd_ssd" => ["search_names.last_name", "search_names.first_name","place_id","record_type", "search_date", "secondary_search_date"],
+     "lnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "place_id","record_type", "search_date", "secondary_search_date"],
+     "lnsdx_fnsdx_place_rt_sd_ssd" => ["search_soundex.last_name", "search_soundex.first_name","place_id","record_type", "search_date", "secondary_search_date"],
+     "fn_place_rt_sd_ssd" => ["search_names.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
+     "fnsdx_place_rt_sd_ssd" => ["search_soundex.first_name", "place_id","record_type", "search_date", "secondary_search_date"],
+     "place_rt_sd_ssd" => [ "place_id","record_type", "search_date", "secondary_search_date"],
+     
+    }
+
+  INDEXES = MERGED_INDEXES
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
@@ -246,21 +282,21 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      candidates = NEW_INDEXES.keys
+      candidates = MERGED_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
-      # p candidates
+       # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-      # p "scores"
-      # p scores
+       # p "scores"
+       # p scores
       best = scores.max_by { |k,v| v}
-      # p "selected"
-      # p best[0]
+       # p "selected"
+       # p best[0]
       best[0]
     end
 
     def index_score(index_name, search_fields)
-      fields = NEW_INDEXES[index_name]
+      fields = MERGED_INDEXES[index_name]
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
@@ -309,10 +345,7 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place_id)
-      search_record = entry.search_record
-      #p search_record
-      if  search_record.blank?
-        #p "creating"
+     unless   entry.record_updateable?
         search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
         search_record = SearchRecord.new(search_record_parameters)
         search_record.freereg1_csv_entry = entry
@@ -324,7 +357,9 @@ class SearchRecord
         #p search_record
         return "created"
       else
+        search_record = entry.search_record
         #p "updating"
+        #p search_record
         digest = search_record.digest
         digest = search_record.cal_digest if digest.blank?
         #create a temporary search record with the new information; this will not be saved
@@ -347,9 +382,8 @@ class SearchRecord
           search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
           #update the soundex if it has changed
           search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
-          #update the search dates
-          search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
-          search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
+          #search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
+          #search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
           #create a hash of search names from the original search names
           #note adjust_search_names does a save of the search record
           search_record.adjust_search_names(new_search_record)
@@ -364,7 +398,7 @@ class SearchRecord
           #end
           return "no update"
         end
-      end
+     end
     end
 
   end
@@ -731,8 +765,9 @@ class SearchRecord
   end
 
   def upgrade_search_date!(search_version)
-    needs_upgrade = self.search_dates.size > 0 && self.search_date.blank?
+    needs_upgrade = self.search_dates.size > 0 
     if needs_upgrade
+      self.transcript_dates = self.search_dates
       self.search_date = self.search_dates[0]
       self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
     end

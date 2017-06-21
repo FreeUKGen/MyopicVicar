@@ -17,6 +17,7 @@
       <li>
         <%= link_to("Select Specific Query", select_search_query_report_path)%>
       </li>
+      <li> <%= @number%> searches for the period</li>
     <% end %>
   </ul>
 </div>
@@ -37,60 +38,64 @@
 <p>The 'Analyze' button will re-execute the query and analyze it. The maximum permitted search time is <%= Rails.application.config.max_search_time%> ms</p>
 
 <h2>Queries</h2>
-<table>
-  <thead>
-    <th> Show Query
-    </th>
-    <th>
-      Query Overview
-    </th>
-    <% if @feedback %>
-    <th>
-      <%= link_to("Run Time (ms)", search_query_report_path(:feedback_id => @feedback, :order => "runtime")) %>
-    </th>
-    <th>
-      <%= link_to("Start Time", search_query_report_path(:feedback_id => @feedback, :order => "updated_at")) %>
-    </th>
-    <th>
-      <%= link_to("Results Found", search_query_report_path(:feedback_id => @feedback, :order => "result_count")) %>
-    </th>
-    <th>
-      Index used
-    </th>
-    <% else %>
-    <th>
-      <%= link_to("Run Time (ms)", search_query_report_path(:day => @start_day, :order => "runtime")) %>
-    </th>
-    <th>
-      <%= link_to("Start Time", search_query_report_path(:day => @start_day, :order => "updated_at")) %>
-    </th>
-    <th>
-      <%= link_to("Results Found", search_query_report_path(:day => @start_day, :order => "result_count")) %>
-    </th>
-    <th>
-      Index used
-    </th>
-    <% end %>
-    <th>&nbsp;</th>
-  </thead>
-  <tbody>
-    <%= paginate @search_queries %>
-    <% @search_queries.each do |query| %>
-    <tr>
-      <td><%= button_to("Show", show_query_search_query_path(query), :method=>:get)%>
-        <td>
-          <% search_params_for_display(query).each do |name, value| %>
-          <%= name %>: <strong><%= value %></strong><br />
-          <% end %>
-        </td>
-        <td><b><%= query.runtime %></b></td>
-        <td><%= query.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
-        <td><%= query.result_count %></td>
-        <td><%= query.search_index %></td>
-        <td>
-          <%= button_to("Analyze", analyze_search_query_path(query), :method=>:post)%>
-        </td>
-      </tr>
+<% number = 0 %>
+<div class="scrollable ">
+  <table class=" table--bordered my-width table--data just--left" >
+    <thead>
+      <th>Search</th>
+      <th> Show Query
+      </th>
+      <th>
+        Query Overview
+      </th>
+      <% if @feedback %>
+      <th>
+        <%= link_to("Run Time (ms)", search_query_report_path(:feedback_id => @feedback, :order => "runtime")) %>
+      </th>
+      <th>
+        <%= link_to("Start Time", search_query_report_path(:feedback_id => @feedback, :order => "updated_at")) %>
+      </th>
+      <th>
+        <%= link_to("Results Found", search_query_report_path(:feedback_id => @feedback, :order => "result_count")) %>
+      </th>
+      <th>
+        Index used
+      </th>
+      <% else %>
+      <th>
+        <%= link_to("Run Time (ms)", search_query_report_path(:day => @start_day, :order => "runtime")) %>
+      </th>
+      <th>
+        <%= link_to("Start Time", search_query_report_path(:day => @start_day, :order => "updated_at")) %>
+      </th>
+      <th>
+        <%= link_to("Results Found", search_query_report_path(:day => @start_day, :order => "result_count")) %>
+      </th>
+      <th>
+        Index used
+      </th>
       <% end %>
-    </tbody>
-  </table>
+      <th>&nbsp;</th>
+    </thead>
+    <tbody>
+      <% @search_queries.each do |query| %>
+      <% number = number + 1 %>
+      <tr><td><%= number %></td>
+        <td><%= button_to("Show", show_query_search_query_path(query), :method=>:get)%>
+          <td>
+            <% search_params_for_display(query).each do |name, value| %>
+            <%= name %>: <strong><%= value %></strong><br />
+            <% end %>
+          </td>
+          <td><b><%= query.runtime %></b></td>
+          <td><%= query.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+          <td><%= query.result_count %></td>
+          <td><%= query.search_index %></td>
+          <td>
+            <%= button_to("Analyze", analyze_search_query_path(query), :method=>:post)%>
+          </td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+ </div>
