@@ -1,6 +1,8 @@
 class UsersNeverUploadedFile
   attr_accessor :model_name, :output_directory
 
+  HEADER_ARRAY = ['USERID','SYNDICATE','EMAIL','ACTIVE','ACCOUNT_CREATION_DATE', 'EMAIL_ADDRESS_VALID']
+
   def initialize(model_name=nil, output_directory = nil)
     @model_name = model_name
     @output_directory = output_directory
@@ -12,7 +14,7 @@ class UsersNeverUploadedFile
     STDOUT.reopen(new_file, "w")
     puts uniq_userid_list
     STDOUT.reopen(original_stdout)
-    puts "Total number of ids: #{uniq_userid_list.count}"
+    puts "Total number of ids: #{uniq_userid_list.count - 1}"
   end
 
   private
@@ -29,7 +31,8 @@ class UsersNeverUploadedFile
     registered_user_lists = []
     registered_before_six_months.all.each do |user|
       if user.password != registered_password
-        registered_user_lists << user.userid
+        registered_user_lists << HEADER_ARRAY.join(";")+"\n"
+        registered_user_lists << user_information(user).join(";")+"\n"
       end
     end
     registered_user_lists
@@ -51,7 +54,7 @@ class UsersNeverUploadedFile
   def new_file
     raise "Not a Valid Directory" unless valid_directory?
 
-    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_users_never_uploaded_file.txt"
+    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_users_never_uploaded_file.csv"
     "#{output_directory_path}#{file_name}"
   end
 
@@ -68,7 +71,15 @@ class UsersNeverUploadedFile
   end
 
   def delete_file_if_exists
-    File.delete(*Dir.glob("#{output_directory_path}*_users_never_uploaded_file.txt"))
+    File.delete(*Dir.glob("#{output_directory_path}*_users_never_uploaded_file.csv"))
+  end
+
+  def user_information user
+    [user.userid, user.syndicate,user.email_address, user.active,user.c_at.to_date, user_email_address_valid(user)]
+  end
+
+  def user_email_address_valid user
+    user.email_address_last_confirmned != nil
   end
 
 end
