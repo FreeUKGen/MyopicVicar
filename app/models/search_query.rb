@@ -479,7 +479,8 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
+   # p @search_parameters
+   #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
 #    p @search_parameters
