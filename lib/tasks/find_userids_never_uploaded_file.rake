@@ -7,10 +7,9 @@ namespace :freereg do
     start_time = Time.now    
         p "Starting at #{start_time}"
 
-        model_name = UseridDetail
         output_directory = File.join(Rails.root, 'script')
 
-        users = UsersNeverUploadedFile.new(model_name, output_directory)
+        users = UsersNeverUploadedFile.new(output_directory)
         a = users.lists
         puts a
 

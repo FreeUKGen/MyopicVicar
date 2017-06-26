@@ -1,10 +1,9 @@
 class UsersNeverUploadedFile
-  attr_accessor :model_name, :output_directory
+  attr_accessor :output_directory
 
   HEADER_ARRAY = ['USERID','SYNDICATE','EMAIL','ACTIVE','ACCOUNT_CREATION_DATE', 'EMAIL_ADDRESS_VALID']
 
-  def initialize(model_name=nil, output_directory = nil)
-    @model_name = model_name
+  def initialize(output_directory = nil)
     @output_directory = output_directory
   end
 
@@ -20,11 +19,15 @@ class UsersNeverUploadedFile
   private
 
   def never_uploaded_file
-    UseridDetail.where(number_of_files: 0)
+    list_user_info.where(number_of_files: 0)
   end
 
   def registered_before_six_months
     never_uploaded_file.where(:created_at.lt => 6.months.ago)
+  end
+
+  def list_user_info
+    UseridDetail.only(:userid, :created_at, :number_of_files, :password, :syndicate, :email_address, :active)
   end
 
   def registered_users
@@ -32,7 +35,7 @@ class UsersNeverUploadedFile
     registered_before_six_months.all.each do |user|
       if user.password != registered_password
         registered_user_lists << HEADER_ARRAY.join(";")+"\n"
-        registered_user_lists << user_information(user).join(";")+"\n"
+        registered_user_lists << user_information_for_display(user).join(";")+"\n"
       end
     end
     registered_user_lists
@@ -74,12 +77,17 @@ class UsersNeverUploadedFile
     File.delete(*Dir.glob("#{output_directory_path}*_users_never_uploaded_file.csv"))
   end
 
-  def user_information user
-    [user.userid, user.syndicate,user.email_address, user.active,user.c_at.to_date, user_email_address_valid(user)]
+  def user_information_for_display user
+    [user.userid, user.syndicate,user.email_address, user.active,user.c_at.to_date, valid_email_domain(user)]
   end
 
-  def user_email_address_valid user
-    user.email_address_last_confirmned != nil
+  #Email Domain Verification
+  def valid_email_domain user
+    split_email = user.email_address.split('@')
+    Resolv::DNS.open do |dns|
+      @mail_servers = dns.getresources(split_email[1], Resolv::DNS::Resource::IN::MX)
+    end
+    @mail_servers.empty? ? false : true
   end
 
 end
