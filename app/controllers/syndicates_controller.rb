@@ -1,5 +1,5 @@
 class SyndicatesController < ApplicationController
-  before_filter :running_on_primary
+
   def create
     @syndicate = Syndicate.new(syndicate_params)
     @syndicate.add_syndicate_to_coordinator(params[:syndicate][:syndicate_code],params[:syndicate][:syndicate_coordinator])

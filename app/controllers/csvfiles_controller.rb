@@ -1,5 +1,5 @@
 class CsvfilesController < ApplicationController
-  before_filter :running_on_primary
+ 
 
   require 'freereg_csv_update_processor'
   require 'digest/md5'

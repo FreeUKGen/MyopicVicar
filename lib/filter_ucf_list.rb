@@ -12,6 +12,7 @@ class FilterUcfList
   # Print the special character ID's into the output directory
   def filter_id
     retrieve_name_columns.each do |name|
+      next if name == "church_name"
       original_stdout = STDOUT.clone
       STDOUT.reopen(new_file(name), "w")
       special_character_records(name).each do |record| 
@@ -20,6 +21,8 @@ class FilterUcfList
       STDOUT.reopen(original_stdout)
       puts "Total number of ids for #{name}: #{special_character_records(name).count}"
     end
+    single_ucf_file_lists
+    remove_duplicate_entries
   end
 
   private
@@ -65,4 +68,27 @@ class FilterUcfList
     end
     directory
   end
+
+  def single_bad_ucf_file
+    "#{output_directory_path}single_ucf_file_lists.txt"
+  end
+
+  # Merged all bad ucf file into single file in the output directory
+  def single_ucf_file_lists
+    File.open(single_bad_ucf_file, 'a') do |mergedfile|
+      Dir.glob("#{output_directory_path}*name.txt").each do |file|
+        File.foreach(file) do |line|
+          mergedfile.write(line)
+        end
+      end
+    end
+  end
+
+  # Remove duplicate entries from the merged text file
+  def remove_duplicate_entries
+    File.open("#{output_directory_path}unique_ucf_lists.txt", "w+") { |file|
+      file.puts File.readlines(single_bad_ucf_file).uniq
+    }
+  end
+
 end

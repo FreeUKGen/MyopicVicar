@@ -1,5 +1,5 @@
 class MessagesController < ApplicationController
-  before_filter :running_on_primary
+  
   require 'freereg_options_constants'
   require 'userid_role'
   def index

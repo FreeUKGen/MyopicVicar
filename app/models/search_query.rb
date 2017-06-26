@@ -1,6 +1,6 @@
 class SearchQuery
   include Mongoid::Document
-  store_in client: "local_writable"
+  #store_in client: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
@@ -57,6 +57,7 @@ class SearchQuery
   field :day, type:String
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
+  field :wildcard_search, type: Boolean, default: false
 
   has_and_belongs_to_many :places, inverse_of: nil
 
@@ -73,11 +74,9 @@ class SearchQuery
   attr_accessor :action
 
 
-  index({ c_at: 1},{background: true })
-  index({day: -1,runtime: -1},{background: true })
-  index({day: -1,u_at: -1},{background: true })
-  index({day: -1,result_count: -1},{background: true })
-  index({day: 1, _id: 1},{name: "day_id",background: true })
+ index({ c_at: 1},{name: "c_at_1",background: true })
+ index({day: -1,runtime: -1},{name: "day__1_runtime__1",background: true })
+ index({day: -1,result_count: -1},{name: "day__1_result_count__1",background: true })
 
   class << self
     def search_id(name)
@@ -256,6 +255,8 @@ class SearchQuery
             include_record = true
           else
           end
+        elsif self.wildcard_search
+          include_record = true
         else
           case
           when name[:type] == "p" && self.last_name.present? && name[:last_name] == self.last_name.downcase && self.first_name.blank?
@@ -406,15 +407,17 @@ class SearchQuery
 
       params[:place_id] = { "$in" => search_place_ids }
     else
-      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
-      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
     end
     params
   end
 
   def query_contains_wildcard?
-    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))
+    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
+    self.wildcard_search = wildcard_search
+    return wildcard_search
   end
+
 
   def radius_is_valid
     if search_nearby_places && places.blank?
@@ -476,9 +479,11 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
+   # p @search_parameters
+   #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
+#    p @search_parameters
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -489,8 +494,10 @@ class SearchQuery
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
+    @secondary_search_params.delete_if {|key, value| key == :search_date } 
     @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    #logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    @search_index = SearchRecord.index_hint(@search_parameters)
+    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end

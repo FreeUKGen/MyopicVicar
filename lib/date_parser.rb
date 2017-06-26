@@ -75,7 +75,8 @@ module DateParser
   end
 
   def self.start_search_date(year)
-    return year.to_s
+    # zero-pad for completionist users inputting three-digit years
+    return year.to_s.rjust(4,"0")
   end
 
   def self.end_search_date(year)

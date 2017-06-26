@@ -3,8 +3,7 @@ class PlacesController < ApplicationController
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
 
   skip_before_filter :require_login, only: [:for_search_form,:for_freereg_content_form]
-  before_filter :running_on_primary, :except => [:show,:index,:for_search_form,:for_freereg_content_form]
-
+  
   def approve
     session[:return_to] = request.referer
     get_user_info_from_userid

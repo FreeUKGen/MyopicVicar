@@ -1,6 +1,5 @@
 class PhysicalFilesController < ApplicationController
   
-  before_filter :running_on_primary
   
   def all_files
     @selection  = 'all'
