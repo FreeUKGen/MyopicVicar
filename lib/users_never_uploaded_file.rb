@@ -33,9 +33,10 @@ class UsersNeverUploadedFile
   def registered_users
     registered_user_lists = []
     registered_before_six_months.all.each do |user|
+      next if technical_syndicate?user
       if user.password != registered_password
-        registered_user_lists << HEADER_ARRAY.join(";")+"\n"
-        registered_user_lists << user_information_for_display(user).join(";")+"\n"
+        registered_user_lists << HEADER_ARRAY.join(",")+"\n"
+        registered_user_lists << user_information_for_display(user).join(",")+"\n"
       end
     end
     registered_user_lists
@@ -78,7 +79,7 @@ class UsersNeverUploadedFile
   end
 
   def user_information_for_display user
-    [user.userid, user.syndicate,user.email_address, user.active,user.c_at.to_date, valid_email_domain(user)]
+    [user.userid, pretty_syndicate_formatting(user),user.email_address, user.active,user.c_at.to_date, valid_email_domain(user)]
   end
 
   #Email Domain Verification
@@ -88,6 +89,14 @@ class UsersNeverUploadedFile
       @mail_servers = dns.getresources(split_email[1], Resolv::DNS::Resource::IN::MX)
     end
     @mail_servers.empty? ? false : true
+  end
+
+  def pretty_syndicate_formatting user
+    user.syndicate.gsub(/[,]/,'-') unless user.syndicate.nil?
+  end
+
+  def technical_syndicate? user
+    user.syndicate == "Technical"
   end
 
 end
