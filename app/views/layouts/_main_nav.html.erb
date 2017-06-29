@@ -9,9 +9,9 @@
             </li>
           <% end %>
         <% else%>
-        <li>
-          <%= link_to("Search",  main_app.new_search_query_path) %>
-        </li>
+          <li>
+            <%= link_to("Search",  main_app.new_search_query_path) %>
+          </li>
         <% end%>
         <% if MyopicVicar::Application.config.template_set == 'freecen' && (controller_name != 'freecen_coverage' || @chapman_code != nil)%>
           <li>
@@ -20,48 +20,49 @@
         <% end %>
 
         <% if  session[:userid_detail_id].present? %>
-        <li>
-          <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
-        </li>
-        <li>
-          <%= link_to "Logout", main_app.logout_manage_resources_path %>
-        </li>
-        <li>
-          <% get_user_info_from_userid %>
-          <% if @user.present? && @user.person_role.present? %>
-          <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
-          <%= link_to "Help", "/cms/information-for-transcribers" %>
-          <% elsif @user.person_role == 'researcher'%>
-          <%= link_to "Help", "/cms/registered-researchers" %>
-          <% else %>
-          <%= link_to "Help", "/cms/information-for-coordinators" %>
-          <% end %>
-        </li>
+          <li>
+            <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
+          </li>
+          <li>
+            <%= link_to "Logout", main_app.logout_manage_resources_path %>
+          </li>
+          <li>
+            <% get_user_info_from_userid %>
+            <% if @user.present? && @user.person_role.present? %>
+              <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
+                <%= link_to "Help", "/cms/information-for-transcribers" %>
+              <% elsif @user.person_role == 'researcher'%>
+                <%= link_to "Help", "/cms/registered-researchers" %>
+              <% else %>
+                <%= link_to "Help", "/cms/information-for-coordinators" %>
+              <% end %>
+          </li>
+            <% else %>
+              <li>
+	             <%# if false %>
+                <%= link_to "About", "/cms/about" %>
+	             <%# end %>
+              </li>
+            <% end%>
         <% else %>
-        <li>
-	  <% if false %>
-          <%= link_to "About", "/cms/about" %>
-	  <% end %>
-        </li>
-        <% end%>
-        <% else %>
-        <li>
-	  <% if false %>
-          <%= link_to "About", "/cms/about" %>
-	  <% end %>
-        </li>
+          <li>
+	         <%# if false %>
+            <%= link_to "About", "/cms/about" %>
+	         <%# end %>
+          </li>
         <!-- TODO: Convert remainder to refinery page references -->
         <li>
           <a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free/">Donate</a>
         </li>
-    <% if false %>
+    <%# if false %>
         <li>
-          <%= link_to "Volunteer", main_app.transcriber_registration_userid_detail_path %>
+          <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-freecen" %>
+          <%#transcriber_registration_userid_detail_path%>
         </li>
         <li>
           <%= link_to "Members", refinery.login_path %>
         </li>
-    <% end %>
+    <%# end %>
         <li>
           <%= link_to "Help", "/cms/help" %>
         </li>

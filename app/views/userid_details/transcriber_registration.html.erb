@@ -28,9 +28,30 @@
     <% end %>
   </ul>
   <%@userid.errors.clear%>
-<% end %>  
-
+<% end %>
 <%= semantic_form_for @userid do |f| %>
+  <div class="grid">
+    <div class= "grid__item two-thirds lap-one-half palm-one-whole"">
+      <div class="read-length">
+        <p>If  you have any questions about transcribing or the documents linked below, Please contact us </p>
+      </div>
+      <%= f.check_box :transcription_agreement %>
+      <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
+      <%= f.check_box :volunteer_induction_handbook %>
+      <span>I have read and hereby sign, the <%= link_to 'Volunteer Induction Handbook(pdf)', "#", title: "Click here to view or download the Volunteer Induction Handbook" %></span><br /><br />
+      <%= f.check_box :code_of_conduct %>
+      <span>I  have read, and agreed to abide by the, the <%= link_to 'Code of Conduct (pdf).', "#", title: "Click here to view or download the Code of Conduct" %></span><br /><br />
+    </div>
+    <aside class="grid__item one-third lap-one-half palm-one-whole">
+      <div class = "adsense_box">
+        <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+          <ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-7825403497160061" data-ad-slot="3235467631"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+    </aside>
+  </div>
   <fieldset class="inputs">
     <legend>Transcriber registration</legend>
     <ol class="grid">

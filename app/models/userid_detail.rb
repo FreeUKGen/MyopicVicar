@@ -34,7 +34,7 @@ class UseridDetail
   field :country_groups, type: Array
   field :digest, type: String, default: nil
   field :skill_notes, type: String
-  field :transcription_agreement, type: Boolean, default: false
+  field :transcription_agreement, type: String, default: 'Unknown'
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
   field :email_address_valid, type: Boolean, default: true
@@ -42,7 +42,7 @@ class UseridDetail
   field :no_processing_messages, type: Boolean, default: false
   field :userid_messages,type: Array, default: []
 
-  attr_accessor :action, :message
+  attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
@@ -56,10 +56,11 @@ class UseridDetail
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
-  validate :userid_and_email_address_does_not_exist, on: :create
+  validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
+  validates :volunteer_induction_handbook, :code_of_conduct, acceptance: true
 
-  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname
+  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
   after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname
   after_update :update_refinery
@@ -468,6 +469,18 @@ class UseridDetail
 
   def get_users(current_syndicate)
     Syndicate.get_users_for_syndicate(current_syndicate)
+  end
+
+  def transcription_agreement_must_accepted
+    errors.add(:base, "Transcription agreement must be accepted") if self.transcription_agreement == "0"
+  end
+
+  def transcription_agreement_value_change
+    if self.transcription_agreement == "1"
+      self.transcription_agreement = 'Accepted'
+    elsif self.transcription_agreement == 0
+      self.transcription_agreement = 'Declined'
+    end
   end
 
 end #end class
