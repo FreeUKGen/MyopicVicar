@@ -50,6 +50,9 @@
       <%= fullwidth_adsense %>
     </div>
   </div>
+  <div class="criteria__value" style="text-align: center;">
+      Total number of records: <%= @result_count %>
+    </div>
   <% end %>
   <section>
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
