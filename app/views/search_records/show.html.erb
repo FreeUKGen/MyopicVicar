@@ -66,14 +66,14 @@
           </tr>
         <% end%>
       </tbody>
-    </table> 
-    <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
-      <% unless defined?(@printable_format) && @printable_format %>
-        <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeREG" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
-       <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b style= "color: #009f98">FreeReg</b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
-      <% end %>
-    </div>
+    </table>
   <% end %>
+  <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+    <% unless defined?(@printable_format) && @printable_format %>
+      <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeREG" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
+      <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b style= "color: #009f98">FreeReg</b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
+    <% end %>
+  </div>
 
   <% if @annotations && @annotations.length > 0 %>
     <table class="table--bordered table--data">
