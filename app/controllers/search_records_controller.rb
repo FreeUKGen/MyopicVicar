@@ -63,6 +63,7 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_print_version
+    @printable_format = true;
     if params[:search_id].nil? || params[:id].nil?
       flash[:notice] = "Prior records no longer exist"
       redirect_to new_search_query_path
