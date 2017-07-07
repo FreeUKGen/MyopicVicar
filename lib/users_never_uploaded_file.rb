@@ -33,7 +33,7 @@ class UsersNeverUploadedFile
   def registered_users
     registered_user_lists = []
     registered_before_six_months.all.each do |user|
-      next if technical_syndicate?user
+      next if !non_management?user
       if user.password != registered_password
         registered_user_lists << HEADER_ARRAY.join(",")+"\n"
         registered_user_lists << user_information_for_display(user).join(",")+"\n"
@@ -95,8 +95,8 @@ class UsersNeverUploadedFile
     user.syndicate.gsub(/[,]/,'-') unless user.syndicate.nil?
   end
 
-  def technical_syndicate? user
-    user.syndicate == "Technical"
+  def non_management? user
+    user.person_role == "transcriber" || user.person_role == "trainee"
   end
 
 end
