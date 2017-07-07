@@ -27,7 +27,7 @@ class UsersNeverUploadedFile
   end
 
   def list_user_info
-    UseridDetail.only(:userid, :created_at, :number_of_files, :password, :syndicate, :email_address, :active)
+    UseridDetail.only(:userid, :created_at, :number_of_files, :password, :syndicate, :email_address, :active, :person_role)
   end
 
   def registered_users
