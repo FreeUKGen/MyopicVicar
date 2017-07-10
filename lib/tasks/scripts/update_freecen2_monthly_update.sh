@@ -1,3 +1,18 @@
+# This script updates the freecen2 production database.
+# It rsyncs the data from FC1 to FC2 on the local machine (unless 'nosync' is
+# passed in as argument 1 or 2 on the command line) before
+# running the rake tasks that:
+#  1) update the database
+#  2) initialize geolocation lat/long for new subplaces that aren't set
+#  3) update the places cache
+#
+#
+# To manually rsync the data from freecen production server to test2 server:
+#  ssh -A user@host
+# rsync -avz --delete dougkdev@colobus.freebmd.org.uk:/raid/freecen/fixed /raid/freecen2/freecen1/
+# rsync -avz --delete dougkdev@colobus.freebmd.org.uk:/raid/freecen/pieces /raid/freecen2/freecen1/
+# rsync -avz --delete dougkdev@colobus.freebmd.org.uk:/home/apache/hosts/freecen/status/db-stats /raid/freecen2/freecen1/
+
 set -uo pipefail
 IFS=$'\n\t'
 
