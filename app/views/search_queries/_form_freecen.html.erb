@@ -3,7 +3,9 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-
+<div style="text-align: center;color:blue;">
+  <p><b>FreeCen2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</b></p>
+  </div>
 <% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
   <h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
 
@@ -184,7 +186,7 @@
   <% end %>
 
   <div style="text-align: center;color:blue;">
-    <p>FreeCen2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</p>
+    <p><b>FreeCen2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</b></p>
   </div>
   <div class="adsense_center">
     <span>Advertisement</span>
