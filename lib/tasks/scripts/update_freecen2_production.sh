@@ -38,7 +38,6 @@ LOG_DIR=${FC2_DATA}/log
 APP_ROOT=/home/apache/hosts/freecen2/production
 UPDATE_RUNNING_STATUS_FILE=${APP_ROOT}/tmp/fc_update_processing.txt #fc_update_processor_status_file value in config/mongo_config.yml needs to match
 GEOLOCATION_FILE=${APP_ROOT}/test_data/Place_and_church_name_resources/places_from_public_domain_data.csv
-RSYNC_USER=freecen2
 WEB_USER=webserv
 BUNDLE=bundle
 #different directories on development machine (pass in "development" as arg 1)
@@ -51,7 +50,6 @@ if [ $# -ge 1 ] && [ "$1" == "development" ]; then
   APP_ROOT=~/freeUKGEN/MyopicVicar
   UPDATE_RUNNING_STATUS_FILE=/tmp/fc_update_processing.txt #fc_update_processor_status_file value in config/mongo_config.yml needs to match
   #GEOLOCATION_FILE is the same on development as above
-  RSYNC_USER=$( whoami )
   WEB_USER=$( whoami )
   BUNDLE=~/.rvm/gems/ruby-2.2.5/bin/bundle
 fi
@@ -89,14 +87,14 @@ fi
 # rsync the FC2 data from FC1 data directories
 if [ "$DO_RSYNC" == true ] ; then
   trace "doing rsync of FreeCen1 metadata (ctyPARMS.DAT) files into FreeCen2"
-  sudo -u ${RSYNC_USER} rsync -avz --delete ${FC1_DATA}/fixed ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freecen1.delta
+  rsync -avz --delete ${FC1_DATA}/fixed ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freecen1.delta
 
   trace "doing rsync of FreeCen1 validated piece (.VLD) files into FreeCen2"
-  sudo -u ${RSYNC_USER} rsync -avz --delete ${FC1_DATA}/pieces ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
+  rsync -avz --delete ${FC1_DATA}/pieces ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
 
   if [[ -f ${FC1_STAT_FILE} ]] ; then
     trace "doing rsync of FreeCen1 db-status file into FreeCen2"
-    sudo -u ${RSYNC_USER} rsync -avz ${FC1_STAT_FILE} ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
+    rsync -avz ${FC1_STAT_FILE} ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
   else
     trace "***WARNING: not doing rsync of status file because ${FC1_STAT_FILE} not found"
   fi
@@ -105,20 +103,6 @@ else
   trace "***WARNING: not doing rsync because 'nosync' option was passed into script"
 fi
 
-
-#fail() {
-#  sudo /root/bin/searchctl.sh enable
-#  trace "FATAL $@"
-#  exit 1
-#}
-
-#if [[ -f /root/bin/searchctl.sh ]] ; then
-#  trap fail ERR
-#  trace "disable searches while update script runs"
-#  sudo /root/bin/searchctl.sh disable
-#else
-#  trace "***WARNING: /root/bin/searchctl.sh not found! not disabling searches"
-#fi
 
 trace "running rake task to update the freecen database"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
@@ -131,11 +115,6 @@ sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production initialize_places_g
 
 trace "running rake task to update the places cache"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production foo:refresh_places_cache --trace
-
-#if [[ -f /root/bin/searchctl.sh ]] ; then
-#  trace "re-enable searches"
-#  sudo /root/bin/searchctl.sh enable
-#fi
 
 trace "finished"
 exit
