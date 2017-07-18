@@ -9,12 +9,25 @@
 <section class="island  island--light ">
 <%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
   <%= f.fields_for :sent_message do |multiple| %>     
-    <%= f.hidden_field :action%>     
+    <%= f.hidden_field :action %>
       <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
         <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">You may select multiple roles for recipients</span></a></label>
         <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="4">
         <% @options.each do |value| %>
           <% if value == @sent_message.recipients %>
+            <option value="<%=value%>" selected="selected" ><%=value%></option>
+          <% else %>
+            <option value="<%=value%>" ><%=value%></option>
+          <% end %>
+        <% end %>
+        </select>
+      </li>
+
+      <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
+        <label class="ttip" for="open_data_status" tabindex="0"> Open Data Status <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select recipients based on the Open Data status</span></label>
+        <select id="open_data_status" name="open_data_status[]"  multiple="multiple" class="select" required="required" size="4">
+        <% @open_data_status.each do |value| %>
+          <% if value == @sent_message.open_data_status %>
             <option value="<%=value%>" selected="selected" ><%=value%></option>
           <% else %>
             <option value="<%=value%>" ><%=value%></option>
