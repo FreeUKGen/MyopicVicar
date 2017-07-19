@@ -113,7 +113,7 @@ class MessagesController < ApplicationController
       UseridRole::REASONS_FOR_INACTIVATING.each_pair do |key,value|
         @inactive_reasons << value
       end
-      @open_data_status = ["Unknown","Accpeted","Declined","Requested"]
+      @open_data_status = ["Unknown","Accepted","Declined","Requested"]
       @senders = Array.new
       @senders << ''
       UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
