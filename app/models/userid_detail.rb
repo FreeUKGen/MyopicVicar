@@ -88,6 +88,10 @@ class UseridDetail
     def email_address_valid
       where(:email_address_valid => true)
     end
+
+    def transcription_agreement(transcription_agreement)
+      where(:transcription_agreement => transcription_agreement)
+    end
   end
 
   def remove_checked_messages(msg_id)
