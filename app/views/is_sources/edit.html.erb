@@ -1,0 +1,11 @@
+<% breadcrumb :show_source, @county, @place, @church, @register %>
+
+<div style="clear:both;"></div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+   	<%= flash[:notice] %><% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+
+<%= render 'edit' %>
+

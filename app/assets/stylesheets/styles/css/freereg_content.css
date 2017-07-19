@@ -215,8 +215,8 @@ margin-left: 0px;
 
 .simple_form label {
   float: left;
-  width: 400px;
-  text-align: right;
+  width: 100%;
+  text-align: left;
   margin: 2px 10px;
 }
 
@@ -287,7 +287,10 @@ label.collection_check_boxes {
     width: 350px !important;  
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
-.simple_form_position{margin-left: 420px}
+.simple_form_position{margin-left: 10px}
+.collection_check_boxes{
+  font-weight: normal;
+}
 
 
 /* width

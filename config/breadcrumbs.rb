@@ -522,6 +522,15 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
+crumb :show_source do |county,place,church,register|
+  link "Image Groups", register_path(register)
+  parent :show_register, county, place, church, register
+end
+
+crumb :show_image do |county,place,church,register|
+  link "Image Files", register_path(register)
+  parent :show_source, county, place,church, register
+end
 
 # crumb :projects do
 #   link "Projects", projects_path
