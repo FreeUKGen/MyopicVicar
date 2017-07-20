@@ -14,7 +14,7 @@
   <% else%>
     <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
     <div class="input select optional userid_detail_transcription_agreement">
-      <span>If you choose to sign the agreement, your transcriptions will be Open. If you decline to sign, your transcriptions will be Closed. You will shown a message to update the status after login, in case you wish to change your mind.</span><br />
+      <span>When you choose to sign the agreement, your transcriptions will be Open. If you decline to sign, your transcriptions will be Closed. If you prefer not to make a choice at this time, please do not click either box, your transcriptions will be Closed . When you decline or had not made your choice you will shown a message to update the status after login, in case you wish to change your mind.</span><br />
       <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
       <div class="simple_form_bgcolour simple_form_position overide_selection_field_width">
         <%= f.radio_button(:transcription_agreement, "Accepted") %>
