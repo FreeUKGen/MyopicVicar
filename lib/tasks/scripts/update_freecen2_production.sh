@@ -10,12 +10,17 @@
 #  3) update the places cache
 #
 #
+# On the test2 server, since freecen1 is very out of date, you will need to
+# manually rsync the current freecen1 files from the production server and
+# pass in 'nosync' as an argument to this script.
 # To manually rsync the data from freecen production server to test2 server:
-#  ssh -A user@test2host
-#  rsync -avz --delete user@productionhost:/raid/freecen/fixed /raid/freecen2/freecen1/
-#  rsync -avz --delete user@productionhost:/raid/freecen/pieces /raid/freecen/
-#  rsync -avz user@productionhost:/home/apache/hosts/freecen/status/db-stats /raid/freecen2/freecen1/
-#  check permisions and ownership
+#   ssh -A user@test2host
+#   rsync -avz --delete user@productionhost:/raid/freecen/fixed /raid/freecen2/freecen1/
+#   rsync -avz --delete user@productionhost:/raid/freecen/pieces /raid/freecen/
+#   rsync -avz user@productionhost:/home/apache/hosts/freecen/status/db-stats /raid/freecen2/freecen1/
+#   sudo chown -R freecen2:freecen2 /raid/freecen2/freecen1/
+# Then, to run the update on the test2 server:
+#   cd /home/apache/hosts/freecen2/production/lib/tasks/scripts && ./update_freecen2_production.sh nosync >> /raid/freecen2/log/update.log 2>&1
 
 set -uo pipefail
 IFS=$'\n\t'
@@ -82,14 +87,14 @@ fi
 # rsync the FC2 data from FC1 data directories
 if [ "$DO_RSYNC" == true ] ; then
   trace "doing rsync of FreeCen1 metadata (ctyPARMS.DAT) files into FreeCen2"
-  sudo -u ${WEB_USER} rsync -avz --delete ${FC1_DATA}/fixed ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freecen1.delta
+  rsync -avz --delete ${FC1_DATA}/fixed ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freecen1.delta
 
   trace "doing rsync of FreeCen1 validated piece (.VLD) files into FreeCen2"
-  sudo -u ${WEB_USER} rsync -avz --delete ${FC1_DATA}/pieces ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
+  rsync -avz --delete ${FC1_DATA}/pieces ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
 
   if [[ -f ${FC1_STAT_FILE} ]] ; then
     trace "doing rsync of FreeCen1 db-status file into FreeCen2"
-    sudo -u ${WEB_USER} rsync -avz ${FC1_STAT_FILE} ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
+    rsync -avz ${FC1_STAT_FILE} ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
   else
     trace "***WARNING: not doing rsync of status file because ${FC1_STAT_FILE} not found"
   fi
@@ -98,20 +103,6 @@ else
   trace "***WARNING: not doing rsync because 'nosync' option was passed into script"
 fi
 
-
-fail() {
-  sudo /root/bin/searchctl.sh enable
-  trace "FATAL $@"
-  exit 1
-}
-
-if [[ -f /root/bin/searchctl.sh ]] ; then
-  trap fail ERR
-  trace "disable searches while update script runs"
-  sudo /root/bin/searchctl.sh disable
-else
-  trace "***WARNING: /root/bin/searchctl.sh not found! not disabling searches"
-fi
 
 trace "running rake task to update the freecen database"
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production freecen_update_from_FC1["${FC2_DATA}/freecen1/fixed","${FC2_DATA}/freecen1/pieces"] --trace
@@ -123,12 +114,7 @@ trace "running rake task to initialize places geolocation based on subplaces, on
 sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production initialize_places_geo[${GEOLOCATION_FILE},true,use_subplaces] --trace
 
 trace "running rake task to update the places cache"
-sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production foo:refresh_places_cache["false"] --trace
-
-if [[ -f /root/bin/searchctl.sh ]] ; then
-  trace "re-enable searches"
-  sudo /root/bin/searchctl.sh enable
-fi
+sudo -u ${WEB_USER} ${BUNDLE} exec rake RAILS_ENV=production foo:refresh_places_cache --trace
 
 trace "finished"
 exit
