@@ -7,6 +7,9 @@
 <% if @user.count_not_checked_messages != 0 %>
 <%= link_to "Messages waiting for you: #{@user.count_not_checked_messages}. Click here to check it out !",userid_messages_path %>
 <% end %>
+<% if @user.transcription_agreement != "Accepted" %>
+  <p><strong><%= link_to "Open Data:", "http://www.freeukgenealogy.org.uk/about/opendata/",:class => "go", target: :_blank %></strong> your transcriptions are currently set to: no preference, and will not be shared as open data. To choose to make your transcriptions Open or Closed, <%= link_to "please click here",edit_userid_detail_path(@user), method: :get %> and update the Transcription Agreement status. If you have any questions about transcribing or the documents linked below, please ask us! volunteers@freereg.org.uk</p>
+<% end %>
 <% breadcrumb :root %>
 <%= @page %> 
 

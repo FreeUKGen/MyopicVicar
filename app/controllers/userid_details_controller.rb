@@ -416,6 +416,7 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:active]  = false
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     when params[:commit] == "Update"
+      params[:userid_detail][:transcription_agreement] = "Unknown"  if params[:userid_detail][:transcription_agreement].blank?
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when params[:commit] == "Confirm"
       if params[:userid_detail][:email_address_valid] == 'true'

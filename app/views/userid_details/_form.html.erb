@@ -1,7 +1,6 @@
 
 <%= simple_form_for @userid, :html => { :class => "grid"} do |f| %>
 <% role_lbl = "Role in " + MyopicVicar::Application.config.freexxx_display_name + ":" %>
-  
 <p style="text-align: center">Required fields are show with an *</p>
   <% if controller.action_name == 'new' || controller.action_name == 'create'%>
     <%= f.input :userid,:label => "UserID",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
@@ -14,6 +13,17 @@
     <% end%>
   <% else%>
     <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
+    <div class="input select optional userid_detail_transcription_agreement">
+      <span>If you choose to sign the agreement, your transcriptions will be Open. If you decline to sign, your transcriptions will be Closed. You will shown a message to update the status after login, in case you wish to change your mind.</span><br />
+      <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
+      <div class="simple_form_bgcolour simple_form_position overide_selection_field_width">
+        <%= f.radio_button(:transcription_agreement, "Accepted") %>
+          <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
+
+        <%= f.radio_button(:transcription_agreement, "Declined") %>
+          <span>I prefer not to sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
+      </div>
+    </div>
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => role_lbl, :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
@@ -38,7 +48,7 @@
   <% unless @user.person_role == 'researcher' %>
     <%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
-    <%= f.input :transcription_agreement, :as => :boolean,:label => "Transcription agreement accepted?"%>
+    <%#= f.input :transcription_agreement, :as => :boolean,:label => "Transcription agreement accepted?"%>
     <% unless session[:my_own] %>           
       <%= f.input :skill_level, :collection => UseridRole::SKILLS, :required => true, :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 4},:selected => "Learning" %>
       <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>
