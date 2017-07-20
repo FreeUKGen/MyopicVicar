@@ -104,7 +104,7 @@ namespace :image do
 
                         is_source = IsSource.where(:register_id=>f[prev_county][prev_place]['register']._id, :ig=>prev_file_name).first
 
-p "status="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][place_part]['church_status'].to_s+" register="+f[county_part][place_part]['register_status'].to_s+" place="+f[county_part][place_part]['place'].place_name.to_s+" church="+f[county_part][place_part]['church'].church_name.to_s+" register="+f[county_part][place_part]['register'].register_type.to_s+" file="+prev_file_name.to_s
+p "status="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_name.to_s
 
                       end
                       update_is_page(is_source,prev_file_name,prev_start_date,prev_end_date,all_seq)
@@ -127,7 +127,7 @@ p "status="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][
       end
     end
 
-    if f[county_part][place_part]['status'] != 'e'
+    if counties.include?(county_part) && f[county_part][place_part]['status'] != 'e'
       update_is_source(f[county_part][place_part]['place'],f[county_part][place_part]['church'],f[county_part][place_part]['register'],f[county_part][place_part]['status'],f[county_part][place_part]['church_status'],f[county_part][place_part]['register_status'],file_name)
 
       is_source = IsSource.where(:register_id=>f[county_part][place_part]['register']._id, :ig=>file_name).first
