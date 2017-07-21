@@ -67,7 +67,7 @@ module FreeregAids
       end
     end
 
-    if ['C4B', 'C4H'].include?(church_status) || ['R4H'].include?(register_status)
+    if ['C4B', 'C4H'].include?(church_status) || ['R4H'].include?(register_status) || place_exist == false
       status = false
     else
       status = true
@@ -81,6 +81,7 @@ module FreeregAids
     if place.present?
       place_ok = true
     else
+p "========================P1"
       place_ok = false
       message = {:P1 => { chapman => { place_name => "P1: file \"/#{chapman}/#{place_name}\" on IS does not have Place \"#{place_name}\" on FR\r\n\r\n"}}}
 #      currently skip all files if related place does not exist in Place yet
@@ -224,7 +225,7 @@ p "=======================R4H"
       if id.nil?
 p "=======================R6B2"
         register_status = 'R6B2'
-        register = create_register(register['chapman_code'], register['place_name'], register['church_id'], register['church_name'], register_type)
+        register = create_register(chapman,place,church,register_type)
 
         message = {:R6B2 => { place.chapman_code => { place_part => "R6-B2: WARNING: file \"/#{place.chapman_code}/#{place_part}\" on IS does not match any register_type on FR\r\n\r\n"}}}
       else
