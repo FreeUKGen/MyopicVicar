@@ -242,7 +242,7 @@ p "=======================R6B1"
 
   def self.create_church(place_id,church_name)
     church_name = Church.standardize_church_name(church_name)
-    church = Church.new(:place_id=>place_id, :IS_church_name=>church_name)
+    church = Church.new(:place_id=>place_id, :church_name=>church_name)
     church.calculate_church_numbers      # do not have collection FreeregValidations in database
 
     church.save!
@@ -255,7 +255,7 @@ p "CREATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
 
   def self.update_church(place_id, church_name)
     church = Church.find({:place_id=>place_id, :church_name=>church_name})
-    church.IS_church_name = church_name
+    church.church_name = church_name
     church.save!
 
 p "UPDATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
