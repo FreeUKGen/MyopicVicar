@@ -42,6 +42,7 @@ class UseridDetail
   field :no_processing_messages, type: Boolean, default: false
   field :userid_messages,type: Array, default: []
   field :reason_for_invalidating,type: String
+  field :new_transcription_agreement, type: String, default: "Unknown"
 
   attr_accessor :action, :message
   index({ email_address: 1 })
