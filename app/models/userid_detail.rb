@@ -373,6 +373,11 @@ class UseridDetail
     user.password != registered_password
   end
 
+  def incomplete_registration_list_rake
+    @users = list_all_users
+    filter_users
+  end
+
   private
 
   def filter_users
@@ -389,7 +394,7 @@ class UseridDetail
   end
 
   def list_all_users
-    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate)
+    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate, :active)
   end
 
   def get_users(current_syndicate)
