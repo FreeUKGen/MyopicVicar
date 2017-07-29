@@ -81,7 +81,7 @@ module FreeregAids
     if place.present?
       place_ok = true
     else
-p "========================P1"
+p "====================P1: county="+chapman.to_s+" place="+place_name.to_s      
       place_ok = false
       message = {:P1 => { chapman => { place_name => "P1: file \"/#{chapman}/#{place_name}\" on IS does not have Place \"#{place_name}\" on FR\r\n\r\n"}}}
 #      currently skip all files if related place does not exist in Place yet
@@ -106,7 +106,7 @@ p "=======================C4B"
       else
 p "=======================C4A"
         church_status = 'C4A'
-        church = create_church(place._id, church_name)
+        church = create_church(place, church_name)
 
         message = {:C4A => { place.chapman_code => { place_part => "C4-A: WARNING: file \"/#{place.chapman_code}/#{place_part}\" on IS does not have Church \"#{church_name}\" for Place \"#{place.place_name} \"on FR\r\n\r\n"}}}
       end
@@ -124,7 +124,7 @@ p "=======================C4A"
         else      # church name on FR and IS are different, create church with church name on IS
 p "=======================C5A"
           church_status = 'C5A'
-          church = create_church(place._id, church_name)
+          church = create_church(place, church_name)
 
           message = {:C5A => { place.chapman_code => { place_part => "C5-A: WARNING: file \"/#{place.chapman_code}/#{place_part}\" does not match church \"#{church.church_name}\" on FR\r\n\r\n"}}}
         end
@@ -147,7 +147,7 @@ p "=======================C4H"
 p "=======================C5B"
         church_status = 'C5B'
         church_ok = false        # comment out for case 3 in image_test.rake#L53
-        church = create_church(place._id, church_name)
+        church = create_church(place, church_name)
 
         message = {:C5B => { place.chapman_code => { place_part => "C5-B: WARNING: file \"/#{place.chapman_code}/#{place_part}\" on IS does not matach any church on FR\r\n\r\n"}}}
       end
@@ -240,9 +240,10 @@ p "=======================R6B1"
     return register,message,register_status,register_ok
   end
 
-  def self.create_church(place_id,church_name)
+  def self.create_church(place,church_name)
     church_name = Church.standardize_church_name(church_name)
-    church = Church.new(:place_id=>place_id, :church_name=>church_name)
+    church = Church.new(:place_id=>place.id, :church_name=>church_name)
+    church.church_notes = 'Created by IS_FR loading script'
     church.calculate_church_numbers      # do not have collection FreeregValidations in database
 
     church.save!

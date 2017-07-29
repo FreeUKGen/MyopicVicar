@@ -1,0 +1,39 @@
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">  
+  <%= link_to 'Create new Source', new_source_path(:id=>params[:id]), method: :get, :class => "btn weight--light btn--small"  %> 
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead>
+      <tr>
+        <th class="t15">Source</th>
+        <th class="t15">Action</th>
+      </tr>
+    </thead>
+  </table>
+
+  <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody>  
+        <% @source.each do |x| %>
+          <tr>
+            <td class="t20"><%= x.source_name %></td>
+            <td class="t15">
+              <% case x.source_name %>
+                <% when 'Image Server' %>
+                  <%= link_to 'SH', image_server_group_path(x) %>
+                <% when 'Other Server1' %>
+                <% when 'Other Server2' %>
+                <% else %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div id="task-form" style="display:none;"></div>
+</div>

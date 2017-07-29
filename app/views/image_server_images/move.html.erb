@@ -1,0 +1,21 @@
+<% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+
+<div style="clear:both;"></div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %><% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+
+<section class="island ">
+You are currently under Images Group <b>"<%= @image_server_group.ig %>"</b><br>
+  <div class="grid__item ">
+    <%= simple_form_for @image_server_image do |s| %>
+      <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort, :label=>'Check the images you want to move', :label_html=>{}, :item_label_class=>"collection_check_boxes", :include_blank=>false, :input_html=>{:class=>"simple_form_position"} %>
+      <%= s.input :image_server_group_id, :as=>:select, :collection=>@ig.invert.sort, :label=>'Re-sssign selected images to Image Group', :multiple=>true, :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
+
+      <%= s.hidden_field :image_server_group_id, :value=>s.object.image_server_group_id %>
+      <%= s.button :submit, 'Submit' %>
+    <% end %>        
+  </div>
+</section>

@@ -1,0 +1,53 @@
+<% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+
+<div style="clear:both;"></div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %><% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered  table--data">
+        <colgroup >
+        <col class=t20>
+        <col class=t80>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th class="caps">Value</th>
+        </tr>
+        <tr><td>Image Group</td><td class="weight--semibold"><%= @image[:image_group][:ig] %></td></tr>
+        <tr><td>Image Set</td><td class="weight--semibold"><%= @image[:image_set] %></td></tr>
+        <tr><td>Image</td><td class="weight--semibold"><%= @image[:seq] %></td></tr>
+        <tr>
+          <td>Status</td>
+          <% case @image[:image_group][:status] %>
+            <% when 'u' %>
+               <td class="weight--semibold" style="color:red">
+            <% when 'i' %>
+              <td class="weight--semibold">
+            <% when 't' %>
+              <td class="weight--semibold" style="color:green">
+            <% when 'r' %>
+              <td class="weight--semibold">
+            <% else %>
+              <td>
+          <% end %>
+          <%= ImageServerImage::Status::ALL_STATUSES[@image[:image_group][:status]] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Difficulty</td><td class="weight--semibold"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[@image[:difficulty]] if @image[:image_group][:difficulty].present? %>&nbsp;</td>
+        </tr>
+        <tr>
+        	<td>Transcriber</td><td class="weight--semibold"><%= @image[:image_group][:transcriber] %>&nbsp;</td>
+				</tr>
+        <tr>
+        	<td>Assign Date</td><td class="weight--semibold"><%= @image[:image_group][:assign_date] %>&nbsp;</td>
+				</tr>
+      </table>
+    </div>
+  </section>
+</div>

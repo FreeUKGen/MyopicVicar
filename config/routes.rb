@@ -283,11 +283,13 @@ MyopicVicar::Application.routes.draw do
 
   resources :assets
 
-  resources :is_sources
+  resources :sources
 
-  resources :is_images
-  get 'is_images/:id/move(.:format)', :to => 'is_images#move', :as => :move_is_image
-  get 'is_images/:id/detail(.:format)', :to => 'is_images#detail', :as => :detail_is_image
+  resources :image_server_groups
+
+  resources :image_server_images
+  get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
+  get 'image_server_images/:id/detail(.:format)', :to => 'image_server_images#detail', :as => :detail_image_server_image
 
 
 
