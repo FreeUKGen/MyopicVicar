@@ -42,7 +42,7 @@ p "============================source show============================="
       when 1    # when only one source_name, display that source
         case @source.first.source_name
           when 'Image Server'
-            redirect_to image_server_group_path(:id=>@source.first.id)
+#            redirect_to image_server_group_path(:id=>@source.first.id)
           when 'Other Server1'   # leave for other servers
           when 'Other Server2'
           else
