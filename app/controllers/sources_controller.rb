@@ -62,6 +62,11 @@ p "============================source show============================="
   end
 
   def update
+    source = Source.where(:id=>params[:id]).first
+
+    source.update_attributes(source_params)
+    flash[:notice] = 'Update of source was successful'
+    redirect_to source_path(source.register)     
   end
 
   private
