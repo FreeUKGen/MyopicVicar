@@ -21,6 +21,14 @@ class SourcesController < ApplicationController
   end
 
   def edit
+    display_info
+    @source = Source.id(params[:id]).first
+
+    if @source.nil?
+      flash[:notice] = 'Attempted to edit a non_esxistent Source'
+      redirect_to :back
+      return
+    end
   end
 
   def index

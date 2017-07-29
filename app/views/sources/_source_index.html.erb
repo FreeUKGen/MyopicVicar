@@ -24,7 +24,7 @@
             <td class="t15">
               <% case x.source_name %>
                 <% when 'Image Server' %>
-                  <%= link_to 'SH', image_server_group_path(x) %>
+                  <%= link_to 'SH', image_server_group_path(x) %> <%= link_to 'ED', edit_source_path(x) %>
                 <% when 'Other Server1' %>
                 <% when 'Other Server2' %>
                 <% else %>
