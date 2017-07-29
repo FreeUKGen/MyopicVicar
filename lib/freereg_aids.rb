@@ -67,7 +67,7 @@ module FreeregAids
       end
     end
 
-    if ['C4B', 'C4H'].include?(church_status) || ['R4H'].include?(register_status) || place_exist == false
+    if ['C4B', 'C4H'].include?(church_status) || ['R4H'].include?(register_status) || place_exist == false || church_exist == false
       status = false
     else
       status = true
