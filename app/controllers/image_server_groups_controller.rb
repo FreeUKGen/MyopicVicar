@@ -1,12 +1,11 @@
 class ImageServerGroupsController < ApplicationController
  
   skip_before_filter :require_login, only: [:show]
-  before_action :display_info
 
   def create
     display_info
-    image_server_group = ImageServerGroup.where(:source_id=>params[:image_server_group][:source_id]).first
-    ig = ImageServerGroup.where(:source_id=>params[:image_server_group][:source_id]).pluck(:ig)
+    image_server_group = ImageServerGroup.where(:source_id=>session[:source_id]).first
+    ig = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:ig)
     source = image_server_group.source
 
     if not ig.include? params[:image_server_group][:ig]
@@ -47,6 +46,7 @@ class ImageServerGroupsController < ApplicationController
 
   def display_info
     @register = Register.find(:id=>session[:register_id])
+    @register_type = RegisterType.display_name(@register.register_type)
     @church = Church.find(session[:church_id])
     @church_name = session[:church_name]
     @county =  session[:county]
@@ -100,8 +100,9 @@ def get_userids_and_transcribers
   end
 
   def new 
+    display_info
     @image_server_group = ImageServerGroup.new
-    @ig = ImageServerGroup.where(:source_id=>params[:id]).pluck(:ig)
+    @ig = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:ig)
   end
 
   def show

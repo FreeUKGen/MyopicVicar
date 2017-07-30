@@ -523,7 +523,7 @@ crumb :create_syndicate do |syndicate|
 end
 
 crumb :show_source do |county,place,church,register|
-  link "Sources", source_path(register)
+  link "Sources", index_source_path(register)
   parent :show_register, county, place, church, register
 end
 

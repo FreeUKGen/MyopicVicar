@@ -1,6 +1,8 @@
 <% breadcrumb :show_source, @county, @place, @church, @register %>
 
 <div style="clear:both;"></div><br>
+<p style="text-align: center">Sources of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %><% flash[:notice] = nil%><br>

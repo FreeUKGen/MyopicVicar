@@ -24,6 +24,7 @@ class ImageServerImagesController < ApplicationController
 
   def display_info
     @register = Register.find(:id=>session[:register_id])
+    @register_type = RegisterType.display_name(@register.register_type)
     @church = Church.find(session[:church_id])
     @church_name = session[:church_name]
     @county =  session[:county]

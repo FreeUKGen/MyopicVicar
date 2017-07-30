@@ -10,6 +10,7 @@
     <thead>
       <tr>
         <th class="t15">Source</th>
+        <th class="t30">Notes</th>
         <th class="t15">Action</th>
       </tr>
     </thead>
@@ -20,7 +21,8 @@
       <tbody>  
         <% @source.each do |x| %>
           <tr>
-            <td class="t20"><%= x.source_name %></td>
+            <td class="t15"><%= x.source_name %></td>
+            <td class="t30"><%= x.notes %>&nbsp;</td>
             <td class="t15">
               <% case x.source_name %>
                 <% when 'Image Server' %>
