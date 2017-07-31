@@ -10,15 +10,15 @@ class ImageServerGroupsController < ApplicationController
 
     if not ig.include? params[:image_server_group][:ig]
       image_server_group = ImageServerGroup.new(image_server_group_params)
-
       image_server_group.save!
-      source.image_server_groups << image_server_group
-      source.save!
 
       if image_server_group.errors.any? then
         flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:ig]+'" was unsuccessful'
         redirect_to :back
       else
+        source.image_server_groups << image_server_group
+        source.save!
+
         flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:ig]+'" was successful'
         redirect_to image_server_group_path(source)
       end

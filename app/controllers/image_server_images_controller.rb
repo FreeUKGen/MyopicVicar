@@ -7,9 +7,10 @@ class ImageServerImagesController < ApplicationController
     display_info
     image_server_image = ImageServerImage.where(:id=>params[:id]).first
     return_location = image_server_image.image_server_group
-    image_server_image.destroy
+#    image_server_image.destroy
 
-    flash[:notice] = 'Deletion of image"'+image_server_image[:image_set]+'_'+image_server_image[:seq]+'.jpg" was successful'
+#    flash[:notice] = 'Deletion of image"'+image_server_image[:image_set]+'_'+image_server_image[:seq]+'.jpg" was successful'
+    flash[:notice] = 'Deletion of image is not supported currently'
     redirect_to image_server_image_path(return_location)
   end
 
@@ -92,7 +93,7 @@ class ImageServerImagesController < ApplicationController
     display_info
 
     @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id])
-    image_server_group = ImageServerGroup.where(:id=>session[:image_server_group_id]).first
+    @image_server_group = ImageServerGroup.where(:id=>session[:image_server_group_id]).first
 
     if @image_server_image.empty?
       flash[:notice] = 'No Images under Image Group "'+image_server_group.ig.to_s+'"'

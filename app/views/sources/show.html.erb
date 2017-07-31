@@ -1,7 +1,7 @@
 <% breadcrumb :show_source, @county, @place, @church, @register %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Sources of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center">Sources of images for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
@@ -9,8 +9,35 @@
   </div>
 <% end %>
 
-<div class="grid">
-  <section class="island">
-    <%= render 'source_index' %>
-  </section>
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">  
+  <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead>
+      <tr>
+        <th class="t15">Source</th>
+        <th class="t30">Notes</th>
+        <th class="t15">Action</th>
+      </tr>
+    </thead>
+  </table>
+
+	<% x = @source.first %>
+  <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody>  
+        <tr>
+          <td class="t15"><%= x[:source_name] %></td>
+          <td class="t30"><%= x[:notes] %>&nbsp;</td>
+          <td class="t15"><%= link_to 'SH', image_server_group_path(x) %> <%= link_to 'ED', edit_source_path(x) %> <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="task-form" style="display:none;"></div>
 </div>
