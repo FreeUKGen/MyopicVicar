@@ -1,0 +1,12 @@
+<div style="clear:both;"></div><br>
+
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @source do |s| %>
+  <%= s.input :source_name, :label=>"Source", :readonly=>true, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
+  <%= s.input :notes, :label=>"Source Notes", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
+
+  <%= s.button :submit, 'Submit' %>
+<% end %>
+</div>
+</section>

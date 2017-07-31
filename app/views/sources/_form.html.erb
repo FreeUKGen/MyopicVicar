@@ -1,0 +1,10 @@
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @source do |s| %>
+  <%= s.input :source_name, :collection=>@list, :label=>'Source Name', include_blank: false, :input_html=>{:class => "simple_form_bgcolour", :size => 2} %>
+  <%= s.input :notes, :label => 'Notes', :input_html => {:class => "simple_form_bgcolour", :size => 20} %>
+	<%= s.hidden_field :register_id, :value=>session[:register_id] %>
+  <%= s.button :submit, 'Submit' %>
+<% end %>
+</div>
+</section>
