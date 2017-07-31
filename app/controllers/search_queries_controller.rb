@@ -57,10 +57,10 @@ class SearchQueriesController < ApplicationController
         @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #check for birth county of the ridings in addition to generic "YKS"
       end
       if @search_query["chapman_codes"].include?("CHI")
-        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ALD", "GSY", "IOM", "JSY", "SRK"]).uniq
+        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ALD", "GSY", "JSY", "SRK"]).uniq
       end
       if @search_query["birth_chapman_codes"].include?("CHI")
-        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ALD", "GSY", "IOM", "JSY", "SRK"]).uniq
+        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ALD", "GSY", "JSY", "SRK"]).uniq
       end
       @search_query.session_id = request.session_options[:id]
       if  @search_query.save
