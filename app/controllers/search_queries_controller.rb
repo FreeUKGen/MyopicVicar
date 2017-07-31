@@ -49,11 +49,18 @@ class SearchQueriesController < ApplicationController
       @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
       @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
       @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
-      if @search_query["chapman_codes"][1].eql?("YKS")
-        @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
+
+      if @search_query["chapman_codes"].include?("YKS")
+        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #keep YKS (in case user revises search) and add codes for the ridings
       end
-      if @search_query["chapman_codes"][1].eql?("CHI")
-        @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+      if @search_query["birth_chapman_codes"].include?("YKS")
+        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #check for birth county of the ridings in addition to generic "YKS"
+      end
+      if @search_query["chapman_codes"].include?("CHI")
+        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ALD", "GSY", "IOM", "JSY", "SRK"]).uniq
+      end
+      if @search_query["birth_chapman_codes"].include?("CHI")
+        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ALD", "GSY", "IOM", "JSY", "SRK"]).uniq
       end
       @search_query.session_id = request.session_options[:id]
       if  @search_query.save
