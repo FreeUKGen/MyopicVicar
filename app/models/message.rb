@@ -42,20 +42,20 @@ class Message
     recipients.each do |recip|
       case
       when active_user
-        UseridDetail.role(recip).transcription_agreement(open_data_status_value(open_data_status)).active(active).email_address_valid.all.each do |person|
+        UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active).email_address_valid.all.each do |person|
           add_message_to_userid_messages(person)
           ccs << person.email_address
         end
       when reasons.present? && !active_user
         reasons.each do |reason|
-          UseridDetail.role(recip).transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
+          UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
         end
       when reasons.blank? && !active_user
         reasons.each do |reason|
-          UseridDetail.role(recip).transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
+          UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end

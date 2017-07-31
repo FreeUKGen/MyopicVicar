@@ -56,7 +56,7 @@ class UseridDetail
   has_many :assignments
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
-    :skill_level #,:transcription_agreement
+    :skill_level #,:new_transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
@@ -92,6 +92,10 @@ class UseridDetail
 
     def transcription_agreement(transcription_agreement)
       where(:transcription_agreement => transcription_agreement)
+    end
+
+    def new_transcription_agreement(new_transcription_agreement)
+      where(:new_transcription_agreement => new_transcription_agreement)
     end
   end
 
