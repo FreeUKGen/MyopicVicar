@@ -43,6 +43,37 @@ module ChapmanCode
     hash
   end
 
+  def self.codes_for_cen_county()
+    hsh = {}
+    ChapmanCode::CODES.each_pair do |ctry, ctryval|
+      ctryhash={}
+      ctryval.each_pair do |kk,vv|
+        ctryhash[kk] = vv
+      end
+      hsh[ctry] = ctryhash
+    end
+    hsh['Islands'].delete('Alderney')
+    hsh['Islands'].delete('Guernsey')
+    hsh['Islands'].delete('Jersey')
+    hsh['Islands'].delete('Sark')
+    hsh
+  end
+
+  def self.codes_for_cen_birth_county()
+    hsh = {}
+    ChapmanCode::CODES.each_pair do |ctry, ctryval|
+      ctryhash={}
+      ctryval.each_pair do |kk,vv|
+        ctryhash[kk] = vv
+      end
+      hsh[ctry] = ctryhash
+    end
+    hsh['England'].delete('Yorkshire, East Riding')
+    hsh['England'].delete('Yorkshire, North Riding')
+    hsh['England'].delete('Yorkshire, West Riding')
+    hsh
+  end
+
   def self.add_parenthetical_codes(hash)
     hsh = {}
     hash.each_pair do |key, value|
