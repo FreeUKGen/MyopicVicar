@@ -13,13 +13,17 @@ class Source
 
   field :source_name, type: String
   field :notes, type: String
+  field :start_date, type: String
+  field :end_date, type: String
 
-  field :digital, type: Mongoid::Boolean # is the source a digital facsimile image or a physical (paper or microform) document
-  field :microform, type: Mongoid::Boolean # is the source we see a microfilm or microfiche or an original?
-  field :edition, type: Mongoid::Boolean # Philimores,  Dwellys, or another printed edition from the Victorian era?
-  field :ms_type, type: String
-  validates_inclusion_of :ms_type, :in => MsType::ALL_TYPES+[nil]
-  field :url, type: String # If the source is locatable online, this is the URL for the top-level (not single-page) webpage for it
+  field :original_form, type: String
+  field :original_owner, type: String
+  field :creating_institution, type: String
+  field :holding_institution, type: String
+  field :restrictions_on_use_by_creating_institution, type: String
+  field :restrictions_on_use_by_holding_institution, type: String
+  field :open_data, type: Boolean, default: true
+  field :url, type: String #if the source is locatable online, this is the URL for the top-level (not single-page) webpage for it
 
   belongs_to :register, index: true
   has_many :image_server_groups, foreign_key: :source_id # includes transcripts, printed editions, and microform, and digital versions of these

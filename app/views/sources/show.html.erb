@@ -1,7 +1,15 @@
 <% breadcrumb :show_source, @county, @place, @church, @register %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Sources of images for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center">Source of images for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+
+<% x = @source.first %>
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">  
+  <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> <%= link_to 'List Image Server Groups', image_server_group_path(x), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Edit Source', edit_source_path(x), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Delete Source', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
@@ -9,35 +17,30 @@
   </div>
 <% end %>
 
-<% unless session[:userid].nil?%>
-  <div style="text-align: center">  
-  <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
-  </div>
-  <div style="clear:both;"> </div><br>
-<% end %>
-
-<div style="overflow: hidden;">
-  <table class="my-width-min flush--bottom" >
-    <thead>
+<div class="grid">
+  <section class="island ">
+  <div class="grid__item ">
+    <table   class="table--bordered  table--data">
+      <colgroup >
+        <col class=t40>
+        <col class=t60>
+      </colgroup>
       <tr>
-        <th class="t15">Source</th>
-        <th class="t30">Notes</th>
-        <th class="t15">Action</th>
+        <th class="caps">Field</th>
+        <th  class="caps">Value</th>
       </tr>
-    </thead>
-  </table>
-
-	<% x = @source.first %>
-  <div class="scrollable">
-    <table class=" table--bordered my-width table--data just--left">
-      <tbody>  
-        <tr>
-          <td class="t15"><%= x[:source_name] %></td>
-          <td class="t30"><%= x[:notes] %>&nbsp;</td>
-          <td class="t15"><%= link_to 'SH', image_server_group_path(x) %> <%= link_to 'ED', edit_source_path(x) %> <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %></td>
-        </tr>
-      </tbody>
+      <tr><td>Source Name :</td><td class="weight--semibold"><%= x[:source_name] %></td></tr>
+      <tr><td>Notes</td><td class="t15"><%= x[:notes] %>&nbsp;</td></tr>
+      <tr><td>Start Date</td><td class="t30"><%= x[:start_date] %>&nbsp;</td></tr>
+      <tr><td>End Date</td><td class="t15"><%= x[:end_date] %>&nbsp;</td></tr>
+      <tr><td>Original Form</td><td class="t15"><%= x[:original_form] %>&nbsp;</td></tr>
+      <tr><td>Creating Institution</td><td class="t15"><%= x[:creating_institution] %>&nbsp;</td></tr>
+      <tr><td>Holding Institution</td><td class="t15"><%= x[:holding_institution] %>&nbsp;</td></tr>
+      <tr><td>Restrictions on Use by Creating Institution</td><td class="t15"><%= x[:restrictions_on_use_by_creating_institution] %>&nbsp;</td></tr>
+      <tr><td>Restrictions on Use by Holding Institution</td><td class="t15"><%= x[:restrictions_on_use_by_holding_institution] %>&nbsp;</td></tr>
+      <tr><td>Open Data</td><td class="t15"><%= x[:open_data] ? 'Yes' : 'No' %>&nbsp;</td></tr>
+      <tr><td>URL</td><td class="t15"><%= x[:url] %>&nbsp;</td></tr>
     </table>
   </div>
-  <div id="task-form" style="display:none;"></div>
+  </section>
 </div>
