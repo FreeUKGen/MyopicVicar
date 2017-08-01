@@ -169,9 +169,9 @@
   <% google_analytics_tracking_id = 'UA-62395250-1' %>
 
 <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-  <% if MyopicVicar::MongoConfig["website"].eql? "freecen2.freecen.org.uk" %>
+  <% if MyopicVicar::MongoConfig["website"].eql? "https://freecen2.freecen.org.uk" %>
   <% google_analytics_tracking_id = 'UA-89287207-1' %>
-  <% elsif MyopicVicar::MongoConfig["website"].eql? "test2.freecen.org.uk"%>
+  <% elsif MyopicVicar::MongoConfig["website"].eql? "http://test2.freecen.org.uk"%>
   <%  google_analytics_tracking_id = 'UA-89287207-1' %>
   <% else %>
   <%  google_analytics_tracking_id = "UA-71283391-1" %>
