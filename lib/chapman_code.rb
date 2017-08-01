@@ -24,7 +24,7 @@ module ChapmanCode
   end
 
   def self.remove_codes(hash)
-    hash = ChapmanCode::CODES.each_pair do |key, value|
+    hash = hash.each_pair do |key, value|
       FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
         value.delete_if {|key, value| key == country }
       end
@@ -48,14 +48,10 @@ module ChapmanCode
     ChapmanCode::CODES.each_pair do |ctry, ctryval|
       ctryhash={}
       ctryval.each_pair do |kk,vv|
-        ctryhash[kk] = vv
+        ctryhash[kk] = vv unless ['ALD','GSY','JSY','SRK'].include?(vv.to_s)
       end
       hsh[ctry] = ctryhash
     end
-    hsh['Islands'].delete('Alderney')
-    hsh['Islands'].delete('Guernsey')
-    hsh['Islands'].delete('Jersey')
-    hsh['Islands'].delete('Sark')
     hsh
   end
 
@@ -64,13 +60,10 @@ module ChapmanCode
     ChapmanCode::CODES.each_pair do |ctry, ctryval|
       ctryhash={}
       ctryval.each_pair do |kk,vv|
-        ctryhash[kk] = vv
+        ctryhash[kk] = vv unless ['ERY','NRY','WRY'].include?(vv)
       end
       hsh[ctry] = ctryhash
     end
-    hsh['England'].delete('Yorkshire, East Riding')
-    hsh['England'].delete('Yorkshire, North Riding')
-    hsh['England'].delete('Yorkshire, West Riding')
     hsh
   end
 
