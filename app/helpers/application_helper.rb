@@ -171,4 +171,41 @@ module ApplicationHelper
     Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
   end
 
+  def valid_directory?
+    File.directory?(output_directory_path)
+  end
+
+  # Create a new file named as current date and time
+  def new_file(name)
+    raise "Not a Valid Directory" unless valid_directory?
+
+    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{name}.txt"
+    "#{output_directory_path}/#{file_name}"
+  end
+
+  # Set an output directory
+  # If there is no ouput directory, then set the default
+  # else check the trailing slash at the end of the directory
+  def output_directory_path
+    if @output_directory.nil?
+      directory = File.join(Rails.root, 'script')
+    else
+      directory = File.join(@output_directory, "")
+    end
+    directory
+  end
+
+  def delete_file_if_exists(name)
+    File.delete(*Dir.glob("#{output_directory_path}/*_#{name}.txt"))
+  end
+
+  def to_boolean(value)
+    case value
+    when true, 'true', 1, '1', 't' then true
+    when false, 'false', nil, '', 0, '0', 'f' then false
+    when nil, "nil" then nil
+    else
+      raise ArgumentError, "invalid value for Boolean(): \"#{value.inspect}\""
+    end
+  end
 end

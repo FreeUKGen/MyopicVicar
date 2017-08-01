@@ -357,11 +357,7 @@ class UseridDetail
   end
 
   def list_incomplete_registrations current_user, current_syndicate
-    if current_syndicate == 'all'
-      @users = list_all_users
-    else
-      @users = get_users(current_syndicate)
-    end
+    @users = get_users_by_syndicate(current_syndicate)
     filter_users
   end
 
@@ -373,9 +369,36 @@ class UseridDetail
     user.password != registered_password
   end
 
-  def incomplete_registration_list_rake
+  def incomplete_registration_user_lists(current_syndicate, active)
+    syndicate_users = get_users_by_syndicate(current_syndicate)
+    if active.nil?
+      @users = syndicate_users
+    elsif active
+      @users = syndicate_users.where(active: true)
+    else
+      @users = syndicate_users.where(active: false)
+    end
+    active_lists(get_user_ids)
+  end
+
+  def active_incomplete_registration_list
     @users = list_all_users
-    filter_users
+    active_incomplete_registrations = Array.new
+    filter_users.each { |usr|
+      next if !usr.active
+      active_incomplete_registrations << usr.userid
+    }
+    active_incomplete_registrations
+  end
+
+  def active_lists(user_lists)
+    original_stdout = STDOUT.clone
+    file_name = "active_incomplete_registrations"
+    ApplicationController.helpers.delete_file_if_exists(file_name)
+    STDOUT.reopen(ApplicationController.helpers.new_file(file_name), "w")
+    puts user_lists
+    STDOUT.reopen(original_stdout)
+    puts "Total number of ids: #{user_lists.count}"
   end
 
   private
@@ -385,7 +408,7 @@ class UseridDetail
     @users.each { |user|
       next if registration_completed(user)
       @incompleted_registration_users << user
-    }    
+    }
     @incompleted_registration_users
   end
 
@@ -397,8 +420,16 @@ class UseridDetail
     self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate, :active)
   end
 
-  def get_users(current_syndicate)
-    Syndicate.get_users_for_syndicate(current_syndicate)
+  def get_users_by_syndicate(current_syndicate)
+    if current_syndicate == 'all'
+      list_all_users
+    else
+      self.class.syndicate(current_syndicate)
+    end
+  end
+
+  def get_user_ids
+    filter_users.map{ |x| x[:userid] }
   end
 
 end #end class
