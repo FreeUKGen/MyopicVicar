@@ -49,11 +49,18 @@ class SearchQueriesController < ApplicationController
       @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
       @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
       @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
-      if @search_query["chapman_codes"][1].eql?("YKS")
-        @search_query["chapman_codes"] = ["", "ERY", "NRY", "WRY"]
+
+      if @search_query["chapman_codes"].include?("YKS")
+        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #keep YKS (in case user revises search) and add codes for the ridings
       end
-      if @search_query["chapman_codes"][1].eql?("CHI")
-        @search_query["chapman_codes"] = ["", "ALD", "GSY", "JSY", "SRK"]
+      if @search_query["birth_chapman_codes"].include?("YKS")
+        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #check for birth county of the ridings in addition to generic "YKS"
+      end
+      if @search_query["chapman_codes"].include?("CHI")
+        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ALD", "GSY", "JSY", "SRK"]).uniq
+      end
+      if @search_query["birth_chapman_codes"].include?("CHI")
+        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ALD", "GSY", "JSY", "SRK"]).uniq
       end
       @search_query.session_id = request.session_options[:id]
       if  @search_query.save
@@ -83,13 +90,15 @@ class SearchQueriesController < ApplicationController
   end
 
   def missing_document
-    logger.warn("FREEREG:SEARCH: Search encountered a missing document #{params}")
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    logger.warn("#{appname}:SEARCH: Search encountered a missing document #{params}")
     flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
     redirect_to new_search_query_path
   end
 
   def missing_template
-    logger.warn("FREEREG:SEARCH: Search encountered a missing template #{params}")
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    logger.warn("#{appname}:SEARCH: Search encountered a missing template #{params}")
     flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
     redirect_to new_search_query_path
   end
@@ -181,15 +190,16 @@ class SearchQueriesController < ApplicationController
   end
 
   def search_taking_too_long(message)
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if message.to_s =~ /operation exceeded time limit/
       @search_query = SearchQuery.find(session[:query])
       runtime = Rails.application.config.max_search_time
       @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
-      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
+      logger.warn("#{appname}:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
       session[:query] = nil
       flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
     else
-      logger.warn("FREEREG:SEARCH: Search #{@search_query.id} had a problem #{message}")
+      logger.warn("#{appname}:SEARCH: Search #{@search_query.id} had a problem #{message}")
       flash[:notice] = 'Your search encountered a problem please contact us with this message'
     end
     redirect_to new_search_query_path(:search_id => @search_query)
@@ -284,7 +294,8 @@ class SearchQueriesController < ApplicationController
     if params[:id].present?
       @search_query = SearchQuery.where(:id => params[:id]).first
     else
-      logger.warn("FREEREG:SEARCH_ERROR:nil parameter condition occurred")
+      appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+      logger.warn("#{appname}:SEARCH_ERROR:nil parameter condition occurred")
       go_back
       return
     end

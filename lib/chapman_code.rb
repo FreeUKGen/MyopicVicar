@@ -24,7 +24,7 @@ module ChapmanCode
   end
 
   def self.remove_codes(hash)
-    hash = ChapmanCode::CODES.each_pair do |key, value|
+    hash = hash.each_pair do |key, value|
       FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
         value.delete_if {|key, value| key == country }
       end
@@ -41,6 +41,30 @@ module ChapmanCode
       hash.delete("All")
     end
     hash
+  end
+
+  def self.codes_for_cen_county()
+    hsh = {}
+    ChapmanCode::CODES.each_pair do |ctry, ctryval|
+      ctryhash={}
+      ctryval.each_pair do |kk,vv|
+        ctryhash[kk] = vv unless ['ALD','GSY','JSY','SRK'].include?(vv.to_s)
+      end
+      hsh[ctry] = ctryhash
+    end
+    hsh
+  end
+
+  def self.codes_for_cen_birth_county()
+    hsh = {}
+    ChapmanCode::CODES.each_pair do |ctry, ctryval|
+      ctryhash={}
+      ctryval.each_pair do |kk,vv|
+        ctryhash[kk] = vv unless ['ERY','NRY','WRY'].include?(vv)
+      end
+      hsh[ctry] = ctryhash
+    end
+    hsh
   end
 
   def self.add_parenthetical_codes(hash)
