@@ -154,6 +154,11 @@ module UseridRole
 
 # Remove options for functionality that is not implemented for FreeCen yet
   if MyopicVicar::Application.config.template_set == 'freecen'
+    transcriber_idx = VALUES.find_index('transcriber')
+    VALUES.insert(transcriber_idx+1,'checker')
+    VALUES.insert(transcriber_idx+2,'validator')
+    OPTIONS['checker'] = ["Batches","Profile", "Roadmap"]
+    OPTIONS['validator'] = ["Batches","Profile", "Roadmap"]
     OPTIONS.each do |role,opts|
       if opts.include?('Batches')
         opts.delete("Batches")
