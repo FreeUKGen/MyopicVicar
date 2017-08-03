@@ -16,7 +16,7 @@ class Source
   field :start_date, type: String
   field :end_date, type: String
 
-  field :original_form, type: String
+  field :original_form, type: Hash, default: {}
   field :original_owner, type: String
   field :creating_institution, type: String
   field :holding_institution, type: String

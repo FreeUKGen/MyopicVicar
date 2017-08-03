@@ -25,17 +25,24 @@ class SourcesController < ApplicationController
 
   def destroy
     display_info
-    source = Source.id(params[:id]).first
-    return_location = source.register
-    image_server_group = ImageServerGroup.where(:source_id=>params[:id]).count
 
-    if image_server_group == 0
-      source.destroy
-      flash[:notice] = 'Deletion of "'+source[:source_name]+'" was successful'
-      redirect_to index_source_path(return_location)      
+    get_user_info(session[:userid],session[:first_name])
+    if ['system_administrator', 'data_managers'].include? @user.person_role
+      source = Source.id(params[:id]).first
+      return_location = source.register
+      image_server_group = ImageServerGroup.where(:source_id=>params[:id]).count
+
+      if image_server_group == 0
+        source.destroy
+        flash[:notice] = 'Deletion of "'+source[:source_name]+'" was successful'
+        redirect_to index_source_path(return_location)      
+      else
+        flash[:notice] = '"'+source[:source_name]+'" contains image groups, can not be deleted'
+        redirect_to index_source_path(return_location)
+      end
     else
-      flash[:notice] = '"'+source[:source_name]+'" contains image groups, can not be deleted'
-      redirect_to index_source_path(return_location)
+      flash[:notice] = 'Only system_administrator and data_manager is allowed to delete source'
+      redirect_to :back
     end
   end
 

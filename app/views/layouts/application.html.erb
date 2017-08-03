@@ -143,6 +143,26 @@
         });
     });
 </script> 
+
+<script type="text/javascript">
+  $('#source_original_form_type').ready(function(){
+    if ($('#source_original_form_type :selected').val() === 'other') {
+      $('#source_original_form_name').show()
+    } else {
+      $('#source_original_form_name').hide()
+    }    
+  })
+  $('#source_original_form_type').on('change',function(){
+    x = document.getElementById('source_original_form_type')
+    if (x.options[x.selectedIndex].value === 'other') {
+      $('#source_original_form_name').show()
+    } else {
+      $('#source_original_form_name').hide()
+      document.getElementById('source_original_form_name').value = ''
+    }    
+  })
+</script>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
