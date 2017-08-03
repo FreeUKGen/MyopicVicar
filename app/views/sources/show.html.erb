@@ -20,20 +20,24 @@
 <div class="grid">
   <section class="island ">
   <div class="grid__item ">
-    <table   class="table--bordered  table--data">
+    <table class="table--bordered  table--data">
       <colgroup >
         <col class=t40>
         <col class=t60>
       </colgroup>
       <tr>
         <th class="caps">Field</th>
-        <th  class="caps">Value</th>
+        <th class="caps">Value</th>
       </tr>
       <tr><td>Source Name :</td><td class="weight--semibold"><%= x[:source_name] %></td></tr>
       <tr><td>Notes</td><td class="t15"><%= x[:notes] %>&nbsp;</td></tr>
       <tr><td>Start Date</td><td class="t30"><%= x[:start_date] %>&nbsp;</td></tr>
       <tr><td>End Date</td><td class="t15"><%= x[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Original Form</td><td class="t15"><%= x[:original_form] %>&nbsp;</td></tr>
+      <tr><td>Original Form</td><td class="t15"><%= x[:original_form][:type] %>
+        <% if x[:original_form][:type] == 'other' %>
+          : <%= x[:original_form][:name]  %>
+        <% end %>
+      </tr>
       <tr><td>Creating Institution</td><td class="t15"><%= x[:creating_institution] %>&nbsp;</td></tr>
       <tr><td>Holding Institution</td><td class="t15"><%= x[:holding_institution] %>&nbsp;</td></tr>
       <tr><td>Restrictions on Use by Creating Institution</td><td class="t15"><%= x[:restrictions_on_use_by_creating_institution] %>&nbsp;</td></tr>
