@@ -147,16 +147,20 @@
 <script type="text/javascript">
   $('#source_original_form_type').ready(function(){
     if ($('#source_original_form_type :selected').val() === 'other') {
+      $('#original_form_label').show()
       $('#source_original_form_name').show()
     } else {
+      $('#original_form_label').hide()
       $('#source_original_form_name').hide()
     }    
   })
   $('#source_original_form_type').on('change',function(){
     x = document.getElementById('source_original_form_type')
     if (x.options[x.selectedIndex].value === 'other') {
+      $('#original_form_label').show()
       $('#source_original_form_name').show()
     } else {
+      $('#original_form_label').hide()
       $('#source_original_form_name').hide()
       document.getElementById('source_original_form_name').value = ''
     }    

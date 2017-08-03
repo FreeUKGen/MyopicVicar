@@ -10,7 +10,7 @@
   
   <%= s.simple_fields_for :original_form do |orig_form| %>
     <%= orig_form.input :type, :as=>:select, :collection=>['fiche', 'film', 'document', 'other'], :label=>"Original Form", :include_blank=>false, :selected=>s.object.original_form.empty? ? '' : s.object.original_form[:type], :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>2} %>
-    <%= orig_form.input :name, :label=>"name of the other form", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>50, :value=>s.object.original_form.empty? ? '' : s.object.original_form[:name]} %>
+    <%= orig_form.input :name, :label=>"name of the other form", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>50, :value=>s.object.original_form.empty? ? '' : s.object.original_form[:name]}, :label_html=>{:id=>"original_form_label"} %>
   <% end %>
   
   <%= s.input :original_owner, :label=>"Original Owner", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
