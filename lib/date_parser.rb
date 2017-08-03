@@ -45,10 +45,10 @@ module DateParser
     end
 
     # handle unclear years
-    if vy.match(/(\d\d\d)_/)
+    if vy.match(/(\d\d\d)[_*]/)
       vy = $1 + '5'
     end
-    if vy.match(/(\d\d)__/)
+    if vy.match(/(\d\d)__/) || vy.match(/(\d\d)\*/) 
       vy = $1 + '50'
     end
 
