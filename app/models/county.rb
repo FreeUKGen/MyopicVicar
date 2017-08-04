@@ -112,7 +112,7 @@ class County
             @old_userid.person_role = 'syndicate_coordinator' if @old_userid.syndicate_groups.present? && @old_userid.syndicate_groups.length >= 1
           end # role
         end #length
-        @old_userid.county_groups.delete_if {|code| code == self.chapman_code}
+        @old_userid.county_groups.delete_if {|code| code == self.chapman_code} unless @old_userid.county_groups.nil?
         @old_userid.save(:validate => false)  unless @old_userid.nil?
       end ## old exists
 
