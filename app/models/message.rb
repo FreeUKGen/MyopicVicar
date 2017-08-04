@@ -35,8 +35,9 @@ class Message
   end
 
   def communicate(recipients,active,reasons,sender)
+    appname = MyopicVicar::Application.config.freexxx_display_name
     sender_email = UseridDetail.userid(sender).first.email_address unless sender.blank?
-    sender_email = "freereg-contacts@freereg.org.uk" if sender_email.blank?
+    sender_email = "#{appname.downcase}-contacts@#{appname.downcase}.org.uk" if sender_email.blank?
     ccs = Array.new
     recipients.each do |recip|
       case
