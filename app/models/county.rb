@@ -106,7 +106,7 @@ class County
     unless self.county_coordinator == parameters[:county_coordinator] #no change in coordinator
       if @old_userid.present? then #make sure that
         parameters[:previous_county_coordinator] = @old_userid.userid
-        if @old_userid.county_groups.length == 1
+        if @old_userid.county_groups.present? && @old_userid.county_groups.length == 1
           unless  (@old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator' || @old_userid.person_role == 'technical' || @old_userid.person_role == 'data_manager' )
             @old_userid.person_role = 'transcriber'  if @old_userid.syndicate_groups.nil?
             @old_userid.person_role = 'syndicate_coordinator' if @old_userid.syndicate_groups.present? && @old_userid.syndicate_groups.length >= 1
