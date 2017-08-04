@@ -152,7 +152,7 @@ module UseridRole
   }
 
 
-# Remove options for functionality that is not implemented for FreeCen yet
+# Remove options for functionality that is not implemented for FreeCEN yet
   if MyopicVicar::Application.config.template_set == 'freecen'
     transcriber_idx = VALUES.find_index('transcriber')
     VALUES.insert(transcriber_idx+1,'checker')

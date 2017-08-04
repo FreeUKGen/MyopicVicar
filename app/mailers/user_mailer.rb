@@ -313,7 +313,7 @@ class UserMailer < ActionMailer::Base
     #attachments["report.log"] = report
     @person_forename = user.person_forename
     @email_address = user.email_address
-    mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCen update processing report")
+    mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
   end
 
   def volunteer(contact,ccs)

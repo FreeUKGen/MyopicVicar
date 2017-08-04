@@ -79,7 +79,7 @@ module MyopicVicar
 
     #set config.freexxx_display_name based on the template_set
     if config.template_set == TemplateSet::FREECEN
-      config.freexxx_display_name = "FreeCen"
+      config.freexxx_display_name = "FreeCEN"
     elsif config.template_set == TemplateSet::FREEREG
       config.freexxx_display_name = "FreeReg"
     elsif config.template_set == TemplateSet::FREEBMD

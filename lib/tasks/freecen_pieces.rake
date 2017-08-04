@@ -16,7 +16,7 @@ task :update_pieces_fc1_online_times, [:csv_file] => :environment do |t, args|
     puts "(See comments in freecen_pieces.rake for how to create the csv)"
   else
     require "csv"
-    # use iso-8859-1 because the FreeCen1 mysql database is Latin1, not UTF-8
+    # use iso-8859-1 because the FreeCEN1 mysql database is Latin1, not UTF-8
     raw_file = File.read(args[:csv_file], :encoding => 'iso-8859-1')
     raw_file=raw_file.encode('utf-8', :undef => :replace)
     csv_rows = CSV.parse(raw_file) unless raw_file.nil?

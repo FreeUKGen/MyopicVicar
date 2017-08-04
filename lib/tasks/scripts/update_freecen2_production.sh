@@ -86,14 +86,14 @@ fi
 
 # rsync the FC2 data from FC1 data directories
 if [ "$DO_RSYNC" == true ] ; then
-  trace "doing rsync of FreeCen1 metadata (ctyPARMS.DAT) files into FreeCen2"
+  trace "doing rsync of FreeCEN1 metadata (ctyPARMS.DAT) files into FreeCEN2"
   rsync -avz --delete ${FC1_DATA}/fixed ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' > ${LOG_DIR}/freecen1.delta
 
-  trace "doing rsync of FreeCen1 validated piece (.VLD) files into FreeCen2"
+  trace "doing rsync of FreeCEN1 validated piece (.VLD) files into FreeCEN2"
   rsync -avz --delete ${FC1_DATA}/pieces ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
 
   if [[ -f ${FC1_STAT_FILE} ]] ; then
-    trace "doing rsync of FreeCen1 db-status file into FreeCen2"
+    trace "doing rsync of FreeCEN1 db-status file into FreeCEN2"
     rsync -avz ${FC1_STAT_FILE} ${FC2_DATA}/freecen1/ 2>${LOG_DIR}/rsync.errors | egrep -v '(^receiving|^sending|^sent|^total|^cannot|^deleting|^$|/$)' >> ${LOG_DIR}/freecen1.delta
   else
     trace "***WARNING: not doing rsync of status file because ${FC1_STAT_FILE} not found"

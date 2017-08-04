@@ -20,7 +20,7 @@ Par number: <input id="freecen_piece_parish_number" name="freecen_piece[parish_n
 District name (Place for search): <input id="freecen_piece_district_name" name="freecen_piece[district_name]" value="<%= @freecen_piece[:district_name].blank? ? '' : @freecen_piece[:district_name] %>" onchange="update_place();" required>
 <div id="place_message_div" name="place_message_div" style="margin-left:2em;inline:block;">&nbsp;</div>
 LDS Film Number: <input id="freecen_piece_film_number" name="freecen_piece[film_number]" value="<%= @freecen_piece[:film_number].blank? ? '' : @freecen_piece[:film_number] %>"><br>
-FreeCen1 Filename: <input id="freecen_piece_freecen1_filename" name="freecen_piece[freecen1_filename]" value="<%= @freecen_piece[:freecen1_filename].blank? ? '' : @freecen_piece[:freecen1_filename] %>"><br>
+FreeCEN1 Filename: <input id="freecen_piece_freecen1_filename" name="freecen_piece[freecen1_filename]" value="<%= @freecen_piece[:freecen1_filename].blank? ? '' : @freecen_piece[:freecen1_filename] %>"><br>
 Remarks (public): <input id="freecen_piece_remarks" name="freecen_piece[remarks]" value="<%= @freecen_piece[:remarks].blank? ? '' : @freecen_piece[:remarks] %>"><br>
 Remarks (coords-only): <input id="freecen_piece_remarks_coord" name="freecen_piece[remarks_coord]" value="<%= @freecen_piece[:remarks_coord].blank? ? '' : @freecen_piece[:remarks_coord] %>"><br>
 <% if @freecen_piece[:num_individuals].to_i>0 %>

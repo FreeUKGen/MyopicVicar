@@ -56,7 +56,7 @@ namespace :freecen do
     if !args.report_email.nil?
       require 'user_mailer'
       p "sending email to #{args.report_email} to notify of task completion"
-      UserMailer.freecen_processing_report(args.report_email,"FreeCen VLD processing #{args.filename} ended", report).deliver
+      UserMailer.freecen_processing_report(args.report_email,"FreeCEN VLD processing #{args.filename} ended", report).deliver
     end
   end
 

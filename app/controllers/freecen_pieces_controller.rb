@@ -133,7 +133,7 @@ class FreecenPiecesController < InheritedResources::Base
     if is_scot
       file_partnum = piece_params['freecen1_filename'][3,2]
       if file_partnum != piece_params['parish_number']
-        error_list << "Par number seems to disagree with FreeCen1 Filename"
+        error_list << "Par number seems to disagree with FreeCEN1 Filename"
       end
     end
     return error_list

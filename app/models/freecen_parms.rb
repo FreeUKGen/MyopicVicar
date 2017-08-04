@@ -114,7 +114,7 @@ class FreecenParms
     return {'chapman'=>chapman, 'year'=>year, 'errors'=>parm_errors, 'warnings'=>parm_warnings, 'info'=>parm_info, 'add'=>parm_additions, 'change'=>parm_changes, 'delete'=>parm_deletions, 'data'=>parm_lines}
   end
 
-  #this function converts a FreeCen1 parms.dat string into ctyPARMS.CSV format
+  #this function converts a FreeCEN1 parms.dat string into ctyPARMS.CSV format
   # (the inverse operation of PARMSBLD.BAS). This is for convenience and debug
   # purposes only.  The result is a hash including
   # the resulting csv string, csv array of line arrays, list of errors
