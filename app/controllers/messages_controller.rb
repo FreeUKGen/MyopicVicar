@@ -91,7 +91,7 @@ class MessagesController < ApplicationController
       redirect_to :action => 'index'
       return
     else
-      redirect_to  :new
+      render  :new
       return
     end
   end
