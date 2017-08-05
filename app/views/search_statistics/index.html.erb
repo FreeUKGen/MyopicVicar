@@ -1,16 +1,67 @@
 <%= javascript_include_tag "Chart.min.js" %>
 
 
-<h1>Search Statistics for FreeREG</h1>
+<h1>Search Statistics for <%= MyopicVicar::Application.config.freexxx_display_name %></h1>
 
 <figure>
 	<figcaption>
-		This chart shows the search performance of FreeREG2 over the last <%= @chart_unit %>.<br/>
+		This chart shows the search performance of <%= MyopicVicar::Application.config.freexxx_display_name %>2 over the last <%= @chart_unit %>.<br/>
 		The top line represents the total number of searches, while the second line represents searches which took longer than 1 second to return.
 		Yellow represents searches taking longer than 10 seconds to return, while red represents searches taking longer than 1 minute to return.
 	</figcaption>
 	<canvas id="myChart" width="1200" height="400"></canvas>
-	
+
+</figure>
+
+
+<figure>
+  <figcaption>
+    Number of last name searches (in blue) to all searches (in green).
+  </figcaption>
+  <canvas id="surnameChart" width="1200" height="400"></canvas>
+</figure>
+
+<figure>
+  <figcaption>
+    Number of first name searches (in blue) to all searches (in green).
+  </figcaption>
+  <canvas id="forenameChart" width="1200" height="400"></canvas>
+</figure>
+
+<figure>
+  <figcaption>
+    Number of searches with no results (in blue) and maximum results (in red) to all searches (in green).
+  </figcaption>
+  <canvas id="resultChart" width="1200" height="400"></canvas>
+</figure>
+
+<figure>
+  <figcaption>
+    Number of all-county searches (in blue) to all searches (in green).
+  </figcaption>
+  <canvas id="countyChart" width="1200" height="400"></canvas>
+</figure>
+
+<figure>
+  <figcaption>
+    Number of date searches (in blue) to all searches (in green).
+  </figcaption>
+  <canvas id="dateChart" width="1200" height="400"></canvas>
+</figure>
+
+<figure>
+  <figcaption>
+    Number of record type (census year) searches (in blue) to all searches (in green).
+  </figcaption>
+  <canvas id="typeChart" width="1200" height="400"></canvas>
+</figure>
+
+
+<figure>
+  <figcaption>
+    Number of single-place searches (in blue) and nearby searches (in purple) to all searches (in green).
+  </figcaption>
+  <canvas id="placeChart" width="1200" height="400"></canvas>
 </figure>
 
 
@@ -64,4 +115,243 @@ var data = {
 // Get the context of the canvas element we want to select
 var ctx = document.getElementById("myChart").getContext("2d");
 var myLineChart = new Chart(ctx).Line(data, { legendTemplate: "boo!"});
+
+
+var surname_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Last Name Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_ln].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var surnameCtx = document.getElementById("surnameChart").getContext("2d");
+var surnameLineChart = new Chart(surnameCtx).Line(surname_data, { legendTemplate: "boo!"});
+
+var forename_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Last Name Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_fn].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var forenameCtx = document.getElementById("forenameChart").getContext("2d");
+var forenameLineChart = new Chart(forenameCtx).Line(forename_data, { legendTemplate: "boo!"});
+
+// Get the context of the canvas element we want to select
+var result_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Zero Result Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_zero_result].to_json %>
+        },
+        {
+            label: "Limit Result Searches",
+            fillColor: "rgba(150,0,0,1)",
+            strokeColor: "rgba(150,0,0,1)",
+            pointColor: "rgba(150,0,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_limit_result].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var resultCtx = document.getElementById("resultChart").getContext("2d");
+var resultLineChart = new Chart(resultCtx).Line(result_data, { legendTemplate: "boo!"});
+
+
+var date_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Date range Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_date].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var dateCtx = document.getElementById("dateChart").getContext("2d");
+var dateLineChart = new Chart(dateCtx).Line(date_data, { legendTemplate: "boo!"});
+
+
+var type_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Record type Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_r_type].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var typeCtx = document.getElementById("typeChart").getContext("2d");
+var typeLineChart = new Chart(typeCtx).Line(type_data, { legendTemplate: "boo!"});
+
+
+
+var county_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Date range Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_0_county].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var countyCtx = document.getElementById("countyChart").getContext("2d");
+var countyLineChart = new Chart(countyCtx).Line(county_data, { legendTemplate: "boo!"});
+
+
+// Get the context of the canvas element we want to select
+var place_data = {
+    labels: <%= raw(@label.to_json) %>,
+    datasets: [
+        {
+            label: "Total searches",
+            fillColor: "rgba(150,150,0,1)",
+            strokeColor: "rgba(150,150,0,1)",
+            pointColor: "rgba(150,150,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_searches].to_json %>
+        },
+        {
+            label: "Place Searches",
+            fillColor: "rgba(0,0,150,1)",
+            strokeColor: "rgba(0,0,150,1)",
+            pointColor: "rgba(0,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_place].to_json %>
+        },
+        {
+            label: "Nearby Searches",
+            fillColor: "rgba(150,0,150,1)",
+            strokeColor: "rgba(150,0,150,1)",
+            pointColor: "rgba(150,0,150,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: <%= @data[:n_nearby].to_json %>
+        }
+    ]
+};
+
+// Get the context of the canvas element we want to select
+var placeCtx = document.getElementById("placeChart").getContext("2d");
+var placeLineChart = new Chart(placeCtx).Line(place_data, { legendTemplate: "boo!"});
+
 </script>

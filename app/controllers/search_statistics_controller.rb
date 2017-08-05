@@ -19,13 +19,13 @@ class SearchStatisticsController < InheritedResources::Base
     points = days + 1
     @chart_unit = "#{days} days"
     @label = [''] * points #initialize blank labels
-    fields = [:n_searches, :n_time_gt_1s, :n_time_gt_10s, :n_time_gt_60s]
+    fields = [:n_searches, :n_time_gt_1s, :n_time_gt_10s, :n_time_gt_60s, :n_ln, :n_fn, :n_zero_result, :n_limit_result, :n_0_county, :n_date, :n_r_type, :n_place, :n_nearby]
     @data = {}
     fields.each { |field| @data[field] = [0]*points }  #initialize data array
     (points-1).downto(0) do |i_ago|
       date = Time.now - i_ago.day
       i = points - i_ago - 1 #TODO make not horrible
-      @label[i] = date.day.to_s
+      @label[i] = date.strftime("%d %b %Y")
       day_stats = SearchStatistic.where(:year => date.year, :month => date.month, :day => date.day)
 
       day_stats.each do |stat|
