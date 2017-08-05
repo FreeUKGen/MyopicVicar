@@ -203,8 +203,8 @@ margin-right: 20px;
 margin-left: 0px;
 }
 .table--data {
-  font: 14px/1.0 sans-serif;
- padding: 5px;
+  font: 14px/1.2 sans-serif;
+  padding: 5px;
 }
 /* ----- SimpleForm Styles ----- */
 
@@ -441,11 +441,10 @@ input::-moz-placeholder          { color: #585858; font-style: italic; opacity: 
 input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 1 ! important; }
 input::placeholder               { color: #585858; font-style: italic; opacity: 1 ! important; }
 
-/* Tables - accessibility changes - 07 Dec 2016 */
+/* Tables - accessibility changes - 24 May 2017 */
+.table--bordered th, .table--bordered td { padding: 14px 5px !important; }
 #search-result .table--data, 
 #search-detail .table--data { line-height: 1.3; width: auto; margin: 0 auto; } 
-#search-result table.table--bordered td, 
-#search-result table.table--bordered th { padding: 14px 5px; }
 #search-detail tbody td {
   padding-left: 14px !important;
   padding-right: 14px !important;

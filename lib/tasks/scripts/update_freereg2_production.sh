@@ -63,6 +63,9 @@ sudo -u webserv bundle exec rake RAILS_ENV=production foo:check_and_refresh_plac
 #sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 trace "delete log files more than +30 days old"
 sudo  -u webserv find ${ROOT}/log -mtime +30 -delete 
+trace "checking invslid emsil sddresses"
+sudo -u webserv bundle exec rake RAILS_ENV=production freereg:bounced_emails_set_invalid[fix] --trace
+
 trace "finished"
 exit
 

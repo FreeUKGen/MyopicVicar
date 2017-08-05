@@ -45,10 +45,10 @@ module DateParser
     end
 
     # handle unclear years
-    if vy.match(/(\d\d\d)_/)
+    if vy.match(/(\d\d\d)[_*]/)
       vy = $1 + '5'
     end
-    if vy.match(/(\d\d)__/)
+    if vy.match(/(\d\d)__/) || vy.match(/(\d\d)\*/) 
       vy = $1 + '50'
     end
 
@@ -75,7 +75,8 @@ module DateParser
   end
 
   def self.start_search_date(year)
-    return year.to_s
+    # zero-pad for completionist users inputting three-digit years
+    return year.to_s.rjust(4,"0")
   end
 
   def self.end_search_date(year)

@@ -68,10 +68,11 @@ class SearchQueriesController < ApplicationController
         @search_results = @search_query.search
         redirect_to search_query_path(@search_query)
       else
-        render :new
+      render :new
       end
     else
-      render :new
+     logger.warn("FREEREG:SEARCH: Search was initiated by a bot")
+     render :new
     end
   end
 
@@ -177,7 +178,8 @@ class SearchQueriesController < ApplicationController
     end
     @previous_day = (Date.parse(@start_day) - 1).strftime("%F")
     @next_day = (Date.parse(@start_day) + 1).strftime("%F")
-    @search_queries = SearchQuery.where(:day => @start_day).desc(order_param).page(params[:page]).per(100)
+    @number = SearchQuery.where(:day => @start_day).count
+    @search_queries = SearchQuery.where(:day => @start_day).limit(500).order_by(runtime: -1)
   end
 
   def report_for_session
@@ -186,7 +188,7 @@ class SearchQueriesController < ApplicationController
     if params[:feedback_id]
       @feedback = Feedback.find(params[:feedback_id])
     end
-    @search_queries = SearchQuery.where(:session_id => @session_id).asc(:c_at).page(params[:page]).per(100)
+    @search_queries = SearchQuery.where(:session_id => @session_id).order_by(c_at: 1)
   end
 
   def search_taking_too_long(message)
@@ -199,8 +201,9 @@ class SearchQueriesController < ApplicationController
       session[:query] = nil
       flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
     else
-      logger.warn("#{appname}:SEARCH: Search #{@search_query.id} had a problem #{message}")
-      flash[:notice] = 'Your search encountered a problem please contact us with this message'
+      logger.warn("#{appname}:SEARCH: Search #{@search_query.id} had a problem #{message}") if @search_query.present? && @search_query.id.present?
+      logger.warn("#{appname}:SEARCH: Search #{message}") unless  @search_query.present? && @search_query.id.present?
+      flash[:notice] = 'Your search encountered a problem please contact us with this message '
     end
     redirect_to new_search_query_path(:search_id => @search_query)
   end
@@ -232,7 +235,7 @@ class SearchQueriesController < ApplicationController
       go_back
       return
     end
-    if @search_query.present?
+    if @search_query.present? &&  @search_query.result_count.present?
       if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
         @result_count = @search_query.result_count
         @search_results =   Array.new

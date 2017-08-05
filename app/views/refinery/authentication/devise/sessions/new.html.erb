@@ -25,7 +25,7 @@
         <% if devise_mapping.rememberable? %>
         <div class='field remember_me push--bottom'>
           <%= f.check_box :remember_me %>
-          <%= f.label :remember_me, :style => 'display: inline-block;' %>
+          <%= f.label :keep_me_logged_in, :style => 'display: inline-block;' %>
         </div>
         <% end %>
         <div class="form-actions">
@@ -42,7 +42,7 @@
       <p>Your <b>Password</b> <em>is</em> case sensitive. If you have forgotten your password, use the this link to receive an email to reset it: 
         <%= link_to t('.forgot_password'), refinery.new_authentication_devise_user_password_path  %>. 
         Alternatively, your Coordinator can send you the email for a reset.</p>
-      <p>Checking <b><q>Remember me</q></b> will have the system fill in your User name the next time you log in.</p>
+      <p><b>Keep me logged in</b> will keep you logged in for 2 weeks after closing the browser.</p>
     </div>
   </div>
 </div>

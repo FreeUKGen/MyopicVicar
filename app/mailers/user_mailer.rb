@@ -63,10 +63,10 @@ class UserMailer < ActionMailer::Base
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new
-      if @userid.present? &&  @userid.active && @userid.email_address_valid && registration_completed(userid) && !@userid.no_processing_messages
-        user_email_with_name =  @userid.email_address
-        emails <<  user_email_with_name
-      end
+        if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+          user_email_with_name =  @userid.email_address
+          emails <<  user_email_with_name
+        end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
       if syndicate_coordinator.present?
@@ -298,6 +298,14 @@ class UserMailer < ActionMailer::Base
     from = "#{appname.downcase}-contacts@#{appname.downcase}.org.uk" if from.blank?
     get_message_attachment if @message.attachment.present? ||  @message.images.present?
     mail(:from => from,:to => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
+  end
+
+  def send_logs(file,ccs,body_message,subjects)
+    from = "freereg-contacts@freereg.org.uk" if from.blank?
+    unless file.nil?
+      attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
+    end
+    mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => subjects,:body => body_message)
   end
 
   def update_report_to_freereg_manager(file,user)

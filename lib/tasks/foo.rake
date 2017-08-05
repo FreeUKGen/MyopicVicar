@@ -274,7 +274,8 @@ namespace :foo do
 
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
-    Place.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
+     p "starting with a skip of #{args.skip.to_i}"
+    Place.data_present.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
       unless args.skip && i < args.skip.to_i
         Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.each do |file|
           print "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
@@ -284,4 +285,98 @@ namespace :foo do
       end
     end
   end
+  
+  desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
+  task :recalc_search_record_for_entries_in_file, [:id_file,:skip,:limit] => [:environment] do |t,args|
+   file_for_warning_messages = "#{Rails.root}/log/update_search_records.log"
+   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+   output_file = File.new(file_for_warning_messages, "w")
+    lines = File.readlines(args.id_file).map { |l| l.to_s }
+    p "starting"
+    number = 0
+    skipping = args.skip.to_i
+    stopping = args.limit.to_i
+    p "#{lines.length} records to process with #{skipping} skipped"
+    time_start = Time.new
+    lines.each do |line|
+      number = number + 1
+      break if stopping + 1 == number
+      output_file.puts "#{number},#{line}"
+      p "#{number}  processed" if (number/10000)*10000 == number
+      if number <= skipping
+        next
+      end
+      if line =~ /^#/
+        print "Rebuilding "
+        print line
+      else
+        begin
+        entry = Freereg1CsvEntry.find(line.chomp)
+        record = entry.search_record 
+        
+          if  entry.present? && record.present? && entry.freereg1_csv_file_id.present? 
+            record.transform
+            record.save!  
+          else
+            output_file.puts "bypassed #{line}"
+          end
+        rescue => e
+          output_file.puts "#{e.message}"
+          output_file.puts "#{e.backtrace.inspect}"
+          next
+        end
+      end
+    end
+    number = number - 1
+    time_running = Time.new - time_start
+    average_time = time_running/(number - skipping)
+    p "finished #{number} with #{skipping} skipped at average time of #{average_time} sec/record"
+  end
+  
+  desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
+  task :recalc_search_record_seach_date_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
+    p "starting"
+    number = 0
+    stop_after = args.limit.to_i
+    p "doing #{stop_after} records"
+    lines = File.readlines(args.id_file).map { |l| l.to_s }
+    p "#{lines.length} records to process"
+    lines.each do |line|
+      number = number + 1
+      break if number == stop_after
+      if line =~ /^#/
+        p "Rebuilding "
+        p line
+      else
+        p line
+        entry = Freereg1CsvEntry.find(line.chomp)
+        record = entry.search_record
+        begin
+        p "original"
+            p entry
+            p record.search_date unless record.blank?
+             p record.secondary_search_date unless record.blank?
+            software_version = SoftwareVersion.control.first
+            search_version = ''
+            search_version  = software_version.last_search_record_version unless software_version.blank?
+            freereg1_csv_file = entry.freereg1_csv_file
+            register = freereg1_csv_file.register
+            church = register.church
+            place = church.place
+            SearchRecord.update_create_search_record(entry,search_version,place.id)
+            record = entry.search_record
+            p "Upadted"
+            p record.search_date
+            p record.secondary_search_date
+            p "passed #{number}"
+        rescue => e
+          p "#{e.message}"
+          p "#{e.backtrace.inspect}"
+          #record.transform
+        end
+      end
+    end
+    p "#{number} records processed"
+  end
+  
 end

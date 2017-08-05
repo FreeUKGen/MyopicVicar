@@ -197,7 +197,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
 
       result.count.should be >= 1
       result.should be_in_result(entry)              
@@ -213,20 +213,20 @@ describe Freereg1CsvEntry do
  
       ['first', 'last'].each do |entry_key|
         entry = file[:entries][entry_key.to_sym]       
-          if file[:type] == RecordType::MARRIAGE
-            first_name = :groom_forename
-            last_name = :groom_surname
-          elsif file[:type] == RecordType::BURIAL
-            first_name = :burial_person_forename
-            if entry[:burial_person_surname]
-              last_name = :burial_person_surname
-            else
-              last_name = :relative_surname
-            end
+        if file[:type] == RecordType::MARRIAGE
+          first_name = :groom_forename
+          last_name = :groom_surname
+        elsif file[:type] == RecordType::BURIAL
+          first_name = :burial_person_forename
+          if entry[:burial_person_surname]
+            last_name = :burial_person_surname
           else
-            first_name = :person_forename
-            last_name = :father_surname
+            last_name = :relative_surname
           end
+        else
+          first_name = :person_forename
+          last_name = :father_surname
+        end
 
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 2 }, true)
         check_record(entry, first_name, last_name, false, { :end_year => entry[:modern_year] - 2 }, false)
@@ -235,6 +235,9 @@ describe Freereg1CsvEntry do
 
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] - 12,:end_year => entry[:modern_year] - 10 }, false)
         check_record(entry, first_name, last_name, false, { :start_year => entry[:modern_year] + 10,:end_year => entry[:modern_year] + 12 }, false)
+
+        check_record(entry, first_name, last_name, false, { :start_year => 999,:end_year => entry[:modern_year] + 10 }, true)
+        check_record(entry, first_name, last_name, false, { :start_year => 99,:end_year => entry[:modern_year] + 10 }, true)
 
       end
     end
@@ -260,7 +263,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
       result.count.should be >= 1
       result.should be_in_result(entry)
     end    
@@ -299,7 +302,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.search_result.records.values
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -310,7 +313,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.search_result.records.values
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -330,7 +333,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.search_result.records.values
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -340,7 +343,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.search_result.records.values
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -358,7 +361,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.search_result.records.values
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -369,7 +372,7 @@ describe Freereg1CsvEntry do
     q = SearchQuery.new(query_params)
     q.save!(:validate => false)
     q.search
-    result = q.search_result.records.values
+    result = q.get_and_sort_results_for_display[1]
 
     result.count.should be >= 1
     result.should be_in_result(entry)
@@ -403,7 +406,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
 
       result.count.should be >= 1
       result.should be_in_result(entry)
@@ -415,7 +418,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
       result.count.should be >= 1
       result.should be_in_result(entry)
       
@@ -426,7 +429,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
 
       result.count.should eq(0)
       result.should_not be_in_result(entry)
@@ -458,7 +461,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
   
       result.count.should be >= 1
       result.should be_in_result(entry)
@@ -474,7 +477,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
   
       result.count.should be >= 1
       result.should be_in_result(entry)
@@ -493,7 +496,7 @@ describe Freereg1CsvEntry do
       q = SearchQuery.new(query_params)
       q.save!(:validate => false)
       q.search
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]
     end
   end
 
@@ -563,7 +566,7 @@ describe Freereg1CsvEntry do
           q = SearchQuery.new(query_params)
           q.save!(:validate => false)
           q.search
-          result = q.search_result.records.values
+          result = q.get_and_sort_results_for_display[1]
  
           print "Test case # #{i+1}: #{entry.person_forename} #{entry.father_surname} should match queries for #{search_forename} #{entry.mother_surname || entry.father_surname}\n"
           result.count.should be >= 1
@@ -628,9 +631,10 @@ describe Freereg1CsvEntry do
     Rails.application.config.ucf_support = true
 
     file_record = process_test_file(filespec)
- 
+    
     file_record.freereg1_csv_entries.each_with_index do |entry,i|
-      check_record(entry, :person_forename, :father_surname, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
+      baptism_date = entry.baptism_date.sub(/\w\w\s\w\w\w\s/, '')
+      check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
     end
   end
 
@@ -645,7 +649,7 @@ describe Freereg1CsvEntry do
       q.save(:validate => false)
       q.search
       
-      result = q.search_result.records.values
+      result = q.get_and_sort_results_for_display[1]#.records.values
       # print "\n\tSearching key #{first_name_key}\n"
       # print "\n\tQuery:\n"
       # pp q.attributes

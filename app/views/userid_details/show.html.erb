@@ -33,6 +33,11 @@
     <tr>
       <td>Email address valid:</td><td > <%= @userid.email_address_valid   %> </td>
     </tr>
+    <% if !@userid.reason_for_invalidating.nil? %>
+    <tr>
+      <td>Reason for invalidating email:</td><td > <%= @userid.reason_for_invalidating   %> </td>
+    </tr>
+    <% end %>
      <tr>
       <td>Email address last confirmed:</td><td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y") if  @userid.email_address_last_confirmned.present? %> </td>
     </tr>

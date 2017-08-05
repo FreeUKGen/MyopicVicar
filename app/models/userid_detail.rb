@@ -41,6 +41,7 @@ class UseridDetail
   field :email_address_last_confirmned, type: DateTime
   field :no_processing_messages, type: Boolean, default: false
   field :userid_messages,type: Array, default: []
+  field :reason_for_invalidating,type: String
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct
   index({ email_address: 1 })

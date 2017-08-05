@@ -84,5 +84,6 @@ MyopicVicar::Application.configure do
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
+  config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
   config.eager_load = false
 end

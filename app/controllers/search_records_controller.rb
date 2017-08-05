@@ -2,7 +2,7 @@ class SearchRecordsController < ApplicationController
   before_filter :viewed
   skip_before_filter :require_login
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
-  before_filter :running_on_primary, :except => [:show,:show_print_version]
+  
   def catch_error
     logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:RECORD: Record encountered a problem #{params}")
     flash[:notice] = 'We are sorry but we encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
@@ -61,6 +61,11 @@ class SearchRecordsController < ApplicationController
       log_possible_host_change
       redirect_to new_search_query_path
       return
+    rescue Mongoid::Errors::InvalidFind
+      log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
+      flash[:notice] = "We encountered a problem locating that original entry"
+      redirect_to new_search_query_path
+      return
     end
     @display_date = false
     @entry.display_fields(@search_record) if @entry
@@ -73,7 +78,6 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_print_version
-# <<<<<<< HEAD
     @page_number = params[:page_number].to_i
     if params[:id].nil?
       redirect_to new_search_query_path
@@ -107,6 +111,7 @@ class SearchRecordsController < ApplicationController
       render "_search_records_freecen_print", :layout => false
       return
     end
+    @printable_format = true;
     if params[:search_id].nil? || @search_record.nil?
       flash[:notice] = "Prior records no longer exist"
       redirect_to new_search_query_path
@@ -141,6 +146,11 @@ class SearchRecordsController < ApplicationController
 # >>>>>>> master
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
+      redirect_to new_search_query_path
+      return
+    rescue Mongoid::Errors::InvalidFind
+      log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
+      flash[:notice] = "We encountered a problem locating that original entry"
       redirect_to new_search_query_path
       return
     end

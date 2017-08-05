@@ -126,9 +126,24 @@ class ApplicationController < ActionController::Base
     redirect_to main_app.new_manage_resource_path
     return
   end
-
+  
   def log_messenger(message)
     log_message = message
+    logger.warn(log_message)
+  end
+  
+  def log_missing_document(message,doc1,doc2)
+    log_message = "FREEREG:PHC WARNING: aunable to find a document #{message}\n"
+    log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
+    log_message += "FREEREG:PHC #{doc1}\n" if doc1.present?
+    log_message += "FREEREG:PHC #{doc2}\n" if doc2.present?
+    log_message += "FREEREG:PHC caller=\t\t#{caller.first}\n"
+    log_message += "FREEREG:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
+    log_message += "FREEREG:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
+    log_message += "FREEREG:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
+    log_message += "FREEREG:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
+    log_message += "FREEREG:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
+
     logger.warn(log_message)
   end
 
@@ -159,15 +174,6 @@ class ApplicationController < ActionController::Base
     logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
     redirect_to main_app.new_manage_resource_path
     return
-  end
-
-  def running_on_primary
-    mongo_node = Mongoid.clients[:default][:options][:read][:mode] if Mongoid.clients[:default][:options]
-    if mongo_node.present? && mongo_node != :primary_preferred
-      flash[:notice] = "You appear to be running on a secondary. Please log in again."
-      logger.warn "FREEREG::USER user is running on a secondary #{Mongoid.clients[:default]}"
-      redirect_to refinery.logout_path and return
-    end
   end
 
   def require_cookie_directive

@@ -107,9 +107,17 @@ class Freereg1CsvEntry
 
   index({freereg1_csv_file_id: 1,file_line_number:1})
   index({freereg1_csv_file_id: 1, record_digest:1})
-  index({file_line_number:1})
-  index({line_id:1})
-
+  index({person_forename: 1})
+  index({mother_forename: 1})
+  index({groom_forenamen: 1})
+  index({groom_father_forename: 1})
+  index({female_relative_forenamee: 1})
+  index({father_forename: 1})
+  index({burial_person_forename: 1})
+  index({bride_forename: 1})
+  index({bride_father_forename: 1})
+  index({"multiple_witnesses.witness_forename":1})
+  
   validate :errors_in_fields
   class << self
     def id(id)
@@ -712,5 +720,54 @@ class Freereg1CsvEntry
     end
     witnesses
   end
+  
+  def record_updateable?
+#    p "updateable"
+    is_ok = true
+    record = self.search_record
+    return false if record.nil?
+    return false unless updateable_search_date?(record)
+    return false unless updateable_county?(record)
+#    p is_ok
+    return is_ok
+  end
+  
+  def updateable_county?(record)
+    is_ok = true
+    if record.chapman_code? && self.county.present? && self.county  != record.chapman_code
+      is_ok = false
+    end
+    unless is_ok
+      record = self.search_record 
+      record.destroy
+      self.search_record = nil
+      self.search_record(true)
+    end
+    return is_ok
+  end
+  
+  def updateable_search_date?(record)
+     is_ok = true
+    if record.search_date.present? && self.baptism_date.present? && DateParser::searchable(self.baptism_date)  != record.search_date
+      is_ok = false
+    elsif record.search_date.present? && self.burial_date.present? && DateParser::searchable(self.burial_date)  != record.search_date
+      is_ok = false
+    elsif record.search_date.present? && self.marriage_date.present? && DateParser::searchable(self.marriage_date)  != record.search_date
+      is_ok = false
+    elsif record.secondary_search_date.present? && self.birth_date.present? && DateParser::searchable(self.birth_date)  != record.secondary_search_date 
+      is_ok = false
+    else
+      is_ok = true
+    end
+    unless is_ok
+      record = self.search_record 
+      record.destroy
+      self.search_record = nil
+      self.search_record(true)
+    end
+    return is_ok
+  end
+
+
 
 end

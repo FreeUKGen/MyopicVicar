@@ -60,4 +60,5 @@
   .freeREG #A {fill: #f0dec0}
     .freeREG #B {fill: #d2ac99}
     .freeREG #C, .freeREG #donateBtn svg {fill:#b48282; stroke:#b48282}
+
 #donate.freeREG:hover #donateBtn, #donate.freeREG:focus #donateBtn {color: #b48282}
