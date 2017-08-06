@@ -1,5 +1,5 @@
 if ($('#source_choice').is(':checked')) {
-	if (confirm("ARE YOU SURE?")) {
+	if (confirm("Are you sure you want to propagate this to other sources?")) {
 		$('#propagate_source').html("<%= escape_javascript render 'place_source_list' %>");
 		$('#propagate_source').slideDown(50);
 	} else {
