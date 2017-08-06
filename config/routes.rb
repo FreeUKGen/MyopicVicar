@@ -285,6 +285,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :sources
   get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
+  get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
 
   resources :image_server_groups
 

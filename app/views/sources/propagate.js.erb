@@ -1,0 +1,10 @@
+if ($('#source_choice').is(':checked')) {
+	if (confirm("ARE YOU SURE?")) {
+		$('#propagate_source').html("<%= escape_javascript render 'place_source_list' %>");
+		$('#propagate_source').slideDown(50);
+	} else {
+		document.getElementById('source_choice').checked = false;
+	}
+} else {
+	$('#propagate_source').hide()
+}

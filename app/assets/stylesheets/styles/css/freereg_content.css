@@ -275,7 +275,7 @@ input.check_boxes {
 }
 
 label.collection_check_boxes {
-   display: inline;
+  display: inline;
   float: left;
   margin: 0;
   vertical-align: -2px;
@@ -292,6 +292,7 @@ label.collection_check_boxes {
 .simple_form_position{margin-left: 10px}
 .collection_check_boxes{
   font-weight: normal;
+  border: 1px ridge;
 }
 
 

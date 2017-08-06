@@ -29,6 +29,7 @@ class Source
   has_many :image_server_groups, foreign_key: :source_id # includes transcripts, printed editions, and microform, and digital versions of these
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
+  attr_accessor :propagate
 
   # TODO: name for "Great Register" vs "Baptsm" -- use RecordType?  Extend it?
 
