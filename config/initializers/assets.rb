@@ -23,6 +23,6 @@ Rails.application.configure do
   config.assets.precompile += %w( spin.min.js)
   config.assets.precompile += %w( ladda.min.js)
   config.assets.precompile += %w( styles/css/donate_icon.css )
-
+  config.assets.precompile += %w( Chart.min.js )
 
 end
