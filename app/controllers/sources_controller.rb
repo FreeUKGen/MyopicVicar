@@ -114,7 +114,7 @@ class SourcesController < ApplicationController
       register_id = Register.where(:church_id=>k1).pluck(:id, :register_type).to_h
       register_id.each do |k2,v2|
         x = Source.where(:register_id=>k2, :source_name=>source1.source_name).first
-        @source_id['Place: '+place.place_name+' Church: '+v1+' - '+RegisterType.display_name(v2)] = x.id
+        @source_id['Place: '+place.place_name+' Church: '+v1+' - '+RegisterType.display_name(v2)] = x.id if x.present?
       end
     end
 
