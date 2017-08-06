@@ -39,12 +39,13 @@ class ImageServerGroup
     }
   end
 
-  field :ig, type: String
+  field :group_name, type: String
   field :start_date, type: String
   field :end_date, type: String
-  field :transcriber, type: String, default: nil
+  field :transcriber, type: Array, default: nil
   field :difficulty, type: String, default: nil
   field :status, type: String
+  field :notes, type: String
 
   field :church_status, type: String
   field :register_status, type: String

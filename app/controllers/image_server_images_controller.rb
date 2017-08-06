@@ -43,8 +43,7 @@ class ImageServerImagesController < ApplicationController
 
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
-    ig_array = ImageServerGroup.where(:source_id=>image_server_group.source_id).pluck(:id, :ig)
-    @ig = Hash[ig_array.map {|key,value| [key,value]}]
+    get_sorted_group_name(image_server_group.source_id)
 
     if @image_server_image.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent image file'
@@ -53,23 +52,28 @@ class ImageServerImagesController < ApplicationController
     end
   end
 
+  def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+    ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
+    @group_name = Hash[ig_array.map {|key,value| [key,value]}]
+    @group_name = @group_name.sort_by{|key,value| value.downcase}.to_h
+  end
+
   def index
-    @is_image = IsImage.where(:source_id => @source_id).all.order_by(ig: 1)
+    @is_image = IsImage.where(:source_id => @source_id).all.order_by(group_name: 1)
   end
 
   def move
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
-    ig_array = ImageServerGroup.where(:register_id=>@image_server_group[:register_id]).pluck(:id, :ig)
-    @ig = Hash[ig_array.map {|key,value| [key,value]}]
+    get_sorted_group_name(@image_server_group[:source_id])
 
-    myseq = Hash.new{|h,k| h[k] = []}
     @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id]).first
-    @test = ImageServerImage.where(:image_server_group_id=>params[:id])
+#    @test = ImageServerImage.where(:image_server_group_id=>params[:id])
     seq = ImageServerImage.where(:image_server_group_id=>params[:id]).pluck(:seq, :image_set)
 
-    @images = Hash[seq.map {|k,v| [k, myseq[k] = v.to_s+'_'+k.to_s]}]
+    myseq = Hash.new{|h,k| h[k] = []}
+    @images = Hash[seq.map {|k,v| [k, myseq[k] = v.to_s+'_'+k.to_s]}]   #get new hash key=:seq, val=:image_set+:seq
 
     if @image_server_image.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent image file'
@@ -96,32 +100,31 @@ class ImageServerImagesController < ApplicationController
     @image_server_group = ImageServerGroup.where(:id=>session[:image_server_group_id]).first
 
     if @image_server_image.empty?
-      flash[:notice] = 'No Images under Image Group "'+image_server_group.ig.to_s+'"'
-      redirect_to image_server_group_path(image_server_group.source)
+      flash[:notice] = 'No Images under Image Group "'+@image_server_group.group_name.to_s+'"'
+      redirect_to image_server_group_path(@image_server_group.source)
     else
       flash.clear
     end
   end
 
   def update
-    image_server_image = ImageServerImage.where(:_id=>params[:image_server_image][:id]).first
-    return_location = image_server_image.image_server_group
+    case params[:image_server_image][:seq].class.to_s
+      when 'String'
+        seq = [] << params[:image_server_image][:seq]     # from edit.html.erb
+      when 'Array'
+        seq = params[:image_server_image][:seq]           # from move.html.erb
+    end
+
     image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:image_server_group_id]).first
+    image_server_image = ImageServerImage.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq})
 
-    if image_server_image.present?
-      image_server_image.update_attributes(image_server_image_params)
-
-      if image_server_image.errors.any? then
-        flash[:notice] = 'Update of the Image file was unsuccessful'
-        redirect_to :back
-      else
-        flash[:notice] = 'Update of the Image file was successful'
-        redirect_to image_server_image_path(image_server_group)
-      end
+    if image_server_image.nil?
+      flash[:notice] = 'Image "'+params[:image_server_image][:image_set]+'_'+params[:image_server_image][:seq].to_s+'.jpg" does not exist'
+      redirect_to image_server_group_path(return_location)
     else
-      flash[:notice] = 'Image "'+params[:image_server_image][:image_set]+'_'+params[:image_server_image][:image_set]+'.jpg" does not exist'
-      redirect_to image_server_group_path(relocation_location)
-      redirect_to :back
+      image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq}).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
+      flash[:notice] = 'Update of the Image file(s) was successful'
+      redirect_to image_server_image_path(image_server_group)
     end
   end
 

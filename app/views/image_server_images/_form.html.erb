@@ -1,11 +1,11 @@
 <section class="island  island--light">
 <div class="grid">
 <%= simple_form_for @is_image do |s| %>
-  <center><b><%= @is_image[:ig] %>_<%= @is_image[:image_list][:seq] %>.jpg</b></center>
+  <center><b><%= @is_image[:group_name] %>_<%= @is_image[:image_list][:seq] %>.jpg</b></center>
   <%= s.input :transcriber, :label => 'transcriber', :input_html => {:class => "simple_form_bgcolour", :size => 20} %>
   <%= s.input :status, :collection=>['transcribed', 'part transcribed', 'in-progress'], selected: s.object.status, :label=>'transcription status', :input_html=>{:class => "simple_form_bgcolour", :size => 2} %>
   <%= s.input :difficulty, :collection=>['easy', 'intermediate', 'hard'], selected: s.object.difficulty, :label => 'difficulty', :input_html => {:class => "simple_form_bgcolour", :size => 2} %>
-	<%= s.hidden_field :ig, :value=>@is_image[:ig] %>
+	<%= s.hidden_field :group_name, :value=>@is_image[:group_name] %>
   <%= s.button :submit, 'Submit' %>
 <% end %>
 </div>

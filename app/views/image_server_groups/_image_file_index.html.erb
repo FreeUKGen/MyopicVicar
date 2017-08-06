@@ -1,6 +1,6 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
-  <%= link_to 'Create new IG', new_image_server_group_path, method: :get, :class => "btn weight--light btn--small"  %> 
+  <%= link_to 'Create new Image Group', new_image_server_group_path, method: :get, :class => "btn weight--light btn--small"  %> 
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
@@ -23,7 +23,7 @@
       <tbody>  
         <% @image_server_group.each do |group| %>
           <tr>
-            <td class="t20"><%= group.ig %></td>
+            <td class="t20"><%= group.group_name %></td>
             <% case group[:status] %>
               <% when ImageServerGroup::Status::UNALLOCATED %>
                 <td class="t15" style="color:red">UnALLOCATED</td>
@@ -40,7 +40,7 @@
             <% end %>
             <td class="t20"><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[group[:difficulty]] %>&nbsp;</td>
             <td class="t20"><%= group[:transcriber] %>&nbsp;</td>
-            <td class="t15"><%= link_to 'SH', image_server_image_path(group) %> <%= link_to 'ED', edit_image_server_group_path(group) %> <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete IG "'+group.ig+'"?'}, method: :delete %></td>
+            <td class="t15"><%= link_to 'SH', image_server_image_path(group) %> <%= link_to 'ED', edit_image_server_group_path(group) %> <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %></td>
           </tr>
         <% end %>
       </tbody>

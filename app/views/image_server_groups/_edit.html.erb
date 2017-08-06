@@ -5,7 +5,7 @@
 <div class="grid">
 
 <%= simple_form_for @image_server_group.first do |s| %>
-  <%= s.input :ig, :label=>"Image Group", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
+  <%= s.input :group_name, :label=>"Image Group", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
   <%= s.input :transcriber, :as=>:select, :collection=>@people, :label => 'Transcriber', :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
   <%= s.input :difficulty, :as=>:select, :collection=>ImageServerImage::Difficulty::ALL_DIFFICULTIES.invert, :include_blank=>true, selected: s.object.difficulty, :label=>'Transcription Level Skill', :value=>ImageServerImage::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :multiple=>true, :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
   <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert.sort, selected: s.object.status, :include_blank=>true, :label => 'Transcription Status', :value=>ImageServerImage::Status::ALL_STATUSES[s.object.status], :multiple => true, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>

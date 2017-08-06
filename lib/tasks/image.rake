@@ -129,13 +129,13 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     report_file.puts "Total sources #{sources} with #{sources_processed} processed"
   end
 
-  def self.update_collection(f,ig,start_date,end_date,all_seq)
+  def self.update_collection(f,group_name,start_date,end_date,all_seq)
     source = Source.where(:register_id=>f['register'].id, :source_name=>'Image Server').first
     source = create_source(f['register'],f['notes']) if source.nil?
 
-    is_group = create_image_server_group(source,ig,f['status'],f['church_status'],f['register_status'])
+    is_group = create_image_server_group(source,group_name,f['status'],f['church_status'],f['register_status'])
     
-    update_image_server_image(is_group,ig,start_date,end_date,all_seq)
+    update_image_server_image(is_group,group_name,start_date,end_date,all_seq)
   end
 
   def self.create_source(register,notes)
@@ -149,12 +149,12 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source
   end
 
-  def self.create_image_server_group(source,ig,status,church_status,register_status)
-    image_server_group = ImageServerGroup.where(:source_id=>source.id, :ig=>ig).first
+  def self.create_image_server_group(source,group_name,status,church_status,register_status)
+    image_server_group = ImageServerGroup.where(:source_id=>source.id, :group_name=>group_name).first
 
     if image_server_group.nil?
       image_server_group = ImageServerGroup.new(:source_id=>source.id)
-      image_server_group.ig = ig
+      image_server_group.group_name = group_name
       image_server_group.status = status
       image_server_group.start_date = source.register.datemin
       image_server_group.end_date = source.register.datemax

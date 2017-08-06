@@ -5,25 +5,25 @@ class ImageServerGroupsController < ApplicationController
   def create
     display_info
     image_server_group = ImageServerGroup.where(:source_id=>session[:source_id]).first
-    ig = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:ig)
+    group_name = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:group_name)
     source = image_server_group.source
 
-    if not ig.include? params[:image_server_group][:ig]
+    if not group_name.include? params[:image_server_group][:group_name]
       image_server_group = ImageServerGroup.new(image_server_group_params)
       image_server_group.save!
 
       if image_server_group.errors.any? then
-        flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:ig]+'" was unsuccessful'
+        flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:group_name]+'" was unsuccessful'
         redirect_to :back
       else
         source.image_server_groups << image_server_group
         source.save!
 
-        flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:ig]+'" was successful'
+        flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
         redirect_to image_server_group_path(source)
       end
     else
-      flash[:notice] = 'Image Group "'+params[:image_server_group][:ig]+'" already exist'
+      flash[:notice] = 'Image Group "'+params[:image_server_group][:group_name]+'" already exist'
       redirect_to :back
     end
   end
@@ -36,10 +36,10 @@ class ImageServerGroupsController < ApplicationController
 
     if image_server_image == 0
       image_server_group.destroy
-      flash[:notice] = 'Deletion of IG "'+image_server_group[:ig]+'" was successful'
+      flash[:notice] = 'Deletion of Image Group "'+image_server_group[:group_name]+'" was successful'
       redirect_to image_server_group_path(return_location)      
     else
-      flash[:notice] = 'IG "'+image_server_group[:ig]+'" contains images, can not be deleted'
+      flash[:notice] = 'Image Group "'+image_server_group[:group_name]+'" contains images, can not be deleted'
       redirect_to image_server_group_path(image_server_group.source_id)
     end
   end
@@ -96,39 +96,39 @@ def get_userids_and_transcribers
   end
 
   def index
-    @image_server_image = ImageServerImage.source_id(@image_server_group.id).all.order_by(ig: 1)
+    @image_server_image = ImageServerImage.source_id(@image_server_group.id).all.order_by(group_name: 1)
   end
 
   def new 
     display_info
     @image_server_group = ImageServerGroup.new
-    @ig = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:ig)
+    @group_name = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:group_name)
   end
 
   def show
     session[:source_id] = params[:id]
     display_info
-    @image_server_group = ImageServerGroup.where(:source_id=>params[:id]).sort_by{|x| x.ig.downcase}
+    @image_server_group = ImageServerGroup.where(:source_id=>params[:id]).sort_by{|x| x.group_name.downcase}
 
     if @image_server_group.present?
       render 'index'
     else
-      flash[:notice] = "Register does not have any IG from Image Server."
+      flash[:notice] = "Register does not have any Image Group from Image Server."
       redirect_to :back
     end
   end
 
   def update
     image_server_group = ImageServerGroup.where(:id=>params[:id]).first
-    ig = ImageServerGroup.where(:source_id=>params[:image_server_group][:source_id], :ig=>{'$ne'=>params[:image_server_group][:ig]}).pluck(:ig)
+    group_name = ImageServerGroup.where(:source_id=>params[:image_server_group][:source_id], :group_name=>{'$ne'=>params[:image_server_group][:group_name]}).pluck(:group_name)
 # if status = in_progress, check if :transcriber is null, if not, :assign_date = current_date, if yes, refuse update
 
-    if ig.include? params[:image_server_group][:ig]
-      flash[:notice] = 'Image Group "'+params[:image_server_group][:ig]+'" already exist'
+    if group_name.include? params[:image_server_group][:group_name]
+      flash[:notice] = 'Image Group "'+params[:image_server_group][:group_name]+'" already exist'
       redirect_to :back
     else
       image_server_group.update_attributes(image_server_group_params)
-      flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:ig]+'" was successful'
+      flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
       redirect_to image_server_group_path(image_server_group.source)     
     end
   end

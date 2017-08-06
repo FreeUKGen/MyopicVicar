@@ -4,10 +4,11 @@
 <section class="island  island--light">
 <div class="grid">
 <%= simple_form_for @image_server_image do |s| %>
-  <%= s.input :image_server_group_id, :as=>:select, :collection=>@ig.invert.sort, :label=>'Re-sssign the image to Image Group', :multiple=>true, :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
+  <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign the image to Image Group', :multiple=>true, :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
 	<%= s.hidden_field :id, :value=>@image_server_image[:id] %>
 	<%= s.hidden_field :image_set, :value=>@image_server_image[:image_set] %>
 	<%= s.hidden_field :seq, :value=>@image_server_image[:seq] %>
+  <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image[:image_server_group_id] %>
   <%= s.button :submit, 'Submit' %>
 <% end %>
 </div>
