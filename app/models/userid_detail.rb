@@ -34,7 +34,7 @@ class UseridDetail
   field :country_groups, type: Array
   field :digest, type: String, default: nil
   field :skill_notes, type: String
-  field :transcription_agreement, type: Boolean, default: false
+  field :transcription_agreement, type: String, default: 'Unknown'
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
   field :email_address_valid, type: Boolean, default: true
@@ -371,6 +371,11 @@ class UseridDetail
   
   def registration_completed user
     user.password != registered_password
+  end
+
+  def self.transcription_agreement_accepted(user_id)
+    user = self.userid(user_id).first
+    user.transcription_agreement
   end
 
   private

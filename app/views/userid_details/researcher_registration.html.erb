@@ -43,7 +43,7 @@ Please provide us with you physical location, i.e. Country.
 <tr><td>
 Please read the researcher <%= link_to 'participation agreement', places_path%> and confirm that you accept these terms. PLEASE NOTE THE AGREEMENT IS NOT THERE YET
 </td><td>
-<%= f.input :transcription_agreement, {:as => :select,  :collection => [false,true], :include_blank => false, :required => true,:size => 35}%></td></tr>
+<%= f.input :transcription_agreement, {:as => :select,  :collection => ["Unknown","Accepted","Declined","Requested"], :include_blank => false, :required => true,:size => 35}%></td></tr>
 
 </table>
 <p><b>After submitting this form you will be redirected to the home page and will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window) WITHIN 24HRS. </b></p>

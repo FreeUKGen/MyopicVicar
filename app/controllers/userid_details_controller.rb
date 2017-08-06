@@ -41,23 +41,28 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-    if spam_check
-      @userid = UseridDetail.new(userid_details_params)
-      @userid.add_fields(params[:commit],session[:syndicate])
-      @userid.save
-      if @userid.save
-        refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
-        @userid.write_userid_file
-        next_place_to_go_successful_create
+    @userid = UseridDetail.new(userid_details_params)
+    if new_user_accepted_agreement?(userid_details_params)
+      if spam_check
+        @userid.add_fields(params[:commit],session[:syndicate])
+        @userid.save
+        if @userid.save
+          refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
+          refinery_user.send_reset_password_instructions
+          flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+          @userid.write_userid_file
+          next_place_to_go_successful_create
+        else
+          flash[:notice] = 'The registration was unsuccessful'
+          @syndicates = Syndicate.get_syndicates_open_for_transcription
+          next_place_to_go_unsuccessful_create
+        end
       else
-        flash[:notice] = 'The registration was unsuccessful'
-        @syndicates = Syndicate.get_syndicates_open_for_transcription
-        next_place_to_go_unsuccessful_create
+        render :status => 404
       end
     else
-      render :status => 404
+      flash[:notice] = 'Please read the Transcriber Agreement. You must accept the terms of this agreement before continuing with the registration.'
+      next_place_to_go_unsuccessful_create
     end
   end
 
@@ -157,7 +162,7 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
-    @userid = @user
+    @userid = @user.reload
   end
 
   def next_place_to_go_successful_create
@@ -188,7 +193,7 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration' and return
     when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
+      @transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       render :action => 'transcriber_registration' and return
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
@@ -390,7 +395,7 @@ class UseridDetailsController < ApplicationController
       @userid = UseridDetail.new
       @userid[:honeypot] = session[:honeypot]
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
+      @transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       @first_name = session[:first_name]
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
@@ -425,7 +430,6 @@ class UseridDetailsController < ApplicationController
       end
     end
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    #    params[:userid_detail][:email_address_valid]  = true
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
@@ -456,6 +460,13 @@ class UseridDetailsController < ApplicationController
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
     end
+  end
+
+  def volunteer_agreement
+    user = UseridDetail.id(params[:user]).first
+    user.update_attributes(transcription_agreement: set_agreement_status)
+    redirect_to new_manage_resource_path(user: user.userid)
+    return
   end
 
   private
@@ -512,4 +523,12 @@ class UseridDetailsController < ApplicationController
     location += '+"&option=' + option +'"'
   end
 
+  def new_user_accepted_agreement? params
+    params[:transcription_agreement] == "Accepted"
+  end
+
+  def set_agreement_status
+    params[:agreement_action] == "Accept" ? agreement = "Accepted" : agreement = "Declined"
+    agreement
+  end
 end

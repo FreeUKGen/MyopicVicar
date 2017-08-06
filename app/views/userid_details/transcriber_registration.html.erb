@@ -116,6 +116,21 @@
           <% end %>
         </select>
       </li>
+
+      <li class="grid__item eleven-twelfths lap-one-whole palm-one-whole">
+        <label class="label ttip" for="syndicate" tabindex="0">Agreement
+          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <span class="ttip__text">Please read the following Transcriber Agreement. You must accept the terms of this agreement before continuing with the registration.</span>
+          <small class="additional">Required</small>
+        </label>
+        <div class="agreement">
+          <%=  Refinery::Page.where(:slug => 'transcription-agreement').first.parts.first.body.html_safe %>
+        </div>
+
+        <%= check_box_tag("userid_detail[transcription_agreement]", "Accepted", false) %>
+        <span>I have read and accept the <%= link_to 'agreement', "/docs/FreeUKGenealogyTranscriptionAgreement.pdf", title: "Click here to Download the Agreement" %></span><br /><br />
+      </li>
+
       <li class="betterstyling grid__item seven-twelfths lap-one-whole palm-one-whole">
         <label class="label ttip" for="<%= @userid[:honeypot] %>" > Leave this field blank </label> 
         <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">

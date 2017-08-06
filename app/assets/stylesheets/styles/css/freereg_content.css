@@ -456,3 +456,20 @@ caption .additional, h3 + .additional {
 dl.table-display { width: 100%; }
 dl.table-display dt { width: 4em; }
 dl.table-display dd { width: calc(100% - 4em); }
+
+.agreement {
+    border: 1px solid grey;
+    padding: 5px;
+    height: 200px;
+    overflow: auto;
+    margin-bottom: 10px;
+
+}
+
+.agreement > h5, h6 {
+  color: #009f98;
+}
+
+.login_agreement, .agreement_options {
+  margin-bottom: 20px;
+}

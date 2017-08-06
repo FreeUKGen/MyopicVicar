@@ -1,16 +1,38 @@
-<% title "Action Page" %>
-<% if flash[:notice] %>
-   <div class="push-half--bottom" id="notice" style="color:blue;">
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
-<% count = @user.count_not_checked_messages %>
-<% if count != 0 %>
-  <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
-  You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
-  </div>
-<% end %>
-<% breadcrumb :root %>
-<%= @page %> 
+<% title "Agreement" %>
+<% if @transcription_agreement == "Accepted" || @transcription_agreement == "Declined" %>
+  <% title "Action Page" %>
+  <% if flash[:notice] %>
+    <div class="push-half--bottom" id="notice" style="color:blue;">
+      <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    </div>
+  <% end %>
+  <% count = @user.count_not_checked_messages %>
+  <% if count != 0 %>
+    <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
+    You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
+    </div>
+  <% end %>
+  <% breadcrumb :root %>
+  <%= @page %>
+  <%= render "resource_sidebar" %>
+<% else %>
+  <div class="login_agreement">
+    <%= form_tag({controller: "userid_details", action: "volunteer_agreement", params: {user: @current_user_id}}, method: "post") do |f| %>
+      <li class="grid__item eleven-twelfths lap-one-whole palm-one-whole">
+        <label class="label ttip" for="syndicate" tabindex="0"><%= link_to 'Agreement', "/docs/FreeUKGenealogyTranscriptionAgreement.pdf", title: "Click here to Download the Agreement" %>
+          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <span class="ttip__text">Please Accept or Decline the following Transcriber Agreement to continue.</span>
+        </label>
 
-<%= render "resource_sidebar" %>
+        <div class="agreement">
+          <%=  Refinery::Page.where(:slug => 'transcription-agreement').first.parts.first.body.html_safe %>
+        </div>
+
+        <div class = agreement_options>
+          <%= submit_tag "Accept", name: "agreement_action", class: "btn btn--small" %>
+          <%= submit_tag "Decline", name: "agreement_action", class: "btn btn--small" %>
+        </div>
+      </li>
+    <% end %>
+  </div>
+<% end %>
