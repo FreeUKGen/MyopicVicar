@@ -6,7 +6,16 @@
 <% x = @source.first %>
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
-  <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> <%= link_to 'List Image Server Groups', image_server_group_path(x), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Edit Source', edit_source_path(x), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Delete Source', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
+  <% case x.source_name %>
+    <% when 'Image Server' %> 
+      <%= link_to 'List Image Server Groups', image_server_group_path(x), method: :get, :class => "btn weight--light btn--small" %> 
+    <% when 'Other Server1' %>
+    <% when 'Other Server2' %>
+    <% when 'OTher Server3' %>
+    <% else %>
+  <% end %>
+  <%= link_to 'Edit Source', edit_source_path(x), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Delete Source', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>

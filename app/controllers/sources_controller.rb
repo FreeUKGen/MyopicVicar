@@ -101,21 +101,24 @@ class SourcesController < ApplicationController
   end
 
   def propagate
-    @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-    display_info
     @source = Source.new
-    @test = Source.where(:id=>params[:id])
+    @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+
+    display_info
     source1 = Source.where(:id=>params[:id]).first
     place = source1.register.church.place
-    place_id = Place.where(:id=>place.id).pluck(:id)
+    place_id = Place.where(:chapman_code=>place.chapman_code).pluck(:id, :place_name).to_h
 
-    church_id = Church.where(:place_id=>{'$in'=>place_id}).pluck(:id, :church_name).to_h
-    church_id.each do |k1,v1|
-      register_id = Register.where(:church_id=>k1).pluck(:id, :register_type).to_h
-      register_id.each do |k2,v2|
-        x = Source.where(:register_id=>k2, :source_name=>source1.source_name).first
-        @source_id['Place: '+place.place_name+' Church: '+v1+' - '+RegisterType.display_name(v2)] = x.id if x.present?
-      end
+    church_id = Church.where(:place_id=>{'$in'=>place_id.keys}).pluck(:id, :place_id, :church_name)
+    church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church_id.each{|k,v,w| h[k] << v << w}}
+
+    register_id = Register.where(:church_id=>{'$in'=>church_id.keys}).pluck(:id, :church_id, :register_type)
+    register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register_id.each{|k,v,w| h[k] << v << w}}
+
+    x = Source.where(:register_id=>{'$in'=>register_id.keys}, :source_name=>source1.source_name).pluck(:id, :register_id).to_h
+    
+    x.each do |k1,v1|
+      @source_id['Place: '+place_id[church_id[register_id[v1][0]][0]]+', Church: '+church_id[register_id[v1][0]][1]+' - '+RegisterType.display_name(register_id[v1][1])] = k1
     end
 
     respond_to do |format|
@@ -127,7 +130,7 @@ class SourcesController < ApplicationController
 
   def show
     display_info
-    @source = Source.where(:register_id=>params[:id])
+    @source = Source.where(:register_id=>params[:id], :source_name=>params[:source_name])
   end
 
   def update
@@ -152,10 +155,10 @@ class SourcesController < ApplicationController
       params[:source].delete(:choice)
       source.update_attributes(source_params)
     end
+
     flash[:notice] = 'Update of source was successful'
     flash.keep(:notice)
     redirect_to index_source_path(source.register)
-
   end
 
   private
