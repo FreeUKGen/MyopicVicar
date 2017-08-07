@@ -81,7 +81,7 @@ class SourcesController < ApplicationController
       when 1
         case @source.first.source_name
           when 'Image Server'
-            redirect_to :action=>'show'
+            redirect_to :action=>'show', :source_name=>'Image Server'
           when 'other server1'
 #            redirect_to :controller=>'server1', :action=>'show'
           when 'other server2'
