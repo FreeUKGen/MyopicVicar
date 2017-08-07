@@ -1,7 +1,7 @@
 <% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center"><b><%= @source.source_name %></b> IG <b><%= @group.ig %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center"><b><%= @source.source_name %></b> IG <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
@@ -10,13 +10,14 @@
 <% end %>
 
 <section class="island ">
-You are currently under Images Group <b>"<%= @image_server_group.ig %>"</b><br>
   <div class="grid__item ">
     <%= simple_form_for @image_server_image do |s| %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort, :label=>'Check the images you want to move', :label_html=>{}, :item_label_class=>"collection_check_boxes", :include_blank=>false, :input_html=>{:class=>"simple_form_position"} %>
-      <%= s.input :image_server_group_id, :as=>:select, :collection=>@ig.invert.sort, :label=>'Re-sssign selected images to Image Group', :multiple=>true, :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
+      <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort, :label=>'Select the images you want to move to another Image Group', :include_blank=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position"} %>
+      <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign selected images to Image Group', :multiple=>true, :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size => 3} %>
 
-      <%= s.hidden_field :image_server_group_id, :value=>s.object.image_server_group_id %>
+      <%# a rail restart is needed for fake field %>
+      <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
+      <%= s.hidden_field :image_set, :value=>@image_server_image.image_set %>
       <%= s.button :submit, 'Submit' %>
     <% end %>        
   </div>
