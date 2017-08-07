@@ -3,27 +3,26 @@
 <div style="clear:both;"></div><br>
 <p style="text-align: center">Source of images for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
-<% x = @source.first %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
   <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
-  <% case x.source_name %>
+  <% case @source.source_name %>
     <% when 'Image Server' %> 
-      <%= link_to 'List Image Server Groups', image_server_group_path(x), method: :get, :class => "btn weight--light btn--small" %> 
+      <%= link_to 'List Image Server Groups', image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %> 
     <% when 'Other Server1' %>
     <% when 'Other Server2' %>
     <% when 'OTher Server3' %>
     <% else %>
   <% end %>
-  <%= link_to 'Edit Source', edit_source_path(x), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Delete Source', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Edit Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Delete Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
   </div>
   <div style="clear:both;"> </div><br>
-<% end %>
-
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %><% flash[:notice] = nil%><br>
-  </div>
 <% end %>
 
 <div class="grid">
@@ -38,21 +37,21 @@
         <th class="caps">Field</th>
         <th class="caps">Value</th>
       </tr>
-      <tr><td>Source Name :</td><td class="weight--semibold"><%= x[:source_name] %></td></tr>
-      <tr><td>Notes</td><td class="t15"><%= x[:notes] %>&nbsp;</td></tr>
-      <tr><td>Start Date</td><td class="t30"><%= x[:start_date] %>&nbsp;</td></tr>
-      <tr><td>End Date</td><td class="t15"><%= x[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Original Form</td><td class="t15"><%= x[:original_form][:type] %>
-        <% if x[:original_form][:type] == 'other' %>
-          : <%= x[:original_form][:name]  %>
+      <tr><td>Source Name :</td><td class="weight--semibold"><%= @source[:source_name] %></td></tr>
+      <tr><td>Notes</td><td class="t15"><%= @source[:notes] %>&nbsp;</td></tr>
+      <tr><td>Start Date</td><td class="t30"><%= @source[:start_date] %>&nbsp;</td></tr>
+      <tr><td>End Date</td><td class="t15"><%= @source[:end_date] %>&nbsp;</td></tr>
+      <tr><td>Original Form</td><td class="t15"><%= @source[:original_form][:type] %>
+        <% if @source[:original_form][:type] == 'other' %>
+          : <%= @source[:original_form][:name]  %>
         <% end %>
       </tr>
-      <tr><td>Creating Institution</td><td class="t15"><%= x[:creating_institution] %>&nbsp;</td></tr>
-      <tr><td>Holding Institution</td><td class="t15"><%= x[:holding_institution] %>&nbsp;</td></tr>
-      <tr><td>Restrictions on Use by Creating Institution</td><td class="t15"><%= x[:restrictions_on_use_by_creating_institution] %>&nbsp;</td></tr>
-      <tr><td>Restrictions on Use by Holding Institution</td><td class="t15"><%= x[:restrictions_on_use_by_holding_institution] %>&nbsp;</td></tr>
-      <tr><td>Open Data</td><td class="t15"><%= x[:open_data] ? 'Yes' : 'No' %>&nbsp;</td></tr>
-      <tr><td>URL</td><td class="t15"><%= x[:url] %>&nbsp;</td></tr>
+      <tr><td>Creating Institution</td><td class="t15"><%= @source[:creating_institution] %>&nbsp;</td></tr>
+      <tr><td>Holding Institution</td><td class="t15"><%= @source[:holding_institution] %>&nbsp;</td></tr>
+      <tr><td>Restrictions on Use by Creating Institution</td><td class="t15"><%= @source[:restrictions_on_use_by_creating_institution] %>&nbsp;</td></tr>
+      <tr><td>Restrictions on Use by Holding Institution</td><td class="t15"><%= @source[:restrictions_on_use_by_holding_institution] %>&nbsp;</td></tr>
+      <tr><td>Open Data</td><td class="t15"><%= @source[:open_data] ? 'Yes' : 'No' %>&nbsp;</td></tr>
+      <tr><td>URL</td><td class="t15"><%= @source[:url] %>&nbsp;</td></tr>
     </table>
   </div>
   </section>

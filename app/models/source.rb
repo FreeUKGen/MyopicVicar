@@ -3,14 +3,6 @@ class Source
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   
-  module MsType
-    PARISH_REGISTER = 'pr'
-    ARCHDEACONS_TRANSCRIPT = 'at'
-    BISHOPS_TRANSCRIPT = 'bt'
-
-    ALL_TYPES = [PARISH_REGISTER, ARCHDEACONS_TRANSCRIPT, BISHOPS_TRANSCRIPT]
-  end
-
   field :source_name, type: String
   field :notes, type: String
   field :start_date, type: String
@@ -26,7 +18,7 @@ class Source
   field :url, type: String #if the source is locatable online, this is the URL for the top-level (not single-page) webpage for it
 
   belongs_to :register, index: true
-  has_many :image_server_groups, foreign_key: :source_id # includes transcripts, printed editions, and microform, and digital versions of these
+  has_many :image_server_groups, foreign_key: :source_id, :dependent=>:restrict # includes transcripts, printed editions, and microform, and digital versions of these
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
   attr_accessor :propagate

@@ -22,7 +22,7 @@
   <%= s.input :url, :label=>"URL", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
 
   <%= s.simple_fields_for :propagate do |p| %>
-    <%= s.input :choice, :as=>:boolean, :label=>'Select if you want to propagate this information to other sources under the same place '+session[:place_name], :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false, 'data-url'=>propagate_source_path(s.object), 'data-remote'=>true} %> 
+    <%= s.input :choice, :as=>:boolean, :label=>'Select if you want to propagate this information to other sources under county '+session[:chapman_code], :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false, 'data-url'=>propagate_source_path(s.object), 'data-remote'=>true} %> 
     <div id="propagate_source" style="display:none;"></div>
   <% end %>
 

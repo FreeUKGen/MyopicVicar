@@ -1,12 +1,12 @@
 <% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center"><b><%= @source.source_name %></b> IG <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center">Image Server Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %><% flash[:notice] = nil%><br>
-  </div>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
 <% end %>
 
 <div class="grid">
@@ -21,7 +21,7 @@
           <th class="caps">Field</th>
           <th class="caps">Value</th>
         </tr>
-        <tr><td>Image Group</td><td class="weight--semibold"><%= @image[:image_group][:ig] %></td></tr>
+        <tr><td>Image Group</td><td class="weight--semibold"><%= @image[:image_group][:group_name] %></td></tr>
         <tr><td>Image Set</td><td class="weight--semibold"><%= @image[:image_set] %></td></tr>
         <tr><td>Image</td><td class="weight--semibold"><%= @image[:seq] %></td></tr>
         <tr>

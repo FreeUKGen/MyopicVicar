@@ -1,5 +1,5 @@
 <%= simple_form_for @source do |s| %>
 	<%= s.simple_fields_for :propagate do |p| %>
-      	<% p.input :source_id, :as=>:check_boxes, :collection=>@source_id.sort, :label=>'Select the sources you want to propagate', :include_blank=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position"} %>
+    <% p.input :source_id, :as=>:check_boxes, :collection=>@source_id.sort, :label=>'Select the sources you want to propagate', :include_blank=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position"} %>
   <% end %>
 <% end %>

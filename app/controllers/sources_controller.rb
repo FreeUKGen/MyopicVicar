@@ -9,14 +9,14 @@ class SourcesController < ApplicationController
     register = source.register
 
     source = Source.new(source_params)
-    source.save!
+    source.save
 
     if source.errors.any? then
       flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was unsuccessful'
       redirect_to :back
     else
       register.sources << source
-      register.save!
+      register.save
 
       flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was successful'
       redirect_to index_source_path(source.register)     
@@ -25,8 +25,8 @@ class SourcesController < ApplicationController
 
   def destroy
     display_info
-
     get_user_info(session[:userid],session[:first_name])
+
     if ['system_administrator', 'data_managers'].include? @user.person_role
       source = Source.id(params[:id]).first
       return_location = source.register
@@ -66,30 +66,33 @@ class SourcesController < ApplicationController
     if @source.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent Source'
       redirect_to :back
-      return
     end
   end
 
   def index
     display_info
-    @source = Source.where(:register_id=>params[:id])
+    @source = Source.where(:register_id=>params[:id]).all
 
-    case @source.count
-      when 0
-        flash[:notice] = 'No Source under this register'
-        redirect_to :back
-      when 1
-        case @source.first.source_name
-          when 'Image Server'
-            redirect_to :action=>'show', :source_name=>'Image Server'
-          when 'other server1'
-#            redirect_to :controller=>'server1', :action=>'show'
-          when 'other server2'
-#            redirect_to :controller=>'server2', :action=>'show'
-          else
-            flash[:notice] = 'Somthing wrong'
-            redirect_to :back
-        end
+    if @source.nil?
+      go_back("source#index",params[:id])
+    else
+      case @source.count
+        when 0
+          flash[:notice] = 'No Source under this register'
+          redirect_to :back
+        when 1
+          case @source.first.source_name
+            when 'Image Server'
+              redirect_to :action=>'show', :source_name=>'Image Server'
+            when 'other server1'
+#              redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
+            when 'other server2'
+#              redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
+            else
+              flash[:notice] = 'Somthing wrong'
+              redirect_to :back
+          end
+       end
     end
   end
 
@@ -97,68 +100,83 @@ class SourcesController < ApplicationController
     display_info
     @source = Source.new
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
-    @list = FreeregOptionsConstants::SOURCE_NAME - name_array
+
+    if name_array.nil?
+      go_back("source#new",params[:id])
+    else
+      @list = FreeregOptionsConstants::SOURCE_NAME - name_array
+    end
   end
 
   def propagate
+    display_info
     @source = Source.new
     @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
-    display_info
     source1 = Source.where(:id=>params[:id]).first
-    place = source1.register.church.place
-    place_id = Place.where(:chapman_code=>place.chapman_code).pluck(:id, :place_name).to_h
+    if source1.nil?
+      go_back("source#propagate",params[:id])
+    else
+      place = source1.register.church.place
+      place_id = Place.where(:chapman_code=>place.chapman_code).pluck(:id, :place_name).to_h
 
-    church_id = Church.where(:place_id=>{'$in'=>place_id.keys}).pluck(:id, :place_id, :church_name)
-    church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church_id.each{|k,v,w| h[k] << v << w}}
+      church_id = Church.where(:place_id=>{'$in'=>place_id.keys}).pluck(:id, :place_id, :church_name)
+      church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church_id.each{|k,v,w| h[k] << v << w}}
 
-    register_id = Register.where(:church_id=>{'$in'=>church_id.keys}).pluck(:id, :church_id, :register_type)
-    register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register_id.each{|k,v,w| h[k] << v << w}}
+      register_id = Register.where(:church_id=>{'$in'=>church_id.keys}).pluck(:id, :church_id, :register_type)
+      register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register_id.each{|k,v,w| h[k] << v << w}}
 
-    x = Source.where(:register_id=>{'$in'=>register_id.keys}, :source_name=>source1.source_name).pluck(:id, :register_id).to_h
+      x = Source.where(:register_id=>{'$in'=>register_id.keys}, :source_name=>source1.source_name).pluck(:id, :register_id).to_h
     
-    x.each do |k1,v1|
-      @source_id['Place: '+place_id[church_id[register_id[v1][0]][0]]+', Church: '+church_id[register_id[v1][0]][1]+' - '+RegisterType.display_name(register_id[v1][1])] = k1
-    end
+      x.each do |k1,v1|
+        @source_id['Place: '+place_id[church_id[register_id[v1][0]][0]]+', Church: '+church_id[register_id[v1][0]][1]+' - '+RegisterType.display_name(register_id[v1][1])] = k1
+      end
 
-    respond_to do |format|
-      format.js
-      format.json
-      format.html
+      respond_to do |format|
+        format.js
+        format.json
+        format.html
+      end
     end
   end
 
   def show
     display_info
-    @source = Source.where(:register_id=>params[:id], :source_name=>params[:source_name])
+    @source = Source.where(:register_id=>params[:id], :source_name=>params[:source_name]).first
+
+    go_back("source",params[:id]) if @source.nil?
   end
 
   def update
     source = Source.where(:id=>params[:id]).first
 
-    if source_params[:choice] == '1'  # propagate checkbox is selected
-      notes = source_params[:notes]
-      original_form_type = source_params[:original_form][:type]
-      original_form_name = source_params[:original_form][:name]
-      original_owner = source_params[:original_owner]
-      creating_institution = source_params[:creating_institution]
-      holding_institution = source_params[:holding_institution]
-      restrictions_on_use_by_creating_institution = source_params[:restrictions_on_use_by_creating_institution]
-      restrictions_on_use_by_holding_institution = source_params[:restrictions_on_use_by_holding_institution]
-      open_data = source_params[:open_data]
-      url = source_params[:url]
-      source_list = source_params[:propagate][:source_id]
-      source_list << params[:id]
-
-      Source.where(:id=>{'$in'=>source_list}).update_all(:notes=>notes, :original_form=>{:type=>original_form_type, :name=>original_form_name}, :original_owner=>original_owner, :creating_institution=>creating_institution, :holding_institution=>holding_institution, :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, :open_data=>open_data, :url=>url)
+    if source.nil?
+      go_back("source#update",params[:id])
     else
-      params[:source].delete(:choice)
-      source.update_attributes(source_params)
-    end
+      if source_params[:choice] == '1'  # propagate checkbox is selected
+        notes = source_params[:notes]
+        original_form_type = source_params[:original_form][:type]
+        original_form_name = source_params[:original_form][:name]
+        original_owner = source_params[:original_owner]
+        creating_institution = source_params[:creating_institution]
+        holding_institution = source_params[:holding_institution]
+        restrictions_on_use_by_creating_institution = source_params[:restrictions_on_use_by_creating_institution]
+        restrictions_on_use_by_holding_institution = source_params[:restrictions_on_use_by_holding_institution]
+        open_data = source_params[:open_data]
+        url = source_params[:url]
+        source_list = source_params[:propagate][:source_id]
+        source_list << params[:id]
 
-    flash[:notice] = 'Update of source was successful'
-    flash.keep(:notice)
-    redirect_to index_source_path(source.register)
+        Source.where(:id=>{'$in'=>source_list}).update_all(:notes=>notes, :original_form=>{:type=>original_form_type, :name=>original_form_name}, :original_owner=>original_owner, :creating_institution=>creating_institution, :holding_institution=>holding_institution, :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, :open_data=>open_data, :url=>url)
+      else
+        params[:source].delete(:choice)
+        source.update_attributes(source_params)
+      end
+
+      flash[:notice] = 'Update of source was successful'
+      flash.keep(:notice)
+      redirect_to index_source_path(source.register)
+    end
   end
 
   private

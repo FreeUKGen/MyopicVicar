@@ -4,8 +4,8 @@
 <p style="text-align: center">Sources of images for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-   	<%= flash[:notice] %><% flash[:notice] = nil%><br>
+  <div id="notice" style="color:blue">
+   	<%= flash[:notice] %><% flash.clear %>
   </div>
 <% end %>
 

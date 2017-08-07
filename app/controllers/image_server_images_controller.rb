@@ -102,8 +102,6 @@ class ImageServerImagesController < ApplicationController
     if @image_server_image.empty?
       flash[:notice] = 'No Images under Image Group "'+@image_server_group.group_name.to_s+'"'
       redirect_to image_server_group_path(@image_server_group.source)
-    else
-      flash.clear
     end
   end
 

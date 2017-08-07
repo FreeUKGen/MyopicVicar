@@ -52,7 +52,7 @@ class ImageServerGroup
   field :consistency, type: Mongoid::Boolean, default: false
 
   belongs_to :source, index: true
-  has_many :image_server_images, foreign_key: :image_server_group_id # includes images
+  has_many :image_server_images, foreign_key: :image_server_group_id, :dependent=>:restrict # includes images
   has_many :gaps
 
   accepts_nested_attributes_for :image_server_images, :reject_if => :all_blank

@@ -10,14 +10,14 @@ class ImageServerGroupsController < ApplicationController
 
     if not group_name.include? params[:image_server_group][:group_name]
       image_server_group = ImageServerGroup.new(image_server_group_params)
-      image_server_group.save!
+      image_server_group.save
 
       if image_server_group.errors.any? then
         flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:group_name]+'" was unsuccessful'
         redirect_to :back
       else
         source.image_server_groups << image_server_group
-        source.save!
+        source.save
 
         flash[:notice] = 'Addition of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
         redirect_to image_server_group_path(source)
@@ -61,7 +61,7 @@ class ImageServerGroupsController < ApplicationController
   def edit
     display_info
     get_userids_and_transcribers
-    @image_server_group = ImageServerGroup.id(params[:id])
+    @image_server_group = ImageServerGroup.id(params[:id]).all
 
     if @image_server_group.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent Image Group'
@@ -73,20 +73,21 @@ class ImageServerGroupsController < ApplicationController
   def error
   end
 
-def get_userids_and_transcribers
+  def get_userids_and_transcribers
     @user = cookies.signed[:userid]
     @first_name = @user.person_forename unless @user.blank?
+
     case
-    when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
-      @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
-    when  @user.person_role == 'country_cordinator'
-      @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
-    when  @user.person_role == 'county_coordinator'
-      @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
-    when  @user.person_role == 'sydicate_coordinator'
-      @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
-    else
-      @userids = @user
+      when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
+        @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
+      when  @user.person_role == 'country_cordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+      when  @user.person_role == 'county_coordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      when  @user.person_role == 'sydicate_coordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      else
+        @userids = @user
     end
 
     @people =Array.new

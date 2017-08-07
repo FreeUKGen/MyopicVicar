@@ -246,9 +246,9 @@ p "=======================R6B1"
     church.church_notes = 'Created by IS_FR loading script'
     church.calculate_church_numbers      # do not have collection FreeregValidations in database
 
-    church.save!
+    church.save
     place.churches << church
-    place.save!
+    place.save
 p "CREATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
 
     return church
@@ -257,7 +257,7 @@ p "CREATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
   def self.update_church(place_id, church_name)
     church = Church.find({:place_id=>place_id, :church_name=>church_name})
     church.church_name = church_name
-    church.save!
+    church.save
 
 p "UPDATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
   end
@@ -269,9 +269,9 @@ p "UPDATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
     register.last_amended = Time.now.strftime("%d %b %Y")
     register.register_notes = 'Created by IS_FR loading script'
 
-    register.save!
+    register.save
     church.registers << register
-    church.save!
+    church.save
 p "CREATE REGISTER: place="+place.place_name.to_s+" church="+church.church_name.to_s+" register="+register_type.to_s+" register id="+register.id.to_s
 
     return register
@@ -280,7 +280,7 @@ p "CREATE REGISTER: place="+place.place_name.to_s+" church="+church.church_name.
   def self.update_register(register_id, register_type)
     register = Register.find({:id=>register_id})
     register.register_type = register_type
-    register.save!
+    register.save
 
 p "UPDATE REGISTER: place="+register[:place_name].to_s+" church="+register[:church_name].to_s+" register_tye="+register_type.to_s+" id="+register_id.to_s
   end

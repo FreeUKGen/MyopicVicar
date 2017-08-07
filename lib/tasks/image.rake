@@ -100,7 +100,7 @@ namespace :image do
                   if ['u','t'].include?(f[prev_county][prev_place]['status'])
 p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_name.to_s
 
-                    update_collection(f[prev_county][prev_place],prev_file_name,start_date,end_date,all_seq) 
+                    update_collection(f[prev_county][prev_place],prev_file_name,prev_start_date,prev_end_date,all_seq) 
                   end
 
                   prev_county = county_part.to_s
@@ -133,7 +133,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source = Source.where(:register_id=>f['register'].id, :source_name=>'Image Server').first
     source = create_source(f['register'],f['notes']) if source.nil?
 
-    is_group = create_image_server_group(source,group_name,f['status'],f['church_status'],f['register_status'])
+    is_group = create_image_server_group(source,group_name,f['status'],start_date,end_date,f['church_status'],f['register_status'])
     
     update_image_server_image(is_group,group_name,start_date,end_date,all_seq)
   end
@@ -142,29 +142,32 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source = Source.new(:register_id=>register.id)
     source.source_name = "Image Server"
     source.notes = notes
-    source.save!
+    source.start_date = source.register.datemin
+    source.end_date = source.register.datemax
+
+    source.save
     register.sources << source
-    register.save!
+    register.save
 
     source
   end
 
-  def self.create_image_server_group(source,group_name,status,church_status,register_status)
+  def self.create_image_server_group(source,group_name,status,start_date,end_date,church_status,register_status)
     image_server_group = ImageServerGroup.where(:source_id=>source.id, :group_name=>group_name).first
 
     if image_server_group.nil?
       image_server_group = ImageServerGroup.new(:source_id=>source.id)
       image_server_group.group_name = group_name
       image_server_group.status = status
-      image_server_group.start_date = source.register.datemin
-      image_server_group.end_date = source.register.datemax
+      image_server_group.start_date = start_date
+      image_server_group.end_date = end_date
       image_server_group.church_status = church_status
       image_server_group.register_status = register_status
       image_server_group.consistency = true if church_status == 'GOOD' && register_status == 'GOOD'
 
-      image_server_group.save!
+      image_server_group.save
       source.image_server_groups << image_server_group
-      source.save!
+      source.save
     else
 #      add image_server_group.update here
     end

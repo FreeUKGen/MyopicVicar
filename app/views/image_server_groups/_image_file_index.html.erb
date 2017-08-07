@@ -9,11 +9,13 @@
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
-        <th class="t15">Image Group</th>
-        <th class="t15">Status</th>
+        <th class="t20">Image Group</th>
+        <th class="t10">Status</th>
+        <th class="t05">Start Date</th>
+        <th class="t05">End Date</th>
         <th class="t15">Skill Level</th>
         <th class="t15">Transcriber</th>
-        <th class="t15">Action</th>
+        <th class="t12">Action</th>
       </tr>
     </thead>
   </table>
@@ -26,18 +28,20 @@
             <td class="t20"><%= group.group_name %></td>
             <% case group[:status] %>
               <% when ImageServerGroup::Status::UNALLOCATED %>
-                <td class="t15" style="color:red">UnALLOCATED</td>
+                <td class="t10" style="color:red">UnALLOCATED</td>
               <% when ImageServerGroup::Status::IN_PROGRESS %>
                 <td>IN_PROGRESS</td>
               <% when ImageServerGroup::Status::TRANSCRIBED %>
-                <td class="t15" style="color:green">TRANSCRIBED</td>
+                <td class="t10" style="color:green">TRANSCRIBED</td>
               <% when ImageServerGroup::Status::REVIEWED %>
-                <td class="t15">REVIEWED</td>
+                <td class="t10">REVIEWED</td>
               <% when ImageServerGroup::Status::ERROR %>
-                <td class="t15" style="color:red">ERROR</td>
+                <td class="t10" style="color:red">ERROR</td>
               <% else %>
-                <td class="t15"><%= group[:status] %>&nbsp;</td>
+                <td class="t10"><%= group[:status] %>&nbsp;</td>
             <% end %>
+            <td class="t10"><%= group[:start_date] %>&nbsp;</td>
+            <td class="t10"><%= group[:end_date] %>&nbsp;</td>
             <td class="t20"><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[group[:difficulty]] %>&nbsp;</td>
             <td class="t20"><%= group[:transcriber] %>&nbsp;</td>
             <td class="t15"><%= link_to 'SH', image_server_image_path(group) %> <%= link_to 'ED', edit_image_server_group_path(group) %> <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %></td>
