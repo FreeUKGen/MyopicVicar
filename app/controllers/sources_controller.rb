@@ -144,7 +144,7 @@ class SourcesController < ApplicationController
     display_info
     @source = Source.where(:register_id=>params[:id], :source_name=>params[:source_name]).first
 
-    go_back("source",params[:id]) if @source.nil?
+    go_back("source#show",params[:id]) if @source.nil?
   end
 
   def update
