@@ -283,10 +283,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :assets
 
-  resources :image_lists
-
-
-
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
   # If you would like to change where this extension is mounted, simply change the :at option to something different.
