@@ -42,7 +42,7 @@ class ImageServerGroup
   field :group_name, type: String
   field :start_date, type: String
   field :end_date, type: String
-  field :transcriber, type: Array, default: nil
+  field :transcribers, type: Array, default: nil
   field :difficulty, type: String, default: nil
   field :status, type: String
   field :notes, type: String

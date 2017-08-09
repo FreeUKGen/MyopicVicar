@@ -1,14 +1,14 @@
 <section class="island  island--light">
 <div class="grid">
-Existed IG:<br>
-<% @group_name.each do |b| %>
-  	<%= b %><br>
-<% end %>
 
 <%= simple_form_for @image_server_group do |s| %>
-  <%= s.input :group_name, :label=>"Create New Image Group", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
+  <%= s.input :group_name, :label=>"Image Group Name", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
   <%= s.input :start_date, :label=>"Start Year", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>10} %>
   <%= s.input :end_date, :label=>"End Year", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>10} %>
+  <%= s.input :transcribers, :as=>:select, :collection=>@people, :label => 'Transcribers', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :difficulty, :as=>:select, :collection=>ImageServerImage::Difficulty::ALL_DIFFICULTIES.invert, :include_blank=>false, selected: s.object.difficulty, :label=>'Transcription Level Skill', :value=>ImageServerImage::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert.sort, selected: s.object.status, :include_blank=>false, :label => 'Transcription Status', :value=>ImageServerImage::Status::ALL_STATUSES[s.object.status], :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :notes, :label=>'Notes', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
 
   <%= s.hidden_field :source_id, :value => params[:id] %>
   <%= s.button :submit, 'Create' %>

@@ -288,6 +288,7 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
 
   resources :image_server_groups
+  get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
 
   resources :image_server_images
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image

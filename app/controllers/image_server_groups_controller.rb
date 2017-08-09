@@ -61,7 +61,7 @@ class ImageServerGroupsController < ApplicationController
   def edit
     display_info
     get_userids_and_transcribers
-    @image_server_group = ImageServerGroup.id(params[:id]).all
+    @image_server_group = ImageServerGroup.id(params[:id]).first
 
     if @image_server_group.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent Image Group'
@@ -97,13 +97,21 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def index
-    @image_server_image = ImageServerImage.source_id(@image_server_group.id).all.order_by(group_name: 1)
+    display_info
+    @image_server_group = ImageServerGroup.id(params[:id]).first
+
+    if @image_server_group.nil?
+      flash[:notice] = "Register does not have any Image Group from Image Server."
+      redirect_to :back
+    end
   end
 
   def new 
     display_info
+    get_userids_and_transcribers
+
     @image_server_group = ImageServerGroup.new
-    @group_name = ImageServerGroup.where(:source_id=>session[:source_id]).pluck(:group_name)
+    @group_name = ImageServerGroup.where(:source_id=>session[:source_id]).all.pluck(:group_name)
   end
 
   def show
@@ -111,9 +119,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
     @image_server_group = ImageServerGroup.where(:source_id=>params[:id]).sort_by{|x| x.group_name.downcase}
 
-    if @image_server_group.present?
-      render 'index'
-    else
+    if @image_server_group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
       redirect_to :back
     end
@@ -130,7 +136,7 @@ class ImageServerGroupsController < ApplicationController
     else
       image_server_group.update_attributes(image_server_group_params)
       flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
-      redirect_to image_server_group_path(image_server_group.source)     
+      redirect_to index_image_server_group_path(image_server_group)     
     end
   end
 

@@ -71,7 +71,7 @@ namespace :image do
                 next
               else
                 file_seq = $1
-                file_name = line.slice(0...ind)
+                file_name = line.slice(0...ind).split('/')[2]
 
                 if f[county_part][place_part]['status'] != 'e'
                   if all_files.include?(file_name) == false
