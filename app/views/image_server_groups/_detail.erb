@@ -20,7 +20,7 @@
       <tr><td>Group Name</td><td class="weight--semibold"><%= @image_server_group[:group_name] %></td></tr>
       <tr><td>Start Date</td><td class="t15"><%= @image_server_group[:start_date] %>&nbsp;</td></tr>
       <tr><td>End Date</td><td class="t15"><%= @image_server_group[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Transcribers</td><td class="t15"><%= @image_server_group[:transcribers].join(' ') if !@image_server_group[:transcribers].blank? %>&nbsp;</td></tr>
+      <tr><td>Transcribers</td><td class="t15"><%= @image_server_group[:transcribers].join(' / ') if !@image_server_group[:transcribers].blank? %>&nbsp;</td></tr>
       <tr><td>Difficulty</td><td class="t15"><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[@image_server_group[:difficulty]] %>&nbsp;</td></tr>
       <tr><td>Status</td><td class="t15"><%= ImageServerGroup::Status::ALL_STATUSES[@image_server_group[:status]] %>&nbsp;</td></tr>
       <tr><td>Notes</td><td class="t15"><%= @image_server_group[:notes] %>&nbsp;</td></tr>

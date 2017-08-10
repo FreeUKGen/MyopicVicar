@@ -4,15 +4,15 @@ class ImageServerGroup
   include Mongoid::Timestamps::Updated::Short
   
   module Difficulty
-    Learning = 'l'
-    Straight_Forward_Forms = 's'
     Complicated_Forms = 'c'
+    Learning = 'l'
     Post_1700_modern_freehand = 'p17'
     Post_1530_freehand_Secretary = 'p15s'
     Post_1530_freehand_Latin = 'p15l'
     Post_1530_freehand_Latin_Chancery = 'p15c'
+    Straight_Forward_Forms = 's'
 
-    ALL_DIFFICULTIES = {'l'=>'Learning', 's'=>'Straight_Forward_Forms', 'c'=>'Complicated_Forms', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery'}
+    ALL_DIFFICULTIES = {'c'=>'Complicated_Forms', 'l'=>'Learning', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery', 's'=>'Straight_Forward_Forms'}
   end
 
   module Status

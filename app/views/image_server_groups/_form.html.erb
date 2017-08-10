@@ -6,12 +6,18 @@
   <%= s.input :start_date, :label=>"Start Year", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>10} %>
   <%= s.input :end_date, :label=>"End Year", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>10} %>
   <%= s.input :transcribers, :as=>:select, :collection=>@people, :label => 'Transcribers', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-  <%= s.input :difficulty, :as=>:select, :collection=>ImageServerImage::Difficulty::ALL_DIFFICULTIES.invert, :include_blank=>false, selected: s.object.difficulty, :label=>'Transcription Level Skill', :value=>ImageServerImage::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-  <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert.sort, selected: s.object.status, :include_blank=>false, :label => 'Transcription Status', :value=>ImageServerImage::Status::ALL_STATUSES[s.object.status], :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :difficulty, :as=>:select, :collection=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES.invert, :include_blank=>false, selected: s.object.difficulty, :label=>'Transcription Level Skill', :value=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :status, :collection=>ImageServerGroup::Status::ALL_STATUSES.invert.sort, selected: s.object.status, :include_blank=>false, :label => 'Transcription Status', :value=>ImageServerGroup::Status::ALL_STATUSES[s.object.status], :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
   <%= s.input :notes, :label=>'Notes', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
 
-  <%= s.hidden_field :source_id, :value => params[:id] %>
-  <%= s.button :submit, 'Create' %>
+<% byebug %>
+	<% if controller.controller_name == 'image_server_groups' && controller.action_name == 'new' %>
+	  <%= s.hidden_field :source_id, :value => params[:id] %>
+  	<%= s.button :submit, 'Create' %>
+  <% else %>
+  	<%= s.hidden_field :source_id %>
+  	<%= s.button :submit, 'Submit' %>
+  <% end %>
 <% end %>
 </div>
 
