@@ -175,19 +175,19 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     image_server_group
   end
 
-  def self.update_image_server_image(is_group,image_set,start_date,end_date,seq)
+  def self.update_image_server_image(is_group,image_name,start_date,end_date,seq)
     if is_group.present?
       rd,new_seq = Array.new,Array.new
       image_server_image = ImageServerImage.where(:image_server_group_id=>is_group.id).first
 
       if image_server_image.nil?
         seq.each do |f|
-          rd << {:image_server_group_id=>is_group.id, :image_set=>image_set, :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
+          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name, :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
         end
         image_server_image = ImageServerImage.create! (rd)
       else
 p "==============NEED UPDATE NOT INSERT"
-p "file="+image_set.to_s
+p "file="+image_name.to_s
         seq.each do |f|
           new_seq << f[:seq]
         end
@@ -197,7 +197,7 @@ p "diff_seq="+diff_seq.to_s
 
         if not diff_seq.empty?
           diff_seq.each do |f|
-            rd << {:image_server_group_id=>is_group.id, :image_set=>image_set, :seq=>f, :start_date=>start_date, :end_date=>end_date}
+            rd << {:image_server_group_id=>is_group.id, :image_name=>image_name, :seq=>f, :start_date=>start_date, :end_date=>end_date}
           end
           image_server_image = ImageServerImage.create! (rd)
         end

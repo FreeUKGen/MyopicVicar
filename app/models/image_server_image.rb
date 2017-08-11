@@ -4,18 +4,20 @@ class ImageServerImage
   include Mongoid::Timestamps::Updated::Short
   
   module Difficulty
-    Learning = 'l'
-    Straight_Forward_Forms = 's'
     Complicated_Forms = 'c'
+    Damaged = 'd'
+    Learning = 'l'
     Post_1700_modern_freehand = 'p17'
     Post_1530_freehand_Secretary = 'p15s'
     Post_1530_freehand_Latin = 'p15l'
     Post_1530_freehand_Latin_Chancery = 'p15c'
+    Straight_Forward_Forms = 's'
 
-    ALL_DIFFICULTIES = {'l'=>'Learning', 's'=>'Straight_Forward_Forms', 'c'=>'Complicated_Forms', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery'}
+    ALL_DIFFICULTIES = {'c'=>'Complicated_Forms', 'd'=>'Damaged', 'l'=>'Learning', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery', 's'=>'Straight_Forward_Forms'}
   end
 
   module Status
+    ERROR = 'e'
     UNALLOCATED = 'u'
     IN_PROGRESS = 'p'
     TRANSCRIBED = 't'
@@ -32,9 +34,13 @@ class ImageServerImage
 
   field :start_date, type: String
   field :end_date, type: String
-  field :image_set, type: String
+  field :image_name, type: String
   field :seq, type: String
   field :status, type: String, default: Status::UNALLOCATED
+  field :difficulty, type: String
+  field :transcriber, type: Array
+  field :reviewer, type: Array
+  field :notes, type: String
 
   belongs_to :image_server_group, index: true
   belongs_to :assignment, index: true # optional -- consider renaming as "current_assignment" or storing as an array of image_ids on an assignment record

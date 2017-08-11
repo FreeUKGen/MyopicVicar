@@ -1,12 +1,18 @@
 <div style="clear:both;"></div><br>
-<center><b><%= @image_server_image[:image_set] %>_<%= @image_server_image[:seq] %>.jpg</b></center>
+<center><b><%= @image_server_image[:image_name] %>_<%= @image_server_image[:seq] %>.jpg</b></center>
 
 <section class="island  island--light">
 <div class="grid">
 <%= simple_form_for @image_server_image do |s| %>
-  <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign the image to Image Group', :multiple=>true, :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
+  <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign the image to Image Group', :include_blank=>false, :include_hidden=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
+  <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert, selected: s.object.status, :label=>'transcription status', :value=>ImageServerImage::Status::ALL_STATUSES[s.object.status], :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :difficulty, :collection=>ImageServerImage::Difficulty::ALL_DIFFICULTIES.invert, selected: s.object.difficulty, :label => 'difficulty', :value=>ImageServerImage::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :include_blank=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :transcriber, :as=>:select, :collection=>@people, :label=>'Transcriber', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+	<%= s.input :reviewer, :as=>:select, :collection=>@people, :label=>'Reviewer', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+	<%= s.input :notes, :input_html => {:class => "simple_form_bgcolour", :size => 70} %>
+
 	<%= s.hidden_field :id, :value=>@image_server_image[:id] %>
-	<%= s.hidden_field :image_set, :value=>@image_server_image[:image_set] %>
+	<%= s.hidden_field :image_name, :value=>@image_server_image[:image_name] %>
 	<%= s.hidden_field :seq, :value=>@image_server_image[:seq] %>
   <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image[:image_server_group_id] %>
   <%= s.button :submit, 'Submit' %>

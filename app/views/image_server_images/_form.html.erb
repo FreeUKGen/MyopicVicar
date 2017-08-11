@@ -1,10 +1,14 @@
 <section class="island  island--light">
 <div class="grid">
-<%= simple_form_for @is_image do |s| %>
+<%= simple_form_for @image_server_image do |s| %>
   <center><b><%= @is_image[:group_name] %>_<%= @is_image[:image_list][:seq] %>.jpg</b></center>
   <%= s.input :transcriber, :label => 'transcriber', :input_html => {:class => "simple_form_bgcolour", :size => 20} %>
-  <%= s.input :status, :collection=>['transcribed', 'part transcribed', 'in-progress'], selected: s.object.status, :label=>'transcription status', :input_html=>{:class => "simple_form_bgcolour", :size => 2} %>
-  <%= s.input :difficulty, :collection=>['easy', 'intermediate', 'hard'], selected: s.object.difficulty, :label => 'difficulty', :input_html => {:class => "simple_form_bgcolour", :size => 2} %>
+  <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert, selected: s.object.status, :label=>'transcription status', :value=>ImageServerImage::Status::ALL_STATUSES[s.object.status], :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :difficulty, :collection=>ImageServerImage::Difficulty::ALL_DIFFICULTIES.invert, selected: s.object.difficulty, :label => 'difficulty', :value=>ImageServerImage::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :include_blank=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :transcriber, :as=>:select, :collection=>@people, :label=>'Transcriber', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+	<%= s.input :reviewer, :as=>:select, :collection=>@people, :label=>'Reviewer', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+	<%= s.input :notes, :input_html => {:class => "simple_form_bgcolour", :size => 70} %>
+
 	<%= s.hidden_field :group_name, :value=>@is_image[:group_name] %>
   <%= s.button :submit, 'Submit' %>
 <% end %>

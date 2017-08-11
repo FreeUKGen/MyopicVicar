@@ -1,7 +1,7 @@
 <% breadcrumb :image_server_images, @county, @place, @church, @register, @source, @group %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Image Server Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center">Image of the <b><%= @group.group_name %></b> for the Image Server of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
@@ -11,7 +11,8 @@
 
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-  <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small"  %> 
+  <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'List Image Groups', image_server_group_path(@image_server_image.first.image_server_group.source), method: :get, :class => "btn weight--light btn--small" %>
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
@@ -20,8 +21,12 @@
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
-        <th class="t40">Image Set</th>
+        <th class="t15">Image Name</th>
         <th class="t15">Image</th>
+        <th class="t15">Status</th>
+        <th class="t15">Difficulty</th>
+        <th class="t15">Transcriber</th>
+        <th class="t15">Reviewer</th>
         <th class="t15">Action</th>
       </tr>
     </thead>
@@ -32,9 +37,26 @@
       <tbody>  
         <% @image_server_image.each do |x| %>
           <tr>
-            <td class="t45"><%= x[:image_set] %></td>
+            <td class="t15"><%= x[:image_name] %></td>
             <td class="t15"><%= x[:seq] %></td>
-            <td class="t15"><%= link_to 'SH', detail_image_server_image_path(x) %> <%= link_to 'ED', edit_image_server_image_path(x) %> <%= link_to 'DE', image_server_image_path(x), data: { confirm: 'Are you sure you want to delete IS image '+x[:image_set]+'_'+x[:seq]+'.jpg?'}, method: :delete %></td>
+            <% case x[:status] %>
+              <% when ImageServerImage::Status::UNALLOCATED %>
+                <td class="t15" style="color:red">UnALLOCATED</td>
+              <% when ImageServerImage::Status::IN_PROGRESS %>
+                <td>IN_PROGRESS</td>
+              <% when ImageServerImage::Status::TRANSCRIBED %>
+                <td class="t15" style="color:green">TRANSCRIBED</td>
+              <% when ImageServerImage::Status::REVIEWED %>
+                <td class="t15">REVIEWED</td>
+              <% when ImageServerImage::Status::ERROR %>
+                <td class="t15" style="color:red">ERROR</td>
+              <% else %>
+                <td class="t15"><%= x[:status] %>&nbsp;</td>
+            <% end %>
+            <td class="t15"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:difficulty]] if !x[:difficulty].blank? %>&nbsp;</td>
+            <td class="t15"><%= x[:transcriber].join(' / ') if !x[:transcriber].blank? %>&nbsp;</td>
+            <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>
+            <td class="t15"><%= link_to 'SH', detail_image_server_image_path(x) %> <%= link_to 'ED', edit_image_server_image_path(x) %> <%= link_to 'DE', image_server_image_path(x), data: { confirm: 'Are you sure you want to delete IS image '+x[:image_name]+'_'+x[:seq]+'.jpg?'}, method: :delete %></td>
           </tr>
         <% end %>
       </tbody>

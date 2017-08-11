@@ -9,7 +9,7 @@ class ImageServerImagesController < ApplicationController
     return_location = image_server_image.image_server_group
 #    image_server_image.destroy
 
-#    flash[:notice] = 'Deletion of image"'+image_server_image[:image_set]+'_'+image_server_image[:seq]+'.jpg" was successful'
+#    flash[:notice] = 'Deletion of image"'+image_server_image[:image_name]+'_'+image_server_image[:seq]+'.jpg" was successful'
     flash[:notice] = 'Deletion of image is not supported currently'
     redirect_to image_server_image_path(return_location)
   end
@@ -40,6 +40,7 @@ class ImageServerImagesController < ApplicationController
 
   def edit
     display_info
+    get_userids_and_transcribers
 
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
@@ -58,6 +59,29 @@ class ImageServerImagesController < ApplicationController
     @group_name = @group_name.sort_by{|key,value| value.downcase}.to_h
   end
 
+  def get_userids_and_transcribers
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
+
+    case
+      when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
+        @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
+      when  @user.person_role == 'country_cordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+      when  @user.person_role == 'county_coordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      when  @user.person_role == 'sydicate_coordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      else
+        @userids = @user
+    end
+
+    @people =Array.new
+    @userids.each do |ids|
+      @people << ids.userid
+    end
+  end
+
   def index
     @is_image = IsImage.where(:source_id => @source_id).all.order_by(group_name: 1)
   end
@@ -70,10 +94,10 @@ class ImageServerImagesController < ApplicationController
 
     @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id]).first
 #    @test = ImageServerImage.where(:image_server_group_id=>params[:id])
-    seq = ImageServerImage.where(:image_server_group_id=>params[:id]).pluck(:seq, :image_set)
+    seq = ImageServerImage.where(:image_server_group_id=>params[:id]).pluck(:seq, :image_name)
 
     myseq = Hash.new{|h,k| h[k] = []}
-    @images = Hash[seq.map {|k,v| [k, myseq[k] = v.to_s+'_'+k.to_s]}]   #get new hash key=:seq, val=:image_set+:seq
+    @images = Hash[seq.map {|k,v| [k, myseq[k] = v.to_s+'_'+k.to_s]}]   #get new hash key=:seq, val=:image_name+:seq
 
     if @image_server_image.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent image file'
@@ -109,18 +133,29 @@ class ImageServerImagesController < ApplicationController
     case params[:image_server_image][:seq].class.to_s
       when 'String'
         seq = [] << params[:image_server_image][:seq]     # from edit.html.erb
+        origin = 'edit'
       when 'Array'
         seq = params[:image_server_image][:seq]           # from move.html.erb
+        origin = 'move'
     end
 
     image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:image_server_group_id]).first
     image_server_image = ImageServerImage.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq})
 
     if image_server_image.nil?
-      flash[:notice] = 'Image "'+params[:image_server_image][:image_set]+'_'+params[:image_server_image][:seq].to_s+'.jpg" does not exist'
-      redirect_to image_server_group_path(return_location)
+      flash[:notice] = 'Image "'+params[:image_server_image][:image_name]+'_'+params[:image_server_image][:seq].to_s+'.jpg" does not exist'
+      redirect_to :back
     else
-      image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq}).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
+      case origin
+        when 'edit'
+          params[:image_server_image].delete :orig_image_server_group_id
+          image_server_image.first.update_attributes(image_server_image_params)
+        when 'move'
+          image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq}).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
+        else
+          flash[:notice] = 'something wrong'
+          redirect :back
+      end
       flash[:notice] = 'Update of the Image file(s) was successful'
       redirect_to image_server_image_path(image_server_group)
     end
