@@ -95,7 +95,7 @@ class UseridDetail
     end
 
     def new_transcription_agreement(new_transcription_agreement)
-      where(:new_transcription_agreement => new_transcription_agreement)
+      where(new_transcription_agreement: new_transcription_agreement)
     end
   end
 
@@ -190,6 +190,7 @@ class UseridDetail
     self.email_address_last_confirmned = self.sign_up_date
     self.email_address_valid= true
     self.email_address_last_confirmned = Time.new
+    self.new_transcription_agreement = "Unknown"
   end
 
   def add_lower_case_userid
