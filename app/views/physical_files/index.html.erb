@@ -13,15 +13,15 @@
 		<table  class="table--bordered  table--data">
 			<tr >
 				<th>Userid</th>
-				<th >File Name</th>
+				<th >File Name <%= @has_access%></th>
                 <th >Syndicate</th>
 				<th >loaded into FR</th>
 				<th >Last Processed into Database</th>
                 <th >Waiting Date</th>
+              <% if @has_access %>
                 <th >Show</th>
                 <th >Download</th>
                 <th >Remove</th>
-              <% unless @is_coordinator %>
                 <th >Process file</th> 
 				        <th >Delete File and Entries</th>
               <% end%>
@@ -39,10 +39,10 @@
 					<td > <%= batch.base_uploaded_date.strftime("%d %b %Y (%H:%M)") if batch.base && !batch.base_uploaded_date.nil? %>  </td>	
 					<td > <%= batch.file_processed_date.strftime("%d %b %Y (%H:%M)") if batch.file_processed && !batch.file_processed_date.nil?%>  </td>
 	        <td > <%= batch.waiting_date.strftime("%d %b %Y (%H:%M)") if batch.waiting_to_be_processed && !batch.waiting_date.nil?%>  </td>
-					<td><%= link_to 'Show', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
+					<% if @has_access %>
+          <td><%= link_to 'Show', physical_file_path(batch.id),  :class => "btn weight--light  btn--small", method: :get%>
 	        <td><%= link_to 'Download', download_physical_file_path(batch,   :params=> {:loc => "FR2"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
 	        <td><%= link_to 'Remove file', remove_physical_file_path(batch) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
-	        <% unless @is_coordinator %>
 	          <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn weight--light  btn--small" ,method: :get  %></td>
 	          <td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn weight--light  btn--small",data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>      </tr>
 	        <% end %>

@@ -2,11 +2,13 @@ class PhysicalFilesController < ApplicationController
   
   
   def all_files
+    get_user_info_from_userid
     @selection  = 'all'
     @sorted_by = "; All files by userid then batch name"
     @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]).per(1000)
     @number =  @batches.length
     @number =  @batches.length
+    @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     @paginate = true
     render  'index'
   end
@@ -87,6 +89,7 @@ class PhysicalFilesController < ApplicationController
     @sorted_by = "(All files by userid then batch name)"
     @sorted_by = session[:sorted_by] unless session[:sorted_by].nil?
     get_user_info_from_userid
+    @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     case
     when @sorted_by ==  "Not processed" && session[:who].present?
       @batches = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
