@@ -2,7 +2,7 @@ $(':checkbox').click(function(){
 	x = document.activeElement
 	if (x.id == 'image_server_image_seq_0') {
 		if (x.checked) {
-			if (confirm("Are you sure you want to propagate to all sources?")) {
+			if (confirm("Are you sure you want to propagate to all images?")) {
 				$(':checkbox').each(function(){
 					$(this).prop('checked', true);
 				})

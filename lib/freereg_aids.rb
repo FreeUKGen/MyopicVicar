@@ -184,7 +184,7 @@ p "=======================R4A"
       else
         if register.register_type == register_type
           register_status = 'GOOD'
-#          message = "file \"/#{place.chapman_code}/#{place.place_name}_#{church.church_name} register_type #{register_type} \" on IS matches register_type on FR\r\n\r\n"
+#          message = {:R4C => { place.chapman_code => { palce_part => "R4C: file \"/#{place.chapman_code}/#{place.place_name}_#{church.church_name} register_type #{register_type} \" on IS matches register_type on FR\r\n\r\n"}}}
         else
           if register.register_type == ' '
 p "=======================R6A1"

@@ -28,7 +28,7 @@
             <td class="t20"><%= group.group_name %></td>
             <% case group[:status] %>
               <% when ImageServerGroup::Status::UNALLOCATED %>
-                <td class="t10" style="color:red">UnALLOCATED</td>
+                <td class="t10" style="color:red">UNALLOCATED</td>
               <% when ImageServerGroup::Status::IN_PROGRESS %>
                 <td>IN_PROGRESS</td>
               <% when ImageServerGroup::Status::TRANSCRIBED %>
