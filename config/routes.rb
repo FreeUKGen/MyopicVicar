@@ -172,6 +172,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#manage_images', constraints:ManageCountiesManageImagesConstraint
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
@@ -293,6 +294,7 @@ MyopicVicar::Application.routes.draw do
   resources :image_server_images
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
   get 'image_server_images/:id/detail(.:format)', :to => 'image_server_images#detail', :as => :detail_image_server_image
+  get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
 
 
 

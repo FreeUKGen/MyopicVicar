@@ -33,7 +33,19 @@ class ImageServerGroup
     CHURCH_STATUS = {}
 
     REGISTER_STATUS = {
+      'C4A' => 'image church name does not match the only existed church in FR, create church',
+      'C4B' => 'image no church in file name and no church in FR from place name', # what to do?
+      'C4C' => 'image church in file name matches the only existed chruch in FR', 
+      'C4E' => 'image no church in file name, use the only existed church in FR as church',
+      'C4F' => 'image church in file name match one record in FR', 
+      'C4H' => 'image no church in file name, but multiple churches in FR', # what to do? skip right now
+      'C5A' => 'image church name does not match the only existed church in FR, create church', 
+      'C5B' => 'image church name does not match any existed church in FR, create church', 
       'R4A' => 'image not transcribed yet. File on IS does not have register type on FR, create register',
+      'R4B' => 'image no register in file name and no register in FR from church name', # what to do?
+      'R4C' => 'image register in file name matches the only register in FR', 
+      'R4E' => 'image no register in file name, use the only existed register in FR as register', 
+      'R4H' => 'image no register in file name, but multiple registers in FR', # what to do? skip right now
       'R6A1' => 'replace register " " on FR with IS image register type(when FR has one register',
       'R6B1' => 'replace register " " on FR with IS image register type(when FR has multiple registers'
     }

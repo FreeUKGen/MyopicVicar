@@ -1,7 +1,7 @@
 <% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Image of the <b><%= @group.group_name %></b> for the Image Server of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center">Images of Image Server <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
@@ -18,6 +18,7 @@
       <%# a rail restart is needed for fake field %>
       <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
       <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
+      <%= s.hidden_field :origin, as: :fake, :value=>'move' %>
       <%= s.button :submit, 'Submit' %>
     <% end %>        
   </div>

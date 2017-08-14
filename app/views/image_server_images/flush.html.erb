@@ -1,0 +1,42 @@
+<% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+
+<div style="clear:both;"></div><br>
+<p style="text-align: center">Images of Image Server <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<section class="island ">
+  <br><div class="grid__item ">
+    <%= simple_form_for @image_server_image do |s| %>
+      <% case @propagate_choice %>
+        <% when 'difficulty' %>
+          <%= s.input :difficulty, :collection=>ImageServerImage::Difficulty::ALL_DIFFICULTIES.invert, :label => 'choose the difficulty to be propagated', :include_blank=>false, :selected=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+          <%= s.hidden_field :origin, as: :fake, :value=>'propagate_difficulty' %>
+        <% when 'status' %>
+          <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert, :label => 'choose the status to be propagated', :include_blank=>false, :selected=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+          <%= s.hidden_field :origin, as: :fake, :value=>'propagate_status' %>
+        <% when 'transcriber' %>
+          <%= s.input :transcriber, :collection=>@people, :label=>'choose transcribers to be propagated', :include_blank=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+          <%= s.hidden_field :origin, as: :fake, :value=>'propagate_transcriber' %>
+        <% when 'reviewer' %>
+          <%= s.input :reviewer, :collection=>@people, :label=>'choose reviewers to be propagated', :include_blank=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+          <%= s.hidden_field :origin, as: :fake, :value=>'propagate_reviewer' %>
+        <% else %>
+      <% end %>
+      <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort.unshift(['select all', '0']), :label=>'Select the images you want to be propagated', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+
+      <%= s.hidden_field :image_server_group_id, :value=>@image_server_image.image_server_group_id %>
+      <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
+      <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
+      <%= s.button :submit, 'Submit' %>
+    <% end %>        
+  </div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'flush.js' %>
+</script>

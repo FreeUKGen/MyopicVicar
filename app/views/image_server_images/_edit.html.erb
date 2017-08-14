@@ -15,6 +15,7 @@
 	<%= s.hidden_field :image_name, :value=>@image_server_image[:image_name] %>
 	<%= s.hidden_field :seq, :value=>@image_server_image[:seq] %>
   <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image[:image_server_group_id] %>
+  <%= s.hidden_field :origin, as: :fake, :value=>'edit' %>
   <%= s.button :submit, 'Submit' %>
 <% end %>
 </div>

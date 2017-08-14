@@ -1,7 +1,7 @@
 <% breadcrumb :image_server_images, @county, @place, @church, @register, @source, @group %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Image of the <b><%= @group.group_name %></b> for the Image Server of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center">Images of Image Server <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
@@ -13,6 +13,10 @@
   <div style="text-align: center">
   <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
   <%= link_to 'List Image Groups', image_server_group_path(@image_server_image.first.image_server_group.source), method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Propagate Transcriber', flush_image_server_image_path(:propagate_choice=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Propagate Reviewer', flush_image_server_image_path(:propagate_choice=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %> 
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
@@ -41,7 +45,7 @@
             <td class="t15"><%= x[:seq] %></td>
             <% case x[:status] %>
               <% when ImageServerImage::Status::UNALLOCATED %>
-                <td class="t15" style="color:red">UnALLOCATED</td>
+                <td class="t15" style="color:red">UNALLOCATED</td>
               <% when ImageServerImage::Status::IN_PROGRESS %>
                 <td>IN_PROGRESS</td>
               <% when ImageServerImage::Status::TRANSCRIBED %>
@@ -63,3 +67,4 @@
     </table>
   </div>
 </div>
+<div style="clear:both;"></div><br>
