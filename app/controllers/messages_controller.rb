@@ -113,7 +113,7 @@ class MessagesController < ApplicationController
       UseridRole::REASONS_FOR_INACTIVATING.each_pair do |key,value|
         @inactive_reasons << value
       end
-      @open_data_status = ["Unknown","Accepted","Declined","Requested"]
+      @open_data_status = SentMessage::ALL_STATUS_MESSAGES
       @senders = Array.new
       @senders << ''
       UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
@@ -141,14 +141,14 @@ class MessagesController < ApplicationController
         sender = params[:sender]
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
         reasons = Array.new
-        params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
+        #params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
         @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:active], :inactive_reason => reasons, :sender => sender, open_data_status: params[:open_data_status])
         if @sent_message.recipients.nil? || @sent_message.open_data_status.nil?
           flash[:notice] = "Invalid Send: Please select Recipients and Open Data Status"
           redirect_to action:'send_message' and return
         else
          @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status])
-          flash[:notice] = @message.reciever_notice(params)
+         flash[:notice] = @message.reciever_notice(params)
         end
       end
       redirect_to :action => 'show'

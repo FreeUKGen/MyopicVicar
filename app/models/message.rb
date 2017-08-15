@@ -39,12 +39,10 @@ class Message
     sender_email = "freereg-contacts@freereg.org.uk" if sender_email.blank?
     ccs = Array.new
     active_user = user_status(active)
-    #raise active_user.inspect 
     recipients.each do |recip|
       case
       when active_user
-        #raise active_user.inspect
-        UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active).email_address_valid.all.each do |person|
+        UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.all.each do |person|
           add_message_to_userid_messages(person)
           ccs << person.email_address
         end
@@ -65,7 +63,6 @@ class Message
       end
     end
     ccs = ccs.uniq
-    raise ccs.inspect
     UserMailer.send_message(self,ccs,sender_email).deliver_now
   end
 

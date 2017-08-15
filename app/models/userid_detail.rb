@@ -95,7 +95,11 @@ class UseridDetail
     end
 
     def new_transcription_agreement(new_transcription_agreement)
-      where(new_transcription_agreement: new_transcription_agreement)
+      if new_transcription_agreement == "All"
+        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES } )
+      else
+        where(new_transcription_agreement: new_transcription_agreement)
+      end
     end
   end
 
