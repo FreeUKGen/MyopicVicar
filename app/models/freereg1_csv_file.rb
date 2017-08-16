@@ -184,7 +184,7 @@ class Freereg1CsvFile
     def calculate_min_year(entries)
       datemin = FreeregValidations::YEAR_MAX.to_i
       entries.each do |entry|
-        datemin = entry.year.to_i if entry.year.to_i < datemin
+        datemin = entry.year.to_i if ((entry.year.to_i < datemin) && (entry.year.to_i > 0))
       end
       datemin
     end
@@ -926,5 +926,14 @@ class Freereg1CsvFile
           end #end records
         end #end csv
       end #end method
+      
+      def get_zero_year_entries
+        freereg1_csv_entries = Array.new
+        self.freereg1_csv_entries.each do |entry|
+          freereg1_csv_entries << entry if entry.year.nil? ||  entry.year == '0'
+        end
+         p freereg1_csv_entries
+      end
+      
 
     end
