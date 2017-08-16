@@ -3,6 +3,9 @@
 
 <h1>Search Statistics for <%= MyopicVicar::Application.config.freexxx_display_name %></h1>
 
+
+
+
 <figure>
 	<figcaption>
 		This chart shows the search performance of <%= MyopicVicar::Application.config.freexxx_display_name %>2 over the last <%= @chart_unit %>.<br/>
@@ -10,7 +13,6 @@
 		Yellow represents searches taking longer than 10 seconds to return, while red represents searches taking longer than 1 minute to return.
 	</figcaption>
 	<canvas id="myChart" width="1200" height="400"></canvas>
-
 </figure>
 
 
@@ -63,6 +65,23 @@
   </figcaption>
   <canvas id="placeChart" width="1200" height="400"></canvas>
 </figure>
+
+<h2>Searches over the last <%= @label.size %> days.</h2>
+<table><thead><tr><th>Date</th><th>Search Count</th></tr></thead>
+  <tbody>
+    <% @label.each_with_index do |l,i| %>
+    <tr>
+      <td>
+        <%= l %>
+      </td>
+      <td>
+        <%= @data[:n_searches][i] %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
 
 
 <script type="text/javascript"  >
