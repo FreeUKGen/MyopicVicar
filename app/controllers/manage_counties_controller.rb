@@ -119,7 +119,7 @@ class ManageCountiesController < ApplicationController
     x = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v,w| h[k] << v << w}}
     x.each do |k1,v1|
       # build array @source_id[place_name][church_name][register_type][source_name] = source_id
-      @source_id[@place_id[@church_id[@register_id[v1[0]][0]][0]]][@church_id[@register_id[v1[0]][0]][1]][@register_id[v1[0]][1]][v1] = k1
+      @source_id[@place_id[@church_id[@register_id[v1[0]][0]][0]]][@church_id[@register_id[v1[0]][0]][1]][@register_id[v1[0]][1]][v1[1]] = k1
     end
 
     render '_sources_index'

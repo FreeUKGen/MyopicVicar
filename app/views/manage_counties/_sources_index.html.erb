@@ -54,12 +54,12 @@
               <% source_rows = @source_id[place_name][church_name][register_type].keys.count %>
               <% register_val.each do |source_val, source_id| %>
                 <% if @source_id[place_name][church_name][register_type].count == 1 %>
-                    <td class="t15"><%= link_to(source_val[1],source_path(@source.select {|x| x[2] == source_val[1]}[0][0])) %></td></tr>
+                    <td class="t15"><%= link_to(source_val,source_path(source_id)) %></td></tr>
                 <% else %>
                   <% if source_rows != @source_id[place_name][church_name][register_type].count %>
                     <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>
                   <% end %>
-                  <td class="t15"><%= link_to(source_val[1],source_path(@source.select {|x| x[2] == source_val[1]}[0][0])) %></td></tr>
+                  <td class="t15"><%= link_to(source_val,source_path(source_id)) %></td></tr>
                   <% source_rows = source_rows - 1 %>
                 <% end %> 
               <% end %>
