@@ -71,6 +71,7 @@ class SourcesController < ApplicationController
 
   def index
     display_info
+    params[:id] = session[:register_id] if params[:id].nil?
     @source = Source.where(:register_id=>params[:id]).all
 
     if @source.nil?
@@ -83,7 +84,7 @@ class SourcesController < ApplicationController
         when 1
           case @source.first.source_name
             when 'Image Server'
-              redirect_to :action=>'show', :source_name=>'Image Server'
+              redirect_to source_path(:id=>source.first.id)
             when 'other server1'
 #              redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
             when 'other server2'
@@ -93,6 +94,28 @@ class SourcesController < ApplicationController
               redirect_to :back
           end
        end
+    end
+  end
+
+  def load(source_id)
+    @source = Source.id(source_id).first
+    if @source.nil?
+      go_back("source",source_id)
+    else
+      @register = @source.register
+      @register_type = RegisterType.display_name(@register.register_type)
+      session[:register_id] = @register.id
+      session[:register_name] = @register_type
+      @church = @register.church
+      @church_name = @church.church_name
+      session[:church_name] = @church_name
+      session[:church_id] = @church.id
+      @place = @church.place
+      session[:place_id] = @place.id
+      @county =  session[:county]
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      get_user_info_from_userid
     end
   end
 
@@ -141,8 +164,9 @@ class SourcesController < ApplicationController
   end
 
   def show
+    load(params[:id])
     display_info
-    @source = Source.where(:register_id=>params[:id], :source_name=>params[:source_name]).first
+    @source = Source.id(params[:id]).first
 
     go_back("source#show",params[:id]) if @source.nil?
   end

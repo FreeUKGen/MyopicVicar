@@ -32,6 +32,10 @@ class Church
       where(:id => id)
     end
 
+    def find_by_place_ids(id)
+      where(:place_id => {'$in'=>id.keys})
+    end
+
     def find_by_name_and_place(chapman_code, place_name,church_name)
       #see if church exists
       my_place = Place.where(:chapman_code => chapman_code, :place_name => place_name,:disabled => "false").first

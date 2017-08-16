@@ -9,17 +9,15 @@
   </div><br>
 <% end %>
 
-<section class="island ">
-  <br><div class="grid__item ">
-    <%= simple_form_for @image_server_image do |s| %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort, :label=>'Select the images you want to move to another Image Group', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position"} %>
-      <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign selected images to Image Group', :include_blank=>false, :include_hidden=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size => 3} %>
+<br><div class="grid__item ">
+  <%= simple_form_for @image_server_image do |s| %>
+    <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort, :label=>'Select the images you want to move to another Image Group', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+    <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign selected images to Image Group', :include_blank=>false, :include_hidden=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size => 3} %>
 
-      <%# a rail restart is needed for fake field %>
-      <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
-      <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
-      <%= s.hidden_field :origin, as: :fake, :value=>'move' %>
-      <%= s.button :submit, 'Submit' %>
-    <% end %>        
-  </div>
-</section>
+    <%# a rail restart is needed for fake field %>
+    <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
+    <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
+    <%= s.hidden_field :origin, as: :fake, :value=>'move' %>
+    <%= s.button :submit, 'Submit' %>
+  <% end %>        
+</div>

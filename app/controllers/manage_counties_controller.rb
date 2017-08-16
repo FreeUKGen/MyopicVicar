@@ -102,6 +102,29 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def manage_images
+    get_user_info_from_userid
+    @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+
+    @county = session[:chapman_code]
+    @place_id = Place.chapman_code(session[:chapman_code]).pluck(:id, :place_name).to_h
+
+    @church = Church.find_by_place_ids(@place_id).pluck(:id, :place_id, :church_name)
+    @church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @church.each{|k,v,w| h[k] << v << w}}
+
+    @register = Register.find_by_church_ids(@church_id).pluck(:id, :church_id, :register_type)
+    @register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @register.each{|k,v,w| h[k] << v << w}}
+
+    @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
+    x = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v,w| h[k] << v << w}}
+    x.each do |k1,v1|
+      # build array @source_id[place_name][church_name][register_type][source_name] = source_id
+      @source_id[@place_id[@church_id[@register_id[v1[0]][0]][0]]][@church_id[@register_id[v1[0]][0]][1]][@register_id[v1[0]][1]][v1] = k1
+    end
+
+    render '_sources_index'
+  end
+
   def new
     #get county to be used
     clean_session_for_county

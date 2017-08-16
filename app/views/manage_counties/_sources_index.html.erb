@@ -1,0 +1,72 @@
+<h3 style="text-align: center">All Sources for Place <%= @county %>.</h3>
+
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th class="t15">Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+          <span> The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
+        <th  class="t15">Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+            <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
+        <th class="t15">Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+              <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (Made from a parish register); Extract of the Parish Registers (Incomplete set of records); Dwelly's Transcript (Made from a parish register); Other Register (Original document); Transcript (Another persons transcription); Unknown; or Unspecified.</span></a></th>
+        <th class="t15">Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+              <span>A register can have multiple sources.</span></a></th>
+      </tr>
+    </thead>
+  </table>
+    <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody >
+        <% @source_id.each do |place_name, place_val| %>
+          <tr>
+          <td class="t15"><%= link_to(place_name, place_path(@place_id.key(place_name))) %></td>
+          <% church_rows = @source_id[place_name].keys.count %>
+          <% place_val.each do |church_name, church_val| %>
+            <% if @source_id[place_name].keys.count == 1 %>
+              <td class="t15"><%= link_to(church_name, church_path(@church.select {|x| x[2] == church_name}[0][0])) %></td>
+            <% else %>
+              <% if church_rows != @source_id[place_name].count %>
+                <tr><td class="t15">&nbsp;</td>
+              <% end %>
+              <td class="t15"><%= link_to(church_name, church_path(@church.select {|x| x[2] == church_name}[0][0])) %></td>
+              <% church_rows = church_rows - 1 %>
+            <% end %>
+            <% register_rows = @source_id[place_name][church_name].keys.count %>
+            <% church_val.each do |register_type, register_val| %>
+              <% registertype = RegisterType.display_name(register_type) %>
+              <% if @source_id[place_name][church_name].keys.count == 1 %>
+                <td class="t15"><%= link_to(registertype, register_path(@register.select {|x| x[2] == register_type}[0][0])) %></td>
+              <% else %>
+                <% if register_rows != @source_id[place_name][church_name].count %>
+                  <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>
+                <% end %>
+                <td class="t15"><%= link_to(registertype, register_path(@register.select {|x| x[2] == register_type}[0][0])) %></td>
+                <% register_rows = register_rows - 1 %>
+              <% end %>
+              <% source_rows = @source_id[place_name][church_name][register_type].keys.count %>
+              <% register_val.each do |source_val, source_id| %>
+                <% if @source_id[place_name][church_name][register_type].count == 1 %>
+                    <td class="t15"><%= link_to(source_val[1],source_path(@source.select {|x| x[2] == source_val[1]}[0][0])) %></td></tr>
+                <% else %>
+                  <% if source_rows != @source_id[place_name][church_name][register_type].count %>
+                    <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>
+                  <% end %>
+                  <td class="t15"><%= link_to(source_val[1],source_path(@source.select {|x| x[2] == source_val[1]}[0][0])) %></td></tr>
+                  <% source_rows = source_rows - 1 %>
+                <% end %> 
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

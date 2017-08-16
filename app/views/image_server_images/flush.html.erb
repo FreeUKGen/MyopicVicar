@@ -20,10 +20,10 @@
           <%= s.input :status, :collection=>ImageServerImage::Status::ALL_STATUSES.invert, :label => 'choose the status to be propagated', :include_blank=>false, :selected=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
           <%= s.hidden_field :origin, as: :fake, :value=>'propagate_status' %>
         <% when 'transcriber' %>
-          <%= s.input :transcriber, :collection=>@people, :label=>'choose transcribers to be propagated', :include_blank=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+          <%= s.input :transcriber, :collection=>@people, :label=>'choose transcribers to be propagated', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
           <%= s.hidden_field :origin, as: :fake, :value=>'propagate_transcriber' %>
         <% when 'reviewer' %>
-          <%= s.input :reviewer, :collection=>@people, :label=>'choose reviewers to be propagated', :include_blank=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+          <%= s.input :reviewer, :collection=>@people, :label=>'choose reviewers to be propagated', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
           <%= s.hidden_field :origin, as: :fake, :value=>'propagate_reviewer' %>
         <% else %>
       <% end %>

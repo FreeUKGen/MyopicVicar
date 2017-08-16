@@ -34,6 +34,10 @@ class Source
     def register_id(id)
       where(:register_id => id)
     end
+
+    def find_by_register_ids(id)
+      where(:register_id => {'$in'=>id.keys})
+    end
     
   end
   

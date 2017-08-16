@@ -70,6 +70,9 @@ class Register
       register
     end
 
+    def find_by_church_ids(id)
+      Register.where(:church_id => {'$in'=>id.keys})
+    end
 
     def find_register(args)
       @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
