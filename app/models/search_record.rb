@@ -124,7 +124,7 @@ class SearchRecord
      
     }
 
-  INDEXES = MERGED_INDEXES
+  INDEXES = NEW_INDEXES
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
@@ -284,7 +284,7 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      candidates = MERGED_INDEXES.keys
+      candidates = NEW_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
        # p candidates
@@ -298,7 +298,7 @@ class SearchRecord
     end
 
     def index_score(index_name, search_fields)
-      fields = MERGED_INDEXES[index_name]
+      fields = NEW_INDEXES[index_name]
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
