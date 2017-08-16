@@ -61,7 +61,7 @@
          </tr> 
       </table>
        <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
-      
+       <%= link_to 'Edit this Message', edit_message_path(@message.id),  :class => "btn weight--light  btn--small", method: :get%>      
     </div>
   </section>
 </div>

@@ -42,6 +42,7 @@ class UseridDetail
   field :no_processing_messages, type: Boolean, default: false
   field :userid_messages,type: Array, default: []
   field :reason_for_invalidating,type: String
+  field :new_transcription_agreement, type: String, default: "Unknown"
 
   attr_accessor :action, :message
   index({ email_address: 1 })
@@ -55,7 +56,7 @@ class UseridDetail
   has_many :assignments
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
-    :skill_level #,:transcription_agreement
+    :skill_level #,:new_transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, on: :create
   validate :email_address_does_not_exist, on: :update
@@ -87,6 +88,18 @@ class UseridDetail
     end
     def email_address_valid
       where(:email_address_valid => true)
+    end
+
+    def transcription_agreement(transcription_agreement)
+      where(:transcription_agreement => transcription_agreement)
+    end
+
+    def new_transcription_agreement(new_transcription_agreement)
+      if new_transcription_agreement == "All"
+        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES } )
+      else
+        where(new_transcription_agreement: new_transcription_agreement)
+      end
     end
   end
 
@@ -181,6 +194,7 @@ class UseridDetail
     self.email_address_last_confirmned = self.sign_up_date
     self.email_address_valid= true
     self.email_address_last_confirmned = Time.new
+    self.new_transcription_agreement = "Unknown"
   end
 
   def add_lower_case_userid

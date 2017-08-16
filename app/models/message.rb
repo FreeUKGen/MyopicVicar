@@ -34,27 +34,28 @@ class Message
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
 
-  def communicate(recipients,active,reasons,sender)
+  def communicate(recipients,active,reasons,sender, open_data_status)
     sender_email = UseridDetail.userid(sender).first.email_address unless sender.blank?
     sender_email = "freereg-contacts@freereg.org.uk" if sender_email.blank?
     ccs = Array.new
+    active_user = user_status(active)
     recipients.each do |recip|
       case
-      when active
-        UseridDetail.role(recip).active(active).email_address_valid.all.each do |person|
+      when active_user
+        UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.all.each do |person|
           add_message_to_userid_messages(person)
           ccs << person.email_address
         end
-      when reasons.present? && !active
+      when reasons.present? && !active_user
         reasons.each do |reason|
-          UseridDetail.role(recip).active(active).reason(reason).email_address_valid.all.each do |person|
+          UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
         end
-      when reasons.blank? && !active
+      when reasons.blank? && !active_user
         reasons.each do |reason|
-          UseridDetail.role(recip).active(active).reason("temporary").email_address_valid.all.each do |person|
+          UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
@@ -65,6 +66,15 @@ class Message
     UserMailer.send_message(self,ccs,sender_email).deliver_now
   end
 
+  def reciever_notice params
+    active_user = user_status(params[:active])
+    if active_user
+      return "Message sent to Recipients: #{params[:recipients]}; Open Data Status: #{open_data_status_value(params[:open_data_status])}; Active : #{active_user} "
+    else
+      return "Message sent to Recipients: #{params[:recipients]}; Open Data Status: #{open_data_status_value(params[:open_data_status])}; Active : #{active_user} #{reasons}"
+    end
+  end
+
   private
   def add_message_to_userid_messages(person)
     @message_userid =  person.userid_messages
@@ -72,6 +82,14 @@ class Message
         @message_userid << self.id.to_s
         person.update_attribute(:userid_messages, @message_userid)
     end
+  end
+
+  def open_data_status_value status
+    status.join("") unless status.nil?
+  end
+
+  def user_status status
+    status == "true"
   end
 
 end

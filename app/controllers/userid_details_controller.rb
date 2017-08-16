@@ -188,7 +188,7 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration' and return
     when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
+      @new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       render :action => 'transcriber_registration' and return
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
@@ -390,7 +390,7 @@ class UseridDetailsController < ApplicationController
       @userid = UseridDetail.new
       @userid[:honeypot] = session[:honeypot]
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @transcription_agreement = [true,false]
+      @new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       @first_name = session[:first_name]
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
