@@ -579,6 +579,19 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
   end
+  def zero_year
+    #get the entries with a zero year
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    if @freereg1_csv_file.present?
+      set_controls(@freereg1_csv_file)
+    else
+      go_back("batch",params[:id])
+    end
+    @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_entries
+    render 'freereg1_csv_entries/index'
+  end
+
+
   private
   def freereg1_csv_file_params
     params.require(:freereg1_csv_file).permit!
