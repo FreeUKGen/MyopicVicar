@@ -34,9 +34,8 @@
         <tr>
           <td>Identifier :</td><td class="weight--semibold"><%= @message.identifier %></td>
         </tr>
-        
         <tr>
-          <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly"><%= @message.body %></textarea></td>
+          <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly">Dear <%= @user.person_forename%>,&#13;&#10;&#13;&#10;<%= @message.body %></textarea></td>
         </tr>
         <% if @message.sent_messages.present?%>
           <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>

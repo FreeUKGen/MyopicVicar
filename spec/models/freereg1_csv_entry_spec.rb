@@ -632,9 +632,10 @@ describe Freereg1CsvEntry do
     Rails.application.config.ucf_support = true
 
     file_record = process_test_file(filespec)
- 
+    
     file_record.freereg1_csv_entries.each_with_index do |entry,i|
-      check_record(entry, :person_forename, :father_surname, false, { :start_year => entry.birth_date,:end_year => entry.birth_date }, true)
+      baptism_date = entry.baptism_date.sub(/\w\w\s\w\w\w\s/, '')
+      check_record(entry, :person_forename, :father_surname, false, { :start_year => baptism_date,:end_year => baptism_date }, true)
     end
   end
 
