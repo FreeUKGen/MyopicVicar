@@ -6,7 +6,10 @@
   <%= s.input :source_name, :label=>"Source", :readonly=>true, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
   <%= s.input :notes, :label=>"Source Notes", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
   <%= s.input :start_date, :label=>"Start Date", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlength=>15} %>
+    <div id='wrong_format_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date needs to be 4 digits</div>
   <%= s.input :end_date, :label=>"End Date", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlength=>15} %>
+    <div id='wrong_format_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date needs to be 4 digits</div>
+    <div id='wrong_range_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date can not be earlier than start date</div>
   
   <%= s.simple_fields_for :original_form do |orig_form| %>
     <%= orig_form.input :type, :as=>:select, :collection=>['fiche', 'film', 'document', 'other'], :label=>"Original Form", :include_blank=>false, :selected=>s.object.original_form.empty? ? '' : s.object.original_form[:type], :required=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>2} %>
@@ -26,7 +29,11 @@
     <div id="propagate_source" style="display:none;"></div>
   <% end %>
 
-  <%= s.button :submit, 'Submit' %>
+  <%= s.button :submit, 'Submit', :onclick=>'return check_year_range()' %>
 <% end %>
 </div>
 </section>
+
+<script type="text/javascript">
+  <%= render :partial => 'source.js' %>
+</script>

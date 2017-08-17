@@ -249,7 +249,7 @@ p "=======================R6B1"
     church.save
     place.churches << church
     place.save
-p "CREATE CHURCH: place="+place_id.to_s+" church="+church_name.to_s
+p "CREATE CHURCH: place="+place.id.to_s+" church="+church_name.to_s
 
     return church
   end

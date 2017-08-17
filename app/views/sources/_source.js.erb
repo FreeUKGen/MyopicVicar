@@ -1,0 +1,47 @@
+var start_year = document.getElementById('source_start_date')
+var end_year = document.getElementById('source_end_date')
+
+start_year.onfocus = function(){
+	start_year.onblur = function() {
+		if (start_year.value.match(/^\d{4}$/) == null && start_year.value != '') {
+			document.getElementById('wrong_format_start_date').style.display = 'block'
+			start_year.style.background = 'red'
+			start_year.focus()
+		} else {
+			start_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
+			document.getElementById('wrong_format_start_date').style.display = 'none'
+		}
+	}
+}
+
+end_year.onfocus = function(){
+	end_year.onblur = function() {
+		if (end_year.value.match(/^\d{4}$/) == null && end_year.value != '') {
+			document.getElementById('wrong_format_end_date').style.display = 'block'
+			end_year.style.background = 'red'
+			end_year.focus()
+		} else {
+			end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
+			document.getElementById('wrong_format_end_date').style.display = 'none'
+		}
+	}
+}
+
+function check_year_range() {
+	var source_name = document.getElementById('source_source_name')
+	if (source_name.value == '' ) {
+		alert('Source Name can not be empty')
+		source_name.scrollIntoView()
+		return false;
+	} else if (start_year.value != '' && end_year.value != '') {
+		if (end_year.value < start_year.value) {
+			document.getElementById('wrong_range_end_date').style.display = 'block'
+			start_year.scrollIntoView()
+			end_year.style.background = 'red'
+			return false;
+		} else {
+			end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
+			document.getElementById('wrong_range_end_date').style.display = 'none'
+		}
+	}
+}

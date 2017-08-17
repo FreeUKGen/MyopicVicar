@@ -1,4 +1,4 @@
-<h3 style="text-align: center">All Sources for Place <%= @county %>.</h3>
+<h3 style="text-align: center">All Sources for County <%= @county %>.</h3>
 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
@@ -52,14 +52,14 @@
                 <% register_rows = register_rows - 1 %>
               <% end %>
               <% source_rows = @source_id[place_name][church_name][register_type].keys.count %>
-              <% register_val.each do |source_val, source_id| %>
+              <% register_val.each do |source_name, source_id| %>
                 <% if @source_id[place_name][church_name][register_type].count == 1 %>
-                    <td class="t15"><%= link_to(source_val,source_path(source_id)) %></td></tr>
+                    <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
                 <% else %>
                   <% if source_rows != @source_id[place_name][church_name][register_type].count %>
                     <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>
                   <% end %>
-                  <td class="t15"><%= link_to(source_val,source_path(source_id)) %></td></tr>
+                  <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
                   <% source_rows = source_rows - 1 %>
                 <% end %> 
               <% end %>
