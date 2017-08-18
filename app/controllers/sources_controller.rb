@@ -5,6 +5,8 @@ class SourcesController < ApplicationController
 
   def create
     display_info
+    get_userids_and_transcribers or return
+
     source = Source.where(:register_id=>params[:source][:register_id]).first
     register = source.register
 
@@ -25,6 +27,7 @@ class SourcesController < ApplicationController
 
   def destroy
     display_info
+    get_userids_and_transcribers or return
     get_user_info(session[:userid],session[:first_name])
 
     if ['system_administrator', 'data_managers'].include? @user.person_role
@@ -61,11 +64,37 @@ class SourcesController < ApplicationController
 
   def edit
     display_info
+    get_userids_and_transcribers or return
+
     @source = Source.id(params[:id]).first
 
     if @source.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent Source'
       redirect_to :back
+    end
+  end
+
+  def get_userids_and_transcribers
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
+
+    case
+      when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'
+        @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
+      when  @user.person_role == 'country_cordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+      when  @user.person_role == 'county_coordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      when  @user.person_role == 'sydicate_coordinator'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      else
+        flash[:notice] = 'Your account does not support this action'
+        redirect_to :back and return
+    end
+
+    @people =Array.new
+    @userids.each do |ids|
+      @people << ids.userid
     end
   end
 
@@ -121,6 +150,8 @@ class SourcesController < ApplicationController
 
   def new 
     display_info
+    get_userids_and_transcribers or return
+
     @source = Source.new
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
 
@@ -133,6 +164,8 @@ class SourcesController < ApplicationController
 
   def propagate
     display_info
+    get_userids_and_transcribers or return
+
     @source = Source.new
     @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 

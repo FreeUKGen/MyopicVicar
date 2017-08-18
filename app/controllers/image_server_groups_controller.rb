@@ -30,6 +30,8 @@ class ImageServerGroupsController < ApplicationController
 
   def destroy
     display_info
+    get_userids_and_transcribers or return
+
     image_server_group = ImageServerGroup.id(params[:id]).first
     return_location = image_server_group.source
     image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id]).count
@@ -60,7 +62,7 @@ class ImageServerGroupsController < ApplicationController
 
   def edit
     display_info
-    get_userids_and_transcribers
+    get_userids_and_transcribers or return
     @image_server_group = ImageServerGroup.id(params[:id]).first
 
     if @image_server_group.nil?
@@ -87,7 +89,8 @@ class ImageServerGroupsController < ApplicationController
       when  @user.person_role == 'sydicate_coordinator'
         @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
       else
-        @userids = @user
+        flash[:notice] = 'Your account does not support this action'
+        redirect_to :back and return
     end
 
     @people =Array.new
@@ -108,7 +111,7 @@ class ImageServerGroupsController < ApplicationController
 
   def new 
     display_info
-    get_userids_and_transcribers
+    get_userids_and_transcribers or return
 
     @image_server_group = ImageServerGroup.new
     @group_name = ImageServerGroup.where(:source_id=>session[:source_id]).all.pluck(:group_name)

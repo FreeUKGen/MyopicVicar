@@ -5,6 +5,8 @@ class ImageServerImagesController < ApplicationController
 
   def destroy
     display_info
+    get_userids_and_transcribers or return
+
     image_server_image = ImageServerImage.where(:id=>params[:id]).first
     return_location = image_server_image.image_server_group
 #    image_server_image.destroy
@@ -40,7 +42,7 @@ class ImageServerImagesController < ApplicationController
 
   def edit
     display_info
-    get_userids_and_transcribers
+    get_userids_and_transcribers or return
 
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
@@ -81,8 +83,9 @@ class ImageServerImagesController < ApplicationController
       when  @user.person_role == 'sydicate_coordinator'
         @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
       else
-        @userids = @user
-    end
+        flash[:notice] = 'Your account does not support this action'
+        redirect_to :back and return
+      end
 
     @people =Array.new
     @userids.each do |ids|
@@ -96,8 +99,9 @@ class ImageServerImagesController < ApplicationController
 
   def flush
     display_info
+    get_userids_and_transcribers or return
+
     get_image_list
-    get_userids_and_transcribers
     @propagate_choice = params[:propagate_choice]
 
     if @image_server_image.nil?
@@ -109,6 +113,7 @@ class ImageServerImagesController < ApplicationController
 
   def move
     display_info
+    get_userids_and_transcribers or return
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
     get_sorted_group_name(@image_server_group[:source_id])
@@ -123,7 +128,8 @@ class ImageServerImagesController < ApplicationController
   end
 
   def new      
-    get_user_info_from_userid
+    get_userids_and_transcribers or return
+
     @county =  session[:county]
     @place_name = session[:place_name]
     @church_name =  session[:church_name]
