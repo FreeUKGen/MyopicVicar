@@ -82,6 +82,8 @@ class ImageServerImagesController < ApplicationController
         @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
       when  @user.person_role == 'sydicate_coordinator'
         @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+      when @user.person_role == 'data_manager'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1)
       else
         flash[:notice] = 'Your account does not support this action'
         redirect_to :back and return
