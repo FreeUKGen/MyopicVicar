@@ -55,6 +55,20 @@ class ImageServerImagesController < ApplicationController
     end
   end
 
+  def flush
+    display_info
+    get_userids_and_transcribers or return
+
+    get_image_list
+    @propagate_choice = params[:propagate_choice]
+
+    if @image_server_image.nil?
+      flash[:notice] = 'Attempted to edit a non_esxistent image file'
+      redirect_to :back
+      return
+    end
+  end
+
   def get_image_list
     @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id]).first
     seq = ImageServerImage.where(:image_server_group_id=>params[:id]).pluck(:seq, :image_name)
@@ -97,20 +111,6 @@ class ImageServerImagesController < ApplicationController
 
   def index
     @is_image = IsImage.where(:source_id => @source_id).all.order_by(group_name: 1)
-  end
-
-  def flush
-    display_info
-    get_userids_and_transcribers or return
-
-    get_image_list
-    @propagate_choice = params[:propagate_choice]
-
-    if @image_server_image.nil?
-      flash[:notice] = 'Attempted to edit a non_esxistent image file'
-      redirect_to :back
-      return
-    end
   end
 
   def move

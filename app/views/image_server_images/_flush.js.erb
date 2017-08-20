@@ -1,4 +1,6 @@
-$(':checkbox').click(function(){
+var lastChecked = null;
+
+$(':checkbox').click(function(e){
 	x = document.activeElement
 	if (x.id == 'image_server_image_seq_0') {
 		if (x.checked) {
@@ -15,6 +17,19 @@ $(':checkbox').click(function(){
 			})
 		}
 	} else {
+		if (e.ctrlKey && e.shiftKey) {
+			if (!lastChecked) {
+				lastChecked = this
+				return
+			}
+
+			var start_id = $(':checkbox').index(lastChecked)
+			var end_id = $(':checkbox').index(this)
+
+			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked)
+
+			lastChecked = null
+		}
 		document.getElementById('image_server_image_seq_0').checked = false;
 	}
 })
