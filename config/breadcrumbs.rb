@@ -547,9 +547,14 @@ crumb :show_other_server3 do |county,place,church,register,source|
   parent :show_source, county, place, church, register
 end
 
-crumb :image_server_group do |county,place,church,register,source|
+crumb :image_server_groups do |county,place,church,register,source|
   link "Image Groups", image_server_group_path(source)
   parent :show_image_source, county, place, church, register, source
+end
+
+crumb :image_server_group do |county,place,church,register,source|
+  link "Image Group", image_server_group_path(source)
+  parent :image_server_groups, county, place, church, register, source
 end
 
 crumb :image_server_images do |county,place,church,register,source,group|
