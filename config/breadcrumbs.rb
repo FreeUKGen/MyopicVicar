@@ -523,13 +523,33 @@ crumb :create_syndicate do |syndicate|
 end
 
 crumb :show_source do |county,place,church,register|
-  link "Sources", index_source_path(register)
+  link "Image Sources", index_source_path(register)
   parent :show_register, county, place, church, register
+end
+
+crumb :show_image_source do |county,place,church,register,source|
+  link "Image Server", source_path(source)
+  parent :show_source, county, place, church, register
+end
+
+crumb :show_other_server1 do |county,place,church,register,source|
+  link "Other Server1", source_path(source)
+  parent :show_source, county, place, church, register
+end
+
+crumb :show_other_server2 do |county,place,church,register,source|
+  link "Other Server2", source_path(source)
+  parent :show_source, county, place, church, register
+end
+
+crumb :show_other_server3 do |county,place,church,register,source|
+  link "Other Server3", source_path(source)
+  parent :show_source, county, place, church, register
 end
 
 crumb :image_server_group do |county,place,church,register,source|
   link "Image Groups", image_server_group_path(source)
-  parent :show_source, county, place, church, register
+  parent :show_image_source, county, place, church, register, source
 end
 
 crumb :image_server_images do |county,place,church,register,source,group|

@@ -1,34 +1,40 @@
+// check format of fields start_date and end_date
 var start_year = document.getElementById('source_start_date')
 var end_year = document.getElementById('source_end_date')
 
-start_year.onfocus = function(){
-	start_year.onblur = function() {
-		if (start_year.value.match(/^\d{4}$/) == null && start_year.value != '') {
-			document.getElementById('wrong_format_start_date').style.display = 'block'
-			start_year.style.background = 'red'
-			start_year.focus()
-		} else {
-			start_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
-			document.getElementById('wrong_format_start_date').style.display = 'none'
+if (start_year) {
+	start_year.onfocus = function(){
+		start_year.onblur = function() {
+			if (start_year.value.match(/^\d{4}$/) == null && start_year.value != '') {
+				document.getElementById('wrong_format_start_date').style.display = 'block'
+				start_year.style.background = 'red'
+				start_year.focus()
+			} else {
+				start_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
+				document.getElementById('wrong_format_start_date').style.display = 'none'
+			}
 		}
 	}
 }
 
-end_year.onfocus = function(){
-	end_year.onblur = function() {
-		if (end_year.value.match(/^\d{4}$/) == null && end_year.value != '') {
-			document.getElementById('wrong_format_end_date').style.display = 'block'
-			end_year.style.background = 'red'
-			end_year.focus()
-		} else {
-			end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
-			document.getElementById('wrong_format_end_date').style.display = 'none'
+if (end_year) {
+	end_year.onfocus = function(){
+		end_year.onblur = function() {
+			if (end_year.value.match(/^\d{4}$/) == null && end_year.value != '') {
+				document.getElementById('wrong_format_end_date').style.display = 'block'
+				end_year.style.background = 'red'
+				end_year.focus()
+			} else {
+				end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
+				document.getElementById('wrong_format_end_date').style.display = 'none'
+			}
 		}
 	}
 }
 
 function check_year_range() {
 	var source_name = document.getElementById('source_source_name')
+
 	if (source_name.value == '' ) {
 		alert('Source Name can not be empty')
 		source_name.scrollIntoView()
@@ -45,3 +51,36 @@ function check_year_range() {
 		}
 	}
 }
+
+// select all for propagate
+var lastChecked = null;
+
+$(':checkbox').click(function(e){
+	x = document.activeElement
+	if (x.id == 'source_propagate_source_id_000000000000000000000000') {
+		if (x.checked) {
+			$(':checkbox').each(function(){
+				$(this).prop('checked', true);
+			})
+		} else {
+			$(':checkbox').each(function(){
+				$(this).prop('checked', false)
+			})
+		}
+	} else {
+		if (e.ctrlKey && e.shiftKey) {
+			if (!lastChecked) {
+				lastChecked = this
+				return
+			}
+
+			var start_id = $(':checkbox').index(lastChecked)
+			var end_id = $(':checkbox').index(this)
+
+			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked)
+
+			lastChecked = null
+		}
+		document.getElementById('source_propagate_source_id_000000000000000000000000').checked = false;
+	}
+})

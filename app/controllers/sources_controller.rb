@@ -74,6 +74,37 @@ class SourcesController < ApplicationController
     end
   end
 
+  def flush
+    display_info
+    get_userids_and_transcribers or return
+
+    @source = Source.id(params[:id]).first
+    @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+
+    if @source.nil?
+      go_back("source#flush",params[:id])
+    else
+      get_source_list(@source)
+    end
+  end
+
+  def get_source_list(source)
+    place = source.register.church.place
+    place_id = Place.where(:chapman_code=>place.chapman_code).pluck(:id, :place_name).to_h
+
+    church_id = Church.where(:place_id=>{'$in'=>place_id.keys}).pluck(:id, :place_id, :church_name)
+    church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church_id.each{|k,v,w| h[k] << v << w}}
+
+    register_id = Register.where(:church_id=>{'$in'=>church_id.keys}).pluck(:id, :church_id, :register_type)
+    register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register_id.each{|k,v,w| h[k] << v << w}}
+
+    x = Source.where(:register_id=>{'$in'=>register_id.keys}, :source_name=>source.source_name).pluck(:id, :register_id).to_h
+    
+    x.each do |k1,v1|
+      @source_id['Place: '+place_id[church_id[register_id[v1][0]][0]]+', Church: '+church_id[register_id[v1][0]][1]+' - '+RegisterType.display_name(register_id[v1][1])] = k1
+    end
+  end
+
   def get_userids_and_transcribers
     @user = cookies.signed[:userid]
     @first_name = @user.person_forename unless @user.blank?
@@ -168,27 +199,13 @@ class SourcesController < ApplicationController
     display_info
     get_userids_and_transcribers or return
 
-    @source = Source.new
+    @source = Source.where(:id=>params[:id]).first
     @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
-    source1 = Source.where(:id=>params[:id]).first
-    if source1.nil?
+    if @source.nil?
       go_back("source#propagate",params[:id])
     else
-      place = source1.register.church.place
-      place_id = Place.where(:chapman_code=>place.chapman_code).pluck(:id, :place_name).to_h
-
-      church_id = Church.where(:place_id=>{'$in'=>place_id.keys}).pluck(:id, :place_id, :church_name)
-      church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church_id.each{|k,v,w| h[k] << v << w}}
-
-      register_id = Register.where(:church_id=>{'$in'=>church_id.keys}).pluck(:id, :church_id, :register_type)
-      register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register_id.each{|k,v,w| h[k] << v << w}}
-
-      x = Source.where(:register_id=>{'$in'=>register_id.keys}, :source_name=>source1.source_name).pluck(:id, :register_id).to_h
-    
-      x.each do |k1,v1|
-        @source_id['Place: '+place_id[church_id[register_id[v1][0]][0]]+', Church: '+church_id[register_id[v1][0]][1]+' - '+RegisterType.display_name(register_id[v1][1])] = k1
-      end
+      get_source_list(@source)
 
       respond_to do |format|
         format.js
@@ -214,6 +231,8 @@ class SourcesController < ApplicationController
     else
       if source_params[:choice] == '1'  # propagate checkbox is selected
         notes = source_params[:notes]
+        start_date = source_params[:start_date]
+        end_date = source_params[:end_date]
         original_form_type = source_params[:original_form][:type]
         original_form_name = source_params[:original_form][:name]
         original_owner = source_params[:original_owner]
@@ -226,7 +245,7 @@ class SourcesController < ApplicationController
         source_list = source_params[:propagate][:source_id]
         source_list << params[:id]
 
-        Source.where(:id=>{'$in'=>source_list}).update_all(:notes=>notes, :original_form=>{:type=>original_form_type, :name=>original_form_name}, :original_owner=>original_owner, :creating_institution=>creating_institution, :holding_institution=>holding_institution, :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, :open_data=>open_data, :url=>url)
+        Source.where(:id=>{'$in'=>source_list}).update_all(:notes=>notes, :start_date=>start_date, :end_date=>end_date, :original_form=>{:type=>original_form_type, :name=>original_form_name}, :original_owner=>original_owner, :creating_institution=>creating_institution, :holding_institution=>holding_institution, :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, :open_data=>open_data, :url=>url)
       else
         params[:source].delete(:choice)
         source.update_attributes(source_params)

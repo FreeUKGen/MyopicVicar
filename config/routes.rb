@@ -286,6 +286,7 @@ MyopicVicar::Application.routes.draw do
   resources :assets
 
   resources :sources
+  get 'sources/:id/flush(.:format)', :to => 'sources#flush', :as => :flush_source
   get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
 

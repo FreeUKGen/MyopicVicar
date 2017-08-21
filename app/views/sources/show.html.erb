@@ -1,7 +1,16 @@
-<% breadcrumb :show_source, @county, @place, @church, @register %>
+<% case @source.source_name %>
+  <% when 'Image Server' %>
+    <% breadcrumb :show_image_source, @county, @place, @church, @register, @source %>
+  <% when 'Other Server1' %>
+    <% breadcrumb :show_other_server1, @county, @place, @church, @register, @source %>
+  <% when 'Other Server2' %>
+    <% breadcrumb :show_other_server2, @county, @place, @church, @register, @source %>
+  <% when 'Other Server3' %>
+    <% breadcrumb :show_other_server3, @county, @place, @church, @register, @source %>
+<% end %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Source of images for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center"><b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
@@ -11,16 +20,18 @@
 
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
-  <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
+  <%= link_to 'Create new Image Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
   <% case @source.source_name %>
     <% when 'Image Server' %> 
-      <%= link_to 'List Image Server Groups', image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %> 
+      <%= link_to 'List Image Groups', image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %> 
     <% when 'Other Server1' %>
     <% when 'Other Server2' %>
     <% when 'OTher Server3' %>
     <% else %>
   <% end %>
-  <%= link_to 'Edit Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %> <%= link_to 'Delete Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
@@ -37,8 +48,8 @@
         <th class="caps">Field</th>
         <th class="caps">Value</th>
       </tr>
-      <tr><td>Source Name :</td><td class="weight--semibold"><%= @source[:source_name] %></td></tr>
-      <tr><td>Notes</td><td class="t15"><%= @source[:notes] %>&nbsp;</td></tr>
+      <tr><td>Image Source Name</td><td class="weight--semibold"><%= @source[:source_name] %></td></tr>
+      <tr><td>Image Source Notes</td><td class="t15"><%= @source[:notes] %>&nbsp;</td></tr>
       <tr><td>Start Date</td><td class="t30"><%= @source[:start_date] %>&nbsp;</td></tr>
       <tr><td>End Date</td><td class="t15"><%= @source[:end_date] %>&nbsp;</td></tr>
       <tr><td>Original Form</td><td class="t15"><%= @source[:original_form][:type] %>
@@ -46,7 +57,7 @@
           : <%= @source[:original_form][:name]  %>
         <% end %>
       </tr>
-      <tr><td>Original Owner</td><td class="t15"><%= @source[:original_owner] %></td></tr>
+      <tr><td>Original Owner</td><td class="t15"><%= @source[:original_owner] %>&nbsp;</td></tr>
       <tr><td>Creating Institution</td><td class="t15"><%= @source[:creating_institution] %>&nbsp;</td></tr>
       <tr><td>Holding Institution</td><td class="t15"><%= @source[:holding_institution] %>&nbsp;</td></tr>
       <tr><td>Restrictions on Use by Creating Institution</td><td class="t15"><%= @source[:restrictions_on_use_by_creating_institution] %>&nbsp;</td></tr>
