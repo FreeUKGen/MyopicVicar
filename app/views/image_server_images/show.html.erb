@@ -12,7 +12,6 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
   <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
-  <%= link_to 'List Image Groups', image_server_group_path(@image_server_image.first.image_server_group.source), method: :get, :class => "btn weight--light btn--small" %>
   <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %> 
   <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
   <%= link_to 'Propagate Transcriber', flush_image_server_image_path(:propagate_choice=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %> 

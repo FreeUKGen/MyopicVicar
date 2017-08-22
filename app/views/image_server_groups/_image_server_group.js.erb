@@ -1,47 +1,98 @@
+// check format of fields start_date and end_date
 var start_year = document.getElementById('image_server_group_start_date')
 var end_year = document.getElementById('image_server_group_end_date')
+var source_start_year = document.getElementById('image_server_group_source_start_date')
+var source_end_year = document.getElementById('image_server_group_source_end_date')
+var current_year = (new Date()).getFullYear()
 
-start_year.onfocus = function(){
-	start_year.onblur = function() {
-		if (start_year.value.match(/^\d{4}$/) == null && start_year.value != '') {
-			document.getElementById('wrong_format_start_date').style.display = 'block'
-			start_year.style.background = 'red'
-			start_year.focus()
-		} else {
-			start_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
-			document.getElementById('wrong_format_start_date').style.display = 'none'
+//disable enter key on this page
+$(document).keypress(function(e) {
+	if (e.keyCode == 10 || e.keyCode == 13)
+		e.preventDefault()
+})
+
+if (start_year) {
+	start_year.onfocus = function() {
+		start_year.onblur = function() {
+			if (start_year.value != '' && start_year.value.match(/^\d{4}$/) == null) {
+				set_focus('start_year', 'ig_wrong_format_start_date')				
+			} else if (start_year.value > current_year) {
+				set_focus('start_year', 'ig_wrong_range_start_date')				
+			} else if (source_start_year.value && start_year.value < source_start_year.value) {
+				set_focus('start_year', 'ig_wrong_range_start_date')				
+			} else {
+				set_focus('start_year', '')
+			}
 		}
 	}
 }
 
-end_year.onfocus = function(){
-	end_year.onblur = function() {
-		if (end_year.value.match(/^\d{4}$/) == null && end_year.value != '') {
-			document.getElementById('wrong_format_end_date').style.display = 'block'
-			end_year.style.background = 'red'
-			end_year.focus()
-		} else {
-			end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
-			document.getElementById('wrong_format_end_date').style.display = 'none'
+if (end_year) {
+	end_year.onfocus = function() {
+		end_year.onblur = function() {
+			if (end_year.value != '' && end_year.value.match(/^\d{4}$/) == null) {
+				set_focus('end_year', 'ig_wrong_format_end_date')				
+			} else if (end_year.value > current_year) {
+				set_focus('end_year', 'ig_wrong_range_end_date')				
+			} else if (source_end_year.value && end_year.value > source_end_year.value) {
+				set_focus('end_year', 'ig_wrong_range_end_date')				
+			} else {
+				set_focus('end_year', '')
+			}
 		}
 	}
 }
 
 function check_year_range() {
 	var group_name = document.getElementById('image_server_group_group_name')
+
 	if (group_name.value == '' ) {
 		alert('Group Name can not be empty')
 		group_name.scrollIntoView()
 		return false;
-	} else if (start_year.value != '' && end_year.value != '') {
-		if (end_year.value < start_year.value) {
-			document.getElementById('wrong_range_end_date').style.display = 'block'
-			start_year.scrollIntoView()
-			end_year.style.background = 'red'
-			return false;
+	} else if (start_year.value != '' && end_year.value != '' && end_year.value < start_year.value) {
+		start_year.scrollIntoView()
+		set_focus('end_year', 'ig_wrong_range_end_date')
+		return false;
+	} else if (source_start_year.value && start_year.value < source_start_year.value) {
+		set_focus('start_year', 'ig_wrong_range_start_date')
+		return false;
+	} else if (source_end_year.value && end_year.value > source_end_year.value) {
+		set_focus('end_year', 'ig_wrong_range_end_date')
+		return false;
+	} else {
+		end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
+		document.getElementById('ig_wrong_range_end_date').style.display = 'none'
+		return true;
+	}
+}
+
+function set_focus(obj, id) {
+	var item_list = ['ig_wrong_range_start_date', 'ig_wrong_format_start_date', 'ig_wrong_range_end_date', 'ig_wrong_format_end_date']
+
+	if (id == '') {
+		document.getElementById('image_server_group_start_date').style.cssText = "string optional simple_form_bgcolour simple_form_position"
+		document.getElementById('image_server_group_end_date').style.cssText = "string optional simple_form_bgcolour simple_form_position"
+	}
+	
+	for (i=0; i<item_list.length; i++) {
+		if (id == item_list[i]) {
+			switch (obj) {
+				case 'start_year': 
+					document.getElementById('image_server_group_end_date').style.cssText = "string optional simple_form_bgcolour simple_form_position"
+					document.getElementById('image_server_group_start_date').style.background = 'red'
+					document.getElementById('image_server_group_start_date').focus()
+					break;
+				case 'end_year': 
+					document.getElementById('image_server_group_start_date').style.cssText = "string optional simple_form_bgcolour simple_form_position"
+					document.getElementById('image_server_group_end_date').style.background = 'red'
+					document.getElementById('image_server_group_end_date').focus()
+					break;
+				default: 
+			}
+			document.getElementById(item_list[i]).style.display = 'block'
 		} else {
-			end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
-			document.getElementById('wrong_range_end_date').style.display = 'none'
+			document.getElementById(item_list[i]).style.display = 'none'
 		}
 	}
 }

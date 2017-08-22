@@ -4,11 +4,12 @@
   <%= s.input :source_name, :collection=>@list, :label=>'Source Name', :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>2} %>
   <%= s.input :notes, :label => 'Notes', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
   <%= s.input :start_date, :label=>'Start Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlength => 15} %>
-    <div id='wrong_format_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date needs to be 4 digits</div>
+    <div id='is_wrong_format_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date needs to be 4 digits</div>
+    <div id='is_wrong_range_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date can not be later than current year</div>
   <%= s.input :end_date, :label=>'End Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlenght=>15} %>
-    <div id='wrong_format_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date needs to be 4 digits</div>
-    <div id='wrong_range_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date can not be earlier than start date</div>
-  
+    <div id='is_wrong_format_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date needs to be 4 digits</div>
+    <div id='is_wrong_range_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date can not be earlier than start date or later than current year</div>
+    
   <%= s.simple_fields_for :original_form do |orig_form| %>
     <%= orig_form.input :type, :as=>:select, :collection=>['fiche', 'film', 'document', 'other'], :label=>"Original Form", :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>2} %>
     <div id="test"><%= orig_form.input :name, :label=>"name of the other form", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>50}, :label_html=>{:id=>"original_form_label"} %></div>

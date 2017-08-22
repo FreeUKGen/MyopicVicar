@@ -9,6 +9,8 @@ class ImageServerGroupsController < ApplicationController
     source = image_server_group.source
 
     if not group_name.include? params[:image_server_group][:group_name]
+      params[:image_server_group].delete(:source_start_date)
+      params[:image_server_group].delete(:source_end_date)
       image_server_group = ImageServerGroup.new(image_server_group_params)
       image_server_group.save
 
@@ -116,7 +118,7 @@ class ImageServerGroupsController < ApplicationController
     get_userids_and_transcribers or return
 
     @image_server_group = ImageServerGroup.new
-    @group_name = ImageServerGroup.where(:source_id=>session[:source_id]).all.pluck(:group_name)
+    @parent_source = Source.id(session[:source_id]).first
   end
 
   def show
@@ -139,6 +141,8 @@ class ImageServerGroupsController < ApplicationController
       flash[:notice] = 'Image Group "'+params[:image_server_group][:group_name]+'" already exist'
       redirect_to :back
     else
+      params[:image_server_group].delete(:source_start_date)
+      params[:image_server_group].delete(:source_end_date)
       image_server_group.update_attributes(image_server_group_params)
       flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
       redirect_to index_image_server_group_path(image_server_group)     
