@@ -41,7 +41,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
-
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit],session[:syndicate])
