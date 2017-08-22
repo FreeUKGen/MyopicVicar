@@ -41,6 +41,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit],session[:syndicate])
@@ -166,7 +167,7 @@ class UseridDetailsController < ApplicationController
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
     when  params[:commit] == 'Register as Transcriber'
-      redirect_to :back and return
+      redirect_to transcriber_registration_userid_detail_path and return
     when params[:commit] == "Submit" && session[:userid_detail_id].present?
       redirect_to userid_detail_path(@userid) and return
     when params[:commit] == "Update" && session[:my_own]
@@ -188,7 +189,8 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration' and return
     when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
+      @userid[:honeypot] = session[:honeypot]
+      #@new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       render :action => 'transcriber_registration' and return
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
