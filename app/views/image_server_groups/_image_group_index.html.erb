@@ -40,8 +40,16 @@
               <% else %>
                 <td class="t10"><%= group[:status] %>&nbsp;</td>
             <% end %>
-            <td class="t10"><%= group[:start_date] %>&nbsp;</td>
-            <td class="t10"><%= group[:end_date] %>&nbsp;</td>
+            <% if group[:start_date] < group.source.start_date %>
+              <td class="t10" style="color:red"><%= group[:start_date] %>&nbsp;</td>
+            <% else %>
+              <td class="t10"><%= group[:start_date] %>&nbsp;</td>
+            <% end %>
+            <% if group[:end_date] > group.source.end_date %>
+              <td class="t10" style="color:red"><%= group[:end_date] %>&nbsp;</td>
+            <% else %>
+              <td class="t10"><%= group[:end_date] %>&nbsp;</td>
+            <% end %>
             <td class="t20"><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[group[:difficulty]] %>&nbsp;</td>
             <td class="t20"><%= group[:transcribers].join(' / ') if !group[:transcribers].blank? %>&nbsp;</td>
             <td class="t15"><%= link_to 'SH', index_image_server_group_path(group) %> <%= link_to 'ED', edit_image_server_group_path(group) %> <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> <%= link_to 'LS', image_server_image_path(group) %></td>
