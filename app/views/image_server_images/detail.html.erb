@@ -10,7 +10,9 @@
 <% end %>
 
 <div style="text-align: center">
-  <%= link_to 'Edit Image', edit_image_server_image_path(@image), :class => "btn weight--light btn--small" %> 
+  <% if ['system_administrator', 'country_cordinator', 'data_manager'].include? @user.person_role %>
+    <%= link_to 'Edit Image', edit_image_server_image_path(@image), :class => "btn weight--light btn--small" %> 
+  <% end %>
   <%= link_to 'List All Images In Group '+@image[:image_group][:group_name], image_server_image_path(@image[:image_server_group_id]), method: :get, :class => "btn weight--light btn--small" %>
 </div>
 <div style="clear:both;"> </div><br>

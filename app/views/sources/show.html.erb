@@ -19,8 +19,7 @@
 <% end %>
 
 <% unless session[:userid].nil?%>
-  <div style="text-align: center">  
-  <%= link_to 'Create new Image Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
+  <div style="text-align: center">
   <% case @source.source_name %>
     <% when 'Image Server' %> 
       <%= link_to 'List Image Groups', image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %> 
@@ -29,9 +28,12 @@
     <% when 'OTher Server3' %>
     <% else %>
   <% end %>
-  <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
-  <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
-  <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  <% if ['system_administrator', 'country_cordinator', 'data_manager'].include? @user.person_role %>
+    <%= link_to 'Create new Image Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
+    <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  <% end %>
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
