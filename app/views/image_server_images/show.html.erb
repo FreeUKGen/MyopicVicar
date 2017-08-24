@@ -11,7 +11,7 @@
 
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-  <% if ['system_administrator', 'country_cordinator', 'data_manager'].include? @user.person_role %>
+  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
     <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
@@ -62,7 +62,7 @@
             <td class="t15"><%= x[:transcriber].join(' / ') if !x[:transcriber].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>
             <td class="t15"><%= link_to 'SH', detail_image_server_image_path(x) %> 
-              <% if ['system_administrator', 'country_cordinator', 'data_manager'].include? @user.person_role %>
+              <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
                 <%= link_to 'ED', edit_image_server_image_path(x) %> 
                 <%= link_to 'RM', image_server_image_path(x), data: { confirm: 'Are you sure you want to remove IS image '+x[:image_name]+'_'+x[:seq]+'.jpg?'}, method: :delete %>
               <% end %>

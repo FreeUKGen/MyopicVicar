@@ -88,7 +88,7 @@ class ImageServerImagesController < ApplicationController
     @first_name = @user.person_forename unless @user.blank?
 
     case
-      when @user.person_role == 'system_administrator' ||  @user.person_role == 'data_manager'
+      when ['system_administrator', 'country_coordinator', 'data_manager'].include? @user.person_role
         @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
       when  @user.person_role == 'county_coordinator'
         @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate

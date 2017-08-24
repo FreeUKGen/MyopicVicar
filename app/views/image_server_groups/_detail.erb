@@ -1,5 +1,5 @@
 <div style="text-align: center">  
-  <% if ['system_administrator', 'country_cordinator', 'data_manager'].include? @user.person_role %>
+  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
     <%= link_to 'Edit Image Group', edit_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
   <% end %>
   <%= link_to 'List Images Under This Group', image_server_image_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>

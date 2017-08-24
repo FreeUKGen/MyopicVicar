@@ -28,7 +28,7 @@
     <% when 'OTher Server3' %>
     <% else %>
   <% end %>
-  <% if ['system_administrator', 'country_cordinator', 'data_manager'].include? @user.person_role %>
+  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
     <%= link_to 'Create new Image Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
     <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
     <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
