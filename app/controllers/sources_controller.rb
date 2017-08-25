@@ -189,26 +189,6 @@ class SourcesController < ApplicationController
     end
   end
 
-  def propagate
-    display_info
-    get_userids_and_transcribers or return
-
-    @source = Source.where(:id=>params[:id]).first
-    @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-
-    if @source.nil?
-      go_back("source#propagate",params[:id])
-    else
-      get_source_list(@source)
-
-      respond_to do |format|
-        format.js
-        format.json
-        format.html
-      end
-    end
-  end
-
   def show
     load(params[:id])
     display_info
