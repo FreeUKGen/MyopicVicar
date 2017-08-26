@@ -9,10 +9,9 @@ class ImageServerImagesController < ApplicationController
 
     image_server_image = ImageServerImage.where(:id=>params[:id]).first
     return_location = image_server_image.image_server_group
-#    image_server_image.destroy
+    image_server_image.destroy
 
-#    flash[:notice] = 'Deletion of image"'+image_server_image[:image_name]+'_'+image_server_image[:seq]+'.jpg" was successful'
-    flash[:notice] = 'Deletion of image is not supported currently'
+    flash[:notice] = 'Deletion of image"'+image_server_image[:image_name]+'_'+image_server_image[:seq]+'.jpg" was successful'
     redirect_to image_server_image_path(return_location)
   end
 
