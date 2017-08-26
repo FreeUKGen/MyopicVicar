@@ -35,17 +35,16 @@ class ImageServerGroupsController < ApplicationController
     get_userids_and_transcribers or return
 
     image_server_group = ImageServerGroup.id(params[:id]).first
-    return_location = image_server_group.source
-    image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id]).count
-
-    if image_server_image == 0
+    begin
       image_server_group.destroy
       flash[:notice] = 'Deletion of Image Group "'+image_server_group[:group_name]+'" was successful'
-      redirect_to image_server_group_path(return_location)      
-    else
-      flash[:notice] = 'Image Group "'+image_server_group[:group_name]+'" contains images, can not be deleted'
-      redirect_to image_server_group_path(image_server_group.source_id)
-    end
+      redirect_to image_server_group_path(image_server_group.source)  
+
+    rescue Mongoid::Errors::DeleteRestriction
+      logger.info "Logged Error for Image Server Group Delete"
+      logger.debug image_server_group.group_name+' is not empty'
+      redirect_to(:back, :notice=> image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED')
+    end     
   end
 
   def display_info
