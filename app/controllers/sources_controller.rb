@@ -32,17 +32,18 @@ class SourcesController < ApplicationController
 
     if ['system_administrator', 'data_managers'].include? @user.person_role
       source = Source.id(params[:id]).first
-      return_location = source.register
-      image_server_group = ImageServerGroup.where(:source_id=>params[:id]).count
 
-      if image_server_group == 0
+      begin
         source.destroy
         flash[:notice] = 'Deletion of "'+source[:source_name]+'" was successful'
-        redirect_to index_source_path(return_location)      
-      else
-        flash[:notice] = '"'+source[:source_name]+'" contains image groups, can not be deleted'
-        redirect_to index_source_path(return_location)
-      end
+        redirect_to index_source_path(source.register)      
+
+      rescue Mongoid::Errors::DeleteRestriction
+        logger.info "Logged Error for Source Delete"
+        logger.debug source.source_name+' is not empty'
+        redirect_to(:back, :notice=> source.source_name+' IS NOT EMPTY, CAN NOT BE DELETED')
+      end 
+
     else
       flash[:notice] = 'Only system_administrator and data_manager is allowed to delete source'
       redirect_to :back
