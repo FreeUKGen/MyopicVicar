@@ -37,7 +37,7 @@ class SearchRecordsController < ApplicationController
       if @search_record[:freereg1_csv_entry_id].present? 
         @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
       else
-        log_missing_document("entry for search record,#{@search_record.id}, the entry #{freereg1_csv_entry_id} does not exist, search #{@search_query.id}")
+        log_missing_document("entry for search record,#{params[:search_id]}, the entry #{freereg1_csv_entry_id} does not exist, search #{@search_query.id}")
         flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
         redirect_to new_search_query_path
         return
@@ -47,7 +47,7 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     rescue Mongoid::Errors::InvalidFind
-      log_missing_document("entry for search record,#{@search_record.id}, the entry #{freereg1_csv_entry_id} does not exist, search #{@search_query.id}")
+      log_missing_document("entry for search record,#{params[:search_id]}, the entry #{freereg1_csv_entry_id} does not exist, search #{@search_query.id}")
       flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
       redirect_to new_search_query_path
       return
@@ -87,7 +87,7 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     rescue Mongoid::Errors::InvalidFind
-      log_missing_document("entry for search record,#{@search_record.id}, the entry #{freereg1_csv_entry_id} does not exist, search #{@search_query.id}")
+      log_missing_document("entry for search record,#{params[:search_id]}, the entry #{freereg1_csv_entry_id} does not exist, search #{@search_query.id}")
       flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
       redirect_to new_search_query_path
       return
