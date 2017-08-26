@@ -64,6 +64,8 @@
             <td class="t15"><%= link_to 'SH', detail_image_server_image_path(x) %> 
               <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
                 <%= link_to 'ED', edit_image_server_image_path(x) %> 
+              <% end %>
+              <% if @user.person_role == 'system_administrator' %>
                 <%= link_to 'RM', image_server_image_path(x), data: { confirm: 'Are you sure you want to remove IS image '+x[:image_name]+'_'+x[:seq]+'.jpg?'}, method: :delete %>
               <% end %>
             </td>
