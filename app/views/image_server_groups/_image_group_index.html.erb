@@ -42,12 +42,12 @@
               <% else %>
                 <td class="t10"><%= group[:status] %>&nbsp;</td>
             <% end %>
-            <% if group[:start_date] < group.source.start_date %>
+            <% if group[:start_date] != '' && group.source.start_date != '' && group[:start_date] < group.source.start_date %>
               <td class="t10" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
               <td class="t10"><%= group[:start_date] %>&nbsp;</td>
             <% end %>
-            <% if group[:end_date] > group.source.end_date %>
+            <% if group[:end_date] != '' && group.source.end_date != '' && group[:end_date] > group.source.end_date %>
               <td class="t10" style="color:red"><%= group[:end_date] %>&nbsp;</td>
             <% else %>
               <td class="t10"><%= group[:end_date] %>&nbsp;</td>

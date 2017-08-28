@@ -5,7 +5,7 @@
   <%= s.input :group_name, :label=>"Image Group Name", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
   <%= s.input :start_date, :label=>"Start Year", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>10} %>
     <div id='ig_wrong_format_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date needs to be 4 digits</div>
-    <div id='ig_wrong_range_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date can not be latter than 1. current year 2. image source start date</div>
+    <div id='ig_wrong_range_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date can not be earlier than image source start date or latter than current year</div>
   <%= s.input :end_date, :label=>"End Year", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>10, :onkeypress=>'test(this,event)'} %>
     <div id='ig_wrong_format_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date needs to be 4 digits</div>
     <div id='ig_wrong_range_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date can not be 1. earlier than start date 2. latter than current year 3. latter than image source end date</div>

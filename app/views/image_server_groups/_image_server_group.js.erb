@@ -14,12 +14,16 @@ $(document).keypress(function(e) {
 if (start_year) {
 	start_year.onfocus = function() {
 		start_year.onblur = function() {
-			if (start_year.value != '' && start_year.value.match(/^\d{4}$/) == null) {
-				set_focus('start_year', 'ig_wrong_format_start_date')				
-			} else if (start_year.value > current_year) {
-				set_focus('start_year', 'ig_wrong_range_start_date')				
-			} else if (source_start_year.value && start_year.value < source_start_year.value) {
-				set_focus('start_year', 'ig_wrong_range_start_date')				
+			if (start_year.value != '') {
+				if (start_year.value.match(/^\d{4}$/) == null) {
+					set_focus('start_year', 'ig_wrong_format_start_date')				
+				} else if (start_year.value > current_year) {
+					set_focus('start_year', 'ig_wrong_range_start_date')				
+				} else if (source_start_year.value && start_year.value < source_start_year.value) {
+					set_focus('start_year', 'ig_wrong_range_start_date')				
+				} else {
+					set_focus('start_year', '')
+				}
 			} else {
 				set_focus('start_year', '')
 			}
@@ -30,12 +34,16 @@ if (start_year) {
 if (end_year) {
 	end_year.onfocus = function() {
 		end_year.onblur = function() {
-			if (end_year.value != '' && end_year.value.match(/^\d{4}$/) == null) {
-				set_focus('end_year', 'ig_wrong_format_end_date')				
-			} else if (end_year.value > current_year) {
-				set_focus('end_year', 'ig_wrong_range_end_date')				
-			} else if (source_end_year.value && end_year.value > source_end_year.value) {
-				set_focus('end_year', 'ig_wrong_range_end_date')				
+			if (end_year.value != '') {
+				if (end_year.value.match(/^\d{4}$/) == null) {
+					set_focus('end_year', 'ig_wrong_format_end_date')				
+				} else if (end_year.value > current_year) {
+					set_focus('end_year', 'ig_wrong_range_end_date')				
+				} else if (source_end_year.value && end_year.value > source_end_year.value) {
+					set_focus('end_year', 'ig_wrong_range_end_date')				
+				} else {
+					set_focus('end_year', '')
+				}
 			} else {
 				set_focus('end_year', '')
 			}
@@ -50,19 +58,19 @@ function check_year_range() {
 		alert('Group Name can not be empty')
 		group_name.scrollIntoView()
 		return false;
-	} else if (start_year.value != '' && end_year.value != '' && end_year.value < start_year.value) {
+	} else if (start_year.value && end_year.value && end_year.value < start_year.value) {
 		start_year.scrollIntoView()
 		set_focus('end_year', 'ig_wrong_range_end_date')
 		return false;
-	} else if (source_start_year.value && start_year.value < source_start_year.value) {
+	} else if (start_year.value && source_start_year.value && start_year.value < source_start_year.value) {
+		start_year.scrollIntoView()
 		set_focus('start_year', 'ig_wrong_range_start_date')
 		return false;
-	} else if (source_end_year.value && end_year.value > source_end_year.value) {
+	} else if (end_year.value && source_end_year.value && end_year.value > source_end_year.value) {
+		end_year.scrollIntoView()
 		set_focus('end_year', 'ig_wrong_range_end_date')
 		return false;
 	} else {
-		end_year.style.cssText = "string optional simple_form_bgcolour simple_form_position"
-		document.getElementById('ig_wrong_range_end_date').style.display = 'none'
 		return true;
 	}
 }
