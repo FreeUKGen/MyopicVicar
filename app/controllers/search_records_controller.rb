@@ -17,7 +17,7 @@ class SearchRecordsController < ApplicationController
 
   def show
     if params[:search_id].nil? || params[:id].nil?
-      flash[:notice] = "Prior records no longer exist"
+      flash[:notice] = "Prior records no longer exist, if this continues please let us know"
       redirect_to new_search_query_path
       return
     end
@@ -30,15 +30,15 @@ class SearchRecordsController < ApplicationController
         response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
       end
       if @search_record.nil?
-        flash[:notice] = "Prior records no longer exist"
+        flash[:notice] = "Prior records no longer exist, if this continues please let us know"
         redirect_to new_search_query_path
         return
       end
       if @search_record[:freereg1_csv_entry_id].present? 
         @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
       else
-        log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
-        flash[:notice] = "We encountered a problem locating that original entry"
+       log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+        flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
         redirect_to new_search_query_path
         return
       end
@@ -47,8 +47,8 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     rescue Mongoid::Errors::InvalidFind
-      log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
-      flash[:notice] = "We encountered a problem locating that original entry"
+       log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+      flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
       redirect_to new_search_query_path
       return
     end
@@ -65,7 +65,7 @@ class SearchRecordsController < ApplicationController
   def show_print_version
     @printable_format = true;
     if params[:search_id].nil? || params[:id].nil?
-      flash[:notice] = "Prior records no longer exist"
+      flash[:notice] = "Prior records no longer exist, if this continues please let us know"
       redirect_to new_search_query_path
       return
     end
@@ -77,7 +77,7 @@ class SearchRecordsController < ApplicationController
         response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
       end
       if @search_record.nil?
-        flash[:notice] = "Prior records no longer exist"
+        flash[:notice] = "Prior records no longer exist, if this continues please let us know"
         redirect_to new_search_query_path
         return
       end
@@ -87,8 +87,8 @@ class SearchRecordsController < ApplicationController
       redirect_to new_search_query_path
       return
     rescue Mongoid::Errors::InvalidFind
-      log_missing_document("entry for search record",@search_record[:freereg1_csv_entry_id],@search_record.id)
-      flash[:notice] = "We encountered a problem locating that original entry"
+    log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+      flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
       redirect_to new_search_query_path
       return
     end
