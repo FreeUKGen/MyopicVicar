@@ -149,4 +149,5 @@ module UseridRole
     'Other (please explain below)' => 'other'
   }
 
+  REASONS_FOR_MAKING_EMAIL_INVALID = ["Mails to this email bounced", "No Response", "Cannot be reached"]
 end

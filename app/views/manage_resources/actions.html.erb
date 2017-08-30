@@ -4,6 +4,16 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
+<%#= raise @user.inspect%>
+<% unless @user.email_address_validity_change_message.empty?%>
+  <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 40em;">
+    <ul>
+      <% @user.email_address_validity_change_message.each do |element| %>
+        <li>Your <b style="color: #009f98">email address</b> has been made <strong style="color: #009f98"><%= element %></strong></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
