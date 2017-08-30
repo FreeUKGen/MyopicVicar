@@ -284,21 +284,29 @@ class SearchRecord
     end
 
     def index_hint(search_params)
+      #raise search_params.inspect
       candidates = NEW_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
+      #raise search_fields.inspect
+      #raise index_score(name,search_fields).inspect
        # p candidates
-      candidates.each { |name| scores[name] = index_score(name,search_fields)}
+      candidates.each { |name| 
+        #raise name.inspect 
+        scores[name] = index_score(name,search_fields)}
        # p "scores"
        # p scores
       best = scores.max_by { |k,v| v}
+      #raise best[0].inspect
        # p "selected"
        # p best[0]
       best[0]
     end
 
     def index_score(index_name, search_fields)
+      #raise (NEW_INDEXES[ln_county_rt_sd_ssd]).inspect
       fields = NEW_INDEXES[index_name]
+      #raise fields.inspect
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }

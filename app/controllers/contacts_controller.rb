@@ -41,6 +41,7 @@ class ContactsController < ApplicationController
       @contact.save
       if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
+        @contact.prepare_search_record
         @contact.communicate
         if @contact.query
           redirect_to search_query_path(@contact.query)
@@ -148,7 +149,15 @@ class ContactsController < ApplicationController
       @contact.line_id  = @freereg1_csv_entry.line_id
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       rec = SearchRecord.where("id" => @contact.record_id).first
+      #raise (@contact.record_id).inspect
+      
       unless rec.nil?
+        @piece = rec.freecen_individual#.freecen_dwelling#.freecen_piece
+        @dwelling = @piece.freecen_dwelling if @piece
+        @cen_year = @dwelling.freecen_piece.year
+      @cen_piece = @dwelling.freecen_piece.piece_number.to_s
+      @cen_chapman_code = @dwelling.freecen_piece.chapman_code
+        #raise (@piece).inspect
         ind_id = rec.freecen_individual_id if rec.freecen_individual_id.present?
         @contact.fc_individual_id = ind_id.to_s unless ind_id.nil?
         @contact.county = rec.chapman_code

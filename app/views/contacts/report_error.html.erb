@@ -28,6 +28,37 @@
   <%= f.hidden_field :line_id %>
   <%= f.hidden_field :previous_page_url %>
   <%= f.hidden_field :county %>
+<%#= raise (params).inspect%>
+  <%#= f.query %>
+  <%= f.hidden_field :contact_type %>
+  <%= f.hidden_field :contact_time %>
+  <%= f.hidden_field :record_id %>
+  <%= f.hidden_field :entry_id %>
+  <%= f.hidden_field :line_id %>
+  <%= f.hidden_field :previous_page_url %>
+  <%= f.hidden_field :county %>
+  <p>Details of transcriptions which is been reported</p>
+  <%#= raise (FreecenDwelling.dwelling_display_labels(@cen_year,@cen_chapman_code)).inspect%>
+    <table class="table--bordered " style="background-color:#ffffff;">
+      <thead>
+        <tr>
+          <% FreecenDwelling.dwelling_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+            <td>
+              <%= lbl %>
+            </td>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+            <td>
+              <%= field_val %>
+            </td>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
     <ol class="grid">
       <li class="grid__item one-quarter lap-one-half palm-one-whole" id="name_input">
         <label class="label ttip" for="name" tabindex="0">Your name 
@@ -51,6 +82,8 @@
         <input id="email_address" name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
       <% end%>
       </li>
+      <%#= @piece.year%>
+
       <li class="grid__item one-half lap-one-whole palm-one-whole push--bottom clear--left">
         <label class="ttip" for="description" tabindex="0">Description
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
