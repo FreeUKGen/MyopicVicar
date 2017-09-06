@@ -1,6 +1,6 @@
 <header class="site__header" >
   <div class="container">
-    <% unless current_page?('/cms/refinery/login')%>
+    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/freereg2/page-not-found')%>
       <div class="banner-horz">
         <%= display_banner %>
       </div>
