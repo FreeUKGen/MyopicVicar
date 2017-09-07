@@ -3,7 +3,7 @@
 <div class="grid">
   <div class="grid__item two-thirds lap-one-half palm-one-whole">
     <div class="read-length">
-      <p>Thank you for volunteering as a transcriber for FreeReg. To join one of our existing teams of transcribers (we call them syndicates), fill in this form with your details: we will not share them with any outside organisation.</p>
+      <p>Thank you for volunteering as a transcriber for <%= MyopicVicar::Application.config.freexxx_display_name %>. To join one of our existing teams of transcribers (we call them syndicates), fill in this form with your details: we will not share them with any outside organisation.</p>
       <p>Then select a team from the list of <q>Syndicates available</q>.</p>
       <p>After successfully submitting the form, you will receive an email that contains a link to complete the registration process. Click on that link or copy and paste it into you browser&rsquo;s address window. You must respond to the email <em>within 24 hours</em>. If you have not received it within a few minutes, please check your spam folder.</p>
     </div>
@@ -28,9 +28,30 @@
     <% end %>
   </ul>
   <%@userid.errors.clear%>
-<% end %>  
-
+<% end %>
 <%= semantic_form_for @userid do |f| %>
+  <div class="grid">
+    <div class= "grid__item two-thirds lap-one-half palm-one-whole"">
+      <div class="read-length">
+        <p>If  you have any questions about transcribing or the documents linked below, please <%= link_to 'contact us','/contacts/new', target: '_blank' %></p>
+      </div>
+      <%= f.check_box :transcription_agreement %>
+      <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
+      <%= f.check_box :volunteer_induction_handbook %>
+      <span>I have read and hereby sign, the <%= link_to 'Volunteer Induction Handbook(pdf)', 'http://www.freeukgenealogy.org.uk/files/Documents/VolunteerInductionHandbook.pdf', title: "Click here to view or download the Volunteer Induction Handbook", target: '_blank' %></span><br /><br />
+      <%= f.check_box :code_of_conduct %>
+      <span>I  have read, and agreed to abide by the, <strong>Code of Conduct</strong> ( <%= link_to 'pdf', "http://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf", title: "Click here to view or download the Code of Conduct(.pdf)", target: '_blank' %>, <%= link_to 'docx', "http://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.docx", title: "Click here to download the Code of Conduct(word Document)" %>)</span><br /><br />
+    </div>
+    <aside class="grid__item one-third lap-one-half palm-one-whole">
+      <div class = "adsense_box">
+        <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+          <ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-7825403497160061" data-ad-slot="3235467631"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+    </aside>
+  </div>
   <fieldset class="inputs">
     <legend>Transcriber registration</legend>
     <ol class="grid">

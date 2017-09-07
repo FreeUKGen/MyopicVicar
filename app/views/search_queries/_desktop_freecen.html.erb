@@ -1,0 +1,103 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+
+<section class="island  " >
+  <div class="table-wrapper">
+    <div class="grid">
+        <table class="table--bordered grid__item one-whole" >
+        <colgroup >
+        <col class="t20">
+        <col class="t10">
+        <col class="t10">
+        <col class="t15">
+        <col class="t35">
+        <% unless print_friendly %>
+          <col class="t10">
+        <% end %>
+        </colgroup>
+        <thead  >
+          <th>
+            <%= link_to('Individual', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
+            <% end %>
+          </th>
+          <th>
+            <%= link_to('Birth County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BIRTH_COUNTY)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>County of birth. Click heading to sort by the birth county</span></a>
+            <% end %>
+          </th>
+          <th>
+            <%= link_to('Birth Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Approximate birth year. Click heading to sort by the date</span></a>
+            <% end %>
+          </th>
+          <th>
+            <%= link_to('Census Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Census Year.  Click heading to sort by the census year</span></a>
+            <% end %>
+          </th>
+          <th>
+            <%= link_to('Census County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>County in which the census was enumerated. Click heading to sort by census county</span></a>
+            <% end %>
+          </th>
+          <th>
+            <%= link_to('Census Place', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
+            <% unless print_friendly %>
+              <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Place in which event was recorded. Click heading to sort by the location</span></a>
+            <% end %>
+          </th>
+          <% unless print_friendly %>
+            <th>Detail<br>
+              <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Click on the detail link in the record below to see all transcription details for the person and others who share the same dwelling</span></a>
+            </th>
+          <% end %>
+        </thead >
+        <tbody >
+	<% n = 0 %>
+        <% @search_results.each do |search_record| %>
+         <% n = n + 1 %>
+          <tr id="<%=search_record.id%>">
+            <td>
+              <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
+                  <% if i > 0 %>
+                  <br/>
+                  <% end%>
+                <%= "#{name['first_name']} #{name['last_name']} " %>
+              <% end%>
+            </td>
+            
+            <td>
+              <%= ChapmanCode::name_from_code(search_record.birth_chapman_code) %>
+            </td>
+            <td>
+              <%= format_freecen_birth_year(search_record.transcript_dates.first, search_record.record_type) %>
+            </td>
+            <td>
+              <%= search_record.record_type %>
+            </td>
+            <td>
+	      <%# search_record.place.county %>
+              <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
+            </td>
+            <td>
+              <%= format_location(search_record) %>
+	    </td>
+            <% unless print_friendly %>
+	      <td>
+              <%= link_to("Detail", search_record_path(search_record.id, :search_id => @search_query), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}") %>
+	      <i><%= viewed(@search_query,search_record) %></i>
+            </td>
+          <% end %>
+          </tr>
+        </tbody>
+        <% end %>
+      </table>
+    </div>
+   
+  </div>
+</section>

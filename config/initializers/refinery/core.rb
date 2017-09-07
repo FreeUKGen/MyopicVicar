@@ -28,8 +28,7 @@ Refinery::Core.configure do |config|
   # config.base_cache_key = :refinery
 
   # Site name
-  # config.site_name = "Company Name"
-  config.site_name = "Free UK Genealogy - FreeREG"
+  config.site_name = "Free UK Genealogy - " + MyopicVicar::Application.config.freexxx_display_name
 
 
   # This activates Google Analytics tracking within your website. If this

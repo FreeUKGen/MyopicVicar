@@ -84,6 +84,7 @@ class Feedback
   end
 
   def github_issue
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if Feedback.github_enabled
       self.add_link_to_attachment
       Octokit.configure do |c|
@@ -92,11 +93,11 @@ class Feedback
       end
       self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
-      logger.info("FREEREG:GITHUB response: #{response}")
+      logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
     else
-      logger.error("FREEREG:Tried to create an issue, but Github integration is not enabled!")
+      logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
   end
 

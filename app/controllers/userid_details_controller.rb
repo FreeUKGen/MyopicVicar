@@ -68,7 +68,9 @@ class UseridDetailsController < ApplicationController
       flash[:notice] = 'The destruction of the profile is not permitted as there are batches stored under this name'
       redirect_to :action => 'options'
     else
-      Freereg1CsvFile.delete_userid_folder(@userid.userid) unless @userid.nil?
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        Freereg1CsvFile.delete_userid_folder(@userid.userid) unless @userid.nil?
+      end
       @userid.destroy
       flash[:notice] = 'The destruction of the profile was successful'
       redirect_to :action => 'options'
@@ -166,7 +168,7 @@ class UseridDetailsController < ApplicationController
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
     when  params[:commit] == 'Register as Transcriber'
-      redirect_to :back and return
+      redirect_to transcriber_registration_userid_detail_path and return
     when params[:commit] == "Submit" && session[:userid_detail_id].present?
       redirect_to userid_detail_path(@userid) and return
     when params[:commit] == "Update" && session[:my_own]
@@ -188,7 +190,8 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration' and return
     when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
+      @userid[:honeypot] = session[:honeypot]
+     # @transcription_agreement = [true,false]
       render :action => 'transcriber_registration' and return
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
@@ -390,7 +393,7 @@ class UseridDetailsController < ApplicationController
       @userid = UseridDetail.new
       @userid[:honeypot] = session[:honeypot]
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
+      @transcription_agreement = [true,false]
       @first_name = session[:first_name]
     else
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
@@ -412,6 +415,7 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:active]  = false
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     when params[:commit] == "Update"
+      params[:userid_detail][:transcription_agreement] = "Unknown"  if params[:userid_detail][:transcription_agreement].blank?
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when params[:commit] == "Confirm"
       if params[:userid_detail][:email_address_valid] == 'true'

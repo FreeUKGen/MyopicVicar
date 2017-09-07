@@ -1,15 +1,26 @@
 <header class="site__header" >
   <div class="container">
-    <div class="banner-horz">
-      <%= display_banner %>
-    </div>   
+    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found')%>
+      <div class="banner-horz">
+        <%= display_banner %>
+      </div>
+    <% end %>
     <button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
       <span>Menu</span>
       <i class="icon__cancel" aria-hidden="true"></i>
     </button>
-    <%= link_to '/', class: "site__header__logo  icon__freereg" do %>
-      <h1 class="accessibility">FreeReg</h1>
+    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+      <%= link_to '/', class: "site__header__logo  icon__freereg" do %>
+        <h1 class="accessibility">FreeREG</h1>
+      <% end %>
+    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+      <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
+        <h1 class="accessibility">FreeCEN</h1>
+      <% end %>
+    <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+      <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
+        <h1 class="accessibility">FreeBMD</h1>
+      <% end %>
     <% end %>
-   
   </div>
 </header>

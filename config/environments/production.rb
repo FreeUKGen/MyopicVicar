@@ -101,6 +101,10 @@ MyopicVicar::Application.configure do
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
+  config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
+  config.fc_parms_upload_dir = MyopicVicar::MongoConfig['fc_parms_upload_dir'] unless MyopicVicar::MongoConfig['fc_parms_upload_dir'].blank?
+  config.fc_update_processor_status_file = MyopicVicar::MongoConfig['fc_update_processor_status_file'] unless MyopicVicar::MongoConfig['fc_update_processor_status_file'].blank?
+  config.wildcard_support = MyopicVicar::MongoConfig['wildcard_support'] unless MyopicVicar::MongoConfig['wildcard_support'].blank?
   config.ucf_support = MyopicVicar::MongoConfig['ucf_support']
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']

@@ -1,0 +1,12 @@
+<h1>Select county for new <%= @year if @year.present? %> piece </h1>
+
+<%= semantic_form_for(@county) do |f| %>
+
+<% if flash[:notice] %>
+<div id="notice" style="color:red"><br>
+<%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+</div>
+<% end %>  
+
+<%= f.input :chap, { :as => :select, :label => 'Which county would you like to create a piece for?', :include_blank => false, :prompt => 'Select county', :required => true, :collection => @year_counties, :size => 10, :input_html => {'onchange' => "location.href='/freecen_pieces/'+this.value+'/#{@year}/new';"} }%>
+<% end %>

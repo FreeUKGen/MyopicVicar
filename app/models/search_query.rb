@@ -1,6 +1,5 @@
 class SearchQuery
   include Mongoid::Document
-  #store_in client: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
@@ -11,12 +10,14 @@ class SearchQuery
   module SearchOrder
     TYPE='record_type'
     DATE='search_date'
+    BIRTH_COUNTY='birth_chapman_code'
     COUNTY='chapman_code'
     LOCATION='location'
     NAME="transcript_names"
 
     ALL_ORDERS = [
       TYPE,
+      BIRTH_COUNTY,
       DATE,
       COUNTY,
       LOCATION,
@@ -59,6 +60,9 @@ class SearchQuery
   field :all_radius_place_ids, type: Array, default: []
   field :wildcard_search, type: Boolean, default: false
 
+  field :birth_chapman_codes, type: Array, default: []
+  field :birth_place_name, type: String
+  
   has_and_belongs_to_many :places, inverse_of: nil
 
   embeds_one :search_result
@@ -68,7 +72,8 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
-  validate :all_counties_have_both_surname_and_firstname
+# probably not necessary in FreeCEN
+#  validate :all_counties_have_both_surname_and_firstname
 
   before_validation :clean_blanks
   attr_accessor :action
@@ -125,12 +130,31 @@ class SearchQuery
     radius_search? && radius_factor > 2
   end
 
+
+  def fetch_records
+    return @search_results if @search_results
+    if self.search_result.present?
+      records = self.search_result.records
+      begin
+        @search_results = SearchRecord.find(records)
+      rescue Mongoid::Errors::DocumentNotFound
+        appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+        logger.warn("#{appname}:SEARCH_ERROR:search record in search results went missing")
+        @search_results = nil
+      end
+    else
+      @search_results = nil
+    end
+    @search_results
+  end
+
   def can_query_ucf?
     Rails.application.config.ucf_support && self.places.exists? && !self.search_nearby_places# disable search until tested
   end
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
+    birth_chapman_codes.delete_if { |x| x.blank? }
   end
 
   def compare_location(x,y)
@@ -334,6 +358,8 @@ class SearchQuery
       name_params["last_name"] = wildcard_to_regex(last_name.downcase) if last_name
       params["search_names"] =  { "$elemMatch" => name_params}
     else
+      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params["first_name"] = Text::Soundex.soundex(first_name) if first_name
         name_params["last_name"] = Text::Soundex.soundex(last_name) if last_name.present?
@@ -407,9 +433,38 @@ class SearchQuery
 
       params[:place_id] = { "$in" => search_place_ids }
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
+      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
     end
     params
+  end
+
+  def previous_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil? || idx <= 0
+    record = record_ids_sorted[idx-1]
+    record
+  end
+
+
+  def next_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil?
+    record = record_ids_sorted[idx+1]
+    record
   end
 
   def query_contains_wildcard?
@@ -451,6 +506,7 @@ class SearchQuery
     param[:role] = self.role
     param[:record_type] = self.record_type
     param[:chapman_codes] = self.chapman_codes
+    param[:birth_chapman_codes] = self.birth_chapman_codes
     param[:inclusive] = self.inclusive
     param[:witness] = self.witness
     param[:start_year] = self.start_year
@@ -636,6 +692,36 @@ class SearchQuery
         # wildcard is in first name only -- no worries
         #end
       end
+    end
+  end
+
+
+  def county_is_valid
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
+        errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+      end
+      if chapman_codes.length > 3
+        if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
+          errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+        end
+      end
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      # don't require date range for now. may need to add back in later.
+    end
+  end
+
+  def date_range_is_valid
+    if !start_year.blank? && !end_year.blank?
+      if start_year.to_i > end_year.to_i
+        errors.add(:end_year, "First year must precede last year.")
+      end
+    end
+  end
+
+  def radius_is_valid
+    if search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
     end
   end
 

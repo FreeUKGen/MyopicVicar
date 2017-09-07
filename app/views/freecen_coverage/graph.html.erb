@@ -1,0 +1,71 @@
+<h1 class="title text--center"><%= @year %> &ndash; <%= @county %> <%='('+@chapman_code+')' unless 'all'==@chapman_code%></h1>
+<br>
+<%# ----------- set up graph variables --------- %>
+<% canvas_w = 700 %>
+<% canvas_h = 400 %>
+<% left_margin = 100 %>
+<% bottom_margin = 100 %>
+<% top_margin = 20 %>
+<% right_margin = 20 %>
+<% graph_w = canvas_w-left_margin-right_margin %>
+<% graph_h = canvas_h-bottom_margin-top_margin %>
+<% first_time = 1057060800 %>
+<% first_time = @graph_data['first_time'] unless @graph_data.nil? || @graph_data['first_time'].nil? %>
+<% now_time = Time.now.to_i %>
+<% max_time = now_time %>
+<% max_time = @graph_data['values_at_time'][-1][0] unless @graph_data.nil? || @graph_data['values_at_time'].nil? || @graph_data['values_at_time'][-1].nil? || @graph_data['values_at_time'][-1][0].nil? %>
+<% valmax = @graph_data['max'] %>
+<% gparms =FreecenCoverage.calculateGraphParms(first_time,max_time,valmax,20,@graph_type ) %>
+<% first_time = gparms['first_time_adjusted'] %>
+<% max_time = gparms['last_time_adjusted'] %>
+<% valmax = gparms['max_y_adjusted'] %>
+
+<%# ------ one canvas for the graph lines, another for text overlay ----- %>
+<center>
+<% if'ind'==@graph_type %>
+<h4>Record Count (Individuals)</h4>
+<% else %>
+<h4>Percentage Completion</h4>
+<% end %>
+<div id="both" style="width:<%=canvas_w+2%>px;height:<%=canvas_h+2%>px;position:relative;top:0px;left:0px;border:1px solid #dddddd;background-color:#ffffff;">
+<canvas id="graph_canvas" width="<%= graph_w %>" height="<%= graph_h %>" style="border:1px solid #aaaaaa;position:absolute;left:<%=left_margin-1%>px;top:<%=top_margin%>px;background-color:#ffffff;"></canvas>
+<canvas id="text_canvas" width="<%= canvas_w %>" height="<%= canvas_h %>" style="position:absolute;left:0px;top:0px;"></canvas>
+</div><br>
+</center>
+
+<%# ---- add javascript points, ticks, labels, and then call the draw code %>
+<%# ---- (draw code is in app/assets/javascripts/freecen_coverage_graphs.js) %>
+
+<script>
+
+var points_array = [
+<% @graph_data['values_at_time'].each_with_index do |dat,idx| %>
+<%   t = dat[0] %>
+<%   r = dat[1] %>
+<%= ',' unless 0==idx -%>
+[<%=t%>,<%="%.0f" % r%>]<% end %>
+];
+
+var x_ticks_array = [
+<% unless gparms['x_ticks'].nil? %>
+<%   gparms['x_ticks'].each_with_index do |tick,idx| %>
+<%= ',' unless 0==idx -%>[<%=tick[0]%>,"<%=tick[1]%>"]
+<%   end %>
+<% end %>
+];
+
+var y_ticks_array = [
+<% unless gparms['y_ticks'].nil? %>
+<%   gparms['y_ticks'].each_with_index do |tick,idx| %>
+<%= ',' unless 0==idx -%>[<%=tick%>,"<%= number_with_delimiter(tick)%>"]
+<%   end %>
+<% end %>
+];
+
+<% if'ind'==@graph_type %>
+drawCoverageGraph('graph_canvas','text_canvas',points_array, 'Date', 'Number  of  Entries', /*leftTicks*/y_ticks_array, /*bottomTicks*/x_ticks_array, /*x_min_value*/<%=first_time%>, /*x_max_value*/<%=max_time%>, /*y_min_value*/0,  /*y_max_value*/<%=valmax%>, /*top_margin*/20, /*left_margin*/100, /*right_margin*/20, /*bottom_margin*/100, /*canvas_w*/700, /*canvas_h*/400);
+<% else %>
+drawCoverageGraph('graph_canvas','text_canvas',points_array, 'Date', 'Percent Complete', /*leftTicks*/y_ticks_array, /*bottomTicks*/x_ticks_array, /*x_min_value*/<%=first_time%>, /*x_max_value*/<%=max_time%>, /*y_min_value*/0,  /*y_max_value*/<%=valmax%>, /*top_margin*/20, /*left_margin*/100, /*right_margin*/20, /*bottom_margin*/100, /*canvas_w*/700, /*canvas_h*/400);
+<% end %>
+
+</script>

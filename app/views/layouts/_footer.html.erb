@@ -14,11 +14,28 @@
 				<% end %>
 				in the 24 hrs ending at midnight GMT. 
 			<% end %>
+
+
+    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
       <p>
        The FreeREG database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
     
        Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
-    </p>
+      </p>
+    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+      <p>
+       The FreeCEN database is just a finding tool. It should not be considered to be *proof* that such information was recorded.<br>
+    
+       Always confirm its content with the actual census record at a County Record Office, local Family History Society or LDS Family History Centre.
+      </p>
+      
+    <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+      <p>
+       The FreeBMD database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
+    
+       Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
+      </p>
+    <% end %>
 		</div>
 	</div>
 
@@ -28,10 +45,18 @@
 
 			<ul class="icon-list">
 				<li>
-					<a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCen</span></a>
+				  <% if MyopicVicar::Application.config.template_set == 'freecen' %>
+<a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
+				  <% else %>
+					<a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a>
+                                  <% end %>
 				</li>
 				<li>
+				  <% if MyopicVicar::Application.config.template_set == 'freebmd' %>
+					<a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
+				  <% else %>
 					<a href="http://www.freebmd.org.uk/" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
+                                  <% end %>
 				</li>
 			</ul>
 		</div>
@@ -45,7 +70,9 @@
         <div class="grid__item  one-third  palm-one-whole">
               <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
                 <li><a href="/contacts/new">Contact Us</a></li>
+		<% if MyopicVicar::Application.config.template_set != 'freecen' %>
                 <li><a href="/userid_details/transcriber_registration">Become a Transcriber</a></li>
+		<% end %>
                 <li><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free/">Make a Donation</a></li>
                 <li><a href="http://www.freeukgenealogy.org.uk/about/constitution-and-policies/">Policies</a></li>
              
@@ -74,7 +101,15 @@
         <div class="island  island--grey  flush--bottom">
         <div class="container  text--center">
         <p class="micro  text--grey">
-        Search engine, layout and database Copyright © 1998-2017 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484. We make no warranty whatsoever as to the accuracy or completeness of the FreeREG data.
+        Search engine, layout and database Copyright © 1998-2017 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484. We make no warranty whatsoever as to the accuracy or completeness of the
+	<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+	FreeREG
+	<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+	FreeCEN
+	<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+	FreeBMD
+	<% end %>
+	data.
       </p>
 			</div>
 		</div>

@@ -82,6 +82,7 @@
     </p>
     <% end %>
   </section>
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
   <section>
     <h3>Records</h3>
     <p>
@@ -92,6 +93,7 @@
     <% end %>
     </p>
   </section>
+<% end %>
   <section>
     <h3>Location</h3>
     <% if @search_query.radius_search? %>

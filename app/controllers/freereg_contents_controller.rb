@@ -107,7 +107,6 @@ class FreeregContentsController < ApplicationController
       flash[:notice] = "Problem with your selection."
       redirect_to :action => 'new' and return
     end
-
   end
 
 

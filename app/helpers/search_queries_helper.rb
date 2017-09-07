@@ -4,6 +4,19 @@ module SearchQueriesHelper
     Text::Soundex.soundex(verbatim)
   end
 
+  def format_freecen_birth_year(search_date, record_type)
+    search_year = search_date.gsub(/\D.*/,'')
+    if search_year == record_type
+      search_year
+    else
+      if record_type == RecordType::CENSUS_1841 && search_year > "1826"
+        "#{search_year.to_i - 3} - #{search_year.to_i + 2}"              
+      else
+        "#{search_year.to_i - 1} - #{search_year}"      
+      end
+    end
+  end
+
   def format_start_date(year)
     "January 1, "+DateParser::start_search_date(year)
   end
@@ -54,8 +67,13 @@ module SearchQueriesHelper
     else
       church = ' '
     end
-    register_type = names[1].gsub('[', '').gsub(']', '')
-    loc = [place, church, register_type].join(' : ')
+    if names[1]
+      register_type = names[1].gsub('[', '').gsub(']', '')
+      loc = [place, church, register_type].join(' : ')
+    else
+      loc = place
+    end
+
     return loc
   end
 

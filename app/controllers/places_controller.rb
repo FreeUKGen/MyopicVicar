@@ -2,8 +2,9 @@ class PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
 
-  skip_before_filter :require_login, only: [:for_search_form,:for_freereg_content_form]
-  
+  skip_before_filter :require_login, only: [:for_search_form,:for_freereg_content_form,:for_freecen_piece_form]
+  before_filter :running_on_primary, :except => [:show,:index,:for_search_form,:for_freereg_content_form,:for_freecen_piece_form]
+
   def approve
     session[:return_to] = request.referer
     get_user_info_from_userid
@@ -108,6 +109,23 @@ class PlacesController < ApplicationController
         render :json => county_response
       end
     end
+  end
+
+  def for_freecen_piece_form
+    place_response = {}
+    unless params[:freecen_piece].blank?
+      chap = params[:freecen_piece][:chapman_code]
+      name = params[:freecen_piece][:place_name]
+      if chap.present? && name.present?
+        place = Place.where(chapman_code: chap, place_name: name).first
+        if place.present?
+          place_response['place_id'] = place['_id']
+          place_response['lat'] = place['latitude']
+          place_response['long'] = place['longitude']
+        end
+      end
+    end
+    render :json => place_response
   end
 
   def get_places_counties_and_countries

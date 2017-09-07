@@ -34,12 +34,16 @@
           <tr>
             <td><%= feedback.name %></td>
             <td><%= feedback.email_address %></td>
-            <td><%= feedback.contact_type %></td>
-            <td><%= feedback.county  %>
+            <td><%= feedback.contact_type %>
+ 	      <% if feedback.selected_county %>
+	       (<%= feedback.selected_county %>)
+	      <% end %>
+	    </td>
+            <td><%= feedback.county %></td>
             <td><%= feedback.contact_time.strftime("%d %b %Y") unless feedback.contact_time.nil?%></td>
-             <td><%= feedback.identifier  %>
-            <td><%= link_to 'SH', contact_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%> <%= link_to 'ED', edit_contact_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%>
-            <%= link_to 'DES', contact_path(feedback.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to delete this contact' } %></td>
+            <td><%= feedback.identifier %>
+	    <td><%= link_to 'SH', contact_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%> <%= link_to 'ED', edit_contact_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%>
+            <%= link_to 'DEL', contact_path(feedback.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to delete this contact?' } %></td>
           </tr>
           <% end %>
         </table>

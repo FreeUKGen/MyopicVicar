@@ -34,7 +34,7 @@ class UseridDetail
   field :country_groups, type: Array
   field :digest, type: String, default: nil
   field :skill_notes, type: String
-  field :transcription_agreement, type: Boolean, default: false
+  field :transcription_agreement, type: String, default: 'Unknown'
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
   field :email_address_valid, type: Boolean, default: true
@@ -44,7 +44,7 @@ class UseridDetail
   field :reason_for_invalidating,type: String
   field :new_transcription_agreement, type: String, default: "Unknown"
 
-  attr_accessor :action, :message
+  attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
@@ -58,10 +58,11 @@ class UseridDetail
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:new_transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
-  validate :userid_and_email_address_does_not_exist, on: :create
+  validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
+  validates :volunteer_induction_handbook, :code_of_conduct, acceptance: true
 
-  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname
+  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
   after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname
   after_update :update_refinery
@@ -103,6 +104,47 @@ class UseridDetail
     end
   end
 
+  def remember_search(search_query)
+    self.search_queries << search_query
+  end
+
+  def write_userid_file
+    return if MyopicVicar::Application.config.template_set == 'freecen'
+    user = self
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
+    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
+    Dir.mkdir(change_details_dir)  unless Dir.exist?(change_details_dir)
+    details_file = File.join(details_dir,".uDetails")
+    change_details_file = File.join(change_details_dir,".uDetails")
+    if File.file?(details_file)
+      save_to_attic
+    end
+    #we do not need a udetails file in the change set
+    details = File.new(details_file, "w")
+    details.puts "Surname:#{user.person_surname}"
+    details.puts "UserID:#{user.userid}"
+    details.puts "EmailID:#{user.email_address}"
+    details.puts "Password:#{user.password}"
+    details.puts "GivenName:#{user.person_forename}"
+    details.puts "Country:#{user.address}"
+    details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}"
+    details.puts "SyndicateName:#{user.syndicate}"
+    details.puts "SignUpDate:#{user.sign_up_date}"
+    details.puts "Person:#{user.person_role}"
+    unless user.active
+      details.puts "DisabledDate:#{user.disabled_date}"
+      details.puts "DisabledReason:#{user.disabled_reason}"
+      details.puts "Active:0"
+      details.puts "Disabled:1"
+    else
+      details.puts "Active:1"
+      details.puts "Disabled:0"
+    end
+    details.close
+  end
+
+
   def remove_checked_messages(msg_id)
     self.reload
     return if !(self.userid_messages.include? msg_id)
@@ -124,6 +166,7 @@ class UseridDetail
     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
     self.userid_messages.length
   end
+
 
 
   def self.get_active_userids_for_display(syndicate)
@@ -154,6 +197,38 @@ class UseridDetail
       @userids << name
     end
     return @userids
+  end
+
+  def send_invitation_to_create_password
+    type = self.person_role
+    UserMailer.invitation_to_register_researcher(self).deliver if type == 'researcher'
+    UserMailer.invitation_to_register_transcriber(self).deliver if type == 'transcriber'
+    UserMailer.invitation_to_register_technical(self).deliver if type == 'technical'
+  end
+
+  def send_invitation_to_reset_password
+    UserMailer.invitation_to_reset_password(self).deliver
+
+  end
+
+  def save_to_attic
+    return if MyopicVicar::Application.config.template_set == 'freecen'
+    #to-do unix permissions
+    user = self
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    details_file = File.join(details_dir,".uDetails")
+    newdir = File.join(details_dir,'.attic')
+    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
+    File.rename(details_file,renamed_file)
+    FileUtils.mv(renamed_file,newdir)
+  end
+
+  def userid_and_email_address_does_not_exist
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+    errors.add(:userid, "Refinery User Already exists") if Refinery::User.where(:username => self[:userid]).exists?
+    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+    errors.add(:email_address, "Refinery email already exists") if Refinery::User.where(:email => self[:email_address]).exists?
   end
 
   def self.get_userids_for_display(syndicate)
@@ -240,6 +315,7 @@ class UseridDetail
     refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
 
@@ -444,6 +520,18 @@ class UseridDetail
 
   def get_user_ids
     filter_users.map{ |x| x[:userid] }
+  end
+
+  def transcription_agreement_must_accepted
+    errors.add(:base, "Transcription agreement must be accepted") if self.transcription_agreement == "0"
+  end
+
+  def transcription_agreement_value_change
+    if self.transcription_agreement == "1"
+      self.transcription_agreement = 'Accepted'
+    elsif self.transcription_agreement == 0
+      self.transcription_agreement = 'Declined'
+    end
   end
 
 end #end class

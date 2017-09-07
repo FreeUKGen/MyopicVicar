@@ -430,6 +430,18 @@ li.choice label { font-weight: normal; margin-bottom: 7px; }
 .ttip:focus .ttip__text {
   visibility: visible;
 }
+form#new_search_query fieldset.inputs > ol {
+    margin-left: -28px;
+    margin-right: 0;
+}
+table thead tr th:last-child, table tbody tr th:last-child, table tbody tr td:last-child {
+    padding-right: 14px;
+}
+table thead tr th:first-child, table tbody tr th:first-child {
+    padding-left: 14px;
+}
+
+/* ---- here to end is new with most recent merge from master 2017-03-10 */
 input::-webkit-input-placeholder { color: #585858; font-style: italic; opacity: 1 ! important; }
 input::-moz-placeholder          { color: #585858; font-style: italic; opacity: 1 ! important; }
 input:-ms-input-placeholder      { color: #585858; font-style: italic; opacity: 1 ! important; }

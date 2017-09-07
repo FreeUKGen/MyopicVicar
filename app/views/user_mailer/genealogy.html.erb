@@ -2,9 +2,14 @@
 <p>Thank you for your correspondence at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p><p> A member of our team should be in touch with you within 2 business days.</p> 
 <p>The following is the information you submitted.
 </p>
+<% if @contact.selected_county.present? %>
+<p>
+<b>County:</b>
+<%= ChapmanCode::name_from_code(@contact.selected_county) + '(' + @contact.selected_county + ')' %>
+<% end %>
 <p><b>Genealogical Question:</b></p>
 <p>  <%= @contact.body %></p>
 <% if @contact.screenshot_url.present?%>
  <p>An image is attached</p>
 <% end%>
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

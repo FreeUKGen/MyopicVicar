@@ -1,0 +1,79 @@
+  <div class="table-wrapper">
+
+    <% @search_results.each do |search_record| %>
+      <table  >
+        <colgroup >
+        </colgroup>
+        <tbody  >
+          <tr>
+            <th >Field</th>
+            <th class="caps">Value</th>
+          </tr>
+          <tr id="<%=search_record.id%>">
+            <td>
+              <%= link_to('Individual', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Name of main person in the record. Click heading to sort by the name. </span></a>
+            </td>
+            <td>
+              <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
+              <% if  name['type'] == 'primary' %>
+              <% if i > 0 %>
+                <br/>
+              <% end%>
+                <%= "#{name['first_name']} #{name['last_name']} " %>
+              <% end %>
+              <% end%>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= link_to('Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %><br>
+              <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Type of record. Click heading to sort by type</span></a>
+            </td>
+            <td>
+              <%= RecordType::display_name(search_record.record_type) %>
+            </td>
+          </tr>
+          <tr>  <td>
+            <%= link_to('Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %><br>
+            <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Date of event. Please note that calendar changed in 1752. Click heading to sort by the date</span></a>
+          </td>
+          <td>
+            <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty?%>
+          </td>
+        </tr>
+        <tr> <td>
+          <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %><br>
+          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>County in which event was recorded. Click heading to sort by the county</span></a>
+        </td>
+        <td>
+           <%# search_record.place.county %>
+	   <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <%= link_to('Census Place', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %><br>
+          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Place and Church in which event was recorded. Click heading to sort by the location</span></a>
+        </td>
+        <td>
+          <%= format_location(search_record) %>
+        </td>
+      </tr>
+      <tr>
+        <td>Detail<br>
+          <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Click on the detail link to view all transcription details for the person and others who share the same dwelling</span></a>
+        </td>
+        <td>
+          <%= link_to("Detail", search_record_path(search_record.id, :search_id => @search_query)) %>
+          <% if session[:viewed] %>
+            <i>
+          <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
+            </i>
+          <% end %>
+	</td>
+      </tr>
+    </tbody>
+  </table>
+  <% end%>
+</div>

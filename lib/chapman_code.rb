@@ -24,12 +24,47 @@ module ChapmanCode
   end
 
   def self.remove_codes(hash)
-    hash = ChapmanCode::CODES.each_pair do |key, value|
+    hash = hash.each_pair do |key, value|
       FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
         value.delete_if {|key, value| key == country }
       end
     end
+    
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+      hash.delete("'England and Wales Shipping'")
+      hash.delete("'Out of County'")
+      hash.delete("'Overseas British'")
+      hash.delete("'Overseas Foreign'")
+      hash.delete("'Scottish Shipping'")
+    end
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREECEN
+      hash.delete("All")
+    end
     hash
+  end
+
+  def self.codes_for_cen_county()
+    hsh = {}
+    ChapmanCode::CODES.each_pair do |ctry, ctryval|
+      ctryhash={}
+      ctryval.each_pair do |kk,vv|
+        ctryhash[kk] = vv unless ['ALD','GSY','JSY','SRK'].include?(vv.to_s)
+      end
+      hsh[ctry] = ctryhash
+    end
+    hsh
+  end
+
+  def self.codes_for_cen_birth_county()
+    hsh = {}
+    ChapmanCode::CODES.each_pair do |ctry, ctryval|
+      ctryhash={}
+      ctryval.each_pair do |kk,vv|
+        ctryhash[kk] = vv unless ['ERY','NRY','WRY'].include?(vv)
+      end
+      hsh[ctry] = ctryhash
+    end
+    hsh
   end
 
   def self.add_parenthetical_codes(hash)
@@ -190,38 +225,35 @@ module ChapmanCode
      'Western Isles' => 'WIS',
      'Wigtownshire' => 'WIG'},
     "Wales" =>
-    {'Wales' => 'WLS',
-     'Anglesey' => 'AGY',
-     'Brecknockshire' => 'BRE',
-     'Caernarfonshire' => 'CAE',
-     'Cardiganshire' => 'CGN',
-     'Carmarthenshire' => 'CMN',
-     'Clwyd' => 'CWD',
-     'Denbighshire' => 'DEN',
-     'Dyfed' => 'DFD',
-     'Flintshire' => 'FLN',
-     'Glamorgan' => 'GLA',
-     'Mid Glamorgan' => 'MGM',
-     'South Glamorgan' => 'SGM',
-     'West Glamorgan' => 'WGM',
-     'Gwent' => 'GNT',
-     'Gwynedd' => 'GWN',
-     'Merionethshire' => 'MER',
-     'Monmouthshire' => 'MON',
-     'Montgomeryshire' => 'MGY',
-     'Pembrokeshire' => 'PEM',
-     'Powys' => 'POW',
-     'Radnorshire' => 'RAD'},
-     "Northern Ireland" =>
-     {"Northern Ireland" => 'NIR',
-     'Antrim' => 'ANT',
-     'Armagh' => 'ARM',
-     'Down' => 'DOW',
-     'Fermanagh' => 'FER',
-     'Londonderry' => 'LDY',
-     'Tyrone' => 'TYR'},
-     'Unknown' => 
-     {'Unknown' => 'UNK'}
+      {'Wales' => 'WLS',
+       'Anglesey' => 'AGY',
+       'Brecknockshire' => 'BRE',
+       'Caernarfonshire' => 'CAE',
+       'Cardiganshire' => 'CGN',
+       'Carmarthenshire' => 'CMN',
+       'Clwyd' => 'CWD',
+       'Denbighshire' => 'DEN',
+       'Dyfed' => 'DFD',
+       'Flintshire' => 'FLN',
+       'Glamorgan' => 'GLA',
+       'Mid Glamorgan' => 'MGM',
+       'South Glamorgan' => 'SGM',
+       'West Glamorgan' => 'WGM',
+       'Gwent' => 'GNT',
+       'Gwynedd' => 'GWN',
+       'Merionethshire' => 'MER',
+       'Monmouthshire' => 'MON',
+       'Montgomeryshire' => 'MGY',
+       'Pembrokeshire' => 'PEM',
+       'Powys' => 'POW',
+       'Radnorshire' => 'RAD' },
+     "Special" => {
+       'Unknown' => 'UNK',
+       'England and Wales Shipping' => 'EWS',
+       'Out of County' => 'OUC',
+       'Overseas British' => 'OVB',
+       'Overseas Foreign' => 'OVF',
+       'Scottish Shipping' => 'SCS'}
   }
 
 

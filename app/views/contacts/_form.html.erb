@@ -71,6 +71,21 @@
           <% end %>
           </select>
         </li>
+
+	<% if 'freecen' == MyopicVicar::Application.config.template_set %>
+        <li class="grid__item one-half palm-one-whole push--bottom">
+	  <label tabindex="0" for="selected_county" class="ttip">Contact a specific county <span class="weight--normal"> (optional) </span> 
+	    <%= image_tag 'info.png', alt: 'Information', height: '16' %>
+	    <span class="ttip__text">If you wish to contact a coordinator for one specific county, please select the county here.</span>
+	  </label>
+	  <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+	  <select name="contact[selected_county]" id="selected_county" class="select" size="5">
+	    <option value="nil">No specific county</option>
+	    <%= grouped_options_for_select(grouped_options) %>
+	  </select>
+	</li>
+	<% end %>
+
         <li class="grid__item one-half palm-one-whole push--bottom">
           <label tabindex="0" for="screenshot" class="ttip">Screenshot or image <span class="weight--normal"> (optional) </span> 
             <%= image_tag 'info.png', alt: 'Information', height: '16' %>

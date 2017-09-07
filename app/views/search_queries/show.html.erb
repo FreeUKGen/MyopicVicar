@@ -1,9 +1,16 @@
 <% title "Search Results" %>
 <% if flash[:notice] %>
-<div id="notice" style="color:red;"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
-</div>
+  <div id="notice" style="color:red;"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
+  </div>
 <% end %>
+
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+  <% contents_link =  link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %>
+<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+  <% contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage" %>
+<% end %>
+
 <% unless @search_query.nil? %>
   <% unless defined?(@printable_format) && @printable_format %>
     <div class="text--center push--bottom">
@@ -11,13 +18,13 @@
       <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small " %>
       <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  weight--light btn--small") %>
       <% if @search_query.can_be_broadened? %>
-      <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  weight--light btn--small" %>
+        <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  weight--light btn--small" %>
       <% end %>
       <% if @search_query.can_be_narrowed? %>
-      <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
+        <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  weight--light btn--small" %>
       <% end %>
       <% if device_type == :desktop || device_type == :tablet %>
-      <%= link_to "Printable Format", show_print_version_search_query_path , :class => "btn  weight--light btn--small" %>
+        <%= link_to "Printable Format", show_print_version_search_query_path , :class => "btn  weight--light btn--small" %>
       <% end %>
     </div>
   <% end %>
@@ -30,13 +37,24 @@
       <h2 class="epsilon flush--bottom"><em>You searched for:</em></h2>
       <div class="criteria-group">
         <% search_params_for_display(@search_query).each do |name, value| %>
-        <dl class="criteria">
-          <dt class="criteria__name"><%= name %></dt>
-          <dd class="criteria__value"><%= value %></dd>
-        </dl>
+          <dl class="criteria">
+            <dt class="criteria__name"><%= name %></dt>
+            <dd class="criteria__value"><%= value %></dd>
+          </dl>
         <% end %>
       </div>
     </section>
+    <div class="adsense_center">
+      <span>Advertisement</span>
+      <div>
+        <%= fullwidth_adsense %>
+      </div>
+    </div>
+    <div class="text--center">
+      <p>FreeCEN2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</p>
+  </div>
+  </div>
+  </div>
   <% end %>
   <section>
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
@@ -48,22 +66,25 @@
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
         <div class="island">
           <h2 class="gamma text--negative push-half--bottom">No results found</h2>
-          <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
+          <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= contents_link %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
         </div>
       <% else %>
+        <div class="criteria__value" style="text-align: center;">
+          Total number of records: <%= @result_count %>
+        </div>
         <% if device_type == :desktop || device_type == :tablet %>
-          <%= render(:partial => "desktop", :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false}) if @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+          <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false}) if @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <% else %>
-          <%= render(:partial => "mobile", :locals => {:search_results => @search_results, :ucf_results => false}) if @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+          <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results => false}) if @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <% end %>
         <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
           <br>
           <p>These additional entries with partly-readable names could be relevant:</p>
           <% @result_count = @ucf_results.size %>
           <% if device_type == :desktop || device_type == :tablet %>
-            <%= render(:partial => "desktop", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
+            <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
           <% else %>
-            <%= render(:partial => "mobile", :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
+            <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @ucf_results, :ucf_results => true}) %>
           <% end %>
         <% end %>
       <% end%>
@@ -74,10 +95,10 @@
             <%= link_to "New Search", new_search_query_path, :class => "btn  weight--light btn--small" %>
             <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn weight--light btn--small") %>
             <% if @search_query.can_be_broadened? %>
-            <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn weight--light btn--small" %>
+              <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn weight--light btn--small" %>
             <% end %>
             <% if @search_query.can_be_narrowed? %>
-            <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
+              <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
             <% end %>
             <a href="#" class="btn weight--light btn--small">Go to top</a>
           </div>
@@ -85,18 +106,19 @@
       <% end %>
       <% if @result_count > 0 && @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
-            <br>
-            <% unless defined?(@printable_format) && @printable_format %>
-              <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeREG" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
-             <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b>FreeReg</b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
-            <% end %>
-          </div>
+          <br>
+          <% unless defined?(@printable_format) && @printable_format %>
+            <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
+            <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= MyopicVicar::Application.config.freexxx_display_name %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
+          <% end %>
+        </div>
       <% end %>
     <% end %>
- </section>
+  </section>
 <% else %>
   <div class="island">
     <h2 class="gamma text--negative push-half--bottom">No results found</h2>
-    <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
+    <p class="read-length">This could be because there are no transcriptions for the Places you were searching: our <%= contents_link %> pages will tell you what we have transcribed. <br> Or you may need to recast your search options: see our <%= link_to "Search Tips", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.
+    </p>
   </div>
 <% end %>

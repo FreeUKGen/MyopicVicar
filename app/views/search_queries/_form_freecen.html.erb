@@ -1,0 +1,220 @@
+<% if flash[:notice] %>
+  <div class="weight--semibold text--center"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div class="island island--bordered text--center">
+  <p>FreeCEN2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</p>
+</div>
+<% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
+  <h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
+
+  <ul class="validation-list">
+    <% @search_query.errors.messages.each do |key, msg| %>
+      <li class="validation-list__error text--center" ><%= msg[0] %></li>
+    <% end %>
+  </ul>
+
+  <% @search_query.errors.clear %>
+<% end %>
+
+<div class="push soft--top palm-flush--bottom">
+  <%= semantic_form_for(@search_query) do |f| %>
+    <fieldset class="inputs">
+      <legend>Person</legend>
+      <ol class="grid">
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="last_name" tabindex="0">
+            Surname
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname, you <em>must</em> enter a County, Forename, and Place</span>
+          </label>
+          <% if @search_query.last_name.nil? %>
+            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
+          <%else%>
+            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
+          <%end%>
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="first_name" tabindex="0">
+            Forename(s)
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of name will be included automatically</span>
+          </label>
+          <% if @search_query.first_name.nil? %>
+            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
+          <%else%>
+            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
+          <%end%>
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="start_year" tabindex="0">
+            Birth year from
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional, YYYY. The first year you want to include</span>
+          </label>
+          <% if @search_query.start_year.nil? %>
+            <input id="start_year" name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional">
+          <%else%>
+            <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
+          <%end%>
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="end_year" tabindex="0">
+            Birth year to
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional, YYYY. The last year you want to include</span>
+          </label>
+          <% if @search_query.end_year.nil? %>
+            <input id="end_year" name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional">
+          <%else%>
+            <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
+          <%end%>
+        </li>
+
+        <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_birth_chapman_codes_input">
+          <input name="search_query[birth_chapman_codes][]" type="hidden" value="">
+          <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
+            Birth County
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">If you select more than one county, <em>all</em> places within those counties will be searched</span>
+            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+          </label>
+          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::codes_for_cen_birth_county))%>
+          <select class="select" id="search_query_birth_chapman_codes" multiple="multiple" name="search_query[birth_chapman_codes][]">
+            <option value="" style= "font-weight: bold;">All Counties</option>
+            <% key = @search_query.birth_chapman_codes unless @search_query.birth_chapman_codes.nil?%>
+            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+          </select>
+        </li>
+
+        <li class="grid__item four-eighths lap-three-quarters palm-one-whole" >
+          <b class="label">Birth Place</b>
+          <p class="push-half--top">We are developing the birth place search feature. We would be grateful if you could spare 10 minutes to fill in our <%=link_to "Birth Place survey","https://goo.gl/forms/hGghqo5u1mDeUwd53",:class => "go", target: :_blank %> &mdash; this will take you to a new tab/page, so you can come back to this tab/page to complete your search.</p>
+        </li>
+      </ol>
+    </fieldset>
+
+    <fieldset class="inputs">
+      <legend>Census location &amp; year</legend>
+      <ol class="grid">
+        <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
+          <input name="search_query[chapman_codes][]" type="hidden" value="">
+          <label class="label ttip" for="search_query_chapman_codes" tabindex="0">
+            Census County
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">If you select more than one county, <em>all</em> places within those counties will be searched</span>
+            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+          </label>
+          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::codes_for_cen_county)) %>
+          <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
+            <option value="" style= "font-weight: bold;">All Counties</option>
+            <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
+            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+          </select>
+        </li>
+
+        <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
+          <label class="label ttip" for="search_query_place_ids" tabindex="0">
+            Census Place
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Select one place, or leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby Places&rdquo; option, below</span>
+            <small class="additional">Select nothing or one place</small>
+          </label>
+          <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4">
+            <option value="">List fills when you select one county</option>
+          </select>
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole optional" id="search_query_record_type_input">
+          <label class="label ttip" for="search_query_record_type" tabindex="0">
+          Census year
+          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <span class="ttip__text">The specific census year to search. Leave blank to search all.</span>
+          <small class="additional">Leave blank to search all</small>
+          </label>
+          <select id="search_query_record_type" name="search_query[record_type]" class="select" size="4" style="max-width: 10rem;">
+            <option value="">--</option>
+            <% RecordType.options.each_pair do |name, value| %>
+              <%if !@search_query.record_type.nil? && @search_query.record_type.include?(value)%>
+                <option value="<%= value %>" selected="selected"> <%= name %></option>
+              <% else %>
+                <option value="<%= value %>"><%= name %></option>
+              <% end %>
+            <% end %>
+          </select>
+        </li>
+      </ol>
+    </fieldset>
+
+    <fieldset class="inputs">
+      <legend>Search options</legend>
+      <ol class="grid">
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :search_nearby_places, {}, "true", "false" %>
+            Nearby places
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total)</span>
+          <% end %>
+        </li>
+
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :fuzzy, {}, "true", "false" %>
+            Name Soundex
+            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+          <% end %>
+        </li>
+
+        <%= f.action :submit,
+        :as => :button,
+        :label => 'Search',
+        :button_html => { :class => "btn", :type => 'submit' },
+        :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
+
+        <li class="grid__item one-whole">
+          <% x = Rails.application.config.max_search_time/1000 %>
+          <small class="additional push-half--ends">Search times are limited to <%= x %> seconds.<br>Please do not restart the search once it is working as this will actually slow the process.</small>
+        </li>
+      </ol>
+    </fieldset>
+  <% end %>
+
+  <div class="text--center">
+    <p>FreeCEN2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</p>
+  </div>
+  <div class="adsense_center">
+    <span>Advertisement</span>
+    <div>
+      <%= fullwidth_adsense %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+//      Ladda.bind( 'button[type=submit]' );
+</script>
+
+<% if true %>
+  <script type="text/javascript" charset="utf-8" >
+    <% if @search_query && @search_query.chapman_codes.size > 0 %>
+      var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+      <% if @search_query.places.size > 0 %>
+        selection["selected"]="<%= @search_query.places.first.id %>";
+      <% end %>
+    <% end %>
+    (function($) {$("#search_query_place_ids").remoteChained({
+    parents : "#search_query_chapman_codes",
+    url : "/places/for_search_form.json",
+    loading : "Loading..."
+    <% if @search_query && @search_query.chapman_codes.size == 1 %>
+    , bootstrap: selection
+    <% end %>
+    });})(jQuery);
+  </script>
+<% end %>

@@ -58,10 +58,10 @@ module UseridRole
     "Feedback" => "/feedbacks",
     "Contacts" => "/contacts",
     "System Documentation" => "/cms/system-documents",
-    "Roadmap" => "/cms/system-documents/development-roadmap",
+    "Roadmap" => "/cms/system-documents/Road-Map",
     "Logout" => "/refinery/logout",
-    "Message System" => "/messages", 
-    "Manage Images" => "/sources"
+    "Message System" => "/messages",
+    "Manage Pieces" => "/freecen_coverage/edit"
   }
   USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
@@ -90,7 +90,7 @@ module UseridRole
   COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
                                'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',
-                               "Upload New Batch",'Manage Images']
+                               "Upload New Batch"]
   COUNTY_OPTIONS_TRANSLATION = {
     'All Places' => "/manage_counties/selection?option=Work with All Places",
     'Active Places' => "/manage_counties/selection?option=Work with Active Places",
@@ -102,8 +102,7 @@ module UseridRole
     'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
     'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
     'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
-    'Upload New Batch' =>  "/csvfiles/new",
-    'Manage Images' => '/manage_counties/selection?option=Manage Images'
+    'Upload New Batch' =>  "/csvfiles/new"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",'Review Batches with Errors','Review Batches by Filename',
@@ -140,6 +139,7 @@ module UseridRole
 
   SKILLS = ["Learning","Straight Forward Forms", "Complicated Forms", "Post 1700 modern freehand", "Post 1530 freehand - Secretary",  "Post 1530 freehand - Latin", "Post 1530 freehand - Latin & Chancery" ]
 
+
   REASONS_FOR_INACTIVATING = {
     'Not currently transcribing (may return)' => 'temporary',
     'No longer transcribing (permanently)' => 'permanent',
@@ -150,5 +150,50 @@ module UseridRole
     'Coordinator controlled' => 'coord-controlled',
     'Other (please explain below)' => 'other'
   }
+
+
+# Remove options for functionality that is not implemented for FreeCEN yet
+  if MyopicVicar::Application.config.template_set == 'freecen'
+    transcriber_idx = VALUES.find_index('transcriber')
+    VALUES.insert(transcriber_idx+1,'checker')
+    VALUES.insert(transcriber_idx+2,'validator')
+    OPTIONS['checker'] = ["Batches","Profile", "Roadmap"]
+    OPTIONS['validator'] = ["Batches","Profile", "Roadmap"]
+    OPTIONS.each do |role,opts|
+      if opts.include?('Batches')
+        opts.delete("Batches")
+      end
+      if opts.include?('Access Attic')
+        opts.delete("Access Attic")
+      end
+      if opts.include?('Physical Files')
+        opts.delete("Physical Files")
+      end
+      if opts.include?('Manage Counties')
+#        opts.delete("Manage Counties")
+      end
+      if opts.include?('Denominations')
+        opts.delete("Denominations")
+      end
+    end
+    OPTIONS['system_administrator'] << 'Manage Pieces'
+    OPTIONS['technical'] << 'Manage Pieces'
+    self.send(:remove_const, :FILE_MANAGEMENT_OPTIONS)
+    FILE_MANAGEMENT_OPTIONS = []
+    COUNTY_MANAGEMENT_OPTIONS.reverse_each do |val|
+      unless val.downcase().index("batch").nil?
+        COUNTY_MANAGEMENT_OPTIONS.delete(val)
+      end
+    end
+
+    SYNDICATE_MANAGEMENT_OPTIONS.reverse_each do |val|
+      unless val.downcase().index("batch").nil?
+        SYNDICATE_MANAGEMENT_OPTIONS.delete(val)
+      end
+    end
+
+    self.send(:remove_const, :PHYSICAL_FILES_OPTIONS)
+    PHYSICAL_FILES_OPTIONS = []
+  end
 
 end

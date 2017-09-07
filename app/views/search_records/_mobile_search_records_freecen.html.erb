@@ -1,0 +1,173 @@
+<section>
+  <p class="text--center">
+    <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small"%>
+
+    <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" unless @previous_record.nil? || !@dwelling.nil?%>
+    <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query, :page_number => @page_number), :class => "btn  btn--small" unless @next_record.nil? || !@dwelling.nil?%>
+
+    <%= link_to "Previous Dwelling", search_record_path(@search_record, :search_id => @search_query, :page_number => @page_number, :dwel => @cen_prev_dwelling), :class => "btn  btn--small" unless @cen_prev_dwelling.nil?%>
+    <%= link_to "Next Dwelling", search_record_path(@search_record, :search_id => @search_query, :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small" unless @cen_next_dwelling.nil?%>
+  </p>
+</section>
+<div class="adsense_center">
+  <span>Advertisement</span>
+  <div>
+    <%= fullwidth_adsense %>
+  </div>
+</div>
+<div class="text--center">
+  <p>FreeCEN2 is a work in progress; <%=link_to "we want your feedback","https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",:class => "go", target: :_blank %> (link opens in a new tab) on all aspects so that we can make it better.</p>
+</div>
+
+<section>
+
+  <% if @dwelling %>
+    <% if 0 != @dwelling_offset %>
+      <p class="text--center">
+        <%= dwelling_offset_message(@dwelling_offset) %>
+      </p>
+    <% end %>
+
+    <div class="table-wrapper">
+    <table class="table--bordered " style="background-color:#ffffff;">
+      <thead>
+      	<tr>
+      	  <% FreecenDwelling.dwelling_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+        	  <td>
+        	    <%= lbl %>
+        	  </td>
+      	  <% end %>
+      	</tr>
+      </thead>
+      <tbody>
+      	<tr>
+      	  <% @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+        	  <td>
+        	    <%= field_val %>
+        	  </td>
+      	  <% end %>
+      	</tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="table-wrapper">
+    <table class="table--bordered " style="background-color:#ffffff;">
+      <thead>
+      	<tr>
+      	  <% FreecenIndividual.individual_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+        	  <td>
+        	    <%= lbl %>
+        	  </td>
+      	  <% end %>
+      	</tr>
+      </thead>
+      <tbody>
+      	<% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
+        	<tr>
+        	  <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+          	  <td>
+          	    <%= field_val %>
+          	  </td>
+        	  <% end %>
+        	</tr>
+      	<% end %>
+      </tbody>
+    </table>
+    </div>
+  <% end %>
+  <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+  <br>
+      <center><a href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
+      <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= MyopicVicar::Application.config.freexxx_display_name %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
+  </div>
+
+  <% if @annotations && @annotations.length > 0 %>
+  <!----- do we need this annotations stuff for freecen? ----->
+  <table class="table--bordered ">
+    <thead>
+      <tr>
+        <td colspan="2">
+          <h2>Online Transcriptions</h2>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <% @annotations.each do |annotation| %>
+      <% annotation.attributes.keys.each do |field| %>
+      <% if annotation[field] %>
+      <tr>
+        <td><%= field.gsub('_',' ').capitalize %></td>
+        <td><%= annotation[field] %></td>
+      </tr>
+      <% end %>
+      <% end %>
+      <% transcription = annotation.transcription %>
+      <% if transcription %>
+      <% transcription.attributes.keys.each do |field| %>
+      <% if transcription[field] %>
+      <tr>
+        <td><%= field.gsub('_',' ').capitalize %></td>
+        <td><%= transcription[field] %></td>
+      </tr>
+      <% end %>
+      <% end %>
+      <tr>
+        <td>Image</td>
+        <td>
+          <% if transcription.asset.thumbnail_location %>
+          <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+          <% else %>
+          <%= link_to("Image", transcription.asset.location) %>
+          <% end %>
+        </td>
+      </tr>
+      <% end %>
+      <% end %>
+    </tbody>
+  </table>
+  <% end%>
+  <% unless params[:debug].blank? %>
+  <table class="table--bordered ">
+    <thead>
+      <tr>
+        <td colspan="2">
+          <h1>Record</h1>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Primary names</td>
+        <td>
+          <% @search_record.primary_names.each do |name| %>
+          first_name: <%= name.first_name %><br/>
+          last_name: <%= name.last_name %><br/>
+          origin: <%= name.origin %><br/>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <td>Other family names</td>
+        <td>
+          <% @search_record.inclusive_names.each do |name| %>
+          first_name: <%= name.first_name %><br/>
+          last_name: <%= name.last_name %><br/>
+          origin: <%= name.origin %><br/>
+          <% end %>
+        </td>
+      </tr>
+      <% @search_record.ordered_display_fields.each do |field| %>
+      <% if @search_record[field] %>
+        <tr>
+          <td><%= field.gsub('_',' ').capitalize %></td>
+          <td><%= @search_record[field] %></td>
+        </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+  <% end %>
+
+  <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %> it to our data manager (link opens in a new tab or window).</h5>
+
+</section>

@@ -4,8 +4,15 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
   </div>
 <% end %>
-<h1 class="title text--center">Search our Parish Registers</h1>
-<%= render 'form' %>
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+  <h1 class="title text--center">Search our Parish Registers</h1>
+<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+  <h1 class="title text--center">Search our Census Records</h1>
+<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+  <h1 class="title text--center">Search our Birth/Marriage/Death Records</h1>
+<% end %>
+<%= render app_specific_partial('form') %>
+
 <% unless @page.nil?%>
   <div class="weight--semibold">
     <%= @page%>

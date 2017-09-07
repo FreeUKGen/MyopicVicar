@@ -31,6 +31,7 @@ class SearchRecord
 
 
   belongs_to :freereg1_csv_entry, index: true
+  belongs_to :freecen_individual, index: true
   belongs_to :place
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
@@ -38,6 +39,7 @@ class SearchRecord
   #denormalized fields
   field :asset_id, type: String
   field :chapman_code, type: String
+  field :birth_chapman_code, type: String
 
   #many :annotations, :in => :annotation_ids
 
@@ -122,7 +124,7 @@ class SearchRecord
      
     }
 
-  INDEXES = MERGED_INDEXES
+  INDEXES = NEW_INDEXES
 
   INDEXES.each_pair do |name,fields|
     field_spec = {}
@@ -282,7 +284,7 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      candidates = MERGED_INDEXES.keys
+      candidates = NEW_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
        # p candidates
@@ -296,7 +298,7 @@ class SearchRecord
     end
 
     def index_score(index_name, search_fields)
-      fields = MERGED_INDEXES[index_name]
+      fields = NEW_INDEXES[index_name]
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
@@ -525,19 +527,25 @@ class SearchRecord
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
   end
-
   def format_location
-    register = self.freereg1_csv_entry.freereg1_csv_file.register
-    register_type = ''
-    register_type = RegisterType.display_name(register.register_type) unless register.nil? # should not be nil but!
-    church = register.church
-    church_name = ''
-    church_name = church.church_name unless church.nil? # should not be nil but!
-    place_name = self.place.place_name unless self.place.nil? # should not be nil but!
-    place_name = self.freereg1_csv_entry.freereg1_csv_file.register.church.place.place_name if self.place.nil?
     location_array = []
-    location_array << "#{place_name} (#{church_name})"
-    location_array << " [#{register_type}]"
+    register_type = ''
+    church_name = ''
+    if self.freereg1_csv_entry
+      register = self.freereg1_csv_entry.freereg1_csv_file.register
+      register_type = ''
+      register_type = RegisterType.display_name(register.register_type) unless register.nil? # should not be nil but!
+      church = register.church
+      church_name = ''
+      church_name = church.church_name unless church.nil? # should not be nil but!
+      place_name = self.place.place_name unless self.place.nil? # should not be nil but!
+      location_array << "#{place_name} (#{church_name})"
+      location_array << " [#{register_type}]"
+    else # freecen
+      place_name = self.place.place_name unless self.place.nil?
+      location_array << "#{place_name}"
+    end
+
     location_array
   end
 
@@ -591,7 +599,6 @@ class SearchRecord
     self[:location_names] = format_location
   end
 
-
   def location_names_equal?(new_search_record)
     location_names = self.location_names
     new_location_names = new_search_record.location_names
@@ -643,7 +650,11 @@ class SearchRecord
           person_type=PersonType::WITNESS
         end
         person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
-        person_gender = gender_from_role(person_role)
+        if MyopicVicar::Application.config.template_set == 'freecen'
+          person_gender = self.freecen_individual.sex.downcase unless self.freecen_individual.nil? || self.freecen_individual.sex.nil?
+        else
+          person_gender = gender_from_role(person_role)
+        end
         name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
         search_names << name if name
       end

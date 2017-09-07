@@ -18,20 +18,27 @@ module RecordType
   MARRIAGE='ma'
   BAPTISM='ba'
 
+  CENSUS_1841='1841'
+  CENSUS_1851='1851'
+  CENSUS_1861='1861'
+  CENSUS_1871='1871'
+  CENSUS_1881='1881'
+  CENSUS_1891='1891'
+
 
   def self.all_types
-    if true #MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
       ALL_FREEREG_TYPES
     else
-      []
+      ALL_FREECEN_TYPES
     end
   end
   
   def self.options
-    if true #MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
       FREEREG_OPTIONS
     else
-      []
+      FREECEN_OPTIONS
     end
   end
   
@@ -41,6 +48,7 @@ module RecordType
   end
 
   ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM]
+  ALL_FREECEN_TYPES = [CENSUS_1841, CENSUS_1851, CENSUS_1861, CENSUS_1871, CENSUS_1881, CENSUS_1891]
 
 private
   FREEREG_OPTIONS = {
@@ -48,6 +56,12 @@ private
     'Marriage' => MARRIAGE,
     'Burial' => BURIAL
   }    
+  
+  FREECEN_OPTIONS = ALL_FREECEN_TYPES.inject({}) do |accum, value|
+    accum[value]=value
+    accum
+  end
+
   
 
 

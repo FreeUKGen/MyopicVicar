@@ -1,0 +1,20 @@
+/*------------------------------------*\
+    $VARS
+\*------------------------------------*/
+
+/**
+ * Override any of the Core or Inuit variables here
+ */
+
+
+$container-width:   1200px;
+
+<% if MyopicVicar::Application.config.template_set == 'freecen' %>
+$brand-color:          $orange;
+$brand-color-brighter: $orange-brighter;
+$brand-color-lighter:  $orange-lighter;
+<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+$brand-color:          $magenta;
+$brand-color-brighter: $magenta-brighter;
+$brand-color-lighter:  $magenta-lighter;
+<%end%>

@@ -3,9 +3,9 @@
 <p> Dear <%= @coordinator.person_forename %>; </p>
 
 
-<p> <%= @user.person_forename%>  <%= @user.person_surname %> at <%= @user.email_address%> and userid  <b><%= @user.userid %> </b> has been re-assigned to your syndicate.</p>
+<p> <%= @user.person_forename%>  <%= @user.person_surname %> at <%= @user.email_address%> and userid <b><%= @user.userid %> </b> has been re-assigned to your syndicate.</p>
 
 <p>Please make them welcome</p>
 
 
-<p> The FreeREG Team</p>
+<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>

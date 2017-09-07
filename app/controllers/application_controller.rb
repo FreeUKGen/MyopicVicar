@@ -148,17 +148,18 @@ class ApplicationController < ActionController::Base
   end
 
   def log_possible_host_change
-    log_message = "FREEREG:PHC WARNING: browser may have jumped across servers mid-session!\n"
-    log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
-    log_message += "FREEREG:PHC params=\t\t#{params}\n"
-    log_message += "FREEREG:PHC caller=\t\t#{caller.first}\n"
-    log_message += "FREEREG:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
-    log_message += "FREEREG:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
-    log_message += "FREEREG:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
-    log_message += "FREEREG:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
-    log_message += "FREEREG:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
-
-    logger.warn(log_message)
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    log_message = "#{appname}:PHC WARNING: browser may have jumped across servers mid-session!\n"
+    log_message += "#{appname}:PHC Time.now=\t\t#{Time.now}\n"
+    log_message += "#{appname}:PHC params=\t\t#{params}\n"
+    log_message += "#{appname}:PHC caller=\t\t#{caller.first}\n"
+    log_message += "#{appname}:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
+    log_message += "#{appname}:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
+    log_message += "#{appname}:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
+    log_message += "#{appname}:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
+    log_message += "#{appname}:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
+    
+    logger.warn(log_message)    
   end
 
   def manager?(user)
@@ -222,6 +223,7 @@ class ApplicationController < ActionController::Base
     session.delete(:character)
     session.delete(:edit_userid)
     session.delete(:who)
+    session.delete(:edit_freecen_pieces)
     session.delete(:redirect_to)
     session.delete(:site_stats)
     session.delete(:message)
@@ -266,7 +268,7 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_userid)
     session.delete(:record)
     session.delete(:current_page)
-
+    session.delete(:edit_freecen_pieces)
   end
 
   def clean_session_for_syndicate
@@ -310,9 +312,22 @@ class ApplicationController < ActionController::Base
     session.delete(:record)
     session.delete(:select_place)
     session.delete(:current_page)
+    session.delete(:edit_freecen_pieces)
   end
 
-
-
+  def go_back(type,record)
+    flash[:notice] = "The #{type} document you are trying to access does not exist."
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    logger.info "#{appname}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end
+  def reject_assess(user,action)
+    flash[:notice] = "You are not permitted to use this action"
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    logger.info "#{appname}:ACCESS ISSUE: The #{user} attempted to access #{action}."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end
 
 end

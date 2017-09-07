@@ -1,0 +1,32 @@
+// 'select all' checkbox for propagate
+var lastChecked = null;
+
+$(':checkbox').click(function(e){
+	x = document.activeElement
+	if (x.id == 'source_propagate_source_id_000000000000000000000000') {
+		if (x.checked) {
+			$(':checkbox').each(function(){
+				$(this).prop('checked', true);
+			})
+		} else {
+			$(':checkbox').each(function(){
+				$(this).prop('checked', false)
+			})
+		}
+	} else {
+		if (e.ctrlKey && e.shiftKey) {
+			if (!lastChecked) {
+				lastChecked = this
+				return
+			}
+
+			var start_id = $(':checkbox').index(lastChecked)
+			var end_id = $(':checkbox').index(this)
+
+			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked)
+
+			lastChecked = null
+		}
+		document.getElementById('source_propagate_source_id_000000000000000000000000').checked = false;
+	}
+})

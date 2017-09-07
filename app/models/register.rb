@@ -30,7 +30,7 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
-  has_many :sources # includes origin server of images
+  has_many :sources # includes transcripts, printed editions, and microform, and digital versions of these
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -68,10 +68,6 @@ class Register
       @@my_church.registers << register
       @@my_church.save
       register
-    end
-
-    def find_by_church_ids(id)
-      Register.where(:church_id => {'$in'=>id.keys})
     end
 
     def find_register(args)
