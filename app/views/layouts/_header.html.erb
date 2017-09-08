@@ -1,8 +1,10 @@
 <header class="site__header" >
   <div class="container">
-    <div class="banner-horz">
-      <%= display_banner %>
-    </div>   
+    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/freereg2/page-not-found')%>
+      <div class="banner-horz">
+        <%= display_banner %>
+      </div>
+    <% end %>
     <button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
       <span>Menu</span>
       <i class="icon__cancel" aria-hidden="true"></i>
