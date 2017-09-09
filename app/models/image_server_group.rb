@@ -54,9 +54,10 @@ class ImageServerGroup
   field :group_name, type: String
   field :start_date, type: String
   field :end_date, type: String
-  field :transcribers, type: Array, default: nil
+  field :transcriber, type: Array, default: nil
+  field :reviewer, type: Array, default: nil
   field :difficulty, type: String, default: nil
-  field :status, type: String
+  field :status, type: Array, default: nil
   field :notes, type: String
 
   field :church_status, type: String
@@ -79,6 +80,18 @@ class ImageServerGroup
 
     def source_id(id)
       where(:source_id => id)
+    end
+
+    def summarize_image_server_group(source_id)
+      if self.count > 0
+        group_list = self.all.sort_by{|x| x.group_name.downcase}
+        a = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status)
+        b = Hash[a.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
+        group_status = Hash[b.map{|k,v| [k, v.compact.uniq]}]
+      else
+        group_status = nil
+      end
+      group_status
     end
     
   end

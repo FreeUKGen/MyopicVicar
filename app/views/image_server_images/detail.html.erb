@@ -38,15 +38,12 @@
         <tr>
           <td>Status</td>
           <% case @image[:status] %>
-            <% when 'u' %>
-               <td class="weight--semibold" style="color:red">
-            <% when 'i' %>
-              <td class="weight--semibold">
+            <% when 'e', 'u' %>
+              <td class="weight--semibold" style="color:red">
             <% when 't' %>
               <td class="weight--semibold" style="color:green">
-            <% when 'r' %>
-              <td class="weight--semibold">
             <% else %>
+              <td class="weight--semibold">
               <td>
           <% end %>
           <%= ImageServerImage::Status::ALL_STATUSES[@image[:status]] %>&nbsp;</td>

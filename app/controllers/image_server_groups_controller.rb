@@ -98,7 +98,10 @@ class ImageServerGroupsController < ApplicationController
 
   def index
     display_info
-    @image_server_group = ImageServerGroup.id(params[:id]).first
+#    @image_server_group = ImageServerGroup.id(params[:id]).first
+    @group = ImageServerGroup.id(params[:id])
+    @image_server_group = @group.first
+    @group_status = @group.summarize_image_server_group(params[:id])
 
     if @image_server_group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
@@ -117,7 +120,9 @@ class ImageServerGroupsController < ApplicationController
   def show
     session[:source_id] = params[:id]
     display_info
-    @image_server_group = ImageServerGroup.where(:source_id=>params[:id]).sort_by{|x| x.group_name.downcase}
+    @group = ImageServerGroup.source_id(params[:id])
+    @image_server_group = @group.sort_by{|x| x.group_name.downcase}
+    @group_status = @group.summarize_image_server_group(params[:id])
 
     if @image_server_group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."

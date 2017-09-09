@@ -4,7 +4,8 @@
 
 <%= simple_form_for @image_server_group do |s| %>
   <%= s.input :group_name, :label=>"Image Group", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
-  <%= s.input :transcribers, :as=>:select, :collection=>@people, :label => 'Transcribers', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :transcriber, :as=>:select, :collection=>@people, :label => 'Transcriber', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :reviewer, :as=>:select, :collection=>@people, :label => 'Reviewer', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
   <%= s.input :difficulty, :as=>:select, :collection=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES.invert, :include_blank=>true, selected: s.object.difficulty, :label=>'Transcription Level Skill', :value=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
   <%= s.input :status, :collection=>ImageServerGroup::Status::ALL_STATUSES.invert.sort, selected: s.object.status, :include_blank=>true, :label => 'Transcription Status', :value=>ImageServerGroup::Status::ALL_STATUSES[s.object.status], :include_blank=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
   <%= s.input :start_date, :label=>'Start Year', :input_html=>{:class=>"simple_form_bgcolour  simple_form_position", :size=>10} %>

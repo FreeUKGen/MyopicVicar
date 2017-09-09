@@ -36,7 +36,7 @@ class ImageServerImage
   field :end_date, type: String
   field :image_name, type: String
   field :seq, type: String
-  field :status, type: String, default: Status::UNALLOCATED
+  field :status, type: String, default: nil
   field :difficulty, type: String
   field :transcriber, type: Array
   field :reviewer, type: Array
