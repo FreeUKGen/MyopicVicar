@@ -24,6 +24,17 @@ class Contact
   field :fc_individual_id, type: String
   field :identifier, type: String
   field :screenshot_location, type: String
+  field :census_year, type: String
+  field :data_county, type: String
+  field :place, type: String
+  field :civil_parish, type: String
+  field :piece, type: String
+  field :enumeration_district, type: String
+  field :folio, type: String
+  field :page, type: String
+  field :house_number, type: String
+  field :house_or_street_name, type: String
+
   attr_accessor :action
 
   validates_presence_of :name, :email_address
@@ -58,7 +69,7 @@ class Contact
   end
 
   def prepare_search_record
-    raise self.inspect
+   raise self.inspect
   end
 
   def communicate

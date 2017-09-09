@@ -41,7 +41,6 @@ class ContactsController < ApplicationController
       @contact.save
       if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
-        @contact.prepare_search_record
         @contact.communicate
         if @contact.query
           redirect_to search_query_path(@contact.query)
@@ -148,20 +147,10 @@ class ContactsController < ApplicationController
       @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
       @contact.line_id  = @freereg1_csv_entry.line_id
     elsif MyopicVicar::Application.config.template_set == 'freecen'
-      rec = SearchRecord.where("id" => @contact.record_id).first
-      #raise (@contact.record_id).inspect
-      
-      unless rec.nil?
-        @piece = rec.freecen_individual#.freecen_dwelling#.freecen_piece
-        @dwelling = @piece.freecen_dwelling if @piece
-        @cen_year = @dwelling.freecen_piece.year
-      @cen_piece = @dwelling.freecen_piece.piece_number.to_s
-      @cen_chapman_code = @dwelling.freecen_piece.chapman_code
-        #raise (@piece).inspect
-        ind_id = rec.freecen_individual_id if rec.freecen_individual_id.present?
-        @contact.fc_individual_id = ind_id.to_s unless ind_id.nil?
-        @contact.county = rec.chapman_code
-        fc_ind = FreecenIndividual.where("id" => ind_id).first if ind_id.present?
+      @rec = SearchRecord.where("id" => @contact.record_id).first
+      unless @rec.nil?
+        assign_field_values
+        fc_ind = FreecenIndividual.where("id" => @ind_id).first if @ind_id.present?
         if fc_ind.present?
           @contact.entry_id = fc_ind.freecen1_vld_entry_id.to_s unless fc_ind.freecen1_vld_entry_id.nil?
           if @contact.entry_id.present?
@@ -243,6 +232,25 @@ class ContactsController < ApplicationController
   private
   def contact_params
     params.require(:contact).permit!
+  end
+
+  def assign_field_values
+    @piece = @rec.freecen_individual#.freecen_dwelling#.freecen_piece
+    @dwelling = @piece.freecen_dwelling if @piece
+    disp_county = '' + ChapmanCode::name_from_code(@dwelling.freecen_piece.chapman_code) + ' (' + @dwelling.freecen_piece.chapman_code + ')'
+    @contact.census_year = @dwelling.freecen_piece.year.to_s
+    @contact.data_county = disp_county
+    @contact.place = @dwelling.place.place_name
+    @contact.civil_parish = @dwelling.civil_parish
+    @contact.piece = @dwelling.freecen_piece.piece_number
+    @contact.enumeration_district = @dwelling.enumeration_district unless @dwelling.enumeration_district.nil?
+    @contact.folio = @dwelling.folio_number unless @dwelling.folio_number.nil?
+    @contact.page = @dwelling.page_number
+    @contact.house_number = @dwelling.house_number
+    @contact.house_or_street_name = @dwelling.house_or_street_name
+    @ind_id = @rec.freecen_individual_id if @rec.freecen_individual_id.present?
+    @contact.fc_individual_id = @ind_id.to_s unless @ind_id.nil?
+    @contact.county = @rec.chapman_code
   end
 
 end

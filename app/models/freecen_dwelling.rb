@@ -52,7 +52,7 @@ class FreecenDwelling
   def dwelling_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
-    disp_county = '' + ChapmanCode::name_from_code(chapman_code) + ' (' + chapman_code + ')'
+    disp_county = '' + ChapmanCode::name_from_code(chapman_code) + ' (' + chapman_code + ')' unless chapman_code.nil?
     if '1841' == year
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
         return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.page_number, self.house_number, self.house_or_street_name]

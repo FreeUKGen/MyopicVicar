@@ -11,7 +11,34 @@
 <p>
   <%= @contact.body %>
 </p>
-<p>
+
+<h4>Below are the further details of the data:</h4>
+<table border="1">
+  <tr>
+    <th>Census Year</th>
+    <th>County</th>
+    <th>Place</th>
+    <th>Civil Parish</th>
+    <th>Piece</th>
+    <th>Enumeration District</th>
+    <th>Folio</th>
+    <th>Page</th>
+    <th>House Number</th>
+    <th>House or Street Name</th>
+  </tr>
+  <tr>
+    <td><%= @contact.census_year%></td>
+    <td><%=@contact.data_county%></td>
+    <td><%=@contact.place%></td>
+    <td><%=@contact.civil_parish%></td>
+    <td><%=@contact.piece%></td>
+    <td><%=@contact.enumeration_district%></td>
+    <td><%=@contact.folio%></td>
+    <td><%=@contact.page%></td>
+    <td><%=@contact.house_number%></td>
+    <td><%=@contact.house_or_street_name%></td>
+  </tr>
+</table>
 <% if @contact.screenshot_url.present?%>
  <p>An image is attached</p>
 <% end%>
