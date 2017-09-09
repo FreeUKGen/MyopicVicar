@@ -82,12 +82,12 @@ class ImageServerGroup
       where(:source_id => id)
     end
 
-    def summarize_image_server_group(source_id)
+    def summarize_image_server_image_status(source_id)
       if self.count > 0
-        group_list = self.all.sort_by{|x| x.group_name.downcase}
-        a = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status)
-        b = Hash[a.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
-        group_status = Hash[b.map{|k,v| [k, v.compact.uniq]}]
+        group_list = self.all.pluck(:id)
+        status_of_each_image = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status)
+        status_by_group_id = Hash[status_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
+        group_status = Hash[status_by_group_id.map{|k,v| [k, v.compact.uniq]}]
       else
         group_status = nil
       end
