@@ -68,10 +68,6 @@ class Contact
     self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
-  def prepare_search_record
-   raise self.inspect
-  end
-
   def communicate
     case
     when  self.contact_type == 'Website Problem'
