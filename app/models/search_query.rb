@@ -406,12 +406,10 @@ class SearchQuery
   end
 
   def persist_results(results)
-    #raise (results.first).inspect
     return unless results
     # finally extract the records IDs and persist them
     records = Hash.new
     results.each do |rec|
-      #raise rec.inspect
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record["_id"].to_s
       records[rec_id] = record
@@ -542,8 +540,7 @@ class SearchQuery
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
 #    p @search_parameters
-#raise @search_parameters.inspect
-    records = SearchRecord.collection.find(@search_parameters)#.hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
