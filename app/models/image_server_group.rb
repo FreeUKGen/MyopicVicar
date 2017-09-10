@@ -93,7 +93,7 @@ class ImageServerGroup
         a = Hash[transcriber_by_group_id.map{|k,v| [k,v.flatten(1)]}]
         group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.compact.uniq.flatten]}]
 
-        reviewer_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[3]}] end ]
+        reviewer_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[4]}] end ]
         a = Hash[reviewer_by_group_id.map{|k,v| [k,v.flatten(1)]}]
         group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.compact.uniq.flatten]}]
 
