@@ -89,10 +89,10 @@ class ImageServerGroup
         group_difficulty = Hash[difficulty_by_group_id.map{|k,v| [k, v.compact.uniq]}]
 
         transcriber_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[3]}] end ]
-        group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.flatten.compact.uniq]}]
+        group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.flatten.compact.collect(&:strip).uniq.sort_by(&:downcase)]}]
 
         reviewer_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[4]}] end ]
-        group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.flatten.compact.uniq]}]
+        group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.flatten.compact.uniq.sort_by(&:downcase)]}]
 
         summarization = [group_status, group_difficulty, group_transcriber, group_reviewer]
       end
