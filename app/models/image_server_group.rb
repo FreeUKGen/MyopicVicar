@@ -77,10 +77,9 @@ class ImageServerGroup
       where(:source_id => id)
     end
 
-    def summarize_from_image_server_image(source_id)
+    def summarize_from_image_server_image(summarization=nil)
       if self.count > 0
         group_list = self.all.pluck(:id)
-
         properties_of_each_image = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status, :difficulty, :transcriber, :reviewer)
 
         status_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
@@ -90,16 +89,12 @@ class ImageServerGroup
         group_difficulty = Hash[difficulty_by_group_id.map{|k,v| [k, v.compact.uniq]}]
 
         transcriber_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[3]}] end ]
-        a = Hash[transcriber_by_group_id.map{|k,v| [k,v.flatten(1)]}]
-        group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.compact.uniq.flatten]}]
+        group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.flatten.compact.uniq]}]
 
         reviewer_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[4]}] end ]
-        a = Hash[reviewer_by_group_id.map{|k,v| [k,v.flatten(1)]}]
-        group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.compact.uniq.flatten]}]
+        group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.flatten.compact.uniq]}]
 
         summarization = [group_status, group_difficulty, group_transcriber, group_reviewer]
-      else
-        summarization = nil
       end
       summarization
     end
