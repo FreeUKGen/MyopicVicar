@@ -26,21 +26,21 @@ class ImageServerImage
     ALL_STATUSES = {'u'=>'UNALLOCATED', 'p'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'r'=>'REVIEWED', 'e'=>'ERROR'}
   end
 
-  field :order, type: Integer
-#  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
-  validates_inclusion_of :status, :in => Status::ALL_STATUSES
-  field :external_url, type: String # URL for the image if it lives elsewhere
-  field :consistency, type: Mongoid::Boolean, default: 'true'
-
-  field :start_date, type: String
-  field :end_date, type: String
   field :image_name, type: String
   field :seq, type: String
-  field :status, type: String, default: nil
-  field :difficulty, type: String
+  field :start_date, type: String
+  field :end_date, type: String
   field :transcriber, type: Array
   field :reviewer, type: Array
+  field :difficulty, type: String
+#  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
+  field :status, type: String, default: nil
+#  validates_inclusion_of :status, :in => Status::ALL_STATUSES
   field :notes, type: String
+
+  field :order, type: Integer
+  field :external_url, type: String # URL for the image if it lives elsewhere
+  field :consistency, type: Mongoid::Boolean, default: 'true'
 
   belongs_to :image_server_group, index: true
   belongs_to :assignment, index: true # optional -- consider renaming as "current_assignment" or storing as an array of image_ids on an assignment record

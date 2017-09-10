@@ -5,6 +5,7 @@ class ImageServerGroup
   
   module Difficulty
     Complicated_Forms = 'c'
+    Damaged = 'd'
     Learning = 'l'
     Post_1700_modern_freehand = 'p17'
     Post_1530_freehand_Secretary = 'p15s'
@@ -12,7 +13,7 @@ class ImageServerGroup
     Post_1530_freehand_Latin_Chancery = 'p15c'
     Straight_Forward_Forms = 's'
 
-    ALL_DIFFICULTIES = {'c'=>'Complicated_Forms', 'l'=>'Learning', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery', 's'=>'Straight_Forward_Forms'}
+    ALL_DIFFICULTIES = {'c'=>'Complicated_Forms', 'd'=>'Damaged', 'l'=>'Learning', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery', 's'=>'Straight_Forward_Forms'}
   end
 
   module Status
@@ -22,13 +23,7 @@ class ImageServerGroup
     REVIEWED    = 'r'
     ERROR       = 'e'
 
-    ALL_STATUSES = {
-      'u'=>'UNALLOCATED', 
-      'p'=>'IN_PROGRESS', 
-      't'=>'TRANSCRIBED', 
-      'r'=>'REVIEWED',
-      'e'=>'ERROR'
-    }
+    ALL_STATUSES = {'u'=>'UNALLOCATED', 'p'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'r'=>'REVIEWED', 'e'=>'ERROR'}
 
     CHURCH_STATUS = {}
 
@@ -56,7 +51,7 @@ class ImageServerGroup
   field :end_date, type: String
   field :transcriber, type: Array, default: nil
   field :reviewer, type: Array, default: nil
-  field :difficulty, type: String, default: nil
+  field :difficulty, type: Array, default: nil
   field :status, type: Array, default: nil
   field :notes, type: String
 
@@ -82,16 +77,31 @@ class ImageServerGroup
       where(:source_id => id)
     end
 
-    def summarize_image_server_image_status(source_id)
+    def summarize_from_image_server_image(source_id)
       if self.count > 0
         group_list = self.all.pluck(:id)
-        status_of_each_image = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status)
-        status_by_group_id = Hash[status_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
+
+        properties_of_each_image = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status, :difficulty, :transcriber, :reviewer)
+
+        status_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
         group_status = Hash[status_by_group_id.map{|k,v| [k, v.compact.uniq]}]
+
+        difficulty_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[2]}] end ]
+        group_difficulty = Hash[difficulty_by_group_id.map{|k,v| [k, v.compact.uniq]}]
+
+        transcriber_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[3]}] end ]
+        a = Hash[transcriber_by_group_id.map{|k,v| [k,v.flatten(1)]}]
+        group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.compact.uniq.flatten]}]
+
+        reviewer_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[3]}] end ]
+        a = Hash[reviewer_by_group_id.map{|k,v| [k,v.flatten(1)]}]
+        group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.compact.uniq.flatten]}]
+
+        summarization = [group_status, group_difficulty, group_transcriber, group_reviewer]
       else
-        group_status = nil
+        summarization = nil
       end
-      group_status
+      summarization
     end
     
   end

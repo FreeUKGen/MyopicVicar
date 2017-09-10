@@ -158,7 +158,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     if image_server_group.nil?
       image_server_group = ImageServerGroup.new(:source_id=>source.id)
       image_server_group.group_name = group_name
-      image_server_group.status = status
+#      image_server_group.status = status     # status is an Array, need to modify script if needed
       image_server_group.start_date = start_date
       image_server_group.end_date = end_date
       image_server_group.church_status = church_status
