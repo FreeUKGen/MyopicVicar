@@ -98,8 +98,9 @@ class ImageServerGroupsController < ApplicationController
 
   def index
     display_info
-#    @image_server_group = ImageServerGroup.id(params[:id]).first
+
     @group = ImageServerGroup.id(params[:id])
+    @group.check_image_server_image_indexing
     @image_server_group = @group.first
     summarization = @group.summarize_from_image_server_image
     @group_status = summarization[0]
@@ -124,7 +125,9 @@ class ImageServerGroupsController < ApplicationController
   def show
     session[:source_id] = params[:id]
     display_info
+
     @group = ImageServerGroup.source_id(params[:id])
+    @group.check_image_server_image_indexing
     @image_server_group = @group.sort_by{|x| x.group_name.downcase}
     summarization = @group.summarize_from_image_server_image
     @group_status = summarization[0]
