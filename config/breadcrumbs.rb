@@ -522,6 +522,11 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
+crumb :show_countysources do |county|
+  link "Show County Sources", county_path(county)
+  parent :counties
+end
+
 crumb :show_source do |county,place,church,register|
   link "Image Sources", index_source_path(register)
   parent :show_register, county, place, church, register

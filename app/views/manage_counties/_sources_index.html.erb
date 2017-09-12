@@ -1,4 +1,5 @@
-<h3 style="text-align: center">All Sources for County <%= @county %>.</h3>
+<% breadcrumb :show_countysources,  @county%>
+<p><h3 style="text-align: center">All Sources for County <%= @county %>.</h3></p>
 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
