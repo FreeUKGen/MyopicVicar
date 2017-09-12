@@ -69,13 +69,6 @@ class ImageServerGroup
 
   class << self
 
-    def check_image_server_image_indexing
-      existIndexes = ImageServerImage.collection.indexes.to_a
-      if !existIndexes.any?{|h| h[:name] == 'image_server_group_id_1'}
-        ImageServerImage.collection.indexes.create_one({'image_server_group_id':1})
-      end
-    end
-
     def id(id)
       where(:id => id)
     end
