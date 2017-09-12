@@ -5,7 +5,7 @@ namespace :image_index do
   	image_indexes = ImageServerImage.collection.indexes.to_a
 
   	if !image_indexes.empty?
-		  if !image_indexes.any? {|h| h[:key].has_key?(:image_server_group_id)}
+		  if !image_indexes.any?{|h| h[:name] === 'image_server_group_id_1'}
     		ImageServerImage.collection.indexes.create_one({'image_server_group_id':1})
   		end
 
