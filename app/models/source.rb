@@ -22,6 +22,8 @@ class Source
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
   attr_accessor :propagate
+  
+  index({register_id:1, source_name:1},{name: "register_id_source_name"})
 
   # TODO: name for "Great Register" vs "Baptsm" -- use RecordType?  Extend it?
 
