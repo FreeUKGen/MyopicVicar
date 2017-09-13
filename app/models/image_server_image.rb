@@ -48,6 +48,11 @@ class ImageServerImage
   # where it makes sense to have multiple images per page(of a source) is in the case
   # of derivatives
   embeds_one :page_image
+  
+  index({image_server_group_id:1,status:1},{name: "image_server_group_id_status"})
+  index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})
+  index({image_server_group_id:1,transcriber:1},{name: "image_server_group_id_transcriber"})
+  index({image_server_group_id:1,reviewer:1},{name: "image_server_group_id_reviewer"})
 
   class << self
 

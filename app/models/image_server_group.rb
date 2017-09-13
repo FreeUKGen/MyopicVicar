@@ -64,6 +64,8 @@ class ImageServerGroup
   has_many :gaps
 
   accepts_nested_attributes_for :image_server_images, :reject_if => :all_blank
+  
+  index({register_id:1, source_name:1},{name: "register_id_source_name"})
 
   # TODO: name for "Great Register" vs "Baptsm" -- use RecordType?  Extend it?
 
