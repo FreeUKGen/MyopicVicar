@@ -58,7 +58,8 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource_or_scope)
     #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
+    cookies.signed[:userid] = UseridDetail.only(:_id, :userid, :password, :person_forename, :active, :person_role, :person_surname, :email_address, :syndicate).id(current_authentication_devise_user.userid_detail_id).first
+    #cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
