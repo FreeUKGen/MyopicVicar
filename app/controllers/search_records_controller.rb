@@ -37,7 +37,6 @@ class SearchRecordsController < ApplicationController
           redirect_to new_search_query_path
           return
         end
-        raise @dwelling.inspect
         @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
         @dwelling_number = @dwelling.dwelling_number
       end
