@@ -49,12 +49,13 @@ class ImageServerGroup
   field :group_name, type: String
   field :start_date, type: String
   field :end_date, type: String
-  field :transcriber, type: Array, default: nil
-  field :reviewer, type: Array, default: nil
-  field :difficulty, type: Array, default: nil
-  field :status, type: Array, default: nil
+  field :summary, type: Hash, default:{}
   field :notes, type: String
 
+  field :transcriber, type: Array, default: nil
+  field :reviewer, type: Array, default: nil
+  field :difficulty, type: String, default: nil
+  field :status, type: String
   field :church_status, type: String
   field :register_status, type: String
   field :consistency, type: Mongoid::Boolean, default: false
@@ -80,26 +81,71 @@ class ImageServerGroup
 
     def summarize_from_image_server_image(summarization=nil)
       if self.count > 0
-        group_list = self.all.pluck(:id)
-        properties_of_each_image = ImageServerImage.where(:image_server_group_id=>{'$in':group_list}).pluck(:image_server_group_id, :status, :difficulty, :transcriber, :reviewer)
+        group_id = self.first.id
+        
+        group_status = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:status).compact.uniq
+        group_difficulty = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:difficulty).compact.uniq
+        group_transcriber = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:transcriber).flatten.compact.uniq
+        group_reviewer = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:reviewer).flatten.compact.uniq
 
-        status_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[1]}] end ]
-        group_status = Hash[status_by_group_id.map{|k,v| [k, v.compact.uniq]}]
-
-        difficulty_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[2]}] end ]
-        group_difficulty = Hash[difficulty_by_group_id.map{|k,v| [k, v.compact.uniq]}]
-
-        transcriber_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[3]}] end ]
-        group_transcriber = Hash[transcriber_by_group_id.map{|k,v| [k, v.flatten.compact.collect(&:strip).uniq.sort_by(&:downcase)]}]
-
-        reviewer_by_group_id = Hash[properties_of_each_image.group_by(&:first).collect do |key, value| [key,value.collect {|v| v[4]}] end ]
-        group_reviewer = Hash[reviewer_by_group_id.map{|k,v| [k, v.flatten.compact.collect(&:strip).uniq.sort_by(&:downcase)]}]
-
-        summarization = [group_status, group_difficulty, group_transcriber, group_reviewer]
+        summarization = [group_difficulty, group_status, group_transcriber, group_reviewer]
       end
       summarization
     end
+
+    def update_image_group_summary(move, difficulty, status, transcriber, reviewer)
+      group = self.first
+
+      if !difficulty.nil?
+        group.summary[:difficulty] = [] if group.summary[:difficulty].nil? || difficulty.blank? || move == 1    # move=0 => populate, move=1 => move
+        
+        case difficulty
+          when Array
+            difficulty.each do |value|
+              group.summary[:difficulty] << value unless group.summary[:difficulty].include?(value)
+            end
+          when String
+            group.summary[:difficulty] << difficulty unless group.summary[:difficulty].include?(difficulty)
+        end
+      elsif !difficulty.blank?
+        group.summary.delete(:difficulty) if group.summary.key?(:difficulty)
+      end
+
+      if !status.nil?
+        group.summary[:status] = [] if group.summary[:status].nil? || status.blank? || move == 1
+
+        case status
+          when Array
+            status.each do |value|
+              group.summary[:status] << value unless group.summary[:status].include?(value)
+            end
+          when String
+            group.summary[:status] << status unless group.summary[:status].include?(status)
+        end
+      elsif !status.blank?
+        group.summary.delete(:status) if group.summary.key?(:status)
+      end
+
+      if !transcriber.nil?
+        group.summary[:transcriber] = [] if group.summary[:transcriber].nil? || transcriber.blank? || move == 1
+        transcriber.each do |value|
+          group.summary[:transcriber] << value unless group.summary[:transcriber].include?(value)
+        end
+      elsif !transcriber.blank?
+        group.summary.delete(:transcriber) if group.summary.key?(:transcriber)
+      end
+
+      if !reviewer.nil?
+        group.summary[:reviewer] = [] if group.summary[:reviewer].nil? || reviewer.blank? || move == 1
+        reviewer.each do |value|
+          group.summary[:reviewer] << value unless group.summary[:reviewer].include?(value)
+        end
+      elsif !reviewer.blank?
+        group.summary.delete(:reviewer) if group.summary.key?(:reviewer)
+      end
+
+      group.save
+    end
     
   end
-  
 end

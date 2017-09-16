@@ -22,57 +22,41 @@
       <tr><td>Group Name</td><td class="weight--semibold"><%= @image_server_group[:group_name] %></td></tr>
       <tr><td>Start Date</td><td class="t15"><%= @image_server_group[:start_date] %>&nbsp;</td></tr>
       <tr><td>End Date</td><td class="t15"><%= @image_server_group[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Transcriber</td>
-        <% if @group_transcriber[@image_server_group.id].blank? %>
-          <td class="t15">&nbsp;</td>
-        <% else %>
-          <td class="t15">
-            <% @group_transcriber[@image_server_group.id].each do |transcriber| %>
-              <span><%= transcriber %></span><br/>
-            <% end %>
-          </td>
+      <tr><td>Transcriber</td><td class="t15">
+        <% unless @image_server_group.summary[:transcriber].nil? %>
+          <% @image_server_group.summary[:transcriber].each do |transcriber| %>
+            <span><%= transcriber %></span>
+          <% end %>
         <% end %>
-      </tr>
-      <tr><td>Reviewer</td>
-        <% if @group_reviewer[@image_server_group.id].blank? %>
-          <td class="t15">&nbsp;</td>
-        <% else %>
-          <td class="t15">
-            <% @group_reviewer[@image_server_group.id].each do |reviewer| %>
-              <span><%= reviewer %></span><br/>
-            <% end %>
-          </td>
+      &nbsp;</td></tr>
+      <tr><td>Reviewer</td><td class="t15">
+        <% unless @image_server_group.summary[:reviewer].nil? %>
+          <% @image_server_group.summary[:reviewer].each do |reviewer| %>
+            <span><%= reviewer %></span>
+          <% end %>
         <% end %>
-      </tr>
-      <tr><td>Difficulty</td>
-        <% if @group_difficulty[@image_server_group.id].blank? %>
-          <td class="t15">&nbsp;</td>
-        <% else %>
-          <td class="t15">
-            <% @group_difficulty[@image_server_group.id].each do |difficulty| %>
-              <span><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[difficulty] %></span><br/>
-            <% end %>
-          </td>
+      &nbsp;</td></tr>
+      <tr><td>Difficulty</td><td class="t15">
+        <% unless @image_server_group.summary[:difficulty].nil? %>
+          <% @image_server_group.summary[:difficulty].each do |difficulty| %>
+            <span><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[difficulty] %></span>
+          <% end %>
         <% end %>
-      </tr>
-      <tr><td>Status</td>
-        <% if @group_status[@image_server_group.id].blank? %>
-          <td class="t10">&nbsp;</td>
-        <% else %>
-          <td class="t10">
-          <% @group_status[@image_server_group.id].each do |status| %>
+      &nbsp;</td></tr>
+      <tr><td>Status</td><td class="t10">
+        <% unless @image_server_group.summary[:status].nil? %>
+          <% @image_server_group.summary[:status].each do |status| %>
             <% case ImageServerGroup::Status::ALL_STATUSES[status] %>
               <% when 'ERROR', 'UNALLOCATED' %>
-                <span style="color:red"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
+                <span style="color:red"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
               <% when 'TRANSCRIBED' %>
-                <span style="color:green"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
+                <span style="color:green"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
               <% else %>
-                <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
+                <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
             <% end %>
           <% end %>
-          </td>
         <% end %>
-      </tr>
+      &nbsp;</td></tr>
       <tr><td>Notes</td><td class="t15"><%= @image_server_group[:notes] %>&nbsp;</td></tr>
     </table>
   </div>
