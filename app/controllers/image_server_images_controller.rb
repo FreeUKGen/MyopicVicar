@@ -130,6 +130,18 @@ class ImageServerImagesController < ApplicationController
     @register = Register.new
   end
 
+  def refresh_src_dest_group_summary(orig_group_id, dest_group_id)
+      # update field summary of original ImageServerGroup
+      orig_group = ImageServerGroup.where(:id=>orig_group_id)
+      orig_summary = orig_group.summarize_from_image_server_image
+      orig_group.update_image_group_summary(1, orig_summary[0], orig_summary[1], orig_summary[2], orig_summary[3]) if !orig_summary.empty?
+
+      # update field summary of destination ImageServerGroup
+      dest_group = ImageServerGroup.where(:id=>dest_group_id)
+      dest_summary = dest_group.summarize_from_image_server_image
+      dest_group.update_image_group_summary(1, dest_summary[0], dest_summary[1], dest_summary[2], dest_summary[3]) if !dest_summary.empty?
+  end
+
   def show
     session[:image_server_group_id] = params[:id]
     display_info
@@ -154,6 +166,7 @@ class ImageServerImagesController < ApplicationController
         redirect_to :back and return
     end
 
+    orig_image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:orig_image_server_group_id])
     image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:image_server_group_id])
     image_server_image = ImageServerImage.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq})
 
@@ -167,18 +180,12 @@ class ImageServerImagesController < ApplicationController
           params[:image_server_image].delete :origin
           image_server_image.first.update_attributes(image_server_image_params)
 
+          refresh_src_dest_group_summary(orig_image_server_group.first[:id], image_server_group.first[:id])
+
         when 'move'
           image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq}).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
 
-          # update source ImageServerGroup field summary
-          orig_group = ImageServerGroup.where(:id=>params[:image_server_image][:orig_image_server_group_id])
-          orig_summary = orig_group.summarize_from_image_server_image
-          orig_group.update_image_group_summary(1, orig_summary[0], orig_summary[1], orig_summary[2], orig_summary[3]) if !orig_summary.empty?
-
-          # update destination ImageServerGroup field summary
-          dest_group = image_server_group
-          dest_summary = dest_group.summarize_from_image_server_image
-          dest_group.update_image_group_summary(1, dest_summary[0], dest_summary[1], dest_summary[2], dest_summary[3]) if !dest_summary.empty?
+          refresh_src_dest_group_summary(orig_image_server_group.first[:id], image_server_group.first[:id])
           
         when 'propagate_difficulty'
           image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq=>{'$in'=>seq}).update_all(:difficulty=>params[:image_server_image][:difficulty])
