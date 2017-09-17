@@ -59,6 +59,7 @@ class ImageServerGroupsController < ApplicationController
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
     @source = Source.find(:id=>session[:source_id])
+    @group = ImageServerGroup.find(:id=>session[:image_server_group_id]) if !session[:image_server_group_id].empty?
   end
 
   def edit
@@ -97,6 +98,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def index
+    session[:image_server_group_id] = params[:id]
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
