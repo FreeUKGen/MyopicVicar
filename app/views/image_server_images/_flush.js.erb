@@ -1,7 +1,7 @@
 var lastChecked = null;
 
 $(':checkbox').click(function(e){
-	x = document.activeElement
+	var x = document.activeElement
 	if (x.id == 'image_server_image_seq_0') {
 		if (x.checked) {
 			if (confirm("Are you sure you want to select all images?")) {

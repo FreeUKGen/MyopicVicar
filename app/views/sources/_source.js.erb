@@ -82,7 +82,7 @@ function check_year_range() {
 var lastChecked = null;
 
 $(':checkbox').click(function(e){
-	x = document.activeElement
+	var x = document.activeElement
 	if (x.id == 'source_propagate_source_id_000000000000000000000000') {
 		if (x.checked) {
 			$(':checkbox').each(function(){
