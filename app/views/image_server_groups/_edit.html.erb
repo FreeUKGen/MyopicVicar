@@ -3,23 +3,23 @@
 <div class="grid">
 
 <%= simple_form_for @image_server_group do |s| %>
-  <%= s.input :group_name, :label=>"Image Group", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
-  <%= s.input :transcriber, :as=>:select, :collection=>@people, :label => 'Transcriber', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-  <%= s.input :reviewer, :as=>:select, :collection=>@people, :label => 'Reviewer', include_hidden: false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-  <%= s.input :difficulty, :as=>:select, :collection=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES.invert, :include_blank=>true, selected: s.object.difficulty, :label=>'Transcription Level Skill', :value=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :include_blank=>false, :input_html=>{:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-  <%= s.input :status, :collection=>ImageServerGroup::Status::ALL_STATUSES.invert.sort, selected: s.object.status, :include_blank=>true, :label => 'Transcription Status', :value=>ImageServerGroup::Status::ALL_STATUSES[s.object.status], :include_blank=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-  <%= s.input :start_date, :label=>'Start Year', :input_html=>{:class=>"simple_form_bgcolour  simple_form_position", :size=>10} %>
-    <div id='ig_wrong_format_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date needs to be 4 digits</div>
-    <div id='ig_wrong_range_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start date can not be earlier than image source start date or latter than current year</div>
-  <%= s.input :end_date, :label=>'End Year', :input_html=>{:class=>"simple_form_bgcolour  simple_form_position", :size=>10} %>
-    <div id='ig_wrong_format_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date needs to be 4 digits</div>
-    <div id='ig_wrong_range_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end date can not be 1. earlier than start date 2. latter than current year 3. latter than image source end date</div>
-  <%= s.input :notes, :label=>'Notes', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>70} %>
+  <%= s.input :group_name, :label => "Image Group", :input_html => {:class=>"simple_form_bgcolour simple_form_position", :size => 70} %>
+  <%= s.input :transcriber, :as => :select, :collection => @people, :label => 'Transcriber', include_hidden: false, :input_html => {:multiple => true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :reviewer, :as => :select, :collection => @people, :label => 'Reviewer', include_hidden: false, :input_html => {:multiple => true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :difficulty, :as => :select, :collection=>ImageServerGroup::Difficulty::ALL_DIFFICULTIES.invert, :include_blank => true, :selected => s.object.difficulty, :label => 'Transcription Level Skill', :value => ImageServerGroup::Difficulty::ALL_DIFFICULTIES[s.object.difficulty], :include_blank=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :status, :collection => ImageServerGroup::Status::ALL_STATUSES.invert.sort, :selected => s.object.status, :include_blank=>true, :label => 'Transcription Status', :value => ImageServerGroup::Status::ALL_STATUSES[s.object.status], :include_blank => false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+  <%= s.input :start_date, :label => 'Start Year', :input_html => {:class => "simple_form_bgcolour  simple_form_position", :size => 10} %>
+    <div id='ig_wrong_format_start_date' style='display:none; color:red; margin:2px 10px'>start date needs to be 4 digits</div>
+    <div id='ig_wrong_range_start_date' style='display:none; color:red; margin:2px 10px'>start date can not be earlier than image source start date or latter than current year</div>
+  <%= s.input :end_date, :label => 'End Year', :input_html => {:class => "simple_form_bgcolour  simple_form_position", :size => 10} %>
+    <div id='ig_wrong_format_end_date' style='display:none; color:red; margin:2px 10px'>end date needs to be 4 digits</div>
+    <div id='ig_wrong_range_end_date' style='display:none; color:red; margin:2px 10px'>end date can not be 1. earlier than start date 2. latter than current year 3. latter than image source end date</div>
+  <%= s.input :notes, :label => 'Notes', :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 70} %>
 
-  <%= s.hidden_field :source_start_date, :value=>s.object.source.start_date %>
-  <%= s.hidden_field :source_end_date, :value=>s.object.source.end_date %>
+  <%= s.hidden_field :source_start_date, :value => s.object.source.start_date %>
+  <%= s.hidden_field :source_end_date, :value => s.object.source.end_date %>
   <%= s.hidden_field :source_id %>
-  <%= s.button :submit, 'Submit', :onclick=>'return check_year_range()' %>
+  <%= s.button :submit, 'Submit', :onclick => 'return check_year_range()' %>
 <% end %>
 </div>
 </section>
