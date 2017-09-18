@@ -45,6 +45,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
+    p "#{request.env['mobvious.device_type']}"
     if params[:search_query].present? && params[:search_query][:region].blank?
       @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
       @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
