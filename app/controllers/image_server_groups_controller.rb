@@ -63,6 +63,7 @@ class ImageServerGroupsController < ApplicationController
 
   def edit
     display_info
+    @group = ImageServerGroup.where(:id=>params[:id])
     get_userids_and_transcribers or return
     @image_server_group = ImageServerGroup.id(params[:id]).first
 
@@ -111,6 +112,7 @@ class ImageServerGroupsController < ApplicationController
 
   def new 
     display_info
+    @group = ImageServerGroup.where(:id=>params[:id])
     get_userids_and_transcribers or return
 
     @image_server_group = ImageServerGroup.new
