@@ -59,7 +59,6 @@ class ImageServerGroupsController < ApplicationController
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
     @source = Source.find(:id=>session[:source_id])
-    @group = ImageServerGroup.find(:id=>session[:image_server_group_id]) if !session[:image_server_group_id].empty?
   end
 
   def edit
@@ -100,12 +99,13 @@ class ImageServerGroupsController < ApplicationController
   def index
     session[:image_server_group_id] = params[:id]
     display_info
+    @group = ImageServerGroup.where(:id=>params[:id])
 
-    @image_server_group = ImageServerGroup.id(params[:id]).first
-
-    if @image_server_group.nil?
+    if @group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
       redirect_to :back
+    else
+      @image_server_group = @group.first
     end
   end
 
