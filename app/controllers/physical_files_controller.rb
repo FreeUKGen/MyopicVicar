@@ -73,6 +73,7 @@ class PhysicalFilesController < ApplicationController
     @number =  @batches.length
     @paginate = false
     render  'index'
+    @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
   end
 
   def get_counties_for_selection
