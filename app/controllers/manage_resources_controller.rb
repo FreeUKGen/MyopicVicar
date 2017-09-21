@@ -20,7 +20,7 @@ class ManageResourcesController < ApplicationController
   def is_ok_to_render_actions?
     continue = true
     if cookies.signed[:userid].present?
-      @user = cookies.signed[:userid]
+      @user = UseridDetail.where(userid: cookies.signed[:userid].userid).first
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
         flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
@@ -67,6 +67,9 @@ class ManageResourcesController < ApplicationController
       stop_processing and return
     when @user.need_to_confirm_email_address?
       redirect_to '/userid_details/confirm_email_address'
+      return
+    when @user.need_to_accept_transcription_agreement?
+      redirect_to '/userid_details/accept_transcription_agreement'
       return
     when user_is_computer?
       go_to_computer_code

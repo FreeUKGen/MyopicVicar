@@ -343,6 +343,13 @@ class UseridDetail
     return result
   end
 
+  def need_to_accept_transcription_agreement?
+    result = false
+    @user = UseridDetail.userid(self.userid).first
+    result = true if @user.transcription_agreement != "Accepted"
+    return result
+  end
+
 
 
   def remember_search(search_query)
