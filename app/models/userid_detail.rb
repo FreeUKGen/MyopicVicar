@@ -58,7 +58,7 @@ class UseridDetail
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
-  validate :email_address_does_not_exist, on: :update
+  validate :email_address_does_not_exist, :transcription_agreement_accept, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
@@ -482,6 +482,10 @@ class UseridDetail
     elsif self.transcription_agreement == 0
       self.transcription_agreement = 'Declined'
     end
+  end
+
+  def transcription_agreement_accept
+    errors.add(:base, "Transcription agreement must be accepted") if self.transcription_agreement != "Accepted"
   end
 
 end #end class
