@@ -40,13 +40,6 @@ class UseridDetailsController < ApplicationController
     @options = [true,false]
   end
 
-  def accept_transcription_agreement
-    get_user_info_from_userid
-    session[:edit_userid] = true
-    session[:return_to] = '/manage_resources/new'
-    @userid = UseridDetail.where(userid: @user.userid).first
-  end
-
   def create
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
@@ -166,7 +159,7 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
-    @userid = UseridDetail.where(userid: @user.userid).first
+    @userid = @user
   end
 
   def next_place_to_go_successful_create
@@ -433,15 +426,6 @@ class UseridDetailsController < ApplicationController
         session[:my_own] = true
         redirect_to :action => 'edit'
         return
-      end
-    when params[:commit] == "Accepted Transcription Agreement"
-      if params[:userid_detail][:transcription_agreement] == '1'
-        @userid.update_attributes(transcription_agreement: "Accepted")
-        redirect_to '/manage_resources/new'
-        return
-      else
-        flash[:notice] = "Transcription Agreement must be accepted to proceed"
-        redirect_to logout_manage_resources_path and return
       end
     end
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
