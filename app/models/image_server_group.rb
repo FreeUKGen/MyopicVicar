@@ -60,6 +60,12 @@ class ImageServerGroup
   field :register_status, type: String
   field :consistency, type: Mongoid::Boolean, default: false
 
+  field :syndicate_coordinator, type: String
+  field :assign_date, type: String
+  field :number_of_images, type: Integer
+
+  attr_accessor :custom_field
+
   belongs_to :source, index: true
   has_many :image_server_images, foreign_key: :image_server_group_id, :dependent=>:restrict # includes images
   has_many :gaps
@@ -70,6 +76,35 @@ class ImageServerGroup
   # TODO: name for "Great Register" vs "Baptsm" -- use RecordType?  Extend it?
 
   class << self
+    def calculate_image_numbers(group_list)
+      @total = ImageServerImage.collection.aggregate([
+                      {'$match'=>{"image_server_group_id"=>{'$in': group_list}}},
+                      {'$group'=>{_id:'$image_server_group_id', 'count':{'$sum':1}}}
+                ])
+
+      @num = {}
+      @total.each do |x|
+        @num.store(x[:_id], x[:count])
+      end
+
+      @num
+    end
+
+    def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+      ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
+      @group_name = Hash[ig_array.map {|key,value| [key,value]}]
+      @group_name = @group_name.sort_by{|key,value| value.downcase}.to_h
+
+      @group_name
+    end
+
+    def get_syndicate_coordinator_list
+      exclude_syndicate = ['', ' ', nil, 'Volunbteers undergoing training - Work will not go into the database', 'For a volunteer who wants to know more before deciding on which Syndicate.', 'A general syndicate for anyone willing to do any work']
+      coordinator_and_description = Syndicate.where(:syndicate_description.nin=>exclude_syndicate).pluck(:syndicate_coordinator, :syndicate_description).sort_by{|x| x[0]}
+      coordinator_and_description.each { |x| (@syndicate_coordinator ||= []) << x.join(' - ') }
+      
+      @syndicate_coordinator
+    end
 
     def id(id)
       where(:id => id)

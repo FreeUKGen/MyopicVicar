@@ -65,5 +65,4 @@ class ImageServerImage
     end
 
   end
-  
 end

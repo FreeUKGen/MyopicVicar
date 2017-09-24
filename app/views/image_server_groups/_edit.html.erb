@@ -14,6 +14,7 @@
   <%= s.input :end_date, :label => 'End Year', :input_html => {:class => "simple_form_bgcolour  simple_form_position", :size => 10} %>
     <div id='ig_wrong_format_end_date' style='display:none; color:red; margin:2px 10px'>end date needs to be 4 digits</div>
     <div id='ig_wrong_range_end_date' style='display:none; color:red; margin:2px 10px'>end date can not be 1. earlier than start date 2. latter than current year 3. latter than image source end date</div>
+  <%= s.input :syndicate_coordinator, :as => :select, :collection => @syndicate_coordinator, :label => 'Select Syndicate Coordinator', :include_blank => false, :include_hidden => false, :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
   <%= s.input :notes, :label => 'Notes', :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 70} %>
 
   <%= s.hidden_field :source_start_date, :value => s.object.source.start_date %>

@@ -183,37 +183,37 @@ class ImageServerImagesController < ApplicationController
           refresh_src_dest_group_summary(orig_image_server_group.first[:id], image_server_group.first[:id])
 
         when 'move'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq}).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
+          image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq.in=>seq).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
 
           refresh_src_dest_group_summary(orig_image_server_group.first[:id], image_server_group.first[:id])
           
         when 'propagate_difficulty'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq=>{'$in'=>seq}).update_all(:difficulty=>params[:image_server_image][:difficulty])
+          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:difficulty=>params[:image_server_image][:difficulty])
 
-          # update ImageServerGroup field summary[:difficulty]
+            # update ImageServerGroup field summary[:difficulty]
           image_server_group.update_image_group_summary(0, params[:image_server_image][:difficulty], nil, nil, nil)
 
         when 'propagate_status'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq=>{'$in'=>seq}).update_all(:status=>params[:image_server_image][:status])
+          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:status=>params[:image_server_image][:status])
 
           # update ImageServerGroup field summary[:status]
           image_server_group.update_image_group_summary(0, nil, params[:image_server_image][:status], nil, nil)
 
         when 'propagate_transcriber'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq=>{'$in'=>seq}).update_all(:transcriber=>params[:image_server_image][:transcriber])
+          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:transcriber=>params[:image_server_image][:transcriber])
 
           # update ImageServerGroup field summary[:transcriber]
           image_server_group.update_image_group_summary(0, nil, nil, params[:image_server_image][:transcriber], nil)
 
         when 'propagate_reviewer'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq=>{'$in'=>seq}).update_all(:reviewer=>params[:image_server_image][:reviewer])
+          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:reviewer=>params[:image_server_image][:reviewer])
 
           # update ImageServerGroup field summary[:reviewer]
           image_server_group.update_image_group_summary(0, nil, nil, nil, params[:image_server_image][:reviewer])
 
         else
           flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'
-          redirect_to :back
+          redirect_to :back and return
       end
       flash[:notice] = 'Update of the Image file(s) was successful'
       redirect_to image_server_image_path(image_server_group.first)

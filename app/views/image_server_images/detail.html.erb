@@ -16,7 +16,7 @@
   <% if @user.person_role == 'system_administrator' %>
     <%= link_to 'Delete Image', image_server_image_path(@image), data: { confirm: 'Are you sure you want to delete IS image '+@image[:image_name]+'_'+@image[:seq]+'.jpg?'}, method: :delete, :class => "btn weight--light btn--small" %>
   <% end %>
-  <%= link_to 'List All Images In Group '+@image[:image_group][:group_name], image_server_image_path(@image[:image_server_group_id]), method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'List All Images In the Same Image Group', image_server_image_path(@image[:image_server_group_id]), method: :get, :class => "btn weight--light btn--small" %>
 </div>
 <div style="clear:both;"> </div><br>
 
@@ -44,7 +44,6 @@
               <td class="weight--semibold" style="color:green">
             <% else %>
               <td class="weight--semibold">
-              <td>
           <% end %>
           <%= ImageServerImage::Status::ALL_STATUSES[@image[:status]] %>&nbsp;</td>
         </tr>
