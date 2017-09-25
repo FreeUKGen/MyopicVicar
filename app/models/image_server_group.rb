@@ -89,18 +89,17 @@ class ImageServerGroup
 
       @num
     end
-
-    def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+    
+    def get_sorted_group_name(source_id)    
+      # get hash key=image_server_group_id, val=ig, sorted by ig
       ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
       @group_name = Hash[ig_array.map {|key,value| [key,value]}]
-      @group_name = @group_name.sort_by{|key,value| value.downcase}.to_h
 
       @group_name
     end
 
     def get_syndicate_coordinator_list
-      exclude_syndicate = ['', ' ', nil, 'Volunbteers undergoing training - Work will not go into the database', 'For a volunteer who wants to know more before deciding on which Syndicate.', 'A general syndicate for anyone willing to do any work']
-      coordinator_and_description = Syndicate.where(:syndicate_description.nin=>exclude_syndicate).pluck(:syndicate_coordinator, :syndicate_description).sort_by{|x| x[0]}
+      coordinator_and_description = Syndicate.all.pluck(:syndicate_code, :syndicate_coordinator).sort_by{|x| x[0]}
       coordinator_and_description.each { |x| (@syndicate_coordinator ||= []) << x.join(' - ') }
       
       @syndicate_coordinator
@@ -117,18 +116,20 @@ class ImageServerGroup
     def summarize_from_image_server_image(summarization=nil)
       if self.count > 0
         group_id = self.first.id
+        image_server_image = ImageServerImage.where(:image_server_group_id=>group_id)
         
-        group_status = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:status).compact.uniq
-        group_difficulty = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:difficulty).compact.uniq
-        group_transcriber = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:transcriber).flatten.compact.uniq
-        group_reviewer = ImageServerImage.where(:image_server_group_id=>group_id).pluck(:reviewer).flatten.compact.uniq
+        group_status = image_server_image.pluck(:status).compact.uniq
+        group_difficulty = image_server_image.pluck(:difficulty).compact.uniq
+        group_transcriber = image_server_image.pluck(:transcriber).flatten.compact.uniq
+        group_reviewer = image_server_image.pluck(:reviewer).flatten.compact.uniq
+        group_count = image_server_image.count
 
-        summarization = [group_difficulty, group_status, group_transcriber, group_reviewer]
+        summarization = [group_difficulty, group_status, group_transcriber, group_reviewer, group_count]
       end
       summarization
     end
 
-    def update_image_group_summary(move, difficulty, status, transcriber, reviewer)
+    def update_image_group_summary(move, difficulty, status, transcriber, reviewer, count)
       group = self.first
 
       if !difficulty.nil?
@@ -178,6 +179,8 @@ class ImageServerGroup
       elsif !reviewer.blank?
         group.summary.delete(:reviewer) if group.summary.key?(:reviewer)
       end
+
+      group.number_of_images = count if !count.nil?
 
       group.save
     end

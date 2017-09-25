@@ -12,16 +12,21 @@
   <%= s.input :syndicate_coordinator, :as => :select, :collection => @syndicate_coordinator, :label => 'Select Syndicate Coordinator', :include_blank => false, :include_hidden => false, :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
   <%= s.input :notes, :label => 'Notes', :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 70} %>
 
-	<% if controller.controller_name == 'image_server_groups' && controller.action_name == 'new' %>
-    <%= s.hidden_field :source_start_date, :value => @parent_source.start_date %>
-    <%= s.hidden_field :source_end_date, :value => @parent_source.end_date %>
-	  <%= s.hidden_field :source_id, :value => params[:id] %>
-  	<%= s.button :submit, 'Create', :onclick => 'return check_year_range()' %>
-  <% else %>
-    <%= s.hidden_field :source_start_date, :value => s.object.source.start_date %>
-    <%= s.hidden_field :source_end_date, :value => s.object.source.end_date %>
-  	<%= s.hidden_field :source_id %>
-  	<%= s.button :submit, 'Submit', :onclick => 'return check_year_range()' %>
+	<% if controller.controller_name == 'image_server_groups' %>
+    <% case controller.action_name %>
+      <% when 'new' %>
+        <%= s.hidden_field :source_start_date, :value => @parent_source.start_date %>
+        <%= s.hidden_field :source_end_date, :value => @parent_source.end_date %>
+        <%= s.hidden_field :source_id %>
+      	<%= s.button :submit, 'Create', :onclick => 'return check_year_range()' %>
+      <% when 'edit' %> 
+        <%= s.hidden_field :source_start_date, :value => s.object.source.start_date %>
+        <%= s.hidden_field :source_end_date, :value => s.object.source.end_date %>
+        <%= s.hidden_field :orig_group_name, :value => s.object.group_name %>
+        <%= s.hidden_field :orig_syndicate_coordinator, :value => s.object.syndicate_coordinator %>
+        <%= s.hidden_field :source_id %>
+        <%= s.button :submit, 'Submit', :onclick => 'return check_year_range()' %>
+    <% end %>
   <% end %>
 <% end %>
 </div>

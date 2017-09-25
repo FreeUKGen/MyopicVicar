@@ -71,7 +71,7 @@ class ImageServerImagesController < ApplicationController
     seq = ImageServerImage.where(:image_server_group_id=>params[:id]).pluck(:seq, :image_name)
 
     myseq = Hash.new{|h,k| h[k] = []}
-    @images = Hash[seq.map {|k,v| [k, myseq[k] = v.to_s+'_'+k.to_s]}]   #get new hash key=:seq, val=:image_name+:seq
+    @images = Hash[seq.map {|k,v| [k1 = v.to_s+':'+k.to_s, myseq[k] = v.to_s+'_'+k.to_s]}]   #get new hash key=image_name:seq, val=image_name_seq
   end
 
   def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
@@ -130,18 +130,6 @@ class ImageServerImagesController < ApplicationController
     @register = Register.new
   end
 
-  def refresh_src_dest_group_summary(orig_group_id, dest_group_id)
-      # update field summary of original ImageServerGroup
-      orig_group = ImageServerGroup.where(:id=>orig_group_id)
-      orig_summary = orig_group.summarize_from_image_server_image
-      orig_group.update_image_group_summary(1, orig_summary[0], orig_summary[1], orig_summary[2], orig_summary[3]) if !orig_summary.empty?
-
-      # update field summary of destination ImageServerGroup
-      dest_group = ImageServerGroup.where(:id=>dest_group_id)
-      dest_summary = dest_group.summarize_from_image_server_image
-      dest_group.update_image_group_summary(1, dest_summary[0], dest_summary[1], dest_summary[2], dest_summary[3]) if !dest_summary.empty?
-  end
-
   def show
     session[:image_server_group_id] = params[:id]
     display_info
@@ -157,18 +145,33 @@ class ImageServerImagesController < ApplicationController
 
   def update
     case params[:image_server_image][:seq].class.to_s
-      when 'String'
-        seq = [] << params[:image_server_image][:seq]     # from edit.html.erb
-      when 'Array'
-        seq = params[:image_server_image][:seq]           # from move.html.erb or flush.html.erb
+      when 'String'         # from edit.html.erb
+        file_name = params[:image_server_image][:image_name]
+        file_seq = params[:image_server_image][:seq]
+
+        file_hash = Hash.new{|h,k| h[k] = []}
+        file_hash[file_name] = [file_seq]
+
+      when 'Array'          # from move.html.erb or flush.html.erb
+        file_array = []
+        params[:image_server_image][:seq].each do |x|
+          file_name = x.split(':')[0]
+          file_seq = x.split(':')[1]
+          file_array << [file_name, file_seq] 
+        end
+        file_hash = Hash.new{|h,k| h[k] = []}
+        file_array.group_by(&:first).collect{|k,v| [k, file_hash[k] = v.collect{|v| v[1]}]}.to_h
+
       when 'NilClass'
         flash[:notice] = 'Please choose an image you want to make change'
         redirect_to :back and return
     end
 
-    orig_image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:orig_image_server_group_id])
+    src_image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:orig_image_server_group_id])
+    src_image_server_image = ImageServerImage.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id])
+
     image_server_group = ImageServerGroup.where(:id=>params[:image_server_image][:image_server_group_id])
-    image_server_image = ImageServerImage.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq=>{'$in'=>seq})
+    image_server_image = ImageServerImage.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
 
     if image_server_image.nil?
       flash[:notice] = 'Image "'+params[:image_server_image][:image_name]+'_'+params[:image_server_image][:seq].to_s+'.jpg" does not exist'
@@ -178,38 +181,51 @@ class ImageServerImagesController < ApplicationController
         when 'edit'
           params[:image_server_image].delete :orig_image_server_group_id
           params[:image_server_image].delete :origin
-          image_server_image.first.update_attributes(image_server_image_params)
 
-          refresh_src_dest_group_summary(orig_image_server_group.first[:id], image_server_group.first[:id])
+          src_image_server_image.first.update_attributes(image_server_image_params)
+
+          src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
+          image_server_image.refresh_src_dest_group_summary(image_server_group)
 
         when 'move'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:orig_image_server_group_id], :seq.in=>seq).update_all(:image_server_group_id=>params[:image_server_image][:image_server_group_id])
+          file_hash.each do |file_name,file_seq|
+            image_server_image.where(:image_server_group_id=>image_server_image_params[:orig_image_server_group_id], :image_name=>file_name, :seq=>{'$in':file_seq}).update_all(:image_server_group_id=>image_server_image_params[:image_server_group_id])
+          end
 
-          refresh_src_dest_group_summary(orig_image_server_group.first[:id], image_server_group.first[:id])
-          
+          src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
+          image_server_image.refresh_src_dest_group_summary(image_server_group)
+
         when 'propagate_difficulty'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:difficulty=>params[:image_server_image][:difficulty])
+          file_hash.each do |file_name,file_seq|
+            image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :image_name=>file_name, :seq=>{'$in':file_seq}).update_all(:difficulty=>params[:image_server_image][:difficulty])
+          end
 
-            # update ImageServerGroup field summary[:difficulty]
-          image_server_group.update_image_group_summary(0, params[:image_server_image][:difficulty], nil, nil, nil)
+          # update ImageServerGroup field summary[:difficulty]
+          image_server_group.update_image_group_summary(0, params[:image_server_image][:difficulty], nil, nil, nil, nil)
 
         when 'propagate_status'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:status=>params[:image_server_image][:status])
+          file_hash.each do |file_name,file_seq|
+            image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :image_name=>file_name, :seq=>{'$in':file_seq}).update_all(:status=>params[:image_server_image][:status])
+          end
 
           # update ImageServerGroup field summary[:status]
-          image_server_group.update_image_group_summary(0, nil, params[:image_server_image][:status], nil, nil)
+          image_server_group.update_image_group_summary(0, nil, params[:image_server_image][:status], nil, nil, nil)
 
         when 'propagate_transcriber'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:transcriber=>params[:image_server_image][:transcriber])
+          file_hash.each do |file_name,file_seq|
+            image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :image_name=>file_name, :seq=>{'$in':file_seq}).update_all(:transcriber=>params[:image_server_image][:transcriber])
+          end
 
           # update ImageServerGroup field summary[:transcriber]
-          image_server_group.update_image_group_summary(0, nil, nil, params[:image_server_image][:transcriber], nil)
+          image_server_group.update_image_group_summary(0, nil, nil, params[:image_server_image][:transcriber], nil, nil)
 
         when 'propagate_reviewer'
-          image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :seq.in=>seq).update_all(:reviewer=>params[:image_server_image][:reviewer])
+          file_hash.each do |file_name,file_seq|
+            image_server_image.where(:image_server_group_id=>params[:image_server_image][:image_server_group_id], :image_name=>file_name, :seq=>{'$in':file_seq}).update_all(:reviewer=>params[:image_server_image][:reviewer])
+          end
 
           # update ImageServerGroup field summary[:reviewer]
-          image_server_group.update_image_group_summary(0, nil, nil, nil, params[:image_server_image][:reviewer])
+          image_server_group.update_image_group_summary(0, nil, nil, nil, params[:image_server_image][:reviewer], nil)
 
         else
           flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'

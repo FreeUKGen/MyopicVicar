@@ -64,5 +64,11 @@ class ImageServerImage
       where(:image_server_group_id => id)
     end
 
+    def refresh_src_dest_group_summary(image_server_group)
+      # update field summary of original ImageServerGroup
+      summary = image_server_group.summarize_from_image_server_image
+      image_server_group.update_image_group_summary(1, summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.empty?
+    end
+
   end
 end
