@@ -33,3 +33,20 @@ $(':checkbox').click(function(e){
 		document.getElementById('image_server_image_seq_0').checked = false;
 	}
 })
+
+function validate_selection() {
+	var checked = 0
+
+	$(':checkbox').each(function(){
+		if ($(this).is(":checked") == true) {
+			checked = 1
+		}
+	})
+
+	if (checked == 1) {
+		return true
+	} else {
+		alert("You didn't select anything")
+		return false
+	}
+}

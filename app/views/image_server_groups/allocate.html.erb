@@ -7,7 +7,7 @@
 
 	<%= s.hidden_field :source_id %>
   <%= s.hidden_field :origin, as: :fake, :value=>'allocate' %>
-  <%= s.button :submit, 'Allocate' %>
+  <%= s.button :submit, 'Allocate', :onclick => 'return validate_selection()' %>
 <% end %>
 
 </div>

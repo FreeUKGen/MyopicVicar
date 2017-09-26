@@ -32,7 +32,7 @@
       <%= s.hidden_field :image_server_group_id, :value=>@image_server_image.image_server_group_id %>
       <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
       <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
-      <%= s.button :submit, 'Submit' %>
+      <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
     <% end %>        
   </div>
 </section>
