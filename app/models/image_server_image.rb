@@ -60,6 +60,23 @@ class ImageServerImage
       where(:id => id)
     end
 
+    def get_image_list(group_id)
+      seq = ImageServerImage.image_server_group_id(group_id).pluck(:id, :image_name, :seq)
+
+      #myseq = Hash.new{|h,k| h[k] = []}
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+      #image_list = Hash[seq.map {|k,v| [k, myseq[k] = v[0].to_s+'_'+k[1].to_s]}]   #get new hash key=image_name:seq, val=image_name_seq
+      image_list
+    end
+
+    def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+      ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
+      group_name = Hash[ig_array.map {|key,value| [key,value]}]
+      group_name = group_name.sort_by{|key,value| value.downcase}.to_h
+
+      group_name
+    end
+
     def image_server_group_id(id)
       where(:image_server_group_id => id)
     end
