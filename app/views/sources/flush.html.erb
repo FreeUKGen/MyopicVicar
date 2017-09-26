@@ -41,7 +41,7 @@
 	<%= s.hidden_field :restrictions_on_use_by_holding_institution, :value=>s.object.restrictions_on_use_by_holding_institution %>
 	<%= s.hidden_field :open_data, :value=>s.object.open_data %>
 	<%= s.hidden_field :url, :value=>s.object.url %>
-  <%= s.button :submit, 'Submit' %>
+  <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
 <% end %>
 </div>
 </section>
