@@ -82,9 +82,11 @@ class ManageSyndicatesController < ApplicationController
 
   def get_syndicates_for_selection
     all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager" ||  @user.person_role == 'documentation_coordinator'
-    @syndicates = @user.syndicate_groups
+    @userid = UseridDetail.where(userid: @user.userid).first
+    @syndicates = @userid.syndicate_groups unless @userid.syndicate_groups.blank?
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
     synd = Array.new
+    display_no_syndicate_message and return if @syndicate.nil?
     @syndicates.each do |syn|
       synd << syn unless all
       synd << syn.syndicate_code if all
@@ -120,8 +122,7 @@ class ManageSyndicatesController < ApplicationController
     get_syndicates_for_selection
     number_of_syndicates = @syndicates.length unless @syndicates.nil?
     if number_of_syndicates == 0
-      flash[:notice] = 'You do not have any syndicates to manage'
-      redirect_to new_manage_resource_path
+      display_no_syndicate_message
       return
     end
     if number_of_syndicates == 1
@@ -189,5 +190,10 @@ class ManageSyndicatesController < ApplicationController
 
   def upload_batch
     redirect_to new_csvfile_path
+  end
+
+  def display_no_syndicate_message
+    flash[:notice] = 'You do not have any syndicates to manage'
+    redirect_to new_manage_resource_path
   end
 end
