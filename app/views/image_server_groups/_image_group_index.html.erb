@@ -17,7 +17,7 @@
         <th class="t05">End Date</th>
         <th class="t10">Status</th>
         <th class="t15">Skill Level</th>
-        <th class="t15">Syndicate Coordinator</th>
+        <th class="t15">Syndicate</th>
         <th class="t15">Transcriber</th>
         <th class="t15">Reviewer</th>
         <th class="t15">Action</th>
@@ -62,7 +62,7 @@
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t15"><%= group[:syndicate_coordinator] if !group[:syndicate_coordinator].nil? %>&nbsp;</td>
+            <td class="t15"><%= group[:syndicate_code] %>&nbsp;</td>
             <td class="t15">
               <% unless group.summary[:transcriber].nil? %>
                 <% group.summary[:transcriber].each do |transcriber| %>

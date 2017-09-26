@@ -60,7 +60,7 @@ class ImageServerGroup
   field :register_status, type: String
   field :consistency, type: Mongoid::Boolean, default: false
 
-  field :syndicate_coordinator, type: String
+  field :syndicate_code, type: String
   field :assign_date, type: String
   field :number_of_images, type: Integer
 
@@ -98,11 +98,10 @@ class ImageServerGroup
       @group_name
     end
 
-    def get_syndicate_coordinator_list
-      coordinator_and_description = Syndicate.all.pluck(:syndicate_code, :syndicate_coordinator).sort_by{|x| x[0]}
-      coordinator_and_description.each { |x| (@syndicate_coordinator ||= []) << x.join(' - ') }
-      
-      @syndicate_coordinator
+    def get_syndicate_list
+      @syndicate_list = Syndicate.all.order_by(:syndicate_code=>1).pluck(:syndicate_code)
+
+      @syndicate_list
     end
 
     def id(id)
