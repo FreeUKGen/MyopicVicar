@@ -152,7 +152,7 @@ class ImageServerGroupsController < ApplicationController
 
     case image_server_group_params[:origin]
       when 'allocate'
-        image_server_group_params[:custom_field].each { |x| group_list << BSON::ObjectId.from_string(x) }
+        image_server_group_params[:custom_field].each { |x| group_list << BSON::ObjectId.from_string(x) unless x=='0' }
         number_of_images = ImageServerGroup.calculate_image_numbers(group_list)
 
         group_list.each do |x|

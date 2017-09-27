@@ -12,7 +12,8 @@
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
-        <th class="t20">Image Group</th>
+        <th class="t15">Image Group</th>
+        <th class="t10">Total Image</th>
         <th class="t05">Start Date</th>
         <th class="t05">End Date</th>
         <th class="t10">Status</th>
@@ -30,7 +31,8 @@
       <tbody>  
         <% @image_server_group.each do |group| %>
           <tr>
-            <td class="t20"><%= group.group_name %></td>
+            <td class="t15"><%= group.group_name %></td>
+            <td class="t10"><%= group.number_of_images %>&nbsp;</td>
             <% if group[:start_date] != '' && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
               <td class="t05" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
