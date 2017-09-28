@@ -19,9 +19,8 @@
       <div class="simple_form_bgcolour simple_form_position overide_selection_field_width">
         <%= f.radio_button(:transcription_agreement, "Accepted") %>
           <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
-
-        <%#= f.radio_button(:transcription_agreement, "Declined") %>
-          <!--<span>I prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />-->
+        <%= f.radio_button(:transcription_agreement, "Declined") %>
+          <span>I hereby prefer not to sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
       </div>
     </div>
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
