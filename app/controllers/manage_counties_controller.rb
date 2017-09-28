@@ -108,22 +108,27 @@ class ManageCountiesController < ApplicationController
 
     @county = session[:chapman_code]
     @place_id = Place.chapman_code(session[:chapman_code]).pluck(:id, :place_name).to_h
-    @placeid = @place_id.sort_by{ |t| t[1] }.to_h
 
     @church = Church.find_by_place_ids(@place_id).pluck(:id, :place_id, :church_name)
     @church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @church.each{|k,v,w| h[k] << v << w}}
-    @churchid = @church_id.sort_by{|k,v| v[1]}.to_h
 
     @register = Register.find_by_church_ids(@church_id).pluck(:id, :church_id, :register_type)
     @register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @register.each{|k,v,w| h[k] << v << w}}
 
     @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
     x = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v,w| h[k] << v << w}}
-    @sourceid = x.sort_by{|k,v| v[1]}.to_h
-    @sourceid.each do |k1,v1|
+
+    sid = []
+    x.each do |k1,v1|
       # build hash @source_id[place_name][church_name][register_type][source_name] = source_id
-      @source_id[@placeid[@churchid[@register_id[v1[0]][0]][0]]][@churchid[@register_id[v1[0]][0]][1]][@register_id[v1[0]][1]][v1[1]] = k1
+      @source_id[@place_id[@church_id[@register_id[v1[0]][0]][0]]][@church_id[@register_id[v1[0]][0]][1]][@register_id[v1[0]][1]][v1[1]] = k1
+
+      register_type = @register_id[v1[0]][1]
+      church_name = @church_id[@register_id[v1[0]][0]][1]
+      place_name = @place_id[@church_id[@register_id[v1[0]][0]][0]]
+      sid << [k1, place_name, church_name, register_type, v1[1]]
     end
+    @s_id = sid.sort_by {|a,b,c,d,e| [b,c,d,e]}
 
     render '_sources_index'
   end
