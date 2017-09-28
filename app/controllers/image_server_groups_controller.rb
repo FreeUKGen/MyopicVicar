@@ -113,15 +113,13 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def index
-    session[:image_server_group_id] = params[:id]
+    session[:source_id] = params[:id]
     display_info
-    @group = ImageServerGroup.id(params[:id])
+    @image_server_group = ImageServerGroup.source_id(params[:id]).sort_by{|x| x.group_name.downcase}
 
-    if @group.nil?
+    if @image_server_group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
       redirect_to :back
-    else
-      @image_server_group = @group.first
     end
   end
 
@@ -136,13 +134,15 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def show
-    session[:source_id] = params[:id]
+    session[:image_server_group_id] = params[:id]
     display_info
-    @image_server_group = ImageServerGroup.source_id(params[:id]).sort_by{|x| x.group_name.downcase}
+    @group = ImageServerGroup.id(params[:id])
 
-    if @image_server_group.nil?
+    if @group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
       redirect_to :back
+    else
+      @image_server_group = @group.first
     end
   end
 

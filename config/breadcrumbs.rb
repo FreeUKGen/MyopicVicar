@@ -553,17 +553,17 @@ crumb :show_other_server3 do |county,place,church,register,source|
 end
 
 crumb :image_server_groups do |county,place,church,register,source|
-  link "Image Groups", image_server_group_path(source)
+  link "Image Groups", index_image_server_group_path(source)
   parent :show_image_source, county, place, church, register, source
 end
 
 crumb :image_server_group do |county,place,church,register,source,group|
-  link "Image Group", index_image_server_group_path(group)
+  link "Image Group", image_server_group_path(group)
   parent :image_server_groups, county, place, church, register, source
 end
 
 crumb :image_server_images do |county,place,church,register,source,group|
-  link "Images", image_server_image_path(group)
+  link "Images", index_image_server_image_path(group)
   parent :image_server_group, county, place, church, register, source, group
 end
 

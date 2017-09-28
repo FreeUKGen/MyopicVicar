@@ -15,15 +15,6 @@ class ImageServerImagesController < ApplicationController
     redirect_to image_server_image_path(return_location)
   end
 
-  def detail
-    display_info
-    @image = ImageServerImage.collection.aggregate([
-                {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
-                {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
-                {'$unwind'=>"$image_group"}
-             ]).first
-  end
-
   def display_info
     @register = Register.find(:id=>session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
@@ -88,7 +79,16 @@ class ImageServerImagesController < ApplicationController
   end
 
   def index
-    @is_image = IsImage.where(:source_id => @source_id).all.order_by(group_name: 1)
+    session[:image_server_group_id] = params[:id]
+    display_info
+
+    @image_server_image = ImageServerImage.image_server_group_id(params[:id])
+    @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
+
+    if @image_server_image.empty?
+      flash[:notice] = 'No Images under Image Group "'+@image_server_group.group_name.to_s+'"'
+      redirect_to image_server_group_path(@image_server_group.source)
+    end
   end
 
   def move
@@ -119,16 +119,12 @@ class ImageServerImagesController < ApplicationController
   end
 
   def show
-    session[:image_server_group_id] = params[:id]
     display_info
-
-    @image_server_image = ImageServerImage.image_server_group_id(params[:id])
-    @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
-
-    if @image_server_image.empty?
-      flash[:notice] = 'No Images under Image Group "'+@image_server_group.group_name.to_s+'"'
-      redirect_to image_server_group_path(@image_server_group.source)
-    end
+    @image = ImageServerImage.collection.aggregate([
+                {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
+                {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
+                {'$unwind'=>"$image_group"}
+             ]).first
   end
 
   def update

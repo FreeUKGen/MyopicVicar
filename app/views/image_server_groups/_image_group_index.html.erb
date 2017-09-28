@@ -79,7 +79,7 @@
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t15"><%= link_to 'SH', index_image_server_group_path(group) %> 
+            <td class="t15"><%= link_to 'SH', image_server_group_path(group) %> 
               <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
                 <%= link_to 'ED', edit_image_server_group_path(group) %> 
                 <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 

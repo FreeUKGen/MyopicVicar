@@ -22,7 +22,7 @@
   <div style="text-align: center">
   <% case @source.source_name %>
     <% when 'Image Server' %> 
-      <%= link_to 'List Image Groups', image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %> 
+      <%= link_to 'List Image Groups', index_image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %> 
     <% when 'Other Server1' %>
     <% when 'Other Server2' %>
     <% when 'OTher Server3' %>
