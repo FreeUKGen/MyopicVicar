@@ -142,14 +142,16 @@ class ImageServerImagesController < ApplicationController
     else
       case image_server_image_params[:origin]
         when 'edit'
+          edit_image = src_image_server_image.where(:seq=>image_server_image_params[:seq]).first
           image_server_image_params.delete :orig_image_server_group_id
           image_server_image_params.delete :origin
 
-          src_image_server_image.first.update_attributes(image_server_image_params)
+          edit_image.update_attributes(image_server_image_params)
 
           src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
           image_server_image.refresh_src_dest_group_summary(image_server_group)
 
+          redirect_to image_server_image_path(edit_image) and return
         when 'move'
           image_server_image.where(
                 :id=>{'$in': image_server_image_params[:seq]}, 
@@ -201,7 +203,7 @@ class ImageServerImagesController < ApplicationController
           redirect_to :back and return
       end
       flash[:notice] = 'Update of the Image file(s) was successful'
-      redirect_to image_server_image_path(image_server_group.first)
+      redirect_to index_image_server_image_path(image_server_group.first)
     end
   end
 

@@ -34,7 +34,7 @@ class ImageServerGroupsController < ApplicationController
         source.save
 
         flash[:notice] = 'Addition of Image Group "'+image_server_group_params[:group_name]+'" was successful'
-        redirect_to image_server_group_path(source)
+        redirect_to index_image_server_group_path(source)
       end
     else
       flash[:notice] = 'Image Group "'+image_server_group_params[:group_name]+'" already exist'
@@ -165,7 +165,7 @@ class ImageServerGroupsController < ApplicationController
         end
 
         flash[:notice] = 'Allocate of Image Groups was successful'
-        redirect_to image_server_group_path(image_server_group)     
+        redirect_to index_image_server_group_path(image_server_group.source)     
       else            # create and edit
         count = ImageServerGroup.where(:source_id=>image_server_group_params[:source_id], :group_name=>image_server_group_params[:group_name]).count
 

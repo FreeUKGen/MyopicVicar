@@ -32,11 +32,18 @@ namespace :image_group_summarize do
       group_reviewer = image_server_image.pluck(:reviewer).flatten.compact.uniq
       group_count = image_server_image.count()
 
-      if ImageServerGroup.where(:id=>group_id).update_all(:status=>group_status, :difficulty=>group_difficulty, :transcriber=>group_transcriber, :reviewer=>group_reviewer, :number_of_images=>group_count)
-        p "ImageServerGroup "+group_id.to_s+", status="+group_status.to_s+", difficulty="+group_difficulty.to_s+", transcriber="+group_transcriber.to_s+", reviewer="+group_reviewer.to_s+", count="+group_count.to_s
+      image_group = ImageServerGroup.where(:id=>group_id).first
+      image_group.summary[:status] = group_status
+      image_group.summary[:difficulty] = group_difficulty
+      image_group.summary[:transcriber] = group_transcriber
+      image_group.summary[:reviewer] = group_reviewer
+      image_group.number_of_images = group_count
+      
+      if image_group.save
+        p "ImageServerGroup:"+group_id+", status="+group_status.to_s+", difficulty="+group_difficulty.to_s+", transcriber="+group_transcriber.to_s+", reviewer="+group_reviewer.to_s+", count="+group_count.to_s
       else
-        p "FAILURE to summarize ImageServerGroup "+group_id.to_s+"with values status="+group_status.to_s+", difficulty="+group_difficulty.to_s+", transcriber="+group_granscriber.to_s+", reviewer="+group_reviewer.to_s+", count="+group_count.tos
-        error_file.puts "FAILURE to summarize ImageServerGroup "+group_id.to_s+"with values status="+group_status.to_s+", difficulty="+group_difficulty.to_s+", transcriber="+group_granscriber.to_s+", reviewer="+group_reviewer.to_s+", count="+group_count.to_s
+        p "FAILURE to summarize ImageServerGroup:"+group_id.to_s+" with values status="+group_status.to_s+", difficulty="+group_difficulty.to_s+", transcriber="+group_granscriber.to_s+", reviewer="+group_reviewer.to_s+", count="+group_count.tos
+        error_file.puts "FAILURE to summarize ImageServerGroup:"+group_id.to_s+" with values status="+group_status.to_s+", difficulty="+group_difficulty.to_s+", transcriber="+group_granscriber.to_s+", reviewer="+group_reviewer.to_s+", count="+group_count.to_s
       end
     end
     error_file.close
