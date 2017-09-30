@@ -33,12 +33,12 @@
           <tr>
             <td class="t15"><%= group.group_name %></td>
             <td class="t10"><%= group.number_of_images %>&nbsp;</td>
-            <% if group[:start_date] != '' && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
+            <% if !group[:start_date].nil? && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
               <td class="t05" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
               <td class="t05"><%= group[:start_date] %>&nbsp;</td>
             <% end %>
-            <% if group[:end_date] != '' && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
+            <% if !group[:end_date].nil? && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
               <td class="t05" style="color:red"><%= group[:end_date] %>&nbsp;</td>
             <% else %>
               <td class="t05"><%= group[:end_date] %>&nbsp;</td>
@@ -84,7 +84,7 @@
                 <%= link_to 'ED', edit_image_server_group_path(group) %> 
                 <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 
               <% end %>
-              <%= link_to 'LS', image_server_image_path(group) %></td>
+              <%= link_to 'LS', index_image_server_image_path(group) %></td>
           </tr>
         <% end %>
       </tbody>

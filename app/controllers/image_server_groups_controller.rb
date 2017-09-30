@@ -165,7 +165,7 @@ class ImageServerGroupsController < ApplicationController
         end
 
         flash[:notice] = 'Allocate of Image Groups was successful'
-        redirect_to image_server_group_path(image_server_group.source)     
+        redirect_to image_server_group_path(image_server_group)     
       else            # create and edit
         count = ImageServerGroup.where(:source_id=>image_server_group_params[:source_id], :group_name=>image_server_group_params[:group_name]).count
 
@@ -185,7 +185,7 @@ class ImageServerGroupsController < ApplicationController
           image_server_group.update_attributes(image_server_group_params)
 
           flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
-          redirect_to index_image_server_group_path(image_server_group)     
+          redirect_to image_server_group_path(image_server_group)     
       end
     end
   end
