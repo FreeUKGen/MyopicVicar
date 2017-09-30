@@ -182,7 +182,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
 
       if image_server_image.nil?
         seq.each do |f|
-          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name, :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
+          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name.split('/')[1], :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
         end
         image_server_image = ImageServerImage.create! (rd)
       else
