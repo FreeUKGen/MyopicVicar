@@ -90,6 +90,10 @@ class ImageServerGroup
       @num
     end
     
+    def find_by_source_ids(id)
+      where(:source_id => {'$in'=>id.keys})
+    end
+    
     def get_sorted_group_name(source_id)    
       # get hash key=image_server_group_id, val=ig, sorted by ig
       ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)

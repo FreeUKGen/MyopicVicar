@@ -60,17 +60,23 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def display_info
-    @register = Register.find(:id=>session[:register_id])
+    image_server_group = ImageServerGroup.find(:id=>params[:id])
+    @source = Source.find(image_server_group.source_id)
+    session[:source_id] = @source.id
+    session[:register_id] = @source.register_id
+    @register = Register.find(session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
+    session[:church_id] = @register.church_id
     @church = Church.find(session[:church_id])
+    session[:church_name] = @church_name
     @church_name = session[:church_name]
+
     @county =  session[:county]
     @place_name = session[:place_name]
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
-    @source = Source.find(:id=>session[:source_id])
   end
 
   def edit
