@@ -60,8 +60,12 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def display_info
-    image_server_group = ImageServerGroup.find(:id=>params[:id])
-    @source = Source.find(image_server_group.source_id)
+    if session[:image_server_group_id]
+      image_server_group = ImageServerGroup.find(:id=>session[:image_server_group_id])
+      @source = Source.find(image_server_group.source_id)
+    elsif session[:source_id]
+      @source = Source.find(session[:source_id])
+    end
     session[:source_id] = @source.id
     session[:register_id] = @source.register_id
     @register = Register.find(session[:register_id])

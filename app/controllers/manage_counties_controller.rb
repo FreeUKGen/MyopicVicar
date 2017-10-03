@@ -118,10 +118,8 @@ class ManageCountiesController < ApplicationController
     @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
     @source_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v1,v2| h[k] << v1 << v2}}
 
-    @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date)
-    @sort_by_group = @image_server_group.sort_by {|a,b,c,d,e| [b,c]}
-    @sort_by_syndicate = @image_server_group.sort_by {|a,b,c,d,e| [b,d ? 1 : 0, d]}
-    x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
+    @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+    x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
 
     gid = []
     x.each do |key,value|
@@ -135,9 +133,10 @@ class ManageCountiesController < ApplicationController
       group_name = value[1]
       syndicate = value[2]
       assign_date = value[3]
-      gid << [key, place_name, church_name, register_type, source_name, group_name, syndicate, assign_date]
+      number_of_images = value[4]
+      gid << [key, place_name, church_name, register_type, source_name, group_name, syndicate, assign_date, number_of_images]
     end
-    @g_id = gid.sort_by {|a,b,c,d,e,f,g,h| [b.downcase,c.downcase,d.downcase,e.downcase,f ? 0:1,f.downcase]}
+    @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i| [b,c,d,e,f ? 0:1,f.downcase]}
 
     render '_image_server_group_index'
   end
@@ -293,7 +292,43 @@ class ManageCountiesController < ApplicationController
   end
 
   def sort_image_group_by_syndicate
+    get_user_info_from_userid
+    @syndicate = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
+    @county = session[:chapman_code]
+    @place_id = Place.chapman_code(session[:chapman_code]).pluck(:id, :place_name).to_h
+
+    @church = Church.find_by_place_ids(@place_id).pluck(:id, :place_id, :church_name)
+    @church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @church.each{|k,v1,v2| h[k] << v1 << v2}}
+
+    @register = Register.find_by_church_ids(@church_id).pluck(:id, :church_id, :register_type)
+    @register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @register.each{|k,v1,v2| h[k] << v1 << v2}}
+
+    @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
+    @source_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v1,v2| h[k] << v1 << v2}}
+
+    @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+    @sort_by_syndicate = @image_server_group.sort_by {|a,b,c,d,e,f| [b,d ? 0 : 1, d]}
+    x = Hash.new{|h,k| h[k]=[]}.tap{|h| @sort_by_syndicate.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
+
+    gid = []
+    x.each do |key,value|
+      # build hash @group_id[place_name][church_name][register_type][source_name][group_name] = group_id
+      @syndicate[value[2]][@place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]][@church_id[@register_id[@source_id[value[0]][0]][0]][1]][@register_id[@source_id[value[0]][0]][1]][@source_id[value[0]][1]][value[1]] = key
+
+      place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
+      church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
+      register_type = @register_id[@source_id[value[0]][0]][1]
+      source_name = @source_id[value[0]][1]
+      group_name = value[1]
+      syndicate = value[2]
+      assign_date = value[3]
+      number_of_images = value[4]
+      gid << [syndicate, key, place_name, church_name, register_type, source_name, group_name, assign_date, number_of_images]
+    end
+    @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i| [a ? 0:1, a.to_s.downcase,c,d,e,f]}
+
+    render '_image_group_by_syndicate'
   end
 
   def upload_batch

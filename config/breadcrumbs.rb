@@ -522,9 +522,19 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
-crumb :show_countysources do |county|
-  link "Sources(#{county})", county_path(county)
+crumb :show_countysource do |county|
+  link "Sources", selection_active_manage_counties_path(:option =>'Manage Images')
   parent :county_options, county
+end
+
+crumb :sort_countysource_by_image_group do |county|
+  link "Sort by Image Group"
+  parent :show_countysource, county
+end
+
+crumb :sort_countysource_by_syndicate do |county|
+  link "Sort by Syndicate"
+  parent :show_countysource, county
 end
 
 crumb :show_source do |county,place,church,register|
