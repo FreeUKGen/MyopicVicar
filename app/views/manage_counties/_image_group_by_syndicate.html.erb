@@ -1,5 +1,5 @@
 <% breadcrumb :sort_countysource_by_syndicate,  @county%>
-<p><h3 style="text-align: center">All Sources for County <%= @county %>.</h3></p>
+<p><h3 style="text-align: center">Image Groups Allocated by Syndicate for County <%= @county %>.</h3></p>
 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
@@ -20,7 +20,7 @@
             <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
         <th class="t15">Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (Made from a parish register); Extract of the Parish Registers (Incomplete set of records); Dwelly's Transcript (Made from a parish register); Other Register (Original document); Transcript (Another persons transcription); Unknown; or Unspecified.</span></a></th>
-        <th class="t15">Image Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+        <th class="t15">Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A register can have multiple sources.</span></a></th>
         <th class="t15">Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A Source can have multiple groups.</span></a></th>
@@ -29,6 +29,7 @@
     </thead>
   </table>
   
+  <div class="scrollable">
     <table class=" table--bordered my-width table--data just--left">
       <tbody >
         <% syndicate_rows, place_rows,church_rows,register_rows,source_rows = 0,0,0,0,0 %>
@@ -84,8 +85,8 @@
             <td class="t15">&nbsp;</td>
           <% end %>
 
-          <td class="t15"><%= link_to(group_name, image_server_group_path(gid)) %></td>
-          <td class="t15"><%= number_of_images %></td></tr>
+          <td class="t15"><%= link_to(group_name, image_server_group_path(gid)) %>&nbsp;</td>
+          <td class="t15"><%= number_of_images %>&nbsp;</td></tr>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>
           <% if source_rows == 0 %>
@@ -103,4 +104,5 @@
         <% end %>
       </tbody>
     </table>
+  </div>
 </div>

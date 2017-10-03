@@ -2,8 +2,9 @@
 <p><h3 style="text-align: center">All Sources for County <%= @county %>.</h3></p>
 
 <div style="text-align: center">  
-  <%= link_to 'List Image Groups', manage_image_group_path, method: :get, :class => "btn weight--light btn--small" %>
-  <%= link_to 'Sort Image Groups By Syndicate', sort_image_group_by_syndicate_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'List All Image Groups', manage_image_group_path, method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Image Groups Allocated by Syndicate', sort_image_group_by_syndicate_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Image Groups Allocated by Place', sort_image_group_by_place_path, method: :get, :class => "btn weight--light btn--small" %> 
 </div>
 
 <div style="clear:both;"> </div><br>

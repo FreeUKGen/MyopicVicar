@@ -528,12 +528,17 @@ crumb :show_countysource do |county|
 end
 
 crumb :sort_countysource_by_image_group do |county|
-  link "Sort by Image Group"
+  link "List All Image Groups"
   parent :show_countysource, county
 end
 
 crumb :sort_countysource_by_syndicate do |county|
-  link "Sort by Syndicate"
+  link "Image Groups Allocated by Syndicate"
+  parent :show_countysource, county
+end
+
+crumb :sort_countysource_by_place do |county|
+  link "Image Groups Allocated by Place"
   parent :show_countysource, county
 end
 
