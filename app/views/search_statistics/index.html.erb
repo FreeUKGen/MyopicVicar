@@ -16,42 +16,42 @@
 
 <figure>
   <figcaption>
-    Number of last name searches (in blue) to all searches (in green).
+    Percentage of last name searches (in blue) to all searches (in green).
   </figcaption>
   <canvas id="surnameChart" width="1200" height="400"></canvas>
 </figure>
 
 <figure>
   <figcaption>
-    Number of first name searches (in blue) to all searches (in green).
+    Percentage of first name searches (in blue) to all searches (in green).
   </figcaption>
   <canvas id="forenameChart" width="1200" height="400"></canvas>
 </figure>
 
 <figure>
   <figcaption>
-    Number of searches with no results (in blue) and maximum results (in red) to all searches (in green).
+    Percentage of searches with no results (in blue) and maximum results (in red) to all searches (in green).
   </figcaption>
   <canvas id="resultChart" width="1200" height="400"></canvas>
 </figure>
 
 <figure>
   <figcaption>
-    Number of all-county searches (in blue) to all searches (in green).
+    Percentage of all-county searches (in blue) to all searches (in green).
   </figcaption>
   <canvas id="countyChart" width="1200" height="400"></canvas>
 </figure>
 
 <figure>
   <figcaption>
-    Number of date searches (in blue) to all searches (in green).
+    Percentage of date searches (in blue) to all searches (in green).
   </figcaption>
   <canvas id="dateChart" width="1200" height="400"></canvas>
 </figure>
 
 <figure>
   <figcaption>
-    Number of record type (census year) searches (in blue) to all searches (in green).
+    Percentage of record type (census year) searches (in blue) to all searches (in green).
   </figcaption>
   <canvas id="typeChart" width="1200" height="400"></canvas>
 </figure>
@@ -59,7 +59,7 @@
 
 <figure>
   <figcaption>
-    Number of single-place searches (in blue) and nearby searches (in purple) to all searches (in green).
+    Percentage of single-place searches (in blue) and nearby searches (in purple) to all searches (in green).
   </figcaption>
   <canvas id="placeChart" width="1200" height="400"></canvas>
 </figure>
@@ -122,13 +122,13 @@ var surname_data = {
     datasets: [
         {
             label: "Total searches",
-            fillColor: "rgba(150,150,0,1)",
+            fillColor: "rgba(0,150,0,1)",
             strokeColor: "rgba(150,150,0,1)",
             pointColor: "rgba(150,150,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Last Name Searches",
@@ -152,13 +152,13 @@ var forename_data = {
     datasets: [
         {
             label: "Total searches",
-            fillColor: "rgba(150,150,0,1)",
+            fillColor: "rgba(0,150,0,1)",
             strokeColor: "rgba(150,150,0,1)",
             pointColor: "rgba(150,150,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Last Name Searches",
@@ -183,13 +183,13 @@ var result_data = {
     datasets: [
         {
             label: "Total searches",
-            fillColor: "rgba(150,150,0,1)",
+            fillColor: "rgba(0,150,0,1)",
             strokeColor: "rgba(150,150,0,1)",
             pointColor: "rgba(150,150,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Zero Result Searches",
@@ -224,13 +224,13 @@ var date_data = {
     datasets: [
         {
             label: "Total searches",
-            fillColor: "rgba(150,150,0,1)",
+            fillColor: "rgba(0,150,0,1)",
             strokeColor: "rgba(150,150,0,1)",
             pointColor: "rgba(150,150,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Date range Searches",
@@ -255,13 +255,13 @@ var type_data = {
     datasets: [
         {
             label: "Total searches",
-            fillColor: "rgba(150,150,0,1)",
+            fillColor: "rgba(0,150,0,1)",
             strokeColor: "rgba(150,150,0,1)",
             pointColor: "rgba(150,150,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Record type Searches",
@@ -287,13 +287,13 @@ var county_data = {
     datasets: [
         {
             label: "Total searches",
-            fillColor: "rgba(150,150,0,1)",
+            fillColor: "rgba(0,150,0,1)",
             strokeColor: "rgba(150,150,0,1)",
             pointColor: "rgba(150,150,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Date range Searches",
@@ -325,7 +325,7 @@ var place_data = {
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: <%= @data[:n_searches].to_json %>
+            data: [100,100,100,100,100,100,100,100,100]
         },
         {
             label: "Place Searches",

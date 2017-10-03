@@ -23,7 +23,7 @@ class SearchStatisticsController < InheritedResources::Base
     @data = {}
     fields.each { |field| @data[field] = [0]*points }  #initialize data array
     (points-1).downto(0) do |i_ago|
-      date = Time.now - i_ago.day
+      date = (Time.new("2017-09-25")) - i_ago.day
       i = points - i_ago - 1 #TODO make not horrible
       @label[i] = date.strftime("%d %b %Y")
       day_stats = SearchStatistic.where(:year => date.year, :month => date.month, :day => date.day)
@@ -34,6 +34,17 @@ class SearchStatisticsController < InheritedResources::Base
         end
       end
     end
+    
+    # convert the percentages
+    absolute_fields = [:n_searches, :n_time_gt_1s, :n_time_gt_10s, :n_time_gt_60s]
+    fields.each do |field|
+      unless absolute_fields.include? field
+        0.upto(@data[field].size) do |i|
+          @data[field][i] =  (100 * @data[field][i].to_f /  @data[:n_searches][i].to_f).ceil if @data[:n_searches][i] && @data[:n_searches][i] > 0
+        end
+      end
+    end
+
   end
 
   def calculate_last_48_hours(hours)
