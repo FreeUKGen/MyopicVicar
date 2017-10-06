@@ -544,7 +544,7 @@ end
 
 crumb :show_source do |county,place,church,register|
   link "Image Sources", index_source_path(register)
-  parent :show_register, county, place, church, register
+  parent :show_countysource, county
 end
 
 crumb :show_image_source do |county,place,church,register,source|
