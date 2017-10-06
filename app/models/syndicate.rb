@@ -37,6 +37,10 @@ class Syndicate
       result
     end
 
+    def get_syndicates
+      @syndicates = Syndicate.all.order_by(:syndicate_code=>1).pluck(:syndicate_code)
+      @syndicates
+    end
   end
 
   def  add_lower_case_and_change_userid_fields
@@ -84,14 +88,7 @@ class Syndicate
     end
     return @syndicates
   end
-  def self.get_syndicates
-    synd = Syndicate.all.order_by(syndicate_code: 1)
-    @syndicates = Array.new
-    synd.each do |syn|
-      @syndicates << syn.syndicate_code
-    end
-    return @syndicates
-  end
+
   def remove_syndicate_from_coordinator
     coordinator = UseridDetail.where(:userid => self.syndicate_coordinator).first
     unless coordinator.nil?

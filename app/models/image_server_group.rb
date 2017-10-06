@@ -102,12 +102,6 @@ class ImageServerGroup
       @group_name
     end
 
-    def get_syndicate_list
-      @syndicate_list = Syndicate.all.order_by(:syndicate_code=>1).pluck(:syndicate_code)
-
-      @syndicate_list
-    end
-
     def id(id)
       where(:id => id)
     end
