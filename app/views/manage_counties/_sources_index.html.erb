@@ -33,7 +33,7 @@
     <table class=" table--bordered my-width table--data just--left">
       <tbody >
         <% place_rows, church_rows, register_rows = 0,0,0 %>
-        <% @s_id.each do |source_id, place_name, church_name, register_type, source_name| %>
+        <% @source_ids.each do |source_id, place_name, church_name, register_type, source_name| %>
           <% if register_rows == 0 %>
             <% register_rows = @source_id[place_name][church_name][register_type].count %>
             <% if church_rows == 0 %>
