@@ -5,7 +5,7 @@ class ImageServerGroupsController < ApplicationController
   def allocate
     display_info
 
-    @syndicate = ImageServerGroup.get_syndicate_list
+    @syndicate = Syndicate.get_syndicates
     @group_name = ImageServerGroup.get_sorted_group_name(params[:id])
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
@@ -88,7 +88,7 @@ class ImageServerGroupsController < ApplicationController
     get_userids_and_transcribers or return
 
     @group = ImageServerGroup.id(params[:id])
-    @syndicate = ImageServerGroup.get_syndicate_list
+    @syndicate = Syndicate.get_syndicates
 
     @image_server_group = @group.first
 
@@ -137,7 +137,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
     @group = ImageServerGroup.id(params[:id])
     get_userids_and_transcribers or return
-    @syndicate = ImageServerGroup.get_syndicate_list
+    @syndicate = Syndicate.get_syndicates
 
     @image_server_group = ImageServerGroup.new
     @parent_source = Source.id(session[:source_id]).first
