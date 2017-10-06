@@ -1,14 +1,3 @@
-<% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
-
-<div style="clear:both;"></div><br>
-<p style="text-align: center">Images of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
-
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-    <%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
-
 <div style="text-align: center">
   <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
     <%= link_to 'Edit Image', edit_image_server_image_path(@image), :class => "btn weight--light btn--small" %> 
