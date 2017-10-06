@@ -523,7 +523,7 @@ crumb :create_syndicate do |syndicate|
 end
 
 crumb :show_countysource do |county|
-  link "Sources", selection_active_manage_counties_path(:option =>'Manage Images')
+  link "Image Sources", selection_active_manage_counties_path(:option =>'Manage Images')
   parent :county_options, county
 end
 

@@ -61,20 +61,20 @@
           <% end %>
 
           <% if source_rows == @syndicate[syndicate][place_name][church_name][register_type][source_name].count && register_rows == @syndicate[syndicate][place_name][church_name][register_type].count && church_rows == @syndicate[syndicate][place_name][church_name].count && place_rows == @syndicate[syndicate][place_name].count %>
-            <td class="t15"><%= link_to(place_name, place_path(@place_id.key(place_name))) %></td>
+            <td class="t15"><%= place_name %></td>
           <% else %>
             <td class="t15">&nbsp;</td>
           <% end %>
 
           <% if source_rows == @syndicate[syndicate][place_name][church_name][register_type][source_name].count && register_rows == @syndicate[syndicate][place_name][church_name][register_type].count && church_rows == @syndicate[syndicate][place_name][church_name].count %>
-            <td class="t15"><%= link_to(church_name, church_path(@church.select {|x| x[2] == church_name}[0][0])) %></td>
+            <td class="t15"><%= church_name %></td>
           <% else %>
             <td class="t15">&nbsp;</td>
           <% end %>
 
           <% registertype = RegisterType.display_name(register_type) %>
           <% if source_rows == @syndicate[syndicate][place_name][church_name][register_type][source_name].count && register_rows == @syndicate[syndicate][place_name][church_name][register_type].count %>
-            <td class="t15"><%= link_to(registertype, register_path(@register.select {|x| x[2] == register_type}[0][0])) %></td>
+            <td class="t15"><%= registertype %></td>
           <% else %>
             <td class="t15">&nbsp;</td>
           <% end %>
