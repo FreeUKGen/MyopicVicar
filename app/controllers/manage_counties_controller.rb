@@ -248,7 +248,7 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
 
     @source,@group_ids,@syndicate = ImageServerGroup.sort_by_syndicate_group_ids(session[:chapman_code])
-    @county = session[:chapman_code]
+    @county = session[:county]
 
     render '_image_group_by_syndicate'
   end
