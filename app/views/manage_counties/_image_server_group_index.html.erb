@@ -24,7 +24,7 @@
     <table class=" table--bordered my-width table--data just--left">
       <tbody >
         <% place_rows, church_rows, register_rows, source_rows = 0,0,0,0 %>
-        <% @g_id.each do |gid,place_name,church_name,register_type,source_name,group_name,syndicate,assign_date,number_of_images| %>
+        <% @group_ids.each do |gid,place_name,church_name,register_type,source_name,group_name,syndicate,assign_date,number_of_images| %>
           <% if source_rows == 0 %>
             <% source_rows = @group_id[place_name][church_name][register_type][source_name].count %>
             <% if register_rows == 0 %>
