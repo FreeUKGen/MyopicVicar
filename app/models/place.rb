@@ -104,7 +104,11 @@ class Place
     end
 
     def chapman_code(chapman)
-      where(:chapman_code => chapman)
+      if chapman.nil?
+        all
+      else
+        where(:chapman_code => chapman)
+      end
     end
 
     def county(county)

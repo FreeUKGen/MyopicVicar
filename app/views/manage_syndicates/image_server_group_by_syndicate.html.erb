@@ -1,0 +1,11 @@
+<% breadcrumb :syndicate_manage_images, @user.syndicate %>
+<p><h3 style="text-align: center">Image Groups Allocated to Syndicate <%= @user.syndicate %>.</h3></p>
+
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+
+<%= render 'image_group_by_syndicate' %>

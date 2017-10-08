@@ -1,13 +1,3 @@
-<% breadcrumb :sort_countysource_by_syndicate,  @county%>
-<p><h3 style="text-align: center">Image Groups Allocated by Syndicate for County <%= @county %>.</h3></p>
-
-<div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
-
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >
@@ -31,7 +21,7 @@
   
   <div class="scrollable">
     <table class=" table--bordered my-width table--data just--left">
-      <tbody >
+      <tbody>
         <% syndicate_rows, place_rows,church_rows,register_rows,source_rows = 0,0,0,0,0 %>
         <% @group_ids.each do |syndicate,gid,place_name,church_name,register_type,source_name,group_name,assign_date,number_of_images| %>
           <% if source_rows == 0 %>

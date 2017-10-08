@@ -271,6 +271,11 @@ crumb :syndicate_options do |syndicate|
   parent :root
 end
 
+crumb :syndicate_manage_images do |syndicate|
+  link "All Image Groups Allocated"
+  parent :syndicate_options, session[:syndicate]
+end
+
 crumb :userid_details_listing do |syndicate,user|
   case
   when user.nil?

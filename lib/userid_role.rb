@@ -108,7 +108,7 @@ module UseridRole
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",'Review Batches with Errors','Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
-                                   'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status']
+                                   'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status','Manage Images']
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
     'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
@@ -126,7 +126,8 @@ module UseridRole
     'Upload New Batch' =>  "/csvfiles/new",
     'List files waiting to be processed'  => "/manage_syndicates/display_files_waiting_to_be_processed",
     'List files NOT processed' => "/manage_syndicates/display_files_not_processed",
-    'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status"
+    'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status",
+    'Manage Images' => "/manage_syndicates/selection?option=Manage Images"
   }
   PHYSICAL_FILES_OPTIONS =  ['Waiting to be processed','Files not processed','Processed but no file','Browse files' ,'Files for specific userid' ]
 

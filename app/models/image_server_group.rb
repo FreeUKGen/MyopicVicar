@@ -94,7 +94,7 @@ class ImageServerGroup
       where(:source_id => {'$in'=>id.keys})
     end
 
-    def sort_by_syndicate_group_ids(chapman_code)
+    def get_group_ids_and_sort_by_syndicate(chapman_code,syndicate_groups)
       @syndicate = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
       @place_id = Place.chapman_code(chapman_code).pluck(:id, :place_name).to_h
@@ -108,7 +108,11 @@ class ImageServerGroup
       @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
       @source_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v1,v2| h[k] << v1 << v2}}
 
-      @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      if syndicate_groups.nil?
+        @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      else
+        @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$in'=>syndicate_groups}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      end
       @sort_by_syndicate = @image_server_group.sort_by {|a,b,c,d,e,f| [b,d ? 0 : 1, d]}
       x = Hash.new{|h,k| h[k]=[]}.tap{|h| @sort_by_syndicate.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
 
@@ -132,7 +136,7 @@ class ImageServerGroup
       return @source, @g_id, @syndicate
     end
 
-    def sort_not_by_syndicate_group_ids(chapman_code, sort_by_place)
+    def get_group_ids_and_sort_by_not_syndicate(chapman_code, sort_by_place)
       @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
       @place_id = Place.chapman_code(chapman_code).pluck(:id, :place_name).to_h

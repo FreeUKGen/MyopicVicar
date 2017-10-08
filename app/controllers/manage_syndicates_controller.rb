@@ -96,6 +96,13 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def manage_image_group
+    get_user_info_from_userid
+    @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(nil, @user.syndicate_groups)
+
+    render 'image_server_group_by_syndicate'
+  end
+
   def member_by_email
     redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
     return
