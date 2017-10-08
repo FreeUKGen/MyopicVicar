@@ -104,7 +104,7 @@ class ManageCountiesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], false)
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], false, nil)
     @county = session[:county]
 
     render 'image_server_group_all'
@@ -238,7 +238,7 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_place
     get_user_info_from_userid
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], false)
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], true, nil)
     @county = session[:county]
 
     render 'image_server_group_by_place'
@@ -247,7 +247,7 @@ class ManageCountiesController < ApplicationController
   def sort_image_group_by_syndicate
     get_user_info_from_userid
 
-    @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code], nil)
+    @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
     @county = session[:county]
 
     render 'image_server_group_by_syndicate'
