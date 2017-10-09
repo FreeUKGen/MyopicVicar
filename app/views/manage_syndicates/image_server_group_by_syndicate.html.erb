@@ -1,5 +1,5 @@
 <% breadcrumb :syndicate_manage_images, @user.syndicate %>
-<p><h3 style="text-align: center">Image Groups Allocated to Syndicate <%= @user.syndicate %>.</h3></p>
+<p><h3 style="text-align: center">Image Groups Allocated to Syndicate <%= session[:syndicate] %>.</h3></p>
 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
