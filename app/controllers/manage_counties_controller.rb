@@ -104,6 +104,8 @@ class ManageCountiesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+
     @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], false, nil)
     @county = session[:county]
 
@@ -112,6 +114,8 @@ class ManageCountiesController < ApplicationController
 
   def manage_sources
     get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+
     @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
     @county = session[:county]
     render '_sources_index'
@@ -238,6 +242,8 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_place
     get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+
     @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], true, nil)
     @county = session[:county]
 
@@ -246,6 +252,7 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_syndicate
     get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
 
     @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
     @county = session[:county]

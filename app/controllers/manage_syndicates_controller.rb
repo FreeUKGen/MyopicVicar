@@ -98,7 +98,9 @@ class ManageSyndicatesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(nil, false, @user.syndicate_groups)
+    session[:manage_user_origin] = 'manage syndicate'
+
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(nil, false, @user.syndicate)
 
     render 'image_server_group_by_syndicate'
   end
