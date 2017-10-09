@@ -66,11 +66,7 @@
             <td class="t12">&nbsp;</td>
           <% end %>
 
-          <% if session[:manage_user_origin] == 'manage_county' %>
-            <td class="t20"><%= link_to(group_name, image_server_group_path(gid)) %>&nbsp;</td>
-          <% else %>
-            <td class="t20"><%= group_name %>&nbsp;</td>
-          <% end %>          
+          <td class="t20"><%= link_to(group_name, image_server_group_path(gid)) %>&nbsp;</td>
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <td class="t12"><%= syndicate %>&nbsp;</td>
           <% if assign_date.nil? %>

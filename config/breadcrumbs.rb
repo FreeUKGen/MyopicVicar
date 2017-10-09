@@ -276,6 +276,26 @@ crumb :syndicate_manage_images do |syndicate|
   parent :syndicate_options, session[:syndicate]
 end
 
+crumb :syndicate_image_server_groups do |county,place,church,register,source|
+  link "Image Groups", index_image_server_group_path(source)
+  parent :syndicate_options, session[:syndicate]
+end
+
+crumb :syndicate_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :syndicate_image_server_groups, county, place, church, register, source
+end
+
+crumb :syndicate_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :syndicate_image_server_group, county, place, church, register, source, group
+end
+
+crumb :syndicate_show_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :syndicate_image_server_images, county, place, church, register, source, group
+end
+
 crumb :userid_details_listing do |syndicate,user|
   case
   when user.nil?
