@@ -172,12 +172,7 @@ class Contact
   def communicate_volunteering
     ccs = Array.new
     person = UseridDetail.where(userid: "ManCity").first
-    #UseridDetail.where(:person_role => 'volunteer_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
-    #end
-    #UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-      #ccs << person.email_address
-    #end
     if ccs.blank?
       UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
         ccs << person.email_address
