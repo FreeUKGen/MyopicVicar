@@ -10,12 +10,14 @@
 <div class="grid">
   <section class="island  ">
     <% case %>
+    <% when @freereg1_csv_entries.blank? %>
+      <%= render 'freereg1_csv_entries/blank_index' %>
     <% when @freereg1_csv_file.record_type == "ba" %>
-      <%= render 'baptism_index' %>
+      <%= render 'freereg1_csv_entries/baptism_index' %>
     <% when @freereg1_csv_file.record_type == "bu" %>
-      <%= render 'burial_index' %>
+      <%= render 'freereg1_csv_entries/burial_index' %>
     <% when @freereg1_csv_file.record_type == "ma" %>
-      <%= render 'marriage_index' %>
+      <%= render 'freereg1_csv_entries/marriage_index' %>
     <% end %>
   </section>
 </div>

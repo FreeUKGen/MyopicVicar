@@ -6,8 +6,8 @@
 <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
 <div class="grid__item ">
   <section class="island ">
-    <div style="overflow: hidden;">
-      <table class="my-width-min flush--bottom" >
+    <div class="scrollable " >
+      <table class="table--bordered my-width table--data just--left" >
         <thead >
           <tr>
             <th class="t12">File</th>
@@ -19,6 +19,8 @@
             <th class="t15">Church</th>
             <% end%>
             <th class="t5">Reg</th>
+            <th class="t5">Entry Count</th>
+            <th class="t5">Entries with zero start year</th>
             <% unless session[:my_own]%>
             <th class="t8">User ID</th>
             <% end%>
@@ -27,9 +29,9 @@
             <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
           </tr>
         </thead>
-      </table>
+      <!--/table-->
       <div class="scrollable ">
-        <table class=" table--bordered my-width table--data just--left">
+        <!--table class=" table--bordered my-width table--data just--left"-->
           <tbody >
             <% @freereg1_csv_files.each do |freereg1_csv_file| %>
             <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
@@ -38,6 +40,12 @@
               <td class="t8"><%= freereg1_csv_file.place %></td>
               <td class="t8"><%= freereg1_csv_file.church_name %></td>
               <td class="t8"><%= freereg1_csv_file.register_type %></td>
+              <td class="t8"><%= freereg1_csv_file.freereg1_csv_entries.count %></td>
+              <% if freereg1_csv_file.minimum_year_zero %>
+                <td><%= button_to("Zero Start Year Entries",show_zero_startyear_entries_freereg1_csv_file_path(:id => freereg1_csv_file.id), :method=>:get, :class => "btn  weight--light btn--small ")%>
+              <% else %>
+                <td>No Zero start year Entries</td>
+              <% end %>
               <% unless session[:my_own]%>
               <td class="t10"><%= freereg1_csv_file.userid %></td>
               <% end %>
@@ -45,6 +53,8 @@
               <td class="t3"><%= locked_by_transcriber(freereg1_csv_file)%></td>
               <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>
               <td class="t4"><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
+
+              
               <td class="t4"><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
               <td class="t4"><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
               <td class="t4"><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
@@ -57,7 +67,7 @@
             </tr>
             <% end %>
           </tbody>
-        </table>
+        </table><br />
       <%= paginate @freereg1_csv_files %>
     </div>
   </div>
@@ -66,3 +76,4 @@
 <% else%>
 <h3 style="text-align: center">  No files</h3>
 <% end%>
+
