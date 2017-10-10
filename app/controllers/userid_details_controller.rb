@@ -522,7 +522,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def email_valid_change_message
-    raise "hi"
     if email_value_changed
       message = @userid.email_address_validity_change_message
       case userid_details_params[:email_address_valid]
