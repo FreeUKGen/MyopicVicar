@@ -11,7 +11,7 @@
   </div>
 <% end %>
 <%# if @user.transcription_agreement != "Accepted" %>
-  <!--<p><strong><%#= link_to "Open Data:", "http://www.freeukgenealogy.org.uk/about/opendata/",:class => "go", target: :_blank %></strong> your transcriptions are currently set to: no preference, and will not be shared as open data. To choose to make your transcriptions Open or Closed, <%#= link_to "please click here",edit_userid_detail_path(@user), method: :get %> and update the Transcription Agreement status. If you have any questions about transcribing or the documents linked below, please ask us! volunteers@freereg.org.uk</p>-->
+  <!--p><strong>Open Data:</strong> Your transcriptions are currently set to: no preference, and will not be shared as open data. To choose to make your transcriptions Open or Closed, <%#= link_to "please click here",edit_userid_detail_path(@user), method: :get %> and update the Transcription Agreement status. To find out more about Open Data, and what signing the transcription agreement means, please visit: <%#= link_to "http://www.freeukgenealogy.org.uk/about/opendata/", "http://www.freeukgenealogy.org.uk/about/opendata/", :class => "go", target: :_blank %>. If you have any questions about transcribing or the documents linked below, please ask us! volunteers@freereg.org.uk</p-->
 <%# end %>
 <% breadcrumb :root %>
 <%= @page %> 

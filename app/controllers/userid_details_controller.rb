@@ -159,7 +159,7 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
-    @userid = @user
+    @userid = UseridDetail.where(userid: @user.userid).first
   end
 
   def next_place_to_go_successful_create
@@ -415,7 +415,7 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:active]  = false
       params[:userid_detail][:person_role] = params[:userid_detail][:person_role] unless params[:userid_detail][:person_role].nil?
     when params[:commit] == "Update"
-      params[:userid_detail][:transcription_agreement] = "Unknown"  if params[:userid_detail][:transcription_agreement].blank?
+      #transcription_agreement_accept_error  if params[:userid_detail][:transcription_agreement].blank?
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when params[:commit] == "Confirm"
       if params[:userid_detail][:email_address_valid] == 'true'
@@ -515,5 +515,4 @@ class UseridDetailsController < ApplicationController
   def get_option_parameter(option, location)
     location += '+"&option=' + option +'"'
   end
-
 end
