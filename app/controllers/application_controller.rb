@@ -95,7 +95,8 @@ class ApplicationController < ActionController::Base
   end
 
   def get_user_info_from_userid
-    @user = cookies.signed[:userid]
+    userid = cookies.signed[:userid]
+    @user = UseridDetail.where(userid: userid.userid).first
     unless @user.present?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path # halts request cycle
