@@ -100,9 +100,14 @@ class ManageSyndicatesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage syndicate'
 
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(nil, false, session[:syndicate])
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate])
 
-    render 'image_server_group_by_syndicate'
+    if @source.nil?
+      flash[:notice] = 'Your other actions has cleared the syndicate information, you need to pick the syndicate again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      render 'image_server_group_by_syndicate'
+    end
   end
 
   def member_by_email

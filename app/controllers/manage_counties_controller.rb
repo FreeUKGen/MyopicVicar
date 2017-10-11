@@ -106,10 +106,15 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
 
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], false, nil)
-    @county = session[:county]
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
 
-    render 'image_server_group_all'
+    if @source.nil?
+      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @county = session[:county]
+      render 'image_server_group_all'
+    end
   end
 
   def manage_sources
@@ -117,8 +122,14 @@ class ManageCountiesController < ApplicationController
     session[:manage_user_origin] = 'manage county'
 
     @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
-    @county = session[:county]
-    render '_sources_index'
+
+    if @source_ids.nil?
+      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @county = session[:county]
+      render '_sources_index'
+    end
   end
 
   def new
@@ -244,10 +255,15 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
 
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_not_syndicate(session[:chapman_code], true, nil)
-    @county = session[:county]
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true)
 
-    render 'image_server_group_by_place'
+    if @source.nil?
+      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @county = session[:county]
+      render 'image_server_group_by_place'
+    end
   end
 
   def sort_image_group_by_syndicate
@@ -255,9 +271,14 @@ class ManageCountiesController < ApplicationController
     session[:manage_user_origin] = 'manage county'
 
     @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
-    @county = session[:county]
 
-    render 'image_server_group_by_syndicate'
+    if @source.nil?
+      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @county = session[:county]
+      render 'image_server_group_by_syndicate'
+    end
   end
 
   def upload_batch
