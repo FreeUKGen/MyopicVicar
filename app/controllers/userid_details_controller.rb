@@ -492,8 +492,8 @@ class UseridDetailsController < ApplicationController
       error_text = error_text+"USERID: "+params[:userid_detail][:userid]+"\r\n"
       error_text = error_text+"FORENAME: "+params[:userid_detail][:person_forename]+"\r\n"
       error_text = error_text+"SURNAME: "+params[:userid_detail][:person_surname] + "\r\n"
-      error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n" if request.present? && request.remote_add.present?
-      error_text = error_text+"REMOE ADDR: Unknown \r\n" unless request.present? && request.remote_add.present?
+      error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n" if request.present? && request.remote_addr.present?
+      error_text = error_text+"REMOE ADDR: Unknown \r\n" unless request.present? && request.remote_addr.present?
       error_text = error_text+"REMOTE IP: "+request.remote_ip + "\r\n" if request.present? && request.remote_ip.present?
       error_text = error_text+"REMOE IP: Unknown \r\n" unless request.present? && request.remote_id.present?
       error_text = error_text+"REMOTE HOST: "+request.remote_host+"\r\n\r\n\r\n" if request.present? && request.remote_host.present?

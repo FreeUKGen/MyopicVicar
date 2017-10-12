@@ -80,7 +80,7 @@
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
            <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
-              <option value="">All Counties</option>
+              <option value="" id="default">All Counties</option>
               <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
               <%= grouped_options_for_select(grouped_options, selected_key = key) %>
             </select>
@@ -88,13 +88,16 @@
 
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
           <label class="ttip label" for="search_query_place_ids" tabindex="0">
-            Place
+            PLACES for which we have data
             <%= image_tag 'info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby places&rdquo; option, below</span>
             <small class="additional">Select one place or none</small>
           </label>
           <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4">
-            <option value="">List fills when you select one county</option>
+            <option value="" >List fills when you select one county</option>
+          </select>
+          <select id="search_query_place" name="search_query[place_ids][]" class="select" size="4">
+            <option value="" style="font-weight: bold;">All places with records have been selected</option>
           </select>
         </li>
 
@@ -206,4 +209,18 @@
       , bootstrap: selection
     <% end %>
   });})(jQuery);
+  $(function(){
+    $("#search_query_place").hide();  // By default use jQuery to hide the second modal
+
+    // We can use the change(); function to watch the state of the select box and run some conditional logic every time it's changes to hide or show the second select box
+    $("#search_query_chapman_codes").change(function(){
+        if( $("#default").is(':selected') ){
+            $("#search_query_place").show();
+            $("#search_query_place_ids").hide();
+        } else {
+            $("#search_query_place").hide();
+            $("#search_query_place_ids").show();
+        }
+    });
+})
 </script>
