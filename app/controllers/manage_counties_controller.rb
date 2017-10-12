@@ -106,13 +106,13 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
 
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
-
-    if @source.nil?
-      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path and return
     else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
       @county = session[:county]
+
       render 'image_server_group_all'
     end
   end
@@ -121,13 +121,13 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
 
-    @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
-
-    if @source_ids.nil?
-      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path and return
     else
+      @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
+
       render '_sources_index'
     end
   end
@@ -255,13 +255,13 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
 
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true)
-
-    if @source.nil?
-      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
       redirect_to main_app.new_manage_resource_path and return
     else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true)
       @county = session[:county]
+
       render 'image_server_group_by_place'
     end
   end
@@ -270,13 +270,13 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
 
-    @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
-
-    if @source.nil?
-      flash[:notice] = 'Your other actions has cleared the county information, you need to pick the county again'
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
       redirect_to main_app.new_manage_resource_path and return
     else
+      @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
       @county = session[:county]
+  
       render 'image_server_group_by_syndicate'
     end
   end
