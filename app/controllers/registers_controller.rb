@@ -147,6 +147,7 @@ class RegistersController < ApplicationController
 
   def show
     load(params[:id])
+    @user = UseridDetail.where(userid: cookies.signed[:userid].userid).first
     unless @register.nil?
       @decade = @register.daterange
       @transcribers = @register.transcribers
