@@ -179,8 +179,8 @@ class ImageServerGroup
       @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
       group = ImageServerGroup.where(:syndicate_code=>syndicate)
-      source_ids = group.pluck(:source_id)
       @image_server_group = group.pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      source_ids = @image_server_group.map{|x| x[1]}.uniq
 
       source_ids.each do |sourceid|
         source = Source.find(sourceid)
