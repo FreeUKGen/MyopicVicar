@@ -929,21 +929,27 @@ class Freereg1CsvFile
 
     def get_entries_zero_year
       freereg1_csv_entries = Array.new
-      self.freereg1_csv_entries.each do |entry|
+      get_entries.each do |entry|
         freereg1_csv_entries << entry if entry.year.to_i == 0 #nil? ||  entry.year == '0'
       end
       freereg1_csv_entries
     end
 
     def get_zero_year
-      freereg1_csv_entries = Array.new
-      self.freereg1_csv_entries.each do |entry|
-        freereg1_csv_entries << entry.year.to_i #if entry.year.to_i == 0 #nil? ||  entry.year == '0'
-      end
-      freereg1_csv_entries
+      freereg1_csv_entries = get_entries.only(:id, :year).any_of({year: nil}, {year: "0"}, {year: ""})
+      Freereg1CsvFile.calculate_min_year(freereg1_csv_entries)
     end
 
+    def get_min_year
+      Freereg1CsvFile.calculate_min_year(get_entries)
+    end
+
+    def get_entries
+      self.freereg1_csv_entries
+    end
+
+
     def minimum_year_zero
-      self.get_zero_year.min == 0
+      self.get_zero_year == 0
     end
   end

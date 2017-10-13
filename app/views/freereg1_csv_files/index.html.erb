@@ -41,11 +41,7 @@
               <td class="t8"><%= freereg1_csv_file.church_name %></td>
               <td class="t8"><%= freereg1_csv_file.register_type %></td>
               <td class="t8"><%= freereg1_csv_file.freereg1_csv_entries.count %></td>
-              <% if freereg1_csv_file.minimum_year_zero %>
-                <td><%= button_to("Zero Start Year Entries",show_zero_startyear_entries_freereg1_csv_file_path(:id => freereg1_csv_file.id), :method=>:get, :class => "btn  weight--light btn--small ")%>
-              <% else %>
-                <td>No Zero start year Entries</td>
-              <% end %>
+              <td><%= freereg1_csv_file.minimum_year_zero ? button_to("Zero Start Year Entries",show_zero_startyear_entries_freereg1_csv_file_path(:id => freereg1_csv_file.id), :method=>:get, :class => "btn  weight--light btn--small ") : "None"%>
               <% unless session[:my_own]%>
               <td class="t10"><%= freereg1_csv_file.userid %></td>
               <% end %>
