@@ -252,57 +252,13 @@ class ImageServerGroup
       summarization
     end
 
-    def update_image_group_summary(move, difficulty, status, transcriber, reviewer, count)
+    def update_image_group_summary(difficulty, status, transcriber, reviewer, count)
       group = self.first
 
-      if !difficulty.nil?
-        group.summary[:difficulty] = [] if group.summary[:difficulty].nil? || difficulty.blank? || move == 1    # move=0 => populate, move=1 => move
-        
-        case difficulty
-          when Array
-            difficulty.each do |value|
-              group.summary[:difficulty] << value unless group.summary[:difficulty].include?(value)
-            end
-          when String
-            group.summary[:difficulty] << difficulty unless group.summary[:difficulty].include?(difficulty)
-        end
-      elsif !difficulty.blank?
-        group.summary.delete(:difficulty) if group.summary.key?(:difficulty)
-      end
-
-      if !status.nil?
-        group.summary[:status] = [] if group.summary[:status].nil? || status.blank? || move == 1
-
-        case status
-          when Array
-            status.each do |value|
-              group.summary[:status] << value unless group.summary[:status].include?(value)
-            end
-          when String
-            group.summary[:status] << status unless group.summary[:status].include?(status)
-        end
-      elsif !status.blank?
-        group.summary.delete(:status) if group.summary.key?(:status)
-      end
-
-      if !transcriber.nil?
-        group.summary[:transcriber] = [] if group.summary[:transcriber].nil? || transcriber.blank? || move == 1
-        transcriber.each do |value|
-          group.summary[:transcriber] << value unless group.summary[:transcriber].include?(value)
-        end
-      elsif !transcriber.blank?
-        group.summary.delete(:transcriber) if group.summary.key?(:transcriber)
-      end
-
-      if !reviewer.nil?
-        group.summary[:reviewer] = [] if group.summary[:reviewer].nil? || reviewer.blank? || move == 1
-        reviewer.each do |value|
-          group.summary[:reviewer] << value unless group.summary[:reviewer].include?(value)
-        end
-      elsif !reviewer.blank?
-        group.summary.delete(:reviewer) if group.summary.key?(:reviewer)
-      end
-
+      group.summary[:difficulty] = difficulty
+      group.summary[:status] = status
+      group.summary[:transcriber] = transcriber
+      group.summary[:reviewer] = reviewer
       group.number_of_images = count if !count.nil?
 
       group.save

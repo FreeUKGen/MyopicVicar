@@ -168,8 +168,7 @@ class ImageServerImagesController < ApplicationController
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:difficulty=>image_server_image_params[:difficulty])
 
-          # update ImageServerGroup field summary[:difficulty]
-          image_server_group.update_image_group_summary(0, params[:image_server_image][:difficulty], nil, nil, nil, nil)
+          image_server_image.refresh_src_dest_group_summary(image_server_group)
 
         when 'propagate_status'
           image_server_image.where(
@@ -177,8 +176,7 @@ class ImageServerImagesController < ApplicationController
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:status=>image_server_image_params[:status])
 
-          # update ImageServerGroup field summary[:status]
-          image_server_group.update_image_group_summary(0, nil, params[:image_server_image][:status], nil, nil, nil)
+          image_server_image.refresh_src_dest_group_summary(image_server_group)
 
         when 'propagate_transcriber'
           image_server_image.where(
@@ -186,8 +184,7 @@ class ImageServerImagesController < ApplicationController
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:transcriber=>image_server_image_params[:transcriber])
 
-          # update ImageServerGroup field summary[:transcriber]
-          image_server_group.update_image_group_summary(0, nil, nil, params[:image_server_image][:transcriber], nil, nil)
+          image_server_image.refresh_src_dest_group_summary(image_server_group)
 
         when 'propagate_reviewer'
           image_server_image.where(
@@ -195,8 +192,7 @@ class ImageServerImagesController < ApplicationController
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:reviewer=>image_server_image_params[:reviewer])
 
-          # update ImageServerGroup field summary[:reviewer]
-          image_server_group.update_image_group_summary(0, nil, nil, nil, params[:image_server_image][:reviewer], nil)
+          image_server_image.refresh_src_dest_group_summary(image_server_group)
 
         else
           flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'
