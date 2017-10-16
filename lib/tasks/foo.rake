@@ -271,6 +271,22 @@ namespace :foo do
     puts "Task complete."
 
   end
+  
+  task :load_place_id_church_id => [:environment] do
+  
+    p "Start load"
+   Source.all.each do |source|
+     register = source.register
+     church = register.church
+     place = church.place
+     source.update_attributes(:place_id => place._id, :church_id => church._id)
+     p source
+   end
+    
+    p "Task complete."
+
+  end
+  
 
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
