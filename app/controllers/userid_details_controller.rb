@@ -166,7 +166,7 @@ class UseridDetailsController < ApplicationController
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
     when  params[:commit] == 'Register as Transcriber'
-      redirect_to :back and return
+      redirect_to transcriber_registration_userid_detail_path and return
     when params[:commit] == "Submit" && session[:userid_detail_id].present?
       redirect_to userid_detail_path(@userid) and return
     when params[:commit] == "Update" && session[:my_own]
@@ -188,7 +188,8 @@ class UseridDetailsController < ApplicationController
       render :action => 'researcher_registration' and return
     when params[:commit] == 'Register as Transcriber'
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      @new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
+      @userid[:honeypot] = session[:honeypot]
+      #@new_transcription_agreement = ["Unknown","Accepted","Declined","Requested"]
       render :action => 'transcriber_registration' and return
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
@@ -491,8 +492,8 @@ class UseridDetailsController < ApplicationController
       error_text = error_text+"USERID: "+params[:userid_detail][:userid]+"\r\n"
       error_text = error_text+"FORENAME: "+params[:userid_detail][:person_forename]+"\r\n"
       error_text = error_text+"SURNAME: "+params[:userid_detail][:person_surname] + "\r\n"
-      error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n" if request.present? && request.remote_add.present?
-      error_text = error_text+"REMOE ADDR: Unknown \r\n" unless request.present? && request.remote_add.present?
+      error_text = error_text+"REMOE ADDR: "+request.remote_addr + "\r\n" if request.present? && request.remote_addr.present?
+      error_text = error_text+"REMOE ADDR: Unknown \r\n" unless request.present? && request.remote_addr.present?
       error_text = error_text+"REMOTE IP: "+request.remote_ip + "\r\n" if request.present? && request.remote_ip.present?
       error_text = error_text+"REMOE IP: Unknown \r\n" unless request.present? && request.remote_id.present?
       error_text = error_text+"REMOTE HOST: "+request.remote_host+"\r\n\r\n\r\n" if request.present? && request.remote_host.present?
