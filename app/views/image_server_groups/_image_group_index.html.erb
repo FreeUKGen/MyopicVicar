@@ -1,7 +1,8 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
   <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
-    <%= link_to 'Create new Image Group', new_image_server_group_path, method: :get, :class => "btn weight--light btn--small"  %> 
+    <%= link_to 'Allocate Image Groups', allocate_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
+    <%= link_to 'Create new Image Group', new_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
   <% end %>
   </div>
   <div style="clear:both;"> </div><br>
@@ -11,13 +12,16 @@
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
-        <th class="t20">Image Group</th>
-        <th class="t10">Status</th>
+        <th class="t15">Image Group</th>
+        <th class="t10">Total Image</th>
         <th class="t05">Start Date</th>
         <th class="t05">End Date</th>
+        <th class="t10">Status</th>
         <th class="t15">Skill Level</th>
-        <th class="t15">Transcribers</th>
-        <th class="t12">Action</th>
+        <th class="t15">Syndicate</th>
+        <th class="t15">Transcriber</th>
+        <th class="t15">Reviewer</th>
+        <th class="t15">Action</th>
       </tr>
     </thead>
   </table>
@@ -27,39 +31,60 @@
       <tbody>  
         <% @image_server_group.each do |group| %>
           <tr>
-            <td class="t20"><%= group.group_name %></td>
-            <% case group[:status] %>
-              <% when ImageServerGroup::Status::UNALLOCATED %>
-                <td class="t10" style="color:red">UNALLOCATED</td>
-              <% when ImageServerGroup::Status::IN_PROGRESS %>
-                <td>IN_PROGRESS</td>
-              <% when ImageServerGroup::Status::TRANSCRIBED %>
-                <td class="t10" style="color:green">TRANSCRIBED</td>
-              <% when ImageServerGroup::Status::REVIEWED %>
-                <td class="t10">REVIEWED</td>
-              <% when ImageServerGroup::Status::ERROR %>
-                <td class="t10" style="color:red">ERROR</td>
-              <% else %>
-                <td class="t10"><%= group[:status] %>&nbsp;</td>
-            <% end %>
-            <% if group[:start_date] != '' && group.source.start_date != '' && group[:start_date] < group.source.start_date %>
-              <td class="t10" style="color:red"><%= group[:start_date] %>&nbsp;</td>
+            <td class="t15"><%= group.group_name %></td>
+            <td class="t10"><%= group.number_of_images %>&nbsp;</td>
+            <% if !group[:start_date].nil? && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
+              <td class="t05" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
-              <td class="t10"><%= group[:start_date] %>&nbsp;</td>
+              <td class="t05"><%= group[:start_date] %>&nbsp;</td>
             <% end %>
-            <% if group[:end_date] != '' && group.source.end_date != '' && group[:end_date] > group.source.end_date %>
-              <td class="t10" style="color:red"><%= group[:end_date] %>&nbsp;</td>
+            <% if !group[:end_date].nil? && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
+              <td class="t05" style="color:red"><%= group[:end_date] %>&nbsp;</td>
             <% else %>
-              <td class="t10"><%= group[:end_date] %>&nbsp;</td>
+              <td class="t05"><%= group[:end_date] %>&nbsp;</td>
             <% end %>
-            <td class="t20"><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[group[:difficulty]] %>&nbsp;</td>
-            <td class="t20"><%= group[:transcribers].join(' / ') if !group[:transcribers].blank? %>&nbsp;</td>
-            <td class="t15"><%= link_to 'SH', index_image_server_group_path(group) %> 
+            <td class="t10">
+              <% unless group.summary[:status].nil? %>
+                <% group.summary[:status].each do |status| %>
+                  <% case ImageServerGroup::Status::ALL_STATUSES[status] %>
+                    <% when 'ERROR', 'UNALLOCATED' %>
+                      <span style="color:red"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
+                    <% when 'TRANSCRIBED' %>
+                      <span style="color:green"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
+                    <% else %>
+                      <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
+                  <% end %>
+                <% end %>
+              <% end %>
+            &nbsp;</td>
+            <td class="t15">
+              <% unless group.summary[:difficulty].nil? %>
+                <% group.summary[:difficulty].each do  |difficulty| %>
+                  <span><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[difficulty] %></span><br/>
+                <% end %>
+              <% end %>
+            &nbsp;</td>
+            <td class="t15"><%= group[:syndicate_code] %>&nbsp;</td>
+            <td class="t15">
+              <% unless group.summary[:transcriber].nil? %>
+                <% group.summary[:transcriber].each do |transcriber| %>
+                  <span><%= transcriber %></span><br/>
+                <% end %>
+              <% end %>
+            &nbsp;</td>
+            <td class="t15">
+              <% unless group.summary[:reviewer].nil? %>
+                <% group.summary[:reviewer].each do |reviewer| %>
+                  <span><%= reviewer %></span><br/>
+                <% end %>
+              <% end %>
+            &nbsp;</td>
+            <td class="t15"><%= link_to 'SH', image_server_group_path(group) %> 
               <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
                 <%= link_to 'ED', edit_image_server_group_path(group) %> 
                 <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 
               <% end %>
-              <%= link_to 'LS', image_server_image_path(group) %></td>
+              <%= link_to 'LS', index_image_server_image_path(group) %></td>
           </tr>
         <% end %>
       </tbody>

@@ -1,4 +1,8 @@
-<% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+<% if session[:manage_user_origin] == 'manage syndicate' %>
+  <% breadcrumb :syndicate_show_image, @county, @place, @church, @register, @source, @group %>
+<% else %>
+  <% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+<% end %>
 
 <div style="clear:both;"></div><br>
 <p style="text-align: center">Images of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
@@ -6,19 +10,19 @@
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
     <%= flash[:notice] %><% flash.clear %>
-  </div><br>
+  </div>
 <% end %>
 
 <br><div class="grid__item ">
   <%= simple_form_for @image_server_image do |s| %>
+    <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign images to Image Group', :include_blank=>false, :include_hidden=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size => 3} %>
     <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort.unshift(['select all', '0']), :label=>'Select the images you want to move to another Image Group', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
-    <%= s.input :image_server_group_id, :as=>:select, :collection=>@group_name.invert, :label=>'Re-sssign selected images to Image Group', :include_blank=>false, :include_hidden=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size => 3} %>
 
     <%# a rail restart is needed for fake field %>
     <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
     <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
     <%= s.hidden_field :origin, as: :fake, :value=>'move' %>
-    <%= s.button :submit, 'Submit' %>
+    <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
   <% end %>        
 </div>
 

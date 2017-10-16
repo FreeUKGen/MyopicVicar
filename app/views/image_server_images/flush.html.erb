@@ -1,4 +1,8 @@
-<% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+<% if session[:manage_user_origin] == 'manage syndicate' %>
+  <% breadcrumb :syndicate_show_image, @county, @place, @church, @register, @source, @group %>
+<% else %>
+  <% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+<% end %>
 
 <div style="clear:both;"></div><br>
 <p style="text-align: center">Images of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
@@ -6,7 +10,7 @@
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
     <%= flash[:notice] %><% flash.clear %>
-  </div><br>
+  </div>
 <% end %>
 
 <section class="island ">
@@ -32,7 +36,7 @@
       <%= s.hidden_field :image_server_group_id, :value=>@image_server_image.image_server_group_id %>
       <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
       <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
-      <%= s.button :submit, 'Submit' %>
+      <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
     <% end %>        
   </div>
 </section>

@@ -25,7 +25,7 @@ namespace :image do
 
     message = Hash.new
     all_files,all_seq = Array.new,Array.new
-    sources,sources_processed = 0,0
+    sources,sources_processed,count = 0,0,1
     prev_county,prev_place,prev_file_name = '','',''
     county_part,place_part,final_message = '','',''
     start_date,end_date = '',''
@@ -66,12 +66,12 @@ namespace :image do
             when 3
               sources = sources.to_i + 1
 
-              ind = line.rindex(/[^\d]+([\d]+[a-zA-Z]*)[\.]/)
+              ind = line.rindex(/[^\d]+([\d]+[a-zA-Z]*)[\.]/)   # start of sequence number
               if ind.blank?
                 next
               else
                 file_seq = $1
-                file_name = line.slice(0...ind).split('/')[2]
+                file_name = line.slice(0...ind).split('/')[1] + '/' + line.slice(0...ind).split('/')[2]
 
                 if f[county_part][place_part]['status'] != 'e'
                   if all_files.include?(file_name) == false
@@ -95,18 +95,20 @@ namespace :image do
                 if prev_file_name == file_name
                   if all_seq.any? {|h| h[:seq] == file_seq} == false
                     all_seq << {:seq => file_seq, :status => 'reserved'}
+                    count = count + 1
                   end
                 else
                   if ['u','t'].include?(f[prev_county][prev_place]['status'])
-p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_name.to_s
+p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-                    update_collection(f[prev_county][prev_place],prev_file_name,prev_start_date,prev_end_date,all_seq) 
+                    update_collection(f[prev_county][prev_place],prev_file_name,prev_start_date,prev_end_date,all_seq,count) 
                   end
 
                   prev_county = county_part.to_s
                   prev_place = place_part.to_s
                   prev_file_name = file_name.to_s
                   all_seq = [{:seq => file_seq, :status => 'reserved'}]
+                  count = 1
                 end
                 sources_processed = sources_processed.to_i + 1
               end
@@ -120,20 +122,20 @@ p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county]
     end
 
     if ['u','t'].include?(f[county_part][place_part]['status'])
-p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][place_part]['church_status'].to_s+" register="+f[county_part][place_part]['register_status'].to_s+" place="+f[county_part][place_part]['place'].place_name.to_s+" church="+f[county_part][place_part]['church'].church_name.to_s+" register="+f[county_part][place_part]['register'].register_type.to_s+" file="+file_name.to_s
+p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][place_part]['church_status'].to_s+" register="+f[county_part][place_part]['register_status'].to_s+" place="+f[county_part][place_part]['place'].place_name.to_s+" church="+f[county_part][place_part]['church'].church_name.to_s+" register="+f[county_part][place_part]['register'].register_type.to_s+" file="+file_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-      update_collection(f[county_part][place_part],file_name,start_date,end_date,all_seq)
+      update_collection(f[county_part][place_part],file_name,start_date,end_date,all_seq,count)
     end
 
     report_file.puts email_message
     report_file.puts "Total sources #{sources} with #{sources_processed} processed"
   end
 
-  def self.update_collection(f,group_name,start_date,end_date,all_seq)
+  def self.update_collection(f,group_name,start_date,end_date,all_seq,count)
     source = Source.where(:register_id=>f['register'].id, :source_name=>'Image Server').first
     source = create_source(f['register'],f['notes']) if source.nil?
 
-    is_group = create_image_server_group(source,group_name,f['status'],start_date,end_date,f['church_status'],f['register_status'])
+    is_group = create_image_server_group(source,group_name,f['status'],start_date,end_date,f['church_status'],f['register_status'],count)
     
     update_image_server_image(is_group,group_name,start_date,end_date,all_seq)
   end
@@ -152,15 +154,16 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source
   end
 
-  def self.create_image_server_group(source,group_name,status,start_date,end_date,church_status,register_status)
+  def self.create_image_server_group(source,group_name,status,start_date,end_date,church_status,register_status,count)
     image_server_group = ImageServerGroup.where(:source_id=>source.id, :group_name=>group_name).first
 
     if image_server_group.nil?
       image_server_group = ImageServerGroup.new(:source_id=>source.id)
       image_server_group.group_name = group_name
-      image_server_group.status = status
+#      image_server_group.status = status     # status is an Array, need to modify script if needed
       image_server_group.start_date = start_date
       image_server_group.end_date = end_date
+      image_server_group.number_of_images = count
       image_server_group.church_status = church_status
       image_server_group.register_status = register_status
       image_server_group.consistency = true if church_status == 'GOOD' && register_status == 'GOOD'
@@ -182,7 +185,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
 
       if image_server_image.nil?
         seq.each do |f|
-          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name, :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
+          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name.split('/')[1], :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
         end
         image_server_image = ImageServerImage.create! (rd)
       else

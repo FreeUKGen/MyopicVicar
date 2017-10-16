@@ -96,6 +96,19 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def manage_image_group
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage syndicate'
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate])
+      render 'image_server_group_by_syndicate'
+    end
+  end
+
   def member_by_email
     redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
     return

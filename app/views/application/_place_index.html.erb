@@ -18,8 +18,6 @@
             <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
         <th class="t15">Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (Made from a parish register); Extract of the Parish Registers (Incomplete set of records); Dwelly's Transcript (Made from a parish register); Other Register (Original document); Transcript (Another persons transcription); Unknown; or Unspecified.</span></a></th>
-        <th class="t15">Image Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                <span>A register can have multiple sources.</span></a></th>
         <th class="t15">Last changed <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
                 <span>The most recent date when at least one record in the register was amended, added or deleted.</span></a></th>
       </tr>
@@ -43,13 +41,11 @@
               <% end%>
               <td class="t25">  </td>              
               <td class="t15"> </td>
-              <td class="t15"> </td>
               <td class="t15">  </td>
               
             </tr>
           <% else%>
             <% place.churches.order_by(church_name: 1).each do |church| %>
-              <% old_register_type = nil %>
               <% if !church.registers.exists? %>
                 <% session[:placeid] = place.id%>
                 <tr style= "color:black" id="<%=place.id%>">
@@ -66,70 +62,28 @@
                     <td class="t25">  </td>
                   <% end%>
                   <td class="t15"> </td>
-                  <td class="t15"> </td>
                   <td class="t15">  </td>
                   
                 </tr>
               <% else %> 
                 <% church.registers.order_by(register_type: 1).each do |register| %>
-                  <% old_source_name = nil %>
-                  <% if !register.sources.exists? %>
-                    <% session[:church_id] = church.id %>
-                    <tr style= "color:black" id="<%=place.id%>">
-                      <% if place.place_name != old_place_name %>
-                        <td class="t15"><%= link_to(place.place_name, place_path(place) )%> </td>
-                        <% old_place_name = place.place_name %>
-                      <% else %>
-                        <td class="t15">  </td>
-                      <% end%>
-                      <% if church.church_name != old_church_name %>
-                        <td class="t25"> <%= link_to(church.church_name, church_path(church) ) %> </td>
-                        <% old_church_name = church.church_name %>
-                      <% else %>
-                        <td class="t25">  </td>
-                      <% end%>
-                      <% if register.register_type != old_register_type %>
-                        <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
-                        <%= link_to(registertype, register_path(register)) %></td>
-                        <% old_register_type = register.register_type %>
-                      <% else %>
-                        <td class="t15">  </td>
-                      <% end %>
-                      <td class="t15"> </td>
-                      <td class="t15"> <%= register.last_amended %> </td>
-                    </tr>
-                  <% else %>
-                    <% register.sources.order_by(source_name: 1).each do |source| %>
-                      <% session[:register_id] = register.id %>
-                      <tr style= "color:black" id="<%=place.id%>">
-                        <% if place.place_name != old_place_name %>
-                          <td class="t15"><%= link_to(place.place_name, place_path(place) )%> </td>
-                          <% old_place_name = place.place_name %>
-                        <% else %>
-                          <td class="t15">  </td>
-                        <% end%>
-                        <% if church.church_name != old_church_name %>
-                          <td class="t25"> <%= link_to(church.church_name, church_path(church) ) %> </td>
-                          <% old_church_name = church.church_name %>
-                        <% else %>
-                          <td class="t25">  </td>
-                        <% end %>
-                        <% if register.register_type != old_register_type %>
-                          <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
-                          <%= link_to(registertype, register_path(register)) %></td>
-                          <% old_register_type = register.register_type %>
-                        <% else %>
-                          <td class="t15">  </td>
-                        <% end%>
-                        <% if source.source_name != old_source_name %>
-                          <td class="t15"> <%= link_to(source.source_name, source_path(source)) %></td>
-                          <% old_source_name = source.source_name %>
-                       <% else %>
-                          <td class="t15">  </td>
-                        <% end %>
-                        <td class="t15"> <%= register.last_amended %> </td>
-                      <% end %>
-                    <% end %>
+                  <% session[:placeid] = place.id%>
+                  <tr style= "color:black" id="<%=place.id%>">
+                    <% if place.place_name != old_place_name %>
+                      <td class="t15"><%= link_to(place.place_name, place_path(place) )%> </td>
+                      <% old_place_name = place.place_name %>
+                    <% else %>
+                      <td class="t15">  </td>
+                    <% end%>
+                    <% if church.church_name != old_church_name %>
+                      <td class="t25"> <%= link_to(church.church_name, church_path(church) ) %> </td>
+                      <% old_church_name = church.church_name %>
+                    <% else %>
+                      <td class="t25">  </td>
+                    <% end%>
+                    <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
+                    <%= link_to(registertype, register_path(register)) %></td>
+                    <td class="t15"> <%= register.last_amended %> </td>
                     <% clear(register) %>
                   </tr>
                 <% end%>

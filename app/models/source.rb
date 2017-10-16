@@ -22,6 +22,8 @@ class Source
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
   attr_accessor :propagate
+  
+  index({register_id:1, source_name:1},{name: "register_id_source_name"})
 
   # TODO: name for "Great Register" vs "Baptsm" -- use RecordType?  Extend it?
 
@@ -39,6 +41,36 @@ class Source
       where(:register_id => {'$in'=>id.keys})
     end
     
-  end
+    def get_source_ids(chapman_code)
+      if chapman_code.nil?
+        return nil, nil
+      else
+        source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+        place_id = Place.chapman_code(chapman_code).pluck(:id, :place_name).to_h
+
+        church = Church.find_by_place_ids(place_id).pluck(:id, :place_id, :church_name)
+        church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church.each{|k,v,w| h[k] << v << w}}
+
+        register = Register.find_by_church_ids(church_id).pluck(:id, :church_id, :register_type)
+        register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register.each{|k,v,w| h[k] << v << w}}
+
+        source = Source.find_by_register_ids(register_id).pluck(:id, :register_id, :source_name)
+        x = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v,w| h[k] << v << w}}
+
+        sid = []
+        x.each do |k1,v1|
+        # build hash @source_id[place_name][church_name][register_type][source_name] = source_id
+          source_id[place_id[church_id[register_id[v1[0]][0]][0]]][church_id[register_id[v1[0]][0]][1]][register_id[v1[0]][1]][v1[1]] = k1
+
+          register_type = register_id[v1[0]][1]
+          church_name = church_id[register_id[v1[0]][0]][1]
+          place_name = place_id[church_id[register_id[v1[0]][0]][0]]
+          sid << [k1, place_name, church_name, register_type, v1[1]]
+        end
+        s_id = sid.sort_by {|a,b,c,d,e| [b,c,d,e]}
+        return s_id, source_id
+      end
+    end
   
+  end
 end

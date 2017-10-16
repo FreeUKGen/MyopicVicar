@@ -1,4 +1,11 @@
-<h3 style="text-align: center">All Sources for County <%= @county %>.</h3>
+<% breadcrumb :show_countysource,  @county%>
+<p><h3 style="text-align: center">All Image Sources for County <%= @county %>.</h3></p>
+
+<div style="text-align: center">  
+  <%= link_to 'List All Image Groups', manage_image_group_path, method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Image Groups Allocated by Syndicate', sort_image_group_by_syndicate_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Image Groups Allocated by Place', sort_image_group_by_place_path, method: :get, :class => "btn weight--light btn--small" %> 
+</div>
 
 <div style="clear:both;"> </div><br>
 <% if flash[:notice] %>
@@ -25,45 +32,45 @@
     <div class="scrollable">
     <table class=" table--bordered my-width table--data just--left">
       <tbody >
-        <% @source_id.each do |place_name, place_val| %>
-          <tr>
-          <td class="t15"><%= link_to(place_name, place_path(@place_id.key(place_name))) %></td>
-          <% church_rows = @source_id[place_name].keys.count %>
-          <% place_val.each do |church_name, church_val| %>
-            <% if @source_id[place_name].keys.count == 1 %>
-              <td class="t15"><%= link_to(church_name, church_path(@church.select {|x| x[2] == church_name}[0][0])) %></td>
-            <% else %>
-              <% if church_rows != @source_id[place_name].count %>
-                <tr><td class="t15">&nbsp;</td>
-              <% end %>
-              <td class="t15"><%= link_to(church_name, church_path(@church.select {|x| x[2] == church_name}[0][0])) %></td>
-              <% church_rows = church_rows - 1 %>
-            <% end %>
-            <% register_rows = @source_id[place_name][church_name].keys.count %>
-            <% church_val.each do |register_type, register_val| %>
-              <% registertype = RegisterType.display_name(register_type) %>
-              <% if @source_id[place_name][church_name].keys.count == 1 %>
-                <td class="t15"><%= link_to(registertype, register_path(@register.select {|x| x[2] == register_type}[0][0])) %></td>
-              <% else %>
-                <% if register_rows != @source_id[place_name][church_name].count %>
-                  <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>
-                <% end %>
-                <td class="t15"><%= link_to(registertype, register_path(@register.select {|x| x[2] == register_type}[0][0])) %></td>
-                <% register_rows = register_rows - 1 %>
-              <% end %>
-              <% source_rows = @source_id[place_name][church_name][register_type].keys.count %>
-              <% register_val.each do |source_name, source_id| %>
-                <% if @source_id[place_name][church_name][register_type].count == 1 %>
-                    <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
-                <% else %>
-                  <% if source_rows != @source_id[place_name][church_name][register_type].count %>
-                    <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>
-                  <% end %>
-                  <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
-                  <% source_rows = source_rows - 1 %>
-                <% end %> 
+        <% place_rows, church_rows, register_rows = 0,0,0 %>
+        <% @source_ids.each do |source_id, place_name, church_name, register_type, source_name| %>
+          <% if register_rows == 0 %>
+            <% register_rows = @source_id[place_name][church_name][register_type].count %>
+            <% if church_rows == 0 %>
+              <% church_rows = @source_id[place_name][church_name].count %>
+              <% if place_rows == 0 %>
+                <% place_rows = @source_id[place_name].count %>
               <% end %>
             <% end %>
+          <% end %>
+
+          <% if register_rows == @source_id[place_name][church_name][register_type].count && church_rows == @source_id[place_name][church_name].count && place_rows == @source_id[place_name].count %>
+            <tr><td class="t15"><%= place_name %></td>
+          <% else %>
+            <tr><td class="t15">&nbsp;</td>
+          <% end %>
+
+          <% if register_rows == @source_id[place_name][church_name][register_type].count && church_rows == @source_id[place_name][church_name].count %>
+            <td class="t15"><%= church_name %></td>
+          <% else %>
+            <td class="t15">&nbsp;</td>
+          <% end %>
+
+          <% registertype = RegisterType.display_name(register_type) %>
+          <% if register_rows == @source_id[place_name][church_name][register_type].count %>
+            <td class="t15"><%= registertype %></td>
+          <% else %>
+            <td class="t15">&nbsp;</td>
+          <% end %>
+
+          <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
+
+          <% register_rows = register_rows - 1  unless register_rows == 0 %>
+          <% if register_rows == 0 %>
+            <% church_rows = church_rows - 1 unless church_rows == 0 %>
+          <% end %>
+          <% if church_rows == 0 %>
+            <% place_rows = place_rows - 1 unless place_rows == 0 %>
           <% end %>
         <% end %>
       </tbody>

@@ -3,7 +3,7 @@
     <%= link_to 'Edit Image Group', edit_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
     <%= link_to 'Delete Image Group', image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to delete Image Group "'+@image_server_group[:group_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %> 
   <% end %>
-  <%= link_to 'List Images Under This Group', image_server_image_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'List Images Under This Group', index_image_server_image_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
 </div>
 <div style="clear:both;"> </div><br>
 
@@ -22,9 +22,44 @@
       <tr><td>Group Name</td><td class="weight--semibold"><%= @image_server_group[:group_name] %></td></tr>
       <tr><td>Start Date</td><td class="t15"><%= @image_server_group[:start_date] %>&nbsp;</td></tr>
       <tr><td>End Date</td><td class="t15"><%= @image_server_group[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Transcribers</td><td class="t15"><%= @image_server_group[:transcribers].join(' / ') if !@image_server_group[:transcribers].blank? %>&nbsp;</td></tr>
-      <tr><td>Difficulty</td><td class="t15"><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[@image_server_group[:difficulty]] %>&nbsp;</td></tr>
-      <tr><td>Status</td><td class="t15"><%= ImageServerGroup::Status::ALL_STATUSES[@image_server_group[:status]] %>&nbsp;</td></tr>
+      <tr><td>Syndicate</td><td class="t15"><%= @image_server_group[:syndicate_code] %>&nbsp;</td></tr>
+      <tr><td>Assign Date</td><td class="t15"><%= @image_server_group[:assign_date] %>&nbsp;</td></tr>
+      <tr><td>Number Of Images</td><td class="t15"><%= @image_server_group[:number_of_images] %>&nbsp;</td></tr>
+      <tr><td>Transcriber</td><td class="t15">
+        <% unless @image_server_group.summary[:transcriber].nil? %>
+          <% @image_server_group.summary[:transcriber].each do |transcriber| %>
+            <span><%= transcriber %></span>
+          <% end %>
+        <% end %>
+      &nbsp;</td></tr>
+      <tr><td>Reviewer</td><td class="t15">
+        <% unless @image_server_group.summary[:reviewer].nil? %>
+          <% @image_server_group.summary[:reviewer].each do |reviewer| %>
+            <span><%= reviewer %></span>
+          <% end %>
+        <% end %>
+      &nbsp;</td></tr>
+      <tr><td>Difficulty</td><td class="t15">
+        <% unless @image_server_group.summary[:difficulty].nil? %>
+          <% @image_server_group.summary[:difficulty].each do |difficulty| %>
+            <span><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[difficulty] %></span>
+          <% end %>
+        <% end %>
+      &nbsp;</td></tr>
+      <tr><td>Status</td><td class="t10">
+        <% unless @image_server_group.summary[:status].nil? %>
+          <% @image_server_group.summary[:status].each do |status| %>
+            <% case ImageServerGroup::Status::ALL_STATUSES[status] %>
+              <% when 'ERROR', 'UNALLOCATED' %>
+                <span style="color:red"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
+              <% when 'TRANSCRIBED' %>
+                <span style="color:green"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
+              <% else %>
+                <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+      &nbsp;</td></tr>
       <tr><td>Notes</td><td class="t15"><%= @image_server_group[:notes] %>&nbsp;</td></tr>
     </table>
   </div>

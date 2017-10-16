@@ -112,6 +112,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint
+  get  'manage_syndicates/selection',  :to => 'manage_syndicates#manage_image_group', constraints: ManageSyndicatesManageImagesConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
   get  'manage_syndicates/display_files_not_processed',  :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
@@ -172,7 +173,10 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
-  get  'manage_counties/selection',  :to => 'manage_counties#manage_images', constraints:ManageCountiesManageImagesConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#manage_sources', constraints:ManageCountiesManageImagesConstraint
+  get  'manage_counties/manage_image_group(.:format)', :to => 'manage_counties#manage_image_group', :as => :manage_image_group
+  get  'manage_counties/sort_image_group_by_syndicate(.:format)', :to => 'manage_counties#sort_image_group_by_syndicate', :as => :sort_image_group_by_syndicate
+  get  'manage_counties/sort_image_group_by_place(.:format)', :to => 'manage_counties#sort_image_group_by_place', :as => :sort_image_group_by_place
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
@@ -291,13 +295,13 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
 
   resources :image_server_groups
+  get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
 
   resources :image_server_images
-  get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
-  get 'image_server_images/:id/detail(.:format)', :to => 'image_server_images#detail', :as => :detail_image_server_image
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
-
+  get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
+  get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
 
 
 

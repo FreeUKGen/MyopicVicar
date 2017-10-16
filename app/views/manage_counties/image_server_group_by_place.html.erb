@@ -1,0 +1,11 @@
+<% breadcrumb :sort_countysource_by_place,  @county%>
+<p><h3 style="text-align: center">Image Groups Allocated by Place for County <%= @county %>.</h3></p>
+
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+
+<%= render 'image_groups' %>

@@ -102,27 +102,34 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
 
-  def manage_images
+  def manage_image_group
     get_user_info_from_userid
-    @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+    session[:manage_user_origin] = 'manage county'
 
-    @county = session[:chapman_code]
-    @place_id = Place.chapman_code(session[:chapman_code]).pluck(:id, :place_name).to_h
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
+      @county = session[:county]
 
-    @church = Church.find_by_place_ids(@place_id).pluck(:id, :place_id, :church_name)
-    @church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @church.each{|k,v,w| h[k] << v << w}}
-
-    @register = Register.find_by_church_ids(@church_id).pluck(:id, :church_id, :register_type)
-    @register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @register.each{|k,v,w| h[k] << v << w}}
-
-    @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
-    x = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v,w| h[k] << v << w}}
-    x.each do |k1,v1|
-      # build array @source_id[place_name][church_name][register_type][source_name] = source_id
-      @source_id[@place_id[@church_id[@register_id[v1[0]][0]][0]]][@church_id[@register_id[v1[0]][0]][1]][@register_id[v1[0]][1]][v1[1]] = k1
+      render 'image_server_group_all'
     end
+  end
 
-    render '_sources_index'
+  def manage_sources
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
+      @county = session[:county]
+
+      render '_sources_index'
+    end
   end
 
   def new
@@ -244,7 +251,35 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def sort_image_group_by_place
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
 
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true)
+      @county = session[:county]
+
+      render 'image_server_group_by_place'
+    end
+  end
+
+  def sort_image_group_by_syndicate
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
+      @county = session[:county]
+  
+      render 'image_server_group_by_syndicate'
+    end
+  end
 
   def upload_batch
     redirect_to new_csvfile_path
