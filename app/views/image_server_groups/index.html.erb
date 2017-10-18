@@ -1,7 +1,7 @@
 <% if session[:manage_user_origin] == 'manage syndicate' %>
 	<% breadcrumb :syndicate_image_server_groups, @county, @place, @church, @register, @source %>
 <% else %>
-	<% breadcrumb :image_server_groups, @county, @place, @church, @register, @source %>
+	<% breadcrumb :county_image_server_groups, @county, @place, @church, @register, @source %>
 <% end %>
 
 <div style="clear:both;"></div><br>

@@ -1,7 +1,7 @@
 <% if session[:manage_user_origin] == 'manage syndicate' %>
   <% breadcrumb :syndicate_image_server_images, @county, @place, @church, @register, @source, @group %>
 <% else %>
-  <% breadcrumb :image_server_images, @county, @place, @church, @register, @source, @group %>
+  <% breadcrumb :county_image_server_images, @county, @place, @church, @register, @source, @group %>
 <% end %>
 
 <div style="clear:both;"></div><br>
@@ -15,10 +15,14 @@
 
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+  <% if session[:manage_user_origin] == 'manage county' %>
     <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <% end %>
+  <% if ['manage county', 'manage syndicate'].include? session[:manage_user_origin] %>
     <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
+  <% end %>
+  <% if session[:manage_user_origin] == 'manage syndicate' %>
     <%= link_to 'Propagate Transcriber', flush_image_server_image_path(:propagate_choice=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Propagate Reviewer', flush_image_server_image_path(:propagate_choice=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %> 
   <% end %>
@@ -36,7 +40,15 @@
         <th class="t15">Difficulty</th>
         <th class="t15">Transcriber</th>
         <th class="t15">Reviewer</th>
-        <th class="t15">Action</th>
+        <th class="t15">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <% if session[:manage_user_origin] == 'manage syndicate' %>   <%# any user from manage_syndicates %>
+            <span>SH: Show Image Properties; ED: Edit Image Properties</span>
+          <% elsif @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
+            <span>SH: Show Image Properties; ED: Edit Image Properties; DE: Delete Image information from FR</span>
+          <% else %>        <%# non admin from manage_counties %>
+            <span>SH: Show Image Properties; ED: Edit Image Properties</span>
+          <% end %>        
+        </a></th>
       </tr>
     </thead>
   </table>
@@ -65,11 +77,10 @@
             <td class="t15"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:difficulty]] if !x[:difficulty].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:transcriber].join(' / ') if !x[:transcriber].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>
-            <td class="t15"><%= link_to 'SH', image_server_image_path(x) %> 
-              <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
-                <%= link_to 'ED', edit_image_server_image_path(x) %> 
-              <% end %>
-              <% if @user.person_role == 'system_administrator' %>
+            <td class="t15">
+              <%= link_to 'SH', image_server_image_path(x) %>
+              <%= link_to 'ED', edit_image_server_image_path(x) %> 
+              <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
                 <%= link_to 'DE', image_server_image_path(x), data: { confirm: 'Are you sure you want to delete IS image '+x[:image_name]+'_'+x[:seq]+'.jpg?'}, method: :delete %>
               <% end %>
             </td>

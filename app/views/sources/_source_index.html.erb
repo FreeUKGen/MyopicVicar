@@ -1,7 +1,7 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
-  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
-    <%= link_to 'Create new Image Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
+  <% if session[:manage_user_origin] == 'manage county' %>
+    <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
   <% end %>
   </div>
   <div style="clear:both;"> </div><br>
@@ -13,7 +13,17 @@
       <tr>
         <th class="t15">Image Source</th>
         <th class="t30">Notes</th>
-        <th class="t15">Action</th>
+        <th class="t15">Action<a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <% if session[:manage_user_origin] = 'manage syndicate' %>
+            <span>SH: Show Source Properties</span>
+          <% else %>
+            <% if @user.person_role == 'system_administrator' %>
+              <span>SH: Show Source Properties; ED: Edit Source Properties; DE: Delete Source</span>
+            <% else %>
+              <span>SH: Show Source Properties; ED: Edit Source Properties</span>
+            <% end %>
+          <% end %>
+        </a></th>
       </tr>
     </thead>
   </table>
@@ -29,27 +39,35 @@
               <% case x.source_name %>
                 <% when 'Image Server' %>
                   <%= link_to 'SH', source_path(x) %> 
-                  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+                  <% if session[:manage_user_origin] == 'manage county' %>
                     <%= link_to 'ED', edit_source_path(x) %> 
-                    <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% if @user.person_role = 'system_administrator' %>
+                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% end %>
                   <% end %>
                 <% when 'Other Server1' %>
                   <%= link_to 'SH', source_path(x) %> 
-                  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+                  <% if session[:manage_user_origin] == 'manage county' %>
                     <%= link_to 'ED', edit_source_path(x) %> 
-                    <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% if @user.person_role = 'system_administrator' %>
+                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% end %>
                   <% end %>
                 <% when 'Other Server2' %>
                   <%= link_to 'SH', source_path(x) %> 
-                  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+                  <% if session[:manage_user_origin] == 'manage county' %>
                     <%= link_to 'ED', edit_source_path(x) %> 
-                    <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% if @user.person_role = 'system_administrator' %>
+                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% end %>
                   <% end %>
                 <% when 'Other Server3' %>
                   <%= link_to 'SH', source_path(x) %> 
-                  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+                  <% if session[:manage_user_origin] == 'manage county' %>
                     <%= link_to 'ED', edit_source_path(x) %> 
-                    <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% if @user.person_role = 'system_administrator' %>
+                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                    <% end %>
                   <% end %>
                 <% else %>
               <% end %>

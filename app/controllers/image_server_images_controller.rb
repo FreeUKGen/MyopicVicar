@@ -62,11 +62,11 @@ class ImageServerImagesController < ApplicationController
     @user = cookies.signed[:userid]
     @first_name = @user.person_forename unless @user.blank?
 
-    case @user.person_role
-      when 'system_administrator', 'country_coordinator', 'data_manager'
-        @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
-      when 'county_coordinator'
-        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
+    case session[:manage_user_origin]
+      when 'manage county'
+        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).order_by(userid_lower_case: 1)
+      when 'manage syndicate'
+        @userids = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
       else
         flash[:notice] = 'Your account does not support this action'
         redirect_to :back and return
