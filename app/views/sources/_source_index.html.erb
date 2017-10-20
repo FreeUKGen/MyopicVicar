@@ -1,7 +1,7 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
   <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
+    <%= link_to 'Create New Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
   <% end %>
   </div>
   <div style="clear:both;"> </div><br>
@@ -14,7 +14,7 @@
         <th class="t15">Image Source</th>
         <th class="t30">Notes</th>
         <th class="t15">Action<a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <% if session[:manage_user_origin] = 'manage syndicate' %>
+          <% if session[:manage_user_origin] == 'manage syndicate' %>
             <span>SH: Show Source Properties</span>
           <% else %>
             <% if @user.person_role == 'system_administrator' %>

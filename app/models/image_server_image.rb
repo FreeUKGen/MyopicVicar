@@ -17,13 +17,16 @@ class ImageServerImage
   end
 
   module Status
-    ERROR = 'e'
     UNALLOCATED = 'u'
-    IN_PROGRESS = 'p'
+    ALLOCATED = 'a'
+    IN_PROGRESS = 'ip'
     TRANSCRIBED = 't'
+    IN_REVIEW = 'ir'
     REVIEWED = 'r'
+    COMPLETE = 'c'
+    ERROR = 'e'
 
-    ALL_STATUSES = {'u'=>'UNALLOCATED', 'p'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'r'=>'REVIEWED', 'e'=>'ERROR'}
+    ALL_STATUSES = {'u'=>'UNALLOCATED', 'a'=>'ALLOCATED', 'ip'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'ir'=>'IN_REVIEW', 'r'=>'REVIEWED', 'c'=>'COMPLETE', 'e'=>'ERROR'}
   end
 
   field :image_name, type: String

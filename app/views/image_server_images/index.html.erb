@@ -4,8 +4,9 @@
   <% breadcrumb :county_image_server_images, @county, @place, @church, @register, @source, @group %>
 <% end %>
 
+<% title "IS Image - list" %>
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Images of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center"><b>Images</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">
@@ -60,20 +61,7 @@
           <tr>
             <td class="t15"><%= x[:image_name] %></td>
             <td class="t15"><%= x[:seq] %></td>
-            <% case x[:status] %>
-              <% when ImageServerImage::Status::UNALLOCATED %>
-                <td class="t15" style="color:red">UNALLOCATED</td>
-              <% when ImageServerImage::Status::IN_PROGRESS %>
-                <td>IN_PROGRESS</td>
-              <% when ImageServerImage::Status::TRANSCRIBED %>
-                <td class="t15" style="color:green">TRANSCRIBED</td>
-              <% when ImageServerImage::Status::REVIEWED %>
-                <td class="t15">REVIEWED</td>
-              <% when ImageServerImage::Status::ERROR %>
-                <td class="t15" style="color:red">ERROR</td>
-              <% else %>
-                <td class="t15"><%= x[:status] %>&nbsp;</td>
-            <% end %>
+            <td class="t15"><%= ImageServerImage::Status::ALL_STATUSES[x[:status]] if !x[:status].blank? %>&nbsp;</td>
             <td class="t15"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:difficulty]] if !x[:difficulty].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:transcriber].join(' / ') if !x[:transcriber].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>

@@ -525,7 +525,7 @@ end
 # breadcrumbs from 'manage counties'
 crumb :show_countysource do |county|
   link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
-  parent :county_options, county
+  parent :county_options, session[:county]
 end
 
 crumb :sort_countysource_by_image_group do |county|
@@ -565,6 +565,11 @@ end
 
 crumb :county_other_server3 do |county,place,church,register,source|
   link "Other Server3", source_path(source)
+  parent :county_sources, county, place, church, register
+end
+
+crumb :county_create_new_source do |county,place,church,register,source|
+  link "Create New Source", source_path(source)
   parent :county_sources, county, place, church, register
 end
 
