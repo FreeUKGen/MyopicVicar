@@ -15,6 +15,11 @@
         <% end %>
         </colgroup>
         <thead  >
+          <% unless print_friendly %>
+            <th>Detail<br>
+              <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Click on the detail link in the record below to see all transcription details for the person and others who share the same dwelling</span></a>
+            </th>
+          <% end %>
           <th>
             <%= link_to('Individual', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><br>
             <% unless print_friendly %>
@@ -51,17 +56,18 @@
               <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Place in which event was recorded. Click heading to sort by the location</span></a>
             <% end %>
           </th>
-          <% unless print_friendly %>
-            <th>Detail<br>
-              <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Click on the detail link in the record below to see all transcription details for the person and others who share the same dwelling</span></a>
-            </th>
-          <% end %>
         </thead >
         <tbody >
 	<% n = 0 %>
         <% @search_results.each do |search_record| %>
          <% n = n + 1 %>
           <tr id="<%=search_record.id%>">
+            <% unless print_friendly %>
+              <td>
+                <%= link_to "Detail", search_record_path(search_record.id, :search_id => @search_query), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
+                <i><%= viewed(@search_query,search_record) %></i>
+              </td>
+            <% end %>
             <td>
               <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
                   <% if i > 0 %>
@@ -86,13 +92,7 @@
             </td>
             <td>
               <%= format_location(search_record) %>
-	    </td>
-            <% unless print_friendly %>
-	      <td>
-              <%= link_to("Detail", search_record_path(search_record.id, :search_id => @search_query), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}") %>
-	      <i><%= viewed(@search_query,search_record) %></i>
-            </td>
-          <% end %>
+	          </td>
           </tr>
         </tbody>
         <% end %>

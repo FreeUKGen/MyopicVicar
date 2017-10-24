@@ -65,7 +65,7 @@
           <a href="#" class="bottom_tooltip"><%= image_tag 'info.png', alt: 'Info', height: '16', onclick: 'return false;' %><span>Click on the detail link to view all transcription details for the person and others who share the same dwelling</span></a>
         </td>
         <td>
-          <%= link_to("Detail", search_record_path(search_record.id, :search_id => @search_query)) %>
+          <%= link_to "Detail", search_record_path(search_record.id, :search_id => @search_query), :class => "btn weight--light btn--small" %>
           <% if session[:viewed] %>
             <i>
           <%= "(viewed)" if session[:viewed].include?("#{search_record.id}") %>
