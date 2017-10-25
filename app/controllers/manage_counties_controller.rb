@@ -120,6 +120,7 @@ class ManageCountiesController < ApplicationController
   def manage_sources
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
+    session[:ig_allocation] = nil
 
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
