@@ -1,7 +1,14 @@
 <% if session[:manage_user_origin] == 'manage syndicate' %>
 	<% breadcrumb :syndicate_image_server_image, @county, @place, @church, @register, @source, @group %>
 <% else %>
-	<% breadcrumb :county_image_server_image, @county, @place, @church, @register, @source, @group %>
+	<% case session[:ig_allocation] %>
+		<% when 'by_syndicate' %>
+			<% breadcrumb :sort_by_syndicate_image_server_image, @county, @place, @church, @register, @source, @group %>
+		<% when 'by_place' %>
+			<% breadcrumb :sort_by_place_image_server_image, @county, @place, @church, @register, @source, @group %>
+		<% else %>
+			<% breadcrumb :county_image_server_image, @county, @place, @church, @register, @source, @group %>
+	<% end %>
 <% end %>
 
 <% title "IS Image - edit" %>

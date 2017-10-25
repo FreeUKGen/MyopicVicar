@@ -534,13 +534,43 @@ crumb :sort_countysource_by_image_group do |county|
 end
 
 crumb :sort_countysource_by_syndicate do |county|
-  link "Image Groups Allocated by Syndicate"
+  link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
   parent :show_countysource, county
 end
 
-crumb :sort_countysource_by_place do |county|
-  link "Image Groups Allocated by Place"
+crumb :sort_by_syndicate_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :sort_countysource_by_syndicate, county, place, church, register, source
+end
+
+crumb :sort_by_syndicate_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :sort_by_syndicate_image_server_group, county, place, church, register, source, group
+end
+
+crumb :sort_by_syndicate_image_server_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :sort_by_syndicate_image_server_images, county, place, church, register, source, group
+end
+
+crumb :sort_countysource_by_place do |county,place|
+  link "Image Groups Allocated by Place", sort_image_group_by_place_path(place)
   parent :show_countysource, county
+end
+
+crumb :sort_by_place_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :sort_countysource_by_place, county, place, church, register, source
+end
+
+crumb :sort_by_place_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :sort_by_place_image_server_group, county, place, church, register, source, group
+end
+
+crumb :sort_by_place_image_server_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :sort_by_place_image_server_images, county, place, church, register, source, group
 end
 
 crumb :county_sources do |county,place,church,register|
@@ -644,6 +674,10 @@ crumb :syndicate_image_server_image do |county,place,church,register,source,grou
   parent :syndicate_image_server_images, county, place, church, register, source, group
 end
 
+crumb :syndicate_assignment do |county,place,church,register,source,group|
+  link "Assignment", assignment_path(group)
+  parent :syndicate_image_server_images, county, place, church, register, source, group
+end
 
 # crumb :projects do
 #   link "Projects", projects_path
