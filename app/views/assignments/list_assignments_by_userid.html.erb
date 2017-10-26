@@ -1,0 +1,85 @@
+<% breadcrumb :syndicate_assignment, @county, @place, @church, @register, @source, @group %>
+
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Assignments</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+
+<% title "Assignment - list by userid" %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">
+  <% if session[:manage_user_origin] == 'manage county' %>
+    <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <% end %>
+  <% if ['manage county', 'manage syndicate'].include? session[:manage_user_origin] %>
+    <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
+  <% end %>
+  <% if session[:manage_user_origin] == 'manage syndicate' %>
+    <%= link_to 'Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Re-assignment', re_assign_assignment_path(:assign_type=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %>
+  <% end %>
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead>
+      <tr>
+        <th class="t12">User</th>
+        <th class="t12">Status</th>
+        <th class="t12">Image</th>
+        <th class="t12">Date</th>
+        <th class="t12">Instructions</th>
+        <th class="t5">Action</th>
+      </tr>
+    </thead>
+  </table>
+
+    <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody>
+        <% prev_user, prev_status = '', '' %>
+        <% if @assignment.nil? %>
+          No assignment for selected user
+        <% else %>
+          <% @assignment.each do |x| %>
+            <tr>
+              <% if !x[:userids].nil? %>
+                <% if x[:userids][:userid] != prev_user %>
+                  <td class="t12"><%= x[:userids][:userid] if !x[:userids].nil? %>&nbsp;</td>
+                  <% prev_user = x[:userids][:userid] %>
+                  <% prev_status = '' %>
+                <% else %>
+                  <td class="t12">&nbsp;</td>
+                <% end %>
+              <% else %>
+                <td class="t12">&nbsp;</td>
+              <% end %>
+              <% if !x[:images].nil? %>
+                <% if ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] != prev_status %>
+                  <td class="t12"><%= ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] if !x[:images].nil? %>&nbsp;</td>
+                  <% prev_status = ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] %>
+                <% else %>
+                  <td class="t12">&nbsp;</td>
+                <% end %>
+              <% else %>
+                <td class="t12">&nbsp;</td>
+              <% end %>
+              <td class="t12"><%= x[:images][:image_name]+'_'+x[:images][:seq] if !x[:images].nil? %>&nbsp;</td>
+              <td class="t12"><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %>&nbsp;</td>
+              <td class="t12"><%= x[:instructions] %>&nbsp;</td>
+              <td class="t5">
+                <%= link_to 'DE', assignment_path(x[:images][:_id]), data: { confirm: 'Are you sure you want to delete the assignment?' }, method: :delete if !x[:images].nil? %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div style="clear:both;"></div><br>

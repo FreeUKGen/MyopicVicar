@@ -1,0 +1,67 @@
+var lastChecked = null;
+
+$(':checkbox').click(function(e){
+	var x = document.activeElement
+	if ((x.id == 'assignment_seq_0') || (x.id == 'assignment_user_id_0')) {
+		if (x.checked) {
+			$(':checkbox').each(function(){
+				$(this).prop('checked', true);
+			})
+		} else {
+			$(':checkbox').each(function(){
+				$(this).prop('checked', false)
+			})
+		}
+	} else {
+		if (e.ctrlKey && e.shiftKey) {
+			if (!lastChecked) {
+				lastChecked = this
+				return
+			}
+
+			var start_id = $(':checkbox').index(lastChecked)
+			var end_id = $(':checkbox').index(this)
+
+			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked)
+
+			lastChecked = null
+		}
+		document.getElementById('assignment_seq_0').checked = false;
+	}
+})
+
+$('input:radio[name="assignment[type]"]').change(function() {
+	$(':checkbox').each(function(){
+		$(this).prop('checked', false)
+	})
+
+	if (this.value == 'transcriber') {
+		$('#transcriber_images').show();
+		$('#reviewer_images').hide();
+	} else {
+		$('#transcriber_images').hide();
+		$('#reviewer_images').show();
+	}
+});
+
+function validate_selection() {
+	if ($('#assignment_user_id').val() === null) {
+		alert("You didn't select transcriber/reviewer")
+		return false
+	} else {
+		var checked = 0
+
+		$(':checkbox').each(function(){
+			if ($(this).is(":checked") == true) {
+				checked = 1
+			}
+		})
+
+		if (checked == 1) {
+			return true
+		} else {
+			alert("You didn't select images")
+			return false
+		}
+	}
+}
