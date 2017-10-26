@@ -19,7 +19,7 @@
     <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
   <% end %>
   <% if session[:manage_user_origin] == 'manage syndicate' %>
-    <%= link_to 'Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
     <%= link_to 'Re-assignment', re_assign_assignment_path(:assign_type=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %>
   <% end %>
   </div>

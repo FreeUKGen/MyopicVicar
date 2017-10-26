@@ -19,7 +19,7 @@ class Source
 
   belongs_to :register, index: true
   has_many :image_server_groups, foreign_key: :source_id, :dependent=>:restrict # includes transcripts, printed editions, and microform, and digital versions of these
-  has_many :assignments
+  has_many :assignments, :dependent=>:restrict
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
   attr_accessor :propagate

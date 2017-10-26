@@ -131,7 +131,8 @@ class AssignmentsController < ApplicationController
     @location = 'location.href= "/assignments/assignments_by_userid"'
 
     image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :assignment_id=>{'$nin'=>[nil,'']})
-    @assignment = Assignment.where(:id=>image_server_image.first.assignment_id).first
+
+    @assignment = image_server_image.count == 0 ? nil : Assignment.where(:id=>image_server_image.first.assignment_id).first
 
     if @assignment.nil?
       flash[:notice] = 'No assignment in this Image Source'
