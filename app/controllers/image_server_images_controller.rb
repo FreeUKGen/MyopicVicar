@@ -12,7 +12,7 @@ class ImageServerImagesController < ApplicationController
     image_server_image.destroy
 
     flash[:notice] = 'Deletion of image"'+image_server_image[:image_name]+'_'+image_server_image[:seq]+'.jpg" was successful'
-    redirect_to image_server_image_path(return_location)
+    redirect_to index_image_server_image_path(return_location)
   end
 
   def display_info

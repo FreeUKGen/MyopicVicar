@@ -49,6 +49,7 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ImageServerGroup.id(params[:id]).first
     begin
       image_server_group.destroy
+      session.delete(:image_server_group_id)
 
       flash[:notice] = 'Deletion of Image Group "'+image_server_group[:group_name]+'" was successful'
       redirect_to index_image_server_group_path(image_server_group.source)  
