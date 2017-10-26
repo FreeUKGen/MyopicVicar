@@ -80,7 +80,7 @@
           <% end %>
 
           <% if source_rows == @syndicate[syndicate][place_name][church_name][register_type][source_name].count %>
-            <td class="t15"><%= source_name %></td>
+            <td class="t15"><%= link_to(source_name,source_path(@source.select {|x| x[2] == source_name}[0][0])) %></td>
           <% else %>
             <td class="t15">&nbsp;</td>
           <% end %>
