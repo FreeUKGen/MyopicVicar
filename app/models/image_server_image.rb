@@ -39,6 +39,7 @@ class ImageServerImage
 #  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
   field :status, type: String, default: nil
 #  validates_inclusion_of :status, :in => Status::ALL_STATUSES
+  field :image_file_name, type: String
   field :notes, type: String
 
   field :order, type: Integer

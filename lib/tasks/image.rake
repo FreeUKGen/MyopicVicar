@@ -48,6 +48,7 @@ namespace :image do
             when 2
               place,church,register_type,notes = ''
               place,church,register_type,notes = FreeregAids.extract_location(place_part)
+              f[county_part][place_part]['folder_name'] = place + ' ' + register_type
 
               place,church,register,final_message,status,church_status,register_status = FreeregAids.check_and_get_location(county_part,place,church,register_type,place_part)
 
@@ -94,7 +95,7 @@ namespace :image do
 
                 if prev_file_name == file_name
                   if all_seq.any? {|h| h[:seq] == file_seq} == false
-                    all_seq << {:seq => file_seq, :status => 'reserved'}
+                    all_seq << {:seq => file_seq, :image_file_name => line_parts[2].to_s}
                     count = count + 1
                   end
                 else
@@ -107,7 +108,7 @@ p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county]
                   prev_county = county_part.to_s
                   prev_place = place_part.to_s
                   prev_file_name = file_name.to_s
-                  all_seq = [{:seq => file_seq, :status => 'reserved'}]
+                  all_seq = [{:seq => file_seq, :image_file_name => line_parts[2].to_s}]
                   count = 1
                 end
                 sources_processed = sources_processed.to_i + 1
@@ -133,16 +134,17 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
 
   def self.update_collection(f,group_name,start_date,end_date,all_seq,count)
     source = Source.where(:register_id=>f['register'].id, :source_name=>'Image Server').first
-    source = create_source(f['register'],f['notes']) if source.nil?
+    source = create_source(f['register'],f['folder_name'],f['notes']) if source.nil?
 
-    is_group = create_image_server_group(source,group_name,f['status'],start_date,end_date,f['church_status'],f['register_status'],count)
+    is_group = create_image_server_group(source,group_name,start_date,end_date,f['church_status'],f['register_status'],count)
     
     update_image_server_image(is_group,group_name,start_date,end_date,all_seq)
   end
 
-  def self.create_source(register,notes)
+  def self.create_source(register,folder_name,notes)
     source = Source.new(:register_id=>register.id)
     source.source_name = "Image Server"
+    source.folder_name = folder_name
     source.notes = notes
     source.start_date = source.register.datemin
     source.end_date = source.register.datemax
@@ -154,13 +156,12 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source
   end
 
-  def self.create_image_server_group(source,group_name,status,start_date,end_date,church_status,register_status,count)
+  def self.create_image_server_group(source,group_name,start_date,end_date,church_status,register_status,count)
     image_server_group = ImageServerGroup.where(:source_id=>source.id, :group_name=>group_name).first
 
     if image_server_group.nil?
       image_server_group = ImageServerGroup.new(:source_id=>source.id)
       image_server_group.group_name = group_name
-#      image_server_group.status = status     # status is an Array, need to modify script if needed
       image_server_group.start_date = start_date
       image_server_group.end_date = end_date
       image_server_group.number_of_images = count
@@ -185,7 +186,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
 
       if image_server_image.nil?
         seq.each do |f|
-          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name.split('/')[1], :seq=>f[:seq], :start_date=>start_date, :end_date=>end_date}
+          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name.split('/')[1], :seq=>f[:seq], :image_file_name=>f[:image_file_name], :start_date=>start_date, :end_date=>end_date}
         end
         image_server_image = ImageServerImage.create! (rd)
       else

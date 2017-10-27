@@ -7,6 +7,7 @@ class Source
   field :notes, type: String
   field :start_date, type: String
   field :end_date, type: String
+  field :folder_name, type: String
 
   field :original_form, type: Hash, default: {}
   field :original_owner, type: String
