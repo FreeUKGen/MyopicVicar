@@ -46,9 +46,7 @@ class Assignment
         dest_assignment.update_all(:assign_date=>Time.now.iso8601)
       end
 
-      orig_assignment.compact.each do |x|
-        Assignment.update_original_assignments(orig_assignment,image_list) if x != dest_assignment.first.id
-      end
+      Assignment.update_original_assignments(orig_assignment,dest_assignment.first.id,image_list)
 
       if image_status.nil?
         ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id)
@@ -57,7 +55,7 @@ class Assignment
       end
     end
 
-    def update_original_assignments(assignment,assign_list)
+    def update_original_assignments(assignment,dest_assignment_id,assign_list)
       images_by_assignment_id = ImageServerImage.where(:assignment_id=>{'$in'=>assignment}).pluck(:assignment_id, :id).uniq
       hash_images_by_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| images_by_assignment_id.each{|k,v| h[k] << v}}
 
@@ -71,7 +69,7 @@ class Assignment
       if !hash_images_by_assignment_id.nil?
         hash_images_by_assignment_id.keys.each do |assignment_id|
           assignment = Assignment.id(assignment_id)
-          assignment.destroy if hash_images_by_assignment_id[assignment_id].empty?
+          assignment.destroy if hash_images_by_assignment_id[assignment_id].empty? && assignment_id != dest_assignment_id
         end
       end
     end
