@@ -39,7 +39,7 @@ class Assignment
       orig_assignment = ImageServerImage.where(:id=>{'$in'=>image_list}).pluck(:assignment_id).uniq
       dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user_id)
 
-      if dest_assignment.count == 0
+      if dest_assignment.nil? || dest_assignment.empty?
         Assignment.create_assignment(source_id, user_id, instructions)
         dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user_id)
       else
