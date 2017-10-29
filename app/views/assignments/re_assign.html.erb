@@ -22,7 +22,7 @@
     <% if @reassign_transcriber_images.empty? %>
       No IN_PROGRESS images to re-assign transcriber
     <% else %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@reassign_transcriber_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to re_assign transcriber', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+      <%= s.input :transcriber_seq, :as=>:check_boxes, :collection=>@reassign_transcriber_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to re_assign transcriber', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
     <% end %>
   </div>
 
@@ -30,7 +30,7 @@
     <% if @reassign_reviewer_images.empty? %>
       No IN_REVIEW images to re-assign reviewer
     <% else %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@reassign_reviewer_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to re_assign reviewer', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+      <%= s.input :reviewer_seq, :as=>:check_boxes, :collection=>@reassign_reviewer_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to re_assign reviewer', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
     <% end %>
   </div>
 

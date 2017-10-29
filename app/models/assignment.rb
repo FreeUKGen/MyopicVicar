@@ -46,7 +46,9 @@ class Assignment
         dest_assignment.update_all(:assign_date=>Time.now.iso8601)
       end
 
-      Assignment.update_original_assignments(orig_assignment,image_list) if !orig_assignment.compact.empty?
+      orig_assignment.compact.each do |x|
+        Assignment.update_original_assignments(orig_assignment,image_list) if x != dest_assignment.first.id
+      end
 
       if image_status.nil?
         ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id)

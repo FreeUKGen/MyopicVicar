@@ -2,7 +2,7 @@ var lastChecked = null;
 
 $(':checkbox').click(function(e){
 	var x = document.activeElement
-	if ((x.id == 'assignment_seq_0') || (x.id == 'assignment_user_id_0')) {
+	if ((x.id == 'assignment_transcriber_seq_0') || (x.id == 'assignment_reviewer_seq_0')) {
 		if (x.checked) {
 			$(':checkbox').each(function(){
 				$(this).prop('checked', true);
@@ -26,7 +26,8 @@ $(':checkbox').click(function(e){
 
 			lastChecked = null
 		}
-		document.getElementById('assignment_seq_0').checked = false;
+		document.getElementById('assignment_transcriber_seq_0').checked = false;
+		document.getElementById('assignment_reviewer_seq_0').checked = false;
 	}
 })
 

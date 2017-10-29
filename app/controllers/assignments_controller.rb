@@ -17,14 +17,15 @@ class AssignmentsController < ApplicationController
     case assignment_params[:type] 
       when 'transcriber'
         image_status = 'ip'
+        assign_list = assignment_params[:transcriber_seq]
       when 'reviewer'
         image_status = 'ir'
+        assign_list = assignment_params[:reviewer_seq]
     end
 
     source_id = assignment_params[:source_id]
     user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
     instructions = assignment_params[:instructions]
-    assign_list = assignment_params[:seq]
 
     Assignment.update_or_create_new_assignment(source_id,user.id,instructions,assign_list,image_status)
 
@@ -147,8 +148,14 @@ class AssignmentsController < ApplicationController
     source_id = assignment_params[:source_id]
     user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
     instructions = assignment_params[:instructions]
-    reassign_list = assignment_params[:seq]
     image_status = nil
+
+    case assignment_params[:type] 
+      when 'transcriber'
+        reassign_list = assignment_params[:transcriber_seq]
+      when 'reviewer'
+        reassign_list = assignment_params[:reviewer_seq]
+    end
 
     Assignment.update_or_create_new_assignment(source_id,user.id,instructions,reassign_list,image_status)
 

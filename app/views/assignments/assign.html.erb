@@ -22,7 +22,7 @@
     <% if @assign_transcriber_images.empty? %>
       No ALLOCATED images to assign transcriber
     <% else %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@assign_transcriber_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to assign transcriber', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+      <%= s.input :transcriber_seq, :as=>:check_boxes, :collection=>@assign_transcriber_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to assign transcriber', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
     <% end %>
   </div>
 
@@ -30,7 +30,7 @@
     <% if @assign_reviewer_images.empty? %>
       No TRANSCRIBED images to assign reviewer
     <% else %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@assign_reviewer_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to assign reviewer', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+      <%= s.input :reviewer_seq, :as=>:check_boxes, :collection=>@assign_reviewer_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to assign reviewer', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
     <% end %>
   </div>
 
