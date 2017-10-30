@@ -51,7 +51,7 @@ class ImageServerImage
   #has_one :page_image # kirk prefers has_many here and may be right, but the only example I can think of
   # where it makes sense to have multiple images per page(of a source) is in the case
   # of derivatives
-  embeds_one :page_image
+  #embeds_one :page_image
   
   index({image_server_group_id:1,status:1},{name: "image_server_group_id_status"})
   index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})

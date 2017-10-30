@@ -18,7 +18,7 @@ class Church
   field :transcribers, type: Hash
   field :contributors, type: Hash
   has_many :registers, dependent: :restrict
-
+  has_many :image_server_groups
   embeds_many :alternatechurchnames
   accepts_nested_attributes_for :alternatechurchnames, allow_destroy: true,  reject_if: :all_blank
 
