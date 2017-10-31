@@ -136,7 +136,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source = Source.where(:register_id=>f['register'].id, :source_name=>'Image Server').first
     source = create_source(f['register'],f['folder_name'],f['notes']) if source.nil?
 
-    is_group = create_image_server_group(source,group_name,start_date,end_date,f['church_status'],f['register_status'],count)
+    is_group = create_image_server_group(f['place'],f['church'],source,group_name,start_date,end_date,f['church_status'],f['register_status'],count)
     
     update_image_server_image(is_group,group_name,start_date,end_date,all_seq)
   end
@@ -156,7 +156,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     source
   end
 
-  def self.create_image_server_group(source,group_name,start_date,end_date,church_status,register_status,count)
+  def self.create_image_server_group(place,church,source,group_name,start_date,end_date,church_status,register_status,count)
     image_server_group = ImageServerGroup.where(:source_id=>source.id, :group_name=>group_name).first
 
     if image_server_group.nil?
@@ -172,6 +172,10 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
       image_server_group.save
       source.image_server_groups << image_server_group
       source.save
+      place.image_server_groups << image_server_group
+      place.save
+      church.image_server_groups << image_server_group
+      church.save
     else
 #      add image_server_group.update here
     end
