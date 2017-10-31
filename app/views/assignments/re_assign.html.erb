@@ -1,0 +1,48 @@
+<% breadcrumb :syndicate_assignment, @county, @place, @church, @register, @source, @group %>
+
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Image Re-assignment</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+
+<% title "IS Image - re_assignment" %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+   	<%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @assignment do |s| %>
+	<%= s.input :user_id, :collection=>@people, :label=>'members to re_assign', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+	<%= s.input :instructions, :input_html => {:class => "simple_form_bgcolour", :size => 70} %>
+
+  <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+
+  <div id="transcriber_images">
+    <% if @reassign_transcriber_images.empty? %>
+      No IN_PROGRESS images to re-assign transcriber
+    <% else %>
+      <%= s.input :transcriber_seq, :as=>:check_boxes, :collection=>@reassign_transcriber_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to re_assign transcriber', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+    <% end %>
+  </div>
+
+  <div id="reviewer_images" style="display:none;">
+    <% if @reassign_reviewer_images.empty? %>
+      No IN_REVIEW images to re-assign reviewer
+    <% else %>
+      <%= s.input :reviewer_seq, :as=>:check_boxes, :collection=>@reassign_reviewer_images.invert.sort.unshift(['select all', '0']), :label=>'Select images to re_assign reviewer', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+    <% end %>
+  </div>
+
+  <%= s.hidden_field :source_id, :value=>@source.id %>
+  <%= s.hidden_field :userid_detail_id, :value=>@user.id %>
+  <%= s.hidden_field :image_server_group_id, :value=>params[:id] %>
+  <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
+  <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
+<% end %>
+</div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'assignment.js' %>
+</script>

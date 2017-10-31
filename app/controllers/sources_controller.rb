@@ -51,6 +51,7 @@ class SourcesController < ApplicationController
   end
 
   def display_info
+    @source = Source.find(:id=>session[:source_id]) if !session[:source_id].nil?
     @register = Register.find(:id=>session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
     @church = Church.find(session[:church_id])
@@ -180,7 +181,7 @@ class SourcesController < ApplicationController
     display_info
     get_userids_and_transcribers or return
 
-    @source = Source.new
+    @source_new = Source.new
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
 
     if name_array.nil?

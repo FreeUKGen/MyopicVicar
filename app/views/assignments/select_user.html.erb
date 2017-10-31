@@ -1,0 +1,28 @@
+<% breadcrumb :syndicate_assignment, @county, @place, @church, @register, @source, @group %>
+
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Images Assignment</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+
+<% title "IS Image - assignment" %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+   	<%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @assignment, :url=>url_for(:action=>'list_assignments_by_userid', :controller=>'assignments'), :method=>'get' do |s| %>
+	<%= s.input :user_id, :as=>:check_boxes, :collection=>@people.invert.sort.unshift(['select all', '0']), :label=>'select a user', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+
+  <%= s.hidden_field :source_id, :value=>@source.id %>
+  <%= s.hidden_field :image_server_group_id, :value=>params[:id] %>
+  <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
+  <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
+<% end %>
+</div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'assignment.js' %>
+</script>

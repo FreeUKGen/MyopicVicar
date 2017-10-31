@@ -1,6 +1,6 @@
 <section class="island  island--light">
 <div class="grid">
-<%= simple_form_for @source do |s| %>
+<%= simple_form_for @source_new do |s| %>
   <%= s.input :source_name, :collection=>@list, :label=>'Source Name', :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>2} %>
   <%= s.input :notes, :label => 'Notes', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
   <%= s.input :start_date, :label=>'Start Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlength => 15} %>

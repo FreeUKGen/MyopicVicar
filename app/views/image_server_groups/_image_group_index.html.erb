@@ -1,6 +1,6 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
-  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+  <% if session[:manage_user_origin] == 'manage county' %>
     <%= link_to 'Allocate Image Groups', allocate_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Create new Image Group', new_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
   <% end %>
@@ -13,15 +13,21 @@
     <thead>
       <tr>
         <th class="t15">Image Group</th>
-        <th class="t10">Total Image</th>
-        <th class="t05">Start Date</th>
-        <th class="t05">End Date</th>
+        <th class="t10">Total Images</th>
+        <th class="t5">Start Date</th>
+        <th class="t5">End Date</th>
         <th class="t10">Status</th>
         <th class="t15">Skill Level</th>
-        <th class="t15">Syndicate</th>
-        <th class="t15">Transcriber</th>
-        <th class="t15">Reviewer</th>
-        <th class="t15">Action</th>
+        <th class="t10">Syndicate</th>
+        <th class="t10">Transcriber</th>
+        <th class="t10">Reviewer</th>
+        <th class="t10">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <% if session[:manage_user_origin] == 'manage county' %>  <%# any user from manage_counties %>
+            <span>SH: Show Group Properties; ED: Edit Group Properties; DE: Delete Group; LS: List Images in the Group</span>
+          <% else %>          <%# any user from manage_syndicates %>
+            <span>SH: Show Group Properties; LS: List Images in the Group</span>
+          <% end %>
+        </a></th>
       </tr>
     </thead>
   </table>
@@ -34,26 +40,19 @@
             <td class="t15"><%= group.group_name %></td>
             <td class="t10"><%= group.number_of_images %>&nbsp;</td>
             <% if !group[:start_date].nil? && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
-              <td class="t05" style="color:red"><%= group[:start_date] %>&nbsp;</td>
+              <td class="t5" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
-              <td class="t05"><%= group[:start_date] %>&nbsp;</td>
+              <td class="t5"><%= group[:start_date] %>&nbsp;</td>
             <% end %>
             <% if !group[:end_date].nil? && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
-              <td class="t05" style="color:red"><%= group[:end_date] %>&nbsp;</td>
+              <td class="t5" style="color:red"><%= group[:end_date] %>&nbsp;</td>
             <% else %>
-              <td class="t05"><%= group[:end_date] %>&nbsp;</td>
+              <td class="t5"><%= group[:end_date] %>&nbsp;</td>
             <% end %>
             <td class="t10">
               <% unless group.summary[:status].nil? %>
                 <% group.summary[:status].each do |status| %>
-                  <% case ImageServerGroup::Status::ALL_STATUSES[status] %>
-                    <% when 'ERROR', 'UNALLOCATED' %>
-                      <span style="color:red"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
-                    <% when 'TRANSCRIBED' %>
-                      <span style="color:green"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
-                    <% else %>
-                      <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
-                  <% end %>
+                  <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
@@ -64,23 +63,23 @@
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t15"><%= group[:syndicate_code] %>&nbsp;</td>
-            <td class="t15">
+            <td class="t10"><%= group[:syndicate_code] %>&nbsp;</td>
+            <td class="t10">
               <% unless group.summary[:transcriber].nil? %>
                 <% group.summary[:transcriber].each do |transcriber| %>
                   <span><%= transcriber %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t15">
+            <td class="t10">
               <% unless group.summary[:reviewer].nil? %>
                 <% group.summary[:reviewer].each do |reviewer| %>
                   <span><%= reviewer %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t15"><%= link_to 'SH', image_server_group_path(group) %> 
-              <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
+            <td class="t10"><%= link_to 'SH', image_server_group_path(group) %> 
+              <% if session[:manage_user_origin] == 'manage county' %>
                 <%= link_to 'ED', edit_image_server_group_path(group) %> 
                 <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 
               <% end %>

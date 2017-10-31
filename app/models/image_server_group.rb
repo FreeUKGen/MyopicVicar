@@ -18,12 +18,15 @@ class ImageServerGroup
 
   module Status
     UNALLOCATED = 'u'
-    IN_PROGRESS = 'p'
+    ALLOCATED = 'a'
+    IN_PROGRESS = 'ip'
     TRANSCRIBED = 't'
-    REVIEWED    = 'r'
-    ERROR       = 'e'
+    IN_REVIEW = 'ir'
+    REVIEWED = 'r'
+    COMPLETE = 'c'
+    ERROR = 'e'
 
-    ALL_STATUSES = {'u'=>'UNALLOCATED', 'p'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'r'=>'REVIEWED', 'e'=>'ERROR'}
+    ALL_STATUSES = {'u'=>'UNALLOCATED', 'a'=>'ALLOCATED', 'ip'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'ir'=>'IN_REVIEW', 'r'=>'REVIEWED', 'c'=>'COMPLETE', 'e'=>'ERROR'}
 
     CHURCH_STATUS = {}
 
@@ -67,6 +70,8 @@ class ImageServerGroup
   attr_accessor :custom_field
 
   belongs_to :source, index: true
+  belongs_to :place, index: true
+  belongs_to :church, index: true
   has_many :image_server_images, foreign_key: :image_server_group_id, :dependent=>:restrict # includes images
   has_many :gaps
 
@@ -222,7 +227,7 @@ class ImageServerGroup
     
     def get_sorted_group_name(source_id)    
       # get hash key=image_server_group_id, val=ig, sorted by ig
-      ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
+      ig_array = ImageServerGroup.where(:source_id=>source_id, :number_of_images=>{'$nin'=>[nil,'',0]}).pluck(:id, :group_name)
       @group_name = Hash[ig_array.map {|key,value| [key,value]}]
 
       @group_name

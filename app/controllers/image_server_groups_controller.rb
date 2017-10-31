@@ -49,8 +49,10 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ImageServerGroup.id(params[:id]).first
     begin
       image_server_group.destroy
+      session.delete(:image_server_group_id)
+
       flash[:notice] = 'Deletion of Image Group "'+image_server_group[:group_name]+'" was successful'
-      redirect_to image_server_group_path(image_server_group.source)  
+      redirect_to index_image_server_group_path(image_server_group.source)  
 
     rescue Mongoid::Errors::DeleteRestriction
       logger.info "Logged Error for Image Server Group Delete"
@@ -60,10 +62,10 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def display_info
-    if session[:image_server_group_id]
+    if !session[:image_server_group_id].nil?
       image_server_group = ImageServerGroup.find(:id=>session[:image_server_group_id])
       @source = Source.find(image_server_group.source_id)
-    elsif session[:source_id]
+    elsif !session[:source_id].nil?
       @source = Source.find(session[:source_id])
     end
     session[:source_id] = @source.id
@@ -137,7 +139,6 @@ class ImageServerGroupsController < ApplicationController
     display_info
     @group = ImageServerGroup.id(params[:id])
     get_userids_and_transcribers or return
-    @syndicate = Syndicate.get_syndicates
 
     @image_server_group = ImageServerGroup.new
     @parent_source = Source.id(session[:source_id]).first
@@ -145,6 +146,7 @@ class ImageServerGroupsController < ApplicationController
 
   def show
     session[:image_server_group_id] = params[:id]
+    session[:ig_allocation] = params[:ig_allocation] if !params[:ig_allocation].nil?
     display_info
     @group = ImageServerGroup.id(params[:id])
 
@@ -166,16 +168,17 @@ class ImageServerGroupsController < ApplicationController
         number_of_images = ImageServerGroup.calculate_image_numbers(group_list)
 
         group_list.each do |x|
-          ImageServerGroup.
-            where(:id=>x).
-            update_all(
-              :syndicate_code=>image_server_group_params[:syndicate_code], 
-              :assign_date=>Time.now.iso8601, 
-              :number_of_images=>number_of_images[x])
+          image_server_group = ImageServerGroup.where(:id=>x)
+          image_server_group.update_all(:syndicate_code=>image_server_group_params[:syndicate_code], 
+                                        :assign_date=>Time.now.iso8601, 
+                                        :number_of_images=>number_of_images[x])
+
+          ImageServerImage.where(:image_server_group_id=>x, :status=>{'$in'=>['u','',nil]}).update_all(:status=>'a')
+          ImageServerImage.refresh_src_dest_group_summary(image_server_group)
         end
 
         flash[:notice] = 'Allocate of Image Groups was successful'
-        redirect_to index_image_server_group_path(image_server_group.source)     
+        redirect_to index_image_server_group_path(image_server_group.first.source)     
       else            # create and edit
         count = ImageServerGroup.where(:source_id=>image_server_group_params[:source_id], :group_name=>image_server_group_params[:group_name]).count
 

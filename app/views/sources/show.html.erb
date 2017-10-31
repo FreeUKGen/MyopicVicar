@@ -1,14 +1,28 @@
-<% case @source.source_name %>
-  <% when 'Image Server' %>
-    <% breadcrumb :show_image_source, @county, @place, @church, @register, @source %>
-  <% when 'Other Server1' %>
-    <% breadcrumb :show_other_server1, @county, @place, @church, @register, @source %>
-  <% when 'Other Server2' %>
-    <% breadcrumb :show_other_server2, @county, @place, @church, @register, @source %>
-  <% when 'Other Server3' %>
-    <% breadcrumb :show_other_server3, @county, @place, @church, @register, @source %>
+<% if session[:manage_user_origin] == 'manage syndicate' %>
+  <% case @source.source_name %>
+    <% when 'Image Server' %>
+      <% breadcrumb :syndicate_image_source, @county, @place, @church, @register, @source %>
+    <% when 'Other Server1' %>
+      <% breadcrumb :syndicate_other_server1, @county, @place, @church, @register, @source %>
+    <% when 'Other Server2' %>
+      <% breadcrumb :syndicate_other_server2, @county, @place, @church, @register, @source %>
+    <% when 'Other Server3' %>
+      <% breadcrumb :syndicate_other_server3, @county, @place, @church, @register, @source %>
+  <% end %>
+<% else %>
+  <% case @source.source_name %>
+    <% when 'Image Server' %>
+      <% breadcrumb :county_image_source, @county, @place, @church, @register, @source %>
+    <% when 'Other Server1' %>
+      <% breadcrumb :county_other_server1, @county, @place, @church, @register, @source %>
+    <% when 'Other Server2' %>
+      <% breadcrumb :county_other_server2, @county, @place, @church, @register, @source %>
+    <% when 'Other Server3' %>
+      <% breadcrumb :county_other_server3, @county, @place, @church, @register, @source %>
+  <% end %>
 <% end %>
 
+<% title "Source - properties" %>
 <div style="clear:both;"></div><br>
 <p style="text-align: center"><b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
@@ -28,11 +42,28 @@
     <% when 'OTher Server3' %>
     <% else %>
   <% end %>
-  <% if ['system_administrator', 'county_coordinator', 'data_manager'].include? @user.person_role %>
-    <%= link_to 'Create new Image Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
-    <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+  <% if session[:manage_user_origin] == 'manage county' %>
+    <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
+    <% case @source.source_name %>
+      <% when 'Image Server' %>
+        <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+        <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+        <% if @user.person_role == 'system_administrator' %>
+          <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+        <% end %>
+      <% when 'Other Server1' %>
+        <% if @user.person_role == 'system_administrator' %>
+          <%= link_to 'Delete Other Server1', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+        <% end %>
+      <% when 'Other Server2' %>
+        <% if @user.person_role == 'system_administrator' %>
+          <%= link_to 'Delete Other Server2', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+        <% end %>
+      <% when 'Other Server3' %>
+        <% if @user.person_role == 'system_administrator' %>
+          <%= link_to 'Delete Other Server3', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+        <% end %>
+    <% end %>
   <% end %>
   </div>
   <div style="clear:both;"> </div><br>

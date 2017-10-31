@@ -1,11 +1,19 @@
 <% if session[:manage_user_origin] == 'manage syndicate' %>
-  <% breadcrumb :syndicate_show_image, @county, @place, @church, @register, @source, @group %>
+  <% breadcrumb :syndicate_image_server_image, @county, @place, @church, @register, @source, @group %>
 <% else %>
-  <% breadcrumb :show_image, @county, @place, @church, @register, @source, @group %>
+  <% case session[:ig_allocation] %>
+    <% when 'by_syndicate' %>
+      <% breadcrumb :sort_by_syndicate_image_server_image, @county, @place, @church, @register, @source, @group %>
+    <% when 'by_place' %>
+      <% breadcrumb :sort_by_place_image_server_image, @county, @place, @church, @register, @source, @group %>
+    <% else %>
+      <% breadcrumb :county_image_server_image, @county, @place, @church, @register, @source, @group %>
+  <% end %>
 <% end %>
 
+<% title "IS Image - move" %>
 <div style="clear:both;"></div><br>
-<p style="text-align: center">Images of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<p style="text-align: center"><b>Images</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">

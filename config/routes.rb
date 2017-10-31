@@ -303,6 +303,12 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
 
+  resources :assignments
+  get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
+  get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
+  get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
+  get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
+
 
 
   # This line mounts Refinery's routes at the root of your application.

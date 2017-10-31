@@ -80,12 +80,12 @@
           <% end %>
 
           <% if source_rows == @syndicate[syndicate][place_name][church_name][register_type][source_name].count %>
-            <td class="t15"><%= link_to(source_name,source_path(@source.select {|x| x[2] == source_name}[0][0])) %></td>
+            <td class="t15"><%= source_name %></td>
           <% else %>
             <td class="t15">&nbsp;</td>
           <% end %>
 
-          <td class="t15"><%= link_to(group_name, image_server_group_path(gid)) %>&nbsp;</td>
+          <td class="t15"><%= link_to(group_name, image_server_group_path(gid, :ig_allocation=>'by_syndicate')) %>&nbsp;</td>
           <td class="t15"><%= number_of_images %>&nbsp;</td></tr>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>

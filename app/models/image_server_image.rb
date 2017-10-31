@@ -17,13 +17,16 @@ class ImageServerImage
   end
 
   module Status
-    ERROR = 'e'
-    UNALLOCATED = 'u'
-    IN_PROGRESS = 'p'
-    TRANSCRIBED = 't'
-    REVIEWED = 'r'
+    Unallocated = 'u'
+    Allocated = 'a'
+    In_progress = 'ip'
+    Transcribed = 't'
+    In_review = 'ir'
+    Reviewed = 'r'
+    Complete = 'c'
+    Error = 'e'
 
-    ALL_STATUSES = {'u'=>'UNALLOCATED', 'p'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'r'=>'REVIEWED', 'e'=>'ERROR'}
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'ip'=>'In_progress', 't'=>'Transcribed', 'ir'=>'In_review', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
   end
 
   field :image_name, type: String
@@ -36,6 +39,7 @@ class ImageServerImage
 #  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
   field :status, type: String, default: nil
 #  validates_inclusion_of :status, :in => Status::ALL_STATUSES
+  field :image_file_name, type: String
   field :notes, type: String
 
   field :order, type: Integer
@@ -47,7 +51,7 @@ class ImageServerImage
   #has_one :page_image # kirk prefers has_many here and may be right, but the only example I can think of
   # where it makes sense to have multiple images per page(of a source) is in the case
   # of derivatives
-  embeds_one :page_image
+  #embeds_one :page_image
   
   index({image_server_group_id:1,status:1},{name: "image_server_group_id_status"})
   index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})
@@ -56,8 +60,11 @@ class ImageServerImage
 
   class << self
 
-    def id(id)
-      where(:id => id)
+    def get_allocated_image_list(group_id)
+      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'a').pluck(:id, :image_name, :seq)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+
+      image_list
     end
 
     def get_image_list(group_id)
@@ -69,6 +76,20 @@ class ImageServerImage
       image_list
     end
 
+    def get_in_progress_image_list(group_id)
+      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'ip').pluck(:id, :image_name, :seq)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+
+      image_list
+    end
+
+    def get_in_review_image_list(group_id)
+      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'ir').pluck(:id, :image_name, :seq)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+
+      image_list
+    end
+
     def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
       ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
       group_name = Hash[ig_array.map {|key,value| [key,value]}]
@@ -77,8 +98,24 @@ class ImageServerImage
       group_name
     end
 
+    def get_transcribed_image_list(group_id)
+      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'t').pluck(:id, :image_name, :seq)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+
+      image_list
+    end
+
+    def id(id)
+      where(:id => id)
+    end
+
     def image_server_group_id(id)
       where(:image_server_group_id => id)
+    end
+
+    def refresh_image_server_group_after_assignment(image_server_group_id)
+      image_server_group = ImageServerGroup.id(image_server_group_id)
+      ImageServerImage.refresh_src_dest_group_summary(image_server_group)
     end
 
     def refresh_src_dest_group_summary(image_server_group)
