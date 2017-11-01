@@ -34,7 +34,6 @@
     <%= link_to 'Propagate Transcriber', flush_image_server_image_path(:propagate_choice=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Propagate Reviewer', flush_image_server_image_path(:propagate_choice=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Re-assignment', re_assign_assignment_path(:assign_type=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %>
     <%= link_to 'List assignments by userid', select_user_assignment_path, method: :get, :class => "btn weight--light btn--small" %>
   <% end %>
   </div>

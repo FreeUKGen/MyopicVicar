@@ -16,9 +16,17 @@
 	<%= s.input :user_id, :collection=>@people, :label=>'members to re_assign', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
 	<%= s.input :instructions, :input_html => {:class => "simple_form_bgcolour", :size => 70} %>
 
-  <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+  <% if params[:assign_type] == 'reviewer' %>
+    <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Reviewer', 'reviewer'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+  <% else %>
+    <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+  <% end %>
 
-  <div id="transcriber_images">
+  <% if params[:assign_type] == 'reviewer' %>
+    <div id="transcriber_images" style="display:none;">
+  <% else %>
+    <div id="transcriber_images">
+  <% end %>
     <% if @reassign_transcriber_images.empty? %>
       No IN_PROGRESS images to re-assign transcriber
     <% else %>
@@ -26,7 +34,11 @@
     <% end %>
   </div>
 
-  <div id="reviewer_images" style="display:none;">
+  <% if params[:assign_type] == 'reviewer' %>
+    <div id="reviewer_images">
+  <% else %>
+    <div id="reviewer_images" style="display:none;">
+  <% end %>
     <% if @reassign_reviewer_images.empty? %>
       No IN_REVIEW images to re-assign reviewer
     <% else %>

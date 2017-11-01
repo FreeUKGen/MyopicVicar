@@ -10,22 +10,6 @@
   </div><br>
 <% end %>
 
-<% unless session[:userid].nil?%>
-  <div style="text-align: center">
-  <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
-  <% end %>
-  <% if ['manage county', 'manage syndicate'].include? session[:manage_user_origin] %>
-    <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
-  <% end %>
-  <% if session[:manage_user_origin] == 'manage syndicate' %>
-    <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Re-assignment', re_assign_assignment_path(:assign_type=>'reviewer'), method: :get, :class => "btn weight--light btn--small" %>
-  <% end %>
-  </div>
-  <div style="clear:both;"> </div><br>
-<% end %>
-
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead>
@@ -35,7 +19,10 @@
         <th class="t12">Image</th>
         <th class="t12">Date</th>
         <th class="t12">Instructions</th>
-        <th class="t5">Action</th>
+        <th class="t10" colspan=2>Action
+          <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <span>RM: Remove Image from Assignment; COM: Change Image Status In This Assignment to Complete; UN: Unassign Images In This Assignment; RA: Re_assign Images In This Assignment; ER: Change Image Status In This Assignment to ERROR</span></a>
+        </th>
       </tr>
     </thead>
   </table>
@@ -50,6 +37,12 @@
           <% @assignment.each do |x| %>
             <tr>
               <% if !x[:userids].nil? %>
+                <% if x[:userids][:userid] != prev_user || x[:images][:status] != prev_status %>
+                  <% rows = @count[x[:userids][:userid]][x[:images][:status]] %>
+                <% else %>
+                  <% rows = 0 %>
+                <% end %>
+
                 <% if x[:userids][:userid] != prev_user %>
                   <td class="t12"><%= x[:userids][:userid] if !x[:userids].nil? %>&nbsp;</td>
                   <% prev_user = x[:userids][:userid] %>
@@ -61,9 +54,9 @@
                 <td class="t12">&nbsp;</td>
               <% end %>
               <% if !x[:images].nil? %>
-                <% if ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] != prev_status %>
+                <% if x[:images][:status] != prev_status %>
                   <td class="t12"><%= ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] if !x[:images].nil? %>&nbsp;</td>
-                  <% prev_status = ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] %>
+                  <% prev_status = x[:images][:status] %>
                 <% else %>
                   <td class="t12">&nbsp;</td>
                 <% end %>
@@ -74,7 +67,19 @@
               <td class="t12"><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %>&nbsp;</td>
               <td class="t12"><%= x[:instructions] %>&nbsp;</td>
               <td class="t5">
-                <%= link_to 'DE', assignment_path(x[:images][:_id]), data: { confirm: 'Are you sure you want to delete the assignment?' }, method: :delete if !x[:images].nil? %></td>
+                <%= link_to 'RM', assignment_path(x[:images][:_id]), data: { confirm: 'Are you sure you want to delete the assignment?' }, method: :delete if !x[:images].nil? %>
+              </td>
+              <% if rows != 0 %>
+                <td class="t5" rowspan=<%= rows %> style="vertical-align:middle">
+                  <%= link_to 'COM', assignment_path(x[:images][:assignment_id], :status=>x[:images][:status], :type=>'complete'), method: :put %>
+                  <%= link_to 'UN', assignment_path(x[:images][:assignment_id], :status=>x[:images][:status], :type=>'unallocate'), method: :put %>
+                  <% assignment_type = x[:images][:status] == 'ip' ? 'transcriber' : 'reviewer' %>
+                  <%= link_to 'RA', re_assign_assignment_path(x[:images][:image_server_group_id], :assign_type=>assignment_type) %>
+                  <% if x[:images][:status] == 'ir' %>
+                    <%= link_to 'ER', assignment_path(x[:images][:assignment_id], :status=>x[:images][:status], :type=>'error'), method: :put %>
+                  <% end %>
+                </td>
+              <% end %>
             </tr>
           <% end %>
         <% end %>

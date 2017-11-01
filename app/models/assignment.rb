@@ -13,6 +13,17 @@ class Assignment
 
   class << self
 
+    def bulk_update_assignment(assignment_id,orig_status,new_status)
+      assignment = Assignment.id(assignment_id)
+      image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
+
+      assignment_list = assignment.pluck(:id)
+      image_list = image_server_image.pluck(:id).map {|x| x.to_s}
+
+      Assignment.update_original_assignments(assignment_list,'',image_list)
+      image_server_image.update_all(:assignment_id=>nil, :status=>new_status)
+    end
+
   	def create_assignment(source_id, user_id, instructions)
       source = Source.id(source_id).first
       userid_detail = UseridDetail.id(user_id).first

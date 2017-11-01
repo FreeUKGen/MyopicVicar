@@ -43,7 +43,7 @@ class AssignmentsController < ApplicationController
     assignment_count = ImageServerImage.where(:assignment_id=>image_server_image.assignment_id).count
     assignment = image_server_image.assignment
 
-    image_server_image.update(:assignment_id=>nil)
+    image_server_image.update(:assignment_id=>nil, :status=>'a')
 
     assignment.destroy if assignment_count == 1
 
@@ -99,10 +99,25 @@ class AssignmentsController < ApplicationController
                 {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
                 {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids", preserveNullAndEmptyArrays: true}},
-                {'$unwind'=>{'path'=>"$images", preserveNullAndEmptyArrays: true}}, 
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
                 {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
              ])
+
+      group_by_count = Assignment.collection.aggregate([
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
+                {'$group'=>{_id:{user:"$userids.userid", status:"$images.status"}, total:{'$sum'=>1}}}
+             ])
+
+      @count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+      group_by_count.each do |x|
+        @count[x[:_id][:user]][x[:_id][:status]] = x[:total]
+      end
     end
   end
 
@@ -149,27 +164,49 @@ class AssignmentsController < ApplicationController
   end
 
   def update
-    source_id = assignment_params[:source_id]
-    user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
-    instructions = assignment_params[:instructions]
-    image_status = nil
+    case params[:_method]
+      when 'put'
+        assignment_id = params[:id]
+        orig_status = params[:status]
 
-    case assignment_params[:type] 
-      when 'transcriber'
-        reassign_list = assignment_params[:transcriber_seq]
-      when 'reviewer'
-        reassign_list = assignment_params[:reviewer_seq]
+        case params[:type]
+          when 'complete'
+            new_status = orig_status == 'ip' ? 't' : 'r'
+            flash[:notice] = 'Modify inmage status to COMPLETE was successful'
+          when 'unallocate'
+            new_status = orig_status == 'ip' ? 'a' : 't'
+            flash[:notice] = 'Modify image status to UNALLOCATE was successful'
+          when 'error'
+            new_status = 'e'
+            flash[:notice] = 'Modify image status to ERROR was successful'
+        end
+
+        Assignment.bulk_update_assignment(assignment_id,orig_status,new_status)
+        redirect_to select_user_assignment_path
+      else
+        source_id = assignment_params[:source_id]
+        user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
+        instructions = assignment_params[:instructions]
+        image_status = nil
+
+        case assignment_params[:type] 
+          when 'transcriber'
+            reassign_list = assignment_params[:transcriber_seq]
+          when 'reviewer'
+            reassign_list = assignment_params[:reviewer_seq]
+          else
+        end
+
+        Assignment.update_or_create_new_assignment(source_id,user.id,instructions,reassign_list,image_status)
+
+        flash[:notice] = 'Re_assignment was successful'
+        redirect_to index_image_server_image_path(assignment_params[:image_server_group_id])
     end
-
-    Assignment.update_or_create_new_assignment(source_id,user.id,instructions,reassign_list,image_status)
-
-    flash[:notice] = 'Re_assignment was successful'
-    redirect_to index_image_server_image_path(assignment_params[:image_server_group_id])
   end
 
   private
   def assignment_params
-    params.require(:assignment).permit!
+    params.require(:assignment).permit! if params[:_method] != 'put'
   end
 
 end
