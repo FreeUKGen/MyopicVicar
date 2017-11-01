@@ -16,6 +16,8 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ImageServerGroup.source_id(session[:source_id]).first
     group_list = ImageServerGroup.source_id(session[:source_id]).pluck(:group_name)
     source = image_server_group.source
+    church = source.register.church
+    place = church.place
 
     if not group_list.include? params[:image_server_group][:group_name]
       params[:image_server_group].delete(:source_start_date)
@@ -32,6 +34,10 @@ class ImageServerGroupsController < ApplicationController
       else
         source.image_server_groups << image_server_group
         source.save
+        church.image_server_groups << image_server_group
+        church.save
+        place.image_server_groups << image_server_group
+        place.save
 
         flash[:notice] = 'Addition of Image Group "'+image_server_group_params[:group_name]+'" was successful'
         redirect_to index_image_server_group_path(source)
@@ -127,7 +133,12 @@ class ImageServerGroupsController < ApplicationController
   def index
     session[:source_id] = params[:id]
     display_info
-    @image_server_group = ImageServerGroup.source_id(params[:id]).sort_by{|x| x.group_name.downcase}
+
+    if session[:manage_user_origin] == 'manage syndicate'
+      @image_server_group = ImageServerGroup.where(:source_id=>params[:id], :syndicate_code=>session[:syndicate]).sort_by{|x| x.group_name.downcase} if !session[:syndicate].nil?
+    else
+      @image_server_group = ImageServerGroup.source_id(params[:id]).sort_by{|x| x.group_name.downcase}
+    end
 
     if @image_server_group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
