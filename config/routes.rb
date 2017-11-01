@@ -299,6 +299,8 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
 
   resources :image_server_images
+  get 'image_server_images/:id/download(.:format)', :to => 'image_server_images#download', :as => :download_image_server_image
+  get 'image_server_images/:id/view(.:format)', :to => 'image_server_images#view', :as => :view_image_server_image
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
   get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image

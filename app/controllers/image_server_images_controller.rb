@@ -29,6 +29,13 @@ class ImageServerImagesController < ApplicationController
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
+  
+   def download
+    display_info
+    @image = ImageServerImage.id(params[:id]).first
+    website = ImageServerImage.create_url('download',params[:id], @place.chapman_code,@source.folder_name, @image.image_file_name,@user.userid) 
+    redirect_to website and return
+   end
 
   def edit
     display_info
@@ -201,6 +208,13 @@ class ImageServerImagesController < ApplicationController
       flash[:notice] = 'Update of the Image file(s) was successful'
       redirect_to index_image_server_image_path(image_server_group.first)
     end
+  end
+  
+  def view
+    display_info
+    @image = ImageServerImage.id(params[:id]).first
+    website = ImageServerImage.create_url('view',params[:id], @place.chapman_code,@source.folder_name, @image.image_file_name,@user.userid) 
+    redirect_to website and return
   end
 
   private

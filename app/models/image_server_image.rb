@@ -60,6 +60,11 @@ class ImageServerImage
 
   class << self
 
+
+  def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
+    Rails.application.config.image_server + 'manage_freereg_images/' + id + '/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid
+  end
+  
     def get_allocated_image_list(group_id)
       seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'a').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
@@ -124,5 +129,12 @@ class ImageServerImage
       image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.empty?
     end
 
+  end
+  
+  def location
+    group = self.image_server_group
+    source = group.source
+    register = source.register
+    return group,source,register
   end
 end
