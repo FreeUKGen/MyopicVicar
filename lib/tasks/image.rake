@@ -48,7 +48,7 @@ namespace :image do
             when 2
               place,church,register_type,notes = ''
               place,church,register_type,notes = FreeregAids.extract_location(place_part)
-              f[county_part][place_part]['folder_name'] = place + ' ' + register_type
+              f[county_part][place_part]['folder_name'] = place + ' ' + register_type if !place.nil? && !register_type.nil?
 
               place,church,register,final_message,status,church_status,register_status = FreeregAids.check_and_get_location(county_part,place,church,register_type,place_part)
 
