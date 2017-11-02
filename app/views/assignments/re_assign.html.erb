@@ -48,7 +48,7 @@
 
   <%= s.hidden_field :source_id, :value=>@source.id %>
   <%= s.hidden_field :userid_detail_id, :value=>@user.id %>
-  <%= s.hidden_field :image_server_group_id, :value=>params[:id] %>
+  <%= s.hidden_field :image_server_group_id, :value=>params[:image_server_group_id] %>
   <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
   <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
 <% end %>

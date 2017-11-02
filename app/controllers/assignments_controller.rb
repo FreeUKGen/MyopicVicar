@@ -38,16 +38,17 @@ class AssignmentsController < ApplicationController
   def destroy
     display_info
     get_userids_and_transcribers or return
+    image_status = assignment_params[:type] == 'transcriber' ? 'a' : 't'
 
     image_server_image = ImageServerImage.id(params[:id]).first
     assignment_count = ImageServerImage.where(:assignment_id=>image_server_image.assignment_id).count
     assignment = image_server_image.assignment
 
-    image_server_image.update(:assignment_id=>nil, :status=>'a')
+    image_server_image.update(:assignment_id=>nil, :status=>image_status)
 
     assignment.destroy if assignment_count == 1
 
-    flash[:notice] = 'Deletion of Assignment was successful'
+    flash[:notice] = 'Removal of this image from Assignment was successful'
     redirect_to :back
   end
 
@@ -89,12 +90,15 @@ class AssignmentsController < ApplicationController
 
   def list_assignments_by_userid
     display_info
-    user_id = assignment_params[:user_id]
-    user_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:userid_detail_id)
 
-    if user_ids.empty?
-      flash[:notice] = 'No assignment for selected user'
+    if params[:assignment].nil?                   # from re_direct after update
+      user_id = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).pluck(:id)
     else
+      user_id = assignment_params[:user_id]       # from select_user
+    end
+      user_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:userid_detail_id)
+
+    if !user_ids.empty?
       @assignment = Assignment.collection.aggregate([
                 {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
                 {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
@@ -172,17 +176,16 @@ class AssignmentsController < ApplicationController
         case params[:type]
           when 'complete'
             new_status = orig_status == 'ip' ? 't' : 'r'
-            flash[:notice] = 'Modify inmage status to COMPLETE was successful'
-          when 'unallocate'
+            flash[:notice] = 'Change assignment to COMPLETE was successful'
+          when 'unassign'
             new_status = orig_status == 'ip' ? 'a' : 't'
-            flash[:notice] = 'Modify image status to UNALLOCATE was successful'
+            flash[:notice] = 'UN_ASSIGN assignment was successful'
           when 'error'
             new_status = 'e'
-            flash[:notice] = 'Modify image status to ERROR was successful'
+            flash[:notice] = 'Modify images in assignment as ERROR was successful'
         end
 
         Assignment.bulk_update_assignment(assignment_id,orig_status,new_status)
-        redirect_to select_user_assignment_path
       else
         source_id = assignment_params[:source_id]
         user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
@@ -200,8 +203,8 @@ class AssignmentsController < ApplicationController
         Assignment.update_or_create_new_assignment(source_id,user.id,instructions,reassign_list,image_status)
 
         flash[:notice] = 'Re_assignment was successful'
-        redirect_to index_image_server_image_path(assignment_params[:image_server_group_id])
     end
+    redirect_to list_assignments_by_userid_assignment_path
   end
 
   private

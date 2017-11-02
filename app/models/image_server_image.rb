@@ -76,15 +76,15 @@ class ImageServerImage
       image_list
     end
 
-    def get_in_progress_image_list(group_id)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'ip').pluck(:id, :image_name, :seq)
+    def get_in_progress_image_list(assignment_id)
+      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'ip').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
 
       image_list
     end
 
-    def get_in_review_image_list(group_id)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'ir').pluck(:id, :image_name, :seq)
+    def get_in_review_image_list(assignment_id)
+      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'ir').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
 
       image_list
