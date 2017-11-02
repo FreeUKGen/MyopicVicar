@@ -31,9 +31,12 @@ class ImageServerImagesController < ApplicationController
   end
   
    def download
+     p "download"
+     p params
     display_info
     @image = ImageServerImage.id(params[:id]).first
     website = ImageServerImage.create_url('download',params[:id], @place.chapman_code,@source.folder_name, @image.image_file_name,@user.userid) 
+    p website
     redirect_to website and return
    end
 
@@ -211,9 +214,12 @@ class ImageServerImagesController < ApplicationController
   end
   
   def view
+     p "view"
+     p params
     display_info
     @image = ImageServerImage.id(params[:id]).first
     website = ImageServerImage.create_url('view',params[:id], @place.chapman_code,@source.folder_name, @image.image_file_name,@user.userid) 
+    p website
     redirect_to website and return
   end
 

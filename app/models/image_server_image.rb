@@ -2,7 +2,7 @@ class ImageServerImage
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
-  
+
   module Difficulty
     Complicated_Forms = 'c'
     Damaged = 'd'
@@ -62,7 +62,7 @@ class ImageServerImage
 
 
   def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
-    Rails.application.config.image_server + 'manage_freereg_images/' + id + '/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid
+   URI.escape( Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id)
   end
   
     def get_allocated_image_list(group_id)
