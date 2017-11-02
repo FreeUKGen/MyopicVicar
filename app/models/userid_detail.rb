@@ -249,6 +249,8 @@ class UseridDetail
       self.active  = false
       self.person_role = 'technical'
       self.syndicate = 'Technical'
+    when type == 'Upload Users'
+      self.transcription_agreement = "Accepted"
     end
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     self.password = password
