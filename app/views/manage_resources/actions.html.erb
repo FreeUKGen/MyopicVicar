@@ -4,16 +4,6 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-<% unless @user.email_address_validity_change_message.empty?%>
-  <div id="email_address_invalid_message" class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 40em;">
-    <button type="button" id="close_email_address_invalid_message" class="btn weight--light btn--small" style="float: right;"><strong>X</strong></button><br />
-    <ul>
-      <% @user.email_address_validity_change_message.last(2).each do |element| %>
-        <li>Your <b style="color: #009f98">email address</b> has been made <strong style="color: #009f98"><%= element %></strong> for <strong style="color: #009f98"><%= @user.reason_for_invalidating.nil? ? "UnSpecified" : @user.reason_for_invalidating %> reason </strong></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
@@ -24,9 +14,3 @@
 <%= @page %> 
 
 <%= render "resource_sidebar" %>
-<script type="text/javascript">
-  $("#show_email_address_invalid_message").hide();
-  $('#close_email_address_invalid_message').click(function() {
-    $('#email_address_invalid_message').slideUp();
-  });
-</script>
