@@ -38,7 +38,7 @@ class AssignmentsController < ApplicationController
   def destroy
     display_info
     get_userids_and_transcribers or return
-    image_status = assignment_params[:type] == 'transcriber' ? 'a' : 't'
+    image_status = params[:assign_type] == 'transcriber' ? 'a' : 't'
 
     image_server_image = ImageServerImage.id(params[:id]).first
     assignment_count = ImageServerImage.where(:assignment_id=>image_server_image.assignment_id).count
@@ -185,7 +185,7 @@ class AssignmentsController < ApplicationController
             flash[:notice] = 'Modify images in assignment as ERROR was successful'
         end
 
-        Assignment.bulk_update_assignment(assignment_id,orig_status,new_status)
+        Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
       else
         source_id = assignment_params[:source_id]
         user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first

@@ -13,7 +13,7 @@ class Assignment
 
   class << self
 
-    def bulk_update_assignment(assignment_id,orig_status,new_status)
+    def bulk_update_assignment(assignment_id,type,orig_status,new_status)
       assignment = Assignment.id(assignment_id)
       image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
       image_server_group = ImageServerGroup.where(:id=>image_server_image.first.image_server_group.id)
@@ -24,10 +24,22 @@ class Assignment
 
       Assignment.update_original_assignments(assignment_list,'',image_list)
 
-      case new_status
-        when 't'
-          image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :transcriber=>[user])
-        when 'r'
+      case type
+        when 'complete'
+          case new_status
+            when 't'
+              image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :transcriber=>[user])
+            when 'r'
+              image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[user])
+          end
+        when 'unassign'
+          case new_status
+            when 'a'
+              image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :transcriber=>[''])
+            when 't'
+              image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[''])
+          end
+        when 'error'
           image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[user])
       end
 
