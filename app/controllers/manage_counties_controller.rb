@@ -118,13 +118,10 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_sources
+    clean_session_for_images
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
     
-    session.delete(:source_id)
-    session.delete(:ig_allocation)
-    session.delete(:image_server_group_id)
-
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path and return

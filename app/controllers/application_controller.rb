@@ -202,9 +202,6 @@ class ApplicationController < ActionController::Base
     request.env['mobvious.device_type']
   end
 
-
-
-
   def clean_session
     session.delete(:freereg1_csv_file_id)
     session.delete(:freereg1_csv_file_name)
@@ -225,7 +222,6 @@ class ApplicationController < ActionController::Base
     session.delete(:redirect_to)
     session.delete(:site_stats)
     session.delete(:message)
-
   end
 
   def clean_session_for_county
@@ -266,7 +262,13 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_userid)
     session.delete(:record)
     session.delete(:current_page)
+  end
 
+  def clean_session_for_images
+    session.delete(:source_id)
+    session.delete(:image_server_group_id)
+    session.delete(:manage_user_origin)
+    session.delete(:ig_allocation)
   end
 
   def clean_session_for_syndicate
@@ -311,8 +313,5 @@ class ApplicationController < ActionController::Base
     session.delete(:select_place)
     session.delete(:current_page)
   end
-
-
-
 
 end

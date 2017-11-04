@@ -97,12 +97,9 @@ class ManageSyndicatesController < ApplicationController
   end
 
   def manage_image_group
+    clean_session_for_images
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage syndicate'
-
-    session.delete(:source_id)
-    session.delete(:ig_allocation)
-    session.delete(:image_server_group_id)
 
     if session[:syndicate].nil?
       flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
