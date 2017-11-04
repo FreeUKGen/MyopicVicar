@@ -599,7 +599,7 @@ crumb :county_other_server3 do |county,place,church,register,source|
 end
 
 crumb :county_create_new_source do |county,place,church,register,source|
-  link "Create New Source", source_path(source)
+  link "Create New Source"
   parent :county_sources, county, place, church, register
 end
 
