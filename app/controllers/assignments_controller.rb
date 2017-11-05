@@ -27,7 +27,7 @@ class AssignmentsController < ApplicationController
     user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
     instructions = assignment_params[:instructions]
 
-    Assignment.update_or_create_new_assignment(source_id,user.id,instructions,assign_list,image_status)
+    Assignment.update_or_create_new_assignment(source_id,user,instructions,assign_list,image_status)
 
     ImageServerImage.refresh_image_server_group_after_assignment(assignment_params[:image_server_group_id])
 
@@ -67,6 +67,18 @@ class AssignmentsController < ApplicationController
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
 
+  def display_info_from_my_own
+    @source = Source.where(:id=>@assignment.first[:source_id]).first
+    session[:source_id] = @source.id
+    @register = @source.register
+    session[:register_id] = @register.id
+    @church = @register.church
+    session[:church_name] = @church.church_name
+    @place = @church.place
+    session[:place_name] = @place.place_name
+    session[:county] = @county = @place.county
+  end
+
   def edit
   end
 
@@ -89,40 +101,38 @@ class AssignmentsController < ApplicationController
   end
 
   def list_assignments_by_userid
-    display_info
-
-    if params[:assignment].nil?                   # from re_direct after update
-      user_id = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).pluck(:id)
+    if session[:my_own]                           # from my_own
+      user_id = [session[:user_id]]
+      @user = UseridDetail.where(:userid=>session[:userid]).first
     else
-      user_id = assignment_params[:user_id]       # from select_user
-    end
-      user_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:userid_detail_id)
-
-    if !user_ids.empty?
-      @assignment = Assignment.collection.aggregate([
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
-             ])
-
-      group_by_count = Assignment.collection.aggregate([
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
-                {'$group'=>{_id:{user:"$userids.userid", status:"$images.status"}, total:{'$sum'=>1}}}
-             ])
-
-      @count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-      group_by_count.each do |x|
-        @count[x[:_id][:user]][x[:_id][:status]] = x[:total]
+      display_info
+      if params[:assignment].nil?                 # from re_direct after update
+        user_id = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).pluck(:id)
+      else                                        # from select_user
+        user_id = assignment_params[:user_id]       
       end
     end
+    user_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:userid_detail_id)
+
+    if !user_ids.empty?
+      @assignment, @count = Assignment.filter_assignments_by_userid(user_ids)
+    else
+      flash[:notice] = 'User '+user_id+' does not have assignments'
+    end
+
+    if session[:my_own]
+      display_info_from_my_own
+      render 'my_own_assignments'
+    end
+  end
+
+  def my_own
+    clean_session
+    clean_session_for_county
+    clean_session_for_syndicate
+    session[:my_own] = true
+
+    redirect_to list_assignments_by_userid_assignment_path(session[:user_id])
   end
 
   def new      
@@ -200,11 +210,29 @@ class AssignmentsController < ApplicationController
           else
         end
 
-        Assignment.update_or_create_new_assignment(source_id,user.id,instructions,reassign_list,image_status)
+        Assignment.update_or_create_new_assignment(source_id,user,instructions,reassign_list,image_status)
 
         flash[:notice] = 'Re_assignment was successful'
     end
     redirect_to list_assignments_by_userid_assignment_path
+  end
+
+  def user_complete_image
+    assignment = Assignment.where(:id=>params[:assignment_id]).first
+    UserMailer.notify_sc_assignment_complete(assignment).deliver_now
+
+    flash[:notice] = 'email has been sent to SC'
+    redirect_to my_own_assignment_path
+  end
+
+  def user_download_image
+    flash[:notice] = 'Image has been downloaded'
+    redirect_to :back
+  end
+
+  def user_view_image
+    flash[:notice] = 'Image has been opened'
+    redirect_to :back
   end
 
   private

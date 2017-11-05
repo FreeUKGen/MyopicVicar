@@ -1,4 +1,6 @@
-<% if session[:manage_user_origin] == 'manage syndicate' %>
+<% if session[:my_own] %>
+  <% breadcrumb :my_own_image_server_images, @user, @county, @place, @church, @register, @source, @group %>
+<% elsif session[:manage_user_origin] == 'manage syndicate' %>
   <% breadcrumb :syndicate_image_server_images, @county, @place, @church, @register, @source, @group %>
 <% else %>
   <% case session[:ig_allocation] %>
@@ -76,7 +78,9 @@
             <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>
             <td class="t15">
               <%= link_to 'SH', image_server_image_path(x) %>
-              <%= link_to 'ED', edit_image_server_image_path(x) %> 
+              <% if !session[:my_own] %>
+                <%= link_to 'ED', edit_image_server_image_path(x) %> 
+              <% end %>
               <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
                 <%= link_to 'DE', image_server_image_path(x), data: { confirm: 'Are you sure you want to delete IS image '+x[:image_name]+'_'+x[:seq]+'.jpg?'}, method: :delete %>
               <% end %>

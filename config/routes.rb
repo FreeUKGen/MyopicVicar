@@ -294,20 +294,25 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
 
-  resources :image_server_groups
   get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
+  get 'image_server_groups/my_own', :to => 'image_server_groups#my_own', :as => :my_own_image_server_group
+  resources :image_server_groups
 
-  resources :image_server_images
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
   get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
+  resources :image_server_images
 
-  resources :assignments
   get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
   get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
   get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
   get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
+  get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
+  get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment
+  get 'assignments/user_download_image', :to => 'assignments#user_download_image', :as => :user_download_image_assignment
+  get 'assignments/user_view_image', :to => 'assignments#user_view_image', :as => :user_view_image_assignment
+  resources :assignments
 
 
 

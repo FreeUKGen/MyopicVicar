@@ -1,0 +1,99 @@
+<% if session[:my_own] %>
+  <% breadcrumb :my_own_assignments, @user %>
+<% else %>
+  <% breadcrumb :syndicate_assignment, @county, @place, @church, @register, @source, @group %>
+<% end %>
+
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Assignments</b> of User <b><%= @user.userid %></b>
+
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">  
+  <% if session[:my_own] %>
+    <%= link_to 'List Image Groups Under My Syndicate', my_own_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <% end %>
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+
+<% title "Assignment - list by userid" %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead>
+      <tr>
+        <th class="t12">User</th>
+        <th class="t12">Status</th>
+        <th class="t12">Image</th>
+        <th class="t12">Date</th>
+        <th class="t12">Instructions</th>
+        <th class="t10" colspan=2>Action
+          <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <span>VW: View Image; DL: Download Image; COM: Notify SC This Assignment has been Completed; </span></a>
+        </th>
+      </tr>
+    </thead>
+  </table>
+
+  <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody>
+        <% prev_user, prev_status = '', '' %>
+        <% if @assignment.nil? %>
+          No Assignment Exists
+        <% else %>
+          <% @assignment.each do |x| %>
+            <tr>
+              <% if !x[:userids].nil? %>
+                <% if x[:userids][:userid] != prev_user || x[:images][:status] != prev_status %>
+                  <% rows = @count[x[:userids][:userid]][x[:images][:status]] %>
+                <% else %>
+                  <% rows = 0 %>
+                <% end %>
+
+                <% if x[:userids][:userid] != prev_user %>
+                  <td class="t12"><%= x[:userids][:userid] if !x[:userids].nil? %>&nbsp;</td>
+                  <% prev_user = x[:userids][:userid] %>
+                  <% prev_status = '' %>
+                <% else %>
+                  <td class="t12">&nbsp;</td>
+                <% end %>
+              <% else %>
+                <td class="t12">&nbsp;</td>
+              <% end %>
+              <% if !x[:images].nil? %>
+                <% if x[:images][:status] != prev_status %>
+                  <td class="t12"><%= ImageServerImage::Status::ALL_STATUSES[x[:images][:status]] if !x[:images].nil? %>&nbsp;</td>
+                  <% prev_status = x[:images][:status] %>
+                <% else %>
+                  <td class="t12">&nbsp;</td>
+                <% end %>
+              <% else %>
+                <td class="t12">&nbsp;</td>
+              <% end %>
+              <td class="t12"><%= x[:images][:image_name]+'_'+x[:images][:seq] if !x[:images].nil? %>&nbsp;</td>
+              <td class="t12"><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %>&nbsp;</td>
+              <td class="t12"><%= x[:instructions] %>&nbsp;</td>
+              <% assignment_type = x[:images][:status] == 'ip' ? 'transcriber' : 'reviewer' %>
+              <td class="t5">
+                <%= link_to 'VW', user_view_image_assignment_path(x[:images][:_id]), method: :get %>
+                <%= link_to 'DL', user_download_image_assignment_path(x[:images][:_id]), method: :get %>
+              </td>
+              <% if rows != 0 %>
+                <td class="t5" rowspan=<%= rows %> style="vertical-align:middle">
+                  <%= link_to 'COM', user_complete_image_assignment_path(:assignment_id=>x[:_id]), method: :get %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div style="clear:both;"></div><br>

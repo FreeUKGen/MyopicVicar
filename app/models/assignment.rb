@@ -60,6 +60,34 @@ class Assignment
       userid_detail.save
     end
 
+    def filter_assignments_by_userid(user_ids)
+      assignment = Assignment.collection.aggregate([
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
+             ])
+
+      group_by_count = Assignment.collection.aggregate([
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
+                {'$group'=>{_id:{user:"$userids.userid", status:"$images.status"}, total:{'$sum'=>1}}}
+             ])
+
+      count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+      group_by_count.each do |x|
+        count[x[:_id][:user]][x[:_id][:status]] = x[:total]
+      end
+
+      return assignment, count
+    end
+
     def id(id)
       where(:id => id)
     end
@@ -68,13 +96,13 @@ class Assignment
       where(:source_id=>id)
     end
 
-    def update_or_create_new_assignment(source_id,user_id,instructions,image_list,image_status)
+    def update_or_create_new_assignment(source_id,user,instructions,image_list,image_status)
       orig_assignment = ImageServerImage.where(:id=>{'$in'=>image_list}).pluck(:assignment_id).uniq
-      dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user_id)
+      dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user.id)
 
       if dest_assignment.nil? || dest_assignment.empty?
-        Assignment.create_assignment(source_id, user_id, instructions)
-        dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user_id)
+        Assignment.create_assignment(source_id, user.id, instructions)
+        dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user.id)
       else
         dest_assignment.update_all(:assign_date=>Time.now.iso8601)
       end
@@ -82,9 +110,9 @@ class Assignment
       Assignment.update_original_assignments(orig_assignment,dest_assignment.first.id,image_list)
 
       if image_status.nil?
-        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id)
+        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id, :transcriber=>[user.userid])
       else
-        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id, :status=>image_status)
+        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id, :status=>image_status, :reviewer=>[user.userid])
       end
     end
 

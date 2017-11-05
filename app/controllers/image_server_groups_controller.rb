@@ -146,6 +146,12 @@ class ImageServerGroupsController < ApplicationController
     end
   end
 
+  def my_own
+    @user = UseridDetail.where(:userid=>session[:userid]).first
+    session[:syndicate] = @user.syndicate
+    @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate])
+  end
+
   def new 
     display_info
     @group = ImageServerGroup.id(params[:id])

@@ -183,6 +183,24 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg research registration") unless @coordinator.nil?
   end
 
+  def notify_sc_assignment_complete(assignment)
+    @user = UseridDetail.where(:id=>assignment.userid_detail_id).first
+    @image_server_images = ImageServerImage.where(:assignment_id=>assignment.id).pluck(:image_name, :seq)
+
+    syndicate = Syndicate.where(:syndicate_code=>@user.syndicate).first
+    if syndicate.present?
+      syndicate_coordinator = syndicate.syndicate_coordinator
+      sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
+
+      if sc.present?
+        @sc_email_with_name =  sc.email_address
+        mail(:from => @user.email_address, :to => @sc_email_with_name, :cc => @user.email_address, :subject => "#{@user.userid} completed the assignment")
+      else
+        p "FREREG_PROCESSING: There was no syndicate coordinator"
+      end
+    end
+  end
+
   def publicity(contact,ccs)
     @ccs = ccs
     @contact = contact

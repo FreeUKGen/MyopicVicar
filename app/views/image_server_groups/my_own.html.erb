@@ -1,0 +1,17 @@
+<% breadcrumb :my_own_image_server_groups, @user, @county, @place, @church, @register, @source, @group %>
+
+<% title "IS Group - list" %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Image Groups</b> under user <b><%= @user.userid %></b>'s Syndicate <b><%= @user.syndicate %></b>
+
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<div class="grid">
+  <section class="island">
+    <%= render 'image_group_index' %>
+  </section>
+</div>

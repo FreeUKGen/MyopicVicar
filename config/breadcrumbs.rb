@@ -679,6 +679,32 @@ crumb :syndicate_assignment do |county,place,church,register,source,group|
   parent :syndicate_image_server_images, county, place, church, register, source, group
 end
 
+# breadcrumbs from 'my_own assignments'
+crumb :my_own_assignments do |user|
+  link "#{user.userid}: Assignment", my_own_assignment_path(user)
+  parent :root
+end
+
+crumb :my_own_image_server_groups do |user,county,place,church,register,source,group|
+  link "Image Groups", my_own_image_server_group_path(group)
+  parent :my_own_assignments, user
+end
+
+crumb :my_own_image_server_group do |user,county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :my_own_image_server_groups, user
+end
+
+crumb :my_own_image_server_images do |user,county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :my_own_image_server_group, user, county, place, church, register, source, group
+end
+
+crumb :my_own_image_server_image do |user,county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :my_own_image_server_images, user, county, place, church, register, source, group
+end
+
 # crumb :projects do
 #   link "Projects", projects_path
 # end
