@@ -60,66 +60,42 @@
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your forename for when we contact you</span>
         </label>
-        <% if @userid.person_forename.nil? %>
-        <input id="forename" name="userid_detail[person_forename]" type="text" class="text-input" placeholder="Required">
-        <% else %>
-        <input id="forename" name="userid_detail[person_forename]" type="text" class="text-input" value="<%=@userid.person_forename%>">
-        <% end %>
+          <%= text_field_tag "userid_detail[person_forename]", @userid.person_forename.blank? ? nil : @userid.person_forename , :id => "forename", placeholder: @userid.person_forename.blank? ? "Required" : nil , :class => "text-input" %>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="surname" tabindex="0">Surname
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your surname for when we contact you</span>
         </label>
-        <% if @userid.person_surname.nil? %>
-        <input id="surname" name="userid_detail[person_surname]" type="text" class="text-input" placeholder="Required">
-        <% else %>
-        <input id="surname" name="userid_detail[person_surname]" type="text" class="text-input" value="<%=@userid.person_surname%>">
-        <% end %>
+        <%= text_field_tag "userid_detail[person_surname]", @userid.person_surname.blank? ? nil : @userid.person_surname , :id => "surname", placeholder: @userid.person_surname.blank? ? "Required" : nil , :class => "text-input" %>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="email_address" tabindex="0">Your email address
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your email address so we can contact you: it will not be made public</span>
         </label>
-        <% if @userid.email_address.nil? %>
-        <input id="email_address" name="userid_detail[email_address]" type="text" class="text-input" placeholder="Required" required="required">
-        <% else%>
-        <input id="email_address" name="userid_detail[email_address]" type="text" class="text-input" value="<%=@userid.email_address%>">
-        <% end%>
+        <%= text_field_tag "userid_detail[email_address]", @userid.email_address.blank? ? nil : @userid.email_address , :id => "email_address", placeholder: @userid.email_address.blank? ? "Required" : nil , :class => "text-input",:required => true %>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="username" tabindex="0">User name (UserID)
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. A <em>unique</em> way to identify you. Letters and numbers <em>only</em>. Any length</span>
         </label>
-        <% if @userid.userid.nil? %>
-        <input id="username" name="userid_detail[userid]" type="text" class="text-input" placeholder="Required">
-        <% else %>
-        <input id="username" name="userid_detail[userid]" type="text" class="text-input" value="<%=@userid.userid%>">
-        <% end %>
+        <%= text_field_tag "userid_detail[userid]", @userid.userid.blank? ? nil : @userid.userid , :id => "username", placeholder: @userid.userid.blank? ? "Required" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="location" tabindex="0">Location
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Optional. The country you live in: this helps us if we need to contact you</span>
         </label>
-        <% if @userid.address.nil? %>
-        <input id="location" name="userid_detail[address]" type="text" class="text-input" placeholder="Optional">
-        <% else %>
-        <input id="location" name="userid_detail[address]" type="text" class="text-input" value="<%= @userid.address %>">
-        <% end %>
+        <%= text_field_tag "userid_detail[address]", @userid.address.blank? ? nil : @userid.address , :id => "location", placeholder: @userid.address.blank? ? "Optional" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="phone" tabindex="0">Phone Number
           <%= image_tag 'info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Optional. Used only if we need to talk to you. Give country code if not UK</span>
         </label>
-        <% if @userid.telephone_number.nil? %>
-        <input id="phone" name="userid_detail[telephone_number]" type="text" class="text-input" placeholder="Optional">
-        <% else %>
-        <input id="phone" name="userid_detail[telephone_number]" type="text" class="text-input" value="<%= @userid.telephone_number %>">
-        <% end %>
+        <%= text_field_tag "userid_detail[telephone_number]", @userid.telephone_number.blank? ? nil : @userid.telephone_number , :id => "phone", placeholder: @userid.telephone_number.blank? ? "Optional" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item seven-twelfths lap-one-whole palm-one-whole">
         <label class="label ttip" for="syndicate" tabindex="0">Syndicates available
