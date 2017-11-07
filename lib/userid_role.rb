@@ -10,7 +10,7 @@ module UseridRole
     'transcriber' => [  "Assignments", "Batches", "Profile", "Roadmap"],
     'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Profile", "Roadmap"],
     'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Profile", "Roadmap"],
-    'contacts_coordinator'=> ["Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Assignments", "Profile", "System Documentation" ,"Roadmap"],
+    'contacts_coordinator'=> ["Assignments", "Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Profile", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [ "Assignments", "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Profile","Roadmap"],
     'country_coordinator' => [   "Assignments", "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
     'volunteer_coordinator' => [ "Assignments", "Batches", "Contacts","Manage Syndicates", "Manage Userids","Profile","Roadmap"],
