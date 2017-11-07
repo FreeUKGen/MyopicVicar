@@ -5,30 +5,30 @@ module UseridRole
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
     'computer' => [ "Profile","Roadmap"],
-    'trainee' => [ "Batches","Manage Assignments","Profile", "Batches","Roadmap"],
+    'trainee' => [ "Assignments", "Batches","Profile", "Batches","Roadmap"],
     'pending' => [ "Profile"],
-    'transcriber' => [  "Batches", "Manage Assignments", "Profile", "Roadmap"],
-    'syndicate_coordinator' => [ "Batches", "Manage Syndicate", "Profile", "Roadmap"],
-    'syndicate_coordinator' => [ "Batches", "Manage Syndicate", "Manage Assignments", "Profile", "Roadmap"],
-    'contacts_coordinator'=> ["Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Manage Assignments", "Profile", "System Documentation" ,"Roadmap"],
-    'county_coordinator' =>  [ "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Manage Assignments", "Profile","Roadmap"],
-    'country_coordinator' => [   "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Manage Assignments","Profile","Roadmap"],
-    'volunteer_coordinator' => [ "Batches", "Contacts","Manage Syndicates", "Manage Userids","Manage Assignments","Profile","Roadmap"],
-    'data_manager' => [ "Access Attic", "Batches", "Contacts", "Denominations", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "Manage Counties", "Manage Syndicates", "Manage Assignments", "Physical Files", "Profile", "Roadmap" ],
-    'technical' => [  "Access Attic", "Batches", "Manage Assignments", "Contacts", "Feedback", "Profile","RefineryCMS", "Roadmap" ,"Search Performance",  "Site Statistics",
+    'transcriber' => [  "Assignments", "Batches", "Profile", "Roadmap"],
+    'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Profile", "Roadmap"],
+    'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Profile", "Roadmap"],
+    'contacts_coordinator'=> ["Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Assignments", "Profile", "System Documentation" ,"Roadmap"],
+    'county_coordinator' =>  [ "Assignments", "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Profile","Roadmap"],
+    'country_coordinator' => [   "Assignments", "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
+    'volunteer_coordinator' => [ "Assignments", "Batches", "Contacts","Manage Syndicates", "Manage Userids","Profile","Roadmap"],
+    'data_manager' => [ "Access Attic", "Assignments", "Batches", "Contacts", "Denominations", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "Manage Counties", "Manage Syndicates", "Physical Files", "Profile", "Roadmap" ],
+    'technical' => [  "Access Attic", "Assignments", "Batches", "Manage Assignments", "Contacts", "Feedback", "Profile","RefineryCMS", "Roadmap" ,"Search Performance",  "Site Statistics",
                       "System Documentation"],
-    'system_administrator' =>[  "Access Attic","Batches", "Contacts", "County Coordinators", "Country Coordinators","Denominations","Feedback",
-                                "Manage Counties","Manage Countries", "Manage Syndicates" ,"Manage Userids",  "Manage Assignments", "Message System",  "Physical Files","Profile","RefineryCMS","Roadmap","Search Performance","Site Statistics",
+    'system_administrator' =>[  "Access Attic","Assignments", "Batches", "Contacts", "County Coordinators", "Country Coordinators","Denominations","Feedback",
+                                "Manage Counties","Manage Countries", "Manage Syndicates" ,"Manage Userids", "Message System",  "Physical Files","Profile","RefineryCMS","Roadmap","Search Performance","Site Statistics",
                                 "Software Version Information", "Syndicate Coordinators","System Documentation" ],
-    'project_manager' =>[  "Batches","Manage Assignments","Contacts", "Manage Userids",  "Feedback", "Profile",  "RefineryCMS","Roadmap" ,"Search Performance","Site Statistics",
+    'project_manager' =>[  "Assignments","Batches","Contacts", "Manage Userids",  "Feedback", "Profile",  "RefineryCMS","Roadmap" ,"Search Performance","Site Statistics",
                            "System Documentation"],
-    'executive_director' =>[  "Batches", "Contacts", "County Coordinators","Country Coordinators", "Feedback","Manage Userids",  "Manage Assignments", "Message System","RefineryCMS","Roadmap","Site Statistics","Search Performance",
+    'executive_director' =>[  "Assignments", "Batches", "Contacts", "County Coordinators","Country Coordinators", "Feedback","Manage Userids", "Message System","RefineryCMS","Roadmap","Site Statistics","Search Performance",
                               "Syndicate Coordinators", "System Documentation" ],
-    'publicity_coordinator'=> [ "Batches", "Manage Assignments", "Contacts", "Profile","Roadmap","System Documentation" ],
-    'genealogy_coordinator'=> [ "Batches", "Manage Assignments","Contacts","Profile", "Roadmap" ,"System Documentation" ],
-    'documentation_coordinator' => [   "Batches",  "Contacts","Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Manage Assignments", "Profile","RefineryCMS","Roadmap",
+    'publicity_coordinator'=> [ "Assignments", "Batches", "Contacts", "Profile","Roadmap","System Documentation" ],
+    'genealogy_coordinator'=> [ "Assignments", "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],
+    'documentation_coordinator' => [  "Assignments", "Batches",  "Contacts","Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
                                        "System Documentation" ],
-    'engagement_coordinator' => [  "Batches", "Manage Assignments", "Contacts","Display Userids", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ]
+    'engagement_coordinator' => [  "Assignments", "Batches", "Contacts","Display Userids", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ]
   }
 
   OPTIONS_TRANSLATION = {
@@ -63,7 +63,7 @@ module UseridRole
     "Logout" => "/refinery/logout",
     "Message System" => "/messages", 
     "Manage Images" => "/sources",
-    "Manage Assignments" => "/assignments/my_own"
+    "Assignments" => "/assignments/my_own"
   }
   USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
