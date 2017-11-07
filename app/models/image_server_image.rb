@@ -62,7 +62,7 @@ class ImageServerImage
 
 
   def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
-   URI.escape( Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id)
+   URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id)
   end
   
     def get_allocated_image_list(group_id)
@@ -129,6 +129,16 @@ class ImageServerImage
       image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.empty?
     end
 
+  end
+  
+  def file_location
+     group = self.image_server_group
+     source = group.source 
+     register = source.register 
+     church = register.church 
+     place = church.place 
+     place.nil? ? process = false: process = true
+     return process,place.chapman_code, source.folder_name, self.image_file_name
   end
   
   def location

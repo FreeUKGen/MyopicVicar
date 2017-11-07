@@ -43,6 +43,10 @@ class Source
       where(:register_id => {'$in'=>id.keys})
     end
     
+    def create_url(userid)
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + 'access?userid=' + userid)
+    end
+    
     def get_source_ids(chapman_code)
       if chapman_code.nil?
         return nil, nil

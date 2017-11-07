@@ -289,6 +289,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :assets
 
+  get 'sources/access_image_server', :to => 'sources#access_image_server', :as => :access_image_server_source
   resources :sources
   get 'sources/:id/flush(.:format)', :to => 'sources#flush', :as => :flush_source
   get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
@@ -297,10 +298,10 @@ MyopicVicar::Application.routes.draw do
   resources :image_server_groups
   get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
-
+  
+  get 'image_server_images/download', :to => 'image_server_images#download', :as => :download_image_server_image
+  get 'image_server_images/view', :to => 'image_server_images#view', :as => :view_image_server_image
   resources :image_server_images
-  get 'image_server_images/:id/download(.:format)', :to => 'image_server_images#download', :as => :download_image_server_image
-  get 'image_server_images/:id/view(.:format)', :to => 'image_server_images#view', :as => :view_image_server_image
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
   get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image

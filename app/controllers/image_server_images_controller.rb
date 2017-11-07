@@ -31,12 +31,14 @@ class ImageServerImagesController < ApplicationController
   end
   
    def download
-     p "download"
-     p params
-    display_info
-    @image = ImageServerImage.id(params[:id]).first
-    website = ImageServerImage.create_url('download',params[:id], @place.chapman_code,@source.folder_name, @image.image_file_name,@user.userid) 
-    p website
+    image = ImageServerImage.id(params[:object]).first
+    process,chapman_code,folder_name,image_file_name = image.file_location
+    if !process
+       flash[:notice] = 'There were problems with the lookup'
+      redirect_to :back and return
+    end
+    @user = cookies.signed[:userid]
+    website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)  
     redirect_to website and return
    end
 
@@ -214,12 +216,14 @@ class ImageServerImagesController < ApplicationController
   end
   
   def view
-     p "view"
-     p params
-    display_info
-    @image = ImageServerImage.id(params[:id]).first
-    website = ImageServerImage.create_url('view',params[:id], @place.chapman_code,@source.folder_name, @image.image_file_name,@user.userid) 
-    p website
+    image = ImageServerImage.id(params[:object]).first
+    process,chapman_code,folder_name,image_file_name = image.file_location
+    if !process
+       flash[:notice] = 'There were problems with the lookup'
+      redirect_to :back and return
+    end
+    @user = cookies.signed[:userid]
+    website = ImageServerImage.create_url('view',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
     redirect_to website and return
   end
 
