@@ -68,12 +68,15 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def display_info
-    if !session[:image_server_group_id].nil?
+    if session[:image_server_group_id].present?
       image_server_group = ImageServerGroup.find(:id=>session[:image_server_group_id])
       @source = Source.find(image_server_group.source_id)
-    elsif !session[:source_id].nil?
+    elsif session[:source_id].present?
       @source = Source.find(session[:source_id])
+    else
+      redirect_to main_app.new_manage_resource_path and return
     end
+
     session[:source_id] = @source.id
     session[:register_id] = @source.register_id
     @register = Register.find(session[:register_id])
@@ -146,10 +149,30 @@ class ImageServerGroupsController < ApplicationController
     end
   end
 
-  def my_own
+  def my_list_by_county
+    session[:my_own_list] = 'county'
+    session[:chapman_code] = params[:id]
+
+    @user = UseridDetail.where(:userid=>session[:userid]).first
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
+
+    if @source.empty?
+      flash[:notice] = 'No image groups under selected county'
+      redirect_to :back
+    else
+      session[:source_id] = @source[0][0]
+      display_info
+    end
+  end
+
+  def my_list_by_syndicate
+    session[:my_own_list] = 'syndicate'
     @user = UseridDetail.where(:userid=>session[:userid]).first
     session[:syndicate] = @user.syndicate
     @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate])
+
+    session[:image_server_group_id] = @image_server_group.first.id
+    display_info
   end
 
   def new 

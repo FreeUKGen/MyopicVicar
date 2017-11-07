@@ -685,24 +685,44 @@ crumb :my_own_assignments do |user|
   parent :root
 end
 
-crumb :my_own_image_server_groups do |user,county,place,church,register,source,group|
-  link "Image Groups", my_own_image_server_group_path(group)
+crumb :my_list_by_syndicate_image_server_groups do |user,county,place,church,register,source|
+  link "Image Groups by Syndicate", my_list_by_syndicate_image_server_group_path(user)
   parent :my_own_assignments, user
 end
 
-crumb :my_own_image_server_group do |user,county,place,church,register,source,group|
-  link "Image Group", image_server_group_path(group)
-  parent :my_own_image_server_groups, user
+crumb :my_list_by_syndicate_image_server_group do |user,county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(user)
+  parent :my_list_by_syndicate_image_server_groups, user,county,place,church,register,source
 end
 
-crumb :my_own_image_server_images do |user,county,place,church,register,source,group|
+crumb :my_list_by_syndicate_image_server_images do |user,county,place,church,register,source,group|
   link "Images", index_image_server_image_path(group)
-  parent :my_own_image_server_group, user, county, place, church, register, source, group
+  parent :my_list_by_syndicate_image_server_group, user, county, place, church, register, source, group
 end
 
-crumb :my_own_image_server_image do |user,county,place,church,register,source,group|
+crumb :my_list_by_syndicate_image_server_image do |user,county,place,church,register,source,group|
   link "Image", image_server_image_path(group)
-  parent :my_own_image_server_images, user, county, place, church, register, source, group
+  parent :my_list_by_syndicate_image_server_images, user, county, place, church, register, source, group
+end
+
+crumb :my_list_by_county_image_server_groups do |user,county,place,church,register,source|
+  link "Image Groups by County", my_list_by_county_image_server_group_path(place.chapman_code)
+  parent :my_own_assignments, user
+end
+
+crumb :my_list_by_county_image_server_group do |user,county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :my_list_by_county_image_server_groups, user,county,place,church,register,source
+end
+
+crumb :my_list_by_county_image_server_images do |user,county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :my_list_by_county_image_server_group, user, county, place, church, register, source, group
+end
+
+crumb :my_list_by_county_image_server_image do |user,county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :my_list_by_county_image_server_images, user, county, place, church, register, source, group
 end
 
 # crumb :projects do

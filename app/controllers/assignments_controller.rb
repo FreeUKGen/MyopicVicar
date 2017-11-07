@@ -53,6 +53,8 @@ class AssignmentsController < ApplicationController
   end
 
   def display_info
+    redirect_to main_app.new_manage_resource_path if session[:register_id].nil?
+
     @register = Register.find(:id=>session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
     @church = Church.find(session[:church_id])
@@ -80,6 +82,18 @@ class AssignmentsController < ApplicationController
   end
 
   def edit
+  end
+
+  def get_counties_for_selection
+    @counties = Array.new
+    counties = County.all.order_by(chapman_code: 1)
+
+    counties.each do |county|
+      @counties << county.chapman_code
+    end
+
+    @counties.compact unless @counties.nil?
+    @counties.delete("nil") unless @counties.nil?
   end
 
   def get_userids_and_transcribers
@@ -117,11 +131,11 @@ class AssignmentsController < ApplicationController
     if !user_ids.empty?
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids)
     else
-      flash[:notice] = 'User '+user_id+' does not have assignments'
+      flash[:notice] = 'User '+session[:userid]+' does not have assignments'
     end
 
     if session[:my_own]
-      display_info_from_my_own
+      display_info_from_my_own if @assignment.present?
       render 'my_own_assignments'
     end
   end
@@ -130,6 +144,7 @@ class AssignmentsController < ApplicationController
     clean_session
     clean_session_for_county
     clean_session_for_syndicate
+    clean_session_for_images
     session[:my_own] = true
 
     redirect_to list_assignments_by_userid_assignment_path(session[:user_id])
@@ -141,7 +156,6 @@ class AssignmentsController < ApplicationController
   def re_assign
     get_userids_and_transcribers or return
     display_info
-
     @assignment = Assignment.where(:source_id=>@source.id).first
 
     @reassign_transcriber_images = ImageServerImage.get_in_progress_image_list(params[:id])
@@ -151,6 +165,21 @@ class AssignmentsController < ApplicationController
       flash[:notice] = 'No assignment in this Image Source'
       redirect_to :back
     end
+  end
+
+  def select_county
+    get_user_info_from_userid
+    get_counties_for_selection
+    number_of_counties = 0
+    number_of_counties = @counties.length unless @counties.nil?
+    if number_of_counties == 0
+      flash[:notice] = 'You do not have any counties to manage'
+      redirect_to new_manage_resource_path
+      return
+    end
+
+    @county = County.new
+    @location = 'location.href= "/image_server_groups/" + this.value +/my_list_by_county/'
   end
 
   def select_user

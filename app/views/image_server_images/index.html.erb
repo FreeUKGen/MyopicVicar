@@ -1,5 +1,10 @@
 <% if session[:my_own] %>
-  <% breadcrumb :my_own_image_server_images, @user, @county, @place, @church, @register, @source, @group %>
+  <% case session[:my_own_list] %>
+    <% when 'syndicate' %>
+      <% breadcrumb :my_list_by_syndicate_image_server_images, @user, @county, @place, @church, @register, @source, @group %>
+    <% when 'county' %>
+    <% breadcrumb :my_list_by_county_image_server_images, @user, @county, @place, @church, @register, @source, @group %>
+  <% end %>
 <% elsif session[:manage_user_origin] == 'manage syndicate' %>
   <% breadcrumb :syndicate_image_server_images, @county, @place, @church, @register, @source, @group %>
 <% else %>

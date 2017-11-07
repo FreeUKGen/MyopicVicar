@@ -296,7 +296,8 @@ MyopicVicar::Application.routes.draw do
 
   get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
-  get 'image_server_groups/my_own', :to => 'image_server_groups#my_own', :as => :my_own_image_server_group
+  get 'image_server_groups/my_list_by_syndicate', :to => 'image_server_groups#my_list_by_syndicate', :as => :my_list_by_syndicate_image_server_group
+  get 'image_server_groups/:id/my_list_by_county(.:format)', :to => 'image_server_groups#my_list_by_county', :as => :my_list_by_county_image_server_group
   resources :image_server_groups
 
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
@@ -312,7 +313,9 @@ MyopicVicar::Application.routes.draw do
   get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment
   get 'assignments/user_download_image', :to => 'assignments#user_download_image', :as => :user_download_image_assignment
   get 'assignments/user_view_image', :to => 'assignments#user_view_image', :as => :user_view_image_assignment
-  resources :assignments
+  get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
+  get  'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
+resources :assignments
 
 
 

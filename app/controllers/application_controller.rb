@@ -269,6 +269,8 @@ class ApplicationController < ActionController::Base
     session.delete(:image_server_group_id)
     session.delete(:manage_user_origin)
     session.delete(:ig_allocation)
+    session.delete(:my_own_list)
+    session.delete(:my_own)
   end
 
   def clean_session_for_syndicate

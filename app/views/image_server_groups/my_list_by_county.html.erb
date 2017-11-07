@@ -1,0 +1,17 @@
+<% breadcrumb :my_list_by_county_image_server_groups, @user, @county, @place, @church, @register, @source %>
+
+<% title "IS Group - list" %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Image Groups</b> for County <b><%= session[:chapman_code] %></b></p>
+
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div><br>
+<% end %>
+
+<div class="grid">
+  <section class="island">
+    <%= render '/manage_counties/image_server_group_index' %>
+  </section>
+</div>
