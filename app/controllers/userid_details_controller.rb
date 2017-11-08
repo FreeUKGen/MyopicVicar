@@ -1,4 +1,5 @@
 class UseridDetailsController < ApplicationController
+  include ActiveModel::Dirty
   require 'userid_role'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
@@ -403,6 +404,8 @@ class UseridDetailsController < ApplicationController
 
   def update
     load(params[:id])
+    #raise (email_value_changed).inspect
+    #raise (userid_details_params[:email_address_valid].changed?).inspect
     changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
     changed_email_address = @userid.changed_email?(params[:userid_detail][:email_address])
     success = Array.new
@@ -425,8 +428,10 @@ class UseridDetailsController < ApplicationController
         return
       end
     end
+    email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
     #    params[:userid_detail][:email_address_valid]  = true
+    
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
@@ -511,6 +516,28 @@ class UseridDetailsController < ApplicationController
 
   def get_option_parameter(option, location)
     location += '+"&option=' + option +'"'
+  end
+
+  def email_value_changed
+    @userid.email_address_valid.to_s != userid_details_params[:email_address_valid]
+  end
+
+  def email_valid_change_message
+    if email_value_changed
+      message = @userid.email_address_validity_change_message
+      case userid_details_params[:email_address_valid]
+      when "true"
+        raise "hello"
+        message << "VALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
+      else
+        message << "INVALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
+      end
+      @userid.update_attribute(:email_address_validity_change_message, message)
+    end
+  end
+
+  def email_valid_change
+    @userid.email_address_valid == true ? "Valid" : "Invalid" 
   end
 
 end
