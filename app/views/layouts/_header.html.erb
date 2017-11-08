@@ -2,7 +2,9 @@
   <div class="container">
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found')%>
       <div class="banner-horz">
-        <%= display_banner %>
+        <% unless device_type == :mobile%>
+          <%= display_banner %>
+        <% end %>
       </div>
     <% end %>
     <button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
@@ -24,3 +26,4 @@
     <% end %>
   </div>
 </header>
+
