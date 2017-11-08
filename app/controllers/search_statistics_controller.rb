@@ -23,7 +23,7 @@ class SearchStatisticsController < InheritedResources::Base
     @data = {}
     fields.each { |field| @data[field] = [0]*points }  #initialize data array
     (points-1).downto(0) do |i_ago|
-      date = (Time.new("2017-09-25")) - i_ago.day
+      date = (Time.now) - i_ago.day
       i = points - i_ago - 1 #TODO make not horrible
       @label[i] = date.strftime("%d %b %Y")
       day_stats = SearchStatistic.where(:year => date.year, :month => date.month, :day => date.day)
