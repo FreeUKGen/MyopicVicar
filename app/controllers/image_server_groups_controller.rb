@@ -154,7 +154,7 @@ class ImageServerGroupsController < ApplicationController
     session[:chapman_code] = params[:id]
 
     @user = UseridDetail.where(:userid=>session[:userid]).first
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
+    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_available_assignment_by_county(session[:chapman_code])
 
     if @source.empty?
       flash[:notice] = 'No image groups under selected county'
