@@ -3,7 +3,7 @@
 Thank you for your interest in Free UK Genealogy and the MyopicVicar genealogical records 
 database and search engine!
 
-## Code of Conduct
+## Our Code of Conduct
 
 Free UK Genealogy, including its software development team, operates under a [code of 
 conduct](https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf).  
@@ -13,6 +13,27 @@ https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf)
 
 
 *Ignore all below this line*
+
+## How We Communicate
+
+The Free UK Genealogy development team 
+
+* the IRC channel, #islandora, on freenode.net
+* our [Google Group/mailing list], 
+* our bi-weekly committers' calls, on Skype and open to everybody (contact community@islandora.ca to join)
+* our various [Interest Groups]
+
+[Google Group/mailing list]: https://groups.google.com/forum/#!forum/islandora
+[Interest Groups]: https://github.com/islandora-interest-groups
+
+
+## How We Develop Software
+
+Waffle board; meetings
+
+Cloud9
+
+
 
 ==========================================================
 
