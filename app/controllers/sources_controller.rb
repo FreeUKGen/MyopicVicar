@@ -51,8 +51,6 @@ class SourcesController < ApplicationController
   end
 
   def display_info
-    redirect_to main_app.new_manage_resource_path if session[:source_id].nil?
-
     @source = Source.find(:id=>session[:source_id]) if !session[:source_id].nil?
     @register = Register.find(:id=>session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
@@ -162,6 +160,7 @@ class SourcesController < ApplicationController
     if @source.nil?
       go_back("source",source_id)
     else
+      session[:source_id] = @source.id
       @register = @source.register
       @register_type = RegisterType.display_name(@register.register_type)
       session[:register_id] = @register.id

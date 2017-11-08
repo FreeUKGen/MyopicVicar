@@ -131,7 +131,7 @@ class AssignmentsController < ApplicationController
     if !user_ids.empty?
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids)
     else
-      flash[:notice] = 'User '+session[:userid]+' does not have assignments'
+      flash[:notice] = 'User does not have assignments'
     end
 
     if session[:my_own]
