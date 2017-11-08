@@ -1,5 +1,6 @@
 class UseridDetailsController < ApplicationController
   require 'userid_role'
+  require 'import_users_from_csv'
   skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
 
@@ -460,6 +461,19 @@ class UseridDetailsController < ApplicationController
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
     end
+  end
+
+  def import
+    create_users = ImportUsersFromCsv.new(params[:file], params[:commit],session[:syndicate]).import
+    flash[:notice] = "Users creation completed"
+    @userids = UseridDetail.get_userids_for_display('all')
+    @syndicate = 'all'
+    @show_log = true
+    render "index"
+  end
+
+  def download_txt
+  send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
   end
 
   private
