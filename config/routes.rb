@@ -192,7 +192,10 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
-  resources :userid_details
+  get 'download_txt', to: "userid_details#download_txt"
+  resources :userid_details do
+    collection { post :import }
+  end
 
 
   get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_all_manage_counties
@@ -214,6 +217,8 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
+  get 'manage_counties/selection', :to =>'manage_counties#select_year', :as => :select_year_manage_counties
+  get 'manage_counties/piece_statistics', :to =>'manage_counties#piece_statistics', :as => :piece_statistics_manage_counties
   resources :manage_counties
 
 

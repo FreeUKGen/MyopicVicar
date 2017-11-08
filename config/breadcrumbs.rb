@@ -352,6 +352,11 @@ crumb :incomplete_registrations do |syndicate|
   end
 end
 
+crumb :import do
+  link 'Import Users', import_userid_details_path
+  parent :regmanager_userid_options
+end
+
 
 #Physical Files
 

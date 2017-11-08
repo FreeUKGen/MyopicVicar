@@ -63,7 +63,7 @@ module UseridRole
     "Message System" => "/messages",
     "Manage Pieces" => "/freecen_coverage/edit"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid", "Import Users"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
@@ -90,7 +90,7 @@ module UseridRole
   COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
                                'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',
-                               "Upload New Batch"]
+                               "Upload New Batch", 'Piece Statistics']
   COUNTY_OPTIONS_TRANSLATION = {
     'All Places' => "/manage_counties/selection?option=Work with All Places",
     'Active Places' => "/manage_counties/selection?option=Work with Active Places",
@@ -102,7 +102,8 @@ module UseridRole
     'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
     'Review Batches by Oldest Date of Change' => "/manage_counties/selection?option=Review Batches by Oldest Date of Change",
     'Review Specific Batch'=> "/manage_counties/selection?option=Review Specific Batch",
-    'Upload New Batch' =>  "/csvfiles/new"
+    'Upload New Batch' =>  "/csvfiles/new",
+    'Piece Statistics' => "/manage_counties/selection?option=Select Year"
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",'Review Batches with Errors','Review Batches by Filename',
