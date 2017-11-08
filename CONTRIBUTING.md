@@ -1,9 +1,14 @@
 # Thank you for contributing.  This is a placeholder document while we develop our contribution guidelines.
 
+Thank you for your interest in Free UK Genealogy and the MyopicVicar genealogical records 
+database and search engine!
+
+## Code of Conduct
 
 Free UK Genealogy, including its software development team, operates under a [code of 
-conduct](https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf).  The short 
-version: _Be excellent to each other_.  (See the full version at 
+conduct](https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf).  
+
+The short version is, _Be excellent to each other_.  (See the full version at 
 https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf)
 
 
