@@ -27,7 +27,7 @@ module UseridRole
     'genealogy_coordinator'=> [ "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],
     'documentation_coordinator' => [   "Batches",  "Contacts","Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
                                        "System Documentation" ],
-    'engagement_coordinator' => [  "Batches", "Contacts","Display Userids", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ]
+    'engagement_coordinator' => [  "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ]
   }
 
   OPTIONS_TRANSLATION = {
