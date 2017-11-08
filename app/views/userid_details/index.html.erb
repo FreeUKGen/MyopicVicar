@@ -1,6 +1,7 @@
 <% breadcrumb :userid_details_listing, @syndicate%>
 <h3 class=" delta text--center">Members Management for <%=@syndicate%> :<%=@sorted_by%> </h3>
 <% if @show_log == true%>
+<% breadcrumb :import %>
 <div class="island island--bordered text--center">
   <strong> To view or download the import log click on the button: </strong><%= link_to "Download Creation Log", download_txt_path, :class => "btn weight--light btn--small" %>
 </div>
