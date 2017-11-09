@@ -60,6 +60,10 @@ class ImageServerImage
 
   class << self
 
+    def find_by_image_server_group_ids(id)
+      where(:image_server_group_id => {'$in'=>id.keys})
+    end
+
     def get_allocated_image_list(group_id)
       seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'a').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}

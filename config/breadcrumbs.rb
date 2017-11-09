@@ -623,6 +623,11 @@ crumb :county_image_server_image do |county,place,church,register,source,group|
   parent :county_image_server_images, county, place, church, register, source, group
 end
 
+crumb :list_uninitialized_image_source do |county|
+  link "List Unitialized Sources", uninitialized_source_list_path(county)
+  parent :show_countysource, county
+end
+
 # breadcrumbs from 'manage syndicate'
 crumb :syndicate_manage_images do |syndicate|
   link "All Allocated Image Groups"

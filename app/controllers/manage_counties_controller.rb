@@ -282,6 +282,26 @@ class ManageCountiesController < ApplicationController
     end
   end
 
+  def uninitialized_source_list
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+    
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
+      redirect_to main_app.new_manage_resource_path and return
+    else
+      @source_ids,@source_id = Source.get_unitialized_source_list(session[:chapman_code])
+      @county = session[:county]
+
+      if @source_ids.empty?
+        flash[:notice] = 'No Uninitialized Sources'
+        redirect_to selection_active_manage_counties_path(session[:chapman_code], :option =>'Manage Images')
+      else
+        render 'uninitialized_source_list'
+      end
+    end
+  end
+
   def upload_batch
     redirect_to new_csvfile_path
   end

@@ -47,7 +47,7 @@
     <% case @source.source_name %>
       <% when 'Image Server' %>
         <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
-        <%= link_to 'Propagate Image Source', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+        <%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
         <% if @user.person_role == 'system_administrator' %>
           <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
         <% end %>
@@ -96,7 +96,6 @@
       <tr><td>Restrictions on Use by Creating Institution</td><td class="t15"><%= @source[:restrictions_on_use_by_creating_institution] %>&nbsp;</td></tr>
       <tr><td>Restrictions on Use by Holding Institution</td><td class="t15"><%= @source[:restrictions_on_use_by_holding_institution] %>&nbsp;</td></tr>
       <tr><td>Open Data</td><td class="t15"><%= @source[:open_data] ? 'Yes' : 'No' %>&nbsp;</td></tr>
-      <tr><td>URL</td><td class="t15"><%= @source[:url] %>&nbsp;</td></tr>
     </table>
   </div>
   </section>

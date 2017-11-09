@@ -22,7 +22,6 @@
   <%= s.input :restrictions_on_use_by_creating_institution, :label=>"Restrictions on Use by Creating Institution", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
   <%= s.input :restrictions_on_use_by_holding_institution, :label=>"Restrictions on Use by Holding Institution", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
   <%= s.input :open_data, :label=>'Open Data', :as=>:select, :collection=>[['Yes', true], ['No', false]], :include_blank=>false, :value=>s.object.open_data, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>2}, :label_html=>{:style=>"color: #0A0A0A", :class=>"simple_form_label"} %>
-  <%= s.input :url, :label=>"URL", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
 
   <%= s.button :submit, 'Submit', :onclick=>'return check_year_range()' %>
 <% end %>
