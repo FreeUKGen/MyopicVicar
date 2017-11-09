@@ -8,7 +8,7 @@ module UseridRole
     'trainee' => [ "Batches","Profile", "Batches","Roadmap"],
     'pending' => [ "Profile"],
     'transcriber' => [  "Batches","Profile", "Roadmap"],
-    'syndicate_coordinator' => [ "Batches", "Manage Syndicate", "Profile", "Roadmap"],
+    'syndicate_coordinator' => [ "Batches", "Manage Syndicate", "RefineryCMS", "Profile", "Roadmap"],
     'contacts_coordinator'=> ["Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Profile", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [ "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Profile","Roadmap"],
     'country_coordinator' => [   "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
