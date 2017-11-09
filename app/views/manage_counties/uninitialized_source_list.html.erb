@@ -1,0 +1,80 @@
+<% breadcrumb :list_uninitialized_image_source,  @county%>
+<p><h3 style="text-align: center">Uninitialized Image Sources for County <%= @county %>.</h3></p>
+
+<div style="text-align: center">  
+  <%= link_to 'List All Image Groups', manage_image_group_path, method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'Image Groups Allocated by Syndicate', sort_image_group_by_syndicate_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Image Groups Allocated by Place', sort_image_group_by_place_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'List Uninitialized Sources', uninitialized_source_list_path, method: :get, :class => "btn weight--light btn--small" %>
+</div>
+
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <% flash[:notice] = nil %> <br>
+  </div>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th class="t15">Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+          <span> The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
+        <th  class="t15">Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+            <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
+        <th class="t15">Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+              <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (Made from a parish register); Extract of the Parish Registers (Incomplete set of records); Dwelly's Transcript (Made from a parish register); Other Register (Original document); Transcript (Another persons transcription); Unknown; or Unspecified.</span></a></th>
+        <th class="t15">Image Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+              <span>A register can have multiple sources.</span></a></th>
+      </tr>
+    </thead>
+  </table>
+    <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody >
+        <% place_rows, church_rows, register_rows = 0,0,0 %>
+        <% @source_ids.each do |source_id, place_name, church_name, register_type, source_name| %>
+          <% if register_rows == 0 %>
+            <% register_rows = @source_id[place_name][church_name][register_type].count %>
+            <% if church_rows == 0 %>
+              <% church_rows = @source_id[place_name][church_name].count %>
+              <% if place_rows == 0 %>
+                <% place_rows = @source_id[place_name].count %>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <% if register_rows == @source_id[place_name][church_name][register_type].count && church_rows == @source_id[place_name][church_name].count && place_rows == @source_id[place_name].count %>
+            <tr><td class="t15"><%= place_name %></td>
+          <% else %>
+            <tr><td class="t15">&nbsp;</td>
+          <% end %>
+
+          <% if register_rows == @source_id[place_name][church_name][register_type].count && church_rows == @source_id[place_name][church_name].count %>
+            <td class="t15"><%= church_name %></td>
+          <% else %>
+            <td class="t15">&nbsp;</td>
+          <% end %>
+
+          <% registertype = RegisterType.display_name(register_type) %>
+          <% if register_rows == @source_id[place_name][church_name][register_type].count %>
+            <td class="t15"><%= registertype %></td>
+          <% else %>
+            <td class="t15">&nbsp;</td>
+          <% end %>
+
+          <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
+
+          <% register_rows = register_rows - 1  unless register_rows == 0 %>
+          <% if register_rows == 0 %>
+            <% church_rows = church_rows - 1 unless church_rows == 0 %>
+          <% end %>
+          <% if church_rows == 0 %>
+            <% place_rows = place_rows - 1 unless place_rows == 0 %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
