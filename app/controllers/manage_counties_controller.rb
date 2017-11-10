@@ -129,7 +129,7 @@ class ManageCountiesController < ApplicationController
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      render '_sources_index'
+      render 'sources_list_all'
     end
   end
 

@@ -1,20 +1,3 @@
-<% breadcrumb :show_countysource,  @county%>
-<p><h3 style="text-align: center">All Image Sources for County <%= @county %>.</h3></p>
-
-<div style="text-align: center">  
-  <%= link_to 'List All Image Groups', manage_image_group_path, method: :get, :class => "btn weight--light btn--small" %>
-  <%= link_to 'Image Groups Allocated by Syndicate', sort_image_group_by_syndicate_path, method: :get, :class => "btn weight--light btn--small" %> 
-  <%= link_to 'Image Groups Allocated by Place', sort_image_group_by_place_path, method: :get, :class => "btn weight--light btn--small" %> 
-  <%= link_to 'List Uninitialized Sources', uninitialized_source_list_path, method: :get, :class => "btn weight--light btn--small" %>
-</div>
-
-<div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
-
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >
