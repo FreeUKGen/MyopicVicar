@@ -77,7 +77,7 @@ class Source
     end
 
     def get_unitialized_source_list(chapman_code)
-      uninitialized_source = Hash.new
+      initialized_source = Hash.new
 
       if chapman_code.nil?
         return nil, nil
@@ -103,14 +103,14 @@ class Source
                 ])
 
         image_server_image.each do |x|
-          if x[:_id][:status].nil?
+          if !x[:_id][:status].nil?
             group_id = x[:_id][:id]
-            uninitialized_source[image_server_group_id[group_id]] = 1
+            initialized_source[image_server_group_id[group_id]] = 1
           end
         end
 
         sourceid.each do |k1,v1| 
-          sourceid.delete(k1) if !uninitialized_source.keys.include?(k1) || uninitialized_source.empty?
+          sourceid.delete(k1) if initialized_source.keys.include?(k1)
         end
 
         sid = []

@@ -99,7 +99,7 @@ class ImageServerGroup
       image_server_group_ids = ImageServerGroup.source_id(source_id).pluck(:id)
       status = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids}).distinct(:status)
 
-      if status.sort == ['nil']
+      if status.empty? || status == ['nil']
         return true
       else
         return false
