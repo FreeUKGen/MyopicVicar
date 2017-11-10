@@ -62,7 +62,7 @@ class ImageServerImage
 
 
   def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
-   URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id)
+   URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id  + '&image_server_access=' + Rails.application.config.image_server_access)
   end
   
     def get_allocated_image_list(group_id)
