@@ -95,6 +95,17 @@ class ImageServerGroup
       @num
     end
     
+    def check_all_images_status_before_initialize_source(source_id)
+      image_server_group_ids = ImageServerGroup.source_id(source_id).pluck(:id)
+      status = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids}).distinct(:status)
+
+      if status.sort == ['nil']
+        return true
+      else
+        return false
+      end
+    end
+
     def find_by_source_ids(id)
       where(:source_id => {'$in'=>id.keys})
     end
@@ -272,6 +283,12 @@ class ImageServerGroup
 
     def id(id)
       where(:id => id)
+    end
+
+    def initialize_all_images_status_under_source(source_id,status)
+      image_server_group_ids = ImageServerGroup.source_id(source_id).pluck(:id)
+      ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids}).update_all(:status=>status)
+      ImageServerGroup.where(:id=>{'$in'=>image_server_group_ids}).update_all('summary.status'=>[status])
     end
 
     def source_id(id)

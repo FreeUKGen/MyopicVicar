@@ -18,6 +18,8 @@ class Source
   field :open_data, type: Boolean, default: true
   field :url, type: String #if the source is locatable online, this is the URL for the top-level (not single-page) webpage for it
 
+  attr_accessor :initialize_status
+
   belongs_to :register, index: true
   has_many :image_server_groups, foreign_key: :source_id, :dependent=>:restrict # includes transcripts, printed editions, and microform, and digital versions of these
   has_many :assignments, :dependent=>:restrict

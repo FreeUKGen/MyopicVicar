@@ -47,6 +47,7 @@
     <% case @source.source_name %>
       <% when 'Image Server' %>
         <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+        <%= link_to 'Initialize Status', initialize_status_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
         <%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
         <% if @user.person_role == 'system_administrator' %>
           <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>

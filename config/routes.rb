@@ -294,6 +294,7 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/flush(.:format)', :to => 'sources#flush', :as => :flush_source
   get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
+  get 'sources/:id/initialize_status(.:format)', :to => 'sources#initialize_status', :as => :initialize_status_source
 
   get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group

@@ -16,7 +16,7 @@ class ImageServerImagesController < ApplicationController
   end
 
   def display_info
-    redirect_to main_app.new_manage_resource_path if session[:register_id].nil?
+    redirect_to main_app.new_manage_resource_path and return if session[:register_id].nil? || session[:source_id].nil? || session[:image_server_group_id].nil?
 
     @register = Register.find(:id=>session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)

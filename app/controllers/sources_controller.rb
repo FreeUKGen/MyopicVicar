@@ -155,6 +155,17 @@ class SourcesController < ApplicationController
     end
   end
 
+  def initialize_status
+    display_info
+
+    allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
+
+    if not allow_initialize
+      flash[:notice] = 'You can only initialize an empty status source'
+      redirect_to :back
+    end
+  end
+
   def load(source_id)
     @source = Source.id(source_id).first
     if @source.nil?
@@ -222,13 +233,30 @@ class SourcesController < ApplicationController
         source_list = source_params[:propagate][:source_id]
         source_list << params[:id]
 
-        Source.where(:id=>{'$in'=>source_list}).update_all(:notes=>notes, :start_date=>start_date, :end_date=>end_date, :original_form=>{:type=>original_form_type, :name=>original_form_name}, :original_owner=>original_owner, :creating_institution=>creating_institution, :holding_institution=>holding_institution, :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, :open_data=>open_data, :url=>url)
-      else
+        Source.where(:id=>{'$in'=>source_list}).
+              update_all(:notes=>notes, 
+                         :start_date=>start_date, 
+                         :end_date=>end_date, 
+                         :original_form=>{:type=>original_form_type, :name=>original_form_name}, 
+                         :original_owner=>original_owner, 
+                         :creating_institution=>creating_institution, 
+                         :holding_institution=>holding_institution, 
+                         :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, 
+                         :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, 
+                         :open_data=>open_data, 
+                         :url=>url)
+
+        flash[:notice] = 'Update of source was successful'
+      elsif !source_params[:initialize_status].nil?           #initialize source
+        ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
+
+        flash[:notice] = 'Successfully initialized source'
+      else                        # edit source without propagate
         params[:source].delete(:choice)
         source.update_attributes(source_params)
+        flash[:notice] = 'Update of source was successful'
       end
 
-      flash[:notice] = 'Update of source was successful'
       flash.keep(:notice)
       redirect_to index_source_path(source.register)
     end
