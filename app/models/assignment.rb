@@ -46,10 +46,10 @@ class Assignment
       ImageServerImage.refresh_src_dest_group_summary(image_server_group)
     end
 
-  	def create_assignment(source_id, user_id, instructions)
+  	def create_assignment(source_id,user_id,instructions,assign_list,image_status)
       source = Source.id(source_id).first
       userid_detail = UseridDetail.id(user_id).first
-      assignment = Assignment.new(:source_id=>source_id, :userid_detail_id=>user_id)
+      assignment = Assignment.new(:source_id=>source_id, :userid_detail_id=>user_id.id)
       assignment.instructions = instructions
       assignment.assign_date = Time.now.iso8601
 
@@ -58,6 +58,8 @@ class Assignment
       source.save
       userid_detail.assignments << assignment
       userid_detail.save
+
+      assign_image_server_image_to_assignment(assignment.id,user_id,assign_list,image_status)
     end
 
     def filter_assignments_by_userid(user_ids)
@@ -77,12 +79,12 @@ class Assignment
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
                 {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
-                {'$group'=>{_id:{user:"$userids.userid", status:"$images.status"}, total:{'$sum'=>1}}}
+                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
              ])
 
       count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
       group_by_count.each do |x|
-        count[x[:_id][:user]][x[:_id][:status]] = x[:total]
+        count[x[:_id]] = x[:total]
       end
 
       return assignment, count
@@ -96,23 +98,18 @@ class Assignment
       where(:source_id=>id)
     end
 
-    def update_or_create_new_assignment(source_id,user,instructions,image_list,image_status)
-      orig_assignment = ImageServerImage.where(:id=>{'$in'=>image_list}).pluck(:assignment_id).uniq
-      dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user.id)
-
-      if dest_assignment.nil? || dest_assignment.empty?
-        Assignment.create_assignment(source_id, user.id, instructions)
-        dest_assignment = Assignment.where(:source_id=>source_id, :userid_detail_id=>user.id)
-      else
-        dest_assignment.update_all(:assign_date=>Time.now.iso8601)
-      end
-
-      Assignment.update_original_assignments(orig_assignment,dest_assignment.first.id,image_list)
+    def assign_image_server_image_to_assignment(assignment_id,user,image_list,image_status)
+      assignment = Assignment.id(assignment_id).first
 
       if image_status.nil?
-        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id, :transcriber=>[user.userid])
+        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
       else
-        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>dest_assignment.first.id, :status=>image_status, :reviewer=>[user.userid])
+        case image_status
+          when 'ip'
+            ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
+          when 'ir'
+            ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :reviewer=>[user.userid])
+        end
       end
     end
 
@@ -133,6 +130,12 @@ class Assignment
           assignment.destroy if hash_images_by_assignment_id[assignment_id].empty? && assignment_id != dest_assignment_id
         end
       end
+    end
+
+    def update_prev_assignment(assignment_id)
+      prev_assignment_image_count = ImageServerImage.where(:assignment_id=>assignment_id).first
+
+      Assignment.id(assignment_id).destroy if prev_assignment_image_count.nil?
     end
 
     def user_id(id)

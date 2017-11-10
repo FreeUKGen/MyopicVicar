@@ -27,7 +27,7 @@ class AssignmentsController < ApplicationController
     user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
     instructions = assignment_params[:instructions]
 
-    Assignment.update_or_create_new_assignment(source_id,user,instructions,assign_list,image_status)
+    Assignment.create_assignment(source_id,user,instructions,assign_list,image_status)
 
     ImageServerImage.refresh_image_server_group_after_assignment(assignment_params[:image_server_group_id])
 
@@ -41,12 +41,18 @@ class AssignmentsController < ApplicationController
     image_status = params[:assign_type] == 'transcriber' ? 'a' : 't'
 
     image_server_image = ImageServerImage.id(params[:id]).first
-    assignment_count = ImageServerImage.where(:assignment_id=>image_server_image.assignment_id).count
     assignment = image_server_image.assignment
+    assignment_id = image_server_image.assignment_id
 
-    image_server_image.update(:assignment_id=>nil, :status=>image_status)
+    case params[:assign_type]
+      when 'transcriber'
+        image_server_image.update(:assignment_id=>nil, :transcriber=>[''], :status=>image_status)
+      else
+        image_server_image.update(:assignment_id=>nil, :reviewer=>[''], :status=>image_status)
+    end
 
-    assignment.destroy if assignment_count == 1
+    assignment_image_count = ImageServerImage.where(:assignment_id=>assignment_id).first
+    assignment.destroy if assignment_image_count.nil?
 
     flash[:notice] = 'Removal of this image from Assignment was successful'
     redirect_to :back
@@ -131,7 +137,7 @@ class AssignmentsController < ApplicationController
     if !user_ids.empty?
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids)
     else
-      flash[:notice] = 'User does not have assignments'
+      flash[:notice] = 'No assignment found.'
     end
 
     if session[:my_own]
@@ -156,7 +162,7 @@ class AssignmentsController < ApplicationController
   def re_assign
     get_userids_and_transcribers or return
     display_info
-    @assignment = Assignment.where(:source_id=>@source.id).first
+    @assignment = Assignment.id(params[:id]).first
 
     @reassign_transcriber_images = ImageServerImage.get_in_progress_image_list(params[:id])
     @reassign_reviewer_images = ImageServerImage.get_in_review_image_list(params[:id])
@@ -225,11 +231,13 @@ class AssignmentsController < ApplicationController
         end
 
         Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
-      else
+      else            # re_assign
         source_id = assignment_params[:source_id]
         user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
         instructions = assignment_params[:instructions]
         image_status = nil
+
+        assignment = Assignment.id(params[:id])
 
         case assignment_params[:type] 
           when 'transcriber'
@@ -239,7 +247,8 @@ class AssignmentsController < ApplicationController
           else
         end
 
-        Assignment.update_or_create_new_assignment(source_id,user,instructions,reassign_list,image_status)
+        Assignment.create_assignment(source_id,user,instructions,reassign_list,image_status)
+        Assignment.update_prev_assignment(params[:id])
 
         flash[:notice] = 'Re_assignment was successful'
     end
