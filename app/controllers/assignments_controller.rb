@@ -142,7 +142,7 @@ class AssignmentsController < ApplicationController
 
     if session[:my_own]
       display_info_from_my_own if @assignment.present?
-      render 'my_own_assignments'
+      render 'list_assignments_of_myself'
     end
   end
 
