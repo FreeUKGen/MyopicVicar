@@ -244,13 +244,13 @@ class AssignmentsController < ApplicationController
 
     case params[:assignment_list_type]
       when 'group'
-        image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :assignment_id=>{'$nin'=>[nil,'']})
+        image_server_image_id = ImageServerImage.where(:image_server_group_id=>params[:id], :assignment_id=>{'$nin'=>[nil,'']}).distinct(:assignment_id)
       when 'all'
         image_server_group_id = ImageServerGroup.where(:syndicate_code=>session[:syndicate]).distinct(:id)
         image_server_image_id = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_id}, :assignment_id=>{'$nin'=>[nil,'']}).distinct(:assignment_id)
     end
 
-    if image_server_image_id.empty? || image_server_image_id.nil?
+    if image_server_image_id.nil?
       @assignment = nil
     else
       @assignment = Assignment.where(:id=>{'$in'=>image_server_image_id}).first
