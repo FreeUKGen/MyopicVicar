@@ -117,6 +117,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/display_files_not_processed',  :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
+  get 'manage_syndicates/manage_image_group', :to => 'manage_syndicates#manage_image_group', :as => :manage_image_group_manage_syndicate
   resources :manage_syndicates
 
   resources :csvfiles
@@ -174,9 +175,10 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#manage_sources', constraints:ManageCountiesManageImagesConstraint
-  get  'manage_counties/manage_image_group(.:format)', :to => 'manage_counties#manage_image_group', :as => :manage_image_group
+  get  'manage_counties/manage_image_group(.:format)', :to => 'manage_counties#manage_image_group', :as => :manage_image_group_manage_county
   get  'manage_counties/sort_image_group_by_syndicate(.:format)', :to => 'manage_counties#sort_image_group_by_syndicate', :as => :sort_image_group_by_syndicate
   get  'manage_counties/sort_image_group_by_place(.:format)', :to => 'manage_counties#sort_image_group_by_place', :as => :sort_image_group_by_place
+  get 'manage_counties/uninitialized_source_list(.:format)', :to => 'manage_counties#uninitialized_source_list', :as => :uninitialized_source_list
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
@@ -294,23 +296,31 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/flush(.:format)', :to => 'sources#flush', :as => :flush_source
   get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
+  get 'sources/:id/initialize_status(.:format)', :to => 'sources#initialize_status', :as => :initialize_status_source
 
-  resources :image_server_groups
-  get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
-  get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
   
   get 'image_server_images/download', :to => 'image_server_images#download', :as => :download_image_server_image
   get 'image_server_images/view', :to => 'image_server_images#view', :as => :view_image_server_image
-  resources :image_server_images
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
   get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
   get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
+  resources :image_server_images
 
-  resources :assignments
+  get 'image_server_groups/my_list_by_syndicate', :to => 'image_server_groups#my_list_by_syndicate', :as => :my_list_by_syndicate_image_server_group
+  get 'image_server_groups/:id/my_list_by_county(.:format)', :to => 'image_server_groups#my_list_by_county', :as => :my_list_by_county_image_server_group
+  get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
+  get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
+  resources :image_server_groups
+
   get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
   get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
   get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
   get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
+  get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
+  get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment
+  get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
+  get  'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
+resources :assignments
 
 
 

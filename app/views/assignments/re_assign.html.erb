@@ -1,7 +1,14 @@
-<% breadcrumb :syndicate_assignment, @county, @place, @church, @register, @source, @group %>
+<% if params[:assignment_list_type] == 'all' %>
+  <% breadcrumb :syndicate_all_assignments, session[:syndicate] %>
 
-<div style="clear:both;"></div><br>
-<p style="text-align: center"><b>Image Re-assignment</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+  <div style="clear:both;"></div><br>
+  <p style="text-align: center"><b>Assignments</b> of Syndicate <b><%= session[:syndicate] %></b>
+<% else %>
+  <% breadcrumb :syndicate_image_group_assignments, @county, @place, @church, @register, @source, @group %>
+
+  <div style="clear:both;"></div><br>
+  <p style="text-align: center"><b>Image Re-assignment</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<% end %>
 
 <% title "IS Image - re_assignment" %>
 <% if flash[:notice] %>
@@ -16,9 +23,17 @@
 	<%= s.input :user_id, :collection=>@people, :label=>'members to re_assign', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
 	<%= s.input :instructions, :input_html => {:class => "simple_form_bgcolour", :size => 70} %>
 
-  <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+  <% if params[:assign_type] == 'reviewer' %>
+    <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Reviewer', 'reviewer'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+  <% else %>
+    <%= s.input :type, :as => :radio_buttons, :label => 'Re_assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes", :input_html => {:class => "simple_form_position"} %> 
+  <% end %>
 
-  <div id="transcriber_images">
+  <% if params[:assign_type] == 'reviewer' %>
+    <div id="transcriber_images" style="display:none;">
+  <% else %>
+    <div id="transcriber_images">
+  <% end %>
     <% if @reassign_transcriber_images.empty? %>
       No IN_PROGRESS images to re-assign transcriber
     <% else %>
@@ -26,7 +41,11 @@
     <% end %>
   </div>
 
-  <div id="reviewer_images" style="display:none;">
+  <% if params[:assign_type] == 'reviewer' %>
+    <div id="reviewer_images">
+  <% else %>
+    <div id="reviewer_images" style="display:none;">
+  <% end %>
     <% if @reassign_reviewer_images.empty? %>
       No IN_REVIEW images to re-assign reviewer
     <% else %>
@@ -34,10 +53,13 @@
     <% end %>
   </div>
 
-  <%= s.hidden_field :source_id, :value=>@source.id %>
+  <% if params[:assignment_list_type] == 'group' %>
+    <%= s.hidden_field :source_id, :value=>@source.id %>
+    <%= s.hidden_field :image_server_group_id, :value=>params[:image_server_group_id] %>
+  <% end %>
   <%= s.hidden_field :userid_detail_id, :value=>@user.id %>
-  <%= s.hidden_field :image_server_group_id, :value=>params[:id] %>
   <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
+  <%= s.hidden_field :assignment_list_type, as: :fake, :value=>params[:assignment_list_type] %>
   <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
 <% end %>
 </div>

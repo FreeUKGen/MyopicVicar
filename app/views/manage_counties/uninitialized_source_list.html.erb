@@ -1,0 +1,11 @@
+<% breadcrumb :list_uninitialized_image_source,  @county%>
+<p><h3 style="text-align: center">Uninitialized Image Sources for County <%= @county %>.</h3></p>
+
+<div style="clear:both;"> </div><br>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <% flash[:notice] = nil %> <br>
+  </div>
+<% end %>
+
+<%= render 'sources_index' %>

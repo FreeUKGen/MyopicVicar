@@ -1,0 +1,13 @@
+<div class="island  island--light">
+
+<% if flash[:notice] %>
+  <div id="notice" style="color:red"><br>
+	  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+
+<%= simple_form_for @county, :html => { :class => "grid"}  do |f| %>
+  <%= f.input :chapman_code, :as=>:select, :label=>'Please select on', :collection=>@counties,:width => 10, :include_blank=>false, :input_html=>{ :class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>5, 'onchange'=>@location } %>
+<% end %>
+</div>
+

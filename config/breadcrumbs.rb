@@ -599,7 +599,7 @@ crumb :county_other_server3 do |county,place,church,register,source|
 end
 
 crumb :county_create_new_source do |county,place,church,register,source|
-  link "Create New Source", source_path(source)
+  link "Create New Source"
   parent :county_sources, county, place, church, register
 end
 
@@ -623,15 +623,25 @@ crumb :county_image_server_image do |county,place,church,register,source,group|
   parent :county_image_server_images, county, place, church, register, source, group
 end
 
+crumb :list_uninitialized_image_source do |county|
+  link "List Unitialized Sources", uninitialized_source_list_path(county)
+  parent :show_countysource, county
+end
+
 # breadcrumbs from 'manage syndicate'
 crumb :syndicate_manage_images do |syndicate|
-  link "All Allocated Image Groups"
+  link "All Allocated Image Groups", manage_image_group_manage_syndicate_path(syndicate)
   parent :syndicate_options, session[:syndicate]
+end
+
+crumb :syndicate_all_assignments do |syndicate|
+  link "List User Assignments"
+  parent :syndicate_manage_images, session[:syndicate]
 end
 
 crumb :syndicate_sources do |county,place,church,register|
   link "Sources", index_source_path(register)
-  parent :syndicate_options, session[:syndicate]
+  parent :syndicate_manage_images, session[:syndicate]
 end
 
 crumb :syndicate_image_source do |county,place,church,register,source|
@@ -674,9 +684,55 @@ crumb :syndicate_image_server_image do |county,place,church,register,source,grou
   parent :syndicate_image_server_images, county, place, church, register, source, group
 end
 
-crumb :syndicate_assignment do |county,place,church,register,source,group|
-  link "Assignment", assignment_path(group)
+crumb :syndicate_image_group_assignments do |county,place,church,register,source,group|
+  link "List User Assignments", assignment_path(group)
   parent :syndicate_image_server_images, county, place, church, register, source, group
+end
+
+# breadcrumbs from 'my_own assignments'
+crumb :my_own_assignments do |user|
+  link "#{user.userid}: Assignment", my_own_assignment_path(user)
+  parent :root
+end
+
+crumb :my_list_by_syndicate_image_server_groups do |user,county,place,church,register,source|
+  link "Image Groups by Syndicate", my_list_by_syndicate_image_server_group_path(user)
+  parent :my_own_assignments, user
+end
+
+crumb :my_list_by_syndicate_image_server_group do |user,county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(user)
+  parent :my_list_by_syndicate_image_server_groups, user,county,place,church,register,source
+end
+
+crumb :my_list_by_syndicate_image_server_images do |user,county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :my_list_by_syndicate_image_server_group, user, county, place, church, register, source, group
+end
+
+crumb :my_list_by_syndicate_image_server_image do |user,county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :my_list_by_syndicate_image_server_images, user, county, place, church, register, source, group
+end
+
+crumb :my_list_by_county_image_server_groups do |user,county,place,church,register,source|
+  link "Image Groups by County", my_list_by_county_image_server_group_path(place.chapman_code)
+  parent :my_own_assignments, user
+end
+
+crumb :my_list_by_county_image_server_group do |user,county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :my_list_by_county_image_server_groups, user,county,place,church,register,source
+end
+
+crumb :my_list_by_county_image_server_images do |user,county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :my_list_by_county_image_server_group, user, county, place, church, register, source, group
+end
+
+crumb :my_list_by_county_image_server_image do |user,county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :my_list_by_county_image_server_images, user, county, place, church, register, source, group
 end
 
 # crumb :projects do

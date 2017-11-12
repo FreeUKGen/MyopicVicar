@@ -65,6 +65,10 @@ class ImageServerImage
    URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id  + '&image_server_access=' + Rails.application.config.image_server_access)
   end
   
+    def find_by_image_server_group_ids(id)
+      where(:image_server_group_id => {'$in'=>id.keys})
+    end
+
     def get_allocated_image_list(group_id)
       seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'a').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
@@ -81,15 +85,15 @@ class ImageServerImage
       image_list
     end
 
-    def get_in_progress_image_list(group_id)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'ip').pluck(:id, :image_name, :seq)
+    def get_in_progress_image_list(assignment_id)
+      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'ip').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
 
       image_list
     end
 
-    def get_in_review_image_list(group_id)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'ir').pluck(:id, :image_name, :seq)
+    def get_in_review_image_list(assignment_id)
+      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'ir').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
 
       image_list

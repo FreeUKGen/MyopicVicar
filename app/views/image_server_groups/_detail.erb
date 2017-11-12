@@ -52,7 +52,7 @@
             <% case ImageServerGroup::Status::ALL_STATUSES[status] %>
               <% when 'ERROR', 'UNALLOCATED' %>
                 <span style="color:red"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
-              <% when 'TRANSCRIBED' %>
+              <% when 'REVIEWED' %>
                 <span style="color:green"><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>
               <% else %>
                 <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span>

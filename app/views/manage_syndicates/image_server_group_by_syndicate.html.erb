@@ -8,4 +8,11 @@
   </div>
 <% end %>
 
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">
+    <%= link_to 'List assignments by userid', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all'), method: :get, :class => "btn weight--light btn--small" %>
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+
 <%= render 'image_groups' %>

@@ -98,11 +98,11 @@ class ManageSyndicatesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
-    session[:manage_user_origin] = 'manage syndicate'
 
     if session[:syndicate].nil?
       flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     else
       @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate])
       render 'image_server_group_by_syndicate'
@@ -129,6 +129,10 @@ class ManageSyndicatesController < ApplicationController
     session.delete(:chapman_code)
     session.delete(:county)
     session[:page] = request.original_url
+
+    clean_session_for_images
+    session[:manage_user_origin] = 'manage syndicate'
+
     get_user_info_from_userid
     get_syndicates_for_selection
     number_of_syndicates = @syndicates.length unless @syndicates.nil?

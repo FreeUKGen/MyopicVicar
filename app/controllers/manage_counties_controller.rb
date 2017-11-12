@@ -108,7 +108,8 @@ class ManageCountiesController < ApplicationController
 
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     else
       @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
       @county = session[:county]
@@ -118,19 +119,19 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_sources
+    clean_session_for_images
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
-    session.delete(:source_id)
-    session.delete(:ig_allocation)
-
+    
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     else
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      render '_sources_index'
+      render 'sources_list_all'
     end
   end
 
@@ -259,7 +260,8 @@ class ManageCountiesController < ApplicationController
 
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     else
       @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true)
       @county = session[:county]
@@ -274,12 +276,34 @@ class ManageCountiesController < ApplicationController
 
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     else
       @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
       @county = session[:county]
   
       render 'image_server_group_by_syndicate'
+    end
+  end
+
+  def uninitialized_source_list
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+    
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source_ids,@source_id = Source.get_unitialized_source_list(session[:chapman_code])
+      @county = session[:county]
+
+      if @source_ids.empty?
+        flash[:notice] = 'No Uninitialized Sources'
+        redirect_to selection_active_manage_counties_path(session[:chapman_code], :option =>'Manage Images')
+      else
+        render 'uninitialized_source_list'
+      end
     end
   end
 
