@@ -328,16 +328,6 @@ class AssignmentsController < ApplicationController
     redirect_to my_own_assignment_path
   end
 
-  def user_download_image
-    flash[:notice] = 'Image has been downloaded'
-    redirect_to :back
-  end
-
-  def user_view_image
-    flash[:notice] = 'Image has been opened'
-    redirect_to :back
-  end
-
   private
   def assignment_params
     params.require(:assignment).permit! if params[:_method] != 'put'
