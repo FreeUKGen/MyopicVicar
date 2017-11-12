@@ -74,7 +74,8 @@ class ImageServerGroupsController < ApplicationController
     elsif session[:source_id].present?
       @source = Source.find(session[:source_id])
     else
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     end
 
     session[:source_id] = @source.id

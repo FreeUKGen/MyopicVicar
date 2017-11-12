@@ -59,20 +59,21 @@ class AssignmentsController < ApplicationController
   end
 
   def display_info
-    redirect_to main_app.new_manage_resource_path if session[:register_id].nil?
-
-    @register = Register.find(:id=>session[:register_id])
-    @register_type = RegisterType.display_name(@register.register_type)
-    @church = Church.find(session[:church_id])
-    @church_name = session[:church_name]
-    @county =  session[:county]
-    @place_name = session[:place_name]
-    @place = @church.place #id?
-    @county =  @place.county
-    @place_name = @place.place_name
-    @user = cookies.signed[:userid]
-    @source = Source.find(:id=>session[:source_id])
-    @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
+    # session[:register_id], session[:source_id] and session[:image_server_group_id] are nil when list assignments under a syndicate
+    if !session[:register_id].nil? && !session[:source_id].nil? && !session[:image_server_group_id].nil?
+      @register = Register.find(:id=>session[:register_id])
+      @register_type = RegisterType.display_name(@register.register_type)
+      @church = Church.find(session[:church_id])
+      @church_name = session[:church_name]
+      @county =  session[:county]
+      @place_name = session[:place_name]
+      @place = @church.place #id?
+      @county =  @place.county
+      @place_name = @place.place_name
+      @user = cookies.signed[:userid]
+      @source = Source.find(:id=>session[:source_id])
+      @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
+    end
   end
 
   def display_info_from_my_own
@@ -113,7 +114,8 @@ class AssignmentsController < ApplicationController
         @userids = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
       else
         flash[:notice] = 'Your account does not support this action'
-        redirect_to :back and return
+        redirect_to :back
+        return
       end
 
     @people = Array.new
@@ -125,7 +127,12 @@ class AssignmentsController < ApplicationController
       user_id = [session[:user_id]]
       @user = UseridDetail.where(:userid=>session[:userid]).first
     else
-      display_info
+      if session[:register_id].nil? && !params[:image_server_group_id].nil?
+        load(params[:image_server_group_id])
+      else
+        display_info
+      end
+
       if params[:assignment].nil?                 # from re_direct after update
         user_id = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).pluck(:id)
       else                                        # from select_user
@@ -135,7 +142,18 @@ class AssignmentsController < ApplicationController
     user_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:userid_detail_id)
 
     if !user_ids.empty?
-      @assignment, @count = Assignment.filter_assignments_by_userid(user_ids)
+      if !params[:assignment].nil?
+        if assignment_params[:image_server_group_id].nil?    # from list assignment under a syndicate
+          group_id = nil
+        else          # from list assignments under a image group of a syndicate
+          group_id = BSON::ObjectId.from_string(assignment_params[:image_server_group_id])
+        end
+      elsif !params[:image_server_group_id].nil?      # from update assignment under image group of a syndicate
+          group_id = BSON::ObjectId.from_string(params[:image_server_group_id])
+      else                        # from update assignment under syndicate
+        group_id = nil
+      end
+      @assignment, @count = Assignment.filter_assignments_by_userid(user_ids,group_id)
     else
       flash[:notice] = 'No assignment found.'
     end
@@ -143,6 +161,32 @@ class AssignmentsController < ApplicationController
     if session[:my_own]
       display_info_from_my_own if @assignment.present?
       render 'list_assignments_of_myself'
+    end
+  end
+
+  def load(image_server_group_id)
+    @group = ImageServerGroup.id(image_server_group_id).first
+    if @group.nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      session[:image_server_group_id] = @group.id
+      @source = @group.source
+      session[:source_id] = @source.id
+      @register = @source.register
+      @register_type = RegisterType.display_name(@register.register_type)
+      session[:register_id] = @register.id
+      session[:register_name] = @register_type
+      @church = @register.church
+      @church_name = @church.church_name
+      session[:church_name] = @church_name
+      session[:church_id] = @church.id
+      @place = @church.place
+      session[:place_id] = @place.id
+      @county =  session[:county]
+      @place_name = @place.place_name
+      session[:place_name] = @place_name
+      get_user_info_from_userid
     end
   end
 
@@ -178,6 +222,7 @@ class AssignmentsController < ApplicationController
     get_counties_for_selection
     number_of_counties = 0
     number_of_counties = @counties.length unless @counties.nil?
+
     if number_of_counties == 0
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
@@ -195,7 +240,13 @@ class AssignmentsController < ApplicationController
     @people = Hash.new{|h,k| h[k]=[]}.tap{|h| users.each{|k,v| h[k]=v}}
     @location = 'location.href= "/assignments/assignments_by_userid"'
 
-    image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :assignment_id=>{'$nin'=>[nil,'']})
+    case params[:assignment_list_type]
+      when 'group'
+        image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :assignment_id=>{'$nin'=>[nil,'']})
+      when 'all'
+        image_server_group_id = ImageServerGroup.where(:syndicate_code=>session[:syndicate]).distinct(:id)
+        image_server_image = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_id}, :assignment_id=>{'$nin'=>[nil,'']})
+    end
 
     if image_server_image.empty? || image_server_image.nil?
       @assignment = nil
@@ -217,6 +268,7 @@ class AssignmentsController < ApplicationController
       when 'put'
         assignment_id = params[:id]
         orig_status = params[:status]
+        assignment_list_type = params[:assignment_list_type]
 
         case params[:type]
           when 'complete'
@@ -231,11 +283,22 @@ class AssignmentsController < ApplicationController
         end
 
         Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
-      else            # re_assign
-        source_id = assignment_params[:source_id]
+      else                                          # re_assign
+        if assignment_params[:source_id].nil?       # from list assignments under a syndicate
+          if assignment_params[:type] == 'transcriber'
+            image_id = assignment_params[:transcriber_seq][0]
+          else
+            image_id = assignment_params[:reviewer_seq][0]
+          end
+          source_id = ImageServerImage.id(image_id).first.image_server_group.source.id
+        else                        # from list assignments under a image group of a syndicate
+          source_id = assignment_params[:source_id]
+        end
         user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
         instructions = assignment_params[:instructions]
         image_status = nil
+        assignment_list_type = assignment_params[:assignment_list_type]
+        image_server_group_id = assignment_params[:image_server_group_id]
 
         assignment = Assignment.id(params[:id])
 
@@ -252,7 +315,7 @@ class AssignmentsController < ApplicationController
 
         flash[:notice] = 'Re_assignment was successful'
     end
-    redirect_to list_assignments_by_userid_assignment_path
+    redirect_to list_assignments_by_userid_assignment_path(:image_server_group_id=>image_server_group_id, :assignment_list_type=>assignment_list_type)
   end
 
   def user_complete_image

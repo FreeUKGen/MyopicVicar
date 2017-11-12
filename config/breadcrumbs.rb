@@ -630,13 +630,18 @@ end
 
 # breadcrumbs from 'manage syndicate'
 crumb :syndicate_manage_images do |syndicate|
-  link "All Allocated Image Groups"
+  link "All Allocated Image Groups", manage_image_group_manage_syndicate_path(syndicate)
   parent :syndicate_options, session[:syndicate]
+end
+
+crumb :syndicate_all_assignments do |syndicate|
+  link "List User Assignments"
+  parent :syndicate_manage_images, session[:syndicate]
 end
 
 crumb :syndicate_sources do |county,place,church,register|
   link "Sources", index_source_path(register)
-  parent :syndicate_options, session[:syndicate]
+  parent :syndicate_manage_images, session[:syndicate]
 end
 
 crumb :syndicate_image_source do |county,place,church,register,source|
@@ -679,8 +684,8 @@ crumb :syndicate_image_server_image do |county,place,church,register,source,grou
   parent :syndicate_image_server_images, county, place, church, register, source, group
 end
 
-crumb :syndicate_assignment do |county,place,church,register,source,group|
-  link "Assignment", assignment_path(group)
+crumb :syndicate_image_group_assignments do |county,place,church,register,source,group|
+  link "List User Assignments", assignment_path(group)
   parent :syndicate_image_server_images, county, place, church, register, source, group
 end
 

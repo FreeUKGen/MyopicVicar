@@ -44,11 +44,17 @@
 
               <% if rows != 0 %>
                 <td class="t5" rowspan=<%= rows %> style="vertical-align:middle">
-                  <%= link_to 'COM', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete'), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
-                  <%= link_to 'UN', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'unassign'), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
-                  <%= link_to 'RA', re_assign_assignment_path(x[:_id], :image_server_group_id=>x[:images][:image_server_group_id], :assign_type=>assignment_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
+                  <% if params[:assignment].nil? %>
+                    <% assignment_list_type = params[:assignment_list_type] %>
+                  <% else %>
+                    <% assignment_list_type = params[:assignment][:assignment_list_type] %>
+                  <% end %>
+
+                  <%= link_to 'COM', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                  <%= link_to 'UN', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
+                  <%= link_to 'RA', re_assign_assignment_path(x[:_id], :image_server_group_id=>x[:images][:image_server_group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
                   <% if x[:images][:status] == 'ir' %>
-                    <%= link_to 'ER', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'error'), data: { confirm: 'Click OK if you want to mark all images in this assignment as ERROR'}, method: :put %>
+                    <%= link_to 'ER', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'error', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if you want to mark all images in this assignment as ERROR'}, method: :put %>
                   <% end %>
                 </td>
               <% end %>

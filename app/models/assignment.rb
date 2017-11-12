@@ -62,8 +62,9 @@ class Assignment
       assign_image_server_image_to_assignment(assignment.id,user_id,assign_list,image_status)
     end
 
-    def filter_assignments_by_userid(user_ids)
-      assignment = Assignment.collection.aggregate([
+    def filter_assignments_by_userid(user_ids,image_server_group_id)
+      if image_server_group_id.nil?
+        assignment = Assignment.collection.aggregate([
                 {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
                 {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
@@ -72,7 +73,7 @@ class Assignment
                 {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
              ])
 
-      group_by_count = Assignment.collection.aggregate([
+        group_by_count = Assignment.collection.aggregate([
                 {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
                 {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
@@ -81,6 +82,27 @@ class Assignment
                 {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
                 {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
              ])
+      else
+        group_id = [image_server_group_id]
+        assignment = Assignment.collection.aggregate([
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}, "images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
+             ])
+
+        group_by_count = Assignment.collection.aggregate([
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}, "images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
+                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
+             ])
+      end          
 
       count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
       group_by_count.each do |x|
