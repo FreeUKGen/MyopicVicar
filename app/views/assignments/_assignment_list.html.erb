@@ -40,6 +40,8 @@
               <% assignment_type = x[:images][:status] == 'ip' ? 'transcriber' : 'reviewer' %>
               <td class="t5">
                 <%= link_to 'RM', assignment_path(x[:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:images].nil? %>
+                <%= link_to 'View', view_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank', :class=>'btn weight-light btn--small' %>
+                <%= link_to 'Download', download_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank', :class=>'btn weight-light btn--small' %>
               </td>
 
               <% if rows != 0 %>
