@@ -150,9 +150,9 @@ class AssignmentsController < ApplicationController
         end
       else                              # from UPDATE
         if params[:image_server_group_id].nil?            # update assignment under syndicate
-          group_id = BSON::ObjectId.from_string(params[:image_server_group_id])
-        else                              # update assignment under image group of a syndicate
           group_id = nil
+        else                              # update assignment under image group of a syndicate
+          group_id = BSON::ObjectId.from_string(params[:image_server_group_id])
         end
       end
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids,group_id)
