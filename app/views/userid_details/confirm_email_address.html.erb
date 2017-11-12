@@ -1,9 +1,29 @@
-<p style="text-align: center">
-	<b>Your current email address is <br><br><%= @current %></b> 
+<div style="text-align: center">
+  <% unless @user.email_address_validity_change_message.empty?%>
+    <div id="email_address_invalid_message" class="islet islet--bordered push--bottom">
+      <button type="button" id="close_email_address_invalid_message" class="btn weight--light btn--small" style="float: right;"><strong>X</strong></button><br />
+      <p>Your email address: <b><%= @user.email_address %></b>, has been made </p>
+      <ul>
+        <% @user.email_address_validity_change_message.last(2).each do |element| %>
+          <li><strong style="color: #009f98"><%= element %></strong> for <strong style="color: #009f98"><%= @user.reason_for_invalidating.nil? ? "UnSpecified" : @user.reason_for_invalidating %> reason </strong></li>
+        <% end %>
+      </ul>
+    </div>
+    <p>Please check that <b style="color: #009f98">@freereg.org.uk</b> is in your whitelist of email domains and then confirm your email</p>
+  <% else %>
+    <b>Your current email address is <br><br><%= @current %></b>
+  <% end %>
+</div>
 	<br><br>
-	<%= simple_form_for @userid do |f| %>
-		<%= f.input_field :email_address_valid,  :as => :radio_buttons,  :collection => @options, :input_html => {:class => "ttip" } %>
-		<br><br>
-		<%= f.button :submit, 'Confirm'   %>
-	<% end %>
-</p>
+<%= simple_form_for @userid do |f| %>
+  <%= f.input_field :email_address_valid,  :as => :radio_buttons,  :collection => @options, :input_html => {:class => "ttip" } %>
+  <br><br>
+  <%= f.button :submit, 'Confirm'   %>
+<% end %>
+
+<script type="text/javascript">
+  $("#show_email_address_invalid_message").hide();
+  $('#close_email_address_invalid_message').click(function() {
+    $('#email_address_invalid_message').slideUp();
+  });
+</script>
