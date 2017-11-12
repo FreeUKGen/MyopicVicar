@@ -142,16 +142,18 @@ class AssignmentsController < ApplicationController
     user_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:userid_detail_id)
 
     if !user_ids.empty?
-      if !params[:assignment].nil?
-        if assignment_params[:image_server_group_id].nil?    # from list assignment under a syndicate
+      if !params[:assignment].nil?      # from LIST
+        if assignment_params[:image_server_group_id].nil?    # list assignment under a syndicate
           group_id = nil
-        else          # from list assignments under a image group of a syndicate
+        else                                # list assignments under a image group of a syndicate
           group_id = BSON::ObjectId.from_string(assignment_params[:image_server_group_id])
         end
-      elsif !params[:image_server_group_id].nil?      # from update assignment under image group of a syndicate
+      else                              # from UPDATE
+        if params[:image_server_group_id].nil?            # update assignment under syndicate
           group_id = BSON::ObjectId.from_string(params[:image_server_group_id])
-      else                        # from update assignment under syndicate
-        group_id = nil
+        else                              # update assignment under image group of a syndicate
+          group_id = nil
+        end
       end
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids,group_id)
     else
@@ -245,17 +247,17 @@ class AssignmentsController < ApplicationController
         image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :assignment_id=>{'$nin'=>[nil,'']})
       when 'all'
         image_server_group_id = ImageServerGroup.where(:syndicate_code=>session[:syndicate]).distinct(:id)
-        image_server_image = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_id}, :assignment_id=>{'$nin'=>[nil,'']})
+        image_server_image_id = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_id}, :assignment_id=>{'$nin'=>[nil,'']}).distinct(:assignment_id)
     end
 
-    if image_server_image.empty? || image_server_image.nil?
+    if image_server_image_id.empty? || image_server_image_id.nil?
       @assignment = nil
     else
-      @assignment = Assignment.where(:id=>image_server_image.first.assignment_id).first
+      @assignment = Assignment.where(:id=>{'$in'=>image_server_image_id}).first
     end
 
     if @assignment.nil?
-      flash[:notice] = 'No assignment in this Image Source'
+      flash[:notice] = 'No assignment belongs to user under this syndicate'
       redirect_to :back
     end
   end
