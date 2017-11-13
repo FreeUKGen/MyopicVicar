@@ -119,7 +119,6 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_sources
-    clean_session_for_images
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
     
@@ -138,6 +137,7 @@ class ManageCountiesController < ApplicationController
   def new
     #get county to be used
     clean_session_for_county
+    clean_session_for_images
     session.delete(:county)
     session.delete(:chapman_code)
     get_user_info_from_userid
