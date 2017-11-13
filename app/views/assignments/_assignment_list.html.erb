@@ -9,7 +9,7 @@
         <th class="t12">Instructions</th>
         <th class="t10" colspan=2>Action
           <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <span>RM: Remove Image from Assignment; COM: Change Image Status In This Assignment to Complete; UN: Unassign Images In This Assignment; RA: Re_assign Images In This Assignment; ER: Change Image Status In This Assignment to ERROR</span></a>
+          <span>RM: Remove Image from Assignment; VW: View Original Image; DL: Download Original Image; COM: Assignment has Completed; UN: Unassign Images in This Assignment; RA: Re_assign Images in This Assignment; ER: Change Image Status in This Assignment as ERROR</span></a>
         </th>
       </tr>
     </thead>
@@ -40,8 +40,8 @@
               <% assignment_type = x[:images][:status] == 'ip' ? 'transcriber' : 'reviewer' %>
               <td class="t5">
                 <%= link_to 'RM', assignment_path(x[:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:images].nil? %>
-                <%= link_to 'View', view_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank', :class=>'btn weight-light btn--small' %>
-                <%= link_to 'Download', download_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank', :class=>'btn weight-light btn--small' %>
+                <%= link_to 'VW', view_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank' %>
+                <%= link_to 'DL', download_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank' %>
               </td>
 
               <% if rows != 0 %>
