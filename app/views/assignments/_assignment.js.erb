@@ -9,22 +9,22 @@ $(':checkbox').click(function(e){
 			})
 		} else {
 			$(':checkbox').each(function(){
-				$(this).prop('checked', false)
+				$(this).prop('checked', false);
 			})
 		}
 	} else {
 		if (e.ctrlKey && e.shiftKey) {
 			if (!lastChecked) {
-				lastChecked = this
-				return
+				lastChecked = this;
+				return;
 			}
 
-			var start_id = $(':checkbox').index(lastChecked)
-			var end_id = $(':checkbox').index(this)
+			var start_id = $(':checkbox').index(lastChecked);
+			var end_id = $(':checkbox').index(this);
 
-			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked)
+			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked);
 
-			lastChecked = null
+			lastChecked = null;
 		}
 		document.getElementById('assignment_transcriber_seq_0').checked = false;
 		document.getElementById('assignment_reviewer_seq_0').checked = false;
@@ -33,7 +33,7 @@ $(':checkbox').click(function(e){
 
 $('input:radio[name="assignment[type]"]').change(function() {
 	$(':checkbox').each(function(){
-		$(this).prop('checked', false)
+		$(this).prop('checked', false);
 	})
 
 	if (this.value == 'transcriber') {
@@ -47,22 +47,22 @@ $('input:radio[name="assignment[type]"]').change(function() {
 
 function validate_selection() {
 	if ($('#assignment_user_id').val() === null) {
-		alert("You didn't select transcriber/reviewer")
-		return false
+		alert("You didn't select transcriber/reviewer");
+		return false;
 	} else {
-		var checked = 0
+		var checked = 0;
 
 		$(':checkbox').each(function(){
 			if ($(this).is(":checked") == true) {
-				checked = 1
+				checked = 1;
 			}
 		})
 
 		if (checked == 1) {
-			return true
+			return true;
 		} else {
-			alert("You didn't select images")
-			return false
+			alert("You didn't select images");
+			return false;
 		}
 	}
 }
