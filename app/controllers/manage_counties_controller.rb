@@ -125,10 +125,10 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false, 'unallocate')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'unallocate')            # not sort by place, unallocated groups
       @county = session[:county]
 
-      render 'image_server_group_all'
+      render 'image_server_group_unallocate'
     end
   end
 

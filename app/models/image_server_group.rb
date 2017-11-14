@@ -167,7 +167,7 @@ class ImageServerGroup
           when 'all'
             @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
           when 'unallocate'
-            @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$in'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+            @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where('summary.status'=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
         end
       else
         @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)

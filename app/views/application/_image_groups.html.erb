@@ -57,12 +57,23 @@
           <% end %>
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count %>
-            <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[2] == source_name}[0][0])) %>&nbsp;</td>
+            <% case ig_allocation %>
+              <% when 'all' %>
+                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[2] == source_name}[0][0], :ig_allocation=>'by_all')) %>&nbsp;</td>
+              <% when 'unallocate' %>
+                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[2] == source_name}[0][0], :ig_allocation=>'by_unallocate')) %>&nbsp;</td>
+            <% end %>
           <% else %>
             <td class="t12">&nbsp;</td>
           <% end %>
 
-          <td class="t20"><%= link_to(group_name, image_server_group_path(gid)) %>&nbsp;</td>
+          <% case ig_allocation %>
+            <% when 'all' %>
+              <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :ig_allocation=>'by_all')) %>&nbsp;</td>
+            <% when 'unallocate' %>
+              <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :ig_allocation=>'by_unallocate')) %>&nbsp;</td>
+          <% end %>
+
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <td class="t12"><%= syndicate %>&nbsp;</td>
           <% if assign_date.nil? %>

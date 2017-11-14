@@ -533,6 +533,80 @@ crumb :sort_countysource_by_image_group do |county|
   parent :show_countysource, county
 end
 
+# from "manage counties" => List Unallocated Image Groups"
+crumb :sort_countysource_by_unallocate_image_group do |county|
+  link "List Unallocated Image Groups"
+  parent :show_countysource, county
+end
+
+crumb :sort_by_unallocate_sources do |county,place,church,register|
+  link "Sources", index_source_path(register)
+  parent :sort_countysource_by_unallocate_image_group, county
+end
+
+crumb :sort_by_unallocate_image_source do |county,place,church,register,source|
+  link "Image Server", source_path(source)
+  parent :sort_by_unallocate_sources, county, place, church, register
+end
+
+crumb :sort_by_unallocate_image_server_groups do |county,place,church,register,source|
+  link "Image Groups", index_image_server_group_path(source)
+  parent :sort_by_unallocate_image_source, county, place, church, register, source
+end
+
+crumb :sort_by_unallocate_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :sort_by_unallocate_image_server_groups, county, place, church, register, source, group
+end
+
+crumb :sort_by_unallocate_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :sort_by_unallocate_image_server_group, county, place, church, register, source, group
+end
+
+crumb :sort_by_unallocate_image_server_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :sort_by_unallocate_image_server_images, county, place, church, register, source, group
+end
+
+# from "manage counties" => "List All Image Groups"
+crumb :sort_countysource_by_all_image_group do |county|
+  link "List All Image Groups"
+  parent :show_countysource, county
+end
+
+crumb :sort_by_all_sources do |county,place,church,register|
+  link "Sources", index_source_path(register)
+  parent :sort_countysource_by_all_image_group, county
+end
+
+crumb :sort_by_all_image_source do |county,place,church,register,source|
+  link "Image Server", source_path(source)
+  parent :sort_by_all_sources, county, place, church, register
+end
+
+crumb :sort_by_all_image_server_groups do |county,place,church,register,source|
+  link "Image Groups", index_image_server_group_path(source)
+  parent :sort_by_all_image_source, county, place, church, register, source
+end
+
+crumb :sort_by_all_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :sort_by_all_image_server_groups, county, place, church, register, source, group
+end
+
+crumb :sort_by_all_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :sort_by_all_image_server_group, county, place, church, register, source, group
+end
+
+crumb :sort_by_all_image_server_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :sort_by_all_image_server_images, county, place, church, register, source, group
+end
+
+
+# from "manage counties" => "Image Groups Allocated by Syndicates"
 crumb :sort_countysource_by_syndicate do |county|
   link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
   parent :show_countysource, county
@@ -553,6 +627,7 @@ crumb :sort_by_syndicate_image_server_image do |county,place,church,register,sou
   parent :sort_by_syndicate_image_server_images, county, place, church, register, source, group
 end
 
+# from "manage counties" => "Image Groups Allocated by Place"
 crumb :sort_countysource_by_place do |county,place|
   link "Image Groups Allocated by Place", sort_image_group_by_place_path(place)
   parent :show_countysource, county

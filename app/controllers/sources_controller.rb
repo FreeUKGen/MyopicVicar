@@ -168,7 +168,7 @@ class SourcesController < ApplicationController
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
 
     if not allow_initialize
-      flash[:notice] = 'You can only initialize an empty status source'
+      flash[:notice] = 'You can only initialize a source when its status was unset'
       redirect_to :back
     end
   end
