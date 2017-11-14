@@ -107,11 +107,25 @@ class ManageCountiesController < ApplicationController
     session[:manage_user_origin] = 'manage county'
 
     if session[:chapman_code].nil?
-      flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false)
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false, 'all')                   # not sort by place, all groups
+      @county = session[:county]
+
+      render 'image_server_group_all'
+    end
+  end
+
+  def manage_unallocated_image_group
+    get_user_info_from_userid
+    session[:manage_user_origin] = 'manage county'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false, 'unallocate')            # not sort by place, unallocated groups
       @county = session[:county]
 
       render 'image_server_group_all'
@@ -263,7 +277,7 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true)
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'all')        # sort by place, all groups
       @county = session[:county]
 
       render 'image_server_group_by_place'
