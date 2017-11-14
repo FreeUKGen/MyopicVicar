@@ -535,7 +535,7 @@ end
 
 # from "manage counties" => List Unallocated Image Groups"
 crumb :sort_countysource_by_unallocate_image_group do |county|
-  link "List Unallocated Image Groups"
+  link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
   parent :show_countysource, county
 end
 
@@ -571,7 +571,7 @@ end
 
 # from "manage counties" => "List All Image Groups"
 crumb :sort_countysource_by_all_image_group do |county|
-  link "List All Image Groups"
+  link "List All Image Groups", manage_image_group_manage_county_path
   parent :show_countysource, county
 end
 
