@@ -603,6 +603,13 @@ class Freereg1CsvFile
         end
       end
 
+      def get_zero_year_entries
+        freereg1_csv_entries = Array.new
+        self.freereg1_csv_entries.each do |entry|
+          freereg1_csv_entries << entry if entry.year.nil? ||  entry.year == '0'
+        end
+         p freereg1_csv_entries
+      end
 
       def lock(type)
         batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
@@ -927,12 +934,39 @@ class Freereg1CsvFile
         end #end csv
       end #end method
       
-      def get_zero_year_entries
-        freereg1_csv_entries = Array.new
-        self.freereg1_csv_entries.each do |entry|
-          freereg1_csv_entries << entry if entry.year.nil? ||  entry.year == '0'
-        end
-         p freereg1_csv_entries
+      def get_unique_names
+        entries = Hash.new
+        all_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => self.id)
+        case self.record_type
+        when "ba"
+          p all_entries
+          entries["Father Surname"] = all_entries.distinct(:father_surname).sort
+          entries["Mother Surname"] = all_entries.distinct(:mother_surname).sort
+          entries["Father Forename"] = all_entries.distinct(:father_forename).sort
+          entries["Mother Forename"] = all_entries.distinct(:mother_forename).sort
+          entries["Person Forename"] = all_entries.distinct(:person_forename).sort
+          p entries
+        when "bu"
+          entries["Burial Person Surname"] = all_entries.distinct(:burial_person_surname).sort
+          entries["Burial Person Forename"] = all_entries.distinct(:burial_person_forename).sort
+          entries["Relative's Surname"] = all_entries.distinct(:relative_surname).sort
+          entries["Male Relative's Forename"] = all_entries.distinct(:male_relative_forename).sort
+          entries["Female Relative's Forename"] = all_entries.distinct(:female_relative_forename).sort
+        when "ma"
+          entries["Groom's Surname"] = all_entries.distinct(:groom_surname).sort
+          entries["Groom's Forename"] = all_entries.distinct(:groom_forename).sort
+          entries["Brides Surname"] = all_entries.distinct(:bride_surname).sort
+          entries["Brides Forename"] = all_entries.distinct(:bride_forename).sort
+          entries["Grooms Father Surname"] = all_entries.distinct(:groom_father_surname).sort
+          entries["Grooms Father Forename"] = all_entries.distinct(:groom_father_forename).sort
+          entries["Brides Father Surname"] = all_entries.distinct(:bride_father_surname).sort
+          entries["Brides Father Forename"] = all_entries.distinct(:bride_father_forename).sort
+          entries["Witness1 Surname"] = all_entries.distinct(:witness1_surname).sort
+          entries["witness1 Forename"] = all_entries.distinct(:witness1_forename).sort
+          entries["Witness2 Surname"] = all_entries.distinct(:witness2_surname).sort
+          entries["witness2 Forename"] = all_entries.distinct(:witness2_forename).sort
+        end 
+        entries
       end
       
 

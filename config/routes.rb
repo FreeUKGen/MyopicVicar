@@ -255,6 +255,7 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freereg1_csv_file
   get 'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year', :to => 'freereg1_csv_files#zero_year', :as => :zero_year_freereg1_csv_file
+  get 'freereg1_csv_files/unique_names', :to => 'freereg1_csv_files#unique_names', :as => :unique_names_freereg1_csv_file
   resources :freereg1_csv_files
 
   resources :emendation_types
