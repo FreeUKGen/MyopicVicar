@@ -599,14 +599,30 @@ class Freereg1CsvFilesController < ApplicationController
 
   def show_zero_startyear_entries
     file_id = params[:id]
-    @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first#.include(:freereg1_csv_entries)
-    @freereg1_csv_entries = @freereg1_csv_file.get_zero_year#freereg1_csv_entries.any_of({year: nil}, {year: "0"})
+    @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first
+    @freereg1_csv_entries = @freereg1_csv_file.get_zero_year
+    display_info
     render 'freereg1_csv_entries/index'
   end
 
   private
   def freereg1_csv_file_params
     params.require(:freereg1_csv_file).permit!
+  end
+
+  def display_info
+    @freereg1_csv_file_id =  @freereg1_csv_file.id
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @file_owner = @freereg1_csv_file.userid
+    @register = @freereg1_csv_file.register
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = @register.church #id?
+    @church_name = @church.church_name
+    @place = @church.place #id?
+    @county =  @place.county
+    @place_name = @place.place_name
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
 end
