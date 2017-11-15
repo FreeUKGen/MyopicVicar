@@ -937,18 +937,13 @@ class Freereg1CsvFile
 
     def get_zero_year
       freereg1_csv_entry = Array.new
-      get_entries.each do |entry|
-        case entry.record_type
-        when "ba"
-          next unless entry.birth_date.blank? && entry.baptism_date.blank?
-            freereg1_csv_entry << entry
-        when "ma"
-          next unless entry.marriage_date.blank?
-            freereg1_csv_entry << entry
-        when "bu"
-          next unless entry.burial_date.blank?# == 0
-          freereg1_csv_entry << entry
-        end
+      case self.record_type
+      when "ba"
+        get_entries.find_all{ |entry| freereg1_csv_entry << entry if entry.birth_date.blank? and entry.baptism_date.blank? }
+      when "ma"
+        get_entries.find_all{ |entry| freereg1_csv_entry << entry if entry.marriage_date.blank? }
+      when "bu"
+        get_entries.find_all{ |entry| freereg1_csv_entry << entry if entry.burial_date.blank? }
       end
       freereg1_csv_entry
     end
@@ -958,7 +953,7 @@ class Freereg1CsvFile
     end
 
     def get_entries
-      self.freereg1_csv_entries#.where(id: "58c98739d7b56b60be31f4cc")
+      self.freereg1_csv_entries
     end
 
 
