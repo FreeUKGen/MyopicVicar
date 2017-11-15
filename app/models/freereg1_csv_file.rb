@@ -940,17 +940,14 @@ class Freereg1CsvFile
       get_entries.each do |entry|
         case entry.record_type
         when "ba"
-          if entry.birth_date.blank? && entry.baptism_date.blank?
+          next unless entry.birth_date.blank? && entry.baptism_date.blank?
             freereg1_csv_entry << entry
-          end
         when "ma"
-          if entry.marriage_date.blank?
+          next unless entry.marriage_date.blank?
             freereg1_csv_entry << entry
-          end
         when "bu"
-          if entry.burial_date.blank?# == 0
+          next unless entry.burial_date.blank?# == 0
           freereg1_csv_entry << entry
-          end
         end
       end
       freereg1_csv_entry
