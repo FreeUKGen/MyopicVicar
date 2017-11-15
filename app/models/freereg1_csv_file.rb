@@ -936,23 +936,24 @@ class Freereg1CsvFile
     end
 
     def get_zero_year
-      get_entries.each do |entry|#.any_of({year: nil}, {year: "0"}, {year: ""})
+      freereg1_csv_entry = Array.new
+      get_entries.each do |entry|
         case entry.record_type
         when "ba"
-          if entry.birth_date.to_i == 0 && entry.baptism_date.to_i == 0
-            datemin = entry.birth_date.to_i + entry.baptism_date.to_i
+          if entry.birth_date.blank? && entry.baptism_date.blank?
+            freereg1_csv_entry << entry
           end
         when "ma"
-          if entry.marriage_date.to_i == 0
-            datemin = entry.marriage_date.to_i
+          if entry.marriage_date.blank?
+            freereg1_csv_entry << entry
           end
         when "bu"
-          if entry.burial_date.to_i == 0
-          datemin =  entry.burial_date.to_i
+          if entry.burial_date.blank?# == 0
+          freereg1_csv_entry << entry
           end
         end
       end
-      datemin.to_i
+      freereg1_csv_entry
     end
 
     def get_min_year
@@ -965,6 +966,6 @@ class Freereg1CsvFile
 
 
     def minimum_year_zero
-      self.get_zero_year == 0
+      self.get_zero_year.count != 0
     end
   end

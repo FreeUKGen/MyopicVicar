@@ -599,8 +599,8 @@ class Freereg1CsvFilesController < ApplicationController
 
   def show_zero_startyear_entries
     file_id = params[:id]
-    @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first
-    @freereg1_csv_entries = @freereg1_csv_file.freereg1_csv_entries.any_of({year: nil}, {year: "0"})
+    @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first#.include(:freereg1_csv_entries)
+    @freereg1_csv_entries = @freereg1_csv_file.get_zero_year#freereg1_csv_entries.any_of({year: nil}, {year: "0"})
     render 'freereg1_csv_entries/index'
   end
 
