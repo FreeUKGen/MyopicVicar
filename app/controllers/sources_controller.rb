@@ -43,6 +43,7 @@ class SourcesController < ApplicationController
       begin
         source.destroy
         flash[:notice] = 'Deletion of "'+source[:source_name]+'" was successful'
+        session.delete(:source_id)
         redirect_to index_source_path(source.register)      
 
       rescue Mongoid::Errors::DeleteRestriction
