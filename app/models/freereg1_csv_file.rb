@@ -939,32 +939,30 @@ class Freereg1CsvFile
         all_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => self.id)
         case self.record_type
         when "ba"
-          p all_entries
-          entries["Father Surname"] = all_entries.distinct(:father_surname).sort
-          entries["Mother Surname"] = all_entries.distinct(:mother_surname).sort
-          entries["Father Forename"] = all_entries.distinct(:father_forename).sort
-          entries["Mother Forename"] = all_entries.distinct(:mother_forename).sort
-          entries["Person Forename"] = all_entries.distinct(:person_forename).sort
-          p entries
+          entries["Father Surname"] = all_entries.distinct(:father_surname).delete_if{|x| x == nil}.sort
+          entries["Mother Surname"] = all_entries.distinct(:mother_surname).delete_if{|x| x == nil}.sort
+          entries["Father Forename"] = all_entries.distinct(:father_forename).delete_if{|x| x == nil}.sort
+          entries["Mother Forename"] = all_entries.distinct(:mother_forename).delete_if{|x| x == nil}.sort
+          entries["Person Forename"] = all_entries.distinct(:person_forename).delete_if{|x| x == nil}.sort
         when "bu"
-          entries["Burial Person Surname"] = all_entries.distinct(:burial_person_surname).sort
-          entries["Burial Person Forename"] = all_entries.distinct(:burial_person_forename).sort
-          entries["Relative's Surname"] = all_entries.distinct(:relative_surname).sort
-          entries["Male Relative's Forename"] = all_entries.distinct(:male_relative_forename).sort
-          entries["Female Relative's Forename"] = all_entries.distinct(:female_relative_forename).sort
+          entries["Burial Person Surname"] = all_entries.distinct(:burial_person_surname).delete_if{|x| x == nil}.sort
+          entries["Burial Person Forename"] = all_entries.distinct(:burial_person_forename).delete_if{|x| x == nil}.sort
+          entries["Relative's Surname"] = all_entries.distinct(:relative_surname).delete_if{|x| x == nil}.sort
+          entries["Male Relative's Forename"] = all_entries.distinct(:male_relative_forename).delete_if{|x| x == nil}.sort
+          entries["Female Relative's Forename"] = all_entries.distinct(:female_relative_forename).delete_if{|x| x == nil}.sort
         when "ma"
-          entries["Groom's Surname"] = all_entries.distinct(:groom_surname).sort
-          entries["Groom's Forename"] = all_entries.distinct(:groom_forename).sort
-          entries["Brides Surname"] = all_entries.distinct(:bride_surname).sort
-          entries["Brides Forename"] = all_entries.distinct(:bride_forename).sort
-          entries["Grooms Father Surname"] = all_entries.distinct(:groom_father_surname).sort
-          entries["Grooms Father Forename"] = all_entries.distinct(:groom_father_forename).sort
-          entries["Brides Father Surname"] = all_entries.distinct(:bride_father_surname).sort
-          entries["Brides Father Forename"] = all_entries.distinct(:bride_father_forename).sort
-          entries["Witness1 Surname"] = all_entries.distinct(:witness1_surname).sort
-          entries["witness1 Forename"] = all_entries.distinct(:witness1_forename).sort
-          entries["Witness2 Surname"] = all_entries.distinct(:witness2_surname).sort
-          entries["witness2 Forename"] = all_entries.distinct(:witness2_forename).sort
+          entries["Groom's Surname"] = all_entries.distinct(:groom_surname).delete_if{|x| x == nil}.sort
+          entries["Groom's Forename"] = all_entries.distinct(:groom_forename).delete_if{|x| x == nil}.sort
+          entries["Brides Surname"] = all_entries.distinct(:bride_surname).delete_if{|x| x == nil}.sort
+          entries["Brides Forename"] = all_entries.distinct(:bride_forename).delete_if{|x| x == nil}.sort
+          entries["Grooms Father Surname"] = all_entries.distinct(:groom_father_surname).delete_if{|x| x == nil}.sort
+          entries["Grooms Father Forename"] = all_entries.distinct(:groom_father_forename).delete_if{|x| x == nil}.sort
+          entries["Brides Father Surname"] = all_entries.distinct(:bride_father_surname).delete_if{|x| x == nil}.sort
+          entries["Brides Father Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
+          entries["Witness1 Surname"] = all_entries.distinct(:witness1_surname).delete_if{|x| x == nil}.sort
+          entries["witness1 Forename"] = all_entries.distinct(:witness1_forename).delete_if{|x| x == nil}.sort
+          entries["Witness2 Surname"] = all_entries.distinct(:witness2_surname).delete_if{|x| x == nil}.sort
+          entries["witness2 Forename"] = all_entries.distinct(:witness2_forename).delete_if{|x| x == nil}.sort
         end 
         entries
       end
