@@ -936,8 +936,23 @@ class Freereg1CsvFile
     end
 
     def get_zero_year
-      freereg1_csv_entries = get_entries.only(:id, :year).any_of({year: nil}, {year: "0"}, {year: ""})
-      Freereg1CsvFile.calculate_min_year(freereg1_csv_entries)
+      get_entries.each do |entry|#.any_of({year: nil}, {year: "0"}, {year: ""})
+        case entry.record_type
+        when "ba"
+          if entry.birth_date.to_i == 0 && entry.baptism_date.to_i == 0
+            datemin = entry.birth_date.to_i + entry.baptism_date.to_i
+          end
+        when "ma"
+          if entry.marriage_date.to_i == 0
+            datemin = entry.marriage_date.to_i
+          end
+        when "bu"
+          if entry.burial_date.to_i == 0
+          datemin =  entry.burial_date.to_i
+          end
+        end
+      end
+      datemin.to_i
     end
 
     def get_min_year
@@ -945,7 +960,7 @@ class Freereg1CsvFile
     end
 
     def get_entries
-      self.freereg1_csv_entries
+      self.freereg1_csv_entries#.where(id: "58c98739d7b56b60be31f4cc")
     end
 
 
