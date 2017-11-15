@@ -172,8 +172,12 @@ class ImageServerGroupsController < ApplicationController
     session[:syndicate] = @user.syndicate
     @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate])
 
-    session[:image_server_group_id] = @image_server_group.first.id
-    display_info
+    if @image_server_group.first.nil?
+      flash[:notice] = 'No assignment under your syndicate'
+    else
+      session[:image_server_group_id] = @image_server_group.first.id
+      display_info
+    end
   end
 
   def new 
