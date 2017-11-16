@@ -54,7 +54,7 @@
                     <% assignment_list_type = params[:assignment][:assignment_list_type] %>
                   <% end %>
 
-                  <% if cookies.signed[:userid].person_role == 'transcriber' %>
+                  <% if session[:my_own] %>
                     <%= link_to 'FIN', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
                   <% else %>
                     <%= link_to 'COM', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
