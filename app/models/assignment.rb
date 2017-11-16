@@ -23,6 +23,7 @@ class Assignment
       image_list = image_server_image.pluck(:id).map {|x| x.to_s}
 
       Assignment.update_original_assignments(assignment_list,'',image_list)
+      UserMailer.notify_sc_assignment_complete(user,assignment_id).deliver_now if new_status == 'r'
 
       case type
         when 'complete'
