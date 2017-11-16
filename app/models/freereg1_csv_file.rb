@@ -106,7 +106,6 @@ class Freereg1CsvFile
   has_many :batch_errors
 
   has_many :freereg1_csv_entries, validate: false, order: :id.asc
-
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4}\z/
@@ -941,6 +940,18 @@ class Freereg1CsvFile
     freereg1_csv_entry = Array.new
     case self.record_type
     when "ba"
+      blank_baptism_records
+    when "ma"
+      blank_marriage_date_records
+    when "bu"
+      blank_burial_date_records
+    end
+  end
+
+  def get_zero_year_records
+    freereg1_csv_entry = Array.new
+    case self.record_type
+    when "ba"
       include_csv_entries.zero_baptism_records.each{|entry| freereg1_csv_entry << entry} if blank_baptism_records
     when "ma"
       include_csv_entries.zero_marriage_records.each{|entry| freereg1_csv_entry << entry} if blank_marriage_date_records
@@ -959,7 +970,7 @@ class Freereg1CsvFile
   end
 
   def minimum_year_zero
-    self.get_zero_year.count != 0
+    self.get_zero_year == true
   end
 
   def blank_burial_date_records
