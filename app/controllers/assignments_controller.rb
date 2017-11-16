@@ -288,7 +288,7 @@ class AssignmentsController < ApplicationController
             flash[:notice] = 'Modify images in assignment as ERROR was successful'
         end
 
-        if user.person_role == 'transcriber'
+        if session[:my_own]
           UserMailer.notify_sc_assignment_complete(user,work_type,assignment_id).deliver_now
           flash[:notice] = 'email is sent to syndicator'
         else
