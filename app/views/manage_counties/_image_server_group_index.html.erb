@@ -58,7 +58,7 @@
           <% end %>
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count %>
-            <% if session[:my_own] %>
+            <% if session[:my_own] || session[:manage_user_origin] %>
               <td class="t12"><%= source_name %></td>
             <% else %>
               <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[2] == source_name}[0][0])) %></td>

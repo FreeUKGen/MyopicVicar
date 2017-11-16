@@ -11,6 +11,7 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
     <%= link_to 'List assignments by userid', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all'), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'List by County of Available Groups', select_county_assignment_path, method: :get, :class => "btn weight--light btn--small" %> 
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
