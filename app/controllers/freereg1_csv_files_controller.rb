@@ -222,7 +222,7 @@ class Freereg1CsvFilesController < ApplicationController
         (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
          session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator")
         userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE).includes(:freereg1_csv_entries)
     when session[:syndicate].present? && session[:userid_id].present? &&
         (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
          session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator")

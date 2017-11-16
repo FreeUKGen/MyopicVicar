@@ -986,6 +986,6 @@ class Freereg1CsvFile
   end
 
   def include_csv_entries
-    Freereg1CsvFile.includes(:freereg1_csv_entries).where(id: self.id).first.freereg1_csv_entries
+    self.freereg1_csv_entries
   end
 end
