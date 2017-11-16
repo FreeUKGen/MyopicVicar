@@ -974,18 +974,22 @@ class Freereg1CsvFile
   end
 
   def blank_burial_date_records
-    include_csv_entries.zero_burial_records.count != 0
+    include_csv_entries_limited_fields.zero_burial_records.count != 0
   end
 
   def blank_marriage_date_records
-    include_csv_entries.zero_marriage_records.count != 0
+    include_csv_entries_limited_fields.zero_marriage_records.count != 0
   end
 
   def blank_baptism_records
-    include_csv_entries.zero_baptism_records.count != 0
+    include_csv_entries_limited_fields.zero_baptism_records.count != 0
   end
 
   def include_csv_entries
     self.freereg1_csv_entries
+  end
+
+  def include_csv_entries_limited_fields
+    self.freereg1_csv_entries.only(:id, :baptism_date, :marriage_date, :burial_date, :record_type, :year)
   end
 end
