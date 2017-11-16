@@ -275,6 +275,10 @@ class AssignmentsController < ApplicationController
         case params[:type]
           when 'complete'
             new_status = orig_status == 'ip' ? 't' : 'r'
+            work_type = orig_status == 'ip' ? 'transcribe' : 'review'
+            assignment = Assignment.id(assignment_id).first
+            user = UseridDetail.id(assignment.userid_detail_id).first
+
             flash[:notice] = 'Change assignment to COMPLETE was successful'
           when 'unassign'
             new_status = orig_status == 'ip' ? 'a' : 't'
@@ -284,7 +288,12 @@ class AssignmentsController < ApplicationController
             flash[:notice] = 'Modify images in assignment as ERROR was successful'
         end
 
-        Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
+        if user.person_role == 'transcriber'
+          UserMailer.notify_sc_assignment_complete(user,work_type,assignment_id).deliver_now
+          flash[:notice] = 'email is sent to syndicator'
+        else
+          Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
+        end
       else                                          # re_assign
         if assignment_params[:source_id].nil?       # from list assignments under a syndicate
           if assignment_params[:type] == 'transcriber'

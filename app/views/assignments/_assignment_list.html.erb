@@ -39,7 +39,9 @@
               <td class="t12"><%= x[:instructions] %>&nbsp;</td>
               <% assignment_type = x[:images][:status] == 'ip' ? 'transcriber' : 'reviewer' %>
               <td class="t5">
-                <%= link_to 'RM', assignment_path(x[:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:images].nil? %>
+                <% if x[:userids][:person_role] != 'transcriber' %>
+                  <%= link_to 'RM', assignment_path(x[:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:images].nil? %>
+                <% end %>
                 <%= link_to 'VW', view_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank' %>
                 <%= link_to 'DL', download_image_server_image_path(:object=>x[:images][:_id]), method: :get, :target=>'_blank' %>
               </td>

@@ -24,12 +24,6 @@ class Assignment
 
       Assignment.update_original_assignments(assignment_list,'',image_list)
 
-      if new_status == 't'
-        UserMailer.notify_sc_assignment_complete(user,'transcribe',assignment_id).deliver_now
-      elsif new_status == 'r'
-        UserMailer.notify_sc_assignment_complete(user,'review',assignment_id).deliver_now
-      end
-
       case type
         when 'complete'
           case new_status

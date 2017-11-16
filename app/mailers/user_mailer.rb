@@ -187,21 +187,21 @@ class UserMailer < ActionMailer::Base
     @user = UseridDetail.where(:userid=>user).first
     @image_server_images = ImageServerImage.where(:assignment_id=>assignment_id).pluck(:image_name, :seq)
 
-    subject = "#{@user.userid} completed the assignment"
+    subject = "#{user.userid} completed the assignment"
     email_body = "To " + assignment_type + " following images:\r\n\r\n"
 
     @image_server_images.each do |x|
       email_body = email_body + x[0] + '_' + x[1] + "\r\n"
     end
 
-    syndicate = Syndicate.where(:syndicate_code=>@user.syndicate).first
+    syndicate = Syndicate.where(:syndicate_code=>user.syndicate).first
     if syndicate.present?
       syndicate_coordinator = syndicate.syndicate_coordinator
       sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
 
       if sc.present?
         @sc_email_with_name =  sc.email_address
-        mail(:from => @user.email_address, :to => @sc_email_with_name, :cc => @user.email_address, :subject => subject, :body => email_body)
+        mail(:from => user.email_address, :to => @sc_email_with_name, :cc => user.email_address, :subject => subject, :body => email_body)
       else
         p "FREREG_PROCESSING: There was no syndicate coordinator"
       end
