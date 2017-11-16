@@ -9,7 +9,7 @@
         <th class="t12">Instructions</th>
         <th class="t10" colspan=2>Action
           <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <span>RM: Remove Image from Assignment; VW: View Original Image; DL: Download Original Image; COM: Assignment has Completed; UN: Unassign Images in This Assignment; RA: Re_assign Images in This Assignment; ER: Change Image Status in This Assignment as ERROR</span></a>
+          <span>RM: Remove Image from Assignment; VW: View Original Image; DL: Download Original Image; COM: Assignment has Completed; FIN: Notify SC assignment is finished; UN: Unassign Images in This Assignment; RA: Re_assign Images in This Assignment; ER: Change Image Status in This Assignment as ERROR</span></a>
         </th>
       </tr>
     </thead>
@@ -54,7 +54,11 @@
                     <% assignment_list_type = params[:assignment][:assignment_list_type] %>
                   <% end %>
 
-                  <%= link_to 'COM', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                  <% if x[:userids][:person_role] == 'transcriber' %>
+                    <%= link_to 'FIN', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                  <% else %>
+                    <%= link_to 'COM', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                  <% end %>
                   <%= link_to 'UN', assignment_path(x[:_id], :status=>x[:images][:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
                   <%= link_to 'RA', re_assign_assignment_path(x[:_id], :image_server_group_id=>x[:images][:image_server_group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
                   <% if x[:images][:status] == 'ir' %>
