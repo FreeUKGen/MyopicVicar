@@ -1,37 +1,101 @@
 # Thank you for contributing.  This is a placeholder document while we develop our contribution guidelines.
 
-Thank you for your interest in Free UK Genealogy and the MyopicVicar genealogical records 
-database and search engine!
+Thank you for your interest in Free UK Genealogy and the MyopicVicar 
+genealogical records database and search engine!
 
 ## Our Code of Conduct
 
-Free UK Genealogy, including its software development team, operates under a [code of 
-conduct](https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf).  
+Free UK Genealogy, including its software development team, operates 
+under a [code of 
+conduct](https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf).
 
 The short version is, _Be excellent to each other_.  (See the full version at 
 https://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf)
 
+## How We Develop Software
 
-*Ignore all below this line*
+Free UK Genealogy development operates on a modified Agile methodology, 
+working in two-week sprints.  Technical teams developing MyopicVicar and 
+related tools meet via a Google Hangout videoconference every two on 
+Wednesday at 1530 GMT/1030 EST (FreeCEN) or 1630 GMT/1130 EST (FreeREG).  
+Participants in this meeting review the previous sprint's work, discuss 
+blocked issues, and schedule work for the next sprint.  Attendance at 
+these meetings is not mandatory, but an email update from developers 
+unable to attend is appreciated.
+
+All development is tracked in Github issues, and organized and 
+prioritized using Waffle.io, which provides a kanban-style interface.
+
+* The [FreeREG Waffle Board](https://waffle.io/freeukgen/myopicvicar)
+* The [FreeCEN Waffle Board](https://waffle.io/freeukgen/freecenmigration)
+
+
 
 ## How We Communicate
 
-The Free UK Genealogy development team 
+The Free UK Genealogy development team communicates through several channels.  
 
-* the IRC channel, #islandora, on freenode.net
-* our [Google Group/mailing list], 
-* our bi-weekly committers' calls, on Skype and open to everybody (contact community@islandora.ca to join)
-* our various [Interest Groups]
+* A traditional mailing list allows developers and system administrators 
+to discuss production issues and large-scale architectural changes.
+* A Slack team provides more immediate communication among developers on 
+different projects and supports occasional asynchronous discussion.
+* Google Hangouts allow video and live-chat meetings.
 
-[Google Group/mailing list]: https://groups.google.com/forum/#!forum/islandora
-[Interest Groups]: https://github.com/islandora-interest-groups
+In addition, several projects have Google Groups for discussion among 
+volunteers transcribing records.
+
+## How You Can Contribute
+
+There are many ways to contribute to Free UK Genealogy projects without 
+developing a line of software.
+
+### Transcribing Records
+
+Each project needs volunteers to help transcribe records.  In addition 
+to benefiting the needs of the projects, this provides a deep 
+introduction to the project aims and the perspective of our users.
+
+[Learn more about transcribing](https://www.freeukgenealogy.org.uk/about/volunteer/transcriber-volunteering-opportunities/)
+
+### Product Research and Testing
+
+Frequently, user-reported issues need specific reproduction steps and 
+suggestions of correct behavior.  Attempting to reproduce, document, and 
+define these issues is a valuable contribution to the project and also a 
+great way to learn about the details of the tools and their users.
+
+One way to 
+DETAILS/EXPLANATION HERE
+
+### Code
+
+Projects also need developers to contribute code, whether that be bug 
+fixes, data analysis, or new and improved features.
+
+_We highly recommend that volunteer developers contact TODO to be 
+partnered with a mentor.  This mentor can help answer questions and 
+smooth over difficulties faced by people new to the codebase._
+
+While some developers install a full Ruby on Rails/MongoDB/MySQL stack 
+on their development machines, the easiest way to get up and running is 
+to develop code in a virtual workspace provided by Cloud9.
+
+DETAILS/EXPLANATION HERE
 
 
-## How We Develop Software
+## Contributing A Patch
 
-Waffle board; meetings
+1. Ask your mentor (or another member of the technical team) to add you as a contributor to the repository.
+1. Create a branch for your change off of `master` or (for FreeCEN-specific features) `freecen_parsing`
+1. Develop and test your changes locally.
+1. Push your changes to Github.
+1. Create a pull request to merge your branch into `master` (or `freecen_parsing`).
+1. Assign the pull request to your mentor to review and merge.
 
-Cloud9
+
+
+*Ignore all below this line*
+
 
 
 
@@ -43,6 +107,8 @@ Cloud9
 
 We'd love to accept your patches! Before we can take them, we
 have to jump a couple of legal hurdles.
+
+BWB: replace with our CLA, encourage people to contact/ask mentors
 
 Please fill out either the individual or corporate Contributor License Agreement
 (CLA).
@@ -57,19 +123,6 @@ Please fill out either the individual or corporate Contributor License Agreement
 Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
 accept your pull requests.
-
-## Contributing A Patch
-
-1. Submit an issue describing your proposed change to the repo in question.
-1. The repo owner will respond to your issue promptly.
-1. If your proposed change is accepted, and you haven't already done so, sign a
-   Contributor License Agreement (see details above).
-1. Fork the desired repo, develop and test your code changes.
-1. Ensure that your code adheres to the existing style in the sample to which
-   you are contributing. Refer to the 
-   [Google Cloud Platform Samples Style Guide](https://github.com/GoogleCloudPlatform/Template/wiki/style.html) for the recommended coding standards for this organization.
-1. Ensure that your code has an appropriate set of unit tests which all pass.
-1. Submit a pull request.
 
 
 ==========================================================
