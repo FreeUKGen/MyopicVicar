@@ -43,6 +43,7 @@ class UseridDetail
   field :userid_messages,type: Array, default: []
   field :reason_for_invalidating,type: String
   field :new_transcription_agreement, type: String, default: "Unknown"
+  field :email_address_validity_change_message, type: Array, default: []
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct
   index({ email_address: 1 })
