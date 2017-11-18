@@ -1,4 +1,12 @@
-<% breadcrumb :county_image_server_group, @county, @place, @church, @register, @source, @group %>
+<% if session[:my_own_list] == 'county' %>
+	<% if session[:manage_user_origin] == 'manage syndicate' %>
+		<% breadcrumb :syndicate_available_groups_by_county_image_server_group, @county, @place, @church, @register, @source, @group %>
+	<% else %>
+			<% breadcrumb :syndicate_available_groups_by_county_image_server_group, @county, @place, @church, @register, @source, @group %>
+	<% end %>	
+<% else %>
+	<% breadcrumb :county_image_server_group, @county, @place, @church, @register, @source, @group %>
+<% end %>
 
 <div style="clear:both;"></div><br>
 <p style="text-align: center"><b>Image Groups</b> for the <b><%= @source.source_name %></b> Source of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>

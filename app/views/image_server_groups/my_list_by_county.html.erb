@@ -1,7 +1,7 @@
 <% if session[:manage_user_origin] == 'manage syndicate' %>
-	<% breadcrumb :syndicate_image_server_groups, @county, @place, @church, @register, @source %>
+	<% breadcrumb :syndicate_available_groups_by_county_image_server_groups, @county, @place, @church, @register, @source %>
 <% elsif session[:manage_user_origin] == 'manage county' %>
-	<% breadcrumb :county_image_server_groups, @county, @place, @church, @register, @source %>
+	<% breadcrumb :county_available_groups_by_county, @county, @place, @church, @register, @source %>
 <% else %>
 	<% breadcrumb :my_list_by_county_image_server_groups, @user, @county, @place, @church, @register, @source %>
 <% end %>

@@ -1,16 +1,25 @@
 <% case @source.source_name %>
   <% when 'Image Server' %>
-    <% case session[:ig_allocation] %>
-      <% when 'by_syndicate' %>
-        <% breadcrumb :sort_by_syndicate_image_source, @county, @place, @church, @register, @source %>
-      <% when 'by_place' %>
-        <% breadcrumb :sort_by_place_image_source, @county, @place, @church, @register, @source %>
-      <% when 'by_all' %>
-        <% breadcrumb :sort_by_all_image_source, @county, @place, @church, @register, @source %>
-      <% when 'by_unallocate' %>
-        <% breadcrumb :sort_by_unallocate_image_source, @county, @place, @church, @register, @source %>
-      <% else %>
-        <% breadcrumb :county_image_source, @county, @place, @church, @register, @source %>
+    <% if session[:my_own_list] == 'county' %>
+      <% case session[:manage_user_origin] %>
+        <% when 'manage county' %>
+          <% breadcrumb :county_available_groups_by_county_source, @county, @place, @church, @register, @source %>
+        <% when 'manage syndicate' %>
+          <% breadcrumb :syndicate_available_groups_by_county_source, @county, @place, @church, @register, @source %>
+      <% end %>
+    <% else %>
+      <% case session[:ig_allocation] %>
+        <% when 'by_syndicate' %>
+          <% breadcrumb :sort_by_syndicate_image_source, @county, @place, @church, @register, @source %>
+        <% when 'by_place' %>
+          <% breadcrumb :sort_by_place_image_source, @county, @place, @church, @register, @source %>
+        <% when 'by_all' %>
+          <% breadcrumb :sort_by_all_image_source, @county, @place, @church, @register, @source %>
+        <% when 'by_unallocate' %>
+          <% breadcrumb :sort_by_unallocate_image_source, @county, @place, @church, @register, @source %>
+        <% else %>
+          <% breadcrumb :county_image_source, @county, @place, @church, @register, @source %>
+      <% end %>
     <% end %>
   <% when 'Other Server1' %>
     <% breadcrumb :county_other_server1, @county, @place, @church, @register, @source %>

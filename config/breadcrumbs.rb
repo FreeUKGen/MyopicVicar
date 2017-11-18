@@ -533,6 +533,7 @@ crumb :sort_countysource_by_image_group do |county|
   parent :show_countysource, county
 end
 
+
 # from "manage counties" => List Unallocated Image Groups"
 crumb :sort_countysource_by_unallocate_image_group do |county|
   link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
@@ -568,6 +569,7 @@ crumb :sort_by_unallocate_image_server_image do |county,place,church,register,so
   link "Image", image_server_image_path(group)
   parent :sort_by_unallocate_image_server_images, county, place, church, register, source, group
 end
+
 
 # from "manage counties" => "List All Image Groups"
 crumb :sort_countysource_by_all_image_group do |county|
@@ -626,6 +628,7 @@ crumb :sort_by_syndicate_image_server_image do |county,place,church,register,sou
   link "Image", image_server_image_path(group)
   parent :sort_by_syndicate_image_server_images, county, place, church, register, source, group
 end
+
 
 # from "manage counties" => "Image Groups Allocated by Place"
 crumb :sort_countysource_by_place do |county,place|
@@ -703,6 +706,46 @@ crumb :list_uninitialized_image_source do |county|
   parent :show_countysource, county
 end
 
+
+# from 'manage counties'=>'list by county of available groups'
+crumb :county_available_groups_by_county do |county,place,church,register,source|
+  link 'List by County of Available Groups', select_county_assignment_path
+  parent :show_countysource, county, place, church, register, source
+end
+
+crumb :county_available_groups_by_county_sources do |county,place,church,register|
+  link "Sources", index_source_path(register)
+  parent :county_available_groups_by_county, session[:syndicate]
+end
+
+crumb :county_available_groups_by_county_source do |county,place,church,register,source|
+  link "Image Server", source_path(source)
+  parent :county_available_groups_by_county_sources, county, place, church, register
+end
+
+crumb :county_available_groups_by_county_image_server_groups do |county,place,church,register,source|
+  link "Image Groups", index_image_server_group_path(source)
+  parent :county_available_groups_by_county_source, county, place, church, register, source
+end
+
+crumb :county_available_groups_by_county_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :county_available_groups_by_county_image_server_groups, county, place, church, register, source
+end
+
+crumb :county_available_groups_by_county_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :county_available_groups_by_county_image_server_group, county, place, church, register, source, group
+end
+
+crumb :county_available_groups_by_county_image_server_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :county_available_groups_by_county_image_server_images, county, place, church, register, source, group
+end
+
+
+
+
 # breadcrumbs from 'manage syndicate'
 crumb :syndicate_manage_images do |syndicate|
   link "All Allocated Image Groups", manage_image_group_manage_syndicate_path(syndicate)
@@ -762,6 +805,43 @@ end
 crumb :syndicate_image_group_assignments do |county,place,church,register,source,group|
   link "List User Assignments", assignment_path(group)
   parent :syndicate_image_server_images, county, place, church, register, source, group
+end
+
+
+# from 'manage syndicates'=>'list by county of available groups'
+crumb :syndicate_available_groups_by_county do |county,place,church,register,source|
+  link 'List by County of Available Groups', select_county_assignment_path
+  parent :syndicate_manage_images, county, place, church, register, source
+end
+
+crumb :syndicate_available_groups_by_county_sources do |county,place,church,register|
+  link "Sources", index_source_path(register)
+  parent :syndicate_available_groups_by_county, session[:syndicate]
+end
+
+crumb :syndicate_available_groups_by_county_source do |county,place,church,register,source|
+  link "Image Server", source_path(source)
+  parent :syndicate_available_groups_by_county_sources, county, place, church, register
+end
+
+crumb :syndicate_available_groups_by_county_image_server_groups do |county,place,church,register,source|
+  link "Image Groups", index_image_server_group_path(source)
+  parent :syndicate_available_groups_by_county_source, county, place, church, register, source
+end
+
+crumb :syndicate_available_groups_by_county_image_server_group do |county,place,church,register,source,group|
+  link "Image Group", image_server_group_path(group)
+  parent :syndicate_available_groups_by_county_image_server_groups, county, place, church, register, source
+end
+
+crumb :syndicate_available_groups_by_county_image_server_images do |county,place,church,register,source,group|
+  link "Images", index_image_server_image_path(group)
+  parent :syndicate_available_groups_by_county_image_server_group, county, place, church, register, source, group
+end
+
+crumb :syndicate_available_groups_by_county_image_server_image do |county,place,church,register,source,group|
+  link "Image", image_server_image_path(group)
+  parent :syndicate_available_groups_by_county_image_server_images, county, place, church, register, source, group
 end
 
 # breadcrumbs from 'my_own assignments'
