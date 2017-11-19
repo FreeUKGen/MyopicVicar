@@ -77,7 +77,7 @@ class AssignmentsController < ApplicationController
   end
 
   def display_info_from_my_own
-    @source = Source.where(:id=>@assignment.first[:source_id]).first
+    @source = Source.where(:id=>@assignment.first[:fields][:source_id]).first
     session[:source_id] = @source.id
     @register = @source.register
     session[:register_id] = @register.id
@@ -163,6 +163,18 @@ class AssignmentsController < ApplicationController
     if session[:my_own]
       display_info_from_my_own if @assignment.present?
       render 'list_assignments_of_myself'
+    end
+  end
+
+  def list_assignment_image
+    @image = ImageServerImage.collection.aggregate([
+                {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
+                {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
+                {'$unwind'=>"$image_group"}
+             ]).first
+
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -289,6 +301,7 @@ class AssignmentsController < ApplicationController
         end
 
         if session[:my_own]
+          Assignment.id(assignment_id).update(:assignment_finished=>'Yes')
           UserMailer.notify_sc_assignment_complete(user,work_type,assignment_id).deliver_now
           flash[:notice] = 'email is sent to syndicator'
         else

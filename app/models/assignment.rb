@@ -3,6 +3,7 @@ class Assignment
   
   field :instructions, type: String
   field :assign_date, type: String
+  field :assignment_finished, type: String, default: 'No'
 
   attr_accessor :user_id
 
@@ -70,7 +71,8 @@ class Assignment
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
-                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
+                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
+                {'$sort'=>{'images.assignment_finished'=>1, 'lower_case_userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
              ])
 
         group_by_count = Assignment.collection.aggregate([
@@ -79,7 +81,6 @@ class Assignment
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
-                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
                 {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
              ])
       else
@@ -90,7 +91,8 @@ class Assignment
                 {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}, "images.image_server_group_id"=>{'$in'=>group_id}}},
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
-                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
+                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
+                {'$sort'=>{'images.assignment_finished'=>1, 'lower_case_userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
              ])
 
         group_by_count = Assignment.collection.aggregate([
@@ -99,7 +101,6 @@ class Assignment
                 {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}, "images.image_server_group_id"=>{'$in'=>group_id}}},
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
-                {'$sort'=>{'userids.userid'=>1, 'images.status'=>1, 'images.seq'=>1}}, 
                 {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
              ])
       end          
