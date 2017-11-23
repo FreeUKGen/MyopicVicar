@@ -65,8 +65,15 @@ class ImageServerImagesController < ApplicationController
     display_info
     get_userids_and_transcribers or return
 
-    @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    @images = ImageServerImage.get_image_list(params[:id])
+    case params[:propagate_choice]
+      when 'status'
+        @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :status=>'u').first
+        status_list = ['u']
+      else
+        @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
+        status_list = ImageServerImage::Status::ARRAY_ALL
+    end        
+    @images = ImageServerImage.get_image_list(params[:id],status_list)
     @propagate_choice = params[:propagate_choice]
 
     if @image_server_image.nil?
@@ -116,7 +123,7 @@ class ImageServerImagesController < ApplicationController
     @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    @images = ImageServerImage.get_image_list(params[:id])
+    @images = ImageServerImage.get_image_list(params[:id],ImageServerImage::Status::ARRAY_ALL)
 
     if @image_server_image.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent image file'

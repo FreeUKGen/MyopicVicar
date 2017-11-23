@@ -250,6 +250,12 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def request_image_server_group(sc,sc_email,cc_email,group)
+    subject = "SC request image group"
+    email_body = sc+' requests to have '+group+' allocated'
+    mail(:from => sc_email, :to => cc_email, :subject => subject, :body => email_body)
+  end
+
   def send_change_of_syndicate_notification_to_sc(user)
     @user = user
     get_coordinator_name

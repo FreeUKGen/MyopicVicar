@@ -26,6 +26,7 @@ class ImageServerImage
     Complete = 'c'
     Error = 'e'
 
+    ARRAY_ALL = ['u', 'a', 'ip', 't', 't', 'ir', 'r', 'c', 'e']
     ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'ip'=>'In_progress', 't'=>'Transcribed', 'ir'=>'In_review', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
   end
 
@@ -76,8 +77,8 @@ class ImageServerImage
       image_list
     end
 
-    def get_image_list(group_id)
-      seq = ImageServerImage.image_server_group_id(group_id).pluck(:id, :image_name, :seq)
+    def get_image_list(group_id,status_list)
+      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>{'$in'=>status_list}).pluck(:id, :image_name, :seq)
 
       #myseq = Hash.new{|h,k| h[k] = []}
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}

@@ -17,16 +17,16 @@ class ImageServerGroup
   end
 
   module Status
-    UNALLOCATED = 'u'
-    ALLOCATED = 'a'
-    IN_PROGRESS = 'ip'
-    TRANSCRIBED = 't'
-    IN_REVIEW = 'ir'
-    REVIEWED = 'r'
-    COMPLETE = 'c'
-    ERROR = 'e'
+    Unallocated = 'u'
+    Allocated = 'a'
+    In_Progress = 'ip'
+    Transcribed = 't'
+    In_Review = 'ir'
+    Reviewed = 'r'
+    Complete = 'c'
+    Error = 'e'
 
-    ALL_STATUSES = {'u'=>'UNALLOCATED', 'a'=>'ALLOCATED', 'ip'=>'IN_PROGRESS', 't'=>'TRANSCRIBED', 'ir'=>'IN_REVIEW', 'r'=>'REVIEWED', 'c'=>'COMPLETE', 'e'=>'ERROR'}
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'ip'=>'In_Progress', 't'=>'Transcribed', 'ir'=>'In_Review', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
 
     CHURCH_STATUS = {}
 

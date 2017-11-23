@@ -230,6 +230,31 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
 
+  def request_image_server_group
+    ig = ImageServerGroup.id(params[:id]).first
+    image_server_group = ig.group_name if !ig.nil?
+
+    sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
+    if !sc.nil?
+      cc_userid = County.where(:chapman_code=>params[:county]).first
+      if !cc_userid.nil?
+        cc = UseridDetail.where(:userid=>cc_userid.county_coordinator).first
+        if !cc.nil?
+          UserMailer.request_image_server_group(sc.userid, sc.email_address, cc.email_address, image_server_group).deliver_now
+          flash[:notice] = 'email sent to county coordinator'
+        else
+          flash[:notice] = 'county coordinator does not exist, please contact administrator'
+        end
+      else
+        flash[:notice] = 'county does not exist'
+      end
+    else
+      flash[:notice] = 'syndicate coordinator does not exist'
+    end
+
+    redirect_to :back
+  end
+
   def review_a_specific_batch
     get_user_info_from_userid
     @manage_county = ManageCounty.new
