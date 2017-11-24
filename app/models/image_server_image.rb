@@ -131,7 +131,7 @@ class ImageServerImage
     def refresh_src_dest_group_summary(image_server_group)
       # update field summary of ImageServerGroup
       summary = image_server_group.summarize_from_image_server_image
-      image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.empty?
+      image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.nil? && !summary.empty?
     end
 
   end

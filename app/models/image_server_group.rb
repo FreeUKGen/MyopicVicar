@@ -136,14 +136,15 @@ class ImageServerGroup
         place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
         church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
         register_type = @register_id[@source_id[value[0]][0]][1]
+        source_id = @source_id[value[0]][0]
         source_name = @source_id[value[0]][1]
         group_name = value[1]
         syndicate = value[2]
         assign_date = value[3]
         number_of_images = value[4]
-        gid << [syndicate, key, place_name, church_name, register_type, source_name, group_name, assign_date, number_of_images]
+        gid << [syndicate, key, place_name, church_name, register_type, source_name, source_id, group_name, assign_date, number_of_images]
       end
-      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i| [a ? 0:1, a.to_s.downcase,c,d,e,f]}
+      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [a ? 0:1, a.to_s.downcase,c,d,e,f]}
 
       return @source, @g_id, @syndicate
     end
@@ -182,14 +183,15 @@ class ImageServerGroup
         place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
         church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
         register_type = @register_id[@source_id[value[0]][0]][1]
+        source_id = @source_id[value[0]][0]
         source_name = @source_id[value[0]][1]
         group_name = value[1]
         syndicate = value[2]
         assign_date = value[3]
         number_of_images = value[4]
-        gid << [key, place_name, church_name, register_type, source_name, group_name, syndicate, assign_date, number_of_images]
+        gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
       end
-      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i| [b,c,d,e,f ? 0:1,f.downcase]}
+      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
 
       return @source, @g_id, @group_id
     end
@@ -219,14 +221,15 @@ class ImageServerGroup
         place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
         church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
         register_type = @register_id[@source_id[value[0]][0]][1]
+        source_id = @source_id[value[0]][0]
         source_name = @source_id[value[0]][1]
         group_name = value[1]
         syndicate = value[2]
         assign_date = value[3]
         number_of_images = value[4]
-        gid << [key, place_name, church_name, register_type, source_name, group_name, syndicate, assign_date, number_of_images]
+        gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
       end
-      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i| [b,c,d,e,f ? 0:1,f.downcase]}
+      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
 
       return @source, @g_id, @group_id
     end
@@ -266,14 +269,15 @@ class ImageServerGroup
         place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
         church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
         register_type = @register_id[@source_id[value[0]][0]][1]
+        source_id = @source_id[value[0]][0]
         source_name = @source_id[value[0]][1]
         group_name = value[1]
         syndicate = value[2]
         assign_date = value[3]
         number_of_images = value[4]
-        gid << [key, place_name, church_name, register_type, source_name, group_name, syndicate, assign_date, number_of_images]
+        gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
       end
-      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i| [b,c,d,e,f ? 0:1,f.downcase]}
+      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
 
       return @source, @g_id, @group_id
     end

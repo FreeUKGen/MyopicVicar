@@ -72,7 +72,7 @@ class Assignment
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
                 {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
-                {'$sort'=>{'images.assignment_finished'=>1, 'lower_case_userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
+                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
              ])
 
         group_by_count = Assignment.collection.aggregate([
@@ -92,7 +92,7 @@ class Assignment
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
                 {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
-                {'$sort'=>{'images.assignment_finished'=>1, 'lower_case_userid'=>1, 'images.status'=>1, 'images.seq'=>1}}
+                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
              ])
 
         group_by_count = Assignment.collection.aggregate([

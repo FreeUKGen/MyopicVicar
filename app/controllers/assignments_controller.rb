@@ -155,6 +155,7 @@ class AssignmentsController < ApplicationController
           group_id = BSON::ObjectId.from_string(params[:image_server_group_id])
         end
       end
+
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids,group_id)
     else
       flash[:notice] = 'No assignment found.'
@@ -175,6 +176,7 @@ class AssignmentsController < ApplicationController
 
     respond_to do |format|
       format.js
+      format.html
     end
   end
 

@@ -1,12 +1,7 @@
 <% case @source.source_name %>
   <% when 'Image Server' %>
-    <% if session[:my_own_list] == 'county' %>
-      <% case session[:manage_user_origin] %>
-        <% when 'manage county' %>
-          <% breadcrumb :county_available_groups_by_county_source, @county, @place, @church, @register, @source %>
-        <% when 'manage syndicate' %>
-          <% breadcrumb :syndicate_available_groups_by_county_source, @county, @place, @church, @register, @source %>
-      <% end %>
+    <% if session[:manage_user_origin] == 'manage syndicatre' %>
+      <% breadcrumb :syndicate_available_groups_by_county_source, @county, @place, @church, @register, @source %>
     <% else %>
       <% case session[:ig_allocation] %>
         <% when 'by_syndicate' %>

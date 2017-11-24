@@ -33,7 +33,7 @@
     <table class=" table--bordered my-width table--data just--left">
       <tbody >
         <% place_rows, church_rows, register_rows, source_rows = 0,0,0,0 %>
-        <% @group_ids.each do |gid,place_name,church_name,register_type,source_name,group_name,syndicate,assign_date,number_of_images| %>
+        <% @group_ids.each do |gid,place_name,church_name,register_type,source_name,source_id,group_name,syndicate,assign_date,number_of_images| %>
           <% if source_rows == 0 %>
             <% source_rows = @group_id[place_name][church_name][register_type][source_name].count %>
             <% if register_rows == 0 %>
@@ -68,7 +68,7 @@
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count %>
             <% if session[:manage_user_origin] == 'manage_county' %>
-              <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[2] == source_name}[0][0])) %>&nbsp;</td>
+              <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[1] == source_id}[0][0])) %>&nbsp;</td>
             <% else %>
               <td class="t12"><%= source_name %></td>
             <% end %>
