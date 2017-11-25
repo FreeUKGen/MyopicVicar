@@ -191,7 +191,7 @@ class ImageServerGroupsController < ApplicationController
 
   def show
     session[:image_server_group_id] = params[:id]
-    session[:ig_allocation] = params[:ig_allocation] if !params[:ig_allocation].nil?
+    session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
     display_info
     @group = ImageServerGroup.id(params[:id])
 

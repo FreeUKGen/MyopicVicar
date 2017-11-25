@@ -67,8 +67,8 @@
           <% end %>
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count %>
-            <% if session[:manage_user_origin] == 'manage_county' %>
-              <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[1] == source_id}[0][0])) %>&nbsp;</td>
+            <% if session[:manage_user_origin] == 'manage county' %>
+              <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'place')) %>&nbsp;</td>
             <% else %>
               <td class="t12"><%= source_name %></td>
             <% end %>
@@ -76,7 +76,7 @@
             <td class="t12">&nbsp;</td>
           <% end %>
 
-          <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :ig_allocation=>'by_place')) %>&nbsp;</td>
+          <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :image_group_filter=>'place')) %>&nbsp;</td>
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <td class="t12"><%= syndicate %>&nbsp;</td>
           <% if assign_date.nil? %>

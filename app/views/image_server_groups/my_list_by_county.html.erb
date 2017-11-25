@@ -1,8 +1,4 @@
-<% if session[:manage_user_origin] == 'manage syndicate' %>
-	<% breadcrumb :syndicate_available_groups_by_county_image_server_groups, @county, @place, @church, @register, @source %>
-<% else %>
-	<% breadcrumb :my_list_by_county_image_server_groups, @user, @county, @place, @church, @register, @source %>
-<% end %>
+<% breadcrumb :request_assignments_by_county, @user, @county, @place, @church, @register, @source %>
 
 <% title "IS Group - list" %>
 <div style="clear:both;"></div><br>

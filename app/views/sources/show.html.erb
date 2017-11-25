@@ -1,32 +1,12 @@
-<% if session[:manage_user_origin] == 'manage syndicate' %>
-  <% case @source.source_name %>
-    <% when 'Image Server' %>
-      <% breadcrumb :syndicate_image_source, @county, @place, @church, @register, @source %>
-    <% when 'Other Server1' %>
-      <% breadcrumb :syndicate_other_server1, @county, @place, @church, @register, @source %>
-    <% when 'Other Server2' %>
-      <% breadcrumb :syndicate_other_server2, @county, @place, @church, @register, @source %>
-    <% when 'Other Server3' %>
-      <% breadcrumb :syndicate_other_server3, @county, @place, @church, @register, @source %>
-  <% end %>
-<% else %>
-  <% case @source.source_name %>
-    <% when 'Image Server' %>
-      <% case session[:ig_allocation] %>
-        <% when 'by_all' %>
-          <% breadcrumb :sort_by_all_image_source, @county, @place, @church, @register, @source %>
-        <% when 'by_unallocate' %>
-          <% breadcrumb :sort_by_unallocate_image_source, @county, @place, @church, @register, @source %>
-        <% else %>
-          <% breadcrumb :county_image_source, @county, @place, @church, @register, @source %>
-      <% end %>
-    <% when 'Other Server1' %>
-      <% breadcrumb :county_other_server1, @county, @place, @church, @register, @source %>
-    <% when 'Other Server2' %>
-      <% breadcrumb :county_other_server2, @county, @place, @church, @register, @source %>
-    <% when 'Other Server3' %>
-      <% breadcrumb :county_other_server3, @county, @place, @church, @register, @source %>
-  <% end %>
+<% case @source.source_name %>
+  <% when 'Image Server' %>
+    <% breadcrumb :sources_image_source, @county, @place, @church, @register, @source %>
+  <% when 'Other Server1' %>
+    <% breadcrumb :sources_other_server1, @county, @place, @church, @register, @source %>
+  <% when 'Other Server2' %>
+    <% breadcrumb :sources_other_server2, @county, @place, @church, @register, @source %>
+  <% when 'Other Server3' %>
+    <% breadcrumb :sources_other_server3, @county, @place, @church, @register, @source %>
 <% end %>
 
 <% title "Source - properties" %>

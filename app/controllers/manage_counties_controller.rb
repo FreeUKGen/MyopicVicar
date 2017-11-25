@@ -327,8 +327,8 @@ class ManageCountiesController < ApplicationController
 
   def uninitialized_source_list
     get_user_info_from_userid
-    session[:manage_user_origin] = 'manage county'
-    
+    session[:image_group_filter] = 'uninitialized'
+
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path

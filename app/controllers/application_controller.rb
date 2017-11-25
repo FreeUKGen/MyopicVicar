@@ -268,7 +268,7 @@ class ApplicationController < ActionController::Base
     session.delete(:source_id)
     session.delete(:image_server_group_id)
     session.delete(:manage_user_origin)
-    session.delete(:ig_allocation)
+    session.delete(:image_group_filter)
     session.delete(:my_own_list)
     session.delete(:my_own)
   end

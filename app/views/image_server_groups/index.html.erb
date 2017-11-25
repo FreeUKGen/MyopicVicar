@@ -1,23 +1,4 @@
-<% if session[:manage_user_origin] == 'manage syndicate' %>
-	<% if session[:my_own_list] == 'county' %>
-		<% breadcrumb :syndicate_available_groups_by_county_image_server_groups, @county, @place, @church, @register, @source %>
-	<% else %>
-		<% breadcrumb :syndicate_image_server_groups, @county, @place, @church, @register, @source %>
-	<% end %>
-<% else %>
-	<% case session[:ig_allocation] %>
-		<% when 'by_syndicate' %>
-			<% breadcrumb :sort_by_syndicate_image_server_groups, @county, @place, @church, @register, @source %>
-		<% when 'by_place' %>
-			<% breadcrumb :sort_by_place_image_server_groups, @county, @place, @church, @register, @source %>
-		<% when 'by_all' %>
-			<% breadcrumb :sort_by_all_image_server_groups, @county, @place, @church, @register, @source %>
-		<% when 'by_unallocate' %>
-			<% breadcrumb :sort_by_unallocate_image_server_groups, @county, @place, @church, @register, @source %>
-		<% else %>
-			<% breadcrumb :county_image_server_groups, @county, @place, @church, @register, @source %>
-	<% end %>
-<% end %>
+<% breadcrumb :image_server_groups, @county, @place, @church, @register, @source %>
 
 <% title "IS Group - list" %>
 <div style="clear:both;"></div><br>

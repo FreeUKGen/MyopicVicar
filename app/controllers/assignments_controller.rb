@@ -305,7 +305,7 @@ class AssignmentsController < ApplicationController
         if session[:my_own]
           Assignment.id(assignment_id).update(:assignment_finished=>'Yes')
           UserMailer.notify_sc_assignment_complete(user,work_type,assignment_id).deliver_now
-          flash[:notice] = 'email is sent to syndicator'
+          flash[:notice] = 'email is sent to syndicate coordinator'
         else
           Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
         end
