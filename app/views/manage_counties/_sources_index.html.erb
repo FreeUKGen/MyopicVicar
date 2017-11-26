@@ -47,7 +47,7 @@
             <td class="t15">&nbsp;</td>
           <% end %>
 
-          <td class="t15"><%= link_to(source_name,source_path(source_id, :image_group_filter=>'uninitialized')) %></td></tr>
+          <td class="t15"><%= link_to(source_name,source_path(source_id)) %></td></tr>
 
           <% register_rows = register_rows - 1  unless register_rows == 0 %>
           <% if register_rows == 0 %>

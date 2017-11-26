@@ -614,26 +614,26 @@ crumb :image_sources do |county,place,church,register|
   if session[:manage_user_origin] == 'manage_syndicate'
     parent :syndicate_manage_images
   else
-    case session[:image_group_filter]
-      when 'all'
-        parent :sort_countysource_by_all_image_group
-      when 'syndicate'
-        parent :sort_countysource_by_syndicate
-      when 'place'
-        parent :sort_countysource_by_place
-      when 'unallocate'
-        parent :sort_countysource_by_unallocate_image_group
-      when 'uninitialized'
-        parent :list_uninitialized_image_source
-      else
-        parent :show_countysource
-    end
+    parent :show_countysource
   end
 end
 
       crumb :sources_image_source do |county,place,church,register,source|
         link "Image Server", source_path(source)
-        parent :image_sources, county, place, church, register
+        case session[:image_group_filter]
+          when 'all'
+            parent :sort_countysource_by_all_image_group
+          when 'syndicate'
+            parent :sort_countysource_by_syndicate
+          when 'place'
+            parent :sort_countysource_by_place
+          when 'unallocate'
+            parent :sort_countysource_by_unallocate_image_group
+          when 'uninitialized'
+            parent :list_uninitialized_image_source
+          else
+            parent :image_sources, county, place, church, register
+        end
       end
 
       crumb :sources_other_server1 do |county,place,church,register,source|

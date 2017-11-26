@@ -1,4 +1,4 @@
-<% breadcrumb :sort_by_unallocate_image_source, @county, @place, @church, @register, @source %>
+<% breadcrumb :sources_image_source, @county, @place, @church, @register, @source %>
 
 <% title "Source - initialize" %>
 <div style="clear:both;"></div><br>
@@ -15,7 +15,7 @@
 <section class="island  island--light">
 <div class="grid">
 <%= simple_form_for @source do |s| %>
-  <%= s.input :initialize_status, :as=>:select, :collection=>[['Unallocated','u'], ['Transcribed','t'], ['Completed','c']], :label=>"Initialized Status", :include_blank=>false, :selected=>false, :required=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>2} %>
+  <%= s.input :initialize_status, :as=>:select, :collection=>[['Unallocated','u'], ['Transcribed','t'], ['Completed','c']], :label=>"Initialize Source to Status", :include_blank=>false, :selected=>false, :required=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>2} %>
   
   <%= s.button :submit, 'Submit', :onclick=>'return check_year_range()' %>
 <% end %>
