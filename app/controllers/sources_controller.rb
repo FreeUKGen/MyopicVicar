@@ -169,7 +169,7 @@ class SourcesController < ApplicationController
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
 
     if not allow_initialize
-      flash[:notice] = 'You can only initialize a source when its status was unset'
+      flash[:notice] = 'You can only initialize a source when all image groups status is unset'
       redirect_to :back
     end
   end
@@ -214,7 +214,7 @@ class SourcesController < ApplicationController
   def show
     load(params[:id])
     display_info
-    session[:image_group_filter] = params[:image_group_filter].nil? ? nil : params[:image_group_filter]
+    session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
     @source = Source.id(params[:id]).first
 
     go_back("source#show",params[:id]) if @source.nil?

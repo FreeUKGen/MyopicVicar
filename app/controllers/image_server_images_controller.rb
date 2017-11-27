@@ -77,7 +77,7 @@ class ImageServerImagesController < ApplicationController
     @propagate_choice = params[:propagate_choice]
 
     if @image_server_image.nil?
-      flash[:notice] = 'Attempted to edit a non_esxistent image file'
+      flash[:notice] = 'No Unallocated images to be propagated'
       redirect_to :back
     end
   end

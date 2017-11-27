@@ -104,7 +104,7 @@ class ManageCountiesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
-    session[:manage_user_origin] = 'manage county'
+    session[:image_group_filter] = 'all'
 
     if session[:chapman_code].nil?
       redirect_to main_app.new_manage_resource_path
@@ -119,7 +119,7 @@ class ManageCountiesController < ApplicationController
 
   def manage_unallocated_image_group
     get_user_info_from_userid
-    session[:manage_user_origin] = 'manage county'
+    session[:image_group_filter] = 'unallocate'
 
     if session[:chapman_code].nil?
       redirect_to main_app.new_manage_resource_path
@@ -135,6 +135,7 @@ class ManageCountiesController < ApplicationController
   def manage_sources
     get_user_info_from_userid
     session[:manage_user_origin] = 'manage county'
+    session.delete(:image_group_filter)
     
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
@@ -295,7 +296,7 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_place
     get_user_info_from_userid
-    session[:manage_user_origin] = 'manage county'
+    session[:image_group_filter] = 'place'
 
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
@@ -311,7 +312,7 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_syndicate
     get_user_info_from_userid
-    session[:manage_user_origin] = 'manage county'
+    session[:image_group_filter] = 'syndicate'
 
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, you need to select county again'

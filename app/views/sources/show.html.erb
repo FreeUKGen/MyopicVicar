@@ -29,7 +29,7 @@
     <% when 'OTher Server3' %>
     <% else %>
   <% end %>
-  <% if session[:manage_user_origin] == 'manage county' %>
+  <% if session[:manage_user_origin] == 'manage county' && !['syndicate','place','unallocate'].include?(session[:image_group_filter])  %>
     <%= link_to 'Create new Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %>
     <% case @source.source_name %>
       <% when 'Image Server' %>

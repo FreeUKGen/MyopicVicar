@@ -577,13 +577,18 @@ end
       # from 'manage syndicates' => "manage images" => 'list by county of available groups'
       crumb :syndicate_available_groups_by_county do |county,place,church,register,source|
         link 'List by County of Available Groups', select_county_assignment_path
-        parent :syndicate_manage_images, county, place, church, register, source
+        parent :syndicate_manage_images, county,place,church,register,source
       end
 
       # from 'manage syndicates' => "manage images" => 'list assignment by userid'
       crumb :syndicate_all_assignments do |syndicate|
-        link "List User Assignments"
+        link "User Assignments"
         parent :syndicate_manage_images, session[:syndicate]
+      end
+
+      crumb :syndicate_image_group_assignments do |user,county,place,church,register,source,group|
+        link "User Assignments", assignment_path(group)
+        parent :image_server_images, user,county,place,church,register,source,group
       end
 
 
@@ -611,28 +616,28 @@ end
 # breadcrumb for Sources
 crumb :image_sources do |county,place,church,register|
   link "Sources", index_source_path(register)
-  if session[:manage_user_origin] == 'manage_syndicate'
-    parent :syndicate_manage_images
-  else
-    parent :show_countysource
-  end
+  parent :show_countysource
 end
 
       crumb :sources_image_source do |county,place,church,register,source|
         link "Image Server", source_path(source)
-        case session[:image_group_filter]
-          when 'all'
-            parent :sort_countysource_by_all_image_group
-          when 'syndicate'
-            parent :sort_countysource_by_syndicate
-          when 'place'
-            parent :sort_countysource_by_place
-          when 'unallocate'
-            parent :sort_countysource_by_unallocate_image_group
-          when 'uninitialized'
-            parent :list_uninitialized_image_source
-          else
-            parent :image_sources, county, place, church, register
+        if session[:manage_user_origin] == 'manage syndicate'
+          parent :syndicate_manage_images
+        else
+          case session[:image_group_filter]
+            when 'all'
+              parent :sort_countysource_by_all_image_group
+            when 'syndicate'
+              parent :sort_countysource_by_syndicate
+            when 'place'
+              parent :sort_countysource_by_place
+            when 'unallocate'
+              parent :sort_countysource_by_unallocate_image_group
+            when 'uninitialized'
+              parent :list_uninitialized_image_source
+            else
+              parent :image_sources, county,place,church,register
+          end
         end
       end
 
@@ -643,37 +648,44 @@ end
 
       crumb :sources_other_server2 do |county,place,church,register,source|
         link "Other Server2", source_path(source)
-        parent :images_sources, county, place, church, register
+        parent :images_sources, county,place,church,register
       end
 
       crumb :sources_other_server3 do |county,place,church,register,source|
         link "Other Server3", source_path(source)
-        parent :image_sources, county, place, church, register
+        parent :image_sources, county,place,church,register
       end
 
 crumb :sources_create_new_source do |county,place,church,register,source|
   link "Create New Source"
-  parent :image_sources, county, place, church, register
+  parent :image_sources, county,place,church,register
 end
 
 
 
 # breadcrumb for Image Server Groups
-crumb :image_server_groups do |county,place,church,register,source|
+crumb :image_server_groups do |user,county,place,church,register,source|
   link "Image Groups", index_image_server_group_path(source)
-  parent :sources_image_source, county, place, church, register, source
+  if session[:my_own]
+    case session[:assignment_filter_list]
+      when 'syndicate'
+        parent :request_assignments_by_syndicate, user,county,place,church,register,source
+      when 'county'
+        parent :request_assignments_by_county, user,county,place,church,register,source
+    end
+  else
+    case session[:assignment_filter_list]
+      when 'county'
+        parent :syndicate_available_groups_by_county, county,place,church,register,source
+      else
+        parent :sources_image_source, county,place,church,register,source
+    end
+  end
 end
 
 crumb :image_server_group do |user,county,place,church,register,source,group|
   link "Image Group", image_server_group_path(group)
-  case session[:my_own_list] 
-    when 'syndicate'
-      parent :request_assignments_by_syndicate, user, county, place, church, register, source
-    when 'county'
-      parent :request_assignments_by_county, user, county, place, church, register, source
-    else
-      parent :image_server_groups, county, place, church, register, source, group
-  end
+  parent :image_server_groups, user,county,place,church,register,source
 end
 
 
@@ -681,12 +693,12 @@ end
 # breadcrumb for Image Server Images
 crumb :image_server_images do |user,county,place,church,register,source,group|
   link "Images", index_image_server_image_path(group)
-  parent :image_server_group, user, county, place, church, register, source, group
+  parent :image_server_group, user,county,place,church,register,source,group
 end
 
 crumb :image_server_image do |user,county,place,church,register,source,group|
   link "Image", image_server_image_path(group)
-  parent :image_server_images, user, county, place, church, register, source, group
+  parent :image_server_images, user,county,place,church,register,source,group
 end
 
 
