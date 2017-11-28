@@ -1,7 +1,7 @@
 <% if session[:my_own] %>
   <% breadcrumb :my_own_assignments, @user %>
 <% else %>
-  <% breadcrumb :syndicate_image_group_assignments, @user, @county, @place, @church, @register, @source, @group %>
+  <% breadcrumb :syndicate_image_group_assignments, @user, @county, @register, @source, @group %>
 <% end %>
 
 <div style="clear:both;"></div><br>

@@ -214,8 +214,8 @@ class SourcesController < ApplicationController
   def show
     load(params[:id])
     display_info
-    session[:image_group_filter] = params[:image_group_filter]
-    session[:assignment_filter_list] = params[:assignment_filter_list]
+    session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
+    session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     @source = Source.id(params[:id]).first
 
     go_back("source#show",params[:id]) if @source.nil?

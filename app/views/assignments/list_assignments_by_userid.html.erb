@@ -4,7 +4,7 @@
 	<div style="clear:both;"></div><br>
 	<p style="text-align: center"><b>Assignments</b> of Syndicate <b><%= session[:syndicate] %></b>
 <% else %>
-	<% breadcrumb :syndicate_image_group_assignments, @user, @county, @place, @church, @register, @source, @group %>
+	<% breadcrumb :syndicate_image_group_assignments, @user, @county, @register, @source, @group %>
 
 	<div style="clear:both;"></div><br>
 	<p style="text-align: center"><b>Assignments</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>

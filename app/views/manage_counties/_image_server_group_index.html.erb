@@ -1,4 +1,3 @@
-
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >
@@ -68,10 +67,10 @@
           <% end %>
 
           <% if session[:manage_user_origin] == 'manage syndicate' %>
-            <td class="t20"><%= link_to(group_name, image_server_group_path(gid)) %></td>
+            <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
             <td class="t2"><%= link_to 'EMAIL', request_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]) %></td>
           <% else %>
-            <td class="t20" colspan=2><%= link_to(group_name, image_server_group_path(gid)) %></td>
+            <td class="t20" colspan=2><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
           <% end %>
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <td class="t12"><%= syndicate %>&nbsp;</td>
