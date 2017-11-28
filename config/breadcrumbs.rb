@@ -619,42 +619,39 @@ crumb :image_sources do |county,place,church,register|
   parent :show_countysource
 end
 
-      crumb :sources_image_source do |county,place,church,register,source|
-        link "Image Server", source_path(source)
-        if session[:manage_user_origin] == 'manage syndicate'
-          parent :syndicate_manage_images
-        else
-          case session[:image_group_filter]
-            when 'all'
-              parent :sort_countysource_by_all_image_group
-            when 'syndicate'
-              parent :sort_countysource_by_syndicate
-            when 'place'
-              parent :sort_countysource_by_place
-            when 'unallocate'
-              parent :sort_countysource_by_unallocate_image_group
-            when 'uninitialized'
-              parent :list_uninitialized_image_source
-            else
-              parent :image_sources, county,place,church,register
-          end
+crumb :sources_image_source do |county,place,church,register,source|
+  case source.source_name
+    when 'Image Server'
+      link "Image Server", source_path(source)
+      if session[:manage_user_origin] == 'manage syndicate'
+        parent :syndicate_manage_images
+      else
+        case session[:image_group_filter]
+          when 'all'
+            parent :sort_countysource_by_all_image_group
+          when 'syndicate'
+            parent :sort_countysource_by_syndicate
+          when 'place'
+            parent :sort_countysource_by_place
+          when 'unallocate'
+            parent :sort_countysource_by_unallocate_image_group
+          when 'uninitialized'
+            parent :list_uninitialized_image_source
+          else
+            parent :image_sources, county,place,church,register
         end
       end
-
-      crumb :sources_other_server1 do |county,place,church,register,source|
-        link "Other Server1", source_path(source)
-        parent :image_sources, county, place, church, register
-      end
-
-      crumb :sources_other_server2 do |county,place,church,register,source|
-        link "Other Server2", source_path(source)
-        parent :images_sources, county,place,church,register
-      end
-
-      crumb :sources_other_server3 do |county,place,church,register,source|
-        link "Other Server3", source_path(source)
-        parent :image_sources, county,place,church,register
-      end
+    when 'Other Server1'
+      link "Other Server1", source_path(source)
+      parent :image_sources, county, place, church, register
+    when 'Other Server2'
+      link "Other Server2", source_path(source)
+      parent :images_sources, county,place,church,register
+    when 'Other Server3'
+      link "Other Server3", source_path(source)
+      parent :image_sources, county,place,church,register
+  end
+end
 
 crumb :sources_create_new_source do |county,place,church,register,source|
   link "Create New Source"
