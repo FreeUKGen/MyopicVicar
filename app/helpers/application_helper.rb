@@ -221,4 +221,24 @@ module ApplicationHelper
   def ucf_wildcards_enabled?
     Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
   end
+
+  def sum_calculation(piece_hash)
+    count_array = Array.new
+    piece_hash.each{ |e|
+      count_array << e.freecen_dwellings.count
+    }
+    calculate_total(count_array)
+  end
+
+  def individual_calculation(piece_hash)
+    count_array = Array.new
+    piece_hash.each{ |e|
+      count_array << e.num_individuals
+    }
+    calculate_total(count_array)
+  end
+
+  def calculate_total(array)
+    array.inject(0){|sum,x| sum + x }
+  end
 end
