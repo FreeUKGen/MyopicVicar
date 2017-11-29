@@ -8,6 +8,7 @@ class UseridDetail
   field :userid, type: String
   field :userid_lower_case, type: String
   field :syndicate, type: String
+  field :syndicate_coordinator, type: String
   field :submitter_number, type: String
   field :person_surname, type: String
   field :person_forename, type: String
@@ -70,6 +71,9 @@ class UseridDetail
   class << self
     def syndicate(syndicate)
       where(:syndicate => syndicate)
+    end
+    def syndicate_coordinator(syndicate_coordinator)
+      where(:syndicate_coordinator => syndicate_coordinator)
     end
     def userid(userid)
       where(:userid => userid)
@@ -250,7 +254,7 @@ class UseridDetail
       self.person_role = 'technical'
       self.syndicate = 'Technical'
     when type == 'Upload Users'
-      self.transcription_agreement = "Accepted"
+      self.transcription_agreement = "Unknown"
     end
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
     self.password = password

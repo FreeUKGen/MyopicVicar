@@ -85,8 +85,9 @@ class ManageSyndicatesController < ApplicationController
     @userid = UseridDetail.where(userid: @user.userid).first
     @syndicates = @userid.syndicate_groups unless @userid.syndicate_groups.blank?
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
+    #raise @syndicates.inspect
     synd = Array.new
-    display_no_syndicate_message and return if @syndicate.nil?
+    display_no_syndicate_message and return if @syndicates.nil?
     @syndicates.each do |syn|
       synd << syn unless all
       synd << syn.syndicate_code if all
