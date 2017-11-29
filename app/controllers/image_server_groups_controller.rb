@@ -151,7 +151,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def my_list_by_county
-    session[:my_own_list] = 'county'
+    session[:assignment_filter_list] = 'county'
     session[:chapman_code] = params[:id]
 
     @user = UseridDetail.where(:userid=>session[:userid]).first
@@ -167,7 +167,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def my_list_by_syndicate
-    session[:my_own_list] = 'syndicate'
+    session[:assignment_filter_list] = 'syndicate'
     @user = UseridDetail.where(:userid=>session[:userid]).first
     session[:syndicate] = @user.syndicate
     @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate])
@@ -191,7 +191,7 @@ class ImageServerGroupsController < ApplicationController
 
   def show
     session[:image_server_group_id] = params[:id]
-    session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
+    session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     display_info
     @group = ImageServerGroup.id(params[:id])
 

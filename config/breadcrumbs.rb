@@ -619,6 +619,11 @@ crumb :image_sources do |register|
   parent :show_countysource
 end
 
+crumb :new_image_source do |register,source|
+  link "Create New Source"
+  parent :image_sources, register
+end
+
 crumb :show_image_source do |register,source|
   case source.source_name
     when 'Image Server'
@@ -653,11 +658,20 @@ crumb :show_image_source do |register,source|
   end
 end
 
-crumb :new_image_source do |register,source|
-  link "Create New Source"
-  parent :image_sources, register
-end
+      crumb :edit_image_source do |register,source|
+        link "Edit Image Server"
+        parent :show_image_source, register,source
+      end
 
+      crumb :initialize_image_source do |register,source|
+        link "Initialize Image Server"
+        parent :show_image_source, register,source
+      end
+
+      crumb :propagate_image_source do |register,source|
+        link "Propagate Image Server"
+        parent :show_image_source, register,source
+      end
 
 
 # breadcrumb for Image Server Groups
@@ -680,23 +694,59 @@ crumb :image_server_groups do |user,county,register,source|
   end
 end
 
-crumb :image_server_group do |user,county,register,source,group|
-  link "Image Group", image_server_group_path(group)
-  parent :image_server_groups, user,county,register,source
-end
+      crumb :allocate_image_server_group do |user,county,register,source,group|
+        link "Allocate Image Group"
+        parent :show_image_server_group, user,county,register,source,group
+      end
+
+      crumb :new_image_server_group do |user,county,register,source,group|
+        link"Create Image Group"
+        parent :image_server_groups, user,county,register,source
+      end
+
+      crumb :show_image_server_group do |user,county,register,source,group|
+        link "Image Group", image_server_group_path(group)
+        parent :image_server_groups, user,county,register,source
+      end
+
+            crumb :edit_image_server_group do |user,county,register,source,group|
+              link "Edit Image Group"
+              parent :show_image_server_group, user,county,register,source,group
+            end
 
 
 
 # breadcrumb for Image Server Images
 crumb :image_server_images do |user,county,register,source,group|
   link "Images", index_image_server_image_path(group)
-  parent :image_server_group, user,county,register,source,group
+  parent :show_image_server_group, user,county,register,source,group
 end
 
-crumb :image_server_image do |user,county,register,source,group|
-  link "Image", image_server_image_path(group)
-  parent :image_server_images, user,county,register,source,group
-end
+      crumb :move_image_server_image do |user,county,register,source,group,image|
+        link "Move Images"
+        parent :image_server_images, user,county,register,source,group
+      end
+
+      crumb :propagate_image_server_image do |user,county,register,source,group,image|
+        link "Propagate Images"
+        parent :image_server_images, user,county,register,source,group
+      end
+
+      crumb :reassign_image_server_image do |user,county,register,source,group,image|
+        link "Reassign Images"
+        parent :image_server_images, user,county,register,source,group
+      end
+
+      crumb :show_image_server_image do |user,county,register,source,group,image|
+        link "Image", image_server_image_path(image)
+        parent :image_server_images, user,county,register,source,group
+      end
+
+            crumb :edit_image_server_image do |user,county,register,source,group,image|
+              link "Edit Image"
+              parent :show_image_server_image, user,county,register,source,group,image
+            end
+
 
 
 

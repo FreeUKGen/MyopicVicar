@@ -132,19 +132,11 @@ class ImageServerImagesController < ApplicationController
   end
 
   def new      
-    get_userids_and_transcribers or return
-
-    @county =  session[:county]
-    @place_name = session[:place_name]
-    @church_name =  session[:church_name]
-    @place = Place.find(session[:place_id])
-    @church = Church.find(session[:church_id])
-    @register = Register.new
   end
 
   def show
     display_info
-    @image = ImageServerImage.collection.aggregate([
+    @image_server_image = ImageServerImage.collection.aggregate([
                 {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
                 {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
                 {'$unwind'=>"$image_group"}
