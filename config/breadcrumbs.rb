@@ -558,9 +558,9 @@ crumb :syndicate_manage_images do |syndicate|
 end
 
       # from 'manage syndicates' => "manage images" => 'list by county of available groups'
-      crumb :syndicate_available_groups_by_county do |county,place,church,register,source|
+      crumb :syndicate_available_groups_by_county do |county,register,source|
         link 'List by County of Available Groups', select_county_assignment_path
-        parent :syndicate_manage_images, county,place,church,register,source
+        parent :syndicate_manage_images, session[:syndicate]
       end
 
       # from 'manage syndicates' => "manage images" => 'list assignment by userid'
@@ -612,7 +612,7 @@ crumb :show_image_source do |register,source|
     when 'Image Server'
       link "Image Server", source_path(source)
       if session[:manage_user_origin] == 'manage syndicate'
-        parent :syndicate_manage_images
+        parent :syndicate_manage_images, session[:syndicate]
       else
         if ['all','unallocate','syndicate','place','uninitialized'].include?(session[:image_group_filter])
           parent :all_sources_selection
