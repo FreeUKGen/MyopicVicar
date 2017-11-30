@@ -525,45 +525,30 @@ end
 
 
 # from 'manage counties' => "Manage Images"
-crumb :show_countysource do |county|
+crumb :all_sources do |county|
   link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
   parent :county_options, session[:county]
 end
 
       # from "manage counties" => "Manage Images" => "List All Image Groups"
-      crumb :sort_countysource_by_image_group do |county|
-        link "List All Image Groups"
-        parent :show_countysource, county
-      end
-
-      # from "manage counties" => "Manage Images" => => List Unallocated Image Groups"
-      crumb :sort_countysource_by_unallocate_image_group do |county|
-        link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
-        parent :show_countysource, county
-      end
-
-      # from "manage counties" => "Manage Images" => => "List All Image Groups"
-      crumb :sort_countysource_by_all_image_group do |county|
-        link "List All Image Groups", manage_image_group_manage_county_path
-        parent :show_countysource, county
-      end
-
-      # from "manage counties" => "Manage Images" => => "Image Groups Allocated by Syndicates"
-      crumb :sort_countysource_by_syndicate do |county|
-        link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
-        parent :show_countysource, county
-      end
-
-      # from "manage counties" => "Manage Images" => => "Image Groups Allocated by Place"
-      crumb :sort_countysource_by_place do |county,place|
-        link "Image Groups Allocated by Place", sort_image_group_by_place_path(place)
-        parent :show_countysource, county
-      end
-
-      # from "manage counties" => "Manage Images" => => "List Uninitialized Sources"
-      crumb :list_uninitialized_image_source do |county|
-        link "List Unitialized Sources", uninitialized_source_list_path(county)
-        parent :show_countysource, county
+      crumb :all_sources_selection do |county|
+        case session[:image_group_filter]
+          when 'all'
+            link "List All Image Groups", manage_image_group_manage_county_path
+          when 'unallocate'
+            link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
+          when 'all'
+            link "List All Image Groups", manage_image_group_manage_county_path
+          when 'syndicate'
+            link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
+          when 'place'
+            link "Image Groups Allocated by Place", sort_image_group_by_place_path(place)
+          when 'uninitialized'
+            link "List Unitialized Sources", uninitialized_source_list_path(county)
+          else
+            link "All Sources", selection_active_manage_counties_path(:option=>"Manage Images")
+        end
+        parent :all_sources, county
       end
 
 
@@ -616,7 +601,7 @@ end
 # breadcrumb for Sources
 crumb :image_sources do |register|
   link "Sources", index_source_path(register)
-  parent :show_countysource
+  parent :all_sources
 end
 
 crumb :new_image_source do |register,source|
@@ -631,19 +616,10 @@ crumb :show_image_source do |register,source|
       if session[:manage_user_origin] == 'manage syndicate'
         parent :syndicate_manage_images
       else
-        case session[:image_group_filter]
-          when 'all'
-            parent :sort_countysource_by_all_image_group
-          when 'syndicate'
-            parent :sort_countysource_by_syndicate
-          when 'place'
-            parent :sort_countysource_by_place
-          when 'unallocate'
-            parent :sort_countysource_by_unallocate_image_group
-          when 'uninitialized'
-            parent :list_uninitialized_image_source
-          else
-            parent :image_sources, register
+        if ['all','unallocate','syndicate','place','uninitialized'].include?(session[:image_group_filter])
+          parent :all_sources_selection
+        else
+          parent :image_sources, register
         end
       end
     when 'Other Server1'
@@ -696,7 +672,7 @@ end
 
       crumb :allocate_image_server_group do |user,county,register,source,group|
         link "Allocate Image Group"
-        parent :show_image_server_group, user,county,register,source,group
+        parent :image_server_groups, user,county,register,source
       end
 
       crumb :new_image_server_group do |user,county,register,source,group|
