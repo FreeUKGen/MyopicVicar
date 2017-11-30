@@ -540,7 +540,7 @@ end
           when 'syndicate'
             link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
           when 'place'
-            link "Image Groups Allocated by Place", sort_image_group_by_place_path(place)
+            link "Image Groups Allocated by Place", sort_image_group_by_place_path
           when 'uninitialized'
             link "List Unitialized Sources", uninitialized_source_list_path(county)
           else
