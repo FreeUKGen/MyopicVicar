@@ -537,8 +537,6 @@ end
             link "List All Image Groups", manage_image_group_manage_county_path
           when 'unallocate'
             link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
-          when 'all'
-            link "List All Image Groups", manage_image_group_manage_county_path
           when 'syndicate'
             link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
           when 'place'
