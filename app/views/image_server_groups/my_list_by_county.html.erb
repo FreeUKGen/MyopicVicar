@@ -4,14 +4,10 @@
 <div style="clear:both;"></div><br>
 <p style="text-align: center"><b>Assignment Available</b> Image Groups for County <b><%= session[:chapman_code] %></b></p>
 
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-    <%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
+<%= render partial: 'flash_notice' %>
 
 <div class="grid">
   <section class="island">
-    <%= render '/manage_counties/image_server_group_index' %>
+    <%= render 'image_groups_of_my_list' %>
   </section>
 </div>

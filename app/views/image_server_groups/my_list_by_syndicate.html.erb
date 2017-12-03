@@ -4,11 +4,7 @@
 <div style="clear:both;"></div><br>
 <p style="text-align: center"><b>Image Groups</b> under user <b><%= @user.userid %></b>'s Syndicate <b><%= @user.syndicate %></b>
 
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-    <%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
+<%= render partial: 'flash_notice' %>
 
 <div class="grid">
   <section class="island">

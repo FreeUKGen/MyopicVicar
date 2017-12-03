@@ -1,13 +1,8 @@
-<% breadcrumb :all_sources_selection,  @county %>
+<% breadcrumb :all_sources_selection, @county %>
 <p><h3 style="text-align: center">Image Groups Allocated by Syndicate for County <%= @county %>.</h3></p>
+<%= render partial: 'flash_notice' %>
 
 <div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
-
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >

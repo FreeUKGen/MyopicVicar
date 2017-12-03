@@ -18,10 +18,6 @@
 <% end %>
 
 <% title "Assignment - list by userid" %>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-    <%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
+<%= render partial: 'flash_notice' %>
 
 <%= render 'assignment_list' %>

@@ -1,14 +1,8 @@
 <% breadcrumb :new_image_source, @register, @source %>
 
-<div style="clear:both;"></div><br>
-<p style="text-align: center"><b>Sources</b> for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
-
 <% title "Source - create" %>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-   	<%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
 
 <div class="grid">
 	<%= render 'form' %>

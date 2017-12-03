@@ -1,13 +1,8 @@
 <% breadcrumb :syndicate_manage_images, @user.syndicate %>
 <p><h3 style="text-align: center">Image Groups Allocated to Syndicate <%= session[:syndicate] %>.</h3></p>
+<%= render partial: 'flash_notice' %>
 
 <div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
-
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
     <%= link_to 'List assignments by userid', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all'), method: :get, :class => "btn weight--light btn--small" %>

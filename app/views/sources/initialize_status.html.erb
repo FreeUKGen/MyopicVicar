@@ -1,16 +1,8 @@
 <% breadcrumb :initialize_image_source, @register, @source %>
 
 <% title "Source - initialize" %>
-<div style="clear:both;"></div><br>
-<p style="text-align: center"><b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
-
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-   	<%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
-
-<div style="clear:both;"></div><br>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
 
 <section class="island  island--light">
 <div class="grid">

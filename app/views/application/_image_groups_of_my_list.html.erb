@@ -10,7 +10,7 @@
               <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (Made from a parish register); Extract of the Parish Registers (Incomplete set of records); Dwelly's Transcript (Made from a parish register); Other Register (Original document); Transcript (Another persons transcription); Unknown; or Unspecified.</span></a></th>
         <th class="t12">Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A register can have multiple sources.</span></a></th>
-        <th class="t20">Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+        <th class="t20" colspan=2>Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A Source can have multiple groups.</span></a></th>
         <th class="t5">Image Number</th>
         <th class="t12">Syndicate</th>
@@ -57,31 +57,21 @@
           <% end %>
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count %>
-            <% case image_group_filter %>
-              <% when 'all' %>
-                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'all', :assignment_filter_list=>'')) %>&nbsp;</td>
-              <% when 'place' %>
-                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'place', :assignment_filter_list=>'')) %>&nbsp;</td>
-              <% when 'syndicate' %>
-                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'syndicate', :assignment_filter_list=>'')) %>&nbsp;</td>
-              <% when 'unallocate' %>
-                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'unallocate', :assignment_filter_list=>'')) %>&nbsp;</td>
-              <% else %>
-                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'', :assignment_filter_list=>'')) %>&nbsp;</td>
+            <% if session[:my_own] || session[:manage_user_origin] %>
+              <td class="t12"><%= source_name %></td>
+            <% else %>
+              <td class="t12"><%= link_to(source_name,source_path(@source.select {|x| x[1] == source_id}[0][0])) %></td>
             <% end %>
           <% else %>
             <td class="t12">&nbsp;</td>
           <% end %>
 
-          <% case image_group_filter %>
-            <% when 'all' %>
-              <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :image_group_filter=>'all', :assignment_filter_list=>'')) %>&nbsp;</td>
-            <% when 'unallocate' %>
-              <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :image_group_filter=>'unallocate', :assignment_filter_list=>'')) %>&nbsp;</td>
-            <% else %>
-              <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :image_group_filter=>'', :assignment_filter_list=>'')) %>&nbsp;</td>
+          <% if session[:manage_user_origin] == 'manage syndicate' %>
+            <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
+            <td class="t2"><%= link_to 'EMAIL', request_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]) %></td>
+          <% else %>
+            <td class="t20" colspan=2><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
           <% end %>
-
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <td class="t12"><%= syndicate %>&nbsp;</td>
           <% if assign_date.nil? %>

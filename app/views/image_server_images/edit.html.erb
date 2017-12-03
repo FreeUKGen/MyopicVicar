@@ -1,14 +1,8 @@
 <% breadcrumb :edit_image_server_image, @user, @county, @register, @source, @group, @image_server_image %>
 
 <% title "IS Image - edit" %>
-<div style="clear:both;"></div><br>
-<p style="text-align: center"><b>Images</b> of Image Group <b><%= @group.group_name %></b> of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
-
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-   	<%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
 
 <%= render 'edit' %>
 

@@ -1,11 +1,6 @@
 <% breadcrumb :all_sources_selection,  @county%>
 <p><h3 style="text-align: center">Uninitialized Image Sources for County <%= @county %>.</h3></p>
+<%= render partial: 'flash_notice' %>
 
 <div style="clear:both;"> </div><br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %> <% flash[:notice] = nil %> <br>
-  </div>
-<% end %>
-
 <%= render :partial=>'sources_index', :locals=>{:image_group_filter=>'uninitialized'} %>

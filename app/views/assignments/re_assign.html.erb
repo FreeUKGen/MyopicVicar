@@ -11,11 +11,7 @@
 <% end %>
 
 <% title "IS Image - re_assignment" %>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue">
-   	<%= flash[:notice] %><% flash.clear %>
-  </div><br>
-<% end %>
+<%= render partial: 'flash_notice' %>
 
 <section class="island  island--light">
 <div class="grid">
