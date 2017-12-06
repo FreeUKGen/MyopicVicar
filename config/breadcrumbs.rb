@@ -522,6 +522,11 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
+crumb :zero_year_records do |record|
+  link "Zero Year Records", freereg1_csv_entries_path(:anchor => "#{record.id}")
+  parent :files
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path

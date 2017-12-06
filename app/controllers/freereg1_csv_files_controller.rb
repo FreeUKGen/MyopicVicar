@@ -597,6 +597,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first
     @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_records
     display_info
+    @get_zero_year_records = true
     render 'freereg1_csv_entries/index'
   end
 
