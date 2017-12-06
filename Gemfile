@@ -59,6 +59,7 @@ gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
 gem 'quiet_assets', :group => :development
 #gem 'rmagick', "2.13.2", require: false   #version added by kirk as windows requires this version
 gem 'rubyzip', "~> 1.2"
+gem 'zip-zip'
 
 gem 'rspec-rails'
 
