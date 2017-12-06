@@ -1,0 +1,14 @@
+<% case controller.action_name %>
+<% when 'manage_image_group' %>
+		<p><h3 style="text-align: center">All Image Groups for County <%= @county %>.</h3></p>
+<% when 'sort_image_group_by_place' %>
+		<p><h3 style="text-align: center">Image Groups Allocated by Place for County <%= @county %>.</h3></p>
+<% when 'sort_image_group_by_syndicate' %>
+		<p><h3 style="text-align: center">Image Groups Allocated by Syndicate for County <%= @county %>.</h3></p>
+<% when 'manage_unallocated_image_group' %>
+		<p><h3 style="text-align: center">Unallocated Image Groups for County <%= @county %>.</h3></p>
+<% when 'manage_sources' %>
+		<p><h3 style="text-align: center">All Image Sources for County <%= @county %>.</h3></p>
+<% when 'uninitialized_source_list' %>
+		<p><h3 style="text-align: center">Uninitialized Image Sources for County <%= @county %>.</h3></p>
+<% end %>
