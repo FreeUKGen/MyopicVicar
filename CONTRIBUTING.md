@@ -37,7 +37,7 @@ The Free UK Genealogy development team communicates through several channels.
 
 * A traditional mailing list allows developers and system administrators 
 to discuss production issues and large-scale architectural changes.
-* A Slack team provides more immediate communication among developers on 
+* A [Slack team](https://freeukgenealogy.slack.com) provides more immediate communication among developers on 
 different projects and supports occasional asynchronous discussion.
 * Google Hangouts allow video and live-chat meetings.
 
