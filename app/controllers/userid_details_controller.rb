@@ -226,6 +226,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def record_validation_errors(exception)
+    raise "hi"
     flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
     @userid.delete
     next_place_to_go_unsuccessful_update
@@ -404,6 +405,10 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def scotland_counties
+    ["Aberdeenshire Syndicate", "Angus (Forfarshire) Syndicate", "Argyllshire Syndicate", "Ayrshire Syndicate",]
+  end
+
   def update
     load(params[:id])
     changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
@@ -429,9 +434,9 @@ class UseridDetailsController < ApplicationController
         return
       end
     end
+    update_userid
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    #    params[:userid_detail][:email_address_valid]  = true
-    @userid.update_attributes(userid_details_params)
+    @userid.update_attributes(userid_details_params.except(:userid))
     @userid.write_userid_file
     @userid.save_to_refinery
     if !@userid.errors.any? && success[0]
@@ -440,6 +445,7 @@ class UseridDetailsController < ApplicationController
       flash[:notice] = 'The update of the profile was successful'
       redirect_to userid_detail_path(@userid, page_name: params[:page_name])
       return
+
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
@@ -528,5 +534,25 @@ class UseridDetailsController < ApplicationController
 
   def get_option_parameter(option, location)
     location += '+"&option=' + option +'"'
+  end
+
+  def userid_updated?
+    params[:userid_detail][:userid] != session[:userid]
+  end
+
+  def userid_taken?
+    UseridDetail.where(:userid => params[:userid_detail][:userid]).exists? || Refinery::Authentication::Devise::User.where(:username => params[:userid_detail][:userid]).exists?
+    return 
+  end
+
+  def update_userid
+    if userid_updated?
+      unless userid_taken?
+        refinery_user = Refinery::Authentication::Devise::User.where(username: session[:userid]).first
+        @userid.update_attributes(userid: userid_details_params[:userid])
+        refinery_user.username = userid_details_params[:userid] 
+        refinery_user.save!
+      end
+    end
   end
 end

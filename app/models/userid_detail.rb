@@ -59,7 +59,7 @@ class UseridDetail
     :skill_level #,:transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
-  validate :email_address_does_not_exist, on: :update#:transcription_agreement_accept, on: :update
+  validate :email_address_does_not_exist,  on: :update#:transcription_agreement_accept, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
@@ -222,6 +222,13 @@ class UseridDetail
     errors.add(:email_address, "Refinery email already exists") if Refinery::User.where(:email => self[:email_address]).exists?
   end
 
+  #def userid_and_email_address_does_not_exist
+   # errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+    #errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+    #errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+    #errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+  #end
+
   def self.get_userids_for_display(syndicate)
     @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
     @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
@@ -318,6 +325,13 @@ class UseridDetail
       errors.add(:email_address, "Refinery email already exists on change") if
       Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
     end
+  end  
+
+  def self.userid_does_not_exist
+    if self.changed.include?('userid')
+      errors.add(:base, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+      errors.add(:base, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+    end
   end
 
   def finish_creation_setup
@@ -348,8 +362,6 @@ class UseridDetail
     result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
     return result
   end
-
-
 
   def remember_search(search_query)
     self.search_queries << search_query

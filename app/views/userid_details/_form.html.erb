@@ -12,7 +12,7 @@
          <%= f.input :person_role,:label => role_lbl,:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
     <% end%>
   <% else%>
-    <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
+    <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => false }%>
     <div class="input select optional userid_detail_transcription_agreement" style="text-align: center;">
       <span>Please sign the agreement to keep your transcriptions Open.</span><br />
       <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
