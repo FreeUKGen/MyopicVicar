@@ -17,6 +17,8 @@ See [CONTRIBUTING.md](TODO) for details on ways to contribute.
 
 # Architecture
 
+Myopic Vicar uses MongoDB to allow researchers to search heterogeneous records.  Both FreeREG and FreeCEN projects accept volunteer contributions as spreadsheets, while metadata, quality control and coordination provided by volunteer coordinators and data managers.   
+
 
 ### TODO
 
