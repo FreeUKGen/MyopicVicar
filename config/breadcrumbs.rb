@@ -527,6 +527,16 @@ crumb :zero_year_records do |record|
   parent :files
 end
 
+crumb :zero_year_record_detail do |entry,file|
+  link "Zero Year Record Detail", freereg1_csv_entry_path(entry)
+  parent :zero_year_records, file
+end
+
+crumb :edit_zero_year_record do |entry,file|
+  link "Edit Zero Year Record", edit_freereg1_csv_entry_path(entry)
+  parent :zero_year_record_detail, entry,file
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path
