@@ -205,7 +205,7 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def show
-    @get_zero_year_records = true if request.referer.include?"zero_year_entries" unless request.referer.nil?
+    @get_zero_year_records = "true" if params[:zero_record]== "true"
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
       get_user_info_from_userid

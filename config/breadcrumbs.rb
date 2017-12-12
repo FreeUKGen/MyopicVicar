@@ -523,18 +523,20 @@ crumb :create_syndicate do |syndicate|
 end
 
 crumb :zero_year_records do |record|
-  link "Zero Year Records", freereg1_csv_entries_path(:anchor => "#{record.id}")
+  link "Zero Year Records", show_zero_startyear_entries_freereg1_csv_file_path(id: "#{record.id}")
   parent :files
 end
 
 crumb :zero_year_record_detail do |entry,file|
-  link "Zero Year Record Detail", freereg1_csv_entry_path(entry)
+  @get_zero_year_records = "true"
+  link "Zero Year Record Detail", freereg1_csv_entry_path(entry, "zero_record" => @get_zero_year_records)
   parent :zero_year_records, file
 end
 
 crumb :edit_zero_year_record do |entry,file|
   link "Edit Zero Year Record", edit_freereg1_csv_entry_path(entry)
   parent :zero_year_record_detail, entry,file
+  parent :zero_year_records, file if request.referer.include?"zero_year_entries" unless request.referer.nil?
 end
 
 
