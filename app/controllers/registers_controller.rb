@@ -30,13 +30,28 @@ class RegistersController < ApplicationController
       redirect_to register_path(@register)
     end
   end
-
+  
+  def create_image_server
+    load(params[:id])
+    flash[:notice] = 'creating image server'
+    folder_name = @place_name.to_s + " " + @church_name.to_s + " " + @register.register_type.to_s
+    website = Register.create_folder_url(@chapman_code,folder_name,params[:id])
+    redirect_to website and return
+  end
+  
+  def create_image_server_return
+  register = Register.id(params[:register]).first
+  proceed,message = register.add_source(params[:folder_name]) if params[:success] == "Succeeded"
+  (params[:success] == "Succeeded" && proceed) ? flash[:notice] = "Creation succeeded: #{params[:message]}" : flash[:notice] = "Creation failed: #{message} #{params[:message]}"
+  redirect_to register_path(params[:register]) and return
+  end 
+  
   def destroy
     load(params[:id])
     return_location = @register.church
     @register.destroy
     flash[:notice] = 'The deletion of the Register was successful'
-    redirect_to church_path(return_location)
+    redirect_to church_path(return_location) 
   end
 
 
@@ -65,6 +80,7 @@ class RegistersController < ApplicationController
       @place = @church.place
       session[:place_id] = @place.id
       @county =  session[:county]
+      @chapman_code = @place.chapman_code
       @place_name = @place.place_name
       session[:place_name] = @place_name
       get_user_info_from_userid
@@ -147,11 +163,14 @@ class RegistersController < ApplicationController
 
   def show
     load(params[:id])
-    unless @register.nil?
+    if @register.nil?
+      flash[:notice] = 'Trying to show a non-existent register'
+      redirect_to :back and return
+    end
       @decade = @register.daterange
       @transcribers = @register.transcribers
-      @contributors = @register.contributors
-    end
+      @contributors = @register.contributors  
+      @image_server = @register.image_server_exists?
   end
 
   def update

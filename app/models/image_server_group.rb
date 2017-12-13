@@ -105,7 +105,7 @@ class ImageServerGroup
         return false
       end
     end
-
+    
     def find_by_source_ids(id)
       where(:source_id => {'$in'=>id.keys})
     end
@@ -333,4 +333,10 @@ class ImageServerGroup
     end
     
   end
+  def create_upload_images_url
+    p self
+    source = self.source
+    place = self.place
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&folder_name=' + source.folder_name + '&image_server_access=' + Rails.application.config.image_server_access)
+    end
 end

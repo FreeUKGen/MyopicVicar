@@ -15,7 +15,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
     image_server_group = ImageServerGroup.source_id(session[:source_id]).first
     group_list = ImageServerGroup.source_id(session[:source_id]).pluck(:group_name)
-    source = image_server_group.source
+    source = @source # image_server_group.source
     church = source.register.church
     place = church.place
 
@@ -247,6 +247,22 @@ class ImageServerGroupsController < ApplicationController
       end
     end
   end
+  
+  def upload
+    p params
+    image_server_group = ImageServerGroup.id(params[:id]).first
+    p image_server_group
+    website = image_server_group.create_upload_url
+    redirect_to website and return
+  end
+
+ def upload_return
+    p params
+    image_server_group = ImageServerGroup.id(params[:image_server_group]).first
+    p image_server_group
+    redirect_to image_server_group_path(image_server_group)     
+  end
+
 
   private
   def image_server_group_params

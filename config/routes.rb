@@ -217,6 +217,8 @@ MyopicVicar::Application.routes.draw do
   get 'registers/:id/rename', :to => 'registers#rename', :as => :rename_register
   get 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
   get 'registers/:id/relocate', :to => 'registers#relocate', :as => :relocate_register
+  get 'registers/:id/create_image_server', :to => 'registers#create_image_server', :as => :create_image_server_register
+  get 'registers/create_image_server_return', :to => 'registers#create_image_server_return', :as => :create_image_server_return_register
   resources :registers
 
   resources :master_place_names
@@ -313,6 +315,8 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/:id/my_list_by_county(.:format)', :to => 'image_server_groups#my_list_by_county', :as => :my_list_by_county_image_server_group
   get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
+  get 'image_server_groups/:id/upload(.:format)', :to => 'image_server_groups#upload', :as => :upload_image_server_group
+  get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group
   resources :image_server_groups
 
   get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment

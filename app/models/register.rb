@@ -69,6 +69,10 @@ class Register
       @@my_church.save
       register
     end
+    
+    def create_folder_url(chapman_code,folder_name,register)
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/create_folder?chapman_code=' + chapman_code + '&folder_name=' + folder_name +  '&register=' + register + '&image_server_access=' + Rails.application.config.image_server_access)
+    end
 
     def find_by_church_ids(id)
       Register.where(:church_id => {'$in'=>id.keys})
@@ -109,6 +113,26 @@ class Register
   end #self
 
   ######################################################################## instance methods
+  def add_source(folder_name)
+    proceed = true
+    message = ''
+    p 'Add Source'
+    p self
+    self.sources.each do |source|
+      if source.source_name == "Image Server"
+        proceed = false
+        message = 'Image Server already exists'
+      end
+    end
+    if proceed
+      source = Source.new(:source_name => "Image Server",:folder_name => folder_name)
+      self.sources << source
+      self.save
+    end
+    p proceed
+    p message
+    return proceed,message
+  end
 
   def calculate_register_numbers
 
@@ -172,6 +196,16 @@ class Register
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
                      self.minimum_year_for_register.present? || self.maximum_year_for_register.present? )
     value
+  end
+  
+  def image_server_exists?
+    image_server = false
+      unless self.sources.nil?
+        self.sources.each do |source|
+           image_server = true if source.source_name == "Image Server"  
+        end
+      end
+      image_server
   end
 
   def merge_registers
