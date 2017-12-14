@@ -183,6 +183,19 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg research registration") unless @coordinator.nil?
   end
 
+  def notify_cc_assignment_complete(user,group_id,chapman_code)
+    image_server_group = ImageServerGroup.find(group_id)
+
+    county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
+    cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
+    cc_email = cc.email_address if cc.present?
+
+    subject = "assignment completed"
+    email_body = "Transcription of image group " + image_server_group.group_name + " is completed"
+
+    mail(:from => user.email_address, :to => cc_email, :subject => subject, :body => email_body)
+  end
+
   def notify_sc_assignment_complete(user, assignment_type, assignment_id)
     @user = UseridDetail.where(:userid=>user).first
     @image_server_images = ImageServerImage.where(:assignment_id=>assignment_id).pluck(:image_name, :seq)

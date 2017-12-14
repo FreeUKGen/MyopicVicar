@@ -96,6 +96,44 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def list_fully_reviewed_group
+    get_user_info_from_userid
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate], 'r')
+
+      if @source.nil?
+        flash[:notice] = 'There is No Fully Reviewed Image Groups Under This Syndicate'
+        redirect_to :back
+      else
+        render 'list_fully_reviewed_group'
+      end
+    end
+  end
+
+  def list_fully_transcribed_group
+    get_user_info_from_userid
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate], 't')
+
+      if @source.nil?
+        flash[:notice] = 'There is No Fully Transcribed Image Groups Under This Syndicate'
+        redirect_to :back
+      else
+        render 'list_fully_transcribed_group'
+      end
+    end
+  end
+
   def manage_image_group
     get_user_info_from_userid
 

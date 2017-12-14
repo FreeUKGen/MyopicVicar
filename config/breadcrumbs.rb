@@ -569,16 +569,28 @@ end
         parent :syndicate_manage_images, session[:syndicate]
       end
 
+      # from 'manage syndicates' => 'manage images' => 'list transcription_submitted assignment'
+      crumb :transcription_submitted_assignments do |syndicate|
+        link "List Transcription_Submitted Assignments", list_submitted_transcription_assignment_path(session[:syndicate])
+        parent :syndicate_manage_images, session[:syndicate]
+      end
+
       crumb :syndicate_image_group_assignments do |user,county,register,source,group|
         link "User Assignments", assignment_path(group)
         parent :image_server_images, user,county,register,source,group
       end
 
+          crumb :syndicate_image_group_assignment do |user,county,register,source,group|
+            link "User Assignment"
+            parent :syndicate_image_group_assignments, user,county,register,source,group
+          end
+
+
 
 
 # breadcrumbs from 'assignments'
 crumb :my_own_assignments do |user|
-  link "#{user.userid}: Assignment", my_own_assignment_path(user)
+  link "#{user.userid}: Assignments", my_own_assignment_path(user)
   parent :root
 end
 
@@ -592,6 +604,12 @@ end
       crumb :request_assignments_by_county do |user,county|
         link "Image Groups by County", my_list_by_county_image_server_group_path(county)
         parent :my_own_assignments, user
+      end
+
+      # from 'assignments' => 'LS'
+      crumb :my_own_assignment do |user|
+        link "#{user.userid}: Assignment"
+        parent :my_own_assignments
       end
 
 

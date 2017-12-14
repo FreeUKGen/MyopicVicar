@@ -68,7 +68,7 @@
 
           <% if session[:manage_user_origin] == 'manage syndicate' %>
             <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
-            <td class="t2"><%= link_to 'EMAIL', request_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]) %></td>
+            <td class="t2"><%= link_to 'Req. Alloc.', request_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]) %></td>
           <% else %>
             <td class="t20" colspan=2><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
           <% end %>

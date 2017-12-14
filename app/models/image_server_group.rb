@@ -19,14 +19,17 @@ class ImageServerGroup
   module Status
     Unallocated = 'u'
     Allocated = 'a'
-    In_Progress = 'ip'
+    In_Transcribing = 'it'
+    Transcription_submitted = 'ts'
     Transcribed = 't'
-    In_Review = 'ir'
+    In_Reviewing = 'ir'
+    Review_submitted = 'rs'
     Reviewed = 'r'
     Complete = 'c'
     Error = 'e'
 
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'ip'=>'In_Progress', 't'=>'Transcribed', 'ir'=>'In_Review', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'a', 'it', 'ts', 't', 'ir', 'rs', 'r', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcription_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
 
     CHURCH_STATUS = {}
 
@@ -234,50 +237,72 @@ class ImageServerGroup
       return @source, @g_id, @group_id
     end
 
-    def get_group_ids_for_syndicate(syndicate)
+    def get_group_ids_for_syndicate(syndicate,type=nil)
       @place_id = {}
       @source, @register, @church, gid = [], [], [], []
       @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+      filtered_group_id = Array.new
 
       group = ImageServerGroup.where(:syndicate_code=>syndicate)
-      @image_server_group = group.pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
-      source_ids = @image_server_group.map{|x| x[1]}.uniq
 
-      source_ids.each do |sourceid|
-        source = Source.find(sourceid)
-        @source << [source.id, source.register_id, source.source_name]
-
-        register = source.register
-        @register << [register.id, register.church_id, register.register_type]
-
-        church = register.church
-        @church << [church.id, church.place_id, church.church_name]
-
-        place_id = church.place
-        @place_id[place_id.id] = place_id.place_name
+      case type
+        when 't'
+          scope = ['u','a','it','ts']
+        when 'r'
+          scope = ['u','a','it','t','ir','rs']
       end
 
-      @church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @church.each{|k,v1,v2| h[k] << v1 << v2}}
-      @register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @register.each{|k,v1,v2| h[k] << v1 << v2}}
-      @source_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v1,v2| h[k] << v1 << v2}}
-      x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
-
-      x.each do |key,value|
-        # build hash @group_id[place_name][church_name][register_type][source_name][group_name] = group_id
-        @group_id[@place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]][@church_id[@register_id[@source_id[value[0]][0]][0]][1]][@register_id[@source_id[value[0]][0]][1]][@source_id[value[0]][1]][value[1]] = key
-
-        place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
-        church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
-        register_type = @register_id[@source_id[value[0]][0]][1]
-        source_id = @source_id[value[0]][0]
-        source_name = @source_id[value[0]][1]
-        group_name = value[1]
-        syndicate = value[2]
-        assign_date = value[3]
-        number_of_images = value[4]
-        gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
+      if type == 't' || type == 'r'
+        group_status = group.pluck(:id, :summary)
+        x = Hash.new{|h,k| h[k]=[]}.tap{|h| group_status.each{|k,v| h[k] << v[:status]}}
+        x.each do |g_id,status|
+          filtered_group_id << g_id if (scope & status.flatten).empty?
+        end
+        group = ImageServerGroup.where(:id=>{'$in'=>filtered_group_id})
       end
-      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
+
+      if group.first.nil?
+        @source, @g_id, @group_id = nil, nil, nil
+      else
+        @image_server_group = group.pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+        source_ids = @image_server_group.map{|x| x[1]}.uniq
+
+        source_ids.each do |sourceid|
+          source = Source.find(sourceid)
+          @source << [source.id, source.register_id, source.source_name]
+
+          register = source.register
+          @register << [register.id, register.church_id, register.register_type]
+
+          church = register.church
+          @church << [church.id, church.place_id, church.church_name]
+
+          place_id = church.place
+          @place_id[place_id.id] = place_id.place_name
+        end
+
+        @church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @church.each{|k,v1,v2| h[k] << v1 << v2}}
+        @register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @register.each{|k,v1,v2| h[k] << v1 << v2}}
+        @source_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v1,v2| h[k] << v1 << v2}}
+        x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
+
+        x.each do |key,value|
+          # build hash @group_id[place_name][church_name][register_type][source_name][group_name] = group_id
+          @group_id[@place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]][@church_id[@register_id[@source_id[value[0]][0]][0]][1]][@register_id[@source_id[value[0]][0]][1]][@source_id[value[0]][1]][value[1]] = key
+
+          place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
+          church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
+          register_type = @register_id[@source_id[value[0]][0]][1]
+          source_id = @source_id[value[0]][0]
+          source_name = @source_id[value[0]][1]
+          group_name = value[1]
+          syndicate = value[2]
+          assign_date = value[3]
+          number_of_images = value[4]
+          gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
+        end
+        @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
+      end
 
       return @source, @g_id, @group_id
     end
