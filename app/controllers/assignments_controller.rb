@@ -182,6 +182,9 @@ class AssignmentsController < ApplicationController
   end
 
   def list_assignment_image_many
+    session[:image_group_filter] = nil
+    session[:assignment_filter_list] = params[:assignment_filter_list]
+
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
 
     if session[:my_own]
@@ -197,7 +200,7 @@ class AssignmentsController < ApplicationController
     @assignment, @count = Assignment.list_submitted_assignment(session[:syndicate], 'rs')
   end
 
-  def list_submitted_transcription
+  def list_submitted_transcribe
     display_info
 
     @assignment, @count = Assignment.list_submitted_assignment(session[:syndicate], 'ts')
@@ -316,7 +319,7 @@ class AssignmentsController < ApplicationController
             assignment = Assignment.id(assignment_id).first
             user = UseridDetail.id(assignment.userid_detail_id).first
 
-            flash[:notice] = 'Change assignment to COMPLETE was successful'
+            flash[:notice] = 'Accept assignment was successful'
           when 'unassign'
             new_status = orig_status == 'it' ? 'a' : 't'
             flash[:notice] = 'UN_ASSIGN assignment was successful'

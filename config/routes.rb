@@ -324,7 +324,7 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
   get 'assignments/:id/list_assignment_image_one(.:format)', :to => 'assignments#list_assignment_image_one', :as => :list_assignment_image_one_assignment
   get 'assignments/:id/list_assignment_image_many(.:format)', :to => 'assignments#list_assignment_image_many', :as => :list_assignment_image_many_assignment
-  get 'assignments/:id/list_submitted_transcription(.:format)', :to => 'assignments#list_submitted_transcription', :as => :list_submitted_transcription_assignment
+  get 'assignments/:id/list_submitted_transcribe(.:format)', :to => 'assignments#list_submitted_transcribe', :as => :list_submitted_transcribe_assignment
   get 'assignments/:id/list_submitted_review(.:format)', :to => 'assignments#list_submitted_review', :as => :list_submitted_review_assignment
   get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
   get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment

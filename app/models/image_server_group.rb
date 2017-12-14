@@ -20,7 +20,7 @@ class ImageServerGroup
     Unallocated = 'u'
     Allocated = 'a'
     In_Transcribing = 'it'
-    Transcription_submitted = 'ts'
+    Transcribe_submitted = 'ts'
     Transcribed = 't'
     In_Reviewing = 'ir'
     Review_submitted = 'rs'
@@ -29,7 +29,7 @@ class ImageServerGroup
     Error = 'e'
 
     ARRAY_ALL = ['u', 'a', 'it', 'ts', 't', 'ir', 'rs', 'r', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcription_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcribe_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
 
     CHURCH_STATUS = {}
 
@@ -241,18 +241,18 @@ class ImageServerGroup
       @place_id = {}
       @source, @register, @church, gid = [], [], [], []
       @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-      filtered_group_id = Array.new
-
-      group = ImageServerGroup.where(:syndicate_code=>syndicate)
 
       case type
         when 't'
-          scope = ['u','a','it','ts']
+          scope = ['u','a','it','ts','ir','rs','r']
         when 'r'
-          scope = ['u','a','it','t','ir','rs']
+          scope = ['u','a','it','ts','t','ir','rs']
       end
 
+      group = ImageServerGroup.where(:syndicate_code=>syndicate)
       if type == 't' || type == 'r'
+        filtered_group_id = Array.new
+  
         group_status = group.pluck(:id, :summary)
         x = Hash.new{|h,k| h[k]=[]}.tap{|h| group_status.each{|k,v| h[k] << v[:status]}}
         x.each do |g_id,status|

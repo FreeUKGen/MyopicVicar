@@ -20,7 +20,7 @@ class ImageServerImage
     Unallocated = 'u'
     Allocated = 'a'
     In_Transcribing = 'it'
-    Transcription_submitted = 'ts'
+    Transcribe_submitted = 'ts'
     Transcribed = 't'
     In_Reviewing = 'ir'
     Review_submitted = 'rs'
@@ -29,7 +29,7 @@ class ImageServerImage
     Error = 'e'
 
     ARRAY_ALL = ['u', 'a', 'it', 'ts', 't', 'ir', 'rs', 'r', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcription_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcribe_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
   end
 
   field :image_name, type: String
