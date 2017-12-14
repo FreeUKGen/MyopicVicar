@@ -8,4 +8,4 @@
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
 
-<%= render 'assignments_list' %>
+<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
