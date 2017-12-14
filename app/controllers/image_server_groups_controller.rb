@@ -189,6 +189,14 @@ class ImageServerGroupsController < ApplicationController
     @parent_source = Source.id(session[:source_id]).first
   end
 
+  def send_complete_to_cc
+    display_info
+
+    UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
+    flash[:notice] = 'email is sent to county coordinator'
+    redirect_to :back
+  end
+
   def show
     session[:image_server_group_id] = params[:id]
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?

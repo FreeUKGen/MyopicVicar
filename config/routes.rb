@@ -118,6 +118,8 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   get 'manage_syndicates/manage_image_group', :to => 'manage_syndicates#manage_image_group', :as => :manage_image_group_manage_syndicate
+  get 'manage_syndicatess/:id/list_fully_transcribed_group', :to => 'manage_syndicates#list_fully_transcribed_group', :as => :list_fully_transcribed_group_manage_syndicate
+  get 'manage_syndicates/:id/list_fully_reviewed_group', :to => 'manage_syndicates#list_fully_reviewed_group', :as => :list_fully_reviewed_group_manage_syndicate
   resources :manage_syndicates
 
   resources :csvfiles
@@ -317,19 +319,22 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
   get 'image_server_groups/:id/upload(.:format)', :to => 'image_server_groups#upload', :as => :upload_image_server_group
   get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group
+  get 'image_server_groups/:id/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_group
   resources :image_server_groups
 
   get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
   get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
   get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
   get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
-  get 'assignments/:id/list_assignment_image(.:format)', :to => 'assignments#list_assignment_image', :as => :list_assignment_image_assignment
+  get 'assignments/:id/list_assignment_image_one(.:format)', :to => 'assignments#list_assignment_image_one', :as => :list_assignment_image_one_assignment
+  get 'assignments/:id/list_assignment_image_many(.:format)', :to => 'assignments#list_assignment_image_many', :as => :list_assignment_image_many_assignment
+  get 'assignments/:id/list_submitted_transcribe(.:format)', :to => 'assignments#list_submitted_transcribe', :as => :list_submitted_transcribe_assignment
+  get 'assignments/:id/list_submitted_review(.:format)', :to => 'assignments#list_submitted_review', :as => :list_submitted_review_assignment
   get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
   get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment
   get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
 resources :assignments
-
 
 
   # This line mounts Refinery's routes at the root of your application.

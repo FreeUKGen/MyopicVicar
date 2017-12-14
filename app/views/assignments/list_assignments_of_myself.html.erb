@@ -5,7 +5,7 @@
 <% end %>
 
 <div style="clear:both;"></div><br>
-<p style="text-align: center"><b>Assignments</b> of User <b><%= @user.userid %></b>
+<p style="text-align: center"><b>Assignments</b> for <b><%= @user.userid %></b>
 <%= render partial: 'flash_notice' %>
 
 <% unless session[:userid].nil?%>
@@ -21,4 +21,4 @@
 <% title "Assignment - list by userid" %>
 <%= render partial: 'flash_notice' %>
 
-<%= render 'assignment_list' %>
+<%= render 'assignments_list' %>

@@ -8,7 +8,7 @@
     <% if @image_server_image[:status] == 'u' %>
       <%= s.input :image_server_group_id, :as => :select, :collection => @group_name.invert, :label => 'Re-sssign the image to Image Group', :include_blank => false, :include_hidden => false, :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 3} %>
     <% end %>
-    <% if not ['ir','ip'].include? @image_server_image[:status] %>
+    <% if not ['it','ir'].include? @image_server_image[:status] %>
       <%= s.input :status, :collection => [['Unallocated','u'], ['Transcribed','t'], ['Reviewed','r'], ['Complete','c']], :selected => s.object.status, :label => 'transcription status', :value => ImageServerImage::Status::ALL_STATUSES[s.object.status], :include_blank => false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
     <% end %>
   <% end %>

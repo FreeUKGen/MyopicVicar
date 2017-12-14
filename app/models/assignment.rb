@@ -3,7 +3,6 @@ class Assignment
   
   field :instructions, type: String
   field :assign_date, type: String
-  field :assignment_finished, type: String, default: 'No'
 
   attr_accessor :user_id
 
@@ -63,6 +62,36 @@ class Assignment
       assign_image_server_image_to_assignment(assignment.id,user_id,assign_list,image_status)
     end
 
+    def filter_assignments_by_assignment_id(assignment_id)
+        assignment = Assignment.collection.aggregate([
+                {'$match'=>{"_id"=>BSON::ObjectId.from_string(assignment_id)}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
+                {'$unwind'=>{'path'=>"$groups"}},
+                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
+                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
+             ])
+
+        group_by_count = Assignment.collection.aggregate([
+                {'$match'=>{"_id"=>BSON::ObjectId.from_string(assignment_id)}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
+             ])
+
+      count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+      group_by_count.each do |x|
+        count[x[:_id]] = x[:total]
+      end
+
+      return assignment, count
+    end
+
     def filter_assignments_by_userid(user_ids,image_server_group_id)
       if image_server_group_id.nil?
         assignment = Assignment.collection.aggregate([
@@ -71,6 +100,8 @@ class Assignment
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
+                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
+                {'$unwind'=>{'path'=>"$groups"}},
                 {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
                 {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
              ])
@@ -86,19 +117,23 @@ class Assignment
       else
         group_id = [image_server_group_id]
         assignment = Assignment.collection.aggregate([
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}, "images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$match'=>{"images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
+                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
+                {'$unwind'=>{'path'=>"$groups"}},
                 {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
                 {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
              ])
 
         group_by_count = Assignment.collection.aggregate([
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}, "images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$match'=>{"images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
                 {'$unwind'=>{'path'=>"$userids"}},
                 {'$unwind'=>{'path'=>"$images"}}, 
                 {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
@@ -117,6 +152,49 @@ class Assignment
       where(:id => id)
     end
 
+    def list_submitted_assignment(syndicate,status)
+      image_server_group = ImageServerGroup.where(:syndicate_code=>syndicate).pluck(:id, :group_name)
+      group_id = image_server_group.map{|a| a[0]}.uniq
+=begin
+      image_group = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v| h[k] << v}}
+
+      image_assignment = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_id}, :assignment_id=>{'$nin'=>[nil,'']}, :status=>status).pluck(:assignment_id, :image_server_group_id, :id)
+      assignment = Hash.new{|h,k| h[k]=[]}.tap{|h| image_assignment.each{|k,v,w| h[k] << v << w}}
+      assignment_id = image_assignment.map {|a| a[0] }.uniq
+
+      user_assignment = Assignment.where(:id=>{'$in'=>assignment_id}).pluck(:id, :userid_detail_id)
+      user = Hash.new{|h,k| h[k]=[]}.tap{|h| user_assignment.each{|k,v| h[k] << v}}
+=end
+
+        assignment = Assignment.collection.aggregate([
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$match'=>{"images.status"=>status, "images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
+                {'$unwind'=>{'path'=>"$groups"}},
+                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
+                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
+             ])
+
+        group_by_count = Assignment.collection.aggregate([
+                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
+                {'$match'=>{"images.status"=>status, "images.image_server_group_id"=>{'$in'=>group_id}}},
+                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
+                {'$unwind'=>{'path'=>"$userids"}},
+                {'$unwind'=>{'path'=>"$images"}}, 
+                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
+             ])
+
+      count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+      group_by_count.each do |x|
+        count[x[:_id]] = x[:total]
+      end
+
+      return assignment, count
+    end
+
     def source_id(id)
       where(:source_id=>id)
     end
@@ -128,7 +206,7 @@ class Assignment
         ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
       else
         case image_status
-          when 'ip'
+          when 'it'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
           when 'ir'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :reviewer=>[user.userid])
