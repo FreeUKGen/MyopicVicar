@@ -8,4 +8,8 @@
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
 
-<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
+<% if @assignment.count == 1 %>
+	<%= render 'assignment_list' %>
+<% else %>
+	<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
+<% end %>

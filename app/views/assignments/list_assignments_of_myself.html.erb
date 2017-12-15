@@ -18,7 +18,11 @@
   <div style="clear:both;"> </div><br>
 <% end %>
 
-<% title "Assignment - list by userid" %>
+<% title "Assignment - list my assignment" %>
 <%= render partial: 'flash_notice' %>
 
-<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
+<% if @assignment.count == 1 %>
+	<%= render 'assignment_list' %>
+<% else %>
+	<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
+<% end %>

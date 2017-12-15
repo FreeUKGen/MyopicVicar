@@ -15,14 +15,5 @@
 	</tr>
   <tr><td>Reviewer</td><td><%= @image[:reviewer].join(' / ') if !@image[:reviewer].blank? %>&nbsp;</td></tr>
   <tr><td>Notes</td><td><%= @image[:notes] %>&nbsp;</td></tr>
-  <tr>
-    <td>Action</td>
-    <td><%= link_to 'VW', view_image_server_image_path(:object=>@image[:_id]), method: :get, :target=>'_blank' %>&nbsp;&nbsp;&nbsp;&nbsp;
-      <%= link_to 'DL', download_image_server_image_path(:object=>@image[:_id]), method: :get, :target=>'_blank' %>&nbsp;&nbsp;&nbsp;&nbsp;
-      <% if session[:my_own] %>
-        <%= link_to 'Send Finish Email to SC', assignment_path(@image[:assignment_id], :status=>@image[:status], :type=>'complete'), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put, :class => "btn weight--light btn--small" %> 
-      <% end %>
-    </td>
-  </tr>
 </table>
 </td>
