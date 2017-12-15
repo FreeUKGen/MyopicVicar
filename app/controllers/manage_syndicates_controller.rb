@@ -143,7 +143,13 @@ class ManageSyndicatesController < ApplicationController
       return
     else
       @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate])
-      render 'image_server_group_by_syndicate'
+
+      if !@source.nil? && !@group_ids.nil? && !@group_id.nil?
+        render 'image_server_group_by_syndicate'
+      else
+        flash[:notice] = 'No image group under managed syndicate'
+        redirect_to :back
+      end
     end
   end
 
