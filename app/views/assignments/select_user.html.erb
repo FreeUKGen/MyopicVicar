@@ -1,5 +1,5 @@
 <% if params[:assignment_list_type] == 'all' %>
-  <% breadcrumb :syndicate_all_assignments, session[:syndicate] %>
+  <% breadcrumb :syndicate_all_assignments_select_user, session[:syndicate] %>
 <% else %>
   <% breadcrumb :syndicate_image_group_assignments, @user, @county, @register, @source, @group %>
 <% end %>

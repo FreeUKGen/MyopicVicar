@@ -16,10 +16,10 @@ class AssignmentsController < ApplicationController
   def create
     case assignment_params[:type] 
       when 'transcriber'
-        image_status = 'it'
+        image_status = 'bt'
         assign_list = assignment_params[:transcriber_seq]
       when 'reviewer'
-        image_status = 'ir'
+        image_status = 'br'
         assign_list = assignment_params[:reviewer_seq]
     end
 
@@ -73,20 +73,34 @@ class AssignmentsController < ApplicationController
       @user = cookies.signed[:userid]
       @source = Source.find(:id=>session[:source_id])
       @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
+    else
+      display_info_from_my_own
     end
   end
 
   def display_info_from_my_own
-    @source = Source.where(:id=>@assignment.first[:fields][:source_id]).first
-    session[:source_id] = @source.id
-    @register = @source.register
-    session[:register_id] = @register.id
-    @church = @register.church
-    session[:church_name] = @church.church_name
-    @place = @church.place
-    session[:place_name] = @place.place_name
-    session[:county] = @county = @place.county
-    @user = cookies.signed[:userid]
+    if !params[:source_id].nil? && params[:image_server_group_id].nil?
+      source_id = params[:source_id]
+      image_server_group_id = params[:image_server_group_id]
+    elsif !@assignment.nil?
+      x = @assignment.first
+      source_id = x[:fields][:source_id]
+      image_server_group_id = x[:fields][:groups][:_id]
+    end
+
+    if !source_id.nil? && !image_server_group_id.nil?
+      @source = Source.where(:id=>source_id).first
+      session[:source_id] = @source.id
+      @register = @source.register
+      session[:register_id] = @register.id
+      @church = @register.church
+      session[:church_name] = @church.church_name
+      @place = @church.place
+      session[:place_name] = @place.place_name
+      session[:county] = @county = @place.county
+      @user = cookies.signed[:userid]
+      @group = ImageServerGroup.find(:id=>image_server_group_id)
+    end
   end
 
   def edit
@@ -163,12 +177,17 @@ class AssignmentsController < ApplicationController
     end
 
     if session[:my_own]
-      display_info_from_my_own if @assignment.present?
-      render 'list_assignments_of_myself'
+      display_info_from_my_own
+
+      if @assignment.count == 1
+        render 'list_assignment_images'
+      else
+        render 'list_assignments_of_myself'
+      end
     end
   end
 
-  def list_assignment_image_one
+  def list_assignment_image
     @image = ImageServerImage.collection.aggregate([
                 {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
                 {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
@@ -181,29 +200,71 @@ class AssignmentsController < ApplicationController
     end
   end
 
-  def list_assignment_image_many
+  def list_assignment_images
     session[:image_group_filter] = nil
     session[:assignment_filter_list] = params[:assignment_filter_list]
 
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
 
     if session[:my_own]
-      display_info_from_my_own if @assignment.present?
+      display_info_from_my_own
     else
       display_info
     end
   end
 
-  def list_submitted_review
+  def list_submitted_review_assignments
     display_info
 
-    @assignment, @count = Assignment.list_submitted_assignment(session[:syndicate], 'rs')
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
+
+      if @count.empty?
+        flash[:notice] = 'No Submitted_Review Assignments in the Syndicate'
+      elsif @assignment.count == 1
+        render 'list_assignment_images' if @assignment.count == 1
+      end
+    end
   end
 
-  def list_submitted_transcribe
+  def list_submitted_transcribe_assignments
     display_info
 
-    @assignment, @count = Assignment.list_submitted_assignment(session[:syndicate], 'ts')
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
+
+      if @count.empty?
+        flash[:notice] = 'No Submitted_Transcription Assignments in the Syndicate'
+      elsif @assignment.count == 1
+        render 'list_assignment_images' if @assignment.count == 1
+      end
+    end
+  end
+
+  def list_transcribed_assignments
+    display_info
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 't')
+
+      if @count.empty?
+        flash[:notice] = 'No Transcribed Assignments in the Syndicate'
+      elsif @assignment.count == 1
+        render 'list_assignment_images'
+      end
+    end
   end
 
   def load(image_server_group_id)
@@ -315,13 +376,13 @@ class AssignmentsController < ApplicationController
         case params[:type]            # from SC
           when 'complete'
             new_status = orig_status == 'ts' ? 't' : 'r'
-            work_type = orig_status == 'it' ? 'transcribe' : 'review'
+            work_type = orig_status == 'bt' ? 'transcribe' : 'review'
             assignment = Assignment.id(assignment_id).first
             user = UseridDetail.id(assignment.userid_detail_id).first
 
             flash[:notice] = 'Accept assignment was successful'
           when 'unassign'
-            new_status = orig_status == 'it' ? 'a' : 't'
+            new_status = orig_status == 'bt' ? 'a' : 't'
             flash[:notice] = 'UN_ASSIGN assignment was successful'
           when 'error'
             new_status = 'e'
@@ -329,7 +390,7 @@ class AssignmentsController < ApplicationController
         end
 
         if session[:my_own]           # from transcriber
-          new_status = orig_status == 'it' ? 'ts' : 'rs'
+          new_status = orig_status == 'bt' ? 'ts' : 'rs'
 
           ImageServerImage.where(:assignment_id=>assignment_id).update_all(:status=>new_status)
           UserMailer.notify_sc_assignment_complete(user,work_type,assignment_id).deliver_now

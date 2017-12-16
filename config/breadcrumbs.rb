@@ -549,11 +549,9 @@ end
           end
           parent :all_sources, county
         else
-          # from "manage syndicates" => "Manage Images" => "List Fully Transcribed/Reviewed Groups"
+          # from "manage syndicates" => "Manage Images" => "List Fully Reviewed Groups"
           link "All Sources"
           case session[:image_group_filter]
-            when 'fully_transcribed'
-              parent :fully_transcribed_groups, session[:syndicate]
             when 'fully_reviewed'
               parent :fully_reviewed_groups, session[:syndicate]
             else
@@ -570,21 +568,36 @@ crumb :syndicate_manage_images do |syndicate|
   parent :syndicate_options, session[:syndicate]
 end
 
-      # from 'manage syndicates' => "manage images" => 'list by county of available groups'
-      crumb :syndicate_available_groups_by_county do |county,register,source|
-        link 'List by County of Available Groups', select_county_assignment_path
+      # from 'manage syndicates' => "manage images" => 'image groups available for allocation'
+      crumb :syndicate_available_groups_by_county_select_county do 
+        link 'Select County', select_county_assignment_path
         parent :syndicate_manage_images, session[:syndicate]
       end
+
+          crumb :syndicate_available_groups_by_county do |county,register,source|
+            link 'Image Groups Available for Allocation(By County)', select_county_assignment_path
+            parent :syndicate_available_groups_by_county_select_county
+          end
 
       # from 'manage syndicates' => "manage images" => 'list assignment by userid'
-      crumb :syndicate_all_assignments do |syndicate|
-        link "User Assignments"
+      crumb :syndicate_all_assignments_select_user do |syndicate|
+        link "Select User", select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all')
         parent :syndicate_manage_images, session[:syndicate]
       end
 
-      # from 'manage syndicate' => 'manage images' => 'list fully transcribed groups'
-      crumb :fully_transcribed_groups do |syndicate|
-        link "List Fully Transcribed Groups", list_fully_transcribed_group_manage_syndicate_path(session[:syndicate])
+          crumb :syndicate_all_assignments do |syndicate|
+            link "List User Assignments", list_assignments_by_userid_assignment_path(session[:syndicate], :assignment_list_type=>'all')
+            parent :syndicate_all_assignments_select_user, session[:syndicate]
+          end
+
+              crumb :syndicate_all_assignment do |syndicate|
+                link "List User Assignment"
+                parent :syndicate_all_assignments, session[:syndicate]
+              end
+
+      # from 'manage syndicate' => 'manage images' => 'list transcribed assignments'
+      crumb :transcribed_assignments do |syndicate|
+        link "List Transcribed Assginmentss", list_transcribed_assignments_assignment_path(session[:syndicate])
         parent :syndicate_manage_images, session[:syndicate]
       end
 
@@ -596,13 +609,13 @@ end
 
       # from 'manage syndicates' => 'manage images' => 'List Submitted Transcribe assignment'
       crumb :submitted_transcribe_assignments do |syndicate|
-        link "List Submitted_Transcribe Assignments", list_submitted_transcribe_assignment_path(session[:syndicate])
+        link "List Submitted_Transcription Assignments", list_submitted_transcribe_assignments_assignment_path(session[:syndicate])
         parent :syndicate_manage_images, session[:syndicate]
       end
 
       # from 'manage syndicates' => 'manage images' => 'List Submitted Review Assignment'
       crumb :submitted_review_assignments do |syndicate|
-        link "List Submitted_Review Assignments", list_submitted_review_assignment_path(session[:syndicate])
+        link "List Submitted_Review Assignments", list_submitted_review_assignments_assignment_path(session[:syndicate])
         parent :syndicate_manage_images, session[:syndicate]
       end
 
@@ -621,26 +634,26 @@ end
 
 # breadcrumbs from 'assignments'
 crumb :my_own_assignments do |user|
-  link "#{user.userid}: Assignments", my_own_assignment_path(user)
+  link "#{user.userid} Assignments", my_own_assignment_path(user)
   parent :root
 end
 
       # from 'assignments' => 'list image groups under my syndicate'
       crumb :request_assignments_by_syndicate do |user|
-        link "Image Groups by Syndicate", my_list_by_syndicate_image_server_group_path(user)
+        link "Image Groups Under My Syndicate", my_list_by_syndicate_image_server_group_path(user)
         parent :my_own_assignments, user
       end
 
       # from 'assignments' => 'list by county of available gruops'
       crumb :request_assignments_by_county do |user,county|
-        link "Image Groups by County", my_list_by_county_image_server_group_path(county)
+        link "Available Groups by County", my_list_by_county_image_server_group_path(county)
         parent :my_own_assignments, user
       end
 
       # from 'assignments' => 'LS'
       crumb :my_own_assignment do |user|
-        link "#{user.userid}: Assignment"
-        parent :my_own_assignments
+        link "Assignment"
+        parent :my_own_assignments, user
       end
 
 
@@ -661,7 +674,7 @@ crumb :show_image_source do |register,source|
     when 'Image Server'
       link "Image Server", source_path(source)
       if session[:manage_user_origin] == 'manage syndicate'
-        if ['fully_transcribed','fully_reviewed'].include?(session[:image_group_filter])
+        if session[:image_group_filter] == 'fully_reviewed'
           parent :all_sources_selection
         else
           parent :syndicate_manage_images, session[:syndicate]
@@ -714,20 +727,11 @@ crumb :image_server_groups do |user,county,register,source|
   elsif session[:assignment_filter_list].present?
     case session[:assignment_filter_list]
       when 'county'
-        parent :syndicate_available_groups_by_county, county,register,source
+        parent :syndicate_available_groups_by_county_select_county, county,register,source
       when 'submitted_transcribe'
         parent :submitted_transcribe_assignments, session[:syndicate]
       when 'submitted_review'
         parent :submitted_review_assignments, session[:syndicate]
-      else
-        parent :show_image_source, register,source
-    end
-  elsif session[:image_group_filter].present?
-    case session[:image_group_filter]
-      when 'fully_transcribed'
-        parent :fully_transcribed_groups, session[:syndicate]
-      when 'fully_reviewed'
-        parent :fully_reviewed_groups, session[:syndicate]
       else
         parent :show_image_source, register,source
     end

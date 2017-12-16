@@ -157,8 +157,8 @@ class ImageServerGroupsController < ApplicationController
     @user = UseridDetail.where(:userid=>session[:userid]).first
     @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_available_assignment_by_county(session[:chapman_code])
 
-    if @source.empty?
-      flash[:notice] = 'No image groups under selected county'
+    if @group_id.empty?
+      flash[:notice] = 'No image groups for allocation under selected county'
       redirect_to :back
     else
       session[:source_id] = @source[0][0]

@@ -10,9 +10,9 @@
         <th class="t12">Status</th>
         <th>Instructions</th>
         <th class="t8">Number</th>
-        <th class="t10" colspan=2>Action
+        <th class="t10">Action
           <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <span>RM: Remove Image from Assignment; VW: View Original Image; DL: Download Original Image; AC: Accept Assignment Submitted; FIN: Notify SC assignment is finished; UN: Unassign Images in This Assignment; RA: Re_assign Images in This Assignment; ER: Change Image Status in This Assignment as ERROR</span></a>
+          <span>LS: List Assignment Detail;<br> AC: Accept Assignment Submitted;<br> UN: Unassign Images in This Assignment;<br> RA: Re_assign Images in This Assignment;<br> ER: Change Image Status in This Assignment as ERROR</span></a>
         </th>
       </tr>
     </thead>
@@ -29,7 +29,7 @@
             <tr>
               <% rows = x[:fields][:_id] != prev_id ? @count[x[:_id]] : 0 %>
               <% prev_id = x[:fields][:_id] %>
-              <% assignment_type = x[:fields][:images][:status] == 'it' ? 'transcriber' : 'reviewer' %>
+              <% assignment_type = x[:fields][:images][:status] == 'bt' ? 'transcriber' : 'reviewer' %>
 
               <% if rows != 0 %>
                 <% if not session[:my_own] %>   <%# display only from 'List Assignment by userid' #%>
@@ -43,40 +43,33 @@
                 <td><%= x[:fields][:instructions] %>&nbsp;</td>
                 <td class="t8"><%= rows %>&nbsp;</td>
 
-                <% if session[:my_own] %>
-                  <td class="t10">
-                <% else %>
-                  <td class="t5">
-                <% end %>
-                  <% if !session[:my_own] %>
-                    <%= link_to 'RM', assignment_path(x[:fields][:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:fields][:images].nil? %>
-                  <% end %>
+                <td class="t10">
                   <% case assignment_filter_list %>
                     <% when 'submitted_transcribe' %>
-                      <%= link_to 'LS', list_assignment_image_many_assignment_path(x[:_id], :assignment_filter_list=>'submitted_transcribe'), method: :get %>
+                      <%= link_to 'LS', list_assignment_images_assignment_path(x[:_id], :assignment_filter_list=>'submitted_transcribe', :source_id=>x[:fields][:source_id], :image_server_group_id=>x[:fields][:groups][:_id]), method: :get %>
                     <% when 'submitted_review' %>
-                      <%= link_to 'LS', list_assignment_image_many_assignment_path(x[:_id], :assignment_filter_list=>'submitted_review'), method: :get %>
+                      <%= link_to 'LS', list_assignment_images_assignment_path(x[:_id], :assignment_filter_list=>'submitted_review', :source_id=>x[:fields][:source_id], :image_server_group_id=>x[:fields][:groups][:_id]), method: :get %>
                     <% else %>
-                      <%= link_to 'LS', list_assignment_image_many_assignment_path(x[:_id], :assignment_filter_list=>''), method: :get %>
+                      <%= link_to 'LS', list_assignment_images_assignment_path(x[:_id], :assignment_filter_list=>'', :source_id=>x[:fields][:source_id], :image_server_group_id=>x[:fields][:groups][:_id]), method: :get %>
                   <% end %>
-                </td>
-
-                <% if !session[:my_own] %>
-                  <td class="t5"%>
+                  <% if !session[:my_own] %>
                     <% if params[:assignment].nil? %>
                       <% assignment_list_type = params[:assignment_list_type] %>
                     <% else %>
                       <% assignment_list_type = params[:assignment][:assignment_list_type] %>
                     <% end %>
 
-                    <%= link_to 'AC', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                    <% if ['ts','rs'].include? x[:fields][:images][:status] %>
+                      <%= link_to 'AC', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                    <% end %>
                     <%= link_to 'UN', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
                     <%= link_to 'RA', re_assign_assignment_path(x[:fields][:_id], :image_server_group_id=>x[:fields][:images][:image_server_group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
+                    <%= link_to 'RM', assignment_path(x[:fields][:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:fields][:images].nil? %>
                     <% if x[:fields][:images][:status] == 'rs' %>
                       <%= link_to 'ER', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'error', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if you want to mark all images in this assignment as ERROR'}, method: :put %>
                     <% end %>
-                  </td>
-                <% end %>
+                  <% end %>
+                </td>
               <% end %>
             </tr>
             <tr id="<%= x[:fields][:images][:_id] %>" style="display:none;"></tr>

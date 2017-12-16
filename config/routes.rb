@@ -118,7 +118,6 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   get 'manage_syndicates/manage_image_group', :to => 'manage_syndicates#manage_image_group', :as => :manage_image_group_manage_syndicate
-  get 'manage_syndicatess/:id/list_fully_transcribed_group', :to => 'manage_syndicates#list_fully_transcribed_group', :as => :list_fully_transcribed_group_manage_syndicate
   get 'manage_syndicates/:id/list_fully_reviewed_group', :to => 'manage_syndicates#list_fully_reviewed_group', :as => :list_fully_reviewed_group_manage_syndicate
   resources :manage_syndicates
 
@@ -326,10 +325,11 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
   get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
   get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
-  get 'assignments/:id/list_assignment_image_one(.:format)', :to => 'assignments#list_assignment_image_one', :as => :list_assignment_image_one_assignment
-  get 'assignments/:id/list_assignment_image_many(.:format)', :to => 'assignments#list_assignment_image_many', :as => :list_assignment_image_many_assignment
-  get 'assignments/:id/list_submitted_transcribe(.:format)', :to => 'assignments#list_submitted_transcribe', :as => :list_submitted_transcribe_assignment
-  get 'assignments/:id/list_submitted_review(.:format)', :to => 'assignments#list_submitted_review', :as => :list_submitted_review_assignment
+  get 'assignments/:id/list_assignment_image(.:format)', :to => 'assignments#list_assignment_image', :as => :list_assignment_image_assignment
+  get 'assignments/:id/list_assignment_images(.:format)', :to => 'assignments#list_assignment_images', :as => :list_assignment_images_assignment
+  get 'assignments/:id/list_transcribed_assignments', :to => 'assignments#list_transcribed_assignments', :as => :list_transcribed_assignments_assignment
+  get 'assignments/:id/list_submitted_transcribe_assignments(.:format)', :to => 'assignments#list_submitted_transcribe_assignments', :as => :list_submitted_transcribe_assignments_assignment
+  get 'assignments/:id/list_submitted_review_assignments(.:format)', :to => 'assignments#list_submitted_review_assignments', :as => :list_submitted_review_assignments_assignment
   get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
   get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment
   get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment

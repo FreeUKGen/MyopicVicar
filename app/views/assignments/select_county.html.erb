@@ -1,5 +1,6 @@
-<div class="island  island--light">
+<% breadcrumb :syndicate_available_groups_by_county_select_county, @user.syndicate %>
 
+<div class="island  island--light">
 <%= render partial: 'flash_notice' %>
 
 <%= simple_form_for @county, :html => { :class => "grid"}  do |f| %>

@@ -2,7 +2,7 @@
   <table class="my-width-min flush--bottom" >
     <thead >
       <tr>
-        <th class="t12">Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+        <th class="t8">Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
           <span> The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
         <th  class="t12">Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
             <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
@@ -10,11 +10,10 @@
               <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (Made from a parish register); Extract of the Parish Registers (Incomplete set of records); Dwelly's Transcript (Made from a parish register); Other Register (Original document); Transcript (Another persons transcription); Unknown; or Unspecified.</span></a></th>
         <th class="t12">Sources <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A register can have multiple sources.</span></a></th>
-        <th class="t20" colspan=2>Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+        <th class="t25">Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A Source can have multiple groups.</span></a></th>
-        <th class="t5">Image Number</th>
-        <th class="t12">Syndicate</th>
-        <th class="t12">Assign Date</th>
+        <th class="t10">Image Number</th>
+        <th class="t10">Request Allocation</th>
       </tr>
     </thead>
   </table>
@@ -38,9 +37,9 @@
           <% end %>
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count && register_rows == @group_id[place_name][church_name][register_type].count && church_rows == @group_id[place_name][church_name].count && place_rows == @group_id[place_name].count %>
-            <tr><td class="t12"><%= place_name %></td>
+            <tr><td class="t8"><%= place_name %></td>
           <% else %>
-            <tr><td class="t12">&nbsp;</td>
+            <tr><td class="t8">&nbsp;</td>
           <% end %>
 
           <% if source_rows == @group_id[place_name][church_name][register_type][source_name].count && register_rows == @group_id[place_name][church_name][register_type].count && church_rows == @group_id[place_name][church_name].count %>
@@ -66,18 +65,10 @@
             <td class="t12">&nbsp;</td>
           <% end %>
 
-          <% if session[:manage_user_origin] == 'manage syndicate' %>
-            <td class="t20"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
-            <td class="t2"><%= link_to 'Req. Alloc.', request_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]) %></td>
-          <% else %>
-            <td class="t20" colspan=2><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
-          <% end %>
+          <td class="t25"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
-          <td class="t12"><%= syndicate %>&nbsp;</td>
-          <% if assign_date.nil? %>
-            <td class="t12">&nbsp;</td></tr>
-          <% else %>
-            <td class="t12"><%= assign_date.to_time.strftime('%Y-%m-%d') %>&nbsp;</td></tr>
+          <% if session[:manage_user_origin] == 'manage syndicate' %>
+            <td class="t10"><%= link_to 'Email CC', request_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]) %></td>
           <% end %>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>

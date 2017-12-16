@@ -5,12 +5,12 @@
 <div style="clear:both;"> </div><br>
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-    <%= link_to 'List assignments by userid', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all'), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'List by County of Available Groups', select_county_assignment_path, method: :get, :class => "btn weight--light btn--small" %> 
-    <%= link_to 'List Fully Transcribed Groups', list_fully_transcribed_group_manage_syndicate_path(session[:syndicate]), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'List User Assignments', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all'), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Image Groups Available for Allocation(By County)', select_county_assignment_path, method: :get, :class => "btn weight--light btn--small" %> 
+    <%= link_to 'List Transcribed Assignments', list_transcribed_assignments_assignment_path(session[:syndicate]), method: :get, :class => "btn weight--light btn--small" %>
     <%= link_to 'List Fully Reviewed Groups', list_fully_reviewed_group_manage_syndicate_path(session[:syndicate]), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'List Submitted Transcribe Assignments', list_submitted_transcribe_assignment_path(session[:syndicate]), method: :get, :class=>"btn weight--light btn--small" %>
-    <%= link_to 'List Submitted Review Assignments', list_submitted_review_assignment_path(session[:syndicate]), method: :get, :class=>"btn weight--light btn--small" %>
+    <%= link_to 'List Submitted Transcription Assignments', list_submitted_transcribe_assignments_assignment_path(session[:syndicate]), method: :get, :class=>"btn weight--light btn--small" %>
+    <%= link_to 'List Submitted Review Assignments', list_submitted_review_assignments_assignment_path(session[:syndicate]), method: :get, :class=>"btn weight--light btn--small" %>
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>

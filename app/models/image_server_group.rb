@@ -19,17 +19,17 @@ class ImageServerGroup
   module Status
     Unallocated = 'u'
     Allocated = 'a'
-    In_Transcribing = 'it'
-    Transcribe_submitted = 'ts'
+    Being_Transcribed = 'bt'
+    Transcription_submitted = 'ts'
     Transcribed = 't'
-    In_Reviewing = 'ir'
+    Being_Reviewed = 'br'
     Review_submitted = 'rs'
     Reviewed = 'r'
     Complete = 'c'
     Error = 'e'
 
-    ARRAY_ALL = ['u', 'a', 'it', 'ts', 't', 'ir', 'rs', 'r', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcribe_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
 
     CHURCH_STATUS = {}
 
@@ -213,7 +213,7 @@ class ImageServerGroup
       @source = Source.find_by_register_ids(@register_id).pluck(:id, :register_id, :source_name)
       @source_id = Hash.new{|h,k| h[k]=[]}.tap{|h| @source.each{|k,v1,v2| h[k] << v1 << v2}}
 
-      @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where("summary.status"=>{'$in'=>['a','u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where("summary.status"=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
       x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
 
       gid = []
@@ -244,9 +244,9 @@ class ImageServerGroup
 
       case type
         when 't'
-          scope = ['u','a','it','ts','ir','rs','r']
+          scope = ['u','a','bt','ts','br','rs','r']
         when 'r'
-          scope = ['u','a','it','ts','t','ir','rs']
+          scope = ['u','a','bt','ts','t','br','rs']
       end
 
       group = ImageServerGroup.where(:syndicate_code=>syndicate)

@@ -1,17 +1,29 @@
+<% if session[:my_own] %>
+  <% x = @assignment.first %>
+  <div style="text-align: center">  
+    <%= link_to 'List Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
+    <%= link_to 'List by County of Available Groups', select_county_assignment_path, method: :get, :class => "btn weight--light btn--small" %> 
+    <%= link_to 'Send Finish Email to SC', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'complete'), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put, :class => "btn weight--light btn--small" %> 
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+</div><div style="clear:both;"> </div><br>
+
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
         <% if not session[:my_own] %>       <%# display only from 'List Assignment by userid' #%>
-          <th class="t12">User</th>
+          <th class="t8">User</th>
         <% end %>
         <th class="t25">Image</th>
         <th class="t12">Difficulty</th>
-        <th class="t25">Notess</th>
+        <th class="t30">Notess</th>
         <th class="t12" colspan=2>Action
           <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <span>RM: Remove Image from Assignment; VW: View Original Image; DL: Download Original Image; AC: Accept Assignment Submitted; FIN: Notify SC assignment is finished; UN: Unassign Images in This Assignment; RA: Re_assign Images in This Assignment; ER: Change Image Status in This Assignment as ERROR</span></a>
+          <span>VW: View Original Image;<br> DL: Download Original Image;<br> AC: Accept Assignment Submitted;<br> UN: Unassign Images in This Assignment;<br> RA: Re_assign Images in This Assignment;<br> ER: Change Image Status in This Assignment as ERROR</span></a>
         </th>
+        <th class="t12">Status</th>
       </tr>
     </thead>
   </table>
@@ -20,52 +32,58 @@
     <table class=" table--bordered my-width table--data just--left">
       <tbody>
         <% prev_id = '' %>
+        <% @assignment.each do |x| %>
+          <tr>
+            <% rows = x[:fields][:_id] != prev_id ? @count[x[:_id]] : 0 %>
+            <% prev_id = x[:fields][:_id] %>
+            <% assignment_type = x[:fields][:images][:status] == 'bt' ? 'transcriber' : 'reviewer' %>
 
-        <% x = @assignment.first %>
-        <tr>
-          <% rows = x[:fields][:_id] != prev_id ? @count[x[:_id]] : 0 %>
-          <% prev_id = x[:fields][:_id] %>
-          <% assignment_type = x[:fields][:images][:status] == 'it' ? 'transcriber' : 'reviewer' %>
-
-          <% if not session[:my_own] %>   <%# display only from 'List Assignment by userid' #%>
-            <% if rows != 0 %>
-              <td class="t12" rowspan=<%= rows %> style="vertical-align: top"><%= x[:fields][:userids][:userid] if !x[:fields][:userids].nil? %>&nbsp;</td>
+            <% if not session[:my_own] %>   <%# display only from 'List Assignment by userid' #%>
+              <% if rows != 0 %>
+                <td class="t8" rowspan=<%= rows*2 %> style="vertical-align: top"><%= x[:fields][:userids][:userid] if !x[:fields][:userids].nil? %>&nbsp;</td>
+              <% end %>
             <% end %>
-          <% end %>
 
-          <td class="t25"><%= link_to x[:fields][:images][:image_name]+'_'+x[:fields][:images][:seq], list_assignment_image_one_assignment_path(x[:fields][:images][:_id]), :remote=>true if !x[:fields][:images].nil? %>&nbsp;</td>
-          <td class="t12"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:fields][:images][:difficulty]] if !x[:fields][:images].nil? %>&nbsp;</td>
-          <td class="t25"><%= x[:fields][:images][:notes] if !x[:fields][:notes].nil? %>&nbsp;</td>
+            <td class="t25"><%= link_to x[:fields][:images][:image_name]+'_'+x[:fields][:images][:seq], list_assignment_image_assignment_path(x[:fields][:images][:_id]), :remote=>true if !x[:fields][:images].nil? %>&nbsp;</td>
+            <td class="t12"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:fields][:images][:difficulty]] if !x[:fields][:images].nil? %>&nbsp;</td>
+            <td class="t30"><%= x[:fields][:images][:notes] if !x[:fields][:notes].nil? %>&nbsp;</td>
 
-          <% if session[:my_own] %>
-            <td class="t12">
-          <% else %>
-            <td class="t6">  
-          <% end %>
-            <%= link_to 'VW', view_image_server_image_path(:object=>x[:fields][:images][:_id]), method: :get, :target=>'_blank' %>
-            <%= link_to 'DL', download_image_server_image_path(:object=>x[:fields][:images][:_id]), method: :get, :target=>'_blank' %>
-          </td>
-
-          <% if !session[:my_own] %>
-            <% if rows != 0 %>
-              <td class="t5" rowspan=<%= rows %> style="vertical-align:top">
-                <% if params[:assignment].nil? %>
-                  <% assignment_list_type = params[:assignment_list_type] %>
-                <% else %>
-                  <% assignment_list_type = params[:assignment][:assignment_list_type] %>
-                <% end %>
-
-                <%= link_to 'AC', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
-                <%= link_to 'UN', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
-                <%= link_to 'RA', re_assign_assignment_path(x[:fields][:_id], :image_server_group_id=>x[:fields][:images][:image_server_group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
-                <% if x[:fields][:images][:status] == 'rs' %>
-                  <%= link_to 'ER', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'error', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if you want to mark all images in this assignment as ERROR'}, method: :put %>
-                <% end %>
-              </td>
+            <% if session[:my_own] %>
+              <td class="t12">
+            <% else %>
+              <td class="t5">  
             <% end %>
-          <% end %>
-        </tr>
-        <tr id="<%= x[:fields][:images][:_id] %>" style="display:none;"></tr>
+              <%= link_to 'VW', view_image_server_image_path(:object=>x[:fields][:images][:_id]), method: :get, :target=>'_blank' %>
+              <%= link_to 'DL', download_image_server_image_path(:object=>x[:fields][:images][:_id]), method: :get, :target=>'_blank' %>
+            </td>
+
+            <% if !session[:my_own] %>
+              <% if rows != 0 %>
+                <td class="t7" rowspan=<%= rows*2 %> style="vertical-align:top">
+                  <% if params[:assignment].nil? %>
+                    <% assignment_list_type = params[:assignment_list_type] %>
+                  <% else %>
+                    <% assignment_list_type = params[:assignment][:assignment_list_type] %>
+                  <% end %>
+
+                  <% if ['ts','rs'].include? x[:fields][:images][:status] %>
+                    <%= link_to 'AC', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'complete', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                  <% end %>
+                  <%= link_to 'UN', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
+                  <%= link_to 'RA', re_assign_assignment_path(x[:fields][:_id], :image_server_group_id=>x[:fields][:images][:image_server_group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
+                  <% if x[:fields][:images][:status] == 'rs' %>
+                    <%= link_to 'ER', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'error', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if you want to mark all images in this assignment as ERROR'}, method: :put %>
+                  <% end %>
+                </td>
+              <% end %>
+            <% end %>
+
+            <% if rows != 0 %>
+              <td class="t12" rowspan=<%= rows*2 %> style="vertical-align:top"><%= ImageServerImage::Status::ALL_STATUSES[x[:fields][:images][:status]] %></td>
+            <% end %>
+          </tr>
+          <tr id="<%= x[:fields][:images][:_id] %>" style="display:none;"></tr>
+        <% end %>
       </tbody>
     </table>
   </div>

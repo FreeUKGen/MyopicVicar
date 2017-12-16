@@ -152,21 +152,11 @@ class Assignment
       where(:id => id)
     end
 
-    def list_submitted_assignment(syndicate,status)
+    def list_assignment_by_status(syndicate,status)
       image_server_group = ImageServerGroup.where(:syndicate_code=>syndicate).pluck(:id, :group_name)
       group_id = image_server_group.map{|a| a[0]}.uniq
-=begin
-      image_group = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v| h[k] << v}}
 
-      image_assignment = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_id}, :assignment_id=>{'$nin'=>[nil,'']}, :status=>status).pluck(:assignment_id, :image_server_group_id, :id)
-      assignment = Hash.new{|h,k| h[k]=[]}.tap{|h| image_assignment.each{|k,v,w| h[k] << v << w}}
-      assignment_id = image_assignment.map {|a| a[0] }.uniq
-
-      user_assignment = Assignment.where(:id=>{'$in'=>assignment_id}).pluck(:id, :userid_detail_id)
-      user = Hash.new{|h,k| h[k]=[]}.tap{|h| user_assignment.each{|k,v| h[k] << v}}
-=end
-
-        assignment = Assignment.collection.aggregate([
+      assignment = Assignment.collection.aggregate([
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
                 {'$match'=>{"images.status"=>status, "images.image_server_group_id"=>{'$in'=>group_id}}},
                 {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
@@ -178,7 +168,7 @@ class Assignment
                 {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
              ])
 
-        group_by_count = Assignment.collection.aggregate([
+      group_by_count = Assignment.collection.aggregate([
                 {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
                 {'$match'=>{"images.status"=>status, "images.image_server_group_id"=>{'$in'=>group_id}}},
                 {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
@@ -206,9 +196,9 @@ class Assignment
         ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
       else
         case image_status
-          when 'it'
+          when 'bt'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
-          when 'ir'
+          when 'br'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :reviewer=>[user.userid])
         end
       end

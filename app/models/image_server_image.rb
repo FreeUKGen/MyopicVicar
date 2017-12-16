@@ -19,17 +19,17 @@ class ImageServerImage
   module Status
     Unallocated = 'u'
     Allocated = 'a'
-    In_Transcribing = 'it'
-    Transcribe_submitted = 'ts'
+    Being_Transcribed = 'bt'
+    Transcription_submitted = 'ts'
     Transcribed = 't'
-    In_Reviewing = 'ir'
+    Being_Reviewed = 'br'
     Review_submitted = 'rs'
     Reviewed = 'r'
     Complete = 'c'
     Error = 'e'
 
-    ARRAY_ALL = ['u', 'a', 'it', 'ts', 't', 'ir', 'rs', 'r', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'it'=>'In_Transcribing', 'ts'=>'Transcribe_submitted', 't'=>'Transcribed', 'ir'=>'In_Reviewing', 'rs'=>'Review_submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
   end
 
   field :image_name, type: String
@@ -89,14 +89,14 @@ class ImageServerImage
     end
 
     def get_in_transcribe_image_list(assignment_id)
-      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'it').pluck(:id, :image_name, :seq)
+      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'bt').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
 
       image_list
     end
 
     def get_in_review_image_list(assignment_id)
-      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'ir').pluck(:id, :image_name, :seq)
+      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'br').pluck(:id, :image_name, :seq)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
 
       image_list
