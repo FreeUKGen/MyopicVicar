@@ -263,10 +263,16 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def request_image_server_group(sc,sc_email,cc_email,group)
+  def request_cc_image_server_group(sc,cc_email,group)
     subject = "SC request image group"
-    email_body = sc+' requests to have '+group+' allocated'
-    mail(:from => sc_email, :to => cc_email, :subject => subject, :body => email_body)
+    email_body = sc.userid+' at '+sc.syndicate+' requests to have '+group+' allocated'
+    mail(:from => sc.email_address, :to => cc_email, :subject => subject, :body => email_body)
+  end
+
+  def request_sc_image_server_group(transcriber,sc_email,group)
+    subject = "Transcriber request image group"
+    email_body = 'member '+transcriber.userid+' of your syndicate '+transcriber.syndicate+' requests to obtain images in '+group
+    mail(:from => transcriber.email_address, :to => sc_email, :subject => subject, :body => email_body)
   end
 
   def send_change_of_syndicate_notification_to_sc(user)

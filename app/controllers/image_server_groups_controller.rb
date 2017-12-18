@@ -189,6 +189,54 @@ class ImageServerGroupsController < ApplicationController
     @parent_source = Source.id(session[:source_id]).first
   end
 
+  def request_cc_image_server_group
+    ig = ImageServerGroup.id(params[:id]).first
+    image_server_group = ig.group_name if !ig.nil?
+
+    sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
+    if !sc.nil?
+      county = County.where(:chapman_code=>params[:county]).first
+      if !county.nil?
+        cc = UseridDetail.where(:userid=>county.county_coordinator).first
+        if !cc.nil?
+          UserMailer.request_cc_image_server_group(sc, cc.email_address, image_server_group).deliver_now
+          flash[:notice] = 'email sent to county coordinator'
+        else
+          flash[:notice] = 'county coordinator does not exist, please contact administrator'
+        end
+      else
+        flash[:notice] = 'county does not exist'
+      end
+    else
+      flash[:notice] = 'SC does not exist'
+    end
+    redirect_to :back
+  end
+
+  def request_sc_image_server_group
+    ig = ImageServerGroup.id(params[:id]).first
+    image_server_group = ig.group_name if !ig.nil?
+
+    transcriber = UseridDetail.where(:id=>params[:user]).first
+    if !transcriber.nil?
+      syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
+      if !syndicate.nil?
+        sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
+        if !sc.nil?
+          UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
+          flash[:notice] = 'email sent to County Coordinator'
+        else
+          flash[:notice] = 'SC does not exist, please contact administrator'
+        end
+      else
+        flash[:notice] = 'syndicate does not exist'
+      end
+    else
+      flash[:notice] = 'transcriber does not exist'
+    end
+    redirect_to :back
+  end
+
   def send_complete_to_cc
     display_info
 

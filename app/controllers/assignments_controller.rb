@@ -173,16 +173,23 @@ class AssignmentsController < ApplicationController
 
       @assignment, @count = Assignment.filter_assignments_by_userid(user_ids,group_id)
     else
-      flash[:notice] = 'No assignment found.'
+      flash[:notice] = 'No user exists'
     end
 
-    if session[:my_own]
-      display_info_from_my_own
+    if @assignment.nil?
+      flash[:notice] = 'No assignment found.'
+      redirect_to :back
+    else
+      if session[:my_own]
+        display_info_from_my_own
 
-      if @assignment.count == 1
-        render 'list_assignment_images'
-      else
-        render 'list_assignments_of_myself'
+        if @assignment.count == 1
+flash[:notice] = 'there is only one assignment'
+          render 'list_assignment_images'
+        else
+flash[:notice] = 'there are '+@assignment.count+' assignments'          
+          render 'list_assignments_of_myself'
+        end
       end
     end
   end
@@ -205,23 +212,17 @@ class AssignmentsController < ApplicationController
     session[:assignment_filter_list] = params[:assignment_filter_list]
 
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
-
-    if session[:my_own]
-      display_info_from_my_own
-    else
-      display_info
-    end
+    display_info
   end
 
   def list_submitted_review_assignments
-    display_info
-
     if session[:syndicate].nil?
       flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
       redirect_to main_app.new_manage_resource_path
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
+      display_info
 
       if @count.empty?
         flash[:notice] = 'No Submitted_Review Assignments in the Syndicate'
@@ -232,14 +233,13 @@ class AssignmentsController < ApplicationController
   end
 
   def list_submitted_transcribe_assignments
-    display_info
-
     if session[:syndicate].nil?
       flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
       redirect_to main_app.new_manage_resource_path
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
+      display_info
 
       if @count.empty?
         flash[:notice] = 'No Submitted_Transcription Assignments in the Syndicate'

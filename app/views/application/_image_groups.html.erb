@@ -66,6 +66,8 @@
                 <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'syndicate', :assignment_filter_list=>'')) %>&nbsp;</td>
               <% when 'unallocate' %>
                 <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'unallocate', :assignment_filter_list=>'')) %>&nbsp;</td>
+              <% when 'fully_transcribed' %>
+                <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'fully_transcribed', :assignment_filter_list=>'')) %>&nbsp;</td>
               <% when 'fully_reviewed' %>
                 <td class="t12"><%= link_to(source_name, source_path(@source.select {|x| x[1] == source_id}[0][0], :image_group_filter=>'fully_reviewed', :assignment_filter_list=>'')) %>&nbsp;</td>
               <% else %>

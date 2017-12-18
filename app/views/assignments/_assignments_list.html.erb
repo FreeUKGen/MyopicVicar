@@ -64,7 +64,6 @@
                     <% end %>
                     <%= link_to 'UN', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
                     <%= link_to 'RA', re_assign_assignment_path(x[:fields][:_id], :image_server_group_id=>x[:fields][:images][:image_server_group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
-                    <%= link_to 'RM', assignment_path(x[:fields][:images][:_id], :assign_type=>assignment_type), data: { confirm: 'Are you sure you want to remove this image from assignment?' }, method: :delete if !x[:fields][:images].nil? %>
                     <% if x[:fields][:images][:status] == 'rs' %>
                       <%= link_to 'ER', assignment_path(x[:fields][:_id], :status=>x[:fields][:images][:status], :type=>'error', :assignment_list_type=>assignment_list_type), data: { confirm: 'Click OK if you want to mark all images in this assignment as ERROR'}, method: :put %>
                     <% end %>

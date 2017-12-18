@@ -119,6 +119,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
   get 'manage_syndicates/manage_image_group', :to => 'manage_syndicates#manage_image_group', :as => :manage_image_group_manage_syndicate
   get 'manage_syndicates/:id/list_fully_reviewed_group', :to => 'manage_syndicates#list_fully_reviewed_group', :as => :list_fully_reviewed_group_manage_syndicate
+  get 'manage_syndicatess/:id/list_fully_transcribed_group', :to => 'manage_syndicates#list_fully_transcribed_group', :as => :list_fully_transcribed_group_manage_syndicate
   resources :manage_syndicates
 
   resources :csvfiles
@@ -181,7 +182,6 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/sort_image_group_by_syndicate(.:format)', :to => 'manage_counties#sort_image_group_by_syndicate', :as => :sort_image_group_by_syndicate
   get  'manage_counties/sort_image_group_by_place(.:format)', :to => 'manage_counties#sort_image_group_by_place', :as => :sort_image_group_by_place
   get 'manage_counties/uninitialized_source_list(.:format)', :to => 'manage_counties#uninitialized_source_list', :as => :uninitialized_source_list
-  get 'manage_counties/:id/request_image_server_group(.:format)', :to => 'manage_counties#request_image_server_group', :as => :request_image_server_group
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
@@ -318,6 +318,8 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
   get 'image_server_groups/:id/upload(.:format)', :to => 'image_server_groups#upload', :as => :upload_image_server_group
   get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group
+  get 'image_server_groups/:id/request_cc_image_server_group(.:format)', :to => 'image_server_groups#request_cc_image_server_group', :as => :request_cc_image_server_group
+  get 'image_server_groups/:id/request_sc_image_server_group(.:format)', :to => 'image_server_groups#request_sc_image_server_group', :as => :request_sc_image_server_group
   get 'image_server_groups/:id/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_group
   resources :image_server_groups
 
@@ -327,7 +329,6 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
   get 'assignments/:id/list_assignment_image(.:format)', :to => 'assignments#list_assignment_image', :as => :list_assignment_image_assignment
   get 'assignments/:id/list_assignment_images(.:format)', :to => 'assignments#list_assignment_images', :as => :list_assignment_images_assignment
-  get 'assignments/:id/list_transcribed_assignments', :to => 'assignments#list_transcribed_assignments', :as => :list_transcribed_assignments_assignment
   get 'assignments/:id/list_submitted_transcribe_assignments(.:format)', :to => 'assignments#list_submitted_transcribe_assignments', :as => :list_submitted_transcribe_assignments_assignment
   get 'assignments/:id/list_submitted_review_assignments(.:format)', :to => 'assignments#list_submitted_review_assignments', :as => :list_submitted_review_assignments_assignment
   get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment

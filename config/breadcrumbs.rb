@@ -549,9 +549,11 @@ end
           end
           parent :all_sources, county
         else
-          # from "manage syndicates" => "Manage Images" => "List Fully Reviewed Groups"
+          # from "manage syndicates" => "Manage Images" => "List Fully Reviewed/Transcribed Groups"
           link "All Sources"
           case session[:image_group_filter]
+            when 'fully_transcribed'
+              parent :fully_transcribed_groups, session[:syndicate]
             when 'fully_reviewed'
               parent :fully_reviewed_groups, session[:syndicate]
             else
@@ -601,6 +603,12 @@ end
         parent :syndicate_manage_images, session[:syndicate]
       end
 
+      # from 'manage syndicate' => 'manage images' => 'list fully transcribed groups'
+      crumb :fully_transcribed_groups do |syndicate|
+        link "List Fully Transcribed Groups", list_fully_transcribed_group_manage_syndicate_path(session[:syndicate])
+        parent :syndicate_manage_images, session[:syndicate]
+      end
+
       # from 'manage syndicate' => 'manage images' => 'list fully reviewed groups'
       crumb :fully_reviewed_groups do |syndicate|
         link "List Fully Reviewed Groups", list_fully_reviewed_group_manage_syndicate_path(session[:syndicate])
@@ -644,9 +652,9 @@ end
         parent :my_own_assignments, user
       end
 
-      # from 'assignments' => 'list by county of available gruops'
+      # from 'assignments' => 'Image Groups Available for Allocation(By County)'
       crumb :request_assignments_by_county do |user,county|
-        link "Available Groups by County", my_list_by_county_image_server_group_path(county)
+        link "Image Groups Available for Allocation(By County)", my_list_by_county_image_server_group_path(county)
         parent :my_own_assignments, user
       end
 
@@ -674,7 +682,7 @@ crumb :show_image_source do |register,source|
     when 'Image Server'
       link "Image Server", source_path(source)
       if session[:manage_user_origin] == 'manage syndicate'
-        if session[:image_group_filter] == 'fully_reviewed'
+        if ['fully_transcribed', 'fully_reviewed'].include? session[:image_group_filter]
           parent :all_sources_selection
         else
           parent :syndicate_manage_images, session[:syndicate]
