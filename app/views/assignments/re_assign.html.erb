@@ -1,7 +1,7 @@
-<% if params[:assignment_list_type] == 'all' %>
-  <% breadcrumb :syndicate_all_assignments, session[:syndicate] %>
-<% else %>
+<% if params[:assignment_list_type] == 'group' %>
   <% breadcrumb :syndicate_image_group_assignments, @user, @county, @register, @source, @group %>
+<% else %>
+  <% breadcrumb :syndicate_all_assignments, session[:syndicate] %>
 <% end %>
 
 <% title "IS Image - re_assignment" %>

@@ -84,8 +84,10 @@ class AssignmentsController < ApplicationController
       image_server_group_id = params[:image_server_group_id]
     elsif !@assignment.nil?
       x = @assignment.first
-      source_id = x[:fields][:source_id]
-      image_server_group_id = x[:fields][:groups][:_id]
+      if !x.nil?
+        source_id = x[:fields][:source_id]
+        image_server_group_id = x[:fields][:groups][:_id]
+      end
     end
 
     if !source_id.nil? && !image_server_group_id.nil?
@@ -180,16 +182,10 @@ class AssignmentsController < ApplicationController
       flash[:notice] = 'No assignment found.'
       redirect_to :back
     else
-      if session[:my_own]
-        display_info_from_my_own
-
-        if @assignment.count == 1
-flash[:notice] = 'there is only one assignment'
-          render 'list_assignment_images'
-        else
-flash[:notice] = 'there are '+@assignment.count+' assignments'          
-          render 'list_assignments_of_myself'
-        end
+      if @count.length == 1
+        render 'list_assignment_images'
+      else
+        render 'list_assignments_of_myself' if session[:my_own]
       end
     end
   end
@@ -226,8 +222,8 @@ flash[:notice] = 'there are '+@assignment.count+' assignments'
 
       if @count.empty?
         flash[:notice] = 'No Submitted_Review Assignments in the Syndicate'
-      elsif @assignment.count == 1
-        render 'list_assignment_images' if @assignment.count == 1
+      elsif @count.length == 1
+        render 'list_assignment_images'
       end
     end
   end
@@ -243,8 +239,8 @@ flash[:notice] = 'there are '+@assignment.count+' assignments'
 
       if @count.empty?
         flash[:notice] = 'No Submitted_Transcription Assignments in the Syndicate'
-      elsif @assignment.count == 1
-        render 'list_assignment_images' if @assignment.count == 1
+      elsif @count.length == 1
+        render 'list_assignment_images'
       end
     end
   end
@@ -261,7 +257,7 @@ flash[:notice] = 'there are '+@assignment.count+' assignments'
 
       if @count.empty?
         flash[:notice] = 'No Transcribed Assignments in the Syndicate'
-      elsif @assignment.count == 1
+      elsif @count.length == 1
         render 'list_assignment_images'
       end
     end
@@ -401,9 +397,9 @@ flash[:notice] = 'there are '+@assignment.count+' assignments'
       else                                          # re_assign
         if assignment_params[:source_id].nil?       # from list assignments under a syndicate
           if assignment_params[:type] == 'transcriber'
-            image_id = assignment_params[:transcriber_seq][0]
+            image_id = assignment_params[:transcriber_seq].reject{|x| x.to_i == 0}[0]
           else
-            image_id = assignment_params[:reviewer_seq][0]
+            image_id = assignment_params[:reviewer_seq].reject{|x| x.to_i == 0}[0]
           end
           source_id = ImageServerImage.id(image_id).first.image_server_group.source.id
         else                        # from list assignments under a image group of a syndicate
@@ -419,9 +415,9 @@ flash[:notice] = 'there are '+@assignment.count+' assignments'
 
         case assignment_params[:type] 
           when 'transcriber'
-            reassign_list = assignment_params[:transcriber_seq]
+            reassign_list = assignment_params[:transcriber_seq].reject{|x| x.to_i == 0}
           when 'reviewer'
-            reassign_list = assignment_params[:reviewer_seq]
+            reassign_list = assignment_params[:reviewer_seq].reject{|x| x.to_i == 0}
           else
         end
 
