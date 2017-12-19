@@ -5,4 +5,8 @@
 <p style="text-align: center">Fully Transcribed Assignmentss Allocated to Syndicate <b><%= session[:syndicate] %></b>
 <%= render partial: 'flash_notice' %>
 
-<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'transcribed'} %>
+<div class="grid">
+  <section class="island">
+		<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'transcribed'} %>
+	</section>
+</div>

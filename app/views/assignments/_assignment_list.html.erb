@@ -18,10 +18,14 @@
         <% end %>
         <th class="t25">Image</th>
         <th class="t12">Difficulty</th>
-        <th class="t30">Notess</th>
+        <th class="t30">Notes</th>
         <th class="t12" colspan=2>Action
           <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <span>VW: View Original Image;<br> DL: Download Original Image;<br> AC: Accept Assignment Submitted;<br> UN: Unassign Images in This Assignment;<br> RA: Re_assign Images in This Assignment;<br> ER: Change Image Status in This Assignment as ERROR</span></a>
+          <% if session[:my_own] %>
+            <span>VW: View Original Image;<br> DL: Download Original Image</span></a>
+          <% else %>
+            <span>VW: View Original Image;<br> DL: Download Original Image;<br> AC: Accept Assignment Submitted;<br> UN: Unassign Images in This Assignment;<br> RA: Re_assign Images in This Assignment;<br> ER: Change Image Status in This Assignment as ERROR</span></a>
+          <% end %>
         </th>
         <th class="t12">Status</th>
       </tr>

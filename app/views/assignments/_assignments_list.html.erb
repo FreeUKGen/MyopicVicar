@@ -12,7 +12,11 @@
         <th class="t8">Number</th>
         <th class="t10">Action
           <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <span>LS: List Assignment Detail;<br> AC: Accept Assignment Submitted;<br> UN: Unassign Images in This Assignment;<br> RA: Re_assign Images in This Assignment;<br> ER: Change Image Status in This Assignment as ERROR</span></a>
+          <% if session[:my_own] %>
+            <span>LS: List Assignment Detail</span></a>
+          <% else %>
+            <span>LS: List Assignment Detail;<br> AC: Accept Assignment Submitted;<br> UN: Unassign Images in This Assignment;<br> RA: Re_assign Images in This Assignment;<br> ER: Change Image Status in This Assignment as ERROR</span></a>
+          <% end %>
         </th>
       </tr>
     </thead>

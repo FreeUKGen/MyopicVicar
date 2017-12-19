@@ -5,4 +5,8 @@
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
 
-<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_transcribe'} %>
+<div class="grid">
+  <section class="island">
+		<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_transcribe'} %>
+	</section>
+</div>
