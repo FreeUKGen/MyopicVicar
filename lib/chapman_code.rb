@@ -178,6 +178,14 @@ module ChapmanCode
       'Sark' => 'SRK'
 
     },
+    "Ireland" => {
+      'County Antrim' => 'ANT',
+      'County Armagh' => 'ARM',
+      'County Down' => 'DOW',
+      'County Fermanagh' => 'FER',
+      'County Londonderry' => 'LDY',
+      'County Tyrone' => 'TYR'
+      },
     "Scotland" =>
     {'Scotland' => 'SCT',
      'Aberdeenshire' => 'ABD',
