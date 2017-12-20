@@ -308,16 +308,18 @@ class ImageServerGroupsController < ApplicationController
     p params
     image_server_group = ImageServerGroup.id(params[:id]).first
     p image_server_group
-    website = image_server_group.create_upload_url
+    website = image_server_group.create_upload_images_url
     redirect_to website and return
   end
 
  def upload_return
-    p params
+    flash[:notice] = "Uploaded  #{params[:files_uploaded]} " if (params[:files_uploaded] != "" && params[:files_exist] == " ")
+    flash[:notice] = "Uploaded  #{params[:files_uploaded]} and failed to upload #{params[:files_exist]} as it was {they were) already there" if (params[:files_uploaded] != " " && params[:files_exist] != " ")
+    flash[:notice] = "No images uploaded" if (params[:files_uploaded] == "" && params[:files_exist] == " " )
+    flash[:notice] = "No images uploaded and failed to upload #{params[:files_exist]} as it was {they were) already there"  if (params[:files_uploaded] == " " && params[:files_exist] != " ")
     image_server_group = ImageServerGroup.id(params[:image_server_group]).first
-    p image_server_group
     redirect_to image_server_group_path(image_server_group)     
-  end
+ end
 
 
   private

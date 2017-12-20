@@ -5,9 +5,9 @@ class SourcesController < ApplicationController
   
   def access_image_server
     @user = cookies.signed[:userid]
-    website = Source.create_url(@user.userid)  
+    (session[:manage_user_origin] != 'manage county' && session[:chapman_code].nil?) ? chapman_code = 'all': chapman_code = session[:chapman_code]
+    website = Source.create_manage_image_server_url(@user.userid,@user.person_role,chapman_code)  
     redirect_to website and return
-    
   end
 
   def create

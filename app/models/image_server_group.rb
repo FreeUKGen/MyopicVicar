@@ -359,9 +359,10 @@ class ImageServerGroup
     
   end
   def create_upload_images_url
-    p self
     source = self.source
+    register = source.register
+    church = register.church
     place = self.place
-      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&folder_name=' + source.folder_name + '&image_server_access=' + Rails.application.config.image_server_access)
-    end
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&group_id=' + self.id + '&image_server_access=' + Rails.application.config.image_server_access)
+  end
 end

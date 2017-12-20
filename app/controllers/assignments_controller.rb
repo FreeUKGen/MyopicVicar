@@ -138,6 +138,10 @@ class AssignmentsController < ApplicationController
     @people = Array.new
     @userids.each { |ids| @people << ids.userid }
   end
+  
+  def index
+    p 'index'
+  end
 
   def list_assignments_by_userid
     if session[:my_own]                           # from my_own
@@ -295,8 +299,12 @@ class AssignmentsController < ApplicationController
     clean_session_for_syndicate
     clean_session_for_images
     session[:my_own] = true
-
-    redirect_to list_assignments_by_userid_assignment_path(session[:user_id])
+    get_user_info_from_userid
+     unless @user.userid == 'testuser9'
+      redirect_to list_assignments_by_userid_assignment_path(session[:user_id]) and return
+     else
+      redirect_to assignments_path and return
+     end
   end
 
   def new      
