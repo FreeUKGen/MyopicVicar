@@ -160,14 +160,18 @@ module ApplicationHelper
       data-ad-format="auto">
     </ins>
     <script>
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({ 
+        google_ad_client: "ca-pub-1788116026113570",
+        enable_page_level_ads: true
+      })
+    })
     </script>
     HTML
-    if Rails.env.development?
-     banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
+    #if Rails.env.development?
+     #banner = <<-HTML
+      #<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      #HTML
+    #end
     banner.html_safe
   end
 
