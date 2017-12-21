@@ -2,8 +2,7 @@
 <table class="table--bordered">
   <tr><td class="caps">Field</th><td class="caps">Value</th></tr>
   <tr><td>Image Group</td><td><%= @image[:image_group][:group_name] %></td></tr>
-  <tr><td>Image Name</td><td><%= @image[:image_name] %></td></tr>
-  <tr><td>Image Number</td><td><%= @image[:seq] %></td></tr>
+  <tr><td>Image Name</td><td><%= @image[:image_file_name] %></td></tr>
   <tr>
     <td>Status</td><td class="weight--semibold"><%= ImageServerImage::Status::ALL_STATUSES[@image[:status]] %>&nbsp;</td>
   </tr>

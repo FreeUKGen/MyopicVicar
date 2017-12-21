@@ -17,10 +17,10 @@ class AssignmentsController < ApplicationController
     case assignment_params[:type] 
       when 'transcriber'
         image_status = 'bt'
-        assign_list = assignment_params[:transcriber_seq]
+        assign_list = assignment_params[:transcriber_image_file_name]
       when 'reviewer'
         image_status = 'br'
-        assign_list = assignment_params[:reviewer_seq]
+        assign_list = assignment_params[:reviewer_image_file_name]
     end
 
     source_id = assignment_params[:source_id]
@@ -405,9 +405,9 @@ class AssignmentsController < ApplicationController
       else                                          # re_assign
         if assignment_params[:source_id].nil?       # from list assignments under a syndicate
           if assignment_params[:type] == 'transcriber'
-            image_id = assignment_params[:transcriber_seq].reject{|x| x.to_i == 0}[0]
+            image_id = assignment_params[:transcriber_image_file_name].reject{|x| x.to_i == 0}[0]
           else
-            image_id = assignment_params[:reviewer_seq].reject{|x| x.to_i == 0}[0]
+            image_id = assignment_params[:reviewer_image_file_name].reject{|x| x.to_i == 0}[0]
           end
           source_id = ImageServerImage.id(image_id).first.image_server_group.source.id
         else                        # from list assignments under a image group of a syndicate
@@ -423,9 +423,9 @@ class AssignmentsController < ApplicationController
 
         case assignment_params[:type] 
           when 'transcriber'
-            reassign_list = assignment_params[:transcriber_seq].reject{|x| x.to_i == 0}
+            reassign_list = assignment_params[:transcriber_image_file_name].reject{|x| x.to_i == 0}
           when 'reviewer'
-            reassign_list = assignment_params[:reviewer_seq].reject{|x| x.to_i == 0}
+            reassign_list = assignment_params[:reviewer_image_file_name].reject{|x| x.to_i == 0}
           else
         end
 

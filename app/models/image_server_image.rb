@@ -32,8 +32,7 @@ class ImageServerImage
     ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
   end
 
-  field :image_name, type: String
-  field :seq, type: String
+  field :image_file_name, type: String
   field :start_date, type: String
   field :end_date, type: String
   field :transcriber, type: Array
@@ -42,7 +41,6 @@ class ImageServerImage
 #  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
   field :status, type: String, default: nil
 #  validates_inclusion_of :status, :in => Status::ALL_STATUSES
-  field :image_file_name, type: String
   field :notes, type: String
 
   field :order, type: Integer
@@ -73,31 +71,31 @@ class ImageServerImage
     end
 
     def get_allocated_image_list(group_id)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'a').pluck(:id, :image_name, :seq)
-      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+      list = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'a').pluck(:id, :image_file_name)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
 
       image_list
     end
 
     def get_image_list(group_id,status_list)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>{'$in'=>status_list}).pluck(:id, :image_name, :seq)
+      list = ImageServerImage.where(:image_server_group_id=>group_id, :status=>{'$in'=>status_list}).pluck(:id, :image_file_name)
 
       #myseq = Hash.new{|h,k| h[k] = []}
-      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
-      #image_list = Hash[seq.map {|k,v| [k, myseq[k] = v[0].to_s+'_'+k[1].to_s]}]   #get new hash key=image_name:seq, val=image_name_seq
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
+
       image_list
     end
 
     def get_in_transcribe_image_list(assignment_id)
-      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'bt').pluck(:id, :image_name, :seq)
-      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+      list = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'bt').pluck(:id, :image_file_name)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
 
       image_list
     end
 
     def get_in_review_image_list(assignment_id)
-      seq = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'br').pluck(:id, :image_name, :seq)
-      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+      list = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'br').pluck(:id, :image_file_name)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
 
       image_list
     end
@@ -111,8 +109,8 @@ class ImageServerImage
     end
 
     def get_transcribed_image_list(group_id)
-      seq = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'t').pluck(:id, :image_name, :seq)
-      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| seq.each{|k,v,w| h[k]=v+'_'+w}}
+      list = ImageServerImage.where(:image_server_group_id=>group_id, :status=>'t').pluck(:id, :image_file_name)
+      image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
 
       image_list
     end

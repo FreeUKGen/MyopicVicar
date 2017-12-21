@@ -198,7 +198,7 @@ class UserMailer < ActionMailer::Base
 
   def notify_sc_assignment_complete(user, assignment_type, assignment_id)
     @user = UseridDetail.where(:userid=>user).first
-    @image_server_images = ImageServerImage.where(:assignment_id=>assignment_id).pluck(:image_name, :seq)
+    @image_server_images = ImageServerImage.where(:assignment_id=>assignment_id).pluck(:image_file_name)
 
     subject = "#{user.userid} completed the assignment"
     email_body = "To " + assignment_type + " following images:\r\n\r\n"

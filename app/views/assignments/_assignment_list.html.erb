@@ -48,7 +48,7 @@
               <% end %>
             <% end %>
 
-            <td class="t25"><%= link_to x[:fields][:images][:image_name]+'_'+x[:fields][:images][:seq], list_assignment_image_assignment_path(x[:fields][:images][:_id]), :remote=>true if !x[:fields][:images].nil? %>&nbsp;</td>
+            <td class="t25"><%= link_to x[:fields][:images][:image_file_name], list_assignment_image_assignment_path(x[:fields][:images][:_id]), :remote=>true if !x[:fields][:images].nil? %>&nbsp;</td>
             <td class="t12"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:fields][:images][:difficulty]] if !x[:fields][:images].nil? %>&nbsp;</td>
             <td class="t30"><%= x[:fields][:images][:notes] if !x[:fields][:notes].nil? %>&nbsp;</td>
 
