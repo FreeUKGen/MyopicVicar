@@ -22,11 +22,10 @@
           <%= s.hidden_field :origin, as: :fake, :value=>'propagate_reviewer' %>
         <% else %>
       <% end %>
-      <%= s.input :seq, :as=>:check_boxes, :collection=>@images.invert.sort.unshift(['select all', '0']), :label=>'Select the images you want to be propagated', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+      <%= s.input :id, :as=>:check_boxes, :collection=>@images.invert.sort.unshift(['select all', '0']), :label=>'Select the images you want to be propagated', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
 
       <%= s.hidden_field :image_server_group_id, :value=>@image_server_image.image_server_group_id %>
       <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image.image_server_group_id %>
-      <%= s.hidden_field :image_name, :value=>@image_server_image.image_name %>
       <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
     <% end %>        
   </div>

@@ -11,7 +11,7 @@ class ImageServerImagesController < ApplicationController
     return_location = image_server_image.image_server_group
     image_server_image.destroy
 
-    flash[:notice] = 'Deletion of image"'+image_server_image[:image_name]+'_'+image_server_image[:seq]+'.jpg" was successful'
+    flash[:notice] = 'Deletion of image"'+image_server_image[:image_file_name]+' was successful'
     redirect_to index_image_server_image_path(return_location)
   end
 
@@ -153,12 +153,12 @@ class ImageServerImagesController < ApplicationController
             :image_server_group_id=>image_server_image_params[:image_server_group_id])
 
     if image_server_image.nil?
-      flash[:notice] = 'Image "'+image_server_image_params[:image_name]+'_'+image_server_image_params[:seq].to_s+'.jpg" does not exist'
+      flash[:notice] = 'Image "'+image_server_image_params[:image_file_name]+' does not exist'
       redirect_to :back
     else
       case image_server_image_params[:origin]
         when 'edit'
-          edit_image = src_image_server_image.where(:seq=>image_server_image_params[:seq]).first
+          edit_image = src_image_server_image.where(:id=>image_server_image_params[:id]).first
           image_server_image_params.delete :orig_image_server_group_id
           image_server_image_params.delete :origin
 
@@ -170,7 +170,7 @@ class ImageServerImagesController < ApplicationController
           redirect_to image_server_image_path(edit_image) and return
         when 'move'
           image_server_image.where(
-                :id=>{'$in': image_server_image_params[:seq]}, 
+                :id=>{'$in': image_server_image_params[:id]}, 
                 :image_server_group_id=>image_server_image_params[:orig_image_server_group_id])
               .update_all(
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
@@ -180,7 +180,7 @@ class ImageServerImagesController < ApplicationController
 
         when 'propagate_difficulty'
           image_server_image.where(
-                :id=>{'$in': image_server_image_params[:seq]}, 
+                :id=>{'$in': image_server_image_params[:id]}, 
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:difficulty=>image_server_image_params[:difficulty])
 
@@ -188,7 +188,7 @@ class ImageServerImagesController < ApplicationController
 
         when 'propagate_status'
           image_server_image.where(
-                :id=>{'$in': image_server_image_params[:seq]}, 
+                :id=>{'$in': image_server_image_params[:id]}, 
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:status=>image_server_image_params[:status])
 
@@ -196,7 +196,7 @@ class ImageServerImagesController < ApplicationController
 
         when 'propagate_transcriber'
           image_server_image.where(
-                :id=>{'$in': image_server_image_params[:seq]}, 
+                :id=>{'$in': image_server_image_params[:id]}, 
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:transcriber=>image_server_image_params[:transcriber])
 
@@ -204,7 +204,7 @@ class ImageServerImagesController < ApplicationController
 
         when 'propagate_reviewer'
           image_server_image.where(
-                :id=>{'$in': image_server_image_params[:seq]}, 
+                :id=>{'$in': image_server_image_params[:id]}, 
                 :image_server_group_id=>image_server_image_params[:image_server_group_id])
               .update_all(:reviewer=>image_server_image_params[:reviewer])
 
