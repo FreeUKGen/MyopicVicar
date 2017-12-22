@@ -313,11 +313,16 @@ class ImageServerGroupsController < ApplicationController
   end
 
  def upload_return
-    flash[:notice] = "Uploaded  #{params[:files_uploaded]} " if (params[:files_uploaded] != "" && params[:files_exist] == " ")
-    flash[:notice] = "Uploaded  #{params[:files_uploaded]} and failed to upload #{params[:files_exist]} as it was {they were) already there" if (params[:files_uploaded] != " " && params[:files_exist] != " ")
-    flash[:notice] = "No images uploaded" if (params[:files_uploaded] == "" && params[:files_exist] == " " )
-    flash[:notice] = "No images uploaded and failed to upload #{params[:files_exist]} as it was {they were) already there"  if (params[:files_uploaded] == " " && params[:files_exist] != " ")
     image_server_group = ImageServerGroup.id(params[:image_server_group]).first
+    proceed, message = image_server_group.process_uploaded_images(params)
+    if proceed
+      flash[:notice] = "Uploaded  #{params[:files_uploaded]} " if (params[:files_uploaded] != "" && params[:files_exist] == " ")
+      flash[:notice] = "Uploaded  #{params[:files_uploaded]} and failed to upload #{params[:files_exist]} as it was {they were) already there" if (params[:files_uploaded] != " " && params[:files_exist] != " ")
+      flash[:notice] = "No images uploaded" if (params[:files_uploaded] == "" && params[:files_exist] == " " )
+      flash[:notice] = "No images uploaded and failed to upload #{params[:files_exist]} as it was {they were) already there"  if (params[:files_uploaded] == " " && params[:files_exist] != " ")
+    else
+       flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
+    end
     redirect_to image_server_group_path(image_server_group)     
  end
 

@@ -365,4 +365,23 @@ class ImageServerGroup
     place = self.place
       URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&group_id=' + self.id + '&image_server_access=' + Rails.application.config.image_server_access)
   end
+  
+  def process_uploaded_images(param)
+    p 'Creating iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii'
+    process = true
+    message = ''
+    uploaded_file_names = param[:files_uploaded].split('/ ')
+    uploaded_file_names.each do |file_name|
+      image = ImageServerImage.create(:image_server_group_id => self.id, :image_file_name => file_name)
+      if image.errors.any?
+        process = false
+        message = image.errors.messages
+        break
+      end
+    end
+    number_of_images = self.image_server_images.count
+    p number_of_images
+    self.update_attribute(:number_of_images, number_of_images )
+    return process,message 
+  end
 end
