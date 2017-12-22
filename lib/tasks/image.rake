@@ -205,7 +205,7 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
 p "==============NEED UPDATE NOT INSERT"
 p "file="+image_name.to_s
         image_list.each do |f|
-          new_image_list << f[:image_file_name]
+          new_image_list << f
         end
         exist_image_list = ImageServerImage.where(:image_server_group_id=>is_group.id).distinct(:image_file_name)
         diff_image_list = new_image_list - exist_image_list
