@@ -13,6 +13,11 @@
 # limitations under the License.
 #
 module ApplicationHelper
+  
+  def action_manage_image_server(role)
+    role == 'Manage Image Server' ? action = true : action = false
+    action
+  end
 
   def get_user_info_from_userid
     @user = cookies.signed[:userid]
@@ -293,6 +298,14 @@ module ApplicationHelper
   def owner(file)
     owner = file.userid
   end
+  
+  
+  def system_administrator(user)
+    user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
+    system_administrator
+  end
+  
+  
   def get_register_object(file)
     register = file.register unless file.blank?
   end

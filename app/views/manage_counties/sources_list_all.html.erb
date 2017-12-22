@@ -9,7 +9,7 @@
   <%= link_to 'List Unallocated Image Groups', manage_unallocated_image_group_manage_county_path, method: :get, :class => "btn weight--light btn--small" %>
   <%= link_to 'List Uninitialized Sources', uninitialized_source_list_path, method: :get, :class => "btn weight--light btn--small" %>
   <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Access Image Server Directly', access_image_server_source_path, method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Access Image Server Directly', access_image_server_source_path, method: :get, :class => "btn weight--light btn--small" ,:target => '_blank' %>
   <% end %>
   
 </div>
