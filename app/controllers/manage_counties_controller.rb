@@ -134,8 +134,8 @@ class ManageCountiesController < ApplicationController
 
   def manage_sources
     get_user_info_from_userid
+    clean_session_for_images
     session[:manage_user_origin] = 'manage county'
-    session.delete(:image_group_filter)
     
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'

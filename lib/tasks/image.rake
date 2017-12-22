@@ -24,12 +24,12 @@ namespace :image do
     args.county == "ALL" ? counties = ChapmanCode.merge_counties : counties[0] = args.county
 
     message = Hash.new
-    all_files,all_seq = Array.new,Array.new
-    sources,sources_processed,count = 0,0,1
-    prev_county,prev_place,prev_file_name = '','',''
+    all_file_groups,all_images = Array.new,Array.new
+    sources,sources_processed,count = 0,0,0
+    prev_county,prev_place,prev_file_group_name = '','',''
     county_part,place_part,final_message = '','',''
     start_date,end_date = '',''
-    file_num,file_name = '',''
+    file_num,file_group_name = '',''
     f = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
     email_message,email_message2,email_message3 = '','',''
     report_file.puts "Starting load of IS_pages for #{args.county} from #{counties}"
@@ -71,44 +71,44 @@ namespace :image do
               if ind.blank?
                 next
               else
-                file_seq = $1
-                file_name = line.slice(0...ind).split('/')[1] + '/' + line.slice(0...ind).split('/')[2]
+                file_group_name = line.slice(0...ind).split('/')[1] + '/' + line.slice(0...ind).split('/')[2]
 
                 if f[county_part][place_part]['status'] != 'e'
-                  if all_files.include?(file_name) == false
-                    f[county_part][place_part]['file_name'] = file_name
-                    all_files << file_name.to_s
+                  if all_file_groups.include?(file_group_name) == false
+                    f[county_part][place_part]['file_group_name'] = file_group_name
+                    all_file_groups << file_group_name.to_s
 
                     prev_start_date = start_date
                     prev_end_date = end_date
-                    if prev_file_name.empty?
-                      prev_file_name = file_name 
+                    if prev_file_group_name.empty?
+                      prev_file_group_name = file_group_name 
                       prev_county = county_part
                       prev_place = place_part
                     end
 
-                    range_ind = file_name.rindex(/(-\d{4}-\d{4})/)
-                    start_date = range_ind.present? ? file_name.slice((range_ind+1)..(range_ind+4)) : ''
-                    end_date = range_ind.present? ? file_name.slice((range_ind+6)..(range_ind+9)) : ''
+                    range_ind = file_group_name.rindex(/(-\d{4}-\d{4})/)
+                    start_date = range_ind.present? ? file_group_name.slice((range_ind+1)..(range_ind+4)) : ''
+                    end_date = range_ind.present? ? file_group_name.slice((range_ind+6)..(range_ind+9)) : ''
                   end
                 end
 
-                if prev_file_name == file_name
-                  if all_seq.any? {|h| h[:seq] == file_seq} == false
-                    all_seq << {:seq => file_seq, :image_file_name => line_parts[2].to_s}
+                if prev_file_group_name == file_group_name
+                  image_file_name = line_parts[2].to_s
+                  if (all_images.include? image_file_name) == false
+                    all_images << image_file_name
                     count = count + 1
                   end
                 else
                   if ['u','t'].include?(f[prev_county][prev_place]['status'])
-p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
+p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_group_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-                    update_collection(f[prev_county][prev_place],prev_file_name,prev_start_date,prev_end_date,all_seq,count) 
+                    update_collection(f[prev_county][prev_place],prev_file_group_name,prev_start_date,prev_end_date,all_images,count) 
                   end
 
                   prev_county = county_part.to_s
                   prev_place = place_part.to_s
-                  prev_file_name = file_name.to_s
-                  all_seq = [{:seq => file_seq, :image_file_name => line_parts[2].to_s}]
+                  prev_file_group_name = file_group_name.to_s
+                  all_images = [line_parts[2].to_s]
                   count = 1
                 end
                 sources_processed = sources_processed.to_i + 1
@@ -118,27 +118,35 @@ p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county]
               #we could now store the image location in page_image
               # p line
           end
+        else
+          if ['u','t'].include?(f[prev_county][prev_place]['status'])
+p "status2="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_group_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
+
+            update_collection(f[prev_county][prev_place],prev_file_group_name,prev_start_date,prev_end_date,all_images,count) 
+            prev_county = county_part
+            prev_place = place_part
+          end
         end
       end
     end
 
     if ['u','t'].include?(f[county_part][place_part]['status'])
-p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][place_part]['church_status'].to_s+" register="+f[county_part][place_part]['register_status'].to_s+" place="+f[county_part][place_part]['place'].place_name.to_s+" church="+f[county_part][place_part]['church'].church_name.to_s+" register="+f[county_part][place_part]['register'].register_type.to_s+" file="+file_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
+p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][place_part]['church_status'].to_s+" register="+f[county_part][place_part]['register_status'].to_s+" place="+f[county_part][place_part]['place'].place_name.to_s+" church="+f[county_part][place_part]['church'].church_name.to_s+" register="+f[county_part][place_part]['register'].register_type.to_s+" file="+file_group_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-      update_collection(f[county_part][place_part],file_name,start_date,end_date,all_seq,count)
+      update_collection(f[county_part][place_part],file_group_name,start_date,end_date,all_images,count)
     end
 
     report_file.puts email_message
     report_file.puts "Total sources #{sources} with #{sources_processed} processed"
   end
 
-  def self.update_collection(f,group_name,start_date,end_date,all_seq,count)
+  def self.update_collection(f,group_name,start_date,end_date,all_images,count)
     source = Source.where(:register_id=>f['register'].id, :source_name=>'Image Server').first
     source = create_source(f['register'],f['folder_name'],f['notes']) if source.nil?
 
     is_group = create_image_server_group(f['place'],f['church'],source,group_name,start_date,end_date,f['church_status'],f['register_status'],count)
     
-    update_image_server_image(is_group,group_name,start_date,end_date,all_seq)
+    update_image_server_image(is_group,group_name,start_date,end_date,all_images)
   end
 
   def self.create_source(register,folder_name,notes)
@@ -183,29 +191,29 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
     image_server_group
   end
 
-  def self.update_image_server_image(is_group,image_name,start_date,end_date,seq)
+  def self.update_image_server_image(is_group,image_name,start_date,end_date,image_list)
     if is_group.present?
-      rd,new_seq = Array.new,Array.new
+      rd,new_image_list = Array.new,Array.new
       image_server_image = ImageServerImage.where(:image_server_group_id=>is_group.id).first
 
       if image_server_image.nil?
-        seq.each do |f|
-          rd << {:image_server_group_id=>is_group.id, :image_name=>image_name.split('/')[1], :seq=>f[:seq], :image_file_name=>f[:image_file_name], :start_date=>start_date, :end_date=>end_date}
+        image_list.each do |image|
+          rd << {:image_server_group_id=>is_group.id, :image_file_name=>image, :start_date=>start_date, :end_date=>end_date}
         end
         image_server_image = ImageServerImage.create! (rd)
       else
 p "==============NEED UPDATE NOT INSERT"
 p "file="+image_name.to_s
-        seq.each do |f|
-          new_seq << f[:seq]
+        image_list.each do |f|
+          new_image_list << f[:image_file_name]
         end
-        exist_seq = ImageServerImage.where(:image_server_group_id=>is_group.id).distinct(:seq)
-        diff_seq = new_seq - exist_seq
-p "diff_seq="+diff_seq.to_s
+        exist_image_list = ImageServerImage.where(:image_server_group_id=>is_group.id).distinct(:image_file_name)
+        diff_image_list = new_image_list - exist_image_list
+p "diff_image_list="+diff_image_list.to_s
 
-        if not diff_seq.empty?
-          diff_seq.each do |f|
-            rd << {:image_server_group_id=>is_group.id, :image_name=>image_name, :seq=>f, :start_date=>start_date, :end_date=>end_date}
+        if not diff_image_list.empty?
+          diff_image_list.each do |f|
+            rd << {:image_server_group_id=>is_group.id, :image_file_name=>f, :start_date=>start_date, :end_date=>end_date}
           end
           image_server_image = ImageServerImage.create! (rd)
         end
