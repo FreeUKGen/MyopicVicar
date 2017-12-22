@@ -7,7 +7,7 @@
   <%= link_to 'List Images Under This Group', index_image_server_image_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
 
   <% if  !@image_server_group.summary.nil? %>
-    <% if (@image_server_group.summary[:status] - ['u','a','bt','t','br','rs']).empty? == false &&  !@image_server_group.nil? && !@image_server_group.summary[:status].nil? %>
+    <% if !@image_server_group.nil? && !@image_server_group.summary[:status].nil? && (@image_server_group.summary[:status] - ['u','a','bt','t','br','rs']).empty? == false %>
       <%= link_to 'Send Complete Email to CC', send_complete_to_cc_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
     <% end %>
   <% end %>
