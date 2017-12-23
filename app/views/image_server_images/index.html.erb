@@ -34,11 +34,11 @@
         <th class="t15">Reviewer</th>
         <th class="t15">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
           <% if session[:manage_user_origin] == 'manage syndicate' %>   <%# any user from manage_syndicates %>
-            <span>SH: Show Image Properties; ED: Edit Image Properties</span>
+            <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;</span>
           <% elsif @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
-            <span>SH: Show Image Properties; ED: Edit Image Properties; DE: Delete Image information from FR</span>
+            <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;<br>DE: Delete Image information from FR</span>
           <% else %>        <%# non admin from manage_counties %>
-            <span>SH: Show Image Properties; ED: Edit Image Properties</span>
+            <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;</span>
           <% end %>        
         </a></th>
       </tr>
@@ -60,6 +60,8 @@
               <% if !session[:my_own] %>
                 <%= link_to 'ED', edit_image_server_image_path(x) %> 
               <% end %>
+              <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
+              <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
               <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
                 <%= link_to 'DE', image_server_image_path(x), data: { confirm: 'Are you sure you want to delete IS image '+x[:image_file_name]}, method: :delete %>
               <% end %>

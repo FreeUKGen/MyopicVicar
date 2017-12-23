@@ -23,9 +23,9 @@
         <th class="t10">Reviewer</th>
         <th class="t10">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
           <% if session[:manage_user_origin] == 'manage county' %>  <%# any user from manage_counties %>
-            <span>SH: Show Group Properties; ED: Edit Group Properties; DE: Delete Group; LS: List Images in the Group</span>
+            <span>SH: Show Group Properties;<br>ED: Edit Group Properties;<br>DE: Delete Group; LS: List Images in the Group</span>
           <% else %>          <%# any user from manage_syndicates %>
-            <span>SH: Show Group Properties; LS: List Images in the Group</span>
+            <span>SH: Show Group Properties;<br>LS: List Images in the Group</span>
           <% end %>
         </a></th>
       </tr>
