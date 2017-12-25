@@ -128,7 +128,7 @@ end
                   if ['u','t'].include?(f[prev_county][prev_place]['status'])
 p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_group_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-#                    update_collection(f[prev_county][prev_place],prev_file_group_name,prev_start_date,prev_end_date,all_images,count) 
+                    update_collection(f[prev_county][prev_place],prev_file_group_name,prev_start_date,prev_end_date,all_images,count) 
                   end
 
                   prev_county = county_part.to_s
@@ -148,7 +148,7 @@ p "status1="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county]
           if ['u','t'].include?(f[prev_county][prev_place]['status'])
 p "status2="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county][prev_place]['church_status'].to_s+" register="+f[prev_county][prev_place]['register_status'].to_s+" place="+f[prev_county][prev_place]['place'].place_name.to_s+" church="+f[prev_county][prev_place]['church'].church_name.to_s+" register="+f[prev_county][prev_place]['register'].register_type.to_s+" file="+prev_file_group_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-#            update_collection(f[prev_county][prev_place],prev_file_group_name,prev_start_date,prev_end_date,all_images,count) 
+            update_collection(f[prev_county][prev_place],prev_file_group_name,prev_start_date,prev_end_date,all_images,count) 
             prev_county = county_part
             prev_place = place_part
           end
@@ -159,7 +159,7 @@ p "status2="+f[prev_county][prev_place]['status'].to_s+" church="+f[prev_county]
     if ['u','t'].include?(f[county_part][place_part]['status'])
 p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part][place_part]['church_status'].to_s+" register="+f[county_part][place_part]['register_status'].to_s+" place="+f[county_part][place_part]['place'].place_name.to_s+" church="+f[county_part][place_part]['church'].church_name.to_s+" register="+f[county_part][place_part]['register'].register_type.to_s+" file="+file_group_name.to_s+" start_date="+start_date.to_s+" end_date="+end_date.to_s+" count="+count.to_s
 
-#      update_collection(f[county_part][place_part],file_group_name,start_date,end_date,all_images,count)
+      update_collection(f[county_part][place_part],file_group_name,start_date,end_date,all_images,count)
     end
 
 
