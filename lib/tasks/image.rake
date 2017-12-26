@@ -48,9 +48,35 @@ namespace :image do
             when 2
               place,church,register_type,notes = ''
               place,church,register_type,notes = FreeregAids.extract_location(place_part)
+p "place_part="+place_part.to_s+' place='+place.to_s
               f[county_part][place_part]['folder_name'] = place_part
 
               place,church,register,final_message,status,church_status,register_status = FreeregAids.check_and_get_location(county_part,place,church,register_type,place_part)
+
+
+if final_message.present?
+  final_message.each do |k1,v1|
+    if k1.present? && v1.present?
+      v1.each do |k2,v2|
+        if k2.present? && v2.present?
+          v2.each do |k3,v3|
+            if message[k1].nil?
+              message[k1] = final_message[k1]
+            else 
+              if message[k1][k2].nil?
+                message[k1][k2] = final_message[k1][k2]
+              else
+                #message[k1][k2][k3] = message[k1][k2][k3].merge({k3 => v3}) unless v3.nil? || k3.nil?
+                message[k1][k2][k3] = v3 unless v3.nil? || k3.nil?
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 
               if status == true
                 f[county_part][place_part]['status'] = register_status == 'R4A' ? 'u' : 't'
@@ -135,6 +161,21 @@ p "status3="+f[county_part][place_part]['status'].to_s+" church="+f[county_part]
 
       update_collection(f[county_part][place_part],file_group_name,start_date,end_date,all_images,count)
     end
+
+
+
+if message.present?
+  x = Hash[ message.sort_by{|k,v| k}]
+  x.each do |k1,v1|
+    v1.each do |k2,v2|
+      v2.each do |k3,v3|
+        email_message = email_message.to_s + v3.to_s unless v3.nil?
+      end
+    end
+  end
+end
+
+
 
     report_file.puts email_message
     report_file.puts "Total sources #{sources} with #{sources_processed} processed"
