@@ -7,6 +7,7 @@ class Assignment
   attr_accessor :user_id
 
   belongs_to :source, index: true
+  belongs_to :syndicate, index: true
   belongs_to :userid_detail, index: true
   has_many :image_server_images #, index: true
   # TODO: Should an assignment be associated with pages at the record level?
@@ -53,11 +54,12 @@ class Assignment
       assignment.instructions = instructions
       assignment.assign_date = Time.now.iso8601
 
+      syndicate_code = userid_detail.syndicate
+      syndicate = Syndicate.syndicate_code(syndicate_code).first
+      assignment.syndicate_id = syndicate._id
+      assignment.source_id = source.id
+      assignment.userid_detail_id = userid_detail.id
       assignment.save
-      source.assignments << assignment
-      source.save
-      userid_detail.assignments << assignment
-      userid_detail.save
 
       assign_image_server_image_to_assignment(assignment.id,user_id,assign_list,image_status)
     end
