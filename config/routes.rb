@@ -326,13 +326,14 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
   get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
   get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
-  get 'assignments/:id/list_assignments_by_userid(.:format)', :to => 'assignments#list_assignments_by_userid', :as => :list_assignments_by_userid_assignment
+  get 'assignments/:id/list_assignments_by_syndicate_coordinator(.:format)', :to => 'assignments#list_assignments_by_syndicate_coordinator', :as => :list_assignments_by_syndicate_coordinator_assignment
+  get 'assignments/:id/list_assignments_of_myself(.:format)', :to => 'assignments#list_assignments_of_myself', :as => :list_assignments_of_myself_assignment
   get 'assignments/:id/list_assignment_image(.:format)', :to => 'assignments#list_assignment_image', :as => :list_assignment_image_assignment
   get 'assignments/:id/list_assignment_images(.:format)', :to => 'assignments#list_assignment_images', :as => :list_assignment_images_assignment
   get 'assignments/:id/list_submitted_transcribe_assignments(.:format)', :to => 'assignments#list_submitted_transcribe_assignments', :as => :list_submitted_transcribe_assignments_assignment
   get 'assignments/:id/list_submitted_review_assignments(.:format)', :to => 'assignments#list_submitted_review_assignments', :as => :list_submitted_review_assignments_assignment
   get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
-  get 'assignment/user_complete_image', :to => 'assignments#user_complete_image', :as => :user_complete_image_assignment
+  get 'assignment/image_completed', :to => 'assignments#image_completed', :as => :user_complete_image_assignment
   get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
 resources :assignments

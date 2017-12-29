@@ -65,92 +65,88 @@ class Assignment
     end
 
     def filter_assignments_by_assignment_id(assignment_id)
-        assignment = Assignment.collection.aggregate([
-                {'$match'=>{"_id"=>BSON::ObjectId.from_string(assignment_id)}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
-                {'$unwind'=>{'path'=>"$groups"}},
-                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
-                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
-             ])
+      a_ids = Assignment.where(:id=>assignment_id).pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
+      assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| a_ids.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
 
-        group_by_count = Assignment.collection.aggregate([
-                {'$match'=>{"_id"=>BSON::ObjectId.from_string(assignment_id)}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
-             ])
+      u_ids = UseridDetail.where(:id=>a_ids[0][4]).pluck(:id,:userid)
+      userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
-      count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-      group_by_count.each do |x|
-        count[x[:_id]] = x[:total]
-      end
+      i_ids = ImageServerImage.where(:assignment_id=>a_ids[0][0]).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+      image_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2| h[k] = v1}}
+      image_group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3| h[k] = v2}}
+      image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
+
+      g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
+      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
+
+      assignment, count = generate_assignment_for_parse(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
 
       return assignment, count
     end
 
-    def filter_assignments_by_userid(user_ids,image_server_group_id)
-      if image_server_group_id.nil?
-        assignment = Assignment.collection.aggregate([
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
-                {'$unwind'=>{'path'=>"$groups"}},
-                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
-                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
-             ])
-
-        group_by_count = Assignment.collection.aggregate([
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
-             ])
+    def filter_assignments_by_userid(user_id,syndicate,image_server_group_id)
+      if user_id.nil?
+        u_ids = UseridDetail.where(:syndicate=>syndicate, :active=>true).pluck(:id,:userid)
+        syndicate_id = Syndicate.where(:syndicate_code=>syndicate).first
+        a_ids = Assignment.where(:syndicate=>syndicate_id.id).pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
       else
-        group_id = [image_server_group_id]
-        assignment = Assignment.collection.aggregate([
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$match'=>{"images.image_server_group_id"=>{'$in'=>group_id}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
-                {'$unwind'=>{'path'=>"$groups"}},
-                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
-                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
-             ])
-
-        group_by_count = Assignment.collection.aggregate([
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$match'=>{"images.image_server_group_id"=>{'$in'=>group_id}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$match'=>{"userid_detail_id"=>{'$in'=>user_ids}}},
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
-             ])
-      end          
-
-      count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-      group_by_count.each do |x|
-        count[x[:_id]] = x[:total]
+        u_ids = UseridDetail.where(:id=>{'$in'=>user_id}, :active=>true).pluck(:id,:userid)
+        a_ids = Assignment.where(:userid_detail_id=>{'$in'=>user_id}).pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
       end
+
+      userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
+      assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| a_ids.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
+
+      i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+      image_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2| h[k] = v1}}
+      image_group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3| h[k] = v2}}
+      image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
+
+      g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
+      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
+
+      assignment, count = generate_assignment_for_parse(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
 
       return assignment, count
     end
 
-    def id(id)
+    def generate_assignment_for_parse(a_id,userid,group_name,image_group_id,image_assignment_id,image)
+      assignment = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+      count = Hash.new
+
+      image_assignment_id.each do |image_id,assignment_id|
+        group_id = image_group_id[image_id]
+
+        assignment[assignment_id][group_id][image_id][:id] = assignment_id
+        assignment[assignment_id][group_id][image_id][:source_id] = a_id[assignment_id][0]
+        assignment[assignment_id][group_id][image_id][:instructions] = a_id[assignment_id][2]
+        assignment[assignment_id][group_id][image_id][:assign_date] = a_id[assignment_id][1]
+        assignment[assignment_id][group_id][image_id][:userid] = userid[a_id[assignment_id][3]]
+        assignment[assignment_id][group_id][image_id][:group_id] = group_id
+        assignment[assignment_id][group_id][image_id][:group_name] = group_name[group_id]
+        assignment[assignment_id][group_id][image_id][:image_id] = image_id
+        assignment[assignment_id][group_id][image_id][:image_file_name] = image[image_id][0]
+        assignment[assignment_id][group_id][image_id][:status] = image[image_id][1]
+        assignment[assignment_id][group_id][image_id][:difficulty] = image[image_id][2]
+        assignment[assignment_id][group_id][image_id][:notes] = image[image_id][3]
+      end
+
+      image_assignment_id.each {|k,v| count[v] = count[v].nil? ? 1 : count[v] + 1}
+
+      return assignment, count
+    end
+
+    def get_image_detail(image_id)
+      image = ImageServerImage.collection.aggregate([
+                {'$match'=>{"_id"=>image_id}},
+                {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
+                {'$unwind'=>"$image_group"}
+             ]).first
+
+      return image
+    end
+
+   def id(id)
       where(:id => id)
     end
 
@@ -158,31 +154,21 @@ class Assignment
       image_server_group = ImageServerGroup.where(:syndicate_code=>syndicate).pluck(:id, :group_name)
       group_id = image_server_group.map{|a| a[0]}.uniq
 
-      assignment = Assignment.collection.aggregate([
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$match'=>{"images.status"=>status, "images.image_server_group_id"=>{'$in'=>group_id}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$lookup'=>{from: "image_server_groups", localField: 'images.image_server_group_id', foreignField: "_id", as: "groups"}},
-                {'$unwind'=>{'path'=>"$groups"}},
-                {'$project'=>{:fields=>'$$ROOT', 'lower_case_userid'=>{'$toLower'=>'userids.userid'}}},
-                {'$sort'=>{'fields.assignment_finished'=>-1, 'lower_case_userid'=>1, 'fields.images.status'=>1}}
-             ])
+      u_ids = UseridDetail.where(:syndicate=>syndicate).pluck(:id,:userid)
+      userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
-      group_by_count = Assignment.collection.aggregate([
-                {'$lookup'=>{from: "image_server_images", localField: "_id", foreignField: "assignment_id", as: "images"}}, 
-                {'$match'=>{"images.status"=>status, "images.image_server_group_id"=>{'$in'=>group_id}}},
-                {'$lookup'=>{from: "userid_details", localField: "userid_detail_id", foreignField: "_id", as:"userids"}},
-                {'$unwind'=>{'path'=>"$userids"}},
-                {'$unwind'=>{'path'=>"$images"}}, 
-                {'$group'=>{_id:"$_id", total:{'$sum'=>1}}}
-             ])
+      a_ids = Assignment.pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
+      assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| a_ids.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
 
-      count = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-      group_by_count.each do |x|
-        count[x[:_id]] = x[:total]
-      end
+      i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}, :status=>status, :image_server_group_id=>{'$in'=>group_id}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+      image_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2| h[k] = v1}}
+      image_group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3| h[k] = v2}}
+      image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
+
+      g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
+      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
+
+      assignment, count = generate_assignment_for_parse(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
 
       return assignment, count
     end

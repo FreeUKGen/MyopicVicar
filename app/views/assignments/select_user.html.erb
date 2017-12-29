@@ -10,7 +10,7 @@
 
 <section class="island  island--light">
 <div class="grid">
-<%= simple_form_for @assignment, :url=>url_for(:action=>'list_assignments_by_userid', :controller=>'assignments'), :method=>'get' do |s| %>
+<%= simple_form_for @assignment, :url=>url_for(:action=>'list_assignments_by_syndicate_coordinator', :controller=>'assignments'), :method=>'get' do |s| %>
 	<%= s.input :user_id, :as=>:check_boxes, :collection=>@people.invert.sort_by{|v| v[0].downcase}.unshift(['select all', '0']), :label=>'select a user', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
 
   <% if params[:assignment_list_type] == 'group' %>

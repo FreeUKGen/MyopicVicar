@@ -196,16 +196,15 @@ class UserMailer < ActionMailer::Base
     mail(:from => user.email_address, :to => cc_email, :subject => subject, :body => email_body)
   end
 
-  def notify_sc_assignment_complete(user, assignment_type, assignment_id)
-    @user = UseridDetail.where(:userid=>user).first
+  def notify_sc_assignment_complete(assignment_id)
+    assignment = Assignment.id(assignment_id).first
+    user = UseridDetail.id(assignment.userid_detail_id).first
     @image_server_images = ImageServerImage.where(:assignment_id=>assignment_id).pluck(:image_file_name)
 
     subject = "#{user.userid} completed the assignment"
-    email_body = "To " + assignment_type + " following images:\r\n\r\n"
+    email_body = "for following images:\r\n\r\n"
 
-    @image_server_images.each do |x|
-      email_body = email_body + x[0] + '_' + x[1] + "\r\n"
-    end
+    @image_server_images.each {|x| email_body = email_body + x + "\r\n" }
 
     syndicate = Syndicate.where(:syndicate_code=>user.syndicate).first
     if syndicate.present?

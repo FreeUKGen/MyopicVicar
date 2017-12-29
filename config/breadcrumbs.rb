@@ -588,7 +588,7 @@ end
       end
 
           crumb :syndicate_all_assignments do |syndicate|
-            link "List User Assignments", list_assignments_by_userid_assignment_path(session[:syndicate], :assignment_list_type=>'all')
+            link "List User Assignments", list_assignments_by_syndicate_coordinator_assignment_path(session[:syndicate], :assignment_list_type=>'all')
             parent :syndicate_all_assignments_select_user, session[:syndicate]
           end
 
@@ -596,12 +596,6 @@ end
                 link "List User Assignment"
                 parent :syndicate_all_assignments, session[:syndicate]
               end
-
-      # from 'manage syndicate' => 'manage images' => 'list transcribed assignments'
-      crumb :transcribed_assignments do |syndicate|
-        link "List Transcribed Assginmentss", list_transcribed_assignments_assignment_path(session[:syndicate])
-        parent :syndicate_manage_images, session[:syndicate]
-      end
 
       # from 'manage syndicate' => 'manage images' => 'list fully transcribed groups'
       crumb :fully_transcribed_groups do |syndicate|
@@ -735,7 +729,7 @@ crumb :image_server_groups do |user,county,register,source|
   elsif session[:assignment_filter_list].present?
     case session[:assignment_filter_list]
       when 'county'
-        parent :syndicate_available_groups_by_county_select_county, county,register,source
+        parent :syndicate_available_groups_by_county_select_county
       when 'submitted_transcribe'
         parent :submitted_transcribe_assignments, session[:syndicate]
       when 'submitted_review'
