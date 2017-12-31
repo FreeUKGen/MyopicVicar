@@ -128,11 +128,7 @@ class AssignmentsController < ApplicationController
 
     user_id = assignment_params[:user_id] if !params[:assignment].nil? && !assignment_params[:user_id].include?('0')
 
-    if !params[:assignment].nil?      # from LIST
-      group_id = Assignment.get_group_id_for_list_request(assignment_params[:image_server_group_id])
-    else                              # from UPDATE
-      group_id = Assignment.get_group_id_for_update_request(params[:image_server_group_id])
-    end
+    group_id = Assignment.get_group_idJ_for_list_assignment(params)
 
     @assignment, @count = Assignment.filter_assignments_by_userid(user_id,session[:syndicate],group_id)
 
@@ -266,7 +262,7 @@ class AssignmentsController < ApplicationController
     case params[:_method]
       when 'put'
         Assignment.update_assignment_from_put_request(session[:my_own], params)
-        flash[:notice] = Assignment.get_flash_message(assign_type, session[:my_own])
+        flash[:notice] = Assignment.get_flash_message(params[:type], session[:my_own])
       else                                          # re_assign
         Assignment.update_assignment_from_reassign(params)
         flash[:notice] = 'Re_assignment was successful'
