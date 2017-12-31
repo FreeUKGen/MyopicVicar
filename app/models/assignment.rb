@@ -170,7 +170,7 @@ class Assignment
 
     def get_group_id_for_list_assignment(params)
       if !params[:assignment].nil?      # from LIST
-        group_id = Assignment.get_group_id_for_list_request(assignment_params[:image_server_group_id])
+        group_id = Assignment.get_group_id_for_list_request(params[:assignment][:image_server_group_id])
       else                              # from UPDATE
         group_id = Assignment.get_group_id_for_update_request(params[:image_server_group_id])
       end
@@ -295,13 +295,13 @@ class Assignment
 
     def update_assignment_from_reassign(params)
       assignment_id = params[:id]
-      assign_type = assignment_params[:type]
-      instructions = assignment_params[:instructions]
-      transcriber_list = assignment_params[:transcriber_image_file_name]
-      reviewer_list = assignment_params[:reviewer_image_file_name]
-      source_id = assignment_params[:source_id]
-      user_id = assignment_params[:user_id]
-      image_server_group_id = assignment_params[:image_server_group_id]
+      assign_type = params[:assignment][:type]
+      instructions = params[:assignment][:instructions]
+      transcriber_list = params[:assignment][:transcriber_image_file_name]
+      reviewer_list = params[:assignment][:reviewer_image_file_name]
+      source_id = params[:assignment][:source_id]
+      user_id = params[:assignment][:user_id]
+      image_server_group_id = params[:assignment][:image_server_group_id]
 
       source_id = get_source_id(assign_type,source_id,transcriber_list,reviewer_list)
       reassign_list = get_reassign_list(assign_type,transcriber_list,reviewer_list)

@@ -128,7 +128,7 @@ class AssignmentsController < ApplicationController
 
     user_id = assignment_params[:user_id] if !params[:assignment].nil? && !assignment_params[:user_id].include?('0')
 
-    group_id = Assignment.get_group_idJ_for_list_assignment(params)
+    group_id = Assignment.get_group_id_for_list_assignment(params)
 
     @assignment, @count = Assignment.filter_assignments_by_userid(user_id,session[:syndicate],group_id)
 
@@ -271,7 +271,8 @@ class AssignmentsController < ApplicationController
     if session[:my_own]
       redirect_to list_assignments_of_myself_assignment_path
     else
-      redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>assignment_params[:image_server_group_id], :assignment_list_type=>assignment_params[:assignment_list_type])
+      image_server_group_id = assignment_params[:image_server_group_id] if !params[:assignment].nil?
+      redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>image_server_group_id, :assignment_list_type=>params[:assignment_list_type])
     end
   end
 
