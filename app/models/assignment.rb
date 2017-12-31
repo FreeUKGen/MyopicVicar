@@ -168,6 +168,14 @@ class Assignment
       return flash_message
     end
 
+    def get_group_id_for_list_assignment(params)
+      if !params[:assignment].nil?      # from LIST
+        group_id = Assignment.get_group_id_for_list_request(assignment_params[:image_server_group_id])
+      else                              # from UPDATE
+        group_id = Assignment.get_group_id_for_update_request(params[:image_server_group_id])
+      end
+    end      
+
     def get_group_id_for_update_request(image_server_group_id)
       if image_server_group_id.nil?    # list assignment under a syndicate
         group_id = nil
@@ -269,15 +277,39 @@ class Assignment
       where(:source_id=>id)
     end
 
-    def update_assignment_from_put_request(my_own,assignment_id,type,orig_status)
-      new_status = Assignment.get_new_status(type, my_own, orig_status)
+    def update_assignment_from_put_request(my_own,params)
+      assignment_id = params[:id]
+      assign_type = params[:type]
+      orig_status = params[:status]
+      assignment_list_type = params[:assignment_list_type]
+
+      new_status = Assignment.get_new_status(assign_type, my_own, orig_status)
 
       if my_own                       # from transcriber
         ImageServerImage.where(:assignment_id=>assignment_id).update_all(:status=>new_status)
         UserMailer.notify_sc_assignment_complete(assignment_id).deliver_now
       else                                      # from SC
-        Assignment.bulk_update_assignment(assignment_id,type,orig_status,new_status)
+        Assignment.bulk_update_assignment(assignment_id,assign_type,orig_status,new_status)
       end
+    end
+
+    def update_assignment_from_reassign(params)
+      assignment_id = params[:id]
+      assign_type = assignment_params[:type]
+      instructions = assignment_params[:instructions]
+      transcriber_list = assignment_params[:transcriber_image_file_name]
+      reviewer_list = assignment_params[:reviewer_image_file_name]
+      source_id = assignment_params[:source_id]
+      user_id = assignment_params[:user_id]
+      image_server_group_id = assignment_params[:image_server_group_id]
+
+      source_id = get_source_id(assign_type,source_id,transcriber_list,reviewer_list)
+      reassign_list = get_reassign_list(assign_type,transcriber_list,reviewer_list)
+      user = UseridDetail.where(:userid=>{'$in'=>user_id}).first
+      assignment = Assignment.id(params[:id])
+
+      create_assignment(source_id,user,instructions,reassign_list,image_status=nil)
+      update_prev_assignment(assignment_id)
     end
 
     def update_image_server_image(image_id,assign_type)
