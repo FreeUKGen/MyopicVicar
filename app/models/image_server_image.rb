@@ -86,15 +86,15 @@ class ImageServerImage
       image_list
     end
 
-    def get_in_transcribe_image_list(assignment_id)
-      list = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'bt').pluck(:id, :image_file_name)
+    def get_transcriber_reassign_image_list(assignment_id)
+      list = ImageServerImage.where(:assignment_id=>assignment_id, :status=>{'$in'=>['bt','ts']}).pluck(:id, :image_file_name)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
 
       image_list
     end
 
-    def get_in_review_image_list(assignment_id)
-      list = ImageServerImage.where(:assignment_id=>assignment_id, :status=>'br').pluck(:id, :image_file_name)
+    def get_reviewer_reassign_image_list(assignment_id)
+      list = ImageServerImage.where(:assignment_id=>assignment_id, :status=>{'$in'=>['br','rs']}).pluck(:id, :image_file_name)
       image_list = Hash.new{|h,k| h[k]=[]}.tap{|h| list.each{|k,v| h[k]=v}}
 
       image_list

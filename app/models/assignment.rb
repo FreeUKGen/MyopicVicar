@@ -14,6 +14,21 @@ class Assignment
 
   class << self
 
+    def assign_image_server_image_to_assignment(assignment_id,user,image_list,image_status)
+      assignment = Assignment.id(assignment_id).first
+
+      if image_status.nil?
+        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
+      else
+        case image_status
+          when 'bt'
+            ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
+          when 'br'
+            ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :reviewer=>[user.userid])
+        end
+      end
+    end
+
     def bulk_update_assignment(assignment_id,type,orig_status,new_status)
       assignment = Assignment.id(assignment_id)
       image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
@@ -136,6 +151,43 @@ class Assignment
       return assignment, count
     end
 
+    def get_flash_message(type,my_own)
+      case type
+        when 'complete'
+          if my_own                 # from SC
+            flash_message = 'email is sent to syndicate coordinator'
+          else                                # from transcriber
+            flash_message = 'Accept assignment was successful'
+          end
+        when 'unassign'
+          flash_message = 'UN_ASSIGN assignment was successful'
+        when 'error'
+          flash_message = 'Modify images in assignment as ERROR was successful'
+      end
+
+      return flash_message
+    end
+
+    def get_group_id_for_update_request(image_server_group_id)
+      if image_server_group_id.nil?    # list assignment under a syndicate
+        group_id = nil
+      else                                # list assignments under a image group of a syndicate
+        group_id = BSON::ObjectId.from_string(image_server_group_id)
+      end
+
+      return group_id
+    end
+
+    def get_group_id_for_list_request(image_server_group_id)
+      if image_server_group_id.nil?            # update assignment under syndicate
+        group_id = nil
+      else                              # update assignment under image group of a syndicate
+        group_id = BSON::ObjectId.from_string(image_server_group_id)
+      end
+
+      return group_id
+    end
+
     def get_image_detail(image_id)
       image = ImageServerImage.collection.aggregate([
                 {'$match'=>{"_id"=>image_id}},
@@ -146,7 +198,47 @@ class Assignment
       return image
     end
 
-   def id(id)
+    def get_new_status(type,my_own,orig_status)
+      case type
+        when 'complete'
+          if my_own                 # from SC
+            new_status = orig_status == 'bt' ? 'ts' : 'rs'
+          else                                # from transcriber
+            new_status = orig_status == 'ts' ? 't' : 'r'
+          end
+        when 'unassign'
+          new_status = orig_status == 'bt' ? 'a' : 't'
+        when 'error'
+          new_status = 'e'
+      end
+
+      return new_status
+    end
+
+    def get_reassign_list(type,transcriber_list,reviewer_list)
+      case type
+        when 'transcriber'
+          reassign_list = transcriber_list.reject{|x| x.to_i == 0}
+        when 'reviewer'
+          reassign_list = reviewer_list.reject{|x| x.to_i == 0}
+        else
+      end
+    end
+
+    def get_source_id(type,source_id,transcriber_list,reviewer_list)
+      if source_id.nil?       # from list assignments under a syndicate
+        if type == 'transcriber'
+          image_id = transcriber_list.reject{|x| x.to_i == 0}[0]
+        else
+          image_id = reviewer_list.reject{|x| x.to_i == 0}[0]
+        end
+        source_id = ImageServerImage.id(image_id).first.image_server_group.source.id
+      end
+
+      return source_id
+    end
+
+    def id(id)
       where(:id => id)
     end
 
@@ -177,18 +269,28 @@ class Assignment
       where(:source_id=>id)
     end
 
-    def assign_image_server_image_to_assignment(assignment_id,user,image_list,image_status)
-      assignment = Assignment.id(assignment_id).first
+    def update_assignment_from_put_request(my_own,assignment_id,type,orig_status)
+      new_status = Assignment.get_new_status(type, my_own, orig_status)
 
-      if image_status.nil?
-        ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
+      if my_own                       # from transcriber
+        ImageServerImage.where(:assignment_id=>assignment_id).update_all(:status=>new_status)
+        UserMailer.notify_sc_assignment_complete(assignment_id).deliver_now
+      else                                      # from SC
+        Assignment.bulk_update_assignment(assignment_id,type,orig_status,new_status)
+      end
+    end
+
+    def update_image_server_image(image_id,assign_type)
+      image_status = assign_type == 'transcriber' ? 'a' : 't'
+
+      image_server_image = ImageServerImage.id(image_id).first
+      assignment = image_server_image.assignment
+      assignment_id = image_server_image.assignment_id
+
+      if assign_type == 'transcriber'
+        image_server_image.update(:assignment_id=>nil, :transcriber=>[''], :status=>image_status)
       else
-        case image_status
-          when 'bt'
-            ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
-          when 'br'
-            ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :reviewer=>[user.userid])
-        end
+        image_server_image.update(:assignment_id=>nil, :reviewer=>[''], :status=>image_status)
       end
     end
 
@@ -197,6 +299,7 @@ class Assignment
       hash_images_by_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| images_by_assignment_id.each{|k,v| h[k] << v}}
 
       hash_images_by_assignment_id.each do |assignment_id,image_ids|
+
         image_ids.each do |image_id|
           image_ids = image_ids - [image_id] if assign_list.include? image_id.to_s
         end
@@ -206,6 +309,7 @@ class Assignment
       if !hash_images_by_assignment_id.nil?
         hash_images_by_assignment_id.keys.each do |assignment_id|
           assignment = Assignment.id(assignment_id)
+
           assignment.destroy if hash_images_by_assignment_id[assignment_id].empty? && assignment_id != dest_assignment_id
         end
       end

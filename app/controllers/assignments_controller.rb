@@ -32,17 +32,8 @@ class AssignmentsController < ApplicationController
   def destroy
     get_userids_and_transcribers or return
     heading_info
-    image_status = params[:assign_type] == 'transcriber' ? 'a' : 't'
 
-    image_server_image = ImageServerImage.id(params[:id]).first
-    assignment = image_server_image.assignment
-    assignment_id = image_server_image.assignment_id
-
-    if params[:assign_type] == 'transcriber'
-      image_server_image.update(:assignment_id=>nil, :transcriber=>[''], :status=>image_status)
-    else
-      image_server_image.update(:assignment_id=>nil, :reviewer=>[''], :status=>image_status)
-    end
+    Assignment.update_image_server_image(params[:id], params[:assign_type])
 
     assignment_image_count = ImageServerImage.where(:assignment_id=>assignment_id).first
     assignment.destroy if assignment_image_count.nil?
@@ -138,17 +129,9 @@ class AssignmentsController < ApplicationController
     user_id = assignment_params[:user_id] if !params[:assignment].nil? && !assignment_params[:user_id].include?('0')
 
     if !params[:assignment].nil?      # from LIST
-      if assignment_params[:image_server_group_id].nil?    # list assignment under a syndicate
-        group_id = nil
-      else                                # list assignments under a image group of a syndicate
-        group_id = BSON::ObjectId.from_string(assignment_params[:image_server_group_id])
-      end
+      group_id = Assignment.get_group_id_for_list_request(assignment_params[:image_server_group_id])
     else                              # from UPDATE
-      if params[:image_server_group_id].nil?            # update assignment under syndicate
-        group_id = nil
-      else                              # update assignment under image group of a syndicate
-        group_id = BSON::ObjectId.from_string(params[:image_server_group_id])
-      end
+      group_id = Assignment.get_group_id_for_update_request(params[:image_server_group_id])
     end
 
     @assignment, @count = Assignment.filter_assignments_by_userid(user_id,session[:syndicate],group_id)
@@ -183,7 +166,7 @@ class AssignmentsController < ApplicationController
   end
 
   def list_assignment_images
-    session[:image_group_filter] = nil
+    session.delete(:image_group_filter)
     session[:assignment_filter_list] = params[:assignment_filter_list]
 
     heading_info
@@ -239,8 +222,8 @@ class AssignmentsController < ApplicationController
     heading_info
     @assignment = Assignment.id(params[:id]).first
 
-    @reassign_transcriber_images = ImageServerImage.get_in_transcribe_image_list(params[:id])
-    @reassign_reviewer_images = ImageServerImage.get_in_review_image_list(params[:id])
+    @reassign_transcriber_images = ImageServerImage.get_transcriber_reassign_image_list(params[:id])
+    @reassign_reviewer_images = ImageServerImage.get_reviewer_reassign_image_list(params[:id])
 
     if @assignment.nil?
       flash[:notice] = 'No assignment in this Image Source'
@@ -249,8 +232,9 @@ class AssignmentsController < ApplicationController
   end
 
   def select_county
+    @user = cookies.signed[:userid]
     get_counties_for_selection
-
+    
     if @counties.nil?
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
@@ -262,6 +246,8 @@ class AssignmentsController < ApplicationController
   end
 
   def select_user
+    heading_info
+
     users = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).pluck(:id, :userid)
     @people = Hash.new{|h,k| h[k]=[]}.tap{|h| users.each{|k,v| h[k]=v}}
 
@@ -279,71 +265,17 @@ class AssignmentsController < ApplicationController
   def update
     case params[:_method]
       when 'put'
-        assignment_id = params[:id]
-        orig_status = params[:status]
-        assignment_list_type = params[:assignment_list_type]
-
-        case params[:type]
-          when 'complete'
-            if session[:my_own]                 # from SC
-              new_status = orig_status == 'bt' ? 'ts' : 'rs'
-            else                                # from transcriber
-              new_status = orig_status == 'ts' ? 't' : 'r'
-            end
-            flash[:notice] = 'Accept assignment was successful'
-          when 'unassign'
-            new_status = orig_status == 'bt' ? 'a' : 't'
-            flash[:notice] = 'UN_ASSIGN assignment was successful'
-          when 'error'
-            new_status = 'e'
-            flash[:notice] = 'Modify images in assignment as ERROR was successful'
-        end
-
-        if session[:my_own]                       # from transcriber
-          ImageServerImage.where(:assignment_id=>assignment_id).update_all(:status=>new_status)
-          UserMailer.notify_sc_assignment_complete(assignment_id).deliver_now
-          flash[:notice] = 'email is sent to syndicate coordinator'
-        else                                      # from SC
-          Assignment.bulk_update_assignment(assignment_id,params[:type],orig_status,new_status)
-        end
+        Assignment.update_assignment_from_put_request(session[:my_own], params)
+        flash[:notice] = Assignment.get_flash_message(assign_type, session[:my_own])
       else                                          # re_assign
-        image_status = nil
-        instructions = assignment_params[:instructions]
-        assignment_list_type = assignment_params[:assignment_list_type]
-        image_server_group_id = assignment_params[:image_server_group_id]
-
-        if assignment_params[:source_id].nil?       # from list assignments under a syndicate
-          if assignment_params[:type] == 'transcriber'
-            image_id = assignment_params[:transcriber_image_file_name].reject{|x| x.to_i == 0}[0]
-          else
-            image_id = assignment_params[:reviewer_image_file_name].reject{|x| x.to_i == 0}[0]
-          end
-          source_id = ImageServerImage.id(image_id).first.image_server_group.source.id
-        else                        # from list assignments under a image group of a syndicate
-          source_id = assignment_params[:source_id]
-        end
-
-        case assignment_params[:type] 
-          when 'transcriber'
-            reassign_list = assignment_params[:transcriber_image_file_name].reject{|x| x.to_i == 0}
-          when 'reviewer'
-            reassign_list = assignment_params[:reviewer_image_file_name].reject{|x| x.to_i == 0}
-          elseF
-        end
-
-        user = UseridDetail.where(:userid=>{'$in'=>assignment_params[:user_id]}).first
-        assignment = Assignment.id(params[:id])
-
-        Assignment.create_assignment(source_id,user,instructions,reassign_list,image_status)
-        Assignment.update_prev_assignment(params[:id])
-
+        Assignment.update_assignment_from_reassign(params)
         flash[:notice] = 'Re_assignment was successful'
     end
 
     if session[:my_own]
       redirect_to list_assignments_of_myself_assignment_path
     else
-      redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>image_server_group_id, :assignment_list_type=>assignment_list_type)
+      redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>assignment_params[:image_server_group_id], :assignment_list_type=>assignment_params[:assignment_list_type])
     end
   end
 
