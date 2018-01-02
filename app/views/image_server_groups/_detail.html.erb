@@ -5,12 +5,7 @@
     <%= link_to 'Upload Images', upload_image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to upload images into this Image Group "'+@image_server_group[:group_name]+'"?'}, method: :get, :class => "btn weight--light btn--small" %>
   <% end %>
   <%= link_to 'List Images Under This Group', index_image_server_image_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
-
-  <% if  !@image_server_group.summary.nil? %>
-    <% if !@image_server_group.nil? && !@image_server_group.summary[:status].nil? && (@image_server_group.summary[:status] - ['u','a','bt','t','br','rs']).empty? == false %>
-      <%= link_to 'Send Complete Email to CC', send_complete_to_cc_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
-    <% end %>
-  <% end %>
+  <%= link_to 'Send Complete Email to CC', send_complete_to_cc_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small"  if do_we_offer_mail_to_cc(@image_server_group) %>
 </div>
 <div style="clear:both;"> </div><br>
 
