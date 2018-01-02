@@ -12,14 +12,18 @@
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
-        <th class="t15">Image Group</th>
-        <th class="t10">Total Images</th>
-        <th class="t5">Start Date</th>
-        <th class="t5">End Date</th>
+        <th class="t10">Image Group</th>
+        <th class="t8">Total Images</th>
+        <th class="t8">Start Date <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <span>If date shows in red text, it is outside the Source date range which must be extended</span>
+        </a></th>
+        <th class="t8">End Date <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
+          <span>If date shows in red text, it is outside the Source date range which must be extended</span>
+        </a></th>
         <th class="t10">Status</th>
-        <th class="t15">Skill Level</th>
-        <th class="t10">Syndicate</th>
-        <th class="t10">Transcriber</th>
+        <th class="t10">Skill<br>Level</th>
+        <th class="t12">Syndicate</th>
+        <th class="t12">Transcriber</th>
         <th class="t10">Reviewer</th>
         <th class="t10">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
           <% if session[:manage_user_origin] == 'manage county' %>  <%# any user from manage_counties %>
@@ -37,34 +41,34 @@
       <tbody>  
         <% @image_server_group.each do |group| %>
           <tr>
-            <td class="t15"><%= group.group_name %></td>
-            <td class="t10"><%= group.number_of_images %>&nbsp;</td>
+            <td class="t10"><%= group.group_name %></td>
+            <td class="t8"><%= group.number_of_images %>&nbsp;</td>
             <% if !group[:start_date].nil? && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
-              <td class="t5" style="color:red"><%= group[:start_date] %>&nbsp;</td>
+              <td class="t8" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
-              <td class="t5"><%= group[:start_date] %>&nbsp;</td>
+              <td class="t8"><%= group[:start_date] %>&nbsp;</td>
             <% end %>
             <% if !group[:end_date].nil? && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
-              <td class="t5" style="color:red"><%= group[:end_date] %>&nbsp;</td>
+              <td class="t8" style="color:red"><%= group[:end_date] %>&nbsp;</td>
             <% else %>
-              <td class="t5"><%= group[:end_date] %>&nbsp;</td>
+              <td class="t8"><%= group[:end_date] %>&nbsp;</td>
             <% end %>
-            <td class="t10">
+            <td class="t12">
               <% unless group.summary[:status].nil? %>
                 <% group.summary[:status].each do |status| %>
                   <span><%= ImageServerGroup::Status::ALL_STATUSES[status] %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t15">
+            <td class="t10">
               <% unless group.summary[:difficulty].nil? %>
-                <% group.summary[:difficulty].each do  |difficulty| %>
+                <% group.summary[:difficulty].each do |difficulty| %>
                   <span><%= ImageServerGroup::Difficulty::ALL_DIFFICULTIES[difficulty] %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t10"><%= group[:syndicate_code] %>&nbsp;</td>
-            <td class="t10">
+            <td class="t12"><%= group[:syndicate_code] %>&nbsp;</td>
+            <td class="t12">
               <% unless group.summary[:transcriber].nil? %>
                 <% group.summary[:transcriber].each do |transcriber| %>
                   <span><%= transcriber %></span><br/>
@@ -83,7 +87,8 @@
                 <%= link_to 'ED', edit_image_server_group_path(group) %> 
                 <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 
               <% end %>
-              <%= link_to 'LS', index_image_server_image_path(group) %></td>
+              <%= link_to 'LS', index_image_server_image_path(group) %>
+            </td>
           </tr>
         <% end %>
       </tbody>

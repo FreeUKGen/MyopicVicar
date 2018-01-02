@@ -110,6 +110,8 @@ class ManageSyndicatesController < ApplicationController
         flash[:notice] = 'There is No Fully Reviewed Image Groups Under This Syndicate'
         redirect_to :back
       else
+        session.delete(:from_source)
+        session[:image_group_filter] = 'fully_reviewed'
         render 'list_fully_reviewed_group'
       end
     end
@@ -129,6 +131,8 @@ class ManageSyndicatesController < ApplicationController
         flash[:notice] = 'There is No Fully Transcribed Image Groups Under This Syndicate'
         redirect_to :back
       else
+        session.delete(:from_source)
+        session[:image_group_filter] = 'fully_transcribed'
         render 'list_fully_transcribed_group'
       end
     end
@@ -136,9 +140,9 @@ class ManageSyndicatesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
+    clean_session_for_managed_images
 
     if session[:syndicate].nil?
-      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
       redirect_to main_app.new_manage_resource_path
       return
     else

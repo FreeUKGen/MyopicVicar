@@ -33,7 +33,7 @@ class AssignmentsController < ApplicationController
     get_userids_and_transcribers or return
     heading_info
 
-    Assignment.update_image_server_image(params[:id], params[:assign_type])
+    Assignment.update_image_server_image_to_destroy_assignment(params[:id], params[:assign_type])
 
     assignment_image_count = ImageServerImage.where(:assignment_id=>assignment_id).first
     assignment.destroy if assignment_image_count.nil?
@@ -167,6 +167,11 @@ class AssignmentsController < ApplicationController
 
     heading_info
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
+
+    if @assignment.nil?
+      flash[:notice] = 'Assignment information was changed, please try again'
+      redirect_to :back
+    end
   end
 
   def list_submitted_review_assignments
@@ -261,12 +266,14 @@ class AssignmentsController < ApplicationController
   def update
     case params[:_method]
       when 'put'
-        Assignment.update_assignment_from_put_request(session[:my_own], params)
+        update_result = Assignment.update_assignment_from_put_request(session[:my_own], params)
         flash[:notice] = Assignment.get_flash_message(params[:type], session[:my_own])
       else                                          # re_assign
-        Assignment.update_assignment_from_reassign(params)
+        update_result = Assignment.update_assignment_from_reassign(params)
         flash[:notice] = 'Re_assignment was successful'
     end
+
+    flash[:notice] = 'Assignment information was changed, please try again' if update_result == false
 
     if session[:my_own]
       redirect_to list_assignments_of_myself_assignment_path

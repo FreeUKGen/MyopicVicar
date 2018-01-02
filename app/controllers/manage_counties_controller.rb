@@ -104,6 +104,7 @@ class ManageCountiesController < ApplicationController
 
   def manage_image_group
     get_user_info_from_userid
+    clean_session_for_managed_images
     session[:image_group_filter] = 'all'
 
     if session[:chapman_code].nil?
@@ -119,6 +120,7 @@ class ManageCountiesController < ApplicationController
 
   def manage_unallocated_image_group
     get_user_info_from_userid
+    session.delete(:from_source)
     session[:image_group_filter] = 'unallocate'
 
     if session[:chapman_code].nil?
@@ -271,6 +273,7 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_place
     get_user_info_from_userid
+    session.delete(:from_source)
     session[:image_group_filter] = 'place'
 
     if session[:chapman_code].nil?
@@ -287,6 +290,7 @@ class ManageCountiesController < ApplicationController
 
   def sort_image_group_by_syndicate
     get_user_info_from_userid
+    session.delete(:from_source)
     session[:image_group_filter] = 'syndicate'
 
     if session[:chapman_code].nil?
@@ -303,6 +307,7 @@ class ManageCountiesController < ApplicationController
 
   def uninitialized_source_list
     get_user_info_from_userid
+    session.delete(:from_source)
     session[:image_group_filter] = 'uninitialized'
 
     if session[:chapman_code].nil?

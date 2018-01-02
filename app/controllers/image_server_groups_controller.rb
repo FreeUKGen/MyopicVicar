@@ -84,13 +84,15 @@ class ImageServerGroupsController < ApplicationController
     @register_type = RegisterType.display_name(@register.register_type)
     session[:church_id] = @register.church_id
     @church = Church.find(session[:church_id])
+    @church_name = @church.church_name
     session[:church_name] = @church_name
     @church_name = session[:church_name]
 
-    @county =  session[:county]
-    @place_name = session[:place_name]
     @place = @church.place #id?
+    @place_name = @place.place_name
+    session[:place_name] = @place_name
     @county =  @place.county
+    session[:county] = @county
     @place_name = @place.place_name
     @user = cookies.signed[:userid]
   end
@@ -158,7 +160,7 @@ class ImageServerGroupsController < ApplicationController
     @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_available_assignment_by_county(session[:chapman_code])
 
     if @group_id.empty?
-      flash[:notice] = 'No image groups for allocation under selected county'
+      flash[:notice] = 'No image groups for allocation under county ' + params[:id]
       redirect_to :back
     else
       session[:source_id] = @source[0][0]

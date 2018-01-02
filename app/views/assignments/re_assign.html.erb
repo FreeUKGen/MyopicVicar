@@ -1,7 +1,7 @@
 <% if params[:assignment_list_type] == 'group' %>
-  <% breadcrumb :syndicate_image_group_assignments, @user, @county, @register, @source, @group %>
+  <% breadcrumb :syndicate_image_group_assignments, @user, @syndicate, @county, @register, @source, @group %>
 <% else %>
-  <% breadcrumb :syndicate_all_assignments, session[:syndicate] %>
+  <% breadcrumb :syndicate_all_reassign, session[:syndicate] %>
 <% end %>
 
 <% title "IS Image - re_assignment" %>
@@ -48,7 +48,6 @@
     <%= s.hidden_field :source_id, :value=>@source.id %>
     <%= s.hidden_field :image_server_group_id, :value=>params[:image_server_group_id] %>
   <% end %>
-  <%= s.hidden_field :userid_detail_id, :value=>@user.id %>
   <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
   <%= s.hidden_field :assignment_list_type, as: :fake, :value=>params[:assignment_list_type] %>
   <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>

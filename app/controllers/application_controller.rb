@@ -266,12 +266,25 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session_for_images
-    session.delete(:source_id)
-    session.delete(:image_server_group_id)
     session.delete(:manage_user_origin)
     session.delete(:image_group_filter)
-    session.delete(:assignment_filter_list)
+    session.delete(:source_id)
     session.delete(:my_own)
+    session.delete(:image_server_group_id)
+    session.delete(:assignment_filter_list)
+    session.delete(:assignment_list_type)
+    session.delete(:image_group_filter)
+    session.delete(:from_source)
+    session.delete(:select_user)
+  end
+
+  def clean_session_for_managed_images
+    session.delete(:image_server_group_id)
+    session.delete(:assignment_filter_list)
+    session.delete(:assignment_list_type)
+    session.delete(:image_group_filter)
+    session.delete(:from_source)
+    session.delete(:select_user)
   end
 
   def clean_session_for_syndicate

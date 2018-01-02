@@ -524,43 +524,31 @@ end
 
 
 
-# from 'manage counties' => "Manage Images"
-crumb :all_sources do |county|
-  link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
-  parent :county_options, session[:county]
+
+# breadcrumbs from 'assignments'
+crumb :my_own_assignments do |user|
+  link "#{user.userid} Assignments", my_own_assignment_path(user)
+  parent :root
 end
 
-      crumb :all_sources_selection do |county|
-        if session[:manage_user_origin] == 'manage county'
-          # from "manage counties" => "Manage Images" => "List All Image Groups"
-          case session[:image_group_filter]
-            when 'all'
-              link "List All Image Groups", manage_image_group_manage_county_path
-            when 'unallocate'
-              link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
-            when 'syndicate'
-              link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
-            when 'place'
-              link "Image Groups Allocated by Place", sort_image_group_by_place_path
-            when 'uninitialized'
-              link "List Unitialized Sources", uninitialized_source_list_path(county)
-            else
-              link "All Sources", selection_active_manage_counties_path(:option=>"Manage Images")
-          end
-          parent :all_sources, county
-        else
-          # from "manage syndicates" => "Manage Images" => "List Fully Reviewed/Transcribed Groups"
-          link "All Sources"
-          case session[:image_group_filter]
-            when 'fully_transcribed'
-              parent :fully_transcribed_groups, session[:syndicate]
-            when 'fully_reviewed'
-              parent :fully_reviewed_groups, session[:syndicate]
-            else
-              parent :syndicate_manage_images, session[:syndicate]
-          end
-        end
+      # from 'assignments' => 'list image groups under my syndicate'
+      crumb :request_assignments_by_syndicate do |user|
+        link "Image Groups Under My Syndicate", my_list_by_syndicate_image_server_group_path(user)
+        parent :my_own_assignments, user
       end
+
+      # from 'assignments' => 'Image Groups Available for Allocation(By County)'
+      crumb :request_assignments_by_county do |user,county|
+        link "Image Groups Available for Allocation(#{county})", my_list_by_county_image_server_group_path(county)
+        parent :syndicate_available_groups_by_county_select_county, user
+      end
+
+      # from 'assignments' => 'LS'
+      crumb :my_own_assignment do |user|
+        link "Assignment"
+        parent :my_own_assignments, user
+      end
+
 
 
 
@@ -571,15 +559,15 @@ crumb :syndicate_manage_images do |syndicate|
 end
 
       # from 'manage syndicates' => "manage images" => 'image groups available for allocation'
-      crumb :syndicate_available_groups_by_county_select_county do 
+      crumb :syndicate_available_groups_by_county_select_county do |user|
         link 'Select County', select_county_assignment_path
-        parent :syndicate_manage_images, session[:syndicate]
-      end
 
-          crumb :syndicate_available_groups_by_county do |county,register,source|
-            link 'Image Groups Available for Allocation(By County)', select_county_assignment_path
-            parent :syndicate_available_groups_by_county_select_county
-          end
+        if session[:my_own]
+          parent :my_own_assignments, user
+        else
+          parent :syndicate_manage_images, session[:syndicate]
+        end
+      end
 
       # from 'manage syndicates' => "manage images" => 'list assignment by userid'
       crumb :syndicate_all_assignments_select_user do |syndicate|
@@ -587,15 +575,28 @@ end
         parent :syndicate_manage_images, session[:syndicate]
       end
 
-          crumb :syndicate_all_assignments do |syndicate|
-            link "List User Assignments", list_assignments_by_syndicate_coordinator_assignment_path(session[:syndicate], :assignment_list_type=>'all')
-            parent :syndicate_all_assignments_select_user, session[:syndicate]
-          end
-
-              crumb :syndicate_all_assignment do |syndicate|
-                link "List User Assignment"
-                parent :syndicate_all_assignments, session[:syndicate]
+            crumb :syndicate_all_assignments do |syndicate|
+              link "List User Assignments", list_assignments_by_syndicate_coordinator_assignment_path(session[:syndicate], :assignment_list_type=>'all')
+              if session[:select_user] == true
+                parent :syndicate_all_assignments_select_user, session[:syndicate]
+              else
+                parent :syndicate_manage_images, session[:syndicate]
               end
+            end
+
+                    crumb :syndicate_all_assignment do |syndicate|
+                    link "List User Assignment"
+                    if session[:select_user] == true
+                      parent :syndicate_all_assignments, session[:syndicate]
+                    else
+                      parent :syndicate_manage_images, session[:syndicate]
+                    end
+                  end
+
+                    crumb :syndicate_all_reassign do |syndicate|
+                      link "Re_assign Assignment"
+                      parent :syndicate_all_assignments, session[:syndicate]
+                    end
 
       # from 'manage syndicate' => 'manage images' => 'list fully transcribed groups'
       crumb :fully_transcribed_groups do |syndicate|
@@ -621,72 +622,79 @@ end
         parent :syndicate_manage_images, session[:syndicate]
       end
 
-      crumb :syndicate_image_group_assignments do |user,county,register,source,group|
+      crumb :syndicate_image_group_assignments do |user,syndicate,county,register,source,group|
         link "User Assignments", assignment_path(group)
-        parent :image_server_images, user,county,register,source,group
+        parent :image_server_images, user,syndicate,county,register,source,group
       end
 
-          crumb :syndicate_image_group_assignment do |user,county,register,source,group|
-            link "User Assignment"
-            parent :syndicate_image_group_assignments, user,county,register,source,group
-          end
+            crumb :syndicate_image_group_assignment do |user,syndicate,county,register,source,group|
+              link "User Assignment"
+              parent :syndicate_image_group_assignments, user,syndicate,county,register,source,group
+            end
 
 
 
 
-# breadcrumbs from 'assignments'
-crumb :my_own_assignments do |user|
-  link "#{user.userid} Assignments", my_own_assignment_path(user)
-  parent :root
+
+# from 'manage counties' => "Manage Images"
+crumb :county_manage_images do |county|
+  link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
+  parent :county_options, session[:county]
 end
 
-      # from 'assignments' => 'list image groups under my syndicate'
-      crumb :request_assignments_by_syndicate do |user|
-        link "Image Groups Under My Syndicate", my_list_by_syndicate_image_server_group_path(user)
-        parent :my_own_assignments, user
+      # from "manage counties" => "Manage Images" => "List All Image Groups"
+      crumb :county_manage_images_selection do |county|
+        case session[:image_group_filter]
+          when 'all'
+            link "List All Image Groups", manage_image_group_manage_county_path
+          when 'unallocate'
+            link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
+          when 'syndicate'
+            link "Image Groups Allocated by Syndicate", sort_image_group_by_syndicate_path(county)
+          when 'place'
+            link "Image Groups Allocated by Place", sort_image_group_by_place_path
+          when 'uninitialized'
+            link "List Unitialized Sources", uninitialized_source_list_path(county)
+        end
+        parent :county_manage_images, session[:county]
       end
 
-      # from 'assignments' => 'Image Groups Available for Allocation(By County)'
-      crumb :request_assignments_by_county do |user,county|
-        link "Image Groups Available for Allocation(By County)", my_list_by_county_image_server_group_path(county)
-        parent :my_own_assignments, user
-      end
-
-      # from 'assignments' => 'LS'
-      crumb :my_own_assignment do |user|
-        link "Assignment"
-        parent :my_own_assignments, user
-      end
 
 
 
-# breadcrumb for Sources
+
+# from 'register' => Sources        (is taken out right now)
 crumb :image_sources do |register|
   link "Sources", index_source_path(register)
-  parent :all_sources
+  parent :county_manage_images
 end
 
-crumb :new_image_source do |register,source|
-  link "Create New Source"
-  parent :image_sources, register
-end
+      crumb :new_image_source do |register,source|
+        link "Create New Source"
+        parent :image_sources, register
+      end
 
+
+
+
+
+# breadcrumb for image_source
 crumb :show_image_source do |register,source|
   case source.source_name
     when 'Image Server'
       link "Image Server", source_path(source)
       if session[:manage_user_origin] == 'manage syndicate'
-        if ['fully_transcribed', 'fully_reviewed'].include? session[:image_group_filter]
-          parent :all_sources_selection
-        else
-          parent :syndicate_manage_images, session[:syndicate]
+        # from "manage syndicates" => "Manage Images" => "List Fully Reviewed/Transcribed Groups"
+        case session[:image_group_filter]
+          when 'fully_transcribed'
+            parent :fully_transcribed_groups, session[:syndicate]
+          when 'fully_reviewed'
+            parent :fully_reviewed_groups, session[:syndicate]
+          else
+            parent :syndicate_manage_images, session[:syndicate]
         end
       else
-        if ['all','unallocate','syndicate','place','uninitialized'].include?(session[:image_group_filter])
-          parent :all_sources_selection
-        else
-          parent :image_sources, register
-        end
+        parent :county_manage_images_selection, session[:county]
       end
     when 'Other Server1'
       link "Other Server1", source_path(source)
@@ -716,83 +724,95 @@ end
       end
 
 
+
+
+
 # breadcrumb for Image Server Groups
-crumb :image_server_groups do |user,county,register,source|
+crumb :image_server_groups do |user,syndicate,county,register,source|
   link "Image Groups", index_image_server_group_path(source)
-  if session[:my_own]
-    case session[:assignment_filter_list]
-      when 'syndicate'
-        parent :request_assignments_by_syndicate, user
-      when 'county'
-        parent :request_assignments_by_county, user,county
-    end
-  elsif session[:assignment_filter_list].present?
-    case session[:assignment_filter_list]
-      when 'county'
-        parent :syndicate_available_groups_by_county_select_county
-      when 'submitted_transcribe'
-        parent :submitted_transcribe_assignments, session[:syndicate]
-      when 'submitted_review'
-        parent :submitted_review_assignments, session[:syndicate]
-      else
-        parent :show_image_source, register,source
-    end
+  parent :show_image_source, register,source
+end
+
+      crumb :allocate_image_server_group do |user,syndicate,county,register,source,group|
+        link "Allocate Image Group"
+        parent :image_server_groups, user,syndicate,county,register,source
+      end
+
+      crumb :new_image_server_group do |user,syndicate,county,register,source,group|
+        link"Create Image Group"
+        parent :image_server_groups, user,syndicate,county,register,source
+      end
+
+
+crumb :show_image_server_group do |user,syndicate,county,register,source,group|
+  link "Image Group", image_server_group_path(group)
+
+  if session[:from_source] == true
+    parent :image_server_groups, user,syndicate,county,register,source
   else
-    parent :show_image_source, register,source
+    # image group from list assignments result
+    if !session[:assignment_filter_list].nil? && !session[:assignment_filter_list].empty?
+      case session[:assignment_filter_list]
+        when 'syndicate'        # from Assignments => 'List Image Groups Under My Syndicate'
+          parent :request_assignments_by_syndicate, user
+        when 'county'           # from 'Image Groups Available for Allocation(county)'
+          parent :request_assignments_by_county, user,county
+      end
+    # image groups from list groups result
+    else
+      if session[:manage_user_origin] == 'manage syndicate'
+        case session[:image_group_filter]
+          when 'fully_transcribed'
+            parent :fully_transcribed_groups
+          when 'fully_reviewed'
+            parent :fully_reviewed_groups
+          else
+            parent :syndicate_manage_images
+        end
+      elsif session[:manage_user_origin] == 'manage county'
+        parent :county_manage_images_selection, register, source
+      end
+    end
   end
 end
 
-      crumb :allocate_image_server_group do |user,county,register,source,group|
-        link "Allocate Image Group"
-        parent :image_server_groups, user,county,register,source
+      crumb :edit_image_server_group do |user,syndicate,county,register,source,group|
+        link "Edit Image Group"
+        parent :show_image_server_group, user,syndicate,county,register,source,group
       end
 
-      crumb :new_image_server_group do |user,county,register,source,group|
-        link"Create Image Group"
-        parent :image_server_groups, user,county,register,source
-      end
-
-      crumb :show_image_server_group do |user,county,register,source,group|
-        link "Image Group", image_server_group_path(group)
-        parent :image_server_groups, user,county,register,source
-      end
-
-            crumb :edit_image_server_group do |user,county,register,source,group|
-              link "Edit Image Group"
-              parent :show_image_server_group, user,county,register,source,group
-            end
 
 
 
 # breadcrumb for Image Server Images
-crumb :image_server_images do |user,county,register,source,group|
+crumb :image_server_images do |user,syndicate,county,register,source,group|
   link "Images", index_image_server_image_path(group)
-  parent :show_image_server_group, user,county,register,source,group
+  parent :show_image_server_group, user,syndicate,county,register,source,group
 end
 
-      crumb :move_image_server_image do |user,county,register,source,group,image|
+      crumb :move_image_server_image do |user,syndicate,county,register,source,group,image|
         link "Move Images"
-        parent :image_server_images, user,county,register,source,group
+        parent :image_server_images, user,syndicate,county,register,source,group
       end
 
-      crumb :propagate_image_server_image do |user,county,register,source,group,image|
+      crumb :propagate_image_server_image do |user,syndicate,county,register,source,group,image|
         link "Propagate Images"
-        parent :image_server_images, user,county,register,source,group
+        parent :image_server_images, user,syndicate,county,register,source,group
       end
 
-      crumb :reassign_image_server_image do |user,county,register,source,group,image|
+      crumb :reassign_image_server_image do |user,syndicate,county,register,source,group,image|
         link "Reassign Images"
-        parent :image_server_images, user,county,register,source,group
+        parent :image_server_images, user,syndicate,county,register,source,group
       end
 
-      crumb :show_image_server_image do |user,county,register,source,group,image|
+      crumb :show_image_server_image do |user,syndicate,county,register,source,group,image|
         link "Image", image_server_image_path(image)
-        parent :image_server_images, user,county,register,source,group
+        parent :image_server_images, user,syndicate,county,register,source,group
       end
 
-            crumb :edit_image_server_image do |user,county,register,source,group,image|
+            crumb :edit_image_server_image do |user,syndicate,county,register,source,group,image|
               link "Edit Image"
-              parent :show_image_server_image, user,county,register,source,group,image
+              parent :show_image_server_image, user,syndicate,county,register,source,group,image
             end
 
 
