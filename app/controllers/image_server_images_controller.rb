@@ -123,7 +123,8 @@ class ImageServerImagesController < ApplicationController
     @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    @images = ImageServerImage.get_image_list(params[:id],ImageServerImage::Status::ARRAY_ALL)
+    move_allowed_status = ['u','a']
+    @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
 
     if @image_server_image.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent image file'
