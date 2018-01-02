@@ -203,6 +203,7 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session
+    
     session.delete(:manage_user_origin)
     session.delete(:freereg1_csv_file_id)
     session.delete(:freereg1_csv_file_name)
