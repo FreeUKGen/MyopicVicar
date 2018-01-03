@@ -61,7 +61,9 @@
                 <%= link_to 'ED', edit_image_server_image_path(x) %> 
               <% end %>
               <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
-              <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
+              <% if !session[:my_own] && @image_server_group.syndicate_code == @user.syndicate %>
+                <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
+              <% end %>
               <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
                 <%= link_to 'DE', image_server_image_path(x), data: { confirm: 'Are you sure you want to delete IS image '+x[:image_file_name]}, method: :delete %>
               <% end %>
