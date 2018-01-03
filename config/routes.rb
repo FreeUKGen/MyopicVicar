@@ -179,6 +179,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#manage_sources', constraints:ManageCountiesManageImagesConstraint
   get  'manage_counties/manage_image_group(.:format)', :to => 'manage_counties#manage_image_group', :as => :manage_image_group_manage_county
   get  'manage_counties/manage_unallocated_image_group(.:format)', :to => 'manage_counties#manage_unallocated_image_group', :as => :manage_unallocated_image_group_manage_county
+  get  'manage_counties/manage_completion_submitted_image_group(.:format)', :to => 'manage_counties#manage_completion_submitted_image_group', :as => :manage_completion_submitted_image_group_manage_county
   get  'manage_counties/sort_image_group_by_syndicate(.:format)', :to => 'manage_counties#sort_image_group_by_syndicate', :as => :sort_image_group_by_syndicate
   get  'manage_counties/sort_image_group_by_place(.:format)', :to => 'manage_counties#sort_image_group_by_place', :as => :sort_image_group_by_place
   get 'manage_counties/uninitialized_source_list(.:format)', :to => 'manage_counties#uninitialized_source_list', :as => :uninitialized_source_list

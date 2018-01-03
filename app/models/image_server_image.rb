@@ -25,11 +25,12 @@ class ImageServerImage
     Being_Reviewed = 'br'
     Review_submitted = 'rs'
     Reviewed = 'r'
+    Completion_Submitted = 'cs'
     Complete = 'c'
     Error = 'e'
 
-    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
   end
 
   field :image_file_name, type: String
@@ -131,6 +132,7 @@ class ImageServerImage
     def refresh_src_dest_group_summary(image_server_group)
       # update field summary of ImageServerGroup
       summary = image_server_group.summarize_from_image_server_image
+
       image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.nil? && !summary.empty?
     end
 

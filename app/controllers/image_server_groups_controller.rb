@@ -242,6 +242,11 @@ class ImageServerGroupsController < ApplicationController
   def send_complete_to_cc
     display_info
 
+    ImageServerImage.where(:image_server_group_id=>params[:id]).update_all(:status=>'cs')
+    
+    image_server_group = ImageServerGroup.where(:id=>params[:id])
+    ImageServerImage.refresh_src_dest_group_summary(image_server_group)
+
     UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
     flash[:notice] = 'email is sent to county coordinator'
     redirect_to :back

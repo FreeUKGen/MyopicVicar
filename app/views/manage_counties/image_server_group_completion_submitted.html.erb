@@ -1,0 +1,6 @@
+<% breadcrumb :county_manage_images_selection, @county%>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<div style="clear:both;"> </div><br>
+<%= render partial: 'image_groups', :locals=>{:image_group_filter=>'completion_submitted'} %>

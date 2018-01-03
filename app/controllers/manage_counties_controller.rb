@@ -102,6 +102,27 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def manage_completion_submitted_image_group
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'completion_submitted'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'completion_submitted')            # not sort by place, unallocated groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.nil? || @group_id.nil?
+        flash[:notice] = 'No completion submitted image groups exists'
+        redirect_to :back
+      else
+        render 'image_server_group_completion_submitted'
+      end
+    end
+  end
+
   def manage_image_group
     get_user_info_from_userid
     clean_session_for_managed_images
@@ -114,7 +135,12 @@ class ManageCountiesController < ApplicationController
       @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false, 'all')                   # not sort by place, all groups
       @county = session[:county]
 
-      render 'image_server_group_all'
+      if @source.nil? || @group_ids.nil? || @group_id.nil?
+        flash[:notice] = 'No image groups exists'
+        redirect_to :back
+      else
+        render 'image_server_group_all'
+      end
     end
   end
 
@@ -130,7 +156,12 @@ class ManageCountiesController < ApplicationController
       @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'unallocate')            # not sort by place, unallocated groups
       @county = session[:county]
 
-      render 'image_server_group_unallocate'
+      if @source.nil? || @group_ids.nil? || @group_id.nil?
+        flash[:notice] = 'No unallocated image groups exists'
+        redirect_to :back
+      else
+        render 'image_server_group_unallocate'
+      end
     end
   end
 
@@ -147,7 +178,12 @@ class ManageCountiesController < ApplicationController
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      render 'sources_list_all'
+      if @source_ids.nil? || @source_id.nil?
+        flash[:notice] = 'No requested Sources exists'
+        redirect_to :back
+      else
+        render 'sources_list_all'
+      end
     end
   end
 

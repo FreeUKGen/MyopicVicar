@@ -25,11 +25,12 @@ class ImageServerGroup
     Being_Reviewed = 'br'
     Review_submitted = 'rs'
     Reviewed = 'r'
+    Completion_Submitted = 'cs'
     Complete = 'c'
     Error = 'e'
 
-    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
 
     CHURCH_STATUS = {}
 
@@ -172,29 +173,36 @@ class ImageServerGroup
             @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
           when 'unallocate'
             @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where('summary.status'=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+          when 'completion_submitted'
+            @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where('summary.status'=>{'$in'=>['cs']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
         end
       else
         @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
       end
-      x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
 
-      gid = []
-      x.each do |key,value|
-        # build hash @group_id[place_name][church_name][register_type][source_name][group_name] = group_id
-        @group_id[@place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]][@church_id[@register_id[@source_id[value[0]][0]][0]][1]][@register_id[@source_id[value[0]][0]][1]][@source_id[value[0]][1]][value[1]] = key
+      if @image_server_group.nil?
+        @source, @g_id, @group_id = nil, nil, nil
+      else
+        x = Hash.new{|h,k| h[k]=[]}.tap{|h| @image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
 
-        place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
-        church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
-        register_type = @register_id[@source_id[value[0]][0]][1]
-        source_id = @source_id[value[0]][0]
-        source_name = @source_id[value[0]][1]
-        group_name = value[1]
-        syndicate = value[2]
-        assign_date = value[3]
-        number_of_images = value[4]
-        gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
+        gid = []
+        x.each do |key,value|
+          # build hash @group_id[place_name][church_name][register_type][source_name][group_name] = group_id
+          @group_id[@place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]][@church_id[@register_id[@source_id[value[0]][0]][0]][1]][@register_id[@source_id[value[0]][0]][1]][@source_id[value[0]][1]][value[1]] = key
+
+          place_name = @place_id[@church_id[@register_id[@source_id[value[0]][0]][0]][0]]
+          church_name = @church_id[@register_id[@source_id[value[0]][0]][0]][1]
+          register_type = @register_id[@source_id[value[0]][0]][1]
+          source_id = @source_id[value[0]][0]
+          source_name = @source_id[value[0]][1]
+          group_name = value[1]
+          syndicate = value[2]
+          assign_date = value[3]
+          number_of_images = value[4]
+          gid << [key, place_name, church_name, register_type, source_name, source_id, group_name, syndicate, assign_date, number_of_images]
+        end
+        @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
       end
-      @g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
 
       return @source, @g_id, @group_id
     end
@@ -244,9 +252,9 @@ class ImageServerGroup
 
       case type
         when 't'
-          scope = ['u','a','bt','ts','br','rs','r']
+          scope = ['u','a','bt','ts','br','rs','r','cs','e']
         when 'r'
-          scope = ['u','a','bt','ts','t','br','rs']
+          scope = ['u','a','bt','ts','t','br','rs','cs','e']
       end
 
       group = ImageServerGroup.where(:syndicate_code=>syndicate)
@@ -358,6 +366,7 @@ class ImageServerGroup
     end
     
   end
+  
   def create_upload_images_url
     source = self.source
     register = source.register
