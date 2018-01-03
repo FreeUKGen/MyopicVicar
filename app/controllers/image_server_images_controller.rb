@@ -137,6 +137,8 @@ class ImageServerImagesController < ApplicationController
 
   def show
     display_info
+
+    @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
     @image_server_image = ImageServerImage.collection.aggregate([
                 {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
                 {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 

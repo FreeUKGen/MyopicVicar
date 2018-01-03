@@ -7,7 +7,9 @@
   <% end %>
   <%= link_to 'List All Images In the Same Image Group', index_image_server_image_path(@image_server_image[:image_server_group_id]), method: :get, :class => "btn weight--light btn--small" %>
   <%= link_to 'View image', view_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank", :class => "btn weight--light btn--small" %>
-  <%= link_to 'Download image', download_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank",  :class => "btn weight--light btn--small" %>
+  <% if !session[:my_own] && @image_server_group.syndicate_code == @user.syndicate %>
+    <%= link_to 'Download image', download_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank",  :class => "btn weight--light btn--small" %>
+  <% end %>
 </div>
 
 <div style="clear:both;"> </div><br>
