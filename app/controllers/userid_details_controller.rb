@@ -49,7 +49,7 @@ class UseridDetailsController < ApplicationController
       if @userid.save
         refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
         refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        #flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
         @userid.write_userid_file
         next_place_to_go_successful_create
       else
@@ -169,7 +169,7 @@ class UseridDetailsController < ApplicationController
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     case
     when  params[:commit] == 'Register as Transcriber'
-      redirect_to transcriber_registration_userid_detail_path and return
+      redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
     when params[:commit] == "Submit" && session[:userid_detail_id].present?
       redirect_to userid_detail_path(@userid) and return
     when params[:commit] == "Update" && session[:my_own]
