@@ -124,6 +124,21 @@ class ImageServerImage
       where(:image_server_group_id => id)
     end
 
+    def IS_access_allowance_check(user,image_server_group_id,chapman_code)
+      case user.person_role
+        when 'syndicate_coordinator'
+          @image_server_group = ImageServerGroup.id(image_server_group_id).first
+          return true if user.syndicate == @image_server_group.syndicate_code
+        when 'county_coordinator'
+          county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
+          return true if user.userid == county_coordinator
+        when 'system_administrator'
+          return true
+      end
+
+      return false
+    end
+
     def refresh_image_server_group_after_assignment(image_server_group_id)
       image_server_group = ImageServerGroup.id(image_server_group_id)
       ImageServerImage.refresh_src_dest_group_summary(image_server_group)

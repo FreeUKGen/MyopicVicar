@@ -60,8 +60,8 @@
               <% if !session[:my_own] %>
                 <%= link_to 'ED', edit_image_server_image_path(x) %> 
               <% end %>
-              <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
-              <% if !session[:my_own] && @image_server_group.syndicate_code == @user.syndicate %>
+              <% if @access_IS %>
+                <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
                 <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
               <% end %>
               <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
