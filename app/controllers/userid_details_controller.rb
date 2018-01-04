@@ -434,7 +434,7 @@ class UseridDetailsController < ApplicationController
         return
       end
     end
-    update_userid
+    redirect_to edit_userid_detail_path(@userid) and return unless update_userid
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
     @userid.update_attributes(userid_details_params.except(:userid))
     @userid.write_userid_file
@@ -542,16 +542,24 @@ class UseridDetailsController < ApplicationController
 
   def userid_taken?
     UseridDetail.where(:userid => params[:userid_detail][:userid]).exists? || Refinery::Authentication::Devise::User.where(:username => params[:userid_detail][:userid]).exists?
-    return 
+  end
+
+  def update_session userid
+    session[:userid] = userid
   end
 
   def update_userid
     if userid_updated?
       unless userid_taken?
         refinery_user = Refinery::Authentication::Devise::User.where(username: session[:userid]).first
-        @userid.update_attributes(userid: userid_details_params[:userid])
         refinery_user.username = userid_details_params[:userid] 
         refinery_user.save!
+        @userid.update_attributes(userid: userid_details_params[:userid])
+        update_session(userid_details_params[:userid]) if refinery_user.save!
+        return true
+      else
+        flash[:notice] = " #{userid_details_params[:userid]} : Userid already exists"
+        return false
       end
     end
   end

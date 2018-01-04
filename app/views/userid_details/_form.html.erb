@@ -13,18 +13,24 @@
     <% end%>
   <% else%>
     <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => false }%>
-    <div class="input select optional userid_detail_transcription_agreement" style="text-align: center;">
-      <span>Please sign the agreement to keep your transcriptions Open.</span><br />
-      <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
-      <div class="simple_form_bgcolour simple_form_position overide_selection_field_width">
-        <%= f.radio_button(:transcription_agreement, "Accepted") %>
-          <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
-        <%#= f.radio_button(:transcription_agreement, "Declined") %>
-          <!--span>I hereby prefer not to sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
-      </div>
-    </div>
+    <% if  session[:my_own]%>
+      <%= f.input :transcription_agreement, :label => "Transcription Agreement",:input_html => {:disabled => true }  if @userid.transcription_agreement == "Accepted" %>
+      <% unless @userid.transcription_agreement == "Accepted"%>
+        <div class="input select optional userid_detail_transcription_agreement" style="text-align: center;">
+          <span>Please sign the agreement to keep your transcriptions Open.</span><br />
+          <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
+          <div class="simple_form_bgcolour simple_form_position overide_selection_field_width">
+            <%= f.radio_button(:transcription_agreement, "Accepted") %>
+              <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
+            <%#= f.radio_button(:transcription_agreement, "Declined") %>
+              <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
+          </div>
+        </div>
+      <% end %>
+    <% end %>
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate",:include_blank => false, :required => true, :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
+
       <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => role_lbl, :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
       <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
       <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {   :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width" }%>
@@ -32,6 +38,7 @@
     <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:input_html => { :size => 40, :disabled => true }%>
          <%= f.input :person_role,:label => role_lbl,:input_html => { :size => 40, :disabled => true }%>
+         <%= f.input :syndicate_coordinator,:label => "Syndicate Coordinator",:input_html => { :size => 40, :disabled => true }%>
 
         <% if (manager?(@user)) %>
           <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
@@ -43,7 +50,7 @@
   <%= f.input :person_surname,:label => "Surname", :required => true,:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
   <%= f.input :email_address,:label => "Email", :required => true,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
 
-  <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <%= f.input :address,:label => "Physical location",:hint => "Full address, if telephone number not given, otherwise just a Country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
   <% unless @user.person_role == 'researcher' %>
     <%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
@@ -71,3 +78,4 @@
   <% end %>
   <%= f.button :submit, 'Update' %>
   <% end %>
+  
