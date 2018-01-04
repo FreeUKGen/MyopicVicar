@@ -108,7 +108,7 @@ class ImageServerImagesController < ApplicationController
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id])
     @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
-    @access_IS = ImageServerImage.IS_access_allowance_check(@user,session[:image_server_group_id],session[:chapman_code])
+    @image_detail_access_allowed = ImageServerImage.image_server_access_allowed?(@user,session[:image_server_group_id],session[:chapman_code])
 
     if @image_server_image.empty?
       flash[:notice] = 'No Images under Image Group "'+@image_server_group.group_name.to_s+'"'
@@ -139,7 +139,7 @@ class ImageServerImagesController < ApplicationController
   def show
     display_info
 
-    @access_IS = ImageServerImage.IS_access_allowance_check(@user,session[:image_server_group_id],session[:chapman_code])
+    @image_detail_access_allowed = ImageServerImage.image_detail_access_allowed?(@user,session[:image_server_group_id],session[:chapman_code])
 
     @image_server_image = ImageServerImage.collection.aggregate([
                 {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},

@@ -57,10 +57,8 @@
             <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>
             <td class="t15">
               <%= link_to 'SH', image_server_image_path(x) %>
-              <% if !session[:my_own] %>
+              <% if @image_detail_access_allowed %>
                 <%= link_to 'ED', edit_image_server_image_path(x) %> 
-              <% end %>
-              <% if @access_IS %>
                 <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
                 <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), method: :get,:target => "_blank" %>
               <% end %>

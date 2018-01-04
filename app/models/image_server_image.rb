@@ -124,7 +124,7 @@ class ImageServerImage
       where(:image_server_group_id => id)
     end
 
-    def IS_access_allowance_check(user,image_server_group_id,chapman_code)
+    def image_detail_access_allowed?(user,image_server_group_id,chapman_code)
       case user.person_role
         when 'syndicate_coordinator'
           @image_server_group = ImageServerGroup.id(image_server_group_id).first
