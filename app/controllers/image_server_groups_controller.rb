@@ -87,7 +87,6 @@ class ImageServerGroupsController < ApplicationController
     @church_name = @church.church_name
     session[:church_name] = @church_name
     @church_name = session[:church_name]
-
     @place = @church.place #id?
     @place_name = @place.place_name
     session[:place_name] = @place_name
@@ -320,19 +319,25 @@ class ImageServerGroupsController < ApplicationController
   end
 
  def upload_return
-    image_server_group = ImageServerGroup.id(params[:image_server_group]).first
-    proceed, message = image_server_group.process_uploaded_images(params)
-    if proceed
-      flash[:notice] = "Uploaded  #{params[:files_uploaded]} " if (params[:files_uploaded] != "" && params[:files_exist] == " ")
-      flash[:notice] = "Uploaded  #{params[:files_uploaded]} and failed to upload #{params[:files_exist]} as it was {they were) already there" if (params[:files_uploaded] != " " && params[:files_exist] != " ")
-      flash[:notice] = "No images uploaded" if (params[:files_uploaded] == "" && params[:files_exist] == " " )
-      flash[:notice] = "No images uploaded and failed to upload #{params[:files_exist]} as it was {they were) already there"  if (params[:files_uploaded] == " " && params[:files_exist] != " ")
-    else
+    @image_server_group = ImageServerGroup.id(params[:image_server_group]).first
+    proceed, message = @image_server_group.process_uploaded_images(params)
+    if !proceed
        flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
+       redirect_to image_server_group_path(@image_server_group)   and return
     end
-    redirect_to image_server_group_path(image_server_group)     
+    @uploaded =  params[:files_uploaded]
+    @not_uploaded = params[:files_exist]
+    @source = @image_server_group.source
+    @register = @source.register
+    @register_type = @register.register_type
+    @place =  @image_server_group.place
+    @place_name = @place.place_name
+    @church = @image_server_group.church
+    @church_name = @church.church_name
+    @county = @place.county
+   get_user_info_from_userid
+    @syndicate = @user.syndicate
  end
-
 
   private
   def image_server_group_params

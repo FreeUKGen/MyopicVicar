@@ -783,6 +783,11 @@ end
         parent :show_image_server_group, user,syndicate,county,register,source,group
       end
 
+      crumb :upload_image_server_group do |user,syndicate,county,register,source,group|
+        link "Upload Images Report"
+        parent :show_image_server_group, user,syndicate,county,register,source,group
+      end
+
 
 
 

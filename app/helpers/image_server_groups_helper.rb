@@ -10,4 +10,10 @@ module ImageServerGroupsHelper
     end
     send_email
   end
+  def show_images_list?(images)
+   show = false
+   show = true if images.present? && images.length >= 1
+   show 
+  end
+  
 end
