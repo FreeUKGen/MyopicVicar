@@ -139,18 +139,23 @@ $(':checkbox').click(function(e){
 })
 
 function validate_selection() {
-	var checked = 0;
-
-	$(':checkbox').each(function(){
-		if ($(this).is(":checked") == true) {
-			checked = 1;
-		}
-	})
-
-	if (checked == 1) {
-		return true;
-	} else {
-		alert("You didn't select anything");
+	if ($('#image_server_group_syndicate_code').val() === null) {
+		alert("You didn't select syndicate");
 		return false;
+	} else {
+		var checked = 0;
+
+		$(':checkbox').each(function(){
+			if ($(this).is(":checked") == true) {
+				checked = 1;
+			}
+		})
+
+		if (checked == 1) {
+			return true;
+		} else {
+			alert("You didn't select image group");
+			return false;
+		}
 	}
 }

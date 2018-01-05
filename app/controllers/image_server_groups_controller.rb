@@ -6,7 +6,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
 
     @syndicate = Syndicate.get_syndicates
-    @group_name = ImageServerGroup.get_sorted_group_name(params[:id])
+    @group_name = ImageServerGroup.group_ilst_by_status(params[:id], 'u')
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
   end
@@ -267,47 +267,60 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def update
-    group_list = []
-    image_server_group = ImageServerGroup.id(params[:id]).first
+    case params[:_method]
+      when 'put'
+        image_server_group = ImageServerGroup.id(params[:id])
 
-    case image_server_group_params[:origin]
-      when 'allocate'
-        image_server_group_params[:custom_field].each { |x| group_list << BSON::ObjectId.from_string(x) unless x=='0' }
-        number_of_images = ImageServerGroup.calculate_image_numbers(group_list)
+        case params[:type]
+          when 'unallocate'
+            flash[:notice] = image_server_group.update_image_server_group_from_put_request('u')
+            redirect_to index_image_server_group_path(image_server_group.first.source)
+          when 'complete'
+            flash[:notice] = image_server_group.update_image_server_group_from_put_request('c')
+            redirect_to index_image_server_group_path(image_server_group.first.source)
+        end
+      else
+        case image_server_group_params[:origin]
+          when 'allocate'
+            group_list = []
+            image_server_group_params[:custom_field].each { |x| group_list << BSON::ObjectId.from_string(x) unless x=='0' }
+            number_of_images = ImageServerGroup.calculate_image_numbers(group_list)
 
-        group_list.each do |x|
-          image_server_group = ImageServerGroup.where(:id=>x)
-          image_server_group.update_all(:syndicate_code=>image_server_group_params[:syndicate_code], 
+            group_list.each do |x|
+              image_server_group = ImageServerGroup.where(:id=>x)
+              image_server_group.update_all(:syndicate_code=>image_server_group_params[:syndicate_code], 
                                         :assign_date=>Time.now.iso8601, 
                                         :number_of_images=>number_of_images[x])
 
-          ImageServerImage.where(:image_server_group_id=>x, :status=>{'$in'=>['u','',nil]}).update_all(:status=>'a')
-          ImageServerImage.refresh_src_dest_group_summary(image_server_group)
+              ImageServerImage.where(:image_server_group_id=>x, :status=>{'$in'=>['u','',nil]}).update_all(:status=>'a')
+              ImageServerImage.refresh_src_dest_group_summary(image_server_group)
+            end
+
+            flash[:notice] = 'Allocate of Image Groups was successful'
+            redirect_to index_image_server_group_path(image_server_group.first.source)
+          else            # create and edit
+            image_server_group = ImageServerGroup.id(params[:id]).first
+            count = ImageServerGroup.where(:source_id=>image_server_group_params[:source_id], :group_name=>image_server_group_params[:group_name]).count
+
+            if count > 0 && image_server_group_params[:orig_group_name] != image_server_group_params[:group_name]
+              flash[:notice] = 'Image Group "'+image_server_group_params[:group_name]+'" already exist'
+              redirect_to :back and return
+            else
+              image_server_group_params[:number_of_images] = ImageServerImage.image_server_group_id(image_server_group.id).count
+              image_server_group_params[:assign_date] = Time.now.iso8601 if !image_server_group_params[:syndicate_code].nil? && (image_server_group_params[:syndicate_code] != image_server_group_params[:orig_syndicate_code])
+
+              image_server_group_params.delete(:origin)
+              image_server_group_params.delete(:source_start_date)
+              image_server_group_params.delete(:source_end_date)
+              image_server_group_params.delete(:orig_group_name)
+              image_server_group_params.delete(:orig_syndicate_code)
+
+              image_server_group.update_attributes(image_server_group_params)
+
+              flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
+              redirect_to image_server_group_path(image_server_group)
+            end
         end
-
-        flash[:notice] = 'Allocate of Image Groups was successful'
-        redirect_to index_image_server_group_path(image_server_group.first.source)     
-      else            # create and edit
-        count = ImageServerGroup.where(:source_id=>image_server_group_params[:source_id], :group_name=>image_server_group_params[:group_name]).count
-
-        if count > 0 && image_server_group_params[:orig_group_name] != image_server_group_params[:group_name]
-          flash[:notice] = 'Image Group "'+image_server_group_params[:group_name]+'" already exist'
-          redirect_to :back and return
-        else
-          image_server_group_params[:number_of_images] = ImageServerImage.image_server_group_id(image_server_group.id).count
-          image_server_group_params[:assign_date] = Time.now.iso8601 if !image_server_group_params[:syndicate_code].nil? && (image_server_group_params[:syndicate_code] != image_server_group_params[:orig_syndicate_code])
-
-          image_server_group_params.delete(:origin)
-          image_server_group_params.delete(:source_start_date)
-          image_server_group_params.delete(:source_end_date)
-          image_server_group_params.delete(:orig_group_name)
-          image_server_group_params.delete(:orig_syndicate_code)
-
-          image_server_group.update_attributes(image_server_group_params)
-
-          flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
-          redirect_to image_server_group_path(image_server_group)     
-      end
     end
   end
   
