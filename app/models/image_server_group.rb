@@ -252,9 +252,9 @@ class ImageServerGroup
 
       case type
         when 't'
-          scope = ['u','a','bt','ts','br','rs','r','cs','e']
+          scope = ['u','a','bt','ts','br','rs','r','cs','c','e']
         when 'r'
-          scope = ['u','a','bt','ts','t','br','rs','cs','e']
+          scope = ['u','a','bt','ts','t','br','rs','cs','c','e']
       end
 
       group = ImageServerGroup.where(:syndicate_code=>syndicate)
@@ -315,12 +315,12 @@ class ImageServerGroup
       return @source, @g_id, @group_id
     end
     
-    def get_sorted_group_name(source_id)    
+    def group_ilst_by_status(source_id,status)    
       # get hash key=image_server_group_id, val=ig, sorted by ig
-      ig_array = ImageServerGroup.where(:source_id=>source_id, :number_of_images=>{'$nin'=>[nil,'',0]}).pluck(:id, :group_name)
+      ig_array = ImageServerGroup.where(:source_id=>source_id, :number_of_images=>{'$nin'=>[nil,'',0]}, :"summary.status"=>status).pluck(:id, :group_name)
       @group_name = Hash[ig_array.map {|key,value| [key,value]}]
 
-      @group_name
+      return @group_name
     end
 
     def id(id)
@@ -365,6 +365,22 @@ class ImageServerGroup
       group.save
     end
     
+    def update_image_server_group_from_put_request(status)
+      case status
+        when 'u'
+          flash_notice = 'Unallocate of Image Group was successful'
+        when 'c'
+          flash_notice = 'Image Group is marked as complete'
+      end
+
+      self.update(:syndicate_code=>'', :assign_date=>nil) if status == 'u'
+
+      ImageServerImage.where(:image_server_group_id=>self.first.id).update_all(:status=>status)
+      ImageServerImage.refresh_src_dest_group_summary(self)
+
+      return flash_notice
+    end
+
   end
   
   def create_upload_images_url
