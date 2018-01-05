@@ -18,6 +18,7 @@ class ImageServerGroup
 
   module Status
     Unallocated = 'u'
+    Allocation_Requested = 'ar'
     Allocated = 'a'
     Being_Transcribed = 'bt'
     Transcription_submitted = 'ts'
@@ -29,8 +30,8 @@ class ImageServerGroup
     Complete = 'c'
     Error = 'e'
 
-    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'ar', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'ar'=>'Allocation Requested', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
 
     CHURCH_STATUS = {}
 
@@ -252,9 +253,9 @@ class ImageServerGroup
 
       case type
         when 't'
-          scope = ['u','a','bt','ts','br','rs','r','cs','c','e']
+          scope = ['u','ar','a','bt','ts','br','rs','r','cs','c','e']
         when 'r'
-          scope = ['u','a','bt','ts','t','br','rs','cs','c','e']
+          scope = ['u','ar','a','bt','ts','t','br','rs','cs','c','e']
       end
 
       group = ImageServerGroup.where(:syndicate_code=>syndicate)

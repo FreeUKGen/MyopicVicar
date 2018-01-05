@@ -18,6 +18,7 @@ class ImageServerImage
 
   module Status
     Unallocated = 'u'
+    Allocation_Requested = 'ar'
     Allocated = 'a'
     Being_Transcribed = 'bt'
     Transcription_submitted = 'ts'
@@ -29,8 +30,8 @@ class ImageServerImage
     Complete = 'c'
     Error = 'e'
 
-    ARRAY_ALL = ['u', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
+    ARRAY_ALL = ['u', 'ar', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
+    ALL_STATUSES = {'u'=>'Unallocated', 'ar'=>'Allocation Requested', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
   end
 
   field :image_file_name, type: String
