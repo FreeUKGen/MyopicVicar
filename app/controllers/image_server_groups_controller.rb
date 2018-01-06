@@ -226,7 +226,7 @@ class ImageServerGroupsController < ApplicationController
         sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
         if !sc.nil?
           UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
-          flash[:notice] = 'email sent to County Coordinator'
+          flash[:notice] = 'email sent to Syndicate Coordinator'
         else
           flash[:notice] = 'SC does not exist, please contact administrator'
         end
