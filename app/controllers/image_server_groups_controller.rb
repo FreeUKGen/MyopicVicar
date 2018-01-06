@@ -324,9 +324,7 @@ class ImageServerGroupsController < ApplicationController
   end
   
   def upload
-    p params
     image_server_group = ImageServerGroup.id(params[:id]).first
-    p image_server_group
     website = image_server_group.create_upload_images_url
     redirect_to website and return
   end

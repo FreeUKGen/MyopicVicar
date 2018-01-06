@@ -393,7 +393,6 @@ class ImageServerGroup
   end
   
   def process_uploaded_images(param)
-    p 'Creating iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii'
     process = true
     message = ''
     uploaded_file_names = param[:files_uploaded].split('/ ')
@@ -406,7 +405,6 @@ class ImageServerGroup
       end
     end
     number_of_images = self.image_server_images.count
-    p number_of_images
     self.update_attribute(:number_of_images, number_of_images )
     return process,message 
   end

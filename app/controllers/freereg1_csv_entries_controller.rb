@@ -5,7 +5,6 @@ class Freereg1CsvEntriesController < ApplicationController
   skip_before_filter :require_login, only: [:show]
  
   def create
-    p "creating"
     get_user_info_from_userid
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type

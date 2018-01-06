@@ -8,11 +8,13 @@ class ImageServerImagesController < ApplicationController
     get_userids_and_transcribers or return
 
     image_server_image = ImageServerImage.where(:id=>params[:id]).first
-    return_location = image_server_image.image_server_group
-    image_server_image.destroy
-
-    flash[:notice] = 'Deletion of image"'+image_server_image[:image_file_name]+' was successful'
-    redirect_to index_image_server_image_path(return_location)
+    if image_server_image.deletion_permitted?
+      website =  image_server_image.url_for_delete_image_from_image_server
+      redirect_to website
+    else 
+      flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{ImageServerImage::Status::ALL_STATUSES[image_server_image.status]}"
+      redirect_to :back and return
+    end
   end
 
   def display_info
@@ -146,6 +148,15 @@ class ImageServerImagesController < ApplicationController
                 {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
                 {'$unwind'=>"$image_group"}
              ]).first
+  end
+  
+  
+  def return_from_image_deletion
+    return_location = ImageServerGroup.id(params[:image_server_group_id]).first
+    image_server_image = ImageServerImage.where(:image_server_group_id => params[:image_server_group_id], :image_file_name =>  params[:image_file_name])
+    image_server_image.destroy
+    flash[:notice] = "Deletion of image #{params[:image_file_name]} was successful and #{params[:message]}"
+    redirect_to index_image_server_image_path(return_location)
   end
 
   def update

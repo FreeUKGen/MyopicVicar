@@ -608,7 +608,6 @@ class Freereg1CsvFile
         self.freereg1_csv_entries.each do |entry|
           freereg1_csv_entries << entry if entry.year.nil? ||  entry.year == '0'
         end
-         p freereg1_csv_entries
       end
 
       def lock(type)

@@ -116,8 +116,6 @@ class Register
   def add_source(folder_name)
     proceed = true
     message = ''
-    p 'Add Source'
-    p self
     self.sources.each do |source|
       if source.source_name == "Image Server"
         proceed = false
@@ -129,8 +127,6 @@ class Register
       self.sources << source
       self.save
     end
-    p proceed
-    p message
     return proceed,message
   end
 

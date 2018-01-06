@@ -152,6 +152,12 @@ class ImageServerImage
       image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.nil? && !summary.empty?
     end
 
+  end # end of class methods
+  
+  def deletion_permitted?
+    permitted = false
+    permitted = true if self.status.nil? || self.status == 'u'
+    permitted
   end
   
   def file_location
@@ -169,5 +175,12 @@ class ImageServerImage
     source = group.source
     register = source.register
     return group,source,register
+  end
+  
+  def url_for_delete_image_from_image_server
+    image_server_group = self.image_server_group
+    source = image_server_group.source
+    place = image_server_group.place
+    URI.escape(Rails.application.config.image_server + 'manage_freereg_images/remove_image?chapman_code=' + place.chapman_code + '&image_server_group_id=' + self.image_server_group.id + '&folder_name=' + source.folder_name + '&image_file_name=' + self.image_file_name + '&image_server_access=' + Rails.application.config.image_server_access)
   end
 end

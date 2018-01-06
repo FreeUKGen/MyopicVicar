@@ -120,7 +120,7 @@ class AssignmentsController < ApplicationController
   end
 
   def index
-    p 'index'
+    
   end
 
   def list_assignments_by_syndicate_coordinator
