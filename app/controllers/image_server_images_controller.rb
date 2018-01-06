@@ -155,6 +155,8 @@ class ImageServerImagesController < ApplicationController
     return_location = ImageServerGroup.id(params[:image_server_group_id]).first
     image_server_image = ImageServerImage.where(:image_server_group_id => params[:image_server_group_id], :image_file_name =>  params[:image_file_name])
     image_server_image.destroy
+    number_of_images = return_location.image_server_images.count
+    return_location.update_attribute(:number_of_images, number_of_images )
     flash[:notice] = "Deletion of image #{params[:image_file_name]} was successful and #{params[:message]}"
     redirect_to index_image_server_image_path(return_location)
   end
