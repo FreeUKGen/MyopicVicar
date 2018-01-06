@@ -91,8 +91,9 @@ class ImageServerGroupsController < ApplicationController
     @place_name = @place.place_name
     session[:place_name] = @place_name
     @county =  @place.county
+    @syndicate = @place.chapman_code
     session[:county] = @county
-    session[:chapman_code] = @place.chapman_code if session[:chapman_code].nil?
+    session[:chapman_code] = @syndicate if session[:chapman_code].nil?
     @user = cookies.signed[:userid]
   end
 

@@ -758,7 +758,7 @@ crumb :show_image_server_group do |user,syndicate,county,register,source,group|
         when 'syndicate'        # from Assignments => 'List Image Groups Under My Syndicate'
           parent :request_assignments_by_syndicate, user
         when 'county'           # from 'Image Groups Available for Allocation(county)'
-          parent :request_assignments_by_county, user,county
+          parent :request_assignments_by_county, user,syndicate
       end
     # image groups from list groups result
     else
