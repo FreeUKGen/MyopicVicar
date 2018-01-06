@@ -92,7 +92,7 @@ class ImageServerGroupsController < ApplicationController
     session[:place_name] = @place_name
     @county =  @place.county
     session[:county] = @county
-    @place_name = @place.place_name
+    session[:chapman_code] = @place.chapman_code if session[:chapman_code].nil?
     @user = cookies.signed[:userid]
   end
 
