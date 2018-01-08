@@ -125,14 +125,20 @@ class ImageServerImage
       where(:image_server_group_id => id)
     end
 
-    def image_detail_access_allowed?(user,image_server_group_id,chapman_code)
+    def image_detail_access_allowed?(user,manage_user_origin,image_server_group_id,chapman_code)
       case user.person_role
         when 'syndicate_coordinator'
           @image_server_group = ImageServerGroup.id(image_server_group_id).first
           return true if user.syndicate == @image_server_group.syndicate_code
         when 'county_coordinator'
-          county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
-          return true if user.userid == county_coordinator
+          case manage_user_origin 
+            when 'manage county'
+              county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
+              return true if user.userid == county_coordinator
+            when 'manage syndicate'
+              @image_server_group = ImageServerGroup.id(image_server_group_id).first
+              return true if user.syndicate == @image_server_group.syndicate_code
+          end
         when 'system_administrator'
           return true
       end
