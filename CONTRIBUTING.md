@@ -71,7 +71,7 @@ One way to find these bugs is to go to the waffle boards listed above and look f
 Projects also need developers to contribute code, whether that be bug 
 fixes, data analysis, or new and improved features.
 
-_We highly recommend that volunteer developers contact TODO to be 
+_We highly recommend that volunteer developers contact our volunteer coordinator [denise.colbert@freeukgenealogy.org.uk](mailto:denise.colbert@freeukgenealogy.org.uk) to be 
 partnered with a mentor.  This mentor can help answer questions and 
 smooth over difficulties faced by people new to the codebase._
 
@@ -79,7 +79,7 @@ While some developers install a full Ruby on Rails/MongoDB/MySQL stack
 on their development machines, the easiest way to get up and running is 
 to develop code in a virtual workspace provided by Cloud9.
 
-DETAILS/EXPLANATION HERE (Ben to review)
+[See instructions for getting set up on Cloud9](https://docs.google.com/document/d/1OWbya7erLmyyFstMwuBJwkquJZG4i4YrMWIHHI4Jvjk/edit#heading=h.r8mtsch418p2)
 
 
 ## Contributing A Patch
