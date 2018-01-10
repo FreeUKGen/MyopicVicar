@@ -229,9 +229,6 @@ class SourcesController < ApplicationController
       go_back("source#update",params[:id])
     else
       if source_params[:choice] == '1'  # propagate checkbox is selected
-        notes = source_params[:notes]
-        start_date = source_params[:start_date]
-        end_date = source_params[:end_date]
         original_form_type = source_params[:original_form][:type]
         original_form_name = source_params[:original_form][:name]
         original_owner = source_params[:original_owner]
@@ -245,9 +242,8 @@ class SourcesController < ApplicationController
         source_list << params[:id]
 
         Source.where(:id=>{'$in'=>source_list}).
-              update_all(:notes=>notes, 
+              update_all(:original_owner=>original_owner, 
                          :original_form=>{:type=>original_form_type, :name=>original_form_name}, 
-                         :original_owner=>original_owner, 
                          :creating_institution=>creating_institution, 
                          :holding_institution=>holding_institution, 
                          :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, 
