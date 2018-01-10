@@ -246,8 +246,6 @@ class SourcesController < ApplicationController
 
         Source.where(:id=>{'$in'=>source_list}).
               update_all(:notes=>notes, 
-                         :start_date=>start_date, 
-                         :end_date=>end_date, 
                          :original_form=>{:type=>original_form_type, :name=>original_form_name}, 
                          :original_owner=>original_owner, 
                          :creating_institution=>creating_institution, 
