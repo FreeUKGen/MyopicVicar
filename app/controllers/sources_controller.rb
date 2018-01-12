@@ -138,6 +138,7 @@ class SourcesController < ApplicationController
 
   def load(source_id)
     @source = Source.id(source_id).first
+
     if @source.nil?
       go_back("source",source_id)
     else
@@ -152,10 +153,11 @@ class SourcesController < ApplicationController
       session[:church_id] = @church.id
       @place = @church.place
       session[:place_id] = @place.id
-      @county =  session[:county]
       @place_name = @place.place_name
       session[:place_name] = @place_name
-      get_user_info_from_userid
+      @county = @place.county
+      session[:county] = @county
+      @user = cookies.signed[:userid]
     end
   end
 
@@ -175,11 +177,10 @@ class SourcesController < ApplicationController
 
   def show
     load(params[:id])
-    display_info
+
     session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     session[:from_source] = true
-    @source = Source.id(params[:id]).first
 
     go_back("source#show",params[:id]) if @source.nil?
   end
