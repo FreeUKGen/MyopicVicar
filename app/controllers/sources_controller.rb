@@ -178,8 +178,11 @@ class SourcesController < ApplicationController
   def show
     load(params[:id])
 
+    #used for breadcrumb
     session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
+
+    # used for breadcrumb, to indicate image group display comes from Source or filters under 'All Sources' directly
     session[:from_source] = true
 
     go_back("source#show",params[:id]) if @source.nil?
@@ -191,35 +194,14 @@ class SourcesController < ApplicationController
     if source.nil?
       go_back("source#update",params[:id])
     else
-      if source_params[:choice] == '1'  # propagate checkbox is selected
-        original_form_type = source_params[:original_form][:type]
-        original_form_name = source_params[:original_form][:name]
-        original_owner = source_params[:original_owner]
-        creating_institution = source_params[:creating_institution]
-        holding_institution = source_params[:holding_institution]
-        restrictions_on_use_by_creating_institution = source_params[:restrictions_on_use_by_creating_institution]
-        restrictions_on_use_by_holding_institution = source_params[:restrictions_on_use_by_holding_institution]
-        open_data = source_params[:open_data]
-        url = source_params[:url]
-        source_list = source_params[:propagate][:source_id]
-        source_list << params[:id]
-
-        Source.where(:id=>{'$in'=>source_list}).
-              update_all(:original_owner=>original_owner, 
-                         :original_form=>{:type=>original_form_type, :name=>original_form_name}, 
-                         :creating_institution=>creating_institution, 
-                         :holding_institution=>holding_institution, 
-                         :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, 
-                         :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, 
-                         :open_data=>open_data, 
-                         :url=>url)
-
+      if source_params[:choice] == '1'                        # to propagate Source
+        Source.update_for_propagate(params)
         flash[:notice] = 'Update of source was successful'
-      elsif !source_params[:initialize_status].nil?           #initialize source
+      elsif !source_params[:initialize_status].nil?           # to initialize Source
         ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
 
         flash[:notice] = 'Successfully initialized source'
-      else                        # edit source without propagate
+      else                                                    # to edit Source
         params[:source].delete(:choice)
         source.update_attributes(source_params)
         flash[:notice] = 'Update of source was successful'

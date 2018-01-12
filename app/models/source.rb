@@ -168,5 +168,29 @@ class Source
       return @people
     end
 
+    def update_for_propagate(params)
+      original_form_type = params[:source][:original_form][:type]
+      original_form_name = params[:source][:original_form][:name]
+      original_owner = params[:source][:original_owner]
+      creating_institution = params[:source][:creating_institution]
+      holding_institution = params[:source][:holding_institution]
+      restrictions_on_use_by_creating_institution = params[:source][:restrictions_on_use_by_creating_institution]
+      restrictions_on_use_by_holding_institution = params[:source][:restrictions_on_use_by_holding_institution]
+      open_data = params[:source][:open_data]
+      url = params[:source][:url]
+      source_list = params[:source][:propagate][:source_id]
+      source_list << params[:id]
+
+      Source.where(:id=>{'$in'=>source_list}).
+              update_all(:original_owner=>original_owner, 
+                         :original_form=>{:type=>original_form_type, :name=>original_form_name}, 
+                         :creating_institution=>creating_institution, 
+                         :holding_institution=>holding_institution, 
+                         :restrictions_on_use_by_creating_institution=>restrictions_on_use_by_creating_institution, 
+                         :restrictions_on_use_by_holding_institution=>restrictions_on_use_by_holding_institution, 
+                         :open_data=>open_data, 
+                         :url=>url)
+    end
+
   end
 end
