@@ -49,6 +49,27 @@ class Source
       URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + 'access?userid=' + userid + '&role=' + role + '&chapman_code=' + chapman_code + '&image_server_access=' + Rails.application.config.image_server_access)
     end
     
+    def get_propagate_source_list(source)
+      @source_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+
+      place = source.register.church.place
+      place_id = Place.where(:chapman_code=>place.chapman_code).pluck(:id, :place_name).to_h
+
+      church_id = Church.where(:place_id=>{'$in'=>place_id.keys}).pluck(:id, :place_id, :church_name)
+      church_id = Hash.new{|h,k| h[k]=[]}.tap{|h| church_id.each{|k,v,w| h[k] << v << w}}
+
+      register_id = Register.where(:church_id=>{'$in'=>church_id.keys}).pluck(:id, :church_id, :register_type)
+      register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register_id.each{|k,v,w| h[k] << v << w}}
+
+      x = Source.where(:register_id=>{'$in'=>register_id.keys}, :source_name=>source.source_name).pluck(:id, :register_id).to_h
+
+      x.each do |k1,v1|
+        @source_id['Place: '+place_id[church_id[register_id[v1][0]][0]]+', Church: '+church_id[register_id[v1][0]][1]+' - '+RegisterType.display_name(register_id[v1][1])] = k1
+      end
+
+      return @source_id
+    end
+
     def get_source_ids(chapman_code)
       if chapman_code.nil?
         return nil, nil
@@ -130,6 +151,21 @@ class Source
         s_id = sid.sort_by {|a,b,c,d,e| [b,c,d,e]}
         return s_id, source_id
       end
+    end
+
+    def get_userids_and_transcribers(user)
+      @first_name = user.person_forename unless @user.blank?
+
+      case user.person_role
+        when 'system_administrator', 'country_coordinator', 'data_manager'
+          @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
+        when  'county_coordinator'
+          @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+      end
+      @people =Array.new
+      @userids.each { |ids| @people << ids.userid }
+
+      return @people
     end
 
   end
