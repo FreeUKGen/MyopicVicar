@@ -15,7 +15,7 @@ class Source
   field :holding_institution, type: String
   field :restrictions_on_use_by_creating_institution, type: String
   field :restrictions_on_use_by_holding_institution, type: String
-  field :open_data, type: Boolean, default: true
+  field :open_data, type: Boolean, default: false
   field :url, type: String #if the source is locatable online, this is the URL for the top-level (not single-page) webpage for it
 
   attr_accessor :initialize_status
