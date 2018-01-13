@@ -153,19 +153,6 @@ class Source
       end
     end
 
-    def get_userids_and_transcribers(user)
-      case user.person_role
-        when 'system_administrator', 'country_coordinator', 'data_manager'
-          @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
-        when  'county_coordinator'
-          @userids = UseridDetail.where(:syndicate => user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
-      end
-
-      @people = Array.new{ @userids.each { |ids| @people << ids.userid }}
-
-      return @people
-    end
-
     def update_for_propagate(params)
       original_form_type = params[:source][:original_form][:type]
       original_form_name = params[:source][:original_form][:name]

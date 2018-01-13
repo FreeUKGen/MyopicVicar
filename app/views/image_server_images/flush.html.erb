@@ -14,13 +14,6 @@
         <% when 'status' %>
           <%= s.input :status, :collection=>[['Transcribed','t'],['Reviewed','r'],['Complete','c']], :label => 'choose the status to be propagated', :include_blank=>false, :selected=>false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
           <%= s.hidden_field :origin, as: :fake, :value=>'propagate_status' %>
-        <% when 'transcriber' %>
-          <%= s.input :transcriber, :collection=>@people, :label=>'choose transcribers to be propagated', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-          <%= s.hidden_field :origin, as: :fake, :value=>'propagate_transcriber' %>
-        <% when 'reviewer' %>
-          <%= s.input :reviewer, :collection=>@people, :label=>'choose reviewers to be propagated', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-          <%= s.hidden_field :origin, as: :fake, :value=>'propagate_reviewer' %>
-        <% else %>
       <% end %>
       <%= s.input :id, :as=>:check_boxes, :collection=>@images.invert.sort.unshift(['select all', '0']), :label=>'Select the images you want to be propagated', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
 

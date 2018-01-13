@@ -12,7 +12,6 @@ class SourcesController < ApplicationController
 
   def create
     display_info
-    @people = Source.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     source = Source.where(:register_id=>params[:source][:register_id]).first
     register = source.register
@@ -34,7 +33,6 @@ class SourcesController < ApplicationController
 
   def destroy
     display_info
-    @people = Source.get_userids_and_transcribers(cookies.signed[:userid]) or return
     get_user_info(session[:userid],session[:first_name])
 
     if ['system_administrator', 'data_managers'].include? @user.person_role
@@ -74,7 +72,6 @@ class SourcesController < ApplicationController
 
   def edit
     display_info
-    @people = Source.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @source = Source.id(params[:id]).first
 
@@ -86,7 +83,6 @@ class SourcesController < ApplicationController
 
   def flush
     display_info
-    @people = Source.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @source = Source.id(params[:id]).first
 
@@ -163,7 +159,6 @@ class SourcesController < ApplicationController
 
   def new 
     display_info
-    @people = Source.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @source_new = Source.new
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)

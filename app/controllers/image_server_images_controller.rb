@@ -5,7 +5,6 @@ class ImageServerImagesController < ApplicationController
 
   def destroy
     display_info
-    get_userids_and_transcribers or return
 
     image_server_image = ImageServerImage.where(:id=>params[:id]).first
     if image_server_image.deletion_permitted?
@@ -52,7 +51,6 @@ class ImageServerImagesController < ApplicationController
 
   def edit
     display_info
-    get_userids_and_transcribers or return
 
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
@@ -66,7 +64,6 @@ class ImageServerImagesController < ApplicationController
 
   def flush
     display_info
-    get_userids_and_transcribers or return
 
     case params[:propagate_choice]
       when 'status'
@@ -85,22 +82,6 @@ class ImageServerImagesController < ApplicationController
     end
   end
 
-  def get_userids_and_transcribers
-    @user = cookies.signed[:userid]
-
-    case session[:manage_user_origin]
-      when 'manage county'
-        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).order_by(userid_lower_case: 1)
-      when 'manage syndicate'
-        @userids = UseridDetail.where(:syndicate => session[:syndicate], :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
-      else
-        flash[:notice] = 'Your account does not support this action'
-        redirect_to :back and return
-      end
-
-    @people = Array.new{ @userids.each { |ids| a << ids.userid }}
-  end
-
   def index
     session[:image_server_group_id] = params[:id]
     display_info
@@ -117,7 +98,6 @@ class ImageServerImagesController < ApplicationController
 
   def move
     display_info
-    get_userids_and_transcribers or return
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
     @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])

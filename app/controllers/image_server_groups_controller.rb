@@ -50,7 +50,6 @@ class ImageServerGroupsController < ApplicationController
 
   def destroy
     display_info
-    ImageServerGroup.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     image_server_group = ImageServerGroup.id(params[:id]).first
     begin
@@ -100,7 +99,6 @@ class ImageServerGroupsController < ApplicationController
 
   def edit
     display_info
-    ImageServerGroup.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @group = ImageServerGroup.id(params[:id])
     @syndicate = Syndicate.get_syndicates
@@ -166,7 +164,6 @@ class ImageServerGroupsController < ApplicationController
   def new 
     display_info
     @group = ImageServerGroup.id(params[:id])
-    ImageServerGroup.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @image_server_group = ImageServerGroup.new
     @parent_source = Source.id(session[:source_id]).first

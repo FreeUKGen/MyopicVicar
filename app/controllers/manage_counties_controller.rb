@@ -111,7 +111,7 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'completion_submitted')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], true, 'completion_submitted')            # not sort by place, unallocated groups
       @county = session[:county]
 
       if @source.nil? || @group_ids.nil? || @group_id.nil?
@@ -132,7 +132,7 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], false, 'all')                   # not sort by place, all groups
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], false, 'all')                   # not sort by place, all groups
       @county = session[:county]
 
       if @source.nil? || @group_ids.nil? || @group_id.nil?
@@ -153,7 +153,7 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'unallocate')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], true, 'unallocate')            # not sort by place, unallocated groups
       @county = session[:county]
 
       if @source.nil? || @group_ids.nil? || @group_id.nil?
@@ -174,7 +174,7 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'allocate request')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], true, 'allocate request')            # not sort by place, unallocated groups
       @county = session[:county]
 
       if @source.nil? || @group_ids.nil? || @group_id.nil?
@@ -338,7 +338,7 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'all')        # sort by place, all groups
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], true, 'all')        # sort by place, all groups
       @county = session[:county]
 
       render 'image_server_group_by_place'
